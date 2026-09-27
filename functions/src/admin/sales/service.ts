@@ -3,6 +3,9 @@ import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateSalesAction, validateSalesRead} from "./schemas";
 import {newSalesAccount} from "./account";
+import {proposeSalesEvidence, reviewSalesEvidenceProposal,
+  listSalesEvidenceProposals, type ReviewProposalInput} from
+  "./evidenceProposals";
 import {assertQualifiedByRuntimePolicy} from "./qualificationPolicy";
 import {
   applySalesImport,
@@ -148,6 +151,7 @@ type MutationPayload =
   | LinkInput
   | ContactInput
   | EvidenceInput
+  | ReviewProposalInput
   | AccountSuppressionInput
   | ContactabilityInput;
 
@@ -296,6 +300,14 @@ export async function executeSalesAction(
           timestamp,
       );
       break;
+    case "evidence.propose":
+      result = await proposeSalesEvidence(tx, db, principal,
+        input as EvidenceInput, timestamp);
+      break;
+    case "evidence.reviewProposal":
+      result = await reviewSalesEvidenceProposal(tx, db, principal,
+        input as ReviewProposalInput, timestamp);
+      break;
     case "evidence.add":
       result = await addSalesEvidence(
         tx,
@@ -432,6 +444,9 @@ export async function executeSalesRead(
     break;
   case "contacts.list":
     response = await listSalesContacts(db, principal, input);
+    break;
+  case "evidenceProposals.list":
+    response = await listSalesEvidenceProposals(db, principal, input);
     break;
   case "evidence.list":
     response = await listSalesEvidence(db, input);
@@ -1284,6 +1299,11 @@ function authorize(
       "permission-denied",
       "Current employee authority is required for Sales.",
     );
+  }
+  if (principal.clientId &&
+    ["evidence.add", "evidence.reviewProposal"].includes(action)) {
+    throw new HttpsError("permission-denied",
+      "Evidence review requires a current employee session.");
   }
   if (principal.allowedActions && !principal.allowedActions.includes(action)) {
     throw new HttpsError(

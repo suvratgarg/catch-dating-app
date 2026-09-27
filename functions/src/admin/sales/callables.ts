@@ -139,3 +139,8 @@ export const adminUpsertSalesContact = write("contacts.upsert");
 export const adminAddSalesEvidence = write("evidence.add");
 export const adminSetSalesAccountSuppression = write("accounts.setSuppression");
 export const adminSetSalesContactability = write("contacts.setContactability");
+
+export const adminProposeSalesEvidence = write("evidence.propose");
+export const adminReviewSalesEvidenceProposal =
+  write("evidence.reviewProposal");
+export const adminListSalesEvidenceProposals = read("evidenceProposals.list");

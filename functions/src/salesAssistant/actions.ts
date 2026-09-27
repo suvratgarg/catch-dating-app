@@ -4,7 +4,7 @@ export const READ_ACTIONS = [
 ] as const;
 export const WRITE_ACTIONS = [
   "activities.log", "tasks.upsert", "opportunities.upsert",
-  "fields.create", "fields.setValue",
+  "fields.create", "fields.setValue", "evidence.propose",
 ] as const;
 export const ASSISTANT_ACTIONS: readonly string[] =
   [...READ_ACTIONS, ...WRITE_ACTIONS];

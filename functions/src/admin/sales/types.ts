@@ -163,7 +163,8 @@ export type SalesReadAction =
   | "intents.list"
   | "imports.preview"
   | "contacts.list"
-  | "evidence.list";
+  | "evidence.list"
+  | "evidenceProposals.list";
 export type SalesMutationAction =
   | "hosts.create"
   | "hosts.update"
@@ -176,6 +177,8 @@ export type SalesMutationAction =
   | "imports.apply"
   | "contacts.upsert"
   | "evidence.add"
+  | "evidence.propose"
+  | "evidence.reviewProposal"
   | "accounts.setSuppression"
   | "contacts.setContactability";
 

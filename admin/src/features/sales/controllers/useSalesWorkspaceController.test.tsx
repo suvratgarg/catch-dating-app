@@ -23,6 +23,8 @@ const repository = vi.hoisted(() => ({
   upsertSalesOpportunity: vi.fn(),
   listSalesContacts: vi.fn(),
   listSalesEvidence: vi.fn(),
+  listSalesEvidenceProposals: vi.fn(),
+  reviewSalesEvidenceProposal: vi.fn(),
   upsertSalesContact: vi.fn(),
   addSalesEvidence: vi.fn(),
   setSalesAccountSuppression: vi.fn(),
@@ -50,6 +52,7 @@ describe("useSalesWorkspaceController", () => {
     repository.searchCanonicalOrganizers.mockResolvedValue([]);
     repository.listSalesContacts.mockResolvedValue({rows: [], nextCursor: null});
     repository.listSalesEvidence.mockResolvedValue({rows: [], nextCursor: null});
+    repository.listSalesEvidenceProposals.mockResolvedValue({rows: [], nextCursor: null});
   });
 
   it("passes filters and the opaque cursor to the bounded server query", async () => {

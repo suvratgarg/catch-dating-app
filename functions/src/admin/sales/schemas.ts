@@ -111,6 +111,9 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
     limit: listLimit,
     cursor,
   }),
+  "evidenceProposals.list": strict(["organizerId"], {
+    organizerId: id, limit: listLimit, cursor,
+  }),
   "imports.preview": strict(
     ["sourceId", "contentHash", "mappingVersion", "rows"],
     {
@@ -163,7 +166,7 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
   ),
 };
 
-export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
+const baseActionSchemas = {
   "hosts.create": strict(["organizerId", "requestId"], {
     organizerId: id,
     requestId,
@@ -388,6 +391,18 @@ export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
       evidenceId: nullableId,
     },
   ),
+};
+
+export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
+  ...baseActionSchemas,
+  "evidence.propose": baseActionSchemas["evidence.add"],
+  "evidence.reviewProposal": strict(
+    ["organizerId", "requestId", "proposalId", "expectedRevision",
+      "decision", "reason"], {
+      organizerId: id, requestId, proposalId: id,
+      expectedRevision: revision,
+      decision: {enum: ["accept", "reject"]}, reason: note,
+    }),
 };
 
 const ajv = new Ajv({allErrors: true, strict: true});

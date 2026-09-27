@@ -112,3 +112,30 @@ it("creates internal work without a contact and requires one for outbound tasks"
     task: expect.objectContaining({kind: "follow_up", contactId: "contact-one"}),
   })));
 });
+
+it("reviews the displayed suggestion revision and clears the reason on a refreshed version", async () => {
+  const reviewEvidenceProposal = vi.fn().mockResolvedValue(false);
+  const proposal = {proposalId: "proposal-one", organizerId: "host-one", revision: 1,
+    status: "pending", evidence: {claimKey: "identity", sourceRef: "https://example.test",
+      observedAt: "2026-09-28T00:00:00Z", confidence: "medium", normalizedValue: "Example host"},
+    clientId: "helper-one"};
+  const controller = {isSaving: false, reviewEvidenceProposal,
+    contacts: {data: {rows: []}}, evidence: {data: {rows: []}},
+    evidenceProposals: {data: {rows: [proposal]}}};
+  const props = {section: "evidence" as const, detail: detail()};
+  const {rerender} = render(<SalesRecordsWorkspace {...props}
+    controller={controller as unknown as SalesWorkspaceController} />);
+  const accept = () => screen.getByRole("button", {name: "Accept as reviewed evidence"});
+  expect(accept()).toHaveProperty("disabled", true);
+  fireEvent.change(screen.getByLabelText("Review reason"), {target: {value: "Checked source"}});
+  fireEvent.click(accept());
+  await waitFor(() => expect(reviewEvidenceProposal).toHaveBeenCalledWith({
+    organizerId: "host-one", proposalId: "proposal-one", expectedRevision: 1,
+    decision: "accept", reason: "Checked source",
+  }));
+  controller.evidenceProposals.data.rows = [{...proposal, revision: 2}];
+  rerender(<SalesRecordsWorkspace {...props}
+    controller={controller as unknown as SalesWorkspaceController} />);
+  expect(accept()).toHaveProperty("disabled", true);
+  expect((screen.getByLabelText("Review reason") as HTMLTextAreaElement).value).toBe("");
+});

@@ -53,7 +53,9 @@
         "contacts.upsert",
         "evidence.add",
         "accounts.setSuppression",
-        "contacts.setContactability"
+        "contacts.setContactability",
+        "evidence.propose",
+        "evidence.reviewProposal"
       ]
     },
     "actorUid": {

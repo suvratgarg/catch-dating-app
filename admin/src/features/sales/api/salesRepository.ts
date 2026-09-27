@@ -15,7 +15,7 @@ import type {
   SalesUpsertOpportunityInput, SalesUpsertTaskInput,
   SalesContact, SalesContactInput, SalesEvidence, SalesEvidenceInput,
   SalesImportPacket, SalesImportPreview, SalesSetAccountSuppressionInput,
-  SalesSetContactabilityInput,
+  SalesSetContactabilityInput, SalesEvidenceProposal, SalesReviewEvidenceProposalInput,
 } from "./salesTypes";
 
 type MutationReceipt = {requestId: string; revision: number};
@@ -453,4 +453,16 @@ export async function applySalesImport(input: SalesImportPacket & {
   counts: Record<string, number>; effectsApplied: true; receipt: MutationReceipt}> {
   if (dataMode() !== "sample") return call("adminApplySalesImport", input);
   throw new Error("Reviewed imports require a live employee workspace.");
+}
+
+export async function listSalesEvidenceProposals(organizerId: string, cursor?: string):
+Promise<SalesPage<SalesEvidenceProposal>> {
+  if (dataMode() === "sample") return {rows: [], nextCursor: null};
+  return call("adminListSalesEvidenceProposals", {organizerId, limit: 25,
+    ...(cursor ? {cursor} : {})});
+}
+export async function reviewSalesEvidenceProposal(input: SalesReviewEvidenceProposalInput):
+Promise<{proposal: SalesEvidenceProposal; receipt: MutationReceipt}> {
+  if (dataMode() === "sample") throw new Error("Evidence suggestions require live data.");
+  return call("adminReviewSalesEvidenceProposal", input);
 }

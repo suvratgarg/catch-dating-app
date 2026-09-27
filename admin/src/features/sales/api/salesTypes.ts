@@ -308,3 +308,22 @@ export interface SalesSetContactabilityInput {
   reason: string;
   evidenceId?: string;
 }
+
+export interface SalesEvidenceProposal {
+  proposalId: string;
+  organizerId: string;
+  revision: number;
+  status: "pending" | "accepted" | "rejected";
+  evidence: Omit<SalesEvidenceInput, "requestId">;
+  createdAt: string;
+  clientId: string | null;
+  reviewReason: string | null;
+}
+export interface SalesReviewEvidenceProposalInput {
+  organizerId: string;
+  proposalId: string;
+  requestId: string;
+  expectedRevision: number;
+  decision: "accept" | "reject";
+  reason: string;
+}

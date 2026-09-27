@@ -194,3 +194,16 @@ test("runtime qualification settings accept only bounded generic rules", () => {
   assert.equal(validate({...policy, normalizedLabels: []}), false);
   assert.equal(validate({...policy, rules: []}), false);
 });
+
+test("new proposal actions remain inside persisted receipt and delegation contracts", () => {
+  for (const action of ["evidence.propose", "evidence.reviewProposal"]) {
+    const validate = validator("sales_action_receipts");
+    assert.equal(validate({...fixtures.sales_action_receipts, action}), true,
+      ajv.errorsText(validate.errors));
+  }
+  const schema = JSON.parse(fs.readFileSync(path.join(schemas,
+    "assistant_delegations.schema.json"), "utf8"));
+  assert.ok(schema.properties.allowedActions.items.enum.includes("evidence.propose"));
+  assert.ok(!schema.properties.allowedActions.items.enum.includes("evidence.add"));
+  assert.ok(!schema.properties.allowedActions.items.enum.includes("evidence.reviewProposal"));
+});

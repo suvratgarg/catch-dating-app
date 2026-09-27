@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import path from "node:path";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {executeSalesAction, executeSalesRead} from "./service";
@@ -876,4 +880,99 @@ test("manual sent-elsewhere log has no provider effect", async () => {
   );
   assert.equal((logged.activity as Doc).outcome, "actor_attested_sent");
   assert.equal((logged.activity as Doc).providerConfirmed, false);
+});
+
+test("assistant suggestions require review before qualification", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const rules = [{ruleId: "synthetic-identity", claimKey: "identity",
+    sourceTypes: ["first_party"], confidence: ["high"], minimumCount: 1,
+    distinctSignalIds: false, distinctSourceRoots: false, maxAgeDays: 30}];
+  const policy = {policyId: "synthetic-policy", version: "v1", rules};
+  db.docs.set("salesSettings/qualificationPolicy", {...policy,
+    schemaVersion: 1, classification: "sales_private", status: "active",
+    policyHash: qualificationPolicyHash(policy)});
+  const assistant: SalesPrincipal = {...employee, clientId: "helper",
+    clientAuthUid: "service-1", delegationId: "grant-1",
+    organizerIds: ["org-1"], allowedActions: ["evidence.propose",
+      "evidence.add", "evidence.reviewProposal"]};
+  const delegated = {...deps, authorizeRead: async () => undefined,
+    authorizeInTransaction: async () => undefined};
+  const input = {organizerId: "org-1", requestId: "proposal-request-1",
+    claimKey: "identity", sourceType: "first_party",
+    sourceRef: "https://example.test/about", observedAt: "2026-09-27T00:00:00Z",
+    confidence: "high", excerpt: "Synthetic source observation"};
+  const result = await executeSalesAction(assistant,
+    "evidence.propose", input, delegated);
+  const proposal = result.proposal as Doc;
+  assert.equal(proposal.status, "pending");
+  assert.equal(proposal.reviewerUid, null);
+  assert.equal(proposal.clientId, "helper");
+  assert.equal([...db.docs.keys()].filter((k) => k.startsWith("salesEvidence/"))
+    .length, 0);
+  assert.deepEqual(await executeSalesAction(assistant,
+    "evidence.propose", input, delegated), result);
+  await assert.rejects(executeSalesAction(assistant, "evidence.propose",
+    {...input, organizerId: "org-2"}, delegated), /outside Sales scope/);
+  await assert.rejects(executeSalesAction(assistant, "evidence.add",
+    {...input, requestId: "direct-review-1"}, delegated), /employee session/);
+  const qualify = {organizerId: "org-1", requestId: "qualify-proposal-1",
+    expectedRevision: 1, patch: {researchStatus: "qualified"}};
+  await assert.rejects(executeSalesAction(employee, "hosts.update", qualify,
+    deps), /evidence is incomplete/);
+  const review = {organizerId: "org-1", requestId: "review-proposal-1",
+    proposalId: proposal.proposalId, expectedRevision: 1, decision: "accept",
+    reason: "Checked source and dates"};
+  await assert.rejects(executeSalesAction(assistant, "evidence.reviewProposal",
+    review, delegated), /employee session/);
+  await assert.rejects(executeSalesAction(employee, "evidence.reviewProposal",
+    {...review, organizerId: "org-2"}, deps), /not found/);
+  const accepted = await executeSalesAction(employee, "evidence.reviewProposal",
+    review, deps);
+  assert.equal((accepted.proposal as Doc).status, "accepted");
+  assert.equal((accepted.evidence as Doc).reviewerUid, employee.uid);
+  assert.deepEqual(await executeSalesAction(employee, "evidence.reviewProposal",
+    review, deps), accepted);
+  await assert.rejects(executeSalesAction(employee, "evidence.reviewProposal",
+    {...review, requestId: "review-proposal-2"}, deps), /changed since review/);
+  const qualified = await executeSalesAction(employee, "hosts.update", qualify,
+    deps);
+  assert.equal((qualified.account as Doc).researchStatus, "qualified");
+  const ajv = new Ajv({strict: false});
+  addFormats(ajv);
+  for (const [collection, schema] of [
+    ["salesEvidenceProposals", "sales_evidence_proposals"],
+    ["salesEvidence", "sales_evidence"],
+    ["salesActionReceipts", "sales_action_receipts"],
+  ]) {
+    const validate = ajv.compile(JSON.parse(readFileSync(path.resolve(__dirname,
+      `../../../../contracts/firestore/${schema}.schema.json`), "utf8")));
+    for (const [key, value] of db.docs) {
+      if (key.startsWith(`${collection}/`)) {
+        assert.ok(validate(value), ajv.errorsText(validate.errors));
+      }
+    }
+  }
+});
+
+test("expired suggestions fail and rejection stays private", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const proposed = await executeSalesAction(employee, "evidence.propose", {
+    organizerId: "org-1", requestId: "expired-proposal-1", claimKey: "other",
+    sourceType: "human_note", sourceRef: "synthetic:old-note",
+    observedAt: "2026-09-20T00:00:00Z", validThrough: "2026-09-21T00:00:00Z",
+    confidence: "low",
+  }, deps);
+  const review = {organizerId: "org-1", proposalId:
+    (proposed.proposal as Doc).proposalId, requestId: "expired-review-1",
+  expectedRevision: 1, decision: "accept", reason: "Reviewed"};
+  await assert.rejects(executeSalesAction(employee, "evidence.reviewProposal",
+    review, deps), /expired/);
+  const rejected = await executeSalesAction(employee, "evidence.reviewProposal",
+    {...review, decision: "reject"}, deps);
+  assert.equal((rejected.proposal as Doc).status, "rejected");
+  assert.equal(rejected.evidence, null);
+  assert.equal([...db.docs.keys()].filter((k) => k.startsWith("salesEvidence/"))
+    .length, 0);
 });

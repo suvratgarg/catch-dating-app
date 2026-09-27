@@ -12,7 +12,7 @@
     "delegationId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
     "actorUid": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
     "clientId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
-    "allowedActions": {"type": "array", "minItems": 1, "maxItems": 20, "uniqueItems": true, "items": {"type": "string", "enum": ["hosts.search", "hosts.get", "tasks.list", "opportunities.list", "fields.list", "receipts.get", "activities.log", "tasks.upsert", "opportunities.upsert", "fields.create", "fields.setValue"]}},
+    "allowedActions": {"type": "array", "minItems": 1, "maxItems": 20, "uniqueItems": true, "items": {"type": "string", "enum": ["hosts.search", "hosts.get", "tasks.list", "opportunities.list", "fields.list", "receipts.get", "activities.log", "tasks.upsert", "opportunities.upsert", "fields.create", "fields.setValue", "evidence.propose"]}},
     "organizerIds": {"type": "array", "minItems": 1, "maxItems": 30, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"}},
     "fieldIds": {"type": "array", "maxItems": 50, "uniqueItems": true, "items": {"type": "string", "maxLength": 96, "pattern": "^sales\\.[A-Za-z0-9._:-]+$"}},
     "expiresAt": {"type": "string", "format": "date-time"},

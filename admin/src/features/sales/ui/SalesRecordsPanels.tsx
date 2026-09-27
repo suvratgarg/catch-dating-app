@@ -4,7 +4,7 @@ import {AdminButton, AdminForm, EmptyState, Panel, SelectField, StateRow,
   TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
 import {toLocalDateTimeInput, type SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
-import type {SalesAccountDetail, SalesContact, SalesEvidence} from "../api/salesTypes";
+import type {SalesAccountDetail, SalesContact, SalesEvidence, SalesEvidenceProposal} from "../api/salesTypes";
 
 function PageControls({previous, next, onPrevious, onNext}: {
   previous: boolean; next: boolean; onPrevious: () => void; onNext: () => void;
@@ -142,6 +142,34 @@ function SalesPeoplePanel({detail, controller}: {
   </Panel>;
 }
 
+function EvidenceSuggestion({proposal, controller}: {
+  proposal: SalesEvidenceProposal; controller: SalesWorkspaceController;
+}) {
+  const [reason, setReason] = useState("");
+  const review = (decision: "accept" | "reject") => controller.reviewEvidenceProposal({
+    organizerId: proposal.organizerId, proposalId: proposal.proposalId,
+    expectedRevision: proposal.revision, decision, reason: reason.trim(),
+  });
+  return <Panel title={`${proposal.evidence.claimKey} · ${proposal.status}`} icon={<ClipboardList size={18} />}>
+    <p>{proposal.evidence.normalizedValue || proposal.evidence.excerpt || "No summary supplied."}</p>
+    <StateRow label="Source" value={proposal.evidence.sourceRef} />
+    <StateRow label="Observed" value={proposal.evidence.observedAt} />
+    <StateRow label="Suggested confidence" value={proposal.evidence.confidence} />
+    {proposal.evidence.excerpt ? <StateRow label="Source excerpt"
+      value={proposal.evidence.excerpt} /> : null}
+    <StateRow label="Valid until" value={proposal.evidence.validThrough ?? "No expiry supplied"} />
+    <StateRow label="Submitted by" value={proposal.clientId ? "Assistant" : "Employee"} />
+    {proposal.status === "pending" ? <>
+      <TextareaField label="Review reason" value={reason} onChange={setReason}
+        maxLength={2000} rows={2} />
+      <AdminButton disabled={!reason.trim() || controller.isSaving}
+        onClick={() => void review("accept")}>Accept as reviewed evidence</AdminButton>
+      <AdminButton disabled={!reason.trim() || controller.isSaving}
+        onClick={() => void review("reject")}>Reject suggestion</AdminButton>
+    </> : <StateRow label="Review decision" value={proposal.reviewReason ?? "Reviewed"} />}
+  </Panel>;
+}
+
 function SalesEvidencePanel({detail, controller}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
 }) {
@@ -181,6 +209,19 @@ function SalesEvidencePanel({detail, controller}: {
     <PageControls previous={controller.hasPreviousEvidencePage}
       next={Boolean(controller.evidence.data?.nextCursor)}
       onPrevious={controller.previousEvidencePage} onNext={controller.nextEvidencePage} />
+    <h3>Suggestions to review</h3>
+    <p>Check the source before accepting. Assistant suggestions do not affect qualification until reviewed.</p>
+    {controller.evidenceProposals?.isPending ? <EmptyState>Loading suggestions…</EmptyState> :
+      controller.evidenceProposals?.error ? <EmptyState>Suggestions could not be loaded.
+        <AdminButton onClick={() => void controller.evidenceProposals.refetch()}>Try again</AdminButton>
+      </EmptyState> : (controller.evidenceProposals?.data?.rows ?? []).map((proposal) =>
+        <EvidenceSuggestion key={`${proposal.proposalId}:${proposal.revision}`}
+          proposal={proposal} controller={controller} />)}
+    {controller.evidenceProposals?.data?.rows.length === 0 ?
+      <EmptyState>No evidence suggestions for this host.</EmptyState> : null}
+    <PageControls previous={controller.hasPreviousProposalPage}
+      next={Boolean(controller.evidenceProposals?.data?.nextCursor)}
+      onPrevious={controller.previousProposalPage} onNext={controller.nextProposalPage} />
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <h3>Add reviewed observation</h3>
       <SelectField label="Related contact on this page (optional)" value={contactId}
