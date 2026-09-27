@@ -19,12 +19,12 @@ import type {
 } from "./types";
 
 const allowedRoles = ["admin", "adminOwner"] as const;
-const options = appCheckCallableOptionsWithLimits({
+const callableLimits = {
   concurrency: 20,
   maxInstances: 10,
-  memory: "256MiB",
+  memory: "256MiB" as const,
   timeoutSeconds: 30,
-});
+};
 
 /** Current Auth state is authoritative after the initial token gate. */
 export async function currentSalesEmployee(
@@ -109,9 +109,11 @@ async function handleAction(
 }
 
 const read = (action: SalesReadAction) =>
-  onCall(options, (request) => handleRead(action, request));
+  onCall(appCheckCallableOptionsWithLimits(callableLimits),
+    (request) => handleRead(action, request));
 const write = (action: SalesMutationAction) =>
-  onCall(options, (request) => handleAction(action, request));
+  onCall(appCheckCallableOptionsWithLimits(callableLimits),
+    (request) => handleAction(action, request));
 
 export const adminListSalesAccounts = read("hosts.search");
 export const adminGetSalesAccount = read("hosts.get");
