@@ -785,3 +785,19 @@ identity for private photo links, with read-only Storage permissions. Their IAM 
 bound to the validated draft, form question, fixed object path, file type, size,
 and expiry; finalization still verifies uploaded metadata before attachment.
 The shared runtime account does not receive a new signing permission.
+
+### Atomic form admission endpoint
+
+`commitOrganizerFormAdmission` is the authenticated, App Check-protected
+command boundary for a reviewed registration/intake response. It validates the
+exact input, applies the actor rate limit, and delegates to the existing single
+Firestore transaction. The transaction rechecks current manager/account, CRM
+origin/contact, immutable submitted version, current issued offer, exact payment
+evidence and canonical seat ledger revisions before writing the attendee and
+immutable ownership/receipt together. Replaying the same request returns its
+receipt only after current manager authority is checked.
+
+This endpoint does not initialize seat ledgers, infer payment from a form fee,
+create an approved application, or bypass the event-offer activation boundary.
+Unreconciled capacity, ambiguous identity, stale offer/ledger revisions and
+missing payment proof return a typed precondition error requiring fresh review.

@@ -730,3 +730,6 @@ export {
   getEventOfferConfiguration,
   configureEventOfferPreferences,
 } from "./organizerEventOffers/callables";
+
+export {commitOrganizerFormAdmission} from
+  "./organizerFormAdmission/callable";
