@@ -27,6 +27,8 @@ export {prepareEventOfferInvitation, manageEventOfferCheckout} from
   "./organizerEventOfferRecipients/recipientCallables";
 export {reconcileOrganizerEventOfferPayments} from
   "./payments/offerPayments/offerPaymentRecovery";
+export {onCancelledEventOfferPayments} from
+  "./payments/offerPayments/offerPaymentCancellationTrigger";
 export {
   reconcileRazorpayOrders,
 } from "./payments/reconcileRazorpayOrders";

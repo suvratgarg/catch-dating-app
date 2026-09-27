@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {Timestamp} from "firebase-admin/firestore";
 import test from "node:test";
 import {setup, uid, phone, now} from "./offerPaymentTestFixture";
 import {eventId, offerId} from
@@ -103,6 +104,52 @@ test("uncertain order is recovered by receipt and never posted twice",
     assert.equal(h.calls.create, 1);
     assert.equal(h.calls.find, 1);
     assert.equal(h.calls.ready, 1);
+  });
+
+test("host cancellation refunds an admitted payment without re-admission",
+  async () => {
+    const h = await processorFixture();
+    await h.processor.ensureOrder();
+    h.observe();
+    const admitted = await h.processor.reconcile();
+    h.store.get(`events/${eventId}`)!.status = "cancelled";
+    h.loseRefund();
+    await assert.rejects(h.processor.reconcile(), /Lost refund response/u);
+    assert.equal((await h.processor.read()).status, "refundPending");
+    const result = await h.processor.reconcile();
+    assert.equal(result.status, "refunded");
+    assert.equal(result.settlement?.state, "reversed");
+    assert.equal(result.admissionReceiptId, admitted.admissionReceiptId);
+    assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 0);
+    await h.processor.reconcile();
+    assert.equal((await h.processor.read()).status, "refunded");
+    assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 0);
+    assert.deepEqual(h.calls.refund, Array(2).fill(
+      `offer_refund_${h.paymentId}`));
+  });
+
+test("host refund waits for an in-flight settlement or another refund lease",
+  async () => {
+    for (const settlementLease of [true, false]) {
+      const h = await processorFixture();
+      await h.processor.ensureOrder();
+      h.observe();
+      const admitted = await h.processor.reconcile();
+      h.store.get(`events/${eventId}`)!.status = "cancelled";
+      const ledger = h.store.get("organizerEventOfferPayments/" +
+        h.paymentId)!;
+      if (settlementLease) {
+        ledger.settlement = {...admitted.settlement,
+          leaseId: "a".repeat(32), leaseUntilMillis: now + 1000};
+      } else {
+        ledger.leaseUntil = Timestamp.fromMillis(now + 1000);
+      }
+      assert.equal((await h.processor.reconcile()).status, "refundPending");
+      assert.equal(h.calls.refund.length, 0);
+      h.advance(now + 1001);
+      assert.equal((await h.processor.reconcile()).status, "refunded");
+      assert.equal(h.calls.refund.length, 1);
+    }
   });
 
 test("expired attempt never creates order and releases inventory offline",

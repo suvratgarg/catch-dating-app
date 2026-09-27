@@ -627,7 +627,8 @@ export interface OrganizerEventOfferPaymentDocument {
       | "released"
       | "settled"
       | "blocked"
-      | "reviewRequired";
+      | "reviewRequired"
+      | "reversed";
     transferId: string | null;
     nextAttemptAtMillis: number;
     leaseUntilMillis: number;
@@ -636,6 +637,13 @@ export interface OrganizerEventOfferPaymentDocument {
     completedAtMillis: number | null;
     releasedAtMillis: number | null;
     settledAtMillis: number | null;
+  };
+  cancellation?: {
+    reason: "eventCancelled";
+    requestedAtMillis: number;
+    attendeeId: string;
+    refundAmountPaise: number;
+    seatRetained: boolean;
   };
 }
 

@@ -62,6 +62,7 @@ async function harness() {
       status: payment.status, amountPaise: payment.amountPaise,
       currency: "INR" as const, mode: payment.routing.selection.mode,
       refundedAmountPaise: payment.refundedAmountPaise,
+      cancellationReason: null,
       expiresAtMillis: payment.checkoutExpiresAt.toMillis(), checkout: null}),
   } as unknown as typeof recipientCallableDefaults;
   return {...h, deps, executions: () => executions, routes: () => routes,

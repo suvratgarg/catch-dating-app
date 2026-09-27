@@ -54,6 +54,13 @@ export function parseOfferPayment(raw: unknown, paymentId: string): Payment {
       payment.paymentSnapshot.currency !== payment.currency ||
       payment.paymentSnapshot.expiresAtMillis <
         payment.checkoutExpiresAt.toMillis()) unavailable();
+  if (payment.cancellation && (!payment.admissionReceiptId ||
+      !payment.reservationReleased ||
+      payment.cancellation.refundAmountPaise !== payment.amountPaise ||
+      !["refundPending", "refunded", "reviewRequired"]
+        .includes(payment.status))) {
+    unavailable();
+  }
   assertPaymentRouteSnapshot(payment.routing, {
     organizerId: payment.organizerId, purpose: "eventAdmission",
     currency: payment.currency, amountMinor: payment.amountPaise});

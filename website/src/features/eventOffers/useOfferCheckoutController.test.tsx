@@ -13,7 +13,7 @@ const credential = {token: "s".repeat(43), instance: "opaque-page"};
 const grant = {grantId: "a".repeat(64), eventName: "Morning run", eventId: "event1",
   startTimeMillis: 9e12, amountPaise: 10000, currency: "INR", expiresAtMillis: 9e12};
 const ready = {paymentId: `ep_${"b".repeat(32)}`, status: "checkoutReady", amountPaise: 10000,
-  currency: "INR", mode: "test", refundedAmountPaise: 0, expiresAtMillis: 9e12,
+  currency: "INR", mode: "test", refundedAmountPaise: 0, cancellationReason: null, expiresAtMillis: 9e12,
   checkout: {publicToken: "rzp_test_key", orderId: "order_one", amountPaise: 10000,
     currency: "INR", description: "Admission", expiresAtMillis: 9e12}};
 let auth: (user: User | null) => void;

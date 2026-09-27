@@ -85,6 +85,7 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
             'refundedAmountPaise',
             'expiresAtMillis',
             'checkout',
+            'cancellationReason',
           ],
           'properties': <String, Object?>{
             'paymentId': <String, Object?>{
@@ -175,6 +176,12 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
                 <String, Object?>{
                   'type': 'null',
                 },
+              ],
+            },
+            'cancellationReason': <String, Object?>{
+              'enum': <Object?>[
+                'eventCancelled',
+                null,
               ],
             },
           },

@@ -4,7 +4,7 @@ export type OfferGrant = NonNullable<Response["grant"]>;
 export type OfferPayment = NonNullable<Response["payment"]>;
 
 export const paymentCopy = (payment: OfferPayment) =>
-  offerPaymentCopy(payment.status, payment.checkout !== null);
+  offerPaymentCopy(payment.status, payment.checkout !== null, payment.cancellationReason);
 export function formatOfferAmount(amountPaise: number) {
   return new Intl.NumberFormat("en-IN", {style: "currency", currency: "INR"}).format(amountPaise / 100);
 }
@@ -35,12 +35,14 @@ export function assertOfferResponse(value: unknown): Response {
   const payment = value.payment;
   if (payment !== null) {
     if (!record(payment) || !keys(payment, ["paymentId", "status", "amountPaise", "currency",
-      "mode", "refundedAmountPaise", "expiresAtMillis", "checkout"]) ||
+      "mode", "refundedAmountPaise", "expiresAtMillis", "checkout", "cancellationReason"]) ||
       !matches(payment.paymentId, /^ep_[a-f0-9]{32}$/u) ||
       typeof payment.status !== "string" || !statuses.has(payment.status) ||
       !integer(payment.amountPaise, 100) || payment.amountPaise > 100_000_000 ||
       payment.currency !== "INR" || !["test", "live"].includes(String(payment.mode)) ||
       !integer(payment.refundedAmountPaise, 0) || payment.refundedAmountPaise > payment.amountPaise ||
+      ![null, "eventCancelled"].includes(payment.cancellationReason as null | string) ||
+      payment.cancellationReason !== null && !["refundPending", "refunded", "reviewRequired"].includes(String(payment.status)) ||
       !integer(payment.expiresAtMillis)) return invalid();
     const checkout = payment.checkout;
     if (checkout !== null && (!record(checkout) || !keys(checkout, ["publicToken", "orderId",

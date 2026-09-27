@@ -117,8 +117,9 @@ export async function reconcileOfferSettlement(input: {
       paymentId);
     const saved = payment.settlement;
     const now = deps.now();
-    if (!saved || saved.state === "settled" ||
+    if (!saved || saved.state === "settled" || saved.state === "reversed" ||
         saved.state === "reviewRequired" || saved.leaseUntilMillis > now ||
+        payment.leaseUntil && payment.leaseUntil.toMillis() > now ||
         saved.nextAttemptAtMillis > now) return null;
     const completed = await completedEvent({db, tx, payment, paymentId,
       nowMillis: now});
@@ -188,6 +189,11 @@ export async function reconcileOfferSettlement(input: {
       assertBound(payment);
       const current = payment.settlement!;
       if (current.leaseId !== leaseId) return;
+      if (current.state === "reversed") {
+        tx.update(ref, {settlement: {...current, leaseId: null,
+          leaseUntilMillis: 0}});
+        return;
+      }
       const now = deps.now();
       // Release without Catch's durable intent needs review.
       const reviewed = !current.authorizedAtMillis || observed.onHold ||

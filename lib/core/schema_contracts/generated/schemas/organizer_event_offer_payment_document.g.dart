@@ -629,6 +629,7 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
             'settled',
             'blocked',
             'reviewRequired',
+            'reversed',
           ],
         },
         'transferId': <String, Object?>{
@@ -711,6 +712,40 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
               'type': 'null',
             },
           ],
+        },
+      },
+    },
+    'cancellation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'reason',
+        'requestedAtMillis',
+        'attendeeId',
+        'refundAmountPaise',
+        'seatRetained',
+      ],
+      'properties': <String, Object?>{
+        'reason': <String, Object?>{
+          'const': 'eventCancelled',
+        },
+        'requestedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'attendeeId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'refundAmountPaise': <String, Object?>{
+          'type': 'integer',
+          'minimum': 100,
+          'maximum': 100000000,
+        },
+        'seatRetained': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },

@@ -82,7 +82,8 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
             "mode",
             "refundedAmountPaise",
             "expiresAtMillis",
-            "checkout"
+            "checkout",
+            "cancellationReason"
           ],
           "properties": {
             "paymentId": {
@@ -173,6 +174,12 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "cancellationReason": {
+              "enum": [
+                "eventCancelled",
+                null
               ]
             }
           }

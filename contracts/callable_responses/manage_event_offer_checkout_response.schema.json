@@ -78,7 +78,8 @@
             "mode",
             "refundedAmountPaise",
             "expiresAtMillis",
-            "checkout"
+            "checkout",
+            "cancellationReason"
           ],
           "properties": {
             "paymentId": {
@@ -169,6 +170,12 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "cancellationReason": {
+              "enum": [
+                "eventCancelled",
+                null
               ]
             }
           }

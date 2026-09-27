@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.154.0
+version: 1.155.0
 updated: 2026-09-27
 owner: recursive_audit_loop
 status: active
@@ -2698,8 +2698,18 @@ proofs leave the automatic queue instead of starving later payments.
 The adapter uses Razorpay's [settlement hold API](https://razorpay.com/docs/api/payments/route/modify-settlement-hold/)
 and validates the frozen merchant, destination, full capture, receipt, allocation
 and zero reversal before release. This implementation does not establish bank
-receipt or complete the post-admission cancellation/refund workflow; that remains
-an activation prerequisite alongside provider test-mode acceptance.
+receipt. Host event cancellation atomically cancels the paid roster entry,
+releases its canonical seat (or retains an independent Catch booking's seat), and
+persists a full-refund intent without deleting the admission receipt. A retryable
+event trigger pages all remaining admissions, regardless of payment age. The
+payment recovery worker also checks current event cancellation when reconciling
+an admitted payment. Explicit authority failures require review; transport errors
+retain retryable work. Refund and settlement leases exclude each other's provider
+I/O. Refund completion requires the original merchant's verified refund, including
+full Route transfer reversal; `reversed` is terminal for the settlement queue.
+Recipient history distinguishes host cancellation from failed initial admission.
+Guest-initiated cancellation and its credit policy remain activation prerequisites
+alongside provider test-mode acceptance.
 
 ### Organizer-connected form payments
 

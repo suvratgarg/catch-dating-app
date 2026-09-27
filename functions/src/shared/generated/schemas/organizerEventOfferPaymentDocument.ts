@@ -626,7 +626,8 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
             "released",
             "settled",
             "blocked",
-            "reviewRequired"
+            "reviewRequired",
+            "reversed"
           ]
         },
         "transferId": {
@@ -709,6 +710,40 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "cancellation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "requestedAtMillis",
+        "attendeeId",
+        "refundAmountPaise",
+        "seatRetained"
+      ],
+      "properties": {
+        "reason": {
+          "const": "eventCancelled"
+        },
+        "requestedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "refundAmountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 100000000
+        },
+        "seatRetained": {
+          "type": "boolean"
         }
       }
     }

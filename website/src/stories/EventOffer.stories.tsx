@@ -16,7 +16,7 @@ const fixture: ReturnType<typeof useOfferCheckoutController> = {
 };
 const payment = {paymentId: `ep_${"a".repeat(32)}`, status: "verifying" as const,
   amountPaise: 85000, currency: "INR" as const, mode: "test" as const,
-  refundedAmountPaise: 0, expiresAtMillis: 9e12, checkout: null};
+  refundedAmountPaise: 0, cancellationReason: null, expiresAtMillis: 9e12, checkout: null};
 export const EventOffer: Story = {parameters: {
   catchRoute: {id: "event_offer", path: "/offer/", reviewStates: ["phone", "otp", "ready", "pending", "admitted", "refund", "unavailable"],
     stateCoverage: {storybook: ["phone", "otp", "ready", "pending", "admitted", "refund", "unavailable"], manual: []}},
@@ -38,4 +38,6 @@ export const Otp: Story = {render: () => <EventOfferView {...fixture} grant={nul
 export const Pending: Story = {render: () => <EventOfferView {...fixture} payment={payment} />};
 export const Admitted: Story = {render: () => <EventOfferView {...fixture} payment={{...payment, status: "admitted"}} />};
 export const Refund: Story = {render: () => <EventOfferView {...fixture} payment={{...payment, status: "refundPending"}} />};
+export const Cancelled: Story = {render: () => <EventOfferView {...fixture} payment={{...payment,
+  status: "refundPending", cancellationReason: "eventCancelled"}} />};
 export const Unavailable: Story = {render: () => <EventOfferView {...fixture} grant={null} phase="unavailable" />};

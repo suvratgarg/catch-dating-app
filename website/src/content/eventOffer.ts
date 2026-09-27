@@ -46,7 +46,13 @@ export const eventOfferCopy = {
 export const offerCodeSent = (phone: string) => `We sent a six-digit code to ${phone}.`;
 export const offerHoldEnds = (time: string) => `Your seat hold ends at ${time}.`;
 
-export function offerPaymentCopy(status: string, hasCheckout: boolean) {
+export function offerPaymentCopy(status: string, hasCheckout: boolean, cancellationReason: "eventCancelled" | null = null) {
+  if (cancellationReason === "eventCancelled" && status === "refundPending") return {
+    title: "The event was cancelled",
+    body: "Your admission is cancelled and your refund is underway. Don’t pay again."};
+  if (cancellationReason === "eventCancelled" && status === "refunded") return {
+    title: "Your refund is processed",
+    body: "The event was cancelled. Your bank may take a few days to show the refund."};
   if (status === "admitted") return {title: "You’re on the guest list",
     body: "Your payment is confirmed and your place is reserved."};
   if (status === "refunded") return {title: "Your refund is processed",

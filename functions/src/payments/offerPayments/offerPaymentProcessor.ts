@@ -15,6 +15,7 @@ import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
 import {finalizeCapturedOfferPayment} from "./offerPaymentAdmission";
+import {cancelPaidOfferForCancelledEvent} from "./offerPaymentCancellation";
 
 export interface OfferPaymentAuthority {
   resolve(): Promise<FormPaymentMerchant>;
@@ -35,7 +36,7 @@ export interface OfferPaymentProcessorDeps {
 /** Shared financial rules; offer fulfillment owns its seat and receipt. */
 function observeDecision(ledger: Payment, observation: FormProviderPayment) {
   const decision = decideFormPaymentObservation({...ledger,
-    responseId: ledger.admissionReceiptId,
+    responseId: ledger.cancellation ? null : ledger.admissionReceiptId,
     status: ledger.status === "admitted" ? "submitted" : ledger.status},
   observation);
   return {...decision,
@@ -140,6 +141,11 @@ export class OfferPaymentProcessor {
     // Inventory expiry must not depend on provider availability.
     await this.expire();
     let ledger = await this.ensureOrder();
+    if (ledger.status === "admitted") {
+      await cancelPaidOfferForCancelledEvent({db: this.deps.db,
+        paymentId: this.deps.paymentId, nowMillis: this.now()});
+      ledger = await this.read();
+    }
     if (!ledger.providerOrderId) return ledger;
     const {authorizationHandle: token} = await this.deps.authority.resolve();
     const order = await this.deps.provider.fetchOrder(token,
@@ -187,6 +193,9 @@ export class OfferPaymentProcessor {
       const {action, ...decision} = observeDecision(ledger, observation);
       const now = Timestamp.fromMillis(this.now());
       tx.update(this.ref(), {...decision, updatedAt: now,
+        ...(ledger.cancellation && ledger.settlement &&
+          decision.status === "refunded" ? {settlement: {...ledger.settlement,
+            state: "reversed"}} : {}),
         capturedAt: ledger.capturedAt ?? (observation.captured ? now : null),
         lastErrorCode: action === "review" ? "paymentNeedsReview" :
           ledger.lastErrorCode});
@@ -194,32 +203,64 @@ export class OfferPaymentProcessor {
   }
 
   private async refund(): Promise<void> {
-    const ledger = await this.read();
-    if (ledger.status !== "refundPending" || !ledger.providerPaymentId ||
-        ledger.admissionReceiptId || !ledger.reservationReleased ||
-        ledger.refundedAmountPaise > 0) return;
     const {authorizationHandle: token} = await this.deps.authority.resolve();
-    const refund = ledger.providerRefundId ?
-      await this.deps.provider.fetchRefund(token, ledger.providerRefundId) :
-      await this.deps.provider.refundPayment(token, {
-        paymentId: ledger.providerPaymentId, amount: ledger.amountPaise,
-        idempotencyKey: `offer_refund_${this.deps.paymentId}`});
-    if (refund.paymentId !== ledger.providerPaymentId ||
-        refund.amount !== ledger.amountPaise) {
-      throw new Error("Refund differs from the offer payment.");
-    }
-    await this.deps.db.runTransaction(async (tx) => {
-      const current = this.bound((await tx.get(this.ref())).data());
-      if (current.admissionReceiptId || current.status !== "refundPending" ||
-          !current.reservationReleased) return;
-      tx.update(this.ref(), {providerRefundId: refund.id,
-        status: refund.status === "processed" ? "refunded" :
-          refund.status === "failed" ? "reviewRequired" : "refundPending",
-        refundedAmountPaise: refund.status === "processed" ?
-          current.amountPaise : current.refundedAmountPaise,
-        lastErrorCode: refund.status === "failed" ? "refundFailed" : null,
-        updatedAt: Timestamp.fromMillis(this.now())});
+    const eligible = (payment: Payment) => payment.status === "refundPending" &&
+      payment.providerPaymentId && payment.reservationReleased &&
+      (!payment.admissionReceiptId || payment.cancellation) &&
+      payment.refundedAmountPaise === 0;
+    const claim = await this.deps.db.runTransaction(async (tx) => {
+      const payment = this.bound((await tx.get(this.ref())).data());
+      const now = this.now();
+      if (!eligible(payment) ||
+          payment.leaseUntil && payment.leaseUntil.toMillis() > now ||
+          (payment.settlement?.leaseUntilMillis ?? 0) > now) return null;
+      const leaseUntil = Timestamp.fromMillis(now + 180_000);
+      tx.update(this.ref(), {leaseUntil});
+      return {payment, leaseUntil};
     });
+    if (!claim) return;
+    try {
+      const ledger = claim.payment;
+      const refund = ledger.providerRefundId ?
+        await this.deps.provider.fetchRefund(token, ledger.providerRefundId) :
+        await this.deps.provider.refundPayment(token, {
+          paymentId: ledger.providerPaymentId!, amount: ledger.amountPaise,
+          idempotencyKey: `offer_refund_${this.deps.paymentId}`});
+      if (refund.paymentId !== ledger.providerPaymentId ||
+          refund.amount !== ledger.amountPaise) {
+        throw new Error("Refund differs from the offer payment.");
+      }
+      await this.deps.db.runTransaction(async (tx) => {
+        const current = this.bound((await tx.get(this.ref())).data());
+        if (current.leaseUntil?.toMillis() !== claim.leaseUntil.toMillis()) {
+          return;
+        }
+        if (!eligible(current)) {
+          tx.update(this.ref(), {leaseUntil: null});
+          return;
+        }
+        tx.update(this.ref(), {providerRefundId: refund.id, leaseUntil: null,
+          ...(current.cancellation && current.settlement &&
+            refund.status === "processed" ? {
+              settlement: {...current.settlement, state: "reversed"},
+            } : {}),
+          status: refund.status === "processed" ? "refunded" :
+            refund.status === "failed" ? "reviewRequired" : "refundPending",
+          refundedAmountPaise: refund.status === "processed" ?
+            current.amountPaise : current.refundedAmountPaise,
+          lastErrorCode: refund.status === "failed" ? "refundFailed" : null,
+          updatedAt: Timestamp.fromMillis(this.now())});
+      });
+    } catch (error) {
+      await this.deps.db.runTransaction(async (tx) => {
+        const current = this.bound((await tx.get(this.ref())).data());
+        if (current.leaseUntil?.toMillis() === claim.leaseUntil.toMillis()) {
+          tx.update(this.ref(), {leaseUntil: null,
+            updatedAt: Timestamp.fromMillis(this.now())});
+        }
+      });
+      throw error;
+    }
   }
 
   private bound(raw: unknown): Payment {

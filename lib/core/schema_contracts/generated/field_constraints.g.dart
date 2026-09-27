@@ -78611,6 +78611,12 @@ abstract final class CatchContractConstraints {
     maximum: 100000000,
   );
 
+  static const manageEventOfferCheckoutCallableResponsePaymentCancellationReason = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.cancellationReason',
+    required: true,
+    enumValues: <String>['eventCancelled'],
+  );
+
   static const manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.amountPaise',
     required: true,
@@ -89135,6 +89141,41 @@ abstract final class CatchContractConstraints {
     maximum: 100000000,
   );
 
+  static const organizerEventOfferPaymentDocumentCancellationAttendeeId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellation.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationReason = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellation.reason',
+    required: true,
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationRefundAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellation.refundAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellation.requestedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationSeatRetained = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellation.seatRetained',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerEventOfferPaymentDocumentCanonicalSeatKey = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.canonicalSeatKey',
     maxLength: 180,
@@ -89607,7 +89648,7 @@ abstract final class CatchContractConstraints {
   static const organizerEventOfferPaymentDocumentSettlementState = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.settlement.state',
     required: true,
-    enumValues: <String>['waiting', 'releasePending', 'released', 'settled', 'blocked', 'reviewRequired'],
+    enumValues: <String>['waiting', 'releasePending', 'released', 'settled', 'blocked', 'reviewRequired', 'reversed'],
   );
 
   static const organizerEventOfferPaymentDocumentSettlementTransferId = CatchContractFieldConstraints(
@@ -138720,6 +138761,7 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.grant.grantId': manageEventOfferCheckoutCallableResponseGrantGrantId,
     'manageEventOfferCheckoutCallableResponse.grant.startTimeMillis': manageEventOfferCheckoutCallableResponseGrantStartTimeMillis,
     'manageEventOfferCheckoutCallableResponse.payment.amountPaise': manageEventOfferCheckoutCallableResponsePaymentAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.payment.cancellationReason': manageEventOfferCheckoutCallableResponsePaymentCancellationReason,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.amountPaise': manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.currency': manageEventOfferCheckoutCallableResponsePaymentCheckoutCurrency,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.description': manageEventOfferCheckoutCallableResponsePaymentCheckoutDescription,
@@ -140167,6 +140209,11 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferPaymentDocument.admittedAt._nanoseconds': organizerEventOfferPaymentDocumentAdmittedAtNanoseconds,
     'organizerEventOfferPaymentDocument.admittedAt._seconds': organizerEventOfferPaymentDocumentAdmittedAtSeconds,
     'organizerEventOfferPaymentDocument.amountPaise': organizerEventOfferPaymentDocumentAmountPaise,
+    'organizerEventOfferPaymentDocument.cancellation.attendeeId': organizerEventOfferPaymentDocumentCancellationAttendeeId,
+    'organizerEventOfferPaymentDocument.cancellation.reason': organizerEventOfferPaymentDocumentCancellationReason,
+    'organizerEventOfferPaymentDocument.cancellation.refundAmountPaise': organizerEventOfferPaymentDocumentCancellationRefundAmountPaise,
+    'organizerEventOfferPaymentDocument.cancellation.requestedAtMillis': organizerEventOfferPaymentDocumentCancellationRequestedAtMillis,
+    'organizerEventOfferPaymentDocument.cancellation.seatRetained': organizerEventOfferPaymentDocumentCancellationSeatRetained,
     'organizerEventOfferPaymentDocument.canonicalSeatKey': organizerEventOfferPaymentDocumentCanonicalSeatKey,
     'organizerEventOfferPaymentDocument.capturedAt._nanoseconds': organizerEventOfferPaymentDocumentCapturedAtNanoseconds,
     'organizerEventOfferPaymentDocument.capturedAt._seconds': organizerEventOfferPaymentDocumentCapturedAtSeconds,

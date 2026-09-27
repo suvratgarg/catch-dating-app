@@ -39,6 +39,7 @@ export interface ManageEventOfferCheckoutCallableResponse {
       description: string;
       expiresAtMillis: number;
     } | null;
+    cancellationReason: "eventCancelled" | null;
   } | null;
   serverTimeMillis: number;
 }
