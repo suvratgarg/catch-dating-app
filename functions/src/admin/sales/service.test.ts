@@ -976,3 +976,63 @@ test("expired suggestions fail and rejection stays private", async () => {
   assert.equal([...db.docs.keys()].filter((k) => k.startsWith("salesEvidence/"))
     .length, 0);
 });
+
+test("commercial authority, receipts and stage gates", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const base = {organizerId: "org-1", requestId: "commercial-opportunity-1",
+    expectedRevision: 0, fields: {motion: "synthetic", stage: "new_enquiry",
+      ownerUid: employee.uid, nextStep: null, nextStepAt: null}};
+  const created = await executeSalesAction(employee,
+    "opportunities.upsert",
+    base, deps);
+  const opportunityId = (created.opportunity as Doc).opportunityId as string;
+  const pilot = {organizerId: "org-1", opportunityId,
+    requestId: "commercial-pilot-1", expectedRevision: 0,
+    plan: {status: "draft", workflowId: "synthetic-forms",
+      objective: "Test form",
+      successMeasures: ["One reviewed form"], startsAt: null, endsAt: null,
+      reviewEvidence: null, outcomeEvidence: null}};
+  const first = await executeSalesAction(employee,
+    "commercial.pilots.upsert",
+    pilot, deps);
+  assert.deepEqual(
+    await executeSalesAction(employee,
+      "commercial.pilots.upsert",
+      pilot, deps), first);
+  assert.equal((first.receipt as Doc).revision, 1);
+  await assert.rejects(executeSalesAction(employee, "commercial.pilots.upsert",
+    {...pilot, plan: {...pilot.plan,
+      objective: "Changed"}}, deps),
+  /different sales action material/);
+  const delegated = {...employee, clientId: "helper", delegationId: "grant-1",
+    organizerIds: ["org-1"], allowedActions: ["commercial.pilots.upsert"]};
+  await assert.rejects(executeSalesAction(delegated, "commercial.pilots.upsert",
+    pilot, {...deps, authorizeInTransaction: async () => undefined}),
+  /employee session/);
+  await assert.rejects(executeSalesAction(employee,
+    "commercial.pilots.upsert", pilot,
+    {...deps, authorizeInTransaction: async () => {
+      throw new Error("role revoked");
+    }}), /role revoked/);
+  await assert.rejects(executeSalesAction(employee,
+    "opportunities.upsert", {...base,
+      opportunityId, requestId: "pilot-bypass-1", expectedRevision: 1,
+      fields: {...base.fields, stage: "pilot_running", nextStep: "Review",
+        nextStepAt: "2026-09-29T00:00:00Z"}}, deps),
+  /current reviewed or active plan/);
+  const lost = {...base, opportunityId, requestId: "lost-opportunity-1",
+    expectedRevision: 1, transitionReason: "Timing",
+    fields: {...base.fields, stage: "closed_lost"}};
+  await executeSalesAction(employee, "opportunities.upsert", lost, deps);
+  const reopen = {...base, opportunityId, requestId: "reopen-opportunity-1",
+    expectedRevision: 2, transitionReason: "Asked to revisit"};
+  await assert.rejects(executeSalesAction(employee,
+    "opportunities.upsert", reopen, deps),
+  /dated next step/);
+  await executeSalesAction(employee, "opportunities.upsert", {...reopen,
+    fields: {...base.fields, nextStep: "Arrange call",
+      nextStepAt: "2026-09-29T00:00:00Z"}}, deps);
+  assert.equal([...db.docs.keys()]
+    .filter((k) => k.startsWith("salesOpportunityStageHistory/")).length, 3);
+});

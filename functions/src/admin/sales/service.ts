@@ -1,3 +1,6 @@
+import {executeCommercialActionInTransaction, executeCommercialRead,
+  appendOpportunityStageHistory} from "../salesCommercial/service";
+import type {CommercialPayload} from "../salesCommercial/types";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -106,6 +109,7 @@ interface UpsertTaskPayload {
   };
 }
 interface UpsertOpportunityPayload {
+  transitionReason?: string;
   organizerId: string;
   requestId: string;
   opportunityId?: string;
@@ -140,6 +144,7 @@ interface SetFieldValuePayload {
   value: string | number | boolean | null;
 }
 type MutationPayload =
+  | CommercialPayload
   | CreateHostPayload
   | UpdateHostPayload
   | UpsertTaskPayload
@@ -210,6 +215,13 @@ export async function executeSalesAction(
     }
     let result: Record<string, unknown>;
     switch (action) {
+    case "commercial.pilots.upsert":
+    case "commercial.quotes.revise":
+    case "commercial.quotes.approve":
+    case "commercial.quotes.accept":
+      result = await executeCommercialActionInTransaction(tx, db, principal,
+        action, input, timestamp);
+      break;
     case "hosts.create":
       result = await createHost(
         tx,
@@ -405,6 +417,10 @@ export async function executeSalesRead(
   await checkCurrent(action, organizerId);
   let response: Record<string, unknown>;
   switch (action) {
+  case "commercial.detail":
+  case "commercial.report":
+    response = await executeCommercialRead(db, principal, action, input);
+    break;
   case "hosts.search":
     response = await searchHosts(db, principal, input);
     break;
@@ -688,7 +704,20 @@ async function upsertOpportunity(
     input.fields.stage,
     input.fields.nextStep,
     input.fields.nextStepAt,
+    input.transitionReason,
   );
+  if (["pilot_agreed", "pilot_running"].includes(input.fields.stage)) {
+    const plan = await tx.get(
+      db.collection("salesPilotPlans").doc(opportunityId));
+    const expected = input.fields.stage === "pilot_running" ?
+      "active" : "reviewed";
+    if (!plan.exists || plan.data()?.organizerId !== input.organizerId ||
+      plan.data()?.opportunityId !== opportunityId ||
+      plan.data()?.status !== expected) {
+      throw new HttpsError("failed-precondition",
+        "Pilot stage needs the current reviewed or active plan.");
+    }
+  }
   const opportunity: SalesOpportunity = {
     schemaVersion: 1,
     classification: "sales_private",
@@ -702,6 +731,8 @@ async function upsertOpportunity(
     updatedAt: now,
     updatedBy: principal.uid,
   };
+  appendOpportunityStageHistory(tx, db, principal, current, opportunity,
+    input.requestId, input.transitionReason ?? null);
   if (current) tx.set(ref, opportunity);
   else tx.create(ref, opportunity);
   return {opportunity};
@@ -1222,16 +1253,23 @@ function assertOpportunityTransition(
   next: SalesOpportunityStage,
   nextStep: string | null,
   nextStepAt: string | null,
+  transitionReason?: string,
 ): void {
   if (
     previous &&
     terminalOpportunityStages.has(previous) &&
-    previous !== next
+    previous !== next &&
+    !(previous === "closed_lost" && transitionReason?.trim())
   ) {
     throw new HttpsError(
       "failed-precondition",
       "A closed opportunity requires a separate reopen decision.",
     );
+  }
+  if (previous === "closed_lost" && previous !== next &&
+    (!nextStep?.trim() || !nextStepAt)) {
+    throw new HttpsError("failed-precondition",
+      "Reopening requires a dated next step.");
   }
   if (
     [
@@ -1301,7 +1339,8 @@ function authorize(
     );
   }
   if (principal.clientId &&
-    ["evidence.add", "evidence.reviewProposal"].includes(action)) {
+    (action.startsWith("commercial.") ||
+      ["evidence.add", "evidence.reviewProposal"].includes(action))) {
     throw new HttpsError("permission-denied",
       "Evidence review requires a current employee session.");
   }

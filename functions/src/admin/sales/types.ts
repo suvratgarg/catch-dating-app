@@ -1,3 +1,4 @@
+import type {CommercialAction, CommercialRead} from "../salesCommercial/types";
 export type SalesResearchStatus =
   | "new"
   | "needs_research"
@@ -154,6 +155,7 @@ export interface SalesCustomField {
 }
 
 export type SalesReadAction =
+  | CommercialRead
   | "hosts.search"
   | "hosts.get"
   | "tasks.list"
@@ -166,6 +168,7 @@ export type SalesReadAction =
   | "evidence.list"
   | "evidenceProposals.list";
 export type SalesMutationAction =
+  | CommercialAction
   | "hosts.create"
   | "hosts.update"
   | "tasks.upsert"

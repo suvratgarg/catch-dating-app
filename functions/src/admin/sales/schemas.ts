@@ -1,3 +1,5 @@
+import {COMMERCIAL_ACTION_SCHEMAS, COMMERCIAL_READ_SCHEMAS} from
+  "../salesCommercial/schemas";
 import Ajv, {type ValidateFunction} from "ajv";
 import addFormats from "ajv-formats";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -83,6 +85,7 @@ const page = (extra: Record<string, unknown> = {}): Schema =>
   strict([], {limit: listLimit, cursor, ...extra});
 
 export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
+  ...COMMERCIAL_READ_SCHEMAS,
   "hosts.search": page({
     query: {
       type: "string",
@@ -214,6 +217,7 @@ const baseActionSchemas = {
       requestId,
       expectedRevision: revision,
       opportunityId: id,
+      transitionReason: {type: "string", minLength: 1, maxLength: 1000},
       fields: strict(
         ["motion", "stage", "ownerUid", "nextStep", "nextStepAt"],
         {
@@ -395,6 +399,7 @@ const baseActionSchemas = {
 
 export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
   ...baseActionSchemas,
+  ...COMMERCIAL_ACTION_SCHEMAS,
   "evidence.propose": baseActionSchemas["evidence.add"],
   "evidence.reviewProposal": strict(
     ["organizerId", "requestId", "proposalId", "expectedRevision",

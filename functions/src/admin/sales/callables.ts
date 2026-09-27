@@ -144,3 +144,10 @@ export const adminProposeSalesEvidence = write("evidence.propose");
 export const adminReviewSalesEvidenceProposal =
   write("evidence.reviewProposal");
 export const adminListSalesEvidenceProposals = read("evidenceProposals.list");
+
+export const adminGetSalesCommercialDetail = read("commercial.detail");
+export const adminListSalesCommercialReport = read("commercial.report");
+export const adminUpsertSalesPilotPlan = write("commercial.pilots.upsert");
+export const adminReviseSalesQuote = write("commercial.quotes.revise");
+export const adminApproveSalesQuote = write("commercial.quotes.approve");
+export const adminAcceptSalesQuote = write("commercial.quotes.accept");

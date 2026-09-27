@@ -55,7 +55,11 @@
         "accounts.setSuppression",
         "contacts.setContactability",
         "evidence.propose",
-        "evidence.reviewProposal"
+        "evidence.reviewProposal",
+        "commercial.pilots.upsert",
+        "commercial.quotes.revise",
+        "commercial.quotes.approve",
+        "commercial.quotes.accept"
       ]
     },
     "actorUid": {
