@@ -163,3 +163,21 @@ test("public OTP cannot bypass restricted eligibility", async () => {
     );
   }
 });
+
+
+test("free registration does not require an INR collection route", async () => {
+  const h = await publicFixture();
+  Object.assign(h.event, {priceInPaise: 0, currency: "USD",
+    eventPolicy: undefined});
+  await configureEventRegistration({db: h.store.db(), actorUid,
+    command: {organizerId: org, eventId, requestId: "configure_usd_free",
+      expectedRegistrationRevision: 1, mode: "free"},
+    nowMillis: () => now});
+  const saved = h.store.get(`events/${eventId}`)!;
+  assert.equal(saved.publicRegistrationMode, "free");
+  assert.equal(saved.currency, "USD");
+  Object.assign(h.event, {priceInPaise: 10000});
+  assert.throws(() => assertPublicRegistrationPolicy(
+    h.event as unknown as EventDocument,
+    h.organizer as unknown as OrganizerDocument, "paid", now));
+});

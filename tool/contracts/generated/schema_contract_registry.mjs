@@ -208016,6 +208016,12 @@ export const updateEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Required for published progressive events; rejects stale Host edits."
+    },
     "fields": {
       "type": "object",
       "additionalProperties": false,

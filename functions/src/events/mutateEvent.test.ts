@@ -1205,6 +1205,93 @@ test("legacy rich mutations cannot edit progressive private basics",
     assert.equal(h.notifications.length, 0);
   });
 
+function publishedProgressiveEvent(overrides: FakeData = {}): FakeData {
+  return event({name: "Sunday run", publicationState: "published",
+    setupRevision: 4, eventCityId: "in-mh-mumbai",
+    eventMarketId: "in-mh-mumbai", eventLocalDate: "2026-05-02",
+    eventLocalStartTime: "07:00", eventTimezone: "Asia/Kolkata",
+    setupDefaults: {city: {value: {cityId: "in-mh-mumbai",
+      marketId: "in-mh-mumbai"}, source: "event"},
+    timezone: {value: "Asia/Kolkata", source: "event"},
+    organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)},
+    ...overrides});
+}
+
+test("published progressive editing requires the current setup revision",
+  async () => {
+    for (const expectedSetupRevision of [undefined, 3, 5]) {
+      const h = harness({"organizers/club-1": club(),
+        "events/event-1": publishedProgressiveEvent()});
+      await assert.rejects(updateEventHandler(request("host-1", {
+        eventId: "event-1", ...(expectedSetupRevision === undefined ? {} :
+          {expectedSetupRevision}), fields: {description: "New notes"},
+      }), h.deps), (error) => assertHttpsCode(error, "aborted"));
+      assert.equal(h.firestore.get("events/event-1")?.setupRevision, 4);
+      assert.equal(h.firestore.get("events/event-1")?.description,
+        "Easy seaside event.");
+    }
+  });
+
+test("published edits synchronize civil time and fence subsequent edits",
+  async () => {
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": publishedProgressiveEvent()});
+    const edit = request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 4, fields: {
+        startTimeMillis: Date.parse("2026-05-02T19:00:00Z"),
+        endTimeMillis: Date.parse("2026-05-02T20:00:00Z"),
+      }});
+    await updateEventHandler(edit, h.deps);
+    const updated = h.firestore.get("events/event-1")!;
+    assert.equal(updated.setupRevision, 5);
+    assert.equal(updated.eventLocalDate, "2026-05-03");
+    assert.equal(updated.eventLocalStartTime, "00:30");
+    assert.equal(updated.eventTimezone, "Asia/Kolkata");
+    assert.equal(updated.publicationState, "published");
+    assert.equal(updated.planChangeRevision, 1);
+    await assert.rejects(updateEventHandler(edit, h.deps),
+      (error) => assertHttpsCode(error, "aborted"));
+  });
+
+test("full form saves can change copy with guests when schedule is unchanged",
+  async () => {
+    const original = publishedProgressiveEvent();
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": original,
+      "eventParticipations/event-1_runner-1": {eventId: "event-1",
+        organizerId: "club-1", uid: "runner-1", status: "signedUp"},
+      "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true}});
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 4, fields: {description: "Bring water.",
+        name: original.name,
+        startTimeMillis: ts("2026-05-02T01:30:00Z").toMillis(),
+        endTimeMillis: ts("2026-05-02T02:30:00Z").toMillis(),
+        meetingLocation: original.meetingLocation,
+        capacityLimit: original.capacityLimit,
+        constraints: original.constraints,
+        priceInPaise: original.priceInPaise,
+      }}), h.deps);
+    assert.equal(h.firestore.get("events/event-1")?.description,
+      "Bring water.");
+    assert.equal(h.firestore.get("events/event-1")?.setupRevision, 5);
+    assert.equal(h.firestore.get("events/event-1")?.planChangeRevision,
+      undefined);
+    assert.deepEqual(h.notifications, []);
+  });
+
+test("published progressive cancellation uses the shared idempotent lifecycle",
+  async () => {
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": publishedProgressiveEvent()});
+    const cancel = request("host-1", {eventId: "event-1", reason: "Weather"});
+    await cancelEventHandler(cancel, h.deps);
+    await cancelEventHandler(cancel, h.deps);
+    assert.equal(h.firestore.get("events/event-1")?.status, "cancelled");
+    assert.equal(h.firestore.get("events/event-1")?.cancellationReason,
+      "Weather");
+    assert.equal(h.firestore.get("events/event-1")?.setupRevision, 5);
+  });
+
 test("updateEventHandler updates only host-editable event fields", async () => {
   const h = harness({
     "organizers/club-1": club(),

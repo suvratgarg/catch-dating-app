@@ -18,8 +18,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         RecordEventInviteLinkOpenCallableRequest,
         RecordEventShareIntentCallableRequest,
         SendEventBroadcastCallableRequest,
-        SelfCheckInAttendanceCallableRequest,
-        UpdateEventCallableRequest;
+        SelfCheckInAttendanceCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -93,9 +92,11 @@ class EventRepository with EventRepositoryActions {
   );
 
   Stream<Event?> watchEvent(String id) => withBackendErrorStream(
-    () => _db.collection(_collectionPath).doc(id).snapshots().map(
-      publishedRichEvent,
-    ),
+    () => _db
+        .collection(_collectionPath)
+        .doc(id)
+        .snapshots()
+        .map(publishedRichEvent),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch event',
@@ -133,26 +134,30 @@ class EventRepository with EventRepositoryActions {
     ),
   );
 
-  Stream<List<Event>> watchEventsForClub({required String clubId}) =>
-      withBackendErrorStream(
-        // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
-        () => _eventsRef
-            .where('organizerId', isEqualTo: clubId)
-            .orderBy('startTime')
-            .limit(ReadLimitPolicy.historyPage)
-            .snapshots()
-            .map(
-              (snap) => snap.docs
-                  .map((d) => d.data())
-                  .where((event) => !event.synthetic)
-                  .toList(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch organizer events',
-          resource: _collectionPath,
+  Stream<List<Event>> watchEventsForClub({
+    required String clubId,
+  }) => withBackendErrorStream(
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
+    () => _db
+        .collection(_collectionPath)
+        .where('publicationState', isEqualTo: 'published')
+        .where('organizerId', isEqualTo: clubId)
+        .orderBy('startTime')
+        .limit(ReadLimitPolicy.historyPage)
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map(publishedRichEvent)
+              .whereType<Event>()
+              .where((event) => !event.synthetic)
+              .toList(),
         ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch organizer events',
+      resource: _collectionPath,
+    ),
+  );
 
   /// Fetches the organizer's nearest live and future events as a cursor page.
   ///
@@ -165,8 +170,10 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
-    _eventsRef
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    _db
+        .collection(_collectionPath)
+        .where('publicationState', isEqualTo: 'published')
         .where('organizerId', isEqualTo: organizerId)
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where('endTime', isGreaterThan: Timestamp.fromDate(sessionBoundary))
@@ -184,8 +191,10 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
-    _eventsRef
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    _db
+        .collection(_collectionPath)
+        .where('publicationState', isEqualTo: 'published')
         .where('organizerId', isEqualTo: organizerId)
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where(
@@ -200,20 +209,23 @@ class EventRepository with EventRepositoryActions {
   );
 
   Future<CursorPage<Event, DocumentSnapshot<Event>>> _fetchOrganizerEventsPage(
-    Query<Event> query, {
+    Query<Map<String, dynamic>> query, {
     required DocumentSnapshot<Event>? startAfter,
     required int limit,
     required String action,
   }) async {
-    final page = await query.fetchDocumentCursorPage(
-      limit: limit,
-      startAfter: startAfter,
-      errorContext: BackendErrorContext(
-        service: BackendService.firestore,
-        action: action,
-        resource: _collectionPath,
-      ),
-    );
+    final windowed = startAfter == null
+        ? query
+        : query.startAfterDocument(startAfter);
+    final page = await decodePublishedEventQuery(windowed)
+        .fetchDocumentCursorPage(
+          limit: limit,
+          errorContext: BackendErrorContext(
+            service: BackendService.firestore,
+            action: action,
+            resource: _collectionPath,
+          ),
+        );
     return CursorPage(
       items: List.unmodifiable(
         page.items
@@ -315,14 +327,16 @@ class EventRepository with EventRepositoryActions {
     List<String> clubIds,
   ) => withBackendErrorContext(
     () async {
-      // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
+      // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
       final uniqueClubIds = clubIds.toSet().toList()..sort();
       if (uniqueClubIds.isEmpty) return [];
       final nowDateTime = DateTime.now();
       final now = Timestamp.fromDate(nowDateTime);
       final events = <Event>[];
       for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
-        final snap = await _eventsRef
+        final snap = await _db
+            .collection(_collectionPath)
+            .where('publicationState', isEqualTo: 'published')
             .where('organizerId', whereIn: chunk)
             .where('startTime', isGreaterThan: now)
             .orderBy('startTime')
@@ -330,7 +344,8 @@ class EventRepository with EventRepositoryActions {
             .get();
         events.addAll(
           snap.docs
-              .map((doc) => doc.data())
+              .map(publishedRichEvent)
+              .whereType<Event>()
               .where(
                 (event) =>
                     !event.isCancelled && event.startTime.isAfter(nowDateTime),

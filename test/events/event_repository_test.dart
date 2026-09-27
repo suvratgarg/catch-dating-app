@@ -210,35 +210,47 @@ void main() {
       );
     });
 
-    test('public organizer streams include legacy events before backfill', () async {
-      final published = buildEvent(id: 'public', clubId: 'club-2');
-      final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
-      await _seedEvent(firestore, published);
-      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
+    test(
+      'public organizer queries exclude unlabelled and private events',
+      () async {
+        final published = buildEvent(id: 'public', clubId: 'club-2');
+        final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
+        await _seedEvent(firestore, published);
+        await firestore
+            .collection('events')
+            .doc(legacy.id)
+            .set(legacy.toJson());
+        await firestore.collection('events').doc('private-basics').set({
+          'organizerId': 'club-2',
+          'publicationState': 'private',
+          'startTime': Timestamp.fromDate(published.startTime),
+        });
 
-      await expectLater(
-        repository.watchEventsForClub(clubId: 'club-2'),
-        emits(containsAll([published, legacy])),
-      );
-      await expectLater(
-        repository.watchEventsForClubs(clubIds: const ['club-2']),
-        emits(containsAll([published, legacy])),
-      );
-      expect(
-        await repository.fetchUpcomingEventsForClubs(const ['club-2']),
-        containsAll([published, legacy]),
-      );
-    });
+        await expectLater(
+          repository.watchEventsForClub(clubId: 'club-2'),
+          emits([published]),
+        );
+        await expectLater(
+          repository.watchEventsForClubs(clubIds: const ['club-2']),
+          emits([published]),
+        );
+        expect(await repository.fetchUpcomingEventsForClubs(const ['club-2']), [
+          published,
+        ]);
+      },
+    );
 
-    test('legacy rows retain organizer page position before backfill', () async {
+    test('unlabelled rows do not consume published page positions', () async {
       final boundary = DateTime(2026, 8, 18, 12);
       final legacy = buildEvent(
-        id: 'legacy-first', clubId: 'club-2',
+        id: 'legacy-first',
+        clubId: 'club-2',
         startTime: boundary.add(const Duration(hours: 1)),
         endTime: boundary.add(const Duration(hours: 2)),
       );
       final published = buildEvent(
-        id: 'published-second', clubId: 'club-2',
+        id: 'published-second',
+        clubId: 'club-2',
         startTime: boundary.add(const Duration(hours: 3)),
         endTime: boundary.add(const Duration(hours: 4)),
       );
@@ -246,10 +258,12 @@ void main() {
       await _seedEvent(firestore, published);
 
       final page = await repository.fetchActiveEventsPage(
-        organizerId: 'club-2', sessionBoundary: boundary, limit: 1,
+        organizerId: 'club-2',
+        sessionBoundary: boundary,
+        limit: 1,
       );
-      expect(page.items, [legacy]);
-      expect(page.hasMore, isTrue);
+      expect(page.items, [published]);
+      expect(page.hasMore, isFalse);
     });
 
     test(

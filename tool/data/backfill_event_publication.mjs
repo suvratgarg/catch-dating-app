@@ -30,7 +30,13 @@ export function classifyEventPublication(data) {
   if (!validateEventDocument(data)) {
     // Include paths and validation keywords, never source field values or PII.
     const validationIssues = [...new Set((validateEventDocument.errors ?? [])
-      .map((error) => `${error.instancePath || "/"}:${error.keyword}`))].sort();
+      .map((error) => {
+        const missing = error.keyword === "required" ? error.params?.missingProperty : null;
+        const path = typeof missing === "string" ?
+          `${error.instancePath}/${missing.replaceAll("~", "~0").replaceAll("/", "~1")}` :
+          error.instancePath || "/";
+        return `${path}:${error.keyword}`;
+      }))].sort();
     return {action: "blocked", reason: "invalid_legacy_event", validationIssues};
   }
   return {action: "publish", reason: "legacy_public_event"};

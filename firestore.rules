@@ -1923,12 +1923,10 @@ service cloud.firestore {
     match /events/{eventId} {
       allow get: if isPublicEventData(resource.data)
         || canReadPrivateEvent(eventId, resource.data);
-      // Compatibility stage only: installed clients still issue unrestricted
-      // event lists. Private event persistence and its Host route stay disabled
-      // until the publication backfill and client cutover are complete. This
-      // rule MUST become publication-constrained before any private event is
-      // stored in this collection.
-      allow list: if true;
+      // Deploy only after the reviewed legacy backfill and compatible client
+      // release. Manager draft inventory uses its authorized callable.
+      // Client filtering and Remote Config cannot enforce draft privacy.
+      allow list: if resource.data.publicationState == 'published';
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.
