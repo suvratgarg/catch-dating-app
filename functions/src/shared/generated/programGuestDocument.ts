@@ -23,6 +23,12 @@ export interface ProgramGuestDocument {
    * Planner-side reference such as a spreadsheet id or invitation code.
    */
   externalReference: string | null;
+  /**
+   * Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import.
+   *
+   * @maxItems 20
+   */
+  groupIds: string[];
   invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
   /**
    * Derived program-wide rollup maintained by the server from programFunctionGuests rows (any attending -> attending, else strongest other response). Per-function truth lives only on programFunctionGuests; writers never set this directly.

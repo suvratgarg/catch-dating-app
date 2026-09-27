@@ -6,6 +6,8 @@ import {validateProgramHouseholdDocument} from
   "../shared/generated/validators/programHouseholdDocument";
 import {validateProgramTravelPartyDocument} from
   "../shared/generated/validators/programTravelPartyDocument";
+import {validateProgramGuestGroupDocument} from
+  "../shared/generated/validators/programGuestGroupDocument";
 import {validateTransportOperationReceiptDocument} from
   "../shared/generated/validators/transportOperationReceiptDocument";
 import type {ValidateFunction} from "ajv";
@@ -15,6 +17,7 @@ const validators: Record<string, ValidateFunction> = {
   programTravelLegs: validateProgramTravelLegDocument,
   programHouseholds: validateProgramHouseholdDocument,
   programTravelParties: validateProgramTravelPartyDocument,
+  programGuestGroups: validateProgramGuestGroupDocument,
   transportOperationReceipts: validateTransportOperationReceiptDocument,
 };
 import assert from "node:assert/strict";
@@ -432,4 +435,60 @@ test("import rejects incompatible routes in a new party", async () => {
   assert.equal(commit.guestsCreated, 0);
   assert.equal(commit.rowErrors.length, 2);
   assert.match(commit.rowErrors[1].message, /same pickup and destination/);
+});
+
+test("groupLabels resolve or create groups and keep memberCount", async () => {
+  const store = new MiniFirestore(seed());
+  const grouped = {...row, groupLabels: "side:Groom side; Friends"};
+  const preview = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "preview",
+    clientOperationId: "group-preview", rows: [grouped],
+  }), deps(store));
+  assert.equal(preview.groupsCreated, 2);
+  assert.equal(preview.rowErrors.length, 0);
+  assert.equal([...store.docs.keys()].filter((k) =>
+    k.startsWith("programGuestGroups/")).length, 0);
+  const commit = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit",
+    clientOperationId: "group-commit", rows: [grouped],
+  }), deps(store));
+  assert.equal(commit.groupsCreated, 2);
+  const groups = [...store.docs.entries()].filter(([k]) =>
+    k.startsWith("programGuestGroups/"));
+  assert.equal(groups.length, 2);
+  const byDim = new Map(groups.map(([id, doc]) => [
+    (doc as {dimension: string}).dimension, [id, doc] as const]));
+  assert.ok(byDim.has("side") && byDim.has("custom"));
+  assert.equal(byDim.get("side")![1].label, "Groom side");
+  const guest = [...store.docs.entries()].find(([k]) =>
+    k.startsWith("programGuests/"))![1];
+  for (const [, doc] of groups) {
+    assert.equal(doc.memberCount, 1);
+    assert.ok((guest.groupIds as string[]).includes(
+      [...store.docs.entries()].find(([k, d]) => d === doc)![0]
+        .split("/")[1]));
+  }
+  // Re-importing the same labels is idempotent: the leg-identity match
+  // updates the existing guest, creates no groups, and never recounts.
+  const again = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit",
+    clientOperationId: "group-reimport",
+    rows: [grouped],
+  }), deps(store));
+  assert.equal(again.guestsUpdated, 1);
+  assert.equal(again.groupsCreated, 0);
+  for (const [, doc] of store.docs) {
+    if ("memberCount" in doc) assert.equal(doc.memberCount, 1);
+  }
+});
+
+test("groupLabels entries report row errors instead of writing", async () => {
+  const store = new MiniFirestore(seed());
+  const response = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit", clientOperationId: "group-bad",
+    rows: [{...row, groupLabels: Array.from({length: 11}, (_, i) =>
+      `g${i}`).join(";")}],
+  }), deps(store));
+  assert.equal(response.guestsCreated, 0);
+  assert.match(response.rowErrors[0].message, /10 group memberships/);
 });

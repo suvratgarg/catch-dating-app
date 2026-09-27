@@ -44,6 +44,17 @@ const schemaUpsertProgramGuestCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'groupIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+      'description': 'When present, replaces the guest\'s programGuestGroups membership. Every id must belong to the same program and organizer. Omitted preserves existing membership.',
+    },
     'phoneE164': <String, Object?>{
       'type': <Object?>[
         'string',

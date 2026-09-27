@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.150.0
-updated: 2026-09-24
+version: 1.151.0
+updated: 2026-09-27
 owner: recursive_audit_loop
 status: active
 ---
@@ -3003,6 +3003,21 @@ operations report per-operation reasons (`alreadyCheckedIn`,
 `notCheckedIn`, `functionCheckInDisabled`, `duplicateJournalId`,
 `invalidTransition`) without blocking the batch's valid writes.
 
+`programGuestGroups/{groupId}` is the organizer-defined grouping record:
+`programGuests.groupIds[]` is membership truth, and the group document keeps
+the queryable `label`, free-form `dimension` (conventional keys per program
+kind — weddings use `side`/`lineage`/`relation`, corporate uses
+`company`/`delegation`/`country`), `sortOrder`, and a denormalized
+`memberCount` maintained transactionally by guest upserts and manifest
+imports. `listProgramGuests` embeds the groups referenced by each page;
+`listProgramGuestGroups` returns the full inventory; `deleteProgramGuestGroup`
+deletes first and then scrubs member `groupIds` in paged transactions, so
+reads tolerate briefly dangling ids. Group labels are unique per
+(dimension, program) — manifest `groupLabels` columns resolve entries
+case-insensitively per dimension (`dimension:label` syntax, bare labels use
+`custom`) and create unmatched groups. The wedding couple-side axis remains
+`programHouseholds.side`; groups cover every other cut, including room
+allocation and group-targeted Moments.
 
 `programStaffDuty` covers `programCoordinator`, `guestRelations`,
 `communications`, `functionCheckIn`, `functionLead`, `airportGreeter`,

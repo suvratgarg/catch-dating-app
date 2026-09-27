@@ -23,6 +23,7 @@ const schemaProgramManifestImportCallableResponseSchema = <String, Object?>{
     'legsUpdated',
     'householdsCreated',
     'partiesCreated',
+    'groupsCreated',
     'rowErrors',
     'alreadyApplied',
   ],
@@ -61,6 +62,11 @@ const schemaProgramManifestImportCallableResponseSchema = <String, Object?>{
     'partiesCreated': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+    },
+    'groupsCreated': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'description': 'programGuestGroups documents created by label resolution during this import.',
     },
     'rowErrors': <String, Object?>{
       'type': 'array',

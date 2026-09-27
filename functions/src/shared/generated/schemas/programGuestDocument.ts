@@ -22,6 +22,7 @@ export const programGuestDocumentSchema: Record<string, unknown> = {
     "phoneE164",
     "email",
     "externalReference",
+    "groupIds",
     "invitationStatus",
     "rsvpStatus",
     "source",
@@ -84,6 +85,17 @@ export const programGuestDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 180,
       "description": "Planner-side reference such as a spreadsheet id or invitation code."
+    },
+    "groupIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import."
     },
     "invitationStatus": {
       "type": "string",

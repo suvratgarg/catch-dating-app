@@ -84,6 +84,14 @@ const schemaImportProgramManifestCallablePayloadSchema = <String, Object?>{
             'maxLength': 140,
             'description': 'Matched against program households by case-insensitive label; unmatched labels create a household.',
           },
+          'groupLabels': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 600,
+            'description': 'Semicolon-separated program guest group memberships, at most 10 entries. Each entry is a label, or `dimension:label` where the first colon splits the dimension key; bare labels land on the `custom` dimension. Entries match programGuestGroups case-insensitively per dimension; unmatched entries create a group.',
+          },
           'partyLabel': <String, Object?>{
             'type': <Object?>[
               'string',

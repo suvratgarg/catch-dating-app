@@ -17,6 +17,12 @@ export interface ProgramGuestListCallableResponse {
     phoneE164: string | null;
     email: string | null;
     externalReference: string | null;
+    /**
+     * programGuestGroups ids this guest belongs to. Resolve labels via the groups array on this response.
+     *
+     * @maxItems 20
+     */
+    groupIds: string[];
     invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
     rsvpStatus: "pending" | "attending" | "declined" | "maybe";
     revision: number;
@@ -48,6 +54,19 @@ export interface ProgramGuestListCallableResponse {
      */
     attendanceStatus: "expected" | "checkedIn" | "noShow";
     partySize: number | null;
+  }[];
+  /**
+   * programGuestGroups documents referenced by groupIds on the paged guests. Page-scoped like households; a group referenced but absent here is corrupt and surfaces as a reconciliation error.
+   *
+   * @maxItems 500
+   */
+  groups: {
+    groupId: string;
+    label: string;
+    dimension: string;
+    sortOrder: number;
+    memberCount: number;
+    revision: number;
   }[];
   nextCursor: string | null;
 }

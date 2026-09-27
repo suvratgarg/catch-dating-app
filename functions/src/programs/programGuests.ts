@@ -9,6 +9,8 @@
 import * as admin from "firebase-admin";
 import {householdMemberIds, planHouseholdMembership} from
   "./programHouseholdMembership";
+import {applyGroupMembershipWrites, readProgramGuestGroups} from
+  "./programGuestGroups";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -24,6 +26,7 @@ import {
 import type {
   ProgramFunctionGuestDocument,
   ProgramGuestDocument,
+  ProgramGuestGroupDocument,
   ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {UpsertProgramGuestCallablePayload} from
@@ -100,6 +103,17 @@ export async function upsertProgramGuestHandler(
       throw new HttpsError("aborted", "Guest ownership changed.");
     }
     const now = deps.now();
+    const nextGroupIds = data.groupIds === undefined ?
+      [...(existing?.groupIds ?? [])] : [...new Set(data.groupIds)].sort();
+    const groups = await readProgramGuestGroups(db, tx, data.programId,
+      access.program.organizerId,
+      [...new Set([...(existing?.groupIds ?? []), ...nextGroupIds])]);
+    for (const id of nextGroupIds) {
+      if (!groups.has(id)) {
+        throw new HttpsError("invalid-argument",
+          "Unknown guest group for this program.");
+      }
+    }
     const document: ProgramGuestDocument = {
       programId: data.programId,
       organizerId: access.program.organizerId,
@@ -113,6 +127,7 @@ export async function upsertProgramGuestHandler(
         existing?.email ?? null : data.email,
       externalReference: data.externalReference === undefined ?
         existing?.externalReference ?? null : data.externalReference,
+      groupIds: nextGroupIds,
       invitationStatus: existing?.invitationStatus ?? "notInvited",
       rsvpStatus: data.rsvpStatus ?? existing?.rsvpStatus ?? "pending",
       source: existing?.source ?? "manual",
@@ -131,6 +146,8 @@ export async function upsertProgramGuestHandler(
         updatedAt: now, revision: nextRevision(households.get(id)!.revision,
           now)});
     }
+    applyGroupMembershipWrites(db, tx, groups, existing?.groupIds ?? [],
+      document.groupIds, now);
     committedRevision = document.revision;
     tx.set(ref, document);
   });
@@ -193,6 +210,8 @@ export async function listProgramGuestsHandler(
     db, access.program.organizerId, data.programId,
     page.map((doc) => doc.id),
   );
+  const groups = await listReferencedGroups(
+    db, access.program.organizerId, data.programId, page);
   return {
     programId: data.programId,
     guests: page.map((doc) => {
@@ -209,6 +228,7 @@ export async function listProgramGuestsHandler(
         phoneE164: guest.phoneE164,
         email: guest.email,
         externalReference: guest.externalReference,
+        groupIds: guest.groupIds ?? [],
         invitationStatus: guest.invitationStatus,
         rsvpStatus: guest.rsvpStatus,
         revision: guest.revision,
@@ -216,8 +236,41 @@ export async function listProgramGuestsHandler(
     }),
     households: households.filter((h) => h !== null),
     functionGuests,
+    groups,
     nextCursor,
   };
+}
+
+/**
+ * Group documents referenced by the page's guest groupIds. Ids dangling after
+ * a group delete are skipped — the delete scrub clears them asynchronously.
+ */
+async function listReferencedGroups(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  programId: string,
+  page: FirebaseFirestore.QueryDocumentSnapshot[],
+): Promise<ProgramGuestListCallableResponse["groups"]> {
+  const groupIds = [...new Set(page.flatMap((doc) =>
+    (doc.data() as ProgramGuestDocument).groupIds ?? []))];
+  const groups = await Promise.all(groupIds.map(async (id) => {
+    const snap = await db.collection("programGuestGroups").doc(id).get();
+    const doc = snap.data() as ProgramGuestGroupDocument | undefined;
+    if (!doc) return null;
+    if (doc.programId !== programId || doc.organizerId !== organizerId) {
+      throw new HttpsError("failed-precondition",
+        "Guest group ownership needs reconciliation.");
+    }
+    return {
+      groupId: id,
+      label: doc.label,
+      dimension: doc.dimension,
+      sortOrder: doc.sortOrder,
+      memberCount: doc.memberCount,
+      revision: doc.revision,
+    };
+  }));
+  return groups.filter((group) => group !== null);
 }
 
 interface FunctionGuestRow {
@@ -388,6 +441,7 @@ export async function listProgramHouseholdsHandler(
     programId: data.programId,
     guests: [],
     functionGuests: [],
+    groups: [],
     households: snap.docs.map((doc) => {
       const household = doc.data() as ProgramHouseholdDocument;
       if (household.organizerId !== access.program.organizerId) {
