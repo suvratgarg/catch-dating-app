@@ -77,6 +77,11 @@ export async function finalizeCapturedOfferPayment(params: {
         if (!validateOrganizerFormAdmissionReceiptDocument(receipt) ||
             !validateOrganizerFormAdmissionDocument(ownership) ||
             payment.admissionReceiptId !== receiptId ||
+            receipt.receiptId !== receiptId ||
+            receipt.requestId !== requestId ||
+            receipt.requestHash !== admissionRequestHash(receipt) ||
+            canonicalJson(receipt.paymentSnapshot) !==
+              canonicalJson(payment.paymentSnapshot) ||
             receipt.providerPayment?.paymentId !== paymentId ||
             receipt.providerPayment.providerPaymentId !==
               payment.providerPaymentId ||

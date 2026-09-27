@@ -16,6 +16,9 @@ import {InvalidFormPaymentWebhook, parseVerifiedFormWebhook,
 import {formPaymentRuntime} from "./formPaymentRuntime";
 import type {FormPaymentProcessor} from "./formPaymentProcessor";
 
+import {processVerifiedOfferPaymentOrder} from
+  "../offerPayments/offerPaymentWebhook";
+
 /** The public URL must name the current configured profile version. */
 export function formRouteWebhookConfigurationVersion(version: string,
   configured = razorpayPlatformPaymentConfigVersion.value().trim()): string {
@@ -95,6 +98,10 @@ export async function processFormRoutePaymentWebhook(receiptId: string,
         receipt.providerOrderId !== providerPayment.orderId) invalid();
     const order = await deps.provider.fetchOrder(deps.profile.keyId,
       providerPayment.orderId);
+    processed = await processVerifiedOfferPaymentOrder({db: deps.db, order,
+      providerPaymentId: receipt.providerPaymentId,
+      accountId: receipt.accountId, mode: deps.profile.mode,
+      route: "razorpayRoute"});
     if (/^cfp_[a-f0-9]{32}$/u.test(order.receipt)) {
       const candidates = await deps.db.collection("organizerFormPayments")
         .where("receipt", "==", order.receipt).limit(2).get();

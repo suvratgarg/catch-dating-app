@@ -23,6 +23,8 @@ export {prepareOrganizerFormPayment, getOrganizerFormPayment,
 export {organizerFormPaymentOauthCallback, organizerFormPaymentWebhook,
   onOrganizerFormPaymentWebhook, reconcileOrganizerFormPayments} from
   "./payments/formPayments/formPaymentTriggers";
+export {reconcileOrganizerEventOfferPayments} from
+  "./payments/offerPayments/offerPaymentRecovery";
 export {
   reconcileRazorpayOrders,
 } from "./payments/reconcileRazorpayOrders";

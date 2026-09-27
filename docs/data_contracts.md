@@ -2661,9 +2661,23 @@ path alongside the existing verified-form-respondent path; it retains the
 canonical seat and rejects conflicting aliases. Raw token/phone data is absent
 from the grant, and all direct client access is denied.
 
-These are tested server primitives. The recipient callable/screen, payment
-attempt, captured-payment admission and expiry/refund worker must be wired
-before event-offer checkout is activated.
+`organizerEventOfferPayments` is a separate server-only payment ledger. Its
+deterministic attempt freezes the grant/UID, source offer revisions, payment
+terms, route, merchant configuration, transfer allocation, canonical seat and
+15-minute hold deadline. Reservation and hold creation commit together.
+Verified capture converts the hold and writes the common roster, admission
+ownership and receipt plus payment completion atomically. The receipt includes
+provider IDs, recipient proof and the frozen route; it never fabricates manual
+payment evidence. Historical receipt replay cannot renew the hold or roster.
+
+Order retries use the saved receipt after an uncertain POST. The common signed
+webhook inbox routes verified provider orders by ledger receipt and exact
+merchant binding. The bounded offer recovery sweep releases expired inventory
+before attempting provider work, retains manual-review anomalies and retries
+full refunds using a stable payment-specific key. Route refunds require full
+transfer reversal. The recipient callable/screen and provider acceptance remain
+required before event-offer checkout activation; admission does not release
+Route settlement.
 
 ### Organizer-connected form payments
 

@@ -12,6 +12,9 @@ import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentProcessor} from "./formPaymentProcessor";
 import type {FormPaymentCredentials} from "./formPaymentCredentials";
 
+import {processVerifiedOfferPaymentOrder} from
+  "../offerPayments/offerPaymentWebhook";
+
 interface WebhookDeps {
   db: FirebaseFirestore.Firestore;
   vault: Pick<RazorpayCredentialVault, "access">;
@@ -106,6 +109,11 @@ export async function processFormPaymentWebhook(receiptId: string,
       receipt.providerOrderId !== providerPayment.orderId) invalid();
   const order = await deps.provider.fetchOrder(credential.token.accessToken,
     providerPayment.orderId);
+  const offerProcessed = await processVerifiedOfferPaymentOrder({db: deps.db,
+    order, providerPaymentId: receipt.providerPaymentId,
+    accountId: receipt.accountId, mode: connection.mode,
+    route: "razorpayOAuth", connectionId: receipt.connectionId,
+    organizerId: connection.organizerId});
   const candidates = await deps.db.collection("organizerFormPayments")
     .where("connectionId", "==", receipt.connectionId)
     .where("receipt", "==", order.receipt).limit(2).get();
@@ -135,7 +143,8 @@ export async function processFormPaymentWebhook(receiptId: string,
     const current = requireDoc<Receipt>(await tx.get(ref),
       "OrganizerFormPaymentWebhookDocument");
     if (current.status !== "pending") return;
-    tx.update(ref, {status: candidate ? "processed" : "ignored",
+    tx.update(ref, {
+      status: candidate || offerProcessed ? "processed" : "ignored",
       processedAt: Timestamp.fromMillis((deps.now ?? Date.now)())});
   });
 }

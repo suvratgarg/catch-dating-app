@@ -135,10 +135,21 @@ export async function assertRazorpayCollectionRoutingCurrent(params: {
   db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
   snapshot: PaymentRoutingSnapshot; nowMillis: number;
 }): Promise<void> {
-  const {db, tx, snapshot, nowMillis} = params;
+  const {snapshot} = params;
   assertPaymentRouteSnapshot(snapshot, {organizerId: snapshot.organizerId,
     purpose: snapshot.purpose, currency: "INR"});
   await assertPaymentRouteCurrent(params);
+  await assertRazorpayCollectionBindingReady(params);
+}
+
+/** Existing attempts retain policy; new orders check account readiness. */
+export async function assertRazorpayCollectionBindingReady(params: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  snapshot: PaymentRoutingSnapshot; nowMillis: number;
+}): Promise<void> {
+  const {db, tx, snapshot, nowMillis} = params;
+  assertPaymentRouteSnapshot(snapshot, {organizerId: snapshot.organizerId,
+    purpose: snapshot.purpose, currency: "INR"});
   if (snapshot.selection.route === "razorpayRoute") {
     const {account} = await readReadyRouteAccount({db, tx,
       organizerId: snapshot.organizerId,
