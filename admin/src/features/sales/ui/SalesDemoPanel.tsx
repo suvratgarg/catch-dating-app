@@ -5,8 +5,8 @@ import {AdminButton, AdminForm, Panel, SelectField, StateRow,
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
   "../api/salesDemoManagement";
-import {useSalesDemoManagement} from
-  "../controllers/useSalesDemoManagement";
+import {useSalesDemoManagementController} from
+  "../controllers/useSalesDemoManagementController";
 
 const reviewAreas = [
   ["questionTypes", "Question types"], ["branching", "Branching"],
@@ -66,7 +66,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   organizerId: string; organizerName: string; currentUserUid: string;
   api?: DemoManagementApi;
 }) {
-  const controller = useSalesDemoManagement({isAdminOwner: true,
+  const controller = useSalesDemoManagementController({isAdminOwner: true,
     actorUid: currentUserUid, organizerId, api});
   const [form, setForm] = useState<FormState>(() => emptyForm(organizerName));
   const [formRevision, setFormRevision] = useState(0);

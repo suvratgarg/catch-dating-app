@@ -1284,3 +1284,20 @@ conflicts:
   and release cadence.
 - A future host portal can be added without overloading either the consumer app
   or the internal admin console.
+
+## Private Sales acquisition surfaces
+
+The Admin Sales feature composes the existing primitives for host research,
+contacts, tasks, opportunities, evidence review, imports, pilot terms and private
+demos. Feature-owned callable adapters are included in the shared Admin
+validator and Operations catalog inventory; they must not bypass server-side
+current-role, revision or receipt checks. Sample mode is clearly identified and
+cannot approve commercial terms or issue real invitations.
+
+The marketing `/demo/:invitationId` route is a lazy transactional surface. Its
+fragment grant is removed after capture and retained only in page memory.
+Route keys, hash scrolling, marketing analytics and the consent banner exclude
+this route. The generated static HTML contains generic noindex metadata, and
+Hosting applies no-referrer and private/no-store headers. No grant, prospect
+research or strategy appears in static content. Verified identity and explicit
+start remain separate from anonymous preview and organizer claim approval.

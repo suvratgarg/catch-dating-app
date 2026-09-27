@@ -8,7 +8,7 @@ import {salesDemoManagementApi, type DemoBlueprint, type DemoIssueResult,
 type Pending = {label: string; run: () => Promise<unknown>;
   accept: (result: never) => void};
 
-export function useSalesDemoManagement({isAdminOwner, actorUid, organizerId,
+export function useSalesDemoManagementController({isAdminOwner, actorUid, organizerId,
   api = salesDemoManagementApi}: {
   isAdminOwner: boolean; actorUid: string; organizerId: string;
   api?: DemoManagementApi;

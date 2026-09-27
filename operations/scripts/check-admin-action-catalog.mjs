@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {adminCallableNames, readAdminCallableSources} from
+  "../../tool/admin/callable_inventory.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -31,10 +33,7 @@ export async function checkAdminActionCatalog({
   } catch (error) {
     return failure("catalog-load-failed", error);
   }
-  const apiSource = adminApiSource ?? await fs.readFile(
-    path.join(repoRoot, "admin", "src", "shared", "api", "adminApi.ts"),
-    "utf8"
-  );
+  const apiSource = adminApiSource ?? readAdminCallableSources(repoRoot);
   const indexSource = functionsIndexSource ?? await fs.readFile(
     path.join(repoRoot, "functions", "src", "index.ts"),
     "utf8"
@@ -165,10 +164,7 @@ export async function checkAdminActionCatalog({
 }
 
 function callableNames(source) {
-  return [...new Set(
-    [...source.matchAll(/\(\s*functions,\s*"(admin[A-Z][A-Za-z0-9]+)"\s*\)/gu)]
-      .map((match) => match[1])
-  )].sort();
+  return adminCallableNames(source);
 }
 
 function generatedStrictRequests(source) {

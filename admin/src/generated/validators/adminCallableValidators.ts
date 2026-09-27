@@ -4,10 +4,16 @@ import addFormats from "ajv-formats";
 
 const model = {
   "names": [
+    "adminAcceptSalesQuote",
+    "adminAddSalesEvidence",
     "adminApplyEventMessagingBudget",
+    "adminApplySalesImport",
+    "adminApproveSalesQuote",
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
     "adminCreateOrganizerDraftFromCandidate",
+    "adminCreateSalesAccount",
+    "adminCreateSalesCustomField",
     "adminDecideAccessApplication",
     "adminDecideEventMessagingBudget",
     "adminDecideOrganizerClaim",
@@ -26,7 +32,14 @@ const model = {
     "adminGetOrganizerDetails",
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
+    "adminGetSalesAccount",
+    "adminGetSalesCommercialDetail",
+    "adminGetSalesDemoBlueprint",
+    "adminGetSalesDemoCapability",
+    "adminGetSalesDemoInvitation",
     "adminGetUserAnalytics",
+    "adminIssueSalesDemoInvitation",
+    "adminLinkSalesInboundIntent",
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListCrossPathsShowcaseCandidates",
@@ -35,20 +48,108 @@ const model = {
     "adminListIntakeOperations",
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
+    "adminListSalesAccounts",
+    "adminListSalesCommercialReport",
+    "adminListSalesContacts",
+    "adminListSalesCustomFields",
+    "adminListSalesDemoBlueprints",
+    "adminListSalesDemoInvitations",
+    "adminListSalesEvidence",
+    "adminListSalesEvidenceProposals",
+    "adminListSalesInboundIntents",
+    "adminListSalesOpportunities",
+    "adminListSalesTasks",
+    "adminPreviewSalesImport",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
     "adminRecordMarketingReviewDecision",
     "adminRecordOrganizerCuration",
+    "adminRecordSalesActivity",
     "adminResolveOrganizerEventLocation",
     "adminReviewEventMessagingBudget",
+    "adminReviewSalesDemoBlueprint",
+    "adminReviewSalesEvidenceProposal",
+    "adminReviseSalesQuote",
+    "adminRevokeSalesDemoInvitation",
+    "adminSaveSalesDemoBlueprint",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",
+    "adminSetSalesAccountSuppression",
+    "adminSetSalesContactability",
+    "adminSetSalesCustomFieldValue",
     "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
-    "adminUpdateOrganizerDetails"
+    "adminUpdateOrganizerDetails",
+    "adminUpdateSalesAccount",
+    "adminUpsertSalesContact",
+    "adminUpsertSalesOpportunity",
+    "adminUpsertSalesPilotPlan",
+    "adminUpsertSalesTask",
+    "adminWithdrawSalesDemoBlueprint"
   ],
   "schemas": [
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_accept_sales_quote_payload.schema.json",
+      "title": "commercial.quotes.accept request",
+      "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "opportunityId",
+        "requestId",
+        "expectedRevision",
+        "termVersion",
+        "evidence"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
@@ -1906,6 +2007,67 @@ const model = {
         "paceSecsPerKm": {
           "type": "integer",
           "minimum": 1
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_approve_sales_quote_payload.schema.json",
+      "title": "commercial.quotes.approve request",
+      "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "opportunityId",
+        "requestId",
+        "expectedRevision",
+        "termVersion",
+        "evidence"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
         }
       }
     },
@@ -14035,6 +14197,32 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_sales_commercial_detail_payload.schema.json",
+      "title": "commercial.detail request",
+      "description": "Strict bounded private Sales commercial read.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "opportunityId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
       "title": "AdminListActionExecutionsCallablePayload",
       "type": "object",
@@ -14550,6 +14738,35 @@ const model = {
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_sales_commercial_report_payload.schema.json",
+      "title": "commercial.report request",
+      "description": "Strict bounded private Sales commercial read.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 25
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
         }
       }
     },
@@ -15213,6 +15430,98 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_revise_sales_quote_payload.schema.json",
+      "title": "commercial.quotes.revise request",
+      "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "opportunityId",
+        "requestId",
+        "expectedRevision",
+        "terms"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "terms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "amountMinor",
+            "billingCadence",
+            "scope",
+            "validUntil",
+            "sourceFactRefs"
+          ],
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000000
+            },
+            "billingCadence": {
+              "enum": [
+                "one_time",
+                "monthly",
+                "annual",
+                "usage_based"
+              ]
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "validUntil": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "sourceFactRefs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
       "title": "Admin Set Admin User Roles Callable Payload",
       "type": "object",
@@ -15694,6 +16003,158 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_upsert_sales_pilot_plan_payload.schema.json",
+      "title": "commercial.pilots.upsert request",
+      "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "opportunityId",
+        "requestId",
+        "expectedRevision",
+        "plan"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "workflowId",
+            "objective",
+            "successMeasures",
+            "startsAt",
+            "endsAt",
+            "reviewEvidence",
+            "outcomeEvidence"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "draft",
+                "reviewed",
+                "active",
+                "completed",
+                "cancelled"
+              ]
+            },
+            "workflowId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "objective": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "successMeasures": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "startsAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "endsAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reviewEvidence": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidenceId"
+                  ],
+                  "properties": {
+                    "evidenceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 96,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outcomeEvidence": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidenceId"
+                  ],
+                  "properties": {
+                    "evidenceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 96,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
       "title": "HostAnalyticsQueryCallablePayload",
       "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
@@ -15909,6 +16370,2066 @@ const model = {
           "maxLength": 1000
         }
       }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_hosts_search_payload.schema.json",
+      "title": "Sales hosts.search callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "query": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "pattern": "^[A-Za-z0-9]+$"
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "researchStatus": {
+          "enum": [
+            "new",
+            "needs_research",
+            "ready_for_review",
+            "qualified",
+            "benchmark_only",
+            "no_fit",
+            "archived"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_hosts_get_payload.schema.json",
+      "title": "Sales hosts.get callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_tasks_list_payload.schema.json",
+      "title": "Sales tasks.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "completed",
+            "cancelled"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_opportunities_list_payload.schema.json",
+      "title": "Sales opportunities.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "stage": {
+          "enum": [
+            "new_enquiry",
+            "ready_to_contact",
+            "contacted",
+            "in_conversation",
+            "demo_arranged",
+            "demo_completed",
+            "pilot_agreed",
+            "pilot_running",
+            "commercial_discussion",
+            "closed_won",
+            "closed_lost"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_fields_list_payload.schema.json",
+      "title": "Sales fields.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {}
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_intents_list_payload.schema.json",
+      "title": "Sales intents.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "status": {
+          "enum": [
+            "needs_identity_review",
+            "linked",
+            "dismissed"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_imports_preview_payload.schema.json",
+      "title": "Sales imports.preview callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "contentHash",
+        "mappingVersion",
+        "rows"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "mappingVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 25,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceRowId",
+              "organizerId",
+              "name",
+              "researchStatus"
+            ],
+            "properties": {
+              "sourceRowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "organizerId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "researchStatus": {
+                "enum": [
+                  "new",
+                  "needs_research",
+                  "ready_for_review",
+                  "qualified",
+                  "benchmark_only",
+                  "no_fit",
+                  "archived"
+                ]
+              },
+              "summary": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1200
+              },
+              "originalScore": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "maxProperties": 12,
+                    "propertyNames": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "originalCells": {
+                "type": "array",
+                "maxItems": 60,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "column",
+                    "value"
+                  ],
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "maxLength": 160
+                    },
+                    "value": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_contacts_list_payload.schema.json",
+      "title": "Sales contacts.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_evidence_list_payload.schema.json",
+      "title": "Sales evidence.list callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_hosts_create_payload.schema.json",
+      "title": "Sales hosts.create callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_hosts_update_payload.schema.json",
+      "title": "Sales hosts.update callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "patch"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "patch": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "researchStatus": {
+              "enum": [
+                "new",
+                "needs_research",
+                "ready_for_review",
+                "qualified",
+                "benchmark_only",
+                "no_fit",
+                "archived"
+              ]
+            },
+            "assignedOwnerUid": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "summary": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1200
+            },
+            "nextAction": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_tasks_upsert_payload.schema.json",
+      "title": "Sales tasks.upsert callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "task"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "taskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "task": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "title",
+            "dueAt",
+            "ownerUid",
+            "status"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "research",
+                "reply",
+                "follow_up",
+                "demo",
+                "pilot",
+                "duplicate_review",
+                "opt_out",
+                "service_commitment"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "contactId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ownerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "completed",
+                "cancelled"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_opportunities_upsert_payload.schema.json",
+      "title": "Sales opportunities.upsert callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "fields"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "motion",
+            "stage",
+            "ownerUid",
+            "nextStep",
+            "nextStepAt"
+          ],
+          "properties": {
+            "motion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "stage": {
+              "enum": [
+                "new_enquiry",
+                "ready_to_contact",
+                "contacted",
+                "in_conversation",
+                "demo_arranged",
+                "demo_completed",
+                "pilot_agreed",
+                "pilot_running",
+                "commercial_discussion",
+                "closed_won",
+                "closed_lost"
+              ]
+            },
+            "ownerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "nextStep": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            },
+            "nextStepAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "transitionReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_activities_log_payload.schema.json",
+      "title": "Sales activities.log callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "type",
+        "occurredAt",
+        "note"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "type": {
+          "enum": [
+            "note",
+            "reply",
+            "call",
+            "demo",
+            "pilot",
+            "correction",
+            "outreach_sent_manual"
+          ]
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "whatsapp",
+            "other"
+          ]
+        },
+        "attestation": {
+          "const": "sent_elsewhere_by_actor"
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_fields_create_payload.schema.json",
+      "title": "Sales fields.create callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "field"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "field": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fieldId",
+            "label",
+            "type",
+            "recordType"
+          ],
+          "properties": {
+            "fieldId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "type": {
+              "enum": [
+                "string",
+                "number",
+                "boolean",
+                "date",
+                "enum"
+              ]
+            },
+            "recordType": {
+              "const": "account"
+            },
+            "helpText": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            },
+            "enumOptions": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_fields_set_value_payload.schema.json",
+      "title": "Sales fields.setValue callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "fieldId",
+        "value"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "fieldId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_intents_link_payload.schema.json",
+      "title": "Sales intents.link callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intentId",
+        "organizerId",
+        "requestId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_imports_apply_payload.schema.json",
+      "title": "Sales imports.apply callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "previewHash",
+        "sourceId",
+        "contentHash",
+        "mappingVersion",
+        "rows"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "previewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "mappingVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 25,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceRowId",
+              "organizerId",
+              "name",
+              "researchStatus"
+            ],
+            "properties": {
+              "sourceRowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "organizerId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "researchStatus": {
+                "enum": [
+                  "new",
+                  "needs_research",
+                  "ready_for_review",
+                  "qualified",
+                  "benchmark_only",
+                  "no_fit",
+                  "archived"
+                ]
+              },
+              "summary": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1200
+              },
+              "originalScore": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "maxProperties": 12,
+                    "propertyNames": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "originalCells": {
+                "type": "array",
+                "maxItems": 60,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "column",
+                    "value"
+                  ],
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "maxLength": 160
+                    },
+                    "value": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_contacts_upsert_payload.schema.json",
+      "title": "Sales contacts.upsert callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "contact",
+        "relationship"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "linkExisting": {
+          "type": "boolean"
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "displayName"
+          ],
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        "relationship": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "decisionInfluence",
+            "primary"
+          ],
+          "properties": {
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "decisionInfluence": {
+              "enum": [
+                "unknown",
+                "decision_maker",
+                "influencer",
+                "operator"
+              ]
+            },
+            "primary": {
+              "type": "boolean"
+            },
+            "endpoints": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "value",
+                  "verificationStatus"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "email",
+                      "phone"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 160
+                  },
+                  "verificationStatus": {
+                    "enum": [
+                      "unverified",
+                      "verified"
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_evidence_add_payload.schema.json",
+      "title": "Sales evidence.add callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "claimKey",
+        "sourceType",
+        "sourceRef",
+        "observedAt",
+        "confidence"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "claimKey": {
+          "enum": [
+            "identity",
+            "recurrence",
+            "operation",
+            "stack",
+            "other"
+          ]
+        },
+        "signalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceType": {
+          "enum": [
+            "first_party",
+            "public_web",
+            "human_note",
+            "import_artifact"
+          ]
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validThrough": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "normalizedValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "excerpt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_accounts_set_suppression_payload.schema.json",
+      "title": "Sales accounts.setSuppression callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedRevision",
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "status": {
+          "enum": [
+            "clear",
+            "held",
+            "suppressed"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_contacts_set_contactability_payload.schema.json",
+      "title": "Sales contacts.setContactability callable payload",
+      "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "requestId",
+        "expectedRevision",
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "status": {
+          "enum": [
+            "unknown",
+            "draft_reviewed",
+            "held",
+            "suppressed"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "evidenceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_evidence_review_proposal_payload.schema.json",
+      "title": "admin_sales_evidence_review_proposal_payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "proposalId",
+        "expectedRevision",
+        "decision",
+        "reason"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "proposalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "decision": {
+          "enum": [
+            "accept",
+            "reject"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_sales_evidence_proposals_list_payload.schema.json",
+      "title": "admin_sales_evidence_proposals_list_payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+      "title": "SalesDemoManagementCallablePayloads",
+      "description": "Admin Owner demo commands and bounded owner reads. A request ID is stable across retries; reads never return grant digests.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/save"
+        },
+        {
+          "$ref": "#/definitions/blueprintDecision"
+        },
+        {
+          "$ref": "#/definitions/issue"
+        },
+        {
+          "$ref": "#/definitions/revoke"
+        },
+        {
+          "$ref": "#/definitions/blueprintRead"
+        },
+        {
+          "$ref": "#/definitions/invitationRead"
+        },
+        {
+          "$ref": "#/definitions/capabilityRead"
+        },
+        {
+          "$ref": "#/definitions/blueprintList"
+        },
+        {
+          "$ref": "#/definitions/invitationList"
+        }
+      ],
+      "definitions": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "save": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "blueprintId",
+            "expectedRevision",
+            "evidenceRevision",
+            "preview",
+            "formCapabilityReview",
+            "fieldMappings"
+          ],
+          "properties": {
+            "requestId": {
+              "$ref": "#/definitions/requestId"
+            },
+            "blueprintId": {
+              "$ref": "#/definitions/id"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "candidateId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opportunityId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceRevision": {
+              "$ref": "#/definitions/id"
+            },
+            "preview": {
+              "$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/preview"
+            },
+            "formCapabilityReview": {
+              "$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/formCapabilityReview"
+            },
+            "fieldMappings": {
+              "$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/fieldMappings"
+            }
+          }
+        },
+        "blueprintDecision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "blueprintId",
+            "expectedRevision"
+          ],
+          "properties": {
+            "requestId": {
+              "$ref": "#/definitions/requestId"
+            },
+            "blueprintId": {
+              "$ref": "#/definitions/id"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "issue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "blueprintId",
+            "blueprintRevision",
+            "expiresAt",
+            "sessionCap"
+          ],
+          "properties": {
+            "requestId": {
+              "$ref": "#/definitions/requestId"
+            },
+            "blueprintId": {
+              "$ref": "#/definitions/id"
+            },
+            "blueprintRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "contactBinding": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "value"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "email",
+                        "phone"
+                      ]
+                    },
+                    "value": {
+                      "type": "string",
+                      "maxLength": 254
+                    }
+                  }
+                }
+              ]
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "sessionCap": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            }
+          }
+        },
+        "revoke": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "invitationId",
+            "expectedRevision"
+          ],
+          "properties": {
+            "requestId": {
+              "$ref": "#/definitions/requestId"
+            },
+            "invitationId": {
+              "$ref": "#/definitions/id"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "blueprintRead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "blueprintId"
+          ],
+          "properties": {
+            "blueprintId": {
+              "$ref": "#/definitions/id"
+            }
+          }
+        },
+        "invitationRead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "invitationId"
+          ],
+          "properties": {
+            "invitationId": {
+              "$ref": "#/definitions/id"
+            }
+          }
+        },
+        "capabilityRead": {
+          "type": "object",
+          "additionalProperties": false,
+          "maxProperties": 0
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "blueprintList": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId"
+          ],
+          "properties": {
+            "organizerId": {
+              "$ref": "#/definitions/id"
+            },
+            "cursor": {
+              "$ref": "#/definitions/id"
+            },
+            "limit": {
+              "$ref": "#/definitions/page"
+            }
+          }
+        },
+        "invitationList": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "blueprintId"
+          ],
+          "properties": {
+            "blueprintId": {
+              "$ref": "#/definitions/id"
+            },
+            "cursor": {
+              "$ref": "#/definitions/id"
+            },
+            "limit": {
+              "$ref": "#/definitions/page"
+            }
+          }
+        }
+      },
+      "x-callables": [
+        "adminSaveSalesDemoBlueprint",
+        "adminReviewSalesDemoBlueprint",
+        "adminWithdrawSalesDemoBlueprint",
+        "adminIssueSalesDemoInvitation",
+        "adminRevokeSalesDemoInvitation",
+        "adminGetSalesDemoBlueprint",
+        "adminGetSalesDemoInvitation",
+        "adminGetSalesDemoCapability",
+        "adminListSalesDemoBlueprints",
+        "adminListSalesDemoInvitations"
+      ]
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/firestore/sales_demo_blueprints.schema.json",
+      "title": "SalesDemoBlueprintDocument",
+      "description": "Private reviewed plan; only its preview object can reach an anonymous invitation view.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "classification",
+        "blueprintId",
+        "revision",
+        "state",
+        "organizerId",
+        "candidateId",
+        "opportunityId",
+        "capability",
+        "capabilityRevision",
+        "evidenceRevision",
+        "seedVersion",
+        "formCapabilityReview",
+        "fieldMappings",
+        "preview",
+        "reviewedByUid",
+        "reviewedAt",
+        "updatedAt",
+        "updatedByUid"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "blueprintId": {
+          "$ref": "#/definitions/id"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "withdrawn"
+          ]
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidateId": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "opportunityId": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capability": {
+          "const": "synthetic_forms_v1"
+        },
+        "capabilityRevision": {
+          "$ref": "#/definitions/id"
+        },
+        "evidenceRevision": {
+          "$ref": "#/definitions/id"
+        },
+        "seedVersion": {
+          "const": 1
+        },
+        "formCapabilityReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionTypes",
+            "branching",
+            "requiredFields",
+            "scoringApproval",
+            "uploads"
+          ],
+          "properties": {
+            "questionTypes": {
+              "$ref": "#/definitions/disposition"
+            },
+            "branching": {
+              "$ref": "#/definitions/disposition"
+            },
+            "requiredFields": {
+              "$ref": "#/definitions/disposition"
+            },
+            "scoringApproval": {
+              "$ref": "#/definitions/disposition"
+            },
+            "uploads": {
+              "$ref": "#/definitions/disposition"
+            }
+          }
+        },
+        "fieldMappings": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceField",
+              "catchField",
+              "disposition"
+            ],
+            "properties": {
+              "sourceField": {
+                "$ref": "#/definitions/text"
+              },
+              "catchField": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/text"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "disposition": {
+                "$ref": "#/definitions/disposition"
+              }
+            }
+          }
+        },
+        "preview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "brandName",
+            "headline",
+            "scenario",
+            "steps",
+            "retainedTools",
+            "limitations",
+            "cta"
+          ],
+          "properties": {
+            "brandName": {
+              "$ref": "#/definitions/text"
+            },
+            "headline": {
+              "$ref": "#/definitions/text"
+            },
+            "scenario": {
+              "$ref": "#/definitions/text"
+            },
+            "steps": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "$ref": "#/definitions/text"
+              }
+            },
+            "retainedTools": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "$ref": "#/definitions/text"
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "$ref": "#/definitions/text"
+              }
+            },
+            "cta": {
+              "$ref": "#/definitions/text"
+            }
+          }
+        },
+        "reviewedByUid": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedByUid": {
+          "$ref": "#/definitions/id"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "disposition": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        }
+      },
+      "x-firestore-collection": "salesDemoBlueprints",
+      "x-firestore-path": "salesDemoBlueprints/{blueprintId}",
+      "x-document-id-field": "blueprintId",
+      "x-owner": "sales demo admin callable"
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -24658,6 +27179,36 @@ const model = {
       }
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminAcceptSalesQuote_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminAddSalesEvidence_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminApplySalesImport_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminApproveSalesQuote_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminCreateSalesAccount_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminCreateSalesCustomField_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerClaim_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -24723,6 +27274,41 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetSalesAccount_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetSalesCommercialDetail_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoBlueprint_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoCapability_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoInvitation_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminIssueSalesDemoInvitation_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminLinkSalesInboundIntent_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -24748,6 +27334,66 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesAccounts_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesCommercialReport_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesContacts_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesCustomFields_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesDemoBlueprints_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesDemoInvitations_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesEvidence_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesEvidenceProposals_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesInboundIntents_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesOpportunities_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListSalesTasks_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminPreviewSalesImport_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminPublishExternalEvent_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -24763,12 +27409,57 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminRecordSalesActivity_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminReviewSalesDemoBlueprint_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminReviewSalesEvidenceProposal_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminReviseSalesQuote_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminRevokeSalesDemoInvitation_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminSaveSalesDemoBlueprint_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminSetSalesAccountSuppression_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminSetSalesContactability_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminSetSalesCustomFieldValue_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -24786,13 +27477,49 @@ const model = {
       "$id": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpdateSalesAccount_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpsertSalesContact_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpsertSalesOpportunity_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpsertSalesPilotPlan_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpsertSalesTask_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminWithdrawSalesDemoBlueprint_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
     }
   ],
   "requestSchemaIds": {
+    "adminAcceptSalesQuote": "https://catch.app/contracts/callables/admin_accept_sales_quote_payload.schema.json",
+    "adminAddSalesEvidence": "https://catch.app/contracts/callables/admin_sales_evidence_add_payload.schema.json",
     "adminApplyEventMessagingBudget": "https://catch.app/contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
+    "adminApplySalesImport": "https://catch.app/contracts/callables/admin_sales_imports_apply_payload.schema.json",
+    "adminApproveSalesQuote": "https://catch.app/contracts/callables/admin_approve_sales_quote_payload.schema.json",
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
     "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+    "adminCreateSalesAccount": "https://catch.app/contracts/callables/admin_sales_hosts_create_payload.schema.json",
+    "adminCreateSalesCustomField": "https://catch.app/contracts/callables/admin_sales_fields_create_payload.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
     "adminDecideEventMessagingBudget": "https://catch.app/contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
     "adminDecideOrganizerClaim": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
@@ -24811,7 +27538,14 @@ const model = {
     "adminGetOrganizerDetails": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
     "adminGetOverview": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
+    "adminGetSalesAccount": "https://catch.app/contracts/callables/admin_sales_hosts_get_payload.schema.json",
+    "adminGetSalesCommercialDetail": "https://catch.app/contracts/callables/admin_get_sales_commercial_detail_payload.schema.json",
+    "adminGetSalesDemoBlueprint": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminGetSalesDemoCapability": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminGetSalesDemoInvitation": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
+    "adminIssueSalesDemoInvitation": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminLinkSalesInboundIntent": "https://catch.app/contracts/callables/admin_sales_intents_link_payload.schema.json",
     "adminListActionExecutions": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
     "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
@@ -24820,24 +27554,57 @@ const model = {
     "adminListIntakeOperations": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
     "adminListOrganizerClaimRequests": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
     "adminListOrganizerDetails": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
+    "adminListSalesAccounts": "https://catch.app/contracts/callables/admin_sales_hosts_search_payload.schema.json",
+    "adminListSalesCommercialReport": "https://catch.app/contracts/callables/admin_list_sales_commercial_report_payload.schema.json",
+    "adminListSalesContacts": "https://catch.app/contracts/callables/admin_sales_contacts_list_payload.schema.json",
+    "adminListSalesCustomFields": "https://catch.app/contracts/callables/admin_sales_fields_list_payload.schema.json",
+    "adminListSalesDemoBlueprints": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminListSalesDemoInvitations": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminListSalesEvidence": "https://catch.app/contracts/callables/admin_sales_evidence_list_payload.schema.json",
+    "adminListSalesEvidenceProposals": "https://catch.app/contracts/callables/admin_sales_evidence_proposals_list_payload.schema.json",
+    "adminListSalesInboundIntents": "https://catch.app/contracts/callables/admin_sales_intents_list_payload.schema.json",
+    "adminListSalesOpportunities": "https://catch.app/contracts/callables/admin_sales_opportunities_list_payload.schema.json",
+    "adminListSalesTasks": "https://catch.app/contracts/callables/admin_sales_tasks_list_payload.schema.json",
+    "adminPreviewSalesImport": "https://catch.app/contracts/callables/admin_sales_imports_preview_payload.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
+    "adminRecordSalesActivity": "https://catch.app/contracts/callables/admin_sales_activities_log_payload.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
     "adminReviewEventMessagingBudget": "https://catch.app/contracts/callables/admin_review_event_messaging_budget_payload.schema.json",
+    "adminReviewSalesDemoBlueprint": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminReviewSalesEvidenceProposal": "https://catch.app/contracts/callables/admin_sales_evidence_review_proposal_payload.schema.json",
+    "adminReviseSalesQuote": "https://catch.app/contracts/callables/admin_revise_sales_quote_payload.schema.json",
+    "adminRevokeSalesDemoInvitation": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+    "adminSaveSalesDemoBlueprint": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+    "adminSetSalesAccountSuppression": "https://catch.app/contracts/callables/admin_sales_accounts_set_suppression_payload.schema.json",
+    "adminSetSalesContactability": "https://catch.app/contracts/callables/admin_sales_contacts_set_contactability_payload.schema.json",
+    "adminSetSalesCustomFieldValue": "https://catch.app/contracts/callables/admin_sales_fields_set_value_payload.schema.json",
     "adminTakedownExternalEvent": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
-    "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
+    "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json",
+    "adminUpdateSalesAccount": "https://catch.app/contracts/callables/admin_sales_hosts_update_payload.schema.json",
+    "adminUpsertSalesContact": "https://catch.app/contracts/callables/admin_sales_contacts_upsert_payload.schema.json",
+    "adminUpsertSalesOpportunity": "https://catch.app/contracts/callables/admin_sales_opportunities_upsert_payload.schema.json",
+    "adminUpsertSalesPilotPlan": "https://catch.app/contracts/callables/admin_upsert_sales_pilot_plan_payload.schema.json",
+    "adminUpsertSalesTask": "https://catch.app/contracts/callables/admin_sales_tasks_upsert_payload.schema.json",
+    "adminWithdrawSalesDemoBlueprint": "https://catch.app/contracts/callables/sales_demo_management.schema.json"
   },
   "responseSchemaIds": {
+    "adminAcceptSalesQuote": "https://catch.app/contracts/admin_runtime/adminAcceptSalesQuote_response.schema.json",
+    "adminAddSalesEvidence": "https://catch.app/contracts/admin_runtime/adminAddSalesEvidence_response.schema.json",
     "adminApplyEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_apply_event_messaging_budget_response.schema.json",
+    "adminApplySalesImport": "https://catch.app/contracts/admin_runtime/adminApplySalesImport_response.schema.json",
+    "adminApproveSalesQuote": "https://catch.app/contracts/admin_runtime/adminApproveSalesQuote_response.schema.json",
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
     "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
+    "adminCreateSalesAccount": "https://catch.app/contracts/admin_runtime/adminCreateSalesAccount_response.schema.json",
+    "adminCreateSalesCustomField": "https://catch.app/contracts/admin_runtime/adminCreateSalesCustomField_response.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
     "adminDecideEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_decide_event_messaging_budget_response.schema.json",
     "adminDecideOrganizerClaim": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerClaim_response.schema.json",
@@ -24856,7 +27623,14 @@ const model = {
     "adminGetOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminGetOrganizerDetails_response.schema.json",
     "adminGetOverview": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/admin_runtime/adminGetSafetyTriageDetails_response.schema.json",
+    "adminGetSalesAccount": "https://catch.app/contracts/admin_runtime/adminGetSalesAccount_response.schema.json",
+    "adminGetSalesCommercialDetail": "https://catch.app/contracts/admin_runtime/adminGetSalesCommercialDetail_response.schema.json",
+    "adminGetSalesDemoBlueprint": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoBlueprint_response.schema.json",
+    "adminGetSalesDemoCapability": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoCapability_response.schema.json",
+    "adminGetSalesDemoInvitation": "https://catch.app/contracts/admin_runtime/adminGetSalesDemoInvitation_response.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callable_responses/user_analytics_response.schema.json",
+    "adminIssueSalesDemoInvitation": "https://catch.app/contracts/admin_runtime/adminIssueSalesDemoInvitation_response.schema.json",
+    "adminLinkSalesInboundIntent": "https://catch.app/contracts/admin_runtime/adminLinkSalesInboundIntent_response.schema.json",
     "adminListActionExecutions": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
     "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
@@ -24865,24 +27639,57 @@ const model = {
     "adminListIntakeOperations": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
     "adminListOrganizerClaimRequests": "https://catch.app/contracts/admin_runtime/adminListOrganizerClaimRequests_response.schema.json",
     "adminListOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminListOrganizerDetails_response.schema.json",
+    "adminListSalesAccounts": "https://catch.app/contracts/admin_runtime/adminListSalesAccounts_response.schema.json",
+    "adminListSalesCommercialReport": "https://catch.app/contracts/admin_runtime/adminListSalesCommercialReport_response.schema.json",
+    "adminListSalesContacts": "https://catch.app/contracts/admin_runtime/adminListSalesContacts_response.schema.json",
+    "adminListSalesCustomFields": "https://catch.app/contracts/admin_runtime/adminListSalesCustomFields_response.schema.json",
+    "adminListSalesDemoBlueprints": "https://catch.app/contracts/admin_runtime/adminListSalesDemoBlueprints_response.schema.json",
+    "adminListSalesDemoInvitations": "https://catch.app/contracts/admin_runtime/adminListSalesDemoInvitations_response.schema.json",
+    "adminListSalesEvidence": "https://catch.app/contracts/admin_runtime/adminListSalesEvidence_response.schema.json",
+    "adminListSalesEvidenceProposals": "https://catch.app/contracts/admin_runtime/adminListSalesEvidenceProposals_response.schema.json",
+    "adminListSalesInboundIntents": "https://catch.app/contracts/admin_runtime/adminListSalesInboundIntents_response.schema.json",
+    "adminListSalesOpportunities": "https://catch.app/contracts/admin_runtime/adminListSalesOpportunities_response.schema.json",
+    "adminListSalesTasks": "https://catch.app/contracts/admin_runtime/adminListSalesTasks_response.schema.json",
+    "adminPreviewSalesImport": "https://catch.app/contracts/admin_runtime/adminPreviewSalesImport_response.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/admin_runtime/adminPublishExternalEvent_response.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordEventIntakeReviewDecision_response.schema.json",
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callable_responses/admin_record_marketing_review_decision_response.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/admin_runtime/adminRecordOrganizerCuration_response.schema.json",
+    "adminRecordSalesActivity": "https://catch.app/contracts/admin_runtime/adminRecordSalesActivity_response.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
     "adminReviewEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_review_event_messaging_budget_response.schema.json",
+    "adminReviewSalesDemoBlueprint": "https://catch.app/contracts/admin_runtime/adminReviewSalesDemoBlueprint_response.schema.json",
+    "adminReviewSalesEvidenceProposal": "https://catch.app/contracts/admin_runtime/adminReviewSalesEvidenceProposal_response.schema.json",
+    "adminReviseSalesQuote": "https://catch.app/contracts/admin_runtime/adminReviseSalesQuote_response.schema.json",
+    "adminRevokeSalesDemoInvitation": "https://catch.app/contracts/admin_runtime/adminRevokeSalesDemoInvitation_response.schema.json",
+    "adminSaveSalesDemoBlueprint": "https://catch.app/contracts/admin_runtime/adminSaveSalesDemoBlueprint_response.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_response.schema.json",
+    "adminSetSalesAccountSuppression": "https://catch.app/contracts/admin_runtime/adminSetSalesAccountSuppression_response.schema.json",
+    "adminSetSalesContactability": "https://catch.app/contracts/admin_runtime/adminSetSalesContactability_response.schema.json",
+    "adminSetSalesCustomFieldValue": "https://catch.app/contracts/admin_runtime/adminSetSalesCustomFieldValue_response.schema.json",
     "adminTakedownExternalEvent": "https://catch.app/contracts/admin_runtime/adminTakedownExternalEvent_response.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
-    "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json"
+    "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json",
+    "adminUpdateSalesAccount": "https://catch.app/contracts/admin_runtime/adminUpdateSalesAccount_response.schema.json",
+    "adminUpsertSalesContact": "https://catch.app/contracts/admin_runtime/adminUpsertSalesContact_response.schema.json",
+    "adminUpsertSalesOpportunity": "https://catch.app/contracts/admin_runtime/adminUpsertSalesOpportunity_response.schema.json",
+    "adminUpsertSalesPilotPlan": "https://catch.app/contracts/admin_runtime/adminUpsertSalesPilotPlan_response.schema.json",
+    "adminUpsertSalesTask": "https://catch.app/contracts/admin_runtime/adminUpsertSalesTask_response.schema.json",
+    "adminWithdrawSalesDemoBlueprint": "https://catch.app/contracts/admin_runtime/adminWithdrawSalesDemoBlueprint_response.schema.json"
   },
   "strictRequests": [
+    "adminAcceptSalesQuote",
+    "adminAddSalesEvidence",
     "adminApplyEventMessagingBudget",
+    "adminApplySalesImport",
+    "adminApproveSalesQuote",
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
     "adminCreateOrganizerDraftFromCandidate",
+    "adminCreateSalesAccount",
+    "adminCreateSalesCustomField",
     "adminDecideAccessApplication",
     "adminDecideEventMessagingBudget",
     "adminDecideOrganizerClaim",
@@ -24901,7 +27708,14 @@ const model = {
     "adminGetOrganizerDetails",
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
+    "adminGetSalesAccount",
+    "adminGetSalesCommercialDetail",
+    "adminGetSalesDemoBlueprint",
+    "adminGetSalesDemoCapability",
+    "adminGetSalesDemoInvitation",
     "adminGetUserAnalytics",
+    "adminIssueSalesDemoInvitation",
+    "adminLinkSalesInboundIntent",
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListCrossPathsShowcaseCandidates",
@@ -24910,18 +27724,45 @@ const model = {
     "adminListIntakeOperations",
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
+    "adminListSalesAccounts",
+    "adminListSalesCommercialReport",
+    "adminListSalesContacts",
+    "adminListSalesCustomFields",
+    "adminListSalesDemoBlueprints",
+    "adminListSalesDemoInvitations",
+    "adminListSalesEvidence",
+    "adminListSalesEvidenceProposals",
+    "adminListSalesInboundIntents",
+    "adminListSalesOpportunities",
+    "adminListSalesTasks",
+    "adminPreviewSalesImport",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
     "adminRecordMarketingReviewDecision",
     "adminRecordOrganizerCuration",
+    "adminRecordSalesActivity",
     "adminResolveOrganizerEventLocation",
     "adminReviewEventMessagingBudget",
+    "adminReviewSalesDemoBlueprint",
+    "adminReviewSalesEvidenceProposal",
+    "adminReviseSalesQuote",
+    "adminRevokeSalesDemoInvitation",
+    "adminSaveSalesDemoBlueprint",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",
+    "adminSetSalesAccountSuppression",
+    "adminSetSalesContactability",
+    "adminSetSalesCustomFieldValue",
     "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
-    "adminUpdateOrganizerDetails"
+    "adminUpdateOrganizerDetails",
+    "adminUpdateSalesAccount",
+    "adminUpsertSalesContact",
+    "adminUpsertSalesOpportunity",
+    "adminUpsertSalesPilotPlan",
+    "adminUpsertSalesTask",
+    "adminWithdrawSalesDemoBlueprint"
   ],
   "strictResponses": [
     "adminApplyEventMessagingBudget",

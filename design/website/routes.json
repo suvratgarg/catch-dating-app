@@ -737,6 +737,45 @@
           "manual": []
         }
       }
+    },
+    {
+      "id": "sales_demo",
+      "kind": "clientDynamic",
+      "pathPattern": "/demo/:invitationId/",
+      "pageKey": "sales_demo",
+      "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
+      "metaKey": "sales_demo",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Private synthetic workflow invitation; fragment grant, verified contact and explicit start. No marketing analytics.",
+      "review": {
+        "priority": "p0",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "preview",
+          "verify-contact",
+          "active",
+          "completed",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "loading",
+            "preview",
+            "verify-contact",
+            "active",
+            "completed",
+            "unavailable"
+          ]
+        }
+      }
     }
   ],
   "redirects": [

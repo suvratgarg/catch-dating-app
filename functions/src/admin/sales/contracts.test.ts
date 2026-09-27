@@ -14,7 +14,8 @@ test("Sales catalog requests match the runtime validator authority", () => {
   };
   const actions = {...SALES_READ_SCHEMAS, ...SALES_ACTION_SCHEMAS};
   const entries = catalog.actions.filter((entry) =>
-    entry.actionId.startsWith("sales."));
+    entry.actionId.startsWith("sales.") &&
+    !entry.actionId.startsWith("sales.demo."));
   assert.equal(entries.length, Object.keys(actions).length);
   for (const entry of entries) {
     const action = entry.actionId.slice("sales.".length);

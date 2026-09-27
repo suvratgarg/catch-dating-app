@@ -5,6 +5,7 @@ import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
 
 export type PageKey =
+  | "sales_demo"
   | "home"
   | "host"
   | "organizers"
@@ -78,6 +79,7 @@ export function pageMetaForEvent(event: EventDetailRecord): PageMeta {
 export function getPageKey(
   pathname: string = window.location.pathname
 ): Exclude<PageKey, "listing" | "event_detail"> {
+  if (pathname.startsWith("/demo/")) return "sales_demo";
   if (pathname.startsWith("/claim")) return "claim";
   if (pathname.startsWith("/privacy")) return "privacy";
   if (pathname.startsWith("/terms")) return "terms";
@@ -100,7 +102,7 @@ export function pageClassFor(page: PageKey) {
   if (page === "host") return "host-page";
   if (page === "listing") return "listing-page";
   if (page === "event_detail") return "event-detail-page";
-  if (page === "event_runtime" || page === "event_rehearsal" ||
+  if (page === "sales_demo" || page === "event_runtime" || page === "event_rehearsal" ||
       page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "event_invite" ||
       page === "household_rsvp" ||

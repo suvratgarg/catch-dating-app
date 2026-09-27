@@ -12,6 +12,89 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `functions/src/shared/generated/outreachDraftingInput.ts` |
+| OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `functions/src/shared/generated/outreachDraftingSelection.ts` |
+| AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts` |
+| SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `functions/src/shared/generated/salesOutreachJobsDocument.ts` |
+| OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `functions/src/shared/generated/outreachDraft.ts` |
+| AdminAcceptSalesQuoteCallablePayload | `callables/admin_accept_sales_quote_payload.schema.json` | `functions/src/shared/generated/adminAcceptSalesQuoteCallablePayload.ts` |
+| AdminApproveSalesQuoteCallablePayload | `callables/admin_approve_sales_quote_payload.schema.json` | `functions/src/shared/generated/adminApproveSalesQuoteCallablePayload.ts` |
+| AdminGetSalesCommercialDetailCallablePayload | `callables/admin_get_sales_commercial_detail_payload.schema.json` | `functions/src/shared/generated/adminGetSalesCommercialDetailCallablePayload.ts` |
+| AdminListSalesCommercialReportCallablePayload | `callables/admin_list_sales_commercial_report_payload.schema.json` | `functions/src/shared/generated/adminListSalesCommercialReportCallablePayload.ts` |
+| AdminReviseSalesQuoteCallablePayload | `callables/admin_revise_sales_quote_payload.schema.json` | `functions/src/shared/generated/adminReviseSalesQuoteCallablePayload.ts` |
+| AdminUpsertSalesPilotPlanCallablePayload | `callables/admin_upsert_sales_pilot_plan_payload.schema.json` | `functions/src/shared/generated/adminUpsertSalesPilotPlanCallablePayload.ts` |
+| SalesCommercialDecisionsDocument | `firestore/sales_commercial_decisions.schema.json` | `functions/src/shared/generated/salesCommercialDecisionsDocument.ts` |
+| SalesOpportunityStageHistoryDocument | `firestore/sales_opportunity_stage_history.schema.json` | `functions/src/shared/generated/salesOpportunityStageHistoryDocument.ts` |
+| SalesPilotPlansDocument | `firestore/sales_pilot_plans.schema.json` | `functions/src/shared/generated/salesPilotPlansDocument.ts` |
+| SalesQuoteVersionsDocument | `firestore/sales_quote_versions.schema.json` | `functions/src/shared/generated/salesQuoteVersionsDocument.ts` |
+| SalesQuotesDocument | `firestore/sales_quotes.schema.json` | `functions/src/shared/generated/salesQuotesDocument.ts` |
+| AssistantClientsDocument | `firestore/assistant_clients.schema.json` | `functions/src/shared/generated/assistantClientsDocument.ts` |
+| AssistantDelegationsDocument | `firestore/assistant_delegations.schema.json` | `functions/src/shared/generated/assistantDelegationsDocument.ts` |
+| AssistantGatewayBudgetsDocument | `firestore/assistant_gateway_budgets.schema.json` | `functions/src/shared/generated/assistantGatewayBudgetsDocument.ts` |
+| AssistantManagementReceiptsDocument | `firestore/assistant_management_receipts.schema.json` | `functions/src/shared/generated/assistantManagementReceiptsDocument.ts` |
+| AdminListSalesAccountsCallablePayload | `callables/admin_sales_hosts_search_payload.schema.json` | `functions/src/shared/generated/adminListSalesAccountsCallablePayload.ts` |
+| AdminGetSalesAccountCallablePayload | `callables/admin_sales_hosts_get_payload.schema.json` | `functions/src/shared/generated/adminGetSalesAccountCallablePayload.ts` |
+| AdminListSalesTasksCallablePayload | `callables/admin_sales_tasks_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesTasksCallablePayload.ts` |
+| AdminListSalesOpportunitiesCallablePayload | `callables/admin_sales_opportunities_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesOpportunitiesCallablePayload.ts` |
+| AdminListSalesCustomFieldsCallablePayload | `callables/admin_sales_fields_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesCustomFieldsCallablePayload.ts` |
+| AdminGetSalesReceiptCallablePayload | `callables/admin_sales_receipts_get_payload.schema.json` | `functions/src/shared/generated/adminGetSalesReceiptCallablePayload.ts` |
+| AdminListSalesInboundIntentsCallablePayload | `callables/admin_sales_intents_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesInboundIntentsCallablePayload.ts` |
+| AdminPreviewSalesImportCallablePayload | `callables/admin_sales_imports_preview_payload.schema.json` | `functions/src/shared/generated/adminPreviewSalesImportCallablePayload.ts` |
+| AdminListSalesContactsCallablePayload | `callables/admin_sales_contacts_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesContactsCallablePayload.ts` |
+| AdminListSalesEvidenceCallablePayload | `callables/admin_sales_evidence_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesEvidenceCallablePayload.ts` |
+| AdminCreateSalesAccountCallablePayload | `callables/admin_sales_hosts_create_payload.schema.json` | `functions/src/shared/generated/adminCreateSalesAccountCallablePayload.ts` |
+| AdminUpdateSalesAccountCallablePayload | `callables/admin_sales_hosts_update_payload.schema.json` | `functions/src/shared/generated/adminUpdateSalesAccountCallablePayload.ts` |
+| AdminUpsertSalesTaskCallablePayload | `callables/admin_sales_tasks_upsert_payload.schema.json` | `functions/src/shared/generated/adminUpsertSalesTaskCallablePayload.ts` |
+| AdminUpsertSalesOpportunityCallablePayload | `callables/admin_sales_opportunities_upsert_payload.schema.json` | `functions/src/shared/generated/adminUpsertSalesOpportunityCallablePayload.ts` |
+| AdminRecordSalesActivityCallablePayload | `callables/admin_sales_activities_log_payload.schema.json` | `functions/src/shared/generated/adminRecordSalesActivityCallablePayload.ts` |
+| AdminCreateSalesCustomFieldCallablePayload | `callables/admin_sales_fields_create_payload.schema.json` | `functions/src/shared/generated/adminCreateSalesCustomFieldCallablePayload.ts` |
+| AdminSetSalesCustomFieldValueCallablePayload | `callables/admin_sales_fields_set_value_payload.schema.json` | `functions/src/shared/generated/adminSetSalesCustomFieldValueCallablePayload.ts` |
+| AdminLinkSalesInboundIntentCallablePayload | `callables/admin_sales_intents_link_payload.schema.json` | `functions/src/shared/generated/adminLinkSalesInboundIntentCallablePayload.ts` |
+| AdminApplySalesImportCallablePayload | `callables/admin_sales_imports_apply_payload.schema.json` | `functions/src/shared/generated/adminApplySalesImportCallablePayload.ts` |
+| AdminUpsertSalesContactCallablePayload | `callables/admin_sales_contacts_upsert_payload.schema.json` | `functions/src/shared/generated/adminUpsertSalesContactCallablePayload.ts` |
+| AdminAddSalesEvidenceCallablePayload | `callables/admin_sales_evidence_add_payload.schema.json` | `functions/src/shared/generated/adminAddSalesEvidenceCallablePayload.ts` |
+| AdminSetSalesAccountSuppressionCallablePayload | `callables/admin_sales_accounts_set_suppression_payload.schema.json` | `functions/src/shared/generated/adminSetSalesAccountSuppressionCallablePayload.ts` |
+| AdminSetSalesContactabilityCallablePayload | `callables/admin_sales_contacts_set_contactability_payload.schema.json` | `functions/src/shared/generated/adminSetSalesContactabilityCallablePayload.ts` |
+| OrganizerSalesAccountDocument | `firestore/organizer_sales_accounts.schema.json` | `functions/src/shared/generated/organizerSalesAccountDocument.ts` |
+| SalesContactDocument | `firestore/sales_contacts.schema.json` | `functions/src/shared/generated/salesContactDocument.ts` |
+| SalesContactRelationshipDocument | `firestore/sales_contact_relationships.schema.json` | `functions/src/shared/generated/salesContactRelationshipDocument.ts` |
+| SalesEvidenceDocument | `firestore/sales_evidence.schema.json` | `functions/src/shared/generated/salesEvidenceDocument.ts` |
+| SalesTaskDocument | `firestore/sales_tasks.schema.json` | `functions/src/shared/generated/salesTaskDocument.ts` |
+| SalesOpportunityDocument | `firestore/sales_opportunities.schema.json` | `functions/src/shared/generated/salesOpportunityDocument.ts` |
+| SalesActivityDocument | `firestore/sales_activities.schema.json` | `functions/src/shared/generated/salesActivityDocument.ts` |
+| SalesCustomFieldDocument | `firestore/sales_custom_fields.schema.json` | `functions/src/shared/generated/salesCustomFieldDocument.ts` |
+| SalesCustomFieldValueDocument | `firestore/sales_custom_field_values.schema.json` | `functions/src/shared/generated/salesCustomFieldValueDocument.ts` |
+| SalesActionReceiptDocument | `firestore/sales_action_receipts.schema.json` | `functions/src/shared/generated/salesActionReceiptDocument.ts` |
+| SalesImportJobDocument | `firestore/sales_import_jobs.schema.json` | `functions/src/shared/generated/salesImportJobDocument.ts` |
+| SalesImportRowDocument | `firestore/sales_import_rows.schema.json` | `functions/src/shared/generated/salesImportRowDocument.ts` |
+| SalesImportJobRowDocument | `firestore/sales_import_job_rows.schema.json` | `functions/src/shared/generated/salesImportJobRowDocument.ts` |
+| SalesSettingDocument | `firestore/sales_settings.schema.json` | `functions/src/shared/generated/salesSettingDocument.ts` |
+| SalesSuppressionDecisionDocument | `firestore/sales_suppression_decisions.schema.json` | `functions/src/shared/generated/salesSuppressionDecisionDocument.ts` |
+| AdminSalesEvidenceProposalsListCallablePayload | `callables/admin_sales_evidence_proposals_list_payload.schema.json` | `functions/src/shared/generated/adminSalesEvidenceProposalsListCallablePayload.ts` |
+| AdminSalesEvidenceProposeCallablePayload | `callables/admin_sales_evidence_propose_payload.schema.json` | `functions/src/shared/generated/adminSalesEvidenceProposeCallablePayload.ts` |
+| AdminSalesEvidenceReviewProposalCallablePayload | `callables/admin_sales_evidence_review_proposal_payload.schema.json` | `functions/src/shared/generated/adminSalesEvidenceReviewProposalCallablePayload.ts` |
+| AdminSalesIntelligenceAssessmentCallablePayload | `callables/admin_sales_intelligence_assessment_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceAssessmentCallablePayload.ts` |
+| AdminSalesIntelligenceClauseCallablePayload | `callables/admin_sales_intelligence_clause_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceClauseCallablePayload.ts` |
+| AdminBuildSalesOutreachInputPayload | `callables/admin_sales_intelligence_draft_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceDraftCallablePayload.ts` |
+| AdminSalesIntelligencePolicyCallablePayload | `callables/admin_sales_intelligence_policy_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligencePolicyCallablePayload.ts` |
+| AdminSalesIntelligenceReviewCallablePayload | `callables/admin_sales_intelligence_review_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceReviewCallablePayload.ts` |
+| AdminSalesIntelligenceScoreCallablePayload | `callables/admin_sales_intelligence_score_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceScoreCallablePayload.ts` |
+| SalesDemoManagementCallablePayload | `callables/sales_demo_management.schema.json` | `functions/src/shared/generated/salesDemoManagementCallablePayload.ts` |
+| SalesDemoPreviewCallablePayload | `callables/sales_demo_preview.schema.json` | `functions/src/shared/generated/salesDemoPreviewCallablePayload.ts` |
+| SalesDemoTrialCallablePayload | `callables/sales_demo_trial.schema.json` | `functions/src/shared/generated/salesDemoTrialCallablePayload.ts` |
+| SalesDemoBlueprintsDocument | `firestore/sales_demo_blueprints.schema.json` | `functions/src/shared/generated/salesDemoBlueprintsDocument.ts` |
+| SalesDemoCapabilitiesDocument | `firestore/sales_demo_capabilities.schema.json` | `functions/src/shared/generated/salesDemoCapabilitiesDocument.ts` |
+| SalesDemoInvitationsDocument | `firestore/sales_demo_invitations.schema.json` | `functions/src/shared/generated/salesDemoInvitationsDocument.ts` |
+| SalesDemoReceiptsDocument | `firestore/sales_demo_receipts.schema.json` | `functions/src/shared/generated/salesDemoReceiptsDocument.ts` |
+| SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
+| SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
+| SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
+| SalesIntelligenceAssessmentsDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
+| SalesIntelligenceClausesDocument | `firestore/sales_intelligence_clauses.schema.json` | `functions/src/shared/generated/salesIntelligenceClausesDocument.ts` |
+| SalesIntelligencePoliciesDocument | `firestore/sales_intelligence_policies.schema.json` | `functions/src/shared/generated/salesIntelligencePoliciesDocument.ts` |
+| SalesIntelligenceReceiptsDocument | `firestore/sales_intelligence_receipts.schema.json` | `functions/src/shared/generated/salesIntelligenceReceiptsDocument.ts` |
+| SalesIntelligenceScoreSnapshotsDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `functions/src/shared/generated/salesIntelligenceScoreSnapshotsDocument.ts` |
+| SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `functions/src/shared/generated/salesOutreachDraftsDocument.ts` |
 | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
 | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
 | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
@@ -958,6 +1041,89 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaOutreachDraftingInputSchema` | OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_input.g.dart` |
+| `schemaOutreachDraftingSelectionSchema` | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_selection.g.dart` |
+| `schemaAdminSalesIntelligenceGenerateCallablePayloadSchema` | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_generate_callable_payload.g.dart` |
+| `schemaSalesOutreachJobsDocumentSchema` | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_jobs_document.g.dart` |
+| `schemaOutreachDraftSchema` | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_draft.g.dart` |
+| `schemaAdminAcceptSalesQuoteCallablePayloadSchema` | AdminAcceptSalesQuoteCallablePayload | `callables/admin_accept_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_accept_sales_quote_callable_payload.g.dart` |
+| `schemaAdminApproveSalesQuoteCallablePayloadSchema` | AdminApproveSalesQuoteCallablePayload | `callables/admin_approve_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_approve_sales_quote_callable_payload.g.dart` |
+| `schemaAdminGetSalesCommercialDetailCallablePayloadSchema` | AdminGetSalesCommercialDetailCallablePayload | `callables/admin_get_sales_commercial_detail_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_commercial_detail_callable_payload.g.dart` |
+| `schemaAdminListSalesCommercialReportCallablePayloadSchema` | AdminListSalesCommercialReportCallablePayload | `callables/admin_list_sales_commercial_report_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_commercial_report_callable_payload.g.dart` |
+| `schemaAdminReviseSalesQuoteCallablePayloadSchema` | AdminReviseSalesQuoteCallablePayload | `callables/admin_revise_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_revise_sales_quote_callable_payload.g.dart` |
+| `schemaAdminUpsertSalesPilotPlanCallablePayloadSchema` | AdminUpsertSalesPilotPlanCallablePayload | `callables/admin_upsert_sales_pilot_plan_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_upsert_sales_pilot_plan_callable_payload.g.dart` |
+| `schemaSalesCommercialDecisionsDocumentSchema` | SalesCommercialDecisionsDocument | `firestore/sales_commercial_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_commercial_decisions_document.g.dart` |
+| `schemaSalesOpportunityStageHistoryDocumentSchema` | SalesOpportunityStageHistoryDocument | `firestore/sales_opportunity_stage_history.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_opportunity_stage_history_document.g.dart` |
+| `schemaSalesPilotPlansDocumentSchema` | SalesPilotPlansDocument | `firestore/sales_pilot_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_pilot_plans_document.g.dart` |
+| `schemaSalesQuoteVersionsDocumentSchema` | SalesQuoteVersionsDocument | `firestore/sales_quote_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_quote_versions_document.g.dart` |
+| `schemaSalesQuotesDocumentSchema` | SalesQuotesDocument | `firestore/sales_quotes.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_quotes_document.g.dart` |
+| `schemaAssistantClientsDocumentSchema` | AssistantClientsDocument | `firestore/assistant_clients.schema.json` | `lib/core/schema_contracts/generated/schemas/assistant_clients_document.g.dart` |
+| `schemaAssistantDelegationsDocumentSchema` | AssistantDelegationsDocument | `firestore/assistant_delegations.schema.json` | `lib/core/schema_contracts/generated/schemas/assistant_delegations_document.g.dart` |
+| `schemaAssistantGatewayBudgetsDocumentSchema` | AssistantGatewayBudgetsDocument | `firestore/assistant_gateway_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/assistant_gateway_budgets_document.g.dart` |
+| `schemaAssistantManagementReceiptsDocumentSchema` | AssistantManagementReceiptsDocument | `firestore/assistant_management_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/assistant_management_receipts_document.g.dart` |
+| `schemaAdminListSalesAccountsCallablePayloadSchema` | AdminListSalesAccountsCallablePayload | `callables/admin_sales_hosts_search_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_accounts_callable_payload.g.dart` |
+| `schemaAdminGetSalesAccountCallablePayloadSchema` | AdminGetSalesAccountCallablePayload | `callables/admin_sales_hosts_get_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_account_callable_payload.g.dart` |
+| `schemaAdminListSalesTasksCallablePayloadSchema` | AdminListSalesTasksCallablePayload | `callables/admin_sales_tasks_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_tasks_callable_payload.g.dart` |
+| `schemaAdminListSalesOpportunitiesCallablePayloadSchema` | AdminListSalesOpportunitiesCallablePayload | `callables/admin_sales_opportunities_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_opportunities_callable_payload.g.dart` |
+| `schemaAdminListSalesCustomFieldsCallablePayloadSchema` | AdminListSalesCustomFieldsCallablePayload | `callables/admin_sales_fields_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_custom_fields_callable_payload.g.dart` |
+| `schemaAdminGetSalesReceiptCallablePayloadSchema` | AdminGetSalesReceiptCallablePayload | `callables/admin_sales_receipts_get_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_receipt_callable_payload.g.dart` |
+| `schemaAdminListSalesInboundIntentsCallablePayloadSchema` | AdminListSalesInboundIntentsCallablePayload | `callables/admin_sales_intents_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_inbound_intents_callable_payload.g.dart` |
+| `schemaAdminPreviewSalesImportCallablePayloadSchema` | AdminPreviewSalesImportCallablePayload | `callables/admin_sales_imports_preview_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_import_callable_payload.g.dart` |
+| `schemaAdminListSalesContactsCallablePayloadSchema` | AdminListSalesContactsCallablePayload | `callables/admin_sales_contacts_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_contacts_callable_payload.g.dart` |
+| `schemaAdminListSalesEvidenceCallablePayloadSchema` | AdminListSalesEvidenceCallablePayload | `callables/admin_sales_evidence_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_evidence_callable_payload.g.dart` |
+| `schemaAdminCreateSalesAccountCallablePayloadSchema` | AdminCreateSalesAccountCallablePayload | `callables/admin_sales_hosts_create_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_create_sales_account_callable_payload.g.dart` |
+| `schemaAdminUpdateSalesAccountCallablePayloadSchema` | AdminUpdateSalesAccountCallablePayload | `callables/admin_sales_hosts_update_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_sales_account_callable_payload.g.dart` |
+| `schemaAdminUpsertSalesTaskCallablePayloadSchema` | AdminUpsertSalesTaskCallablePayload | `callables/admin_sales_tasks_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_upsert_sales_task_callable_payload.g.dart` |
+| `schemaAdminUpsertSalesOpportunityCallablePayloadSchema` | AdminUpsertSalesOpportunityCallablePayload | `callables/admin_sales_opportunities_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_upsert_sales_opportunity_callable_payload.g.dart` |
+| `schemaAdminRecordSalesActivityCallablePayloadSchema` | AdminRecordSalesActivityCallablePayload | `callables/admin_sales_activities_log_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_sales_activity_callable_payload.g.dart` |
+| `schemaAdminCreateSalesCustomFieldCallablePayloadSchema` | AdminCreateSalesCustomFieldCallablePayload | `callables/admin_sales_fields_create_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_create_sales_custom_field_callable_payload.g.dart` |
+| `schemaAdminSetSalesCustomFieldValueCallablePayloadSchema` | AdminSetSalesCustomFieldValueCallablePayload | `callables/admin_sales_fields_set_value_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_sales_custom_field_value_callable_payload.g.dart` |
+| `schemaAdminLinkSalesInboundIntentCallablePayloadSchema` | AdminLinkSalesInboundIntentCallablePayload | `callables/admin_sales_intents_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_link_sales_inbound_intent_callable_payload.g.dart` |
+| `schemaAdminApplySalesImportCallablePayloadSchema` | AdminApplySalesImportCallablePayload | `callables/admin_sales_imports_apply_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_import_callable_payload.g.dart` |
+| `schemaAdminUpsertSalesContactCallablePayloadSchema` | AdminUpsertSalesContactCallablePayload | `callables/admin_sales_contacts_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_upsert_sales_contact_callable_payload.g.dart` |
+| `schemaAdminAddSalesEvidenceCallablePayloadSchema` | AdminAddSalesEvidenceCallablePayload | `callables/admin_sales_evidence_add_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_add_sales_evidence_callable_payload.g.dart` |
+| `schemaAdminSetSalesAccountSuppressionCallablePayloadSchema` | AdminSetSalesAccountSuppressionCallablePayload | `callables/admin_sales_accounts_set_suppression_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_sales_account_suppression_callable_payload.g.dart` |
+| `schemaAdminSetSalesContactabilityCallablePayloadSchema` | AdminSetSalesContactabilityCallablePayload | `callables/admin_sales_contacts_set_contactability_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_sales_contactability_callable_payload.g.dart` |
+| `schemaOrganizerSalesAccountDocumentSchema` | OrganizerSalesAccountDocument | `firestore/organizer_sales_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_sales_account_document.g.dart` |
+| `schemaSalesContactDocumentSchema` | SalesContactDocument | `firestore/sales_contacts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_contact_document.g.dart` |
+| `schemaSalesContactRelationshipDocumentSchema` | SalesContactRelationshipDocument | `firestore/sales_contact_relationships.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_contact_relationship_document.g.dart` |
+| `schemaSalesEvidenceDocumentSchema` | SalesEvidenceDocument | `firestore/sales_evidence.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_document.g.dart` |
+| `schemaSalesTaskDocumentSchema` | SalesTaskDocument | `firestore/sales_tasks.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_task_document.g.dart` |
+| `schemaSalesOpportunityDocumentSchema` | SalesOpportunityDocument | `firestore/sales_opportunities.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_opportunity_document.g.dart` |
+| `schemaSalesActivityDocumentSchema` | SalesActivityDocument | `firestore/sales_activities.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_activity_document.g.dart` |
+| `schemaSalesCustomFieldDocumentSchema` | SalesCustomFieldDocument | `firestore/sales_custom_fields.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_custom_field_document.g.dart` |
+| `schemaSalesCustomFieldValueDocumentSchema` | SalesCustomFieldValueDocument | `firestore/sales_custom_field_values.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_custom_field_value_document.g.dart` |
+| `schemaSalesActionReceiptDocumentSchema` | SalesActionReceiptDocument | `firestore/sales_action_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_action_receipt_document.g.dart` |
+| `schemaSalesImportJobDocumentSchema` | SalesImportJobDocument | `firestore/sales_import_jobs.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_job_document.g.dart` |
+| `schemaSalesImportRowDocumentSchema` | SalesImportRowDocument | `firestore/sales_import_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_row_document.g.dart` |
+| `schemaSalesImportJobRowDocumentSchema` | SalesImportJobRowDocument | `firestore/sales_import_job_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_job_row_document.g.dart` |
+| `schemaSalesSettingDocumentSchema` | SalesSettingDocument | `firestore/sales_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_setting_document.g.dart` |
+| `schemaSalesSuppressionDecisionDocumentSchema` | SalesSuppressionDecisionDocument | `firestore/sales_suppression_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_suppression_decision_document.g.dart` |
+| `schemaAdminSalesEvidenceProposalsListCallablePayloadSchema` | AdminSalesEvidenceProposalsListCallablePayload | `callables/admin_sales_evidence_proposals_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_evidence_proposals_list_callable_payload.g.dart` |
+| `schemaAdminSalesEvidenceProposeCallablePayloadSchema` | AdminSalesEvidenceProposeCallablePayload | `callables/admin_sales_evidence_propose_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_evidence_propose_callable_payload.g.dart` |
+| `schemaAdminSalesEvidenceReviewProposalCallablePayloadSchema` | AdminSalesEvidenceReviewProposalCallablePayload | `callables/admin_sales_evidence_review_proposal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_evidence_review_proposal_callable_payload.g.dart` |
+| `schemaAdminSalesIntelligenceAssessmentCallablePayloadSchema` | AdminSalesIntelligenceAssessmentCallablePayload | `callables/admin_sales_intelligence_assessment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_assessment_callable_payload.g.dart` |
+| `schemaAdminSalesIntelligenceClauseCallablePayloadSchema` | AdminSalesIntelligenceClauseCallablePayload | `callables/admin_sales_intelligence_clause_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_clause_callable_payload.g.dart` |
+| `schemaAdminBuildSalesOutreachInputPayloadSchema` | AdminBuildSalesOutreachInputPayload | `callables/admin_sales_intelligence_draft_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_build_sales_outreach_input_payload.g.dart` |
+| `schemaAdminSalesIntelligencePolicyCallablePayloadSchema` | AdminSalesIntelligencePolicyCallablePayload | `callables/admin_sales_intelligence_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_policy_callable_payload.g.dart` |
+| `schemaAdminSalesIntelligenceReviewCallablePayloadSchema` | AdminSalesIntelligenceReviewCallablePayload | `callables/admin_sales_intelligence_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_review_callable_payload.g.dart` |
+| `schemaAdminSalesIntelligenceScoreCallablePayloadSchema` | AdminSalesIntelligenceScoreCallablePayload | `callables/admin_sales_intelligence_score_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_score_callable_payload.g.dart` |
+| `schemaSalesDemoManagementCallablePayloadSchema` | SalesDemoManagementCallablePayload | `callables/sales_demo_management.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_management_callable_payload.g.dart` |
+| `schemaSalesDemoPreviewCallablePayloadSchema` | SalesDemoPreviewCallablePayload | `callables/sales_demo_preview.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_preview_callable_payload.g.dart` |
+| `schemaSalesDemoTrialCallablePayloadSchema` | SalesDemoTrialCallablePayload | `callables/sales_demo_trial.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_trial_callable_payload.g.dart` |
+| `schemaSalesDemoBlueprintsDocumentSchema` | SalesDemoBlueprintsDocument | `firestore/sales_demo_blueprints.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_blueprints_document.g.dart` |
+| `schemaSalesDemoCapabilitiesDocumentSchema` | SalesDemoCapabilitiesDocument | `firestore/sales_demo_capabilities.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_capabilities_document.g.dart` |
+| `schemaSalesDemoInvitationsDocumentSchema` | SalesDemoInvitationsDocument | `firestore/sales_demo_invitations.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_invitations_document.g.dart` |
+| `schemaSalesDemoReceiptsDocumentSchema` | SalesDemoReceiptsDocument | `firestore/sales_demo_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_receipts_document.g.dart` |
+| `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
+| `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
+| `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
+| `schemaSalesIntelligenceAssessmentsDocumentSchema` | SalesIntelligenceAssessmentsDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessments_document.g.dart` |
+| `schemaSalesIntelligenceClausesDocumentSchema` | SalesIntelligenceClausesDocument | `firestore/sales_intelligence_clauses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_clauses_document.g.dart` |
+| `schemaSalesIntelligencePoliciesDocumentSchema` | SalesIntelligencePoliciesDocument | `firestore/sales_intelligence_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_policies_document.g.dart` |
+| `schemaSalesIntelligenceReceiptsDocumentSchema` | SalesIntelligenceReceiptsDocument | `firestore/sales_intelligence_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_receipts_document.g.dart` |
+| `schemaSalesIntelligenceScoreSnapshotsDocumentSchema` | SalesIntelligenceScoreSnapshotsDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_score_snapshots_document.g.dart` |
+| `schemaSalesOutreachDraftsDocumentSchema` | SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_drafts_document.g.dart` |
 | `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
 | `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
 | `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |
@@ -1904,6 +2070,30 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| AdminSalesIntelligenceGenerateCallableRequest | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_generate_callable_request.g.dart` |
+| AdminAcceptSalesQuoteCallableRequest | AdminAcceptSalesQuoteCallablePayload | `callables/admin_accept_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_accept_sales_quote_callable_request.g.dart` |
+| AdminApproveSalesQuoteCallableRequest | AdminApproveSalesQuoteCallablePayload | `callables/admin_approve_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_approve_sales_quote_callable_request.g.dart` |
+| AdminGetSalesCommercialDetailCallableRequest | AdminGetSalesCommercialDetailCallablePayload | `callables/admin_get_sales_commercial_detail_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_commercial_detail_callable_request.g.dart` |
+| AdminListSalesCommercialReportCallableRequest | AdminListSalesCommercialReportCallablePayload | `callables/admin_list_sales_commercial_report_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_commercial_report_callable_request.g.dart` |
+| AdminReviseSalesQuoteCallableRequest | AdminReviseSalesQuoteCallablePayload | `callables/admin_revise_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_revise_sales_quote_callable_request.g.dart` |
+| AdminUpsertSalesPilotPlanCallableRequest | AdminUpsertSalesPilotPlanCallablePayload | `callables/admin_upsert_sales_pilot_plan_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_upsert_sales_pilot_plan_callable_request.g.dart` |
+| AdminGetSalesAccountCallableRequest | AdminGetSalesAccountCallablePayload | `callables/admin_sales_hosts_get_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_account_callable_request.g.dart` |
+| AdminGetSalesReceiptCallableRequest | AdminGetSalesReceiptCallablePayload | `callables/admin_sales_receipts_get_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_receipt_callable_request.g.dart` |
+| AdminPreviewSalesImportCallableRequest | AdminPreviewSalesImportCallablePayload | `callables/admin_sales_imports_preview_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_preview_sales_import_callable_request.g.dart` |
+| AdminListSalesContactsCallableRequest | AdminListSalesContactsCallablePayload | `callables/admin_sales_contacts_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_contacts_callable_request.g.dart` |
+| AdminListSalesEvidenceCallableRequest | AdminListSalesEvidenceCallablePayload | `callables/admin_sales_evidence_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_evidence_callable_request.g.dart` |
+| AdminCreateSalesAccountCallableRequest | AdminCreateSalesAccountCallablePayload | `callables/admin_sales_hosts_create_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_create_sales_account_callable_request.g.dart` |
+| AdminUpdateSalesAccountCallableRequest | AdminUpdateSalesAccountCallablePayload | `callables/admin_sales_hosts_update_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_update_sales_account_callable_request.g.dart` |
+| AdminUpsertSalesTaskCallableRequest | AdminUpsertSalesTaskCallablePayload | `callables/admin_sales_tasks_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_upsert_sales_task_callable_request.g.dart` |
+| AdminUpsertSalesOpportunityCallableRequest | AdminUpsertSalesOpportunityCallablePayload | `callables/admin_sales_opportunities_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_upsert_sales_opportunity_callable_request.g.dart` |
+| AdminCreateSalesCustomFieldCallableRequest | AdminCreateSalesCustomFieldCallablePayload | `callables/admin_sales_fields_create_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_create_sales_custom_field_callable_request.g.dart` |
+| AdminLinkSalesInboundIntentCallableRequest | AdminLinkSalesInboundIntentCallablePayload | `callables/admin_sales_intents_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_link_sales_inbound_intent_callable_request.g.dart` |
+| AdminApplySalesImportCallableRequest | AdminApplySalesImportCallablePayload | `callables/admin_sales_imports_apply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_apply_sales_import_callable_request.g.dart` |
+| AdminUpsertSalesContactCallableRequest | AdminUpsertSalesContactCallablePayload | `callables/admin_sales_contacts_upsert_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_upsert_sales_contact_callable_request.g.dart` |
+| AdminSalesEvidenceProposalsListCallableRequest | AdminSalesEvidenceProposalsListCallablePayload | `callables/admin_sales_evidence_proposals_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_evidence_proposals_list_callable_request.g.dart` |
+| AdminSalesIntelligencePolicyCallableRequest | AdminSalesIntelligencePolicyCallablePayload | `callables/admin_sales_intelligence_policy_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_policy_callable_request.g.dart` |
+| AdminSalesIntelligenceScoreCallableRequest | AdminSalesIntelligenceScoreCallablePayload | `callables/admin_sales_intelligence_score_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_score_callable_request.g.dart` |
+| SalesDemoPreviewCallableRequest | SalesDemoPreviewCallablePayload | `callables/sales_demo_preview.schema.json` | `lib/core/schema_contracts/generated/callables/sales_demo_preview_callable_request.g.dart` |
 | SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
 | PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
@@ -2259,6 +2449,24 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| AdminListSalesAccountsCallablePayload | cannot map field "researchStatus" (no type) |
+| AdminListSalesTasksCallablePayload | cannot map field "status" (no type) |
+| AdminListSalesOpportunitiesCallablePayload | cannot map field "stage" (no type) |
+| AdminListSalesCustomFieldsCallablePayload | no properties |
+| AdminListSalesInboundIntentsCallablePayload | cannot map field "status" (no type) |
+| AdminRecordSalesActivityCallablePayload | cannot map field "type" (no type) |
+| AdminSetSalesCustomFieldValueCallablePayload | cannot map field "value" (anyOf) |
+| AdminAddSalesEvidenceCallablePayload | cannot map field "claimKey" (no type) |
+| AdminSetSalesAccountSuppressionCallablePayload | cannot map field "status" (no type) |
+| AdminSetSalesContactabilityCallablePayload | cannot map field "status" (no type) |
+| AdminSalesEvidenceProposeCallablePayload | cannot map field "claimKey" (no type) |
+| AdminSalesEvidenceReviewProposalCallablePayload | cannot map field "decision" (no type) |
+| AdminSalesIntelligenceAssessmentCallablePayload | cannot map field "state" (no type) |
+| AdminSalesIntelligenceClauseCallablePayload | cannot map field "kind" (no type) |
+| AdminBuildSalesOutreachInputPayload | cannot map field "channel" (no type) |
+| AdminSalesIntelligenceReviewCallablePayload | not an object schema |
+| SalesDemoManagementCallablePayload | not an object schema |
+| SalesDemoTrialCallablePayload | not an object schema |
 | ManagePublicEventCheckoutCallablePayload | not an object schema |
 | ConfigureEventRegistrationCallablePayload | cannot map field "mode" (no type) |
 | ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |

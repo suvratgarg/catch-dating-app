@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {adminCallableNames, readAdminCallableSources} from
+  "../../tool/admin/callable_inventory.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -7,7 +9,6 @@ import {fileURLToPath} from "node:url";
 const adminRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(adminRoot, "..");
 const contractsRoot = path.join(repoRoot, "contracts");
-const apiPath = path.join(adminRoot, "src/shared/api/adminApi.ts");
 const outputPath = path.join(
   adminRoot,
   "src/generated/validators/adminCallableValidators.ts"
@@ -29,11 +30,7 @@ function snakeToCamel(value) {
 }
 
 function callableNames() {
-  const source = fs.readFileSync(apiPath, "utf8");
-  return [...new Set(
-    [...source.matchAll(/\(\s*functions,\s*"(admin[A-Z][A-Za-z0-9]+)"\s*\)/gu)]
-      .map((match) => match[1])
-  )].sort();
+  return adminCallableNames(readAdminCallableSources(repoRoot));
 }
 
 function referencedSchemaFiles(filePath, schema) {

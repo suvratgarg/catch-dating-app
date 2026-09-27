@@ -754,3 +754,75 @@ export {configureEventRegistration, managePublicEventCheckout} from
   "./events/publicRegistration/callables";
 export {reconcilePublicEventPayments, onCancelledPublicEventPayments} from
   "./events/publicRegistration/recovery";
+
+export {
+  adminListSalesAccounts,
+  adminGetSalesAccount,
+  adminListSalesTasks,
+  adminListSalesOpportunities,
+  adminListSalesCustomFields,
+  adminGetSalesReceipt,
+  adminListSalesInboundIntents,
+  adminPreviewSalesImport,
+  adminListSalesContacts,
+  adminListSalesEvidence,
+  adminCreateSalesAccount,
+  adminUpdateSalesAccount,
+  adminUpsertSalesTask,
+  adminUpsertSalesOpportunity,
+  adminRecordSalesActivity,
+  adminCreateSalesCustomField,
+  adminSetSalesCustomFieldValue,
+  adminLinkSalesInboundIntent,
+  adminApplySalesImport,
+  adminUpsertSalesContact,
+  adminAddSalesEvidence,
+  adminSetSalesAccountSuppression,
+  adminSetSalesContactability,
+  adminProposeSalesEvidence,
+  adminReviewSalesEvidenceProposal,
+  adminListSalesEvidenceProposals,
+  adminGetSalesCommercialDetail,
+  adminListSalesCommercialReport,
+  adminUpsertSalesPilotPlan,
+  adminReviseSalesQuote,
+  adminApproveSalesQuote,
+  adminAcceptSalesQuote,
+} from "./admin/sales/callables";
+
+export {
+  adminSaveSalesIntelligencePolicy,
+  adminSaveSalesFactorAssessment,
+  adminSaveSalesIntelligenceClause,
+  adminReviewSalesIntelligenceClause,
+  adminSaveSalesScoreSnapshot,
+  adminReviewSalesOutreachDraft,
+  adminCopySalesOutreachDraft,
+  adminGetSalesIntelligenceScore,
+  adminBuildSalesOutreachInput,
+  adminGenerateSalesOutreachDraft,
+  adminGetSalesOutreachDraftJob,
+  adminGetSalesOutreachDraft,
+} from "./admin/salesIntelligence/callables";
+
+export {
+  getSalesDemoPreview,
+  startSalesDemo,
+  getSalesDemoSession,
+  advanceSalesDemo,
+  adminSaveSalesDemoBlueprint,
+  adminReviewSalesDemoBlueprint,
+  adminWithdrawSalesDemoBlueprint,
+  adminIssueSalesDemoInvitation,
+  adminRevokeSalesDemoInvitation,
+  adminGetSalesDemoBlueprint,
+  adminGetSalesDemoInvitation,
+  adminGetSalesDemoCapability,
+  adminListSalesDemoBlueprints,
+  adminListSalesDemoInvitations,
+  expireSalesDemos,
+} from "./salesDemo/callables";
+
+export {
+  salesAssistant,
+} from "./salesAssistant/http";

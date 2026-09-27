@@ -3575,6 +3575,510 @@
       "read": "server only; authenticated guest or manager projection",
       "write": "server only; transactional registration and payment authority",
       "exportedFunctions": []
+    },
+    {
+      "id": "assistantClients",
+      "path": "assistantClients/{id}",
+      "rulesMatch": "/assistantClients/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "AssistantClientsDocument"
+    },
+    {
+      "id": "assistantDelegations",
+      "path": "assistantDelegations/{id}",
+      "rulesMatch": "/assistantDelegations/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "AssistantDelegationsDocument"
+    },
+    {
+      "id": "assistantGatewayBudgets",
+      "path": "assistantGatewayBudgets/{id}",
+      "rulesMatch": "/assistantGatewayBudgets/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "AssistantGatewayBudgetsDocument"
+    },
+    {
+      "id": "assistantManagementReceipts",
+      "path": "assistantManagementReceipts/{id}",
+      "rulesMatch": "/assistantManagementReceipts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "AssistantManagementReceiptsDocument"
+    },
+    {
+      "id": "organizerSalesAccounts",
+      "path": "organizerSalesAccounts/{id}",
+      "rulesMatch": "/organizerSalesAccounts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "OrganizerSalesAccountDocument"
+    },
+    {
+      "id": "salesActionReceipts",
+      "path": "salesActionReceipts/{id}",
+      "rulesMatch": "/salesActionReceipts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesActionReceiptDocument"
+    },
+    {
+      "id": "salesActivities",
+      "path": "salesActivities/{id}",
+      "rulesMatch": "/salesActivities/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesActivityDocument"
+    },
+    {
+      "id": "salesContactRelationships",
+      "path": "salesContactRelationships/{id}",
+      "rulesMatch": "/salesContactRelationships/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesContactRelationshipDocument"
+    },
+    {
+      "id": "salesContacts",
+      "path": "salesContacts/{id}",
+      "rulesMatch": "/salesContacts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesContactDocument"
+    },
+    {
+      "id": "salesCustomFields",
+      "path": "salesCustomFields/{id}",
+      "rulesMatch": "/salesCustomFields/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesCustomFieldDocument"
+    },
+    {
+      "id": "salesDemoBlueprints",
+      "path": "salesDemoBlueprints/{id}",
+      "rulesMatch": "/salesDemoBlueprints/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesDemoBlueprintsDocument"
+    },
+    {
+      "id": "salesDemoCapabilities",
+      "path": "salesDemoCapabilities/{id}",
+      "rulesMatch": "/salesDemoCapabilities/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesDemoCapabilitiesDocument"
+    },
+    {
+      "id": "salesDemoInvitations",
+      "path": "salesDemoInvitations/{id}",
+      "rulesMatch": "/salesDemoInvitations/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesDemoInvitationsDocument"
+    },
+    {
+      "id": "salesDemoReceipts",
+      "path": "salesDemoReceipts/{id}",
+      "rulesMatch": "/salesDemoReceipts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesDemoReceiptsDocument"
+    },
+    {
+      "id": "salesDemoSessions",
+      "path": "salesDemoSessions/{id}",
+      "rulesMatch": "/salesDemoSessions/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesDemoSessionsDocument"
+    },
+    {
+      "id": "salesEvidence",
+      "path": "salesEvidence/{id}",
+      "rulesMatch": "/salesEvidence/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesEvidenceDocument"
+    },
+    {
+      "id": "salesEvidenceProposals",
+      "path": "salesEvidenceProposals/{id}",
+      "rulesMatch": "/salesEvidenceProposals/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesEvidenceProposalsDocument"
+    },
+    {
+      "id": "salesImportJobs",
+      "path": "salesImportJobs/{id}",
+      "rulesMatch": "/salesImportJobs/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesImportJobDocument"
+    },
+    {
+      "id": "salesImportRows",
+      "path": "salesImportRows/{id}",
+      "rulesMatch": "/salesImportRows/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesImportRowDocument"
+    },
+    {
+      "id": "salesInboundIntents",
+      "path": "salesInboundIntents/{id}",
+      "rulesMatch": "/salesInboundIntents/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesInboundIntentsDocument"
+    },
+    {
+      "id": "salesIntelligenceAssessments",
+      "path": "salesIntelligenceAssessments/{id}",
+      "rulesMatch": "/salesIntelligenceAssessments/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesIntelligenceAssessmentsDocument"
+    },
+    {
+      "id": "salesIntelligenceClauses",
+      "path": "salesIntelligenceClauses/{id}",
+      "rulesMatch": "/salesIntelligenceClauses/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesIntelligenceClausesDocument"
+    },
+    {
+      "id": "salesIntelligencePolicies",
+      "path": "salesIntelligencePolicies/{id}",
+      "rulesMatch": "/salesIntelligencePolicies/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesIntelligencePoliciesDocument"
+    },
+    {
+      "id": "salesIntelligenceReceipts",
+      "path": "salesIntelligenceReceipts/{id}",
+      "rulesMatch": "/salesIntelligenceReceipts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesIntelligenceReceiptsDocument"
+    },
+    {
+      "id": "salesIntelligenceScoreSnapshots",
+      "path": "salesIntelligenceScoreSnapshots/{id}",
+      "rulesMatch": "/salesIntelligenceScoreSnapshots/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesIntelligenceScoreSnapshotsDocument"
+    },
+    {
+      "id": "salesOpportunities",
+      "path": "salesOpportunities/{id}",
+      "rulesMatch": "/salesOpportunities/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesOpportunityDocument"
+    },
+    {
+      "id": "salesOutreachDrafts",
+      "path": "salesOutreachDrafts/{id}",
+      "rulesMatch": "/salesOutreachDrafts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesOutreachDraftsDocument"
+    },
+    {
+      "id": "salesSettings",
+      "path": "salesSettings/{id}",
+      "rulesMatch": "/salesSettings/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesSettingDocument"
+    },
+    {
+      "id": "salesSuppressionDecisions",
+      "path": "salesSuppressionDecisions/{id}",
+      "rulesMatch": "/salesSuppressionDecisions/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesSuppressionDecisionDocument"
+    },
+    {
+      "id": "salesTasks",
+      "path": "salesTasks/{id}",
+      "rulesMatch": "/salesTasks/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee and delegated projections",
+      "write": "server only",
+      "typescriptInterface": "SalesTaskDocument"
+    },
+    {
+      "id": "salesCommercialDecisions",
+      "path": "salesCommercialDecisions/{id}",
+      "rulesMatch": "/salesCommercialDecisions/{privateDocument=**}",
+      "typescriptInterface": "SalesCommercialDecisionsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesOpportunityStageHistory",
+      "path": "salesOpportunityStageHistory/{id}",
+      "rulesMatch": "/salesOpportunityStageHistory/{privateDocument=**}",
+      "typescriptInterface": "SalesOpportunityStageHistoryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesPilotPlans",
+      "path": "salesPilotPlans/{id}",
+      "rulesMatch": "/salesPilotPlans/{privateDocument=**}",
+      "typescriptInterface": "SalesPilotPlansDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesQuoteVersions",
+      "path": "salesQuoteVersions/{id}",
+      "rulesMatch": "/salesQuoteVersions/{privateDocument=**}",
+      "typescriptInterface": "SalesQuoteVersionsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesQuotes",
+      "path": "salesQuotes/{id}",
+      "rulesMatch": "/salesQuotes/{privateDocument=**}",
+      "typescriptInterface": "SalesQuotesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesOutreachJobs",
+      "path": "salesOutreachJobs/{id}",
+      "rulesMatch": "/salesOutreachJobs/{privateDocument=**}",
+      "typescriptInterface": "SalesOutreachJobsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
     }
   ]
 }

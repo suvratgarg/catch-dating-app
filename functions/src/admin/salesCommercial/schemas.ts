@@ -28,7 +28,7 @@ function object(
 const common = {
   organizerId: id,
   opportunityId: id,
-  requestId: id,
+  requestId: {...id, minLength: 8},
   expectedRevision: revision,
 };
 export const COMMERCIAL_ACTION_SCHEMAS: Record<CommercialAction, Schema> = {

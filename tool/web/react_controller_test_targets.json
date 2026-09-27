@@ -203,6 +203,21 @@
       "source": "website/src/features/events/usePublicCheckoutController.ts",
       "test": "website/src/features/events/usePublicCheckoutController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/salesDemo/useSalesDemoController.ts",
+      "test": "website/src/features/salesDemo/useSalesDemoController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesDemoManagementController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesDemoManagementController.test.tsx",
+      "status": "required"
     }
   ]
 }

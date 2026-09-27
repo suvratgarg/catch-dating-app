@@ -1,3 +1,5 @@
+import {validateAdminCallableRequest, validateAdminCallableResponse} from
+  "../../../generated/validators/adminCallableValidators";
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -109,8 +111,12 @@ function call<Request, Response>(name: string, payload: Request): Promise<Respon
   if (dataMode() === "sample") {
     throw new Error("Private demos are unavailable in sample mode.");
   }
+  validateAdminCallableRequest(name, payload);
   return httpsCallable<Request, Response>(functions, name)(payload)
-    .then((result) => result.data);
+    .then((result) => {
+      validateAdminCallableResponse(name, result.data);
+      return result.data;
+    });
 }
 
 /** The capability read is a narrow server-owned addition pending integration. */

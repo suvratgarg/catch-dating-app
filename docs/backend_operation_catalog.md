@@ -548,3 +548,27 @@ server-only rule documents and are never returned by callable projections.
 
 | `getOrganizerEventSetupDefaults` | Callable | Current-manager projection of private event defaults. |
 | `updateOrganizerEventSetupDefaults` | Callable | Idempotent private defaults save with current-manager and revision checks. |
+
+## Private host Sales operations
+
+`admin/sales/callables.ts` owns bounded account, contact, evidence, suggestion
+review, task, opportunity, custom-field, inbound-intent and import operations.
+Commercial pilot/quote handlers execute inside the same current-authority and
+receipt transaction. Read projections are bounded and organizer scoped.
+`admin/salesIntelligence/callables.ts` owns private configurable score policy,
+reviewed factors and approved outreach clauses; missing factors remain unknown.
+Draft review/copy recheck source material and suppression and grant no send
+permission. Production draft execution remains a separate runtime acceptance
+step.
+
+`salesAssistant` provides scoped third-party access through a registered service
+identity and short-lived employee delegation. Every operation revalidates the
+client, employee, delegation and budget; there is no direct database credential
+handoff. Evidence suggestions enter an employee review queue. Connecting a
+particular assistant vendor is separate from deploying this endpoint.
+
+`salesDemo/callables.ts` owns preview, explicit verified-contact start, synthetic
+steps, owner blueprint/invitation management and bounded expiration cleanup.
+Activation requires the private runtime capability record and a valid
+`SALES_DEMO_GRANT_KEY` secret. These source exports do not establish deployment
+or live feature activation.

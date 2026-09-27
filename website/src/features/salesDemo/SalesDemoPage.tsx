@@ -1,3 +1,4 @@
+import {salesDemoCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
 import {Button, EventRuntimeActionGrid, EventRuntimeFrame,
@@ -36,37 +37,34 @@ function SalesDemoInvitation({invitationId, api, auth}: {
   const preview = controller.preview.data;
   const invalidId = !/^[A-Za-z0-9_-]{3,128}$/u.test(invitationId);
 
-  return <EventRuntimeFrame brandLabel="Catch" brandWord="Catch"
+  return <EventRuntimeFrame brandLabel={salesDemoCopy.catch} brandWord={salesDemoCopy.catch}
     eventTitle={preview?.preview.brandName}>
     {invalidId || controller.preview.isError ? <EventRuntimePanel
-      kicker="Private example" title="This preview is unavailable"
-      body="The invitation may have expired or changed. Ask the inviter for a current link.">
-      <Button type="button" onClick={() => void controller.preview.refetch()}>
-        Try again
-      </Button>
+      kicker={salesDemoCopy.privateExample} title={salesDemoCopy.thisPreviewIsUnavailable}
+      body={salesDemoCopy.theInvitationMayHaveExpiredOr}>
+      <Button type="button" onClick={() => void controller.preview.refetch()}>{salesDemoCopy.tryAgain}</Button>
     </EventRuntimePanel> : controller.preview.isPending || !preview ?
-      <EventRuntimeLoading label="Loading private preview…" /> :
-      <EventRuntimePanel kicker="Private workflow preview"
+      <EventRuntimeLoading label={salesDemoCopy.loadingPrivatePreview} /> :
+      <EventRuntimePanel kicker={salesDemoCopy.privateWorkflowPreview}
         title={preview.preview.headline} body={preview.preview.scenario}>
         <EventRuntimeSectionStack>
           <EventRuntimePracticeBanner>{preview.notice}</EventRuntimePracticeBanner>
-          <EventRuntimeModule title="What you can explore">
+          <EventRuntimeModule title={salesDemoCopy.whatYouCanExplore}>
             <ol>{preview.preview.steps.map((step, index) =>
               <li key={`${index}-${step}`}>{step}</li>)}</ol>
           </EventRuntimeModule>
           {preview.preview.retainedTools.length ? <EventRuntimeModule
-            title="What stays with your current tools">
+            title={salesDemoCopy.whatStaysWithYourCurrentTools}>
             <ul>{preview.preview.retainedTools.map((tool) =>
               <li key={tool}>{tool}</li>)}</ul>
           </EventRuntimeModule> : null}
           {preview.preview.limitations.length ? <EventRuntimeModule
-            title="Known limits of this example">
+            title={salesDemoCopy.knownLimitsOfThisExample}>
             <ul>{preview.preview.limitations.map((limit) =>
               <li key={limit}>{limit}</li>)}</ul>
           </EventRuntimeModule> : null}
-          <p>Available until {new Date(preview.expiresAt).toLocaleString()}.</p>
-          <p>No real messages, charges, guest admission, organizer ownership,
-            or publication occur here.</p>
+          <p>{salesDemoCopy.availableUntil}{new Date(preview.expiresAt).toLocaleString()}.</p>
+          <p>{salesDemoCopy.noRealMessagesChargesGuestAdmission}</p>
           {controller.notice ? <FormStatus status={{message: controller.notice,
             tone: "is-error"}} /> : null}
           {controller.session ? <DemoSessionView controller={controller} /> :
@@ -94,14 +92,14 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
     if (authPending) return;
     setAuthPending(true); setAuthError("");
     try {await auth.signInGoogle();} catch {
-      setAuthError("Google sign-in did not complete. You can try again.");
+      setAuthError(salesDemoCopy.googleSigninDidNotCompleteYou);
     } finally {setAuthPending(false);}
   };
   const sendCode = async () => {
     if (authPending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())) return;
     setAuthPending(true); setAuthError("");
     try {setChallenge(await auth.beginPhone(phone.trim(), "sales-demo-recaptcha"));}
-    catch {setAuthError("Phone verification could not start. Check the number and try again.");}
+    catch {setAuthError(salesDemoCopy.phoneVerificationCouldNotStartCheck);}
     finally {setAuthPending(false);}
   };
   const verifyCode = async () => {
@@ -109,55 +107,49 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
     setAuthPending(true); setAuthError("");
     try {await challenge.confirm(code.trim()); setCode(""); setPhone("");
       setChallenge(null);} catch {
-      setAuthError("That verification code could not be confirmed. Try again.");
+      setAuthError(salesDemoCopy.thatVerificationCodeCouldNotBe);
     } finally {setAuthPending(false);}
   };
-  if (!interactiveAvailable) return <EventRuntimeModule title="Preview only">
-    <p>Interactive access has not been enabled for this invitation. Ask the inviter
-      to review the intended contact if you want to try the sample workflow.</p>
+  if (!interactiveAvailable) return <EventRuntimeModule title={salesDemoCopy.previewOnly}>
+    <p>{salesDemoCopy.interactiveAccessHasNotBeenEnabled}</p>
   </EventRuntimeModule>;
-  if (!hasGrant) return <EventRuntimeModule title="Interactive link needed">
-    <p>This preview is safe to view, but its interactive grant is missing.
-      Open the original invitation link or ask the inviter for a new one.</p>
+  if (!hasGrant) return <EventRuntimeModule title={salesDemoCopy.interactiveLinkNeeded}>
+    <p>{salesDemoCopy.thisPreviewIsSafeToView}</p>
   </EventRuntimeModule>;
-  return <EventRuntimeModule title="Try the sample workflow">
+  return <EventRuntimeModule title={salesDemoCopy.tryTheSampleWorkflow}>
     <p>{cta}</p>
-    {!controller.authReady ? <EventRuntimeLoading label="Checking sign-in…" /> :
+    {!controller.authReady ? <EventRuntimeLoading label={salesDemoCopy.checkingSignin} /> :
       <>
       {controller.canTry ? <>
-        <p>Signed in as {controller.viewer?.email ||
-          controller.viewer?.phoneNumber || "verified account"}.
-          The server will check this identity against the invitation.</p>
+        <p>{salesDemoCopy.signedInAs}{controller.viewer?.email ||
+          controller.viewer?.phoneNumber || "verified account"}{salesDemoCopy.theServerWillCheckThisIdentity}</p>
         <Button type="button" onClick={() => void controller.start()}
           disabled={controller.pending || authPending} loading={controller.pending}
-          loadingLabel="Opening sample…">Open interactive example</Button>
+          loadingLabel={salesDemoCopy.openingSample}>{salesDemoCopy.openInteractiveExample}</Button>
       </> : null}
-        <p>Use the invited email or verify the invited phone. If you are signed
-          in with another account, you can change it below.</p>
+        <p>{salesDemoCopy.useTheInvitedEmailOrVerify}</p>
         <EventRuntimeActionGrid><Button type="button" onClick={() => void google()}
           disabled={authPending || controller.pending} loading={authPending}>
           {controller.viewer ? "Use another Google account" : "Continue with Google"}
         </Button>
         </EventRuntimeActionGrid>
-        <TextField id="sales-demo-phone" label="Or verify phone (international format)"
+        <TextField id="sales-demo-phone" label={salesDemoCopy.orVerifyPhoneInternationalFormat}
           type="tel" autoComplete="tel" value={phone}
           disabled={authPending || controller.pending || Boolean(challenge)}
           onChange={(event) => setPhone(event.target.value)}
-          placeholder="+91…" />
+          placeholder={salesDemoCopy.phonePlaceholder} />
         <div id="sales-demo-recaptcha" />
         {!challenge ? <Button type="button" variant="ghost"
           disabled={authPending || controller.pending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())}
-          onClick={() => void sendCode()}>Send verification code</Button> : <>
-          <TextField id="sales-demo-code" label="Verification code" value={code}
+          onClick={() => void sendCode()}>{salesDemoCopy.sendVerificationCode}</Button> : <>
+          <TextField id="sales-demo-code" label={salesDemoCopy.verificationCode} value={code}
             onChange={(event) => setCode(event.target.value)}
             inputMode="numeric" autoComplete="one-time-code" />
           <Button type="button" variant="ghost" disabled={authPending || controller.pending || !code.trim()}
-            onClick={() => void verifyCode()}>Verify phone</Button>
+            onClick={() => void verifyCode()}>{salesDemoCopy.verifyPhone}</Button>
           <Button type="button" variant="ghost"
             disabled={authPending || controller.pending}
-            onClick={() => {setChallenge(null); setCode(""); setAuthError("");}}>
-            Change number or resend code
-          </Button>
+            onClick={() => {setChallenge(null); setCode(""); setAuthError("");}}>{salesDemoCopy.changeNumberOrResendCode}</Button>
         </>}
       </>}
     {authError ? <FormStatus status={{message: authError, tone: "is-error"}} /> : null}
@@ -171,37 +163,29 @@ function DemoSessionView({controller}: {controller: Controller}) {
   const act = (action: SalesDemoAction, choice?: "approve" | "needs_info" |
     "welcome" | "clarify") => void controller.advance({action, choice});
   return <>
-    <EventRuntimeModule title="Your isolated sample">
-      <p>Step: {session.step.replaceAll("_", " ")} ·
+    <EventRuntimeModule title={salesDemoCopy.yourIsolatedSample}>
+      <p>{salesDemoCopy.step}{session.step.replaceAll("_", " ")} ·
         {session.status === "completed" ? " Completed" : " In progress"}</p>
-      <p>Sample applicant: {session.application.applicantName} ·
+      <p>{salesDemoCopy.sampleApplicant}{session.application.applicantName} ·
         {session.application.request}</p>
-      <p>Review: {session.application.review.replaceAll("_", " ")} ·
-        Reply: {session.reply.template.replaceAll("_", " ")} ·
-        Guest: {session.guest.status.replaceAll("_", " ")}</p>
-      <p>Only synthetic records are changed.</p>
+      <p>{salesDemoCopy.review}{session.application.review.replaceAll("_", " ")}{salesDemoCopy.reply}{session.reply.template.replaceAll("_", " ")}{salesDemoCopy.guest}{session.guest.status.replaceAll("_", " ")}</p>
+      <p>{salesDemoCopy.onlySyntheticRecordsAreChanged}</p>
     </EventRuntimeModule>
-    <EventRuntimeModule title="Next sample step">
-      {!controller.fresh ? <p>Check the latest session before continuing.</p> : null}
+    <EventRuntimeModule title={salesDemoCopy.nextSampleStep}>
+      {!controller.fresh ? <p>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</p> : null}
       <EventRuntimeActionGrid>
         {retry ? <Button type="button" disabled={controller.pending || !controller.fresh}
-          onClick={() => act(retry.action, retry.choice)}>
-          Retry: {salesDemoActionTitle(retry.action, retry.choice)}
+          onClick={() => act(retry.action, retry.choice)}>{salesDemoCopy.retry}{salesDemoActionTitle(retry.action, retry.choice)}
         </Button> : <DemoStepActions session={session} disabled={controller.pending ||
           !controller.fresh} onAction={act} />}
         {available("requestAssistance") && !session.assistanceRequested && !retry ?
           <Button type="button" variant="ghost" disabled={controller.pending ||
-            !controller.fresh} onClick={() => act("requestAssistance")}>
-            Request help with this demo
-          </Button> : null}
+            !controller.fresh} onClick={() => act("requestAssistance")}>{salesDemoCopy.requestHelpWithThisDemo}</Button> : null}
         <Button type="button" variant="ghost" disabled={controller.pending}
-          onClick={() => void controller.refresh()}>Refresh sample status</Button>
+          onClick={() => void controller.refresh()}>{salesDemoCopy.refreshSampleStatus}</Button>
       </EventRuntimeActionGrid>
-      {session.assistanceRequested ? <p role="status">Assistance requested.
-        This records an in-product request; no message is sent here.</p> : null}
-      {session.status === "completed" ? <p role="status">You completed this
-        synthetic workflow. A real product setup requires a separate reviewed
-        host handoff.</p> : null}
+      {session.assistanceRequested ? <p role="status">{salesDemoCopy.assistanceRequestedThisRecordsAnInproduct}</p> : null}
+      {session.status === "completed" ? <p role="status">{salesDemoCopy.youCompletedThisSyntheticWorkflowA}</p> : null}
     </EventRuntimeModule>
   </>;
 }
@@ -214,32 +198,22 @@ function DemoStepActions({session, disabled, onAction}: {
   if (session.step === "application" &&
       session.allowedActions.includes("reviewApplication")) return <>
     <Button type="button" disabled={disabled}
-      onClick={() => onAction("reviewApplication", "approve")}>
-      Approve sample application
-    </Button>
+      onClick={() => onAction("reviewApplication", "approve")}>{salesDemoCopy.approveSampleApplication}</Button>
     <Button type="button" variant="ghost" disabled={disabled}
-      onClick={() => onAction("reviewApplication", "needs_info")}>
-      Ask sample applicant for more information
-    </Button>
+      onClick={() => onAction("reviewApplication", "needs_info")}>{salesDemoCopy.askSampleApplicantForMoreInformation}</Button>
   </>;
   if (session.step === "reply" && session.allowedActions.includes("prepareReply")) {
     return session.application.review === "needs_info" ? <Button type="button"
-      disabled={disabled} onClick={() => onAction("prepareReply", "clarify")}>
-      Prepare clarification example
-    </Button> : <>
+      disabled={disabled} onClick={() => onAction("prepareReply", "clarify")}>{salesDemoCopy.prepareClarificationExample}</Button> : <>
       <Button type="button" disabled={disabled}
-        onClick={() => onAction("prepareReply", "welcome")}>
-        Prepare welcome example
-      </Button>
+        onClick={() => onAction("prepareReply", "welcome")}>{salesDemoCopy.prepareWelcomeExample}</Button>
       <Button type="button" variant="ghost" disabled={disabled}
-        onClick={() => onAction("prepareReply", "clarify")}>
-        Prepare clarification example
-      </Button>
+        onClick={() => onAction("prepareReply", "clarify")}>{salesDemoCopy.prepareClarificationExample}</Button>
     </>;
   }
   if (session.step === "admission" && session.allowedActions.includes("admitGuest")) {
     return <Button type="button" disabled={disabled}
-      onClick={() => onAction("admitGuest")}>Admit sample guest</Button>;
+      onClick={() => onAction("admitGuest")}>{salesDemoCopy.admitSampleGuest}</Button>;
   }
-  return <p>No further sample step is available.</p>;
+  return <p>{salesDemoCopy.noFurtherSampleStepIsAvailable}</p>;
 }

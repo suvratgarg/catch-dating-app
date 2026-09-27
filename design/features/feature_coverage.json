@@ -705,6 +705,15 @@
       "reason": "Unified staff work shell assignment picker for event and program scopes; contracts compile after route captures and golden coverage land.",
       "targetFeature": "feature.programs_arrivals_ops",
       "debtId": "PROGRAMS-FEATURE-006"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "sales_demo",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private synthetic Sales invitation reuses runtime primitives and bounded verified-contact access. Shared host acquisition orchestration classification remains planned.",
+      "targetFeature": "feature.host_acquisition",
+      "debtId": "FEATURE-SALES-DEMO-001"
     }
   ]
 }

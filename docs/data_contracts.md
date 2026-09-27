@@ -4526,3 +4526,29 @@ are assigned only to the restricted safety owner, other categories to the event
 lead. No SDK client, including an administrator, can access any of these four
 collections directly. Host projections and case-resolution commands require
 separate authorized boundaries before this feature can be enabled.
+
+## Private host Sales records
+
+The canonical organizer remains the identity owner. `organizerSalesAccounts`
+is its private Sales companion; contacts, relationships, reviewed evidence,
+assistant proposals, tasks, opportunities, stage history, import lineage,
+commercial records, and outreach intelligence use separate server-only
+collections. Neither `appVisibility: hidden` nor an unclaimed organizer makes
+an organizer document private. Strategy, prospect research, scores, contact
+endpoints and commercial terms must never be written into public organizer
+projections.
+
+The Sales service checks current employee or explicitly delegated authority,
+organizer scope, exact request material and record revision. Its transaction
+writes the effect and immutable receipt together. Assistant fact proposals
+require employee review before becoming qualification evidence. Opportunity
+pilot stages require the matching reviewed or active plan. Quote acceptance
+records reviewed terms; it does not prove host subscription revenue. Guest
+checkout payment records cannot satisfy a host commercial close.
+
+Synthetic demo blueprints, digest-only invitations, sessions and receipts are
+private records. Anonymous preview is read-only; verified invited contact plus
+an explicit start is required to materialize synthetic state. A demo never
+grants organizer ownership, publishes a listing, admits a real guest or charges
+a payment. Source contracts and rules tests live with the Sales feature; generated
+types and validators follow the existing schema generator.

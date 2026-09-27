@@ -1202,3 +1202,12 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
 export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {
   return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
 }
+
+export async function invokeSalesDemoCallable<Request, Response>(
+  name: "getSalesDemoPreview" | "startSalesDemo" |
+    "getSalesDemoSession" | "advanceSalesDemo",
+  payload: Request
+): Promise<Response> {
+  return invokeWebsiteCallable<Request, Response>(name, payload,
+    claimFirebaseConfigured, "Private demo");
+}

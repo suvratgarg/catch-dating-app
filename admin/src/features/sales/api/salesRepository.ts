@@ -1,3 +1,5 @@
+import {validateAdminCallableRequest, validateAdminCallableResponse} from
+  "../../../generated/validators/adminCallableValidators";
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -21,8 +23,12 @@ import type {
 type MutationReceipt = {requestId: string; revision: number};
 
 function call<Request, Response>(name: string, payload: Request): Promise<Response> {
+  validateAdminCallableRequest(name, payload);
   return httpsCallable<Request, Response>(functions, name)(payload).then(
-    (result) => result.data
+    (result) => {
+      validateAdminCallableResponse(name, result.data);
+      return result.data;
+    }
   );
 }
 

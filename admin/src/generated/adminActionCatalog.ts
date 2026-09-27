@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.4.0",
+  "catalogVersion": "1.5.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -757,6 +757,668 @@ export const adminActionCatalog = {
       ],
       "summary": "Create or advance the remotely visible receipt for one CLI action execution.",
       "controlPlane": true
+    },
+    {
+      "actionId": "sales.hosts.search",
+      "callable": "adminListSalesAccounts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales hosts.search operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.hosts.get",
+      "callable": "adminGetSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales hosts.get operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.tasks.list",
+      "callable": "adminListSalesTasks",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/today",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales tasks.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.opportunities.list",
+      "callable": "adminListSalesOpportunities",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales opportunities.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.fields.list",
+      "callable": "adminListSalesCustomFields",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales fields.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.receipts.get",
+      "callable": "adminGetSalesReceipt",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales receipts.get operation.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intents.list",
+      "callable": "adminListSalesInboundIntents",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales intents.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.imports.preview",
+      "callable": "adminPreviewSalesImport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales imports.preview operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.contacts.list",
+      "callable": "adminListSalesContacts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales contacts.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.evidence.list",
+      "callable": "adminListSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales evidence.list operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.hosts.create",
+      "callable": "adminCreateSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales hosts.create operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.hosts.update",
+      "callable": "adminUpdateSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales hosts.update operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.tasks.upsert",
+      "callable": "adminUpsertSalesTask",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/today",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales tasks.upsert operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.opportunities.upsert",
+      "callable": "adminUpsertSalesOpportunity",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales opportunities.upsert operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.activities.log",
+      "callable": "adminRecordSalesActivity",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales activities.log operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.fields.create",
+      "callable": "adminCreateSalesCustomField",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales fields.create operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.fields.setValue",
+      "callable": "adminSetSalesCustomFieldValue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales fields.setValue operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intents.link",
+      "callable": "adminLinkSalesInboundIntent",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales intents.link operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.imports.apply",
+      "callable": "adminApplySalesImport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales imports.apply operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.contacts.upsert",
+      "callable": "adminUpsertSalesContact",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales contacts.upsert operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.evidence.add",
+      "callable": "adminAddSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales evidence.add operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.accounts.setSuppression",
+      "callable": "adminSetSalesAccountSuppression",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales accounts.setSuppression operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.contacts.setContactability",
+      "callable": "adminSetSalesContactability",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review and execute the bounded private Sales contacts.setContactability operation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.evidence.propose",
+      "callable": "adminProposeSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Suggest an unreviewed private fact; never grants qualification.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.evidence.reviewProposal",
+      "callable": "adminReviewSalesEvidenceProposal",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Employee accepts or rejects the exact version of a suggested fact.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.evidenceProposals.list",
+      "callable": "adminListSalesEvidenceProposals",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read private evidence suggestions awaiting employee review.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.SaveSalesDemoBlueprint",
+      "callable": "adminSaveSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.ReviewSalesDemoBlueprint",
+      "callable": "adminReviewSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.WithdrawSalesDemoBlueprint",
+      "callable": "adminWithdrawSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.IssueSalesDemoInvitation",
+      "callable": "adminIssueSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.RevokeSalesDemoInvitation",
+      "callable": "adminRevokeSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoBlueprint",
+      "callable": "adminGetSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoInvitation",
+      "callable": "adminGetSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoCapability",
+      "callable": "adminGetSalesDemoCapability",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.ListSalesDemoBlueprints",
+      "callable": "adminListSalesDemoBlueprints",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.ListSalesDemoInvitations",
+      "callable": "adminListSalesDemoInvitations",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.detail",
+      "callable": "adminGetSalesCommercialDetail",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.report",
+      "callable": "adminListSalesCommercialReport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.pilots.upsert",
+      "callable": "adminUpsertSalesPilotPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.quotes.revise",
+      "callable": "adminReviseSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.quotes.approve",
+      "callable": "adminApproveSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.quotes.accept",
+      "callable": "adminAcceptSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -946,6 +1608,55 @@ export const adminActionCatalog = {
       "guiPath": "/operations",
       "actions": [
         "operations.list-executions"
+      ]
+    },
+    {
+      "workflowId": "sales",
+      "label": "Sales",
+      "guiPath": "/sales/today",
+      "actions": [
+        "sales.hosts.search",
+        "sales.hosts.get",
+        "sales.tasks.list",
+        "sales.opportunities.list",
+        "sales.fields.list",
+        "sales.receipts.get",
+        "sales.intents.list",
+        "sales.imports.preview",
+        "sales.contacts.list",
+        "sales.evidence.list",
+        "sales.hosts.create",
+        "sales.hosts.update",
+        "sales.tasks.upsert",
+        "sales.opportunities.upsert",
+        "sales.activities.log",
+        "sales.fields.create",
+        "sales.fields.setValue",
+        "sales.intents.link",
+        "sales.imports.apply",
+        "sales.contacts.upsert",
+        "sales.evidence.add",
+        "sales.accounts.setSuppression",
+        "sales.contacts.setContactability",
+        "sales.evidence.propose",
+        "sales.evidence.reviewProposal",
+        "sales.evidenceProposals.list",
+        "sales.demo.SaveSalesDemoBlueprint",
+        "sales.demo.ReviewSalesDemoBlueprint",
+        "sales.demo.WithdrawSalesDemoBlueprint",
+        "sales.demo.IssueSalesDemoInvitation",
+        "sales.demo.RevokeSalesDemoInvitation",
+        "sales.demo.GetSalesDemoBlueprint",
+        "sales.demo.GetSalesDemoInvitation",
+        "sales.demo.GetSalesDemoCapability",
+        "sales.demo.ListSalesDemoBlueprints",
+        "sales.demo.ListSalesDemoInvitations",
+        "sales.commercial.detail",
+        "sales.commercial.report",
+        "sales.commercial.pilots.upsert",
+        "sales.commercial.quotes.revise",
+        "sales.commercial.quotes.approve",
+        "sales.commercial.quotes.accept"
       ]
     }
   ]

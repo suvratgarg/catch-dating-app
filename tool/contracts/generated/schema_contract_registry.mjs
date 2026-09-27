@@ -1,6 +1,12460 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const outreachDraftingInputSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/outreach_drafting_input.schema.json",
+  "title": "OutreachDraftingInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizer",
+    "contact",
+    "opportunity",
+    "language",
+    "channel",
+    "purpose",
+    "evaluatedAt",
+    "policy",
+    "observations",
+    "capabilities",
+    "references",
+    "ctas",
+    "priorInteraction",
+    "evidenceConflictStatus"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "revision",
+        "identityStatus"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "identityStatus": {
+          "const": "verified"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "revision",
+        "role",
+        "eligibility",
+        "suppressionStatus",
+        "claimStatus"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "eligibility": {
+          "const": "eligible"
+        },
+        "suppressionStatus": {
+          "const": "clear"
+        },
+        "claimStatus": {
+          "enum": [
+            "verified",
+            "not_required"
+          ]
+        }
+      }
+    },
+    "opportunity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opportunityId",
+        "revision",
+        "stage",
+        "motion"
+      ],
+      "properties": {
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "motion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en"
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "message"
+      ]
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "first_message",
+        "follow_up"
+      ]
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promptVersion",
+        "playbookVersion",
+        "modelId"
+      ],
+      "properties": {
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "playbookVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "modelId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "revision",
+          "organizerId",
+          "approved",
+          "validUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "approved": {
+            "const": true
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "revision",
+          "organizerId",
+          "approved",
+          "validUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "approved": {
+            "const": true
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "revision",
+          "organizerId",
+          "approved",
+          "validUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "approved": {
+            "const": true
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "ctas": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "revision"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "priorInteraction": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activityId",
+            "summary",
+            "revision"
+          ],
+          "properties": {
+            "activityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "evidenceConflictStatus": {
+      "enum": [
+        "clear",
+        "needs_review"
+      ]
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "revision",
+        "identityStatus"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "identityStatus": {
+          "const": "verified"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "revision",
+        "role",
+        "eligibility",
+        "suppressionStatus",
+        "claimStatus"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "eligibility": {
+          "const": "eligible"
+        },
+        "suppressionStatus": {
+          "const": "clear"
+        },
+        "claimStatus": {
+          "enum": [
+            "verified",
+            "not_required"
+          ]
+        }
+      }
+    },
+    "opportunity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opportunityId",
+        "revision",
+        "stage",
+        "motion"
+      ],
+      "properties": {
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "motion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "clause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "text",
+        "revision",
+        "organizerId",
+        "approved",
+        "validUntil"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approved": {
+          "const": true
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+};
+
+export const outreachDraftingSelectionSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/outreach_drafting_selection.schema.json",
+  "title": "OutreachDraftingSelection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "opportunityId",
+    "language",
+    "observationId",
+    "capabilityId",
+    "referenceId",
+    "ctaId",
+    "reasonToBlock",
+    "omittedIds"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "const": "en"
+    },
+    "observationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "capabilityId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "referenceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ctaId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reasonToBlock": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "omittedIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    }
+  }
+};
+
+export const adminSalesIntelligenceGenerateCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
+  "title": "AdminGenerateSalesOutreachDraftPayload",
+  "description": "Exact-retry zero-model Operations generation from approved private Sales source IDs. No prose, provider or send parameters.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "sourceRequest"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRequest": {
+      "title": "AdminBuildSalesOutreachInputPayload",
+      "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "observationIds",
+        "capabilityIds",
+        "referenceIds",
+        "ctaIds",
+        "channel",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "observationIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "capabilityIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "referenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "ctaIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "priorActivityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  }
+};
+
+export const salesOutreachJobsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_outreach_jobs.schema.json",
+  "title": "SalesOutreachJobDocument",
+  "description": "Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesOutreachJobs",
+  "x-firestore-path": "salesOutreachJobs/{jobId}",
+  "x-document-id-field": "jobId",
+  "x-owner": "private Sales intelligence generate callable",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "jobId",
+    "actorUid",
+    "requestId",
+    "materialHash",
+    "sourceHash",
+    "sourceRequest",
+    "frozenBundle",
+    "status",
+    "attemptCount",
+    "leaseOwner",
+    "leaseUntil",
+    "expiresAt",
+    "createdAt",
+    "updatedAt",
+    "result",
+    "failure"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "jobId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceRequest": {
+      "title": "AdminBuildSalesOutreachInputPayload",
+      "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "observationIds",
+        "capabilityIds",
+        "referenceIds",
+        "ctaIds",
+        "channel",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "observationIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "capabilityIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "referenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "ctaIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "priorActivityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "frozenBundle": {
+      "title": "OutreachDraftingInput",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "organizer",
+        "contact",
+        "opportunity",
+        "language",
+        "channel",
+        "purpose",
+        "evaluatedAt",
+        "policy",
+        "observations",
+        "capabilities",
+        "references",
+        "ctas",
+        "priorInteraction",
+        "evidenceConflictStatus"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "revision",
+            "identityStatus"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "identityStatus": {
+              "const": "verified"
+            }
+          }
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contactId",
+            "revision",
+            "role",
+            "eligibility",
+            "suppressionStatus",
+            "claimStatus"
+          ],
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "eligibility": {
+              "const": "eligible"
+            },
+            "suppressionStatus": {
+              "const": "clear"
+            },
+            "claimStatus": {
+              "enum": [
+                "verified",
+                "not_required"
+              ]
+            }
+          }
+        },
+        "opportunity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opportunityId",
+            "revision",
+            "stage",
+            "motion"
+          ],
+          "properties": {
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stage": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "motion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en"
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "promptVersion",
+            "playbookVersion",
+            "modelId"
+          ],
+          "properties": {
+            "promptVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "playbookVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "modelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "observations": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "ctas": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "priorInteraction": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "activityId",
+                "summary",
+                "revision"
+              ],
+              "properties": {
+                "activityId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          ]
+        },
+        "evidenceConflictStatus": {
+          "enum": [
+            "clear",
+            "needs_review"
+          ]
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "revision",
+            "identityStatus"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "identityStatus": {
+              "const": "verified"
+            }
+          }
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contactId",
+            "revision",
+            "role",
+            "eligibility",
+            "suppressionStatus",
+            "claimStatus"
+          ],
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "eligibility": {
+              "const": "eligible"
+            },
+            "suppressionStatus": {
+              "const": "clear"
+            },
+            "claimStatus": {
+              "enum": [
+                "verified",
+                "not_required"
+              ]
+            }
+          }
+        },
+        "opportunity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opportunityId",
+            "revision",
+            "stage",
+            "motion"
+          ],
+          "properties": {
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stage": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "motion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "clause": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "text",
+            "revision",
+            "organizerId",
+            "approved",
+            "validUntil"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approved": {
+              "const": true
+            },
+            "validUntil": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "running",
+        "completed",
+        "failed"
+      ]
+    },
+    "attemptCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "leaseOwner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 64
+    },
+    "leaseUntil": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "contentHash"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "failure": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const outreachDraftSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/outreach_drafting_draft.schema.json",
+  "title": "OutreachDraft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "draftId",
+    "organizerId",
+    "contactId",
+    "opportunityId",
+    "language",
+    "channel",
+    "subject",
+    "text",
+    "sentences",
+    "selection",
+    "inputHash",
+    "contentHash",
+    "sourceRevisions",
+    "model",
+    "reviewStatus",
+    "sendAuthority"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "const": "en"
+    },
+    "channel": {
+      "enum": [
+        "email",
+        "message"
+      ]
+    },
+    "subject": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "sentences": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "kind",
+          "sourceIds"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "observation",
+              "capability",
+              "reference",
+              "cta",
+              "prior_interaction"
+            ]
+          },
+          "sourceIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "selection": {
+      "title": "OutreachDraftingSelection",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "language",
+        "observationId",
+        "capabilityId",
+        "referenceId",
+        "ctaId",
+        "reasonToBlock",
+        "omittedIds"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "const": "en"
+        },
+        "observationId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capabilityId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "referenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ctaId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reasonToBlock": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "omittedIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "inputHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceRevisions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelId",
+        "promptVersion",
+        "playbookVersion",
+        "cacheHit",
+        "usage"
+      ],
+      "properties": {
+        "modelId": {
+          "type": "string"
+        },
+        "promptVersion": {
+          "type": "string"
+        },
+        "playbookVersion": {
+          "type": "string"
+        },
+        "cacheHit": {
+          "type": "boolean"
+        },
+        "usage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inputTokens",
+            "outputTokens",
+            "costMicros"
+          ],
+          "properties": {
+            "inputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "costMicros": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "reviewStatus": {
+      "const": "pending_review"
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  }
+};
+
+export const adminAcceptSalesQuoteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_accept_sales_quote_payload.schema.json",
+  "title": "commercial.quotes.accept request",
+  "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId",
+    "requestId",
+    "expectedRevision",
+    "termVersion",
+    "evidence"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  }
+};
+
+export const adminApproveSalesQuoteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_approve_sales_quote_payload.schema.json",
+  "title": "commercial.quotes.approve request",
+  "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId",
+    "requestId",
+    "expectedRevision",
+    "termVersion",
+    "evidence"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  }
+};
+
+export const adminGetSalesCommercialDetailCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_sales_commercial_detail_payload.schema.json",
+  "title": "commercial.detail request",
+  "description": "Strict bounded private Sales commercial read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminListSalesCommercialReportCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_sales_commercial_report_payload.schema.json",
+  "title": "commercial.report request",
+  "description": "Strict bounded private Sales commercial read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+};
+
+export const adminReviseSalesQuoteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_revise_sales_quote_payload.schema.json",
+  "title": "commercial.quotes.revise request",
+  "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId",
+    "requestId",
+    "expectedRevision",
+    "terms"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "billingCadence",
+        "scope",
+        "validUntil",
+        "sourceFactRefs"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "billingCadence": {
+          "enum": [
+            "one_time",
+            "monthly",
+            "annual",
+            "usage_based"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sourceFactRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSalesPilotPlanCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_upsert_sales_pilot_plan_payload.schema.json",
+  "title": "commercial.pilots.upsert request",
+  "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId",
+    "requestId",
+    "expectedRevision",
+    "plan"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "workflowId",
+        "objective",
+        "successMeasures",
+        "startsAt",
+        "endsAt",
+        "reviewEvidence",
+        "outcomeEvidence"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "active",
+            "completed",
+            "cancelled"
+          ]
+        },
+        "workflowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "successMeasures": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "startsAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endsAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewEvidence": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcomeEvidence": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const salesCommercialDecisionsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_commercial_decisions.schema.json",
+  "title": "salesCommercialDecisions document",
+  "description": "Append-only exact-version approval or reviewed terms acceptance; not a receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesCommercialDecisions",
+  "x-firestore-path": "salesCommercialDecisions/{decisionId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "decisionId",
+    "organizerId",
+    "opportunityId",
+    "quoteId",
+    "termVersion",
+    "termsHash",
+    "kind",
+    "evidence",
+    "approvedDecisionId",
+    "actorUid",
+    "decidedAt",
+    "paymentStatus"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "quoteId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "termVersion": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "termsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "kind": {
+      "enum": [
+        "quote_approved",
+        "terms_acceptance_reviewed"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId",
+        "sourceRef",
+        "contentHash",
+        "observedAt"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        }
+      }
+    },
+    "approvedDecisionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "decidedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "paymentStatus": {
+      "const": "unknown"
+    }
+  },
+  "x-document-id-field": "decisionId"
+};
+
+export const salesOpportunityStageHistoryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_opportunity_stage_history.schema.json",
+  "title": "salesOpportunityStageHistory document",
+  "description": "Append-only private stage movement with explicit loss/reopen reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesOpportunityStageHistory",
+  "x-firestore-path": "salesOpportunityStageHistory/{historyId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "historyId",
+    "organizerId",
+    "opportunityId",
+    "fromStage",
+    "toStage",
+    "reason",
+    "actorUid",
+    "changedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "historyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fromStage": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "toStage": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "changedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  },
+  "x-document-id-field": "historyId"
+};
+
+export const salesPilotPlansDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_pilot_plans.schema.json",
+  "title": "salesPilotPlans document",
+  "description": "Private revisioned pilot scope; no revenue or product activation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesPilotPlans",
+  "x-firestore-path": "salesPilotPlans/{opportunityId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "opportunityId",
+    "revision",
+    "status",
+    "workflowId",
+    "objective",
+    "successMeasures",
+    "startsAt",
+    "endsAt",
+    "reviewEvidence",
+    "outcomeEvidence",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "reviewed",
+        "active",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "workflowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "successMeasures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "startsAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "endsAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewEvidence": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId",
+            "sourceRef",
+            "contentHash",
+            "observedAt"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "observedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcomeEvidence": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId",
+            "sourceRef",
+            "contentHash",
+            "observedAt"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "observedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-document-id-field": "opportunityId"
+};
+
+export const salesQuoteVersionsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_quote_versions.schema.json",
+  "title": "salesQuoteVersions document",
+  "description": "Immutable exact commercial terms with reviewed source fact references.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesQuoteVersions",
+  "x-firestore-path": "salesQuoteVersions/{versionId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "opportunityId",
+    "quoteId",
+    "termVersion",
+    "terms",
+    "termsHash",
+    "createdAt",
+    "createdBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "quoteId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "billingCadence",
+        "scope",
+        "validUntil",
+        "sourceFactRefs"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "billingCadence": {
+          "enum": [
+            "one_time",
+            "monthly",
+            "annual",
+            "usage_based"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "sourceFactRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    },
+    "termsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesQuotesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_quotes.schema.json",
+  "title": "salesQuotes document",
+  "description": "Current quote head; accepted terms do not prove collection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesQuotes",
+  "x-firestore-path": "salesQuotes/{quoteId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "opportunityId",
+    "quoteId",
+    "revision",
+    "termVersion",
+    "status",
+    "approvedDecisionId",
+    "acceptedDecisionId",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "quoteId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "approved",
+        "accepted_reviewed"
+      ]
+    },
+    "approvedDecisionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "acceptedDecisionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-document-id-field": "quoteId"
+};
+
+export const assistantClientsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/assistant_clients.schema.json",
+  "title": "AssistantClientDocument",
+  "description": "Private binding of a non-admin Firebase Auth client account.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "clientId",
+    "authUid",
+    "active",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "clientId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "authUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-firestore-collection": "assistantClients",
+  "x-firestore-path": "assistantClients/{clientId}",
+  "x-document-id-field": "clientId",
+  "x-owner": "sales assistant gateway server-only management"
+};
+
+export const assistantDelegationsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/assistant_delegations.schema.json",
+  "title": "AssistantDelegationDocument",
+  "description": "Private expiring action and entity grant from an employee to one registered assistant client.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "delegationId",
+    "actorUid",
+    "clientId",
+    "allowedActions",
+    "organizerIds",
+    "fieldIds",
+    "expiresAt",
+    "maxRequestsPerMinute",
+    "maxRequestsPerDay",
+    "revoked",
+    "revision",
+    "issuedByUid",
+    "issuedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "delegationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "clientId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "allowedActions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "hosts.search",
+          "hosts.get",
+          "tasks.list",
+          "opportunities.list",
+          "fields.list",
+          "receipts.get",
+          "activities.log",
+          "tasks.upsert",
+          "opportunities.upsert",
+          "fields.create",
+          "fields.setValue",
+          "evidence.propose"
+        ]
+      }
+    },
+    "organizerIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{3,128}$"
+      }
+    },
+    "fieldIds": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 96,
+        "pattern": "^sales\\.[A-Za-z0-9._:-]+$"
+      }
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "maxRequestsPerMinute": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60
+    },
+    "maxRequestsPerDay": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "revoked": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "issuedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revokedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "assistantDelegations",
+  "x-firestore-path": "assistantDelegations/{delegationId}",
+  "x-document-id-field": "delegationId",
+  "x-owner": "sales assistant gateway server-only management"
+};
+
+export const assistantGatewayBudgetsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/assistant_gateway_budgets.schema.json",
+  "title": "AssistantGatewayBudgetDocument",
+  "description": "Transactional request counter for one delegated client or owner window.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "budgetId",
+    "windowKind",
+    "count",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "budgetId": {
+      "type": "string",
+      "minLength": 43,
+      "maxLength": 70,
+      "pattern": "^[a-f0-9]{40}_[md]_[A-Za-z0-9-]+$"
+    },
+    "windowKind": {
+      "enum": [
+        "minute",
+        "day"
+      ]
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "assistantGatewayBudgets",
+  "x-firestore-path": "assistantGatewayBudgets/{budgetId}",
+  "x-document-id-field": "budgetId",
+  "x-owner": "sales assistant gateway server-only budget transaction"
+};
+
+export const assistantManagementReceiptsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/assistant_management_receipts.schema.json",
+  "title": "AssistantManagementReceiptDocument",
+  "description": "Immutable server-side result of one owner management request; keyed by issuer and request id hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "receiptId",
+    "issuerUid",
+    "requestId",
+    "action",
+    "targetId",
+    "materialHash",
+    "result",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "issuerUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "action": {
+      "enum": [
+        "assistant.clients.set",
+        "assistant.delegations.issue",
+        "assistant.delegations.revoke"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "authUid": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "delegationId": {
+          "type": "string"
+        },
+        "actorUid": {
+          "type": "string"
+        },
+        "allowedActions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "organizerIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revoked": {
+          "type": "boolean"
+        },
+        "revokedByUid": {
+          "type": "string"
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "assistantManagementReceipts",
+  "x-firestore-path": "assistantManagementReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "sales assistant gateway server-only immutable management transaction"
+};
+
+export const adminListSalesAccountsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_hosts_search_payload.schema.json",
+  "title": "Sales hosts.search callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "query": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80,
+      "pattern": "^[A-Za-z0-9]+$"
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "researchStatus": {
+      "enum": [
+        "new",
+        "needs_research",
+        "ready_for_review",
+        "qualified",
+        "benchmark_only",
+        "no_fit",
+        "archived"
+      ]
+    }
+  }
+};
+
+export const adminGetSalesAccountCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_hosts_get_payload.schema.json",
+  "title": "Sales hosts.get callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminListSalesTasksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_tasks_list_payload.schema.json",
+  "title": "Sales tasks.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "completed",
+        "cancelled"
+      ]
+    }
+  }
+};
+
+export const adminListSalesOpportunitiesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_opportunities_list_payload.schema.json",
+  "title": "Sales opportunities.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "stage": {
+      "enum": [
+        "new_enquiry",
+        "ready_to_contact",
+        "contacted",
+        "in_conversation",
+        "demo_arranged",
+        "demo_completed",
+        "pilot_agreed",
+        "pilot_running",
+        "commercial_discussion",
+        "closed_won",
+        "closed_lost"
+      ]
+    }
+  }
+};
+
+export const adminListSalesCustomFieldsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_fields_list_payload.schema.json",
+  "title": "Sales fields.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {}
+};
+
+export const adminGetSalesReceiptCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_receipts_get_payload.schema.json",
+  "title": "Sales receipts.get callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminListSalesInboundIntentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intents_list_payload.schema.json",
+  "title": "Sales intents.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "status": {
+      "enum": [
+        "needs_identity_review",
+        "linked",
+        "dismissed"
+      ]
+    }
+  }
+};
+
+export const adminPreviewSalesImportCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_imports_preview_payload.schema.json",
+  "title": "Sales imports.preview callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceId",
+    "contentHash",
+    "mappingVersion",
+    "rows"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRowId",
+          "organizerId",
+          "name",
+          "researchStatus"
+        ],
+        "properties": {
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "researchStatus": {
+            "enum": [
+              "new",
+              "needs_research",
+              "ready_for_review",
+              "qualified",
+              "benchmark_only",
+              "no_fit",
+              "archived"
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1200
+          },
+          "originalScore": {
+            "anyOf": [
+              {
+                "type": "object",
+                "maxProperties": 12,
+                "propertyNames": {
+                  "type": "string",
+                  "maxLength": 64,
+                  "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+                },
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "originalCells": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "value"
+              ],
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminListSalesContactsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_contacts_list_payload.schema.json",
+  "title": "Sales contacts.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+};
+
+export const adminListSalesEvidenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_evidence_list_payload.schema.json",
+  "title": "Sales evidence.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+};
+
+export const adminCreateSalesAccountCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_hosts_create_payload.schema.json",
+  "title": "Sales hosts.create callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminUpdateSalesAccountCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_hosts_update_payload.schema.json",
+  "title": "Sales hosts.update callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "patch"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "patch": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "researchStatus": {
+          "enum": [
+            "new",
+            "needs_research",
+            "ready_for_review",
+            "qualified",
+            "benchmark_only",
+            "no_fit",
+            "archived"
+          ]
+        },
+        "assignedOwnerUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1200
+        },
+        "nextAction": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSalesTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_tasks_upsert_payload.schema.json",
+  "title": "Sales tasks.upsert callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "task"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "title",
+        "dueAt",
+        "ownerUid",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "research",
+            "reply",
+            "follow_up",
+            "demo",
+            "pilot",
+            "duplicate_review",
+            "opt_out",
+            "service_commitment"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "dueAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contactId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "completed",
+            "cancelled"
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSalesOpportunityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_opportunities_upsert_payload.schema.json",
+  "title": "Sales opportunities.upsert callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "fields"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "motion",
+        "stage",
+        "ownerUid",
+        "nextStep",
+        "nextStepAt"
+      ],
+      "properties": {
+        "motion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "stage": {
+          "enum": [
+            "new_enquiry",
+            "ready_to_contact",
+            "contacted",
+            "in_conversation",
+            "demo_arranged",
+            "demo_completed",
+            "pilot_agreed",
+            "pilot_running",
+            "commercial_discussion",
+            "closed_won",
+            "closed_lost"
+          ]
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "nextStep": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "nextStepAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "transitionReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminRecordSalesActivityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_activities_log_payload.schema.json",
+  "title": "Sales activities.log callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "type",
+    "occurredAt",
+    "note"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "type": {
+      "enum": [
+        "note",
+        "reply",
+        "call",
+        "demo",
+        "pilot",
+        "correction",
+        "outreach_sent_manual"
+      ]
+    },
+    "channel": {
+      "enum": [
+        "email",
+        "whatsapp",
+        "other"
+      ]
+    },
+    "attestation": {
+      "const": "sent_elsewhere_by_actor"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  }
+};
+
+export const adminCreateSalesCustomFieldCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_fields_create_payload.schema.json",
+  "title": "Sales fields.create callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "field"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldId",
+        "label",
+        "type",
+        "recordType"
+      ],
+      "properties": {
+        "fieldId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "type": {
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "date",
+            "enum"
+          ]
+        },
+        "recordType": {
+          "const": "account"
+        },
+        "helpText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "enumOptions": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminSetSalesCustomFieldValueCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_fields_set_value_payload.schema.json",
+  "title": "Sales fields.setValue callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "fieldId",
+    "value"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "fieldId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 500
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminLinkSalesInboundIntentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intents_link_payload.schema.json",
+  "title": "Sales intents.link callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intentId",
+    "organizerId",
+    "requestId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    }
+  }
+};
+
+export const adminApplySalesImportCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_imports_apply_payload.schema.json",
+  "title": "Sales imports.apply callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "previewHash",
+    "sourceId",
+    "contentHash",
+    "mappingVersion",
+    "rows"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRowId",
+          "organizerId",
+          "name",
+          "researchStatus"
+        ],
+        "properties": {
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "researchStatus": {
+            "enum": [
+              "new",
+              "needs_research",
+              "ready_for_review",
+              "qualified",
+              "benchmark_only",
+              "no_fit",
+              "archived"
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1200
+          },
+          "originalScore": {
+            "anyOf": [
+              {
+                "type": "object",
+                "maxProperties": 12,
+                "propertyNames": {
+                  "type": "string",
+                  "maxLength": 64,
+                  "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+                },
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "originalCells": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "value"
+              ],
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSalesContactCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_contacts_upsert_payload.schema.json",
+  "title": "Sales contacts.upsert callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "contact",
+    "relationship"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "linkExisting": {
+      "type": "boolean"
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName"
+      ],
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "decisionInfluence",
+        "primary"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decisionInfluence": {
+          "enum": [
+            "unknown",
+            "decision_maker",
+            "influencer",
+            "operator"
+          ]
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "endpoints": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "value",
+              "verificationStatus"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "email",
+                  "phone"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 160
+              },
+              "verificationStatus": {
+                "enum": [
+                  "unverified",
+                  "verified"
+                ]
+              },
+              "evidenceId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminAddSalesEvidenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_evidence_add_payload.schema.json",
+  "title": "Sales evidence.add callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "claimKey",
+    "sourceType",
+    "sourceRef",
+    "observedAt",
+    "confidence"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "claimKey": {
+      "enum": [
+        "identity",
+        "recurrence",
+        "operation",
+        "stack",
+        "other"
+      ]
+    },
+    "signalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceType": {
+      "enum": [
+        "first_party",
+        "public_web",
+        "human_note",
+        "import_artifact"
+      ]
+    },
+    "sourceRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validThrough": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "normalizedValue": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "excerpt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminSetSalesAccountSuppressionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_accounts_set_suppression_payload.schema.json",
+  "title": "Sales accounts.setSuppression callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "status",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "status": {
+      "enum": [
+        "clear",
+        "held",
+        "suppressed"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  }
+};
+
+export const adminSetSalesContactabilityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_contacts_set_contactability_payload.schema.json",
+  "title": "Sales contacts.setContactability callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "requestId",
+    "expectedRevision",
+    "status",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "status": {
+      "enum": [
+        "unknown",
+        "draft_reviewed",
+        "held",
+        "suppressed"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "evidenceId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const organizerSalesAccountDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_sales_accounts.schema.json",
+  "title": "OrganizerSalesAccountDocument",
+  "description": "Private organizer-linked Sales companion; no canonical ownership, payment, or publication authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerSalesAccounts",
+  "x-firestore-path": "organizerSalesAccounts/{organizerId}",
+  "x-owner": "private Sales account service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "revision",
+    "researchStatus",
+    "assignedOwnerUid",
+    "summary",
+    "nextAction",
+    "suppressionStatus",
+    "suppressionReason",
+    "suppressionAt",
+    "suppressionBy",
+    "duplicateReviewRequired",
+    "qualificationPolicy",
+    "name",
+    "city",
+    "market",
+    "marketLabel",
+    "eventTypes",
+    "cohortIds",
+    "searchTokens",
+    "createdAt",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "researchStatus": {
+      "enum": [
+        "new",
+        "needs_research",
+        "ready_for_review",
+        "qualified",
+        "benchmark_only",
+        "no_fit",
+        "archived"
+      ]
+    },
+    "assignedOwnerUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "suppressionStatus": {
+      "enum": [
+        "clear",
+        "held",
+        "suppressed"
+      ]
+    },
+    "suppressionReason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "suppressionAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "suppressionBy": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "duplicateReviewRequired": {
+      "type": "boolean"
+    },
+    "qualificationPolicy": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId",
+            "version",
+            "policyHash"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "policyHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "market": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "marketLabel": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventTypes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "cohortIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "searchTokens": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 96
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "organizerId"
+};
+
+export const salesContactDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_contacts.schema.json",
+  "title": "SalesContactDocument",
+  "description": "Shared person identity only; organizer-specific endpoints and contactability live on relationships.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesContacts",
+  "x-firestore-path": "salesContacts/{contactId}",
+  "x-owner": "private Sales contact service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "contactId",
+    "displayName",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "createdBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "contactId"
+};
+
+export const salesContactRelationshipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_contact_relationships.schema.json",
+  "title": "SalesContactRelationshipDocument",
+  "description": "Organizer-scoped role, endpoints, and human draft review. Draft review never grants send authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesContactRelationships",
+  "x-firestore-path": "salesContactRelationships/{relationshipId}",
+  "x-owner": "private Sales contact service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "relationshipId",
+    "contactId",
+    "organizerId",
+    "revision",
+    "role",
+    "decisionInfluence",
+    "primary",
+    "contactabilityStatus",
+    "contactabilityReason",
+    "contactabilityAt",
+    "contactabilityBy",
+    "draftReviewEvidenceId",
+    "sendAuthority",
+    "endpoints",
+    "createdAt",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "relationshipId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "decisionInfluence": {
+      "enum": [
+        "unknown",
+        "decision_maker",
+        "influencer",
+        "operator"
+      ]
+    },
+    "primary": {
+      "type": "boolean"
+    },
+    "contactabilityStatus": {
+      "enum": [
+        "unknown",
+        "draft_reviewed",
+        "held",
+        "suppressed"
+      ]
+    },
+    "contactabilityReason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contactabilityAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contactabilityBy": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "draftReviewEvidenceId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "endpoints": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "value",
+          "verificationStatus"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "email",
+              "phone"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "verificationStatus": {
+            "enum": [
+              "unverified",
+              "verified"
+            ]
+          },
+          "evidenceId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "relationshipId",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "contactabilityStatus": {
+            "const": "draft_reviewed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "draftReviewEvidenceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const salesEvidenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_evidence.schema.json",
+  "title": "SalesEvidenceDocument",
+  "description": "Reviewed source lineage for Sales claims; not provider consent or ownership verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesEvidence",
+  "x-firestore-path": "salesEvidence/{evidenceId}",
+  "x-owner": "private Sales evidence service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "evidenceId",
+    "organizerId",
+    "contactId",
+    "claimKey",
+    "signalId",
+    "sourceType",
+    "sourceRef",
+    "observedAt",
+    "validThrough",
+    "confidence",
+    "normalizedValue",
+    "excerpt",
+    "reviewedAt",
+    "reviewerUid",
+    "createdAt",
+    "createdBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "evidenceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claimKey": {
+      "enum": [
+        "identity",
+        "recurrence",
+        "operation",
+        "stack",
+        "other"
+      ]
+    },
+    "signalId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceType": {
+      "enum": [
+        "first_party",
+        "public_web",
+        "human_note",
+        "import_artifact"
+      ]
+    },
+    "sourceRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "validThrough": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "normalizedValue": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "excerpt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "reviewerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "evidenceId",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "claimKey": {
+            "const": "operation"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "signalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const salesTaskDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_tasks.schema.json",
+  "title": "SalesTaskDocument",
+  "description": "Human-owned follow-up; a task does not authorize contacting or sending.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesTasks",
+  "x-firestore-path": "salesTasks/{taskId}",
+  "x-owner": "private Sales task service and organizer claim projection",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "taskId",
+    "organizerId",
+    "contactId",
+    "revision",
+    "kind",
+    "title",
+    "dueAt",
+    "ownerUid",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "kind": {
+      "enum": [
+        "research",
+        "reply",
+        "follow_up",
+        "demo",
+        "pilot",
+        "duplicate_review",
+        "opt_out",
+        "service_commitment"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "dueAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "enum": [
+        "open",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "taskId"
+};
+
+export const salesOpportunityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_opportunities.schema.json",
+  "title": "SalesOpportunityDocument",
+  "description": "Private sales pipeline stage, independent of public organizer status.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesOpportunities",
+  "x-firestore-path": "salesOpportunities/{opportunityId}",
+  "x-owner": "private Sales opportunity service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "opportunityId",
+    "organizerId",
+    "revision",
+    "motion",
+    "stage",
+    "ownerUid",
+    "nextStep",
+    "nextStepAt",
+    "stageEnteredAt",
+    "createdAt",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "motion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "stage": {
+      "enum": [
+        "new_enquiry",
+        "ready_to_contact",
+        "contacted",
+        "in_conversation",
+        "demo_arranged",
+        "demo_completed",
+        "pilot_agreed",
+        "pilot_running",
+        "commercial_discussion",
+        "closed_won",
+        "closed_lost"
+      ]
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "nextStep": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextStepAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stageEnteredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "opportunityId"
+};
+
+export const salesActivityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_activities.schema.json",
+  "title": "SalesActivityDocument",
+  "description": "Private timeline. Manual outbound is actor-attested only; claim transitions originate only from canonical server workflows.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesActivities",
+  "x-firestore-path": "salesActivities/{activityId}",
+  "x-owner": "private Sales service and canonical claim projection",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "activityId",
+    "organizerId",
+    "opportunityId",
+    "type",
+    "channel",
+    "outcome",
+    "providerConfirmed",
+    "occurredAt",
+    "recordedAt",
+    "note",
+    "actorUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "activityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "type": {
+      "enum": [
+        "note",
+        "reply",
+        "call",
+        "demo",
+        "pilot",
+        "correction",
+        "outreach_sent_manual",
+        "claim_requested",
+        "claim_approved",
+        "claim_rejected"
+      ]
+    },
+    "channel": {
+      "anyOf": [
+        {
+          "enum": [
+            "email",
+            "whatsapp",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "const": "actor_attested_sent"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "claimRequestId",
+        "transitionId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "organizer_claim"
+        },
+        "claimRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "transitionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  },
+  "x-document-id-field": "activityId",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "claim_requested",
+              "claim_approved",
+              "claim_rejected"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source"
+        ],
+        "properties": {
+          "channel": {
+            "type": "null"
+          },
+          "outcome": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "source"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "outreach_sent_manual"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "channel": {
+            "enum": [
+              "email",
+              "whatsapp",
+              "other"
+            ]
+          },
+          "outcome": {
+            "const": "actor_attested_sent"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "channel": {
+            "type": "null"
+          },
+          "outcome": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const salesCustomFieldDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_custom_fields.schema.json",
+  "title": "SalesCustomFieldDocument",
+  "description": "Typed, namespaced private account field definition; never extends public organizer records.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesCustomFields",
+  "x-firestore-path": "salesCustomFields/{fieldId}",
+  "x-owner": "private Sales custom-field service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "fieldId",
+    "label",
+    "normalizedLabel",
+    "type",
+    "recordType",
+    "helpText",
+    "enumOptions",
+    "revision",
+    "createdAt",
+    "createdBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "fieldId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "normalizedLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "type": {
+      "enum": [
+        "string",
+        "number",
+        "boolean",
+        "date",
+        "enum"
+      ]
+    },
+    "recordType": {
+      "const": "account"
+    },
+    "helpText": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "enumOptions": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "revision": {
+      "const": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "fieldId",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "enum"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "enumOptions": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "enumOptions": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const salesCustomFieldValueDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_custom_field_values.schema.json",
+  "title": "SalesCustomFieldValueDocument",
+  "description": "Typed value validated against its private field definition in the transaction.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "customValues",
+  "x-firestore-path": "organizerSalesAccounts/{organizerId}/customValues/{fieldId}",
+  "x-owner": "private Sales custom-field service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "fieldId",
+    "value",
+    "revision",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fieldId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "fieldId"
+};
+
+export const salesActionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_action_receipts.schema.json",
+  "title": "SalesActionReceiptDocument",
+  "description": "Actor- and scope-bound immutable idempotency receipt; result is bounded and never public.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesActionReceipts",
+  "x-firestore-path": "salesActionReceipts/{receiptId}",
+  "x-owner": "private Sales action dispatcher",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "requestId",
+    "requestHash",
+    "action",
+    "actorUid",
+    "clientId",
+    "clientAuthUid",
+    "delegationId",
+    "organizerId",
+    "createdAt",
+    "result"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "enum": [
+        "hosts.create",
+        "hosts.update",
+        "tasks.upsert",
+        "opportunities.upsert",
+        "activities.log",
+        "fields.create",
+        "fields.setValue",
+        "intents.link",
+        "imports.apply",
+        "contacts.upsert",
+        "evidence.add",
+        "accounts.setSuppression",
+        "contacts.setContactability",
+        "evidence.propose",
+        "evidence.reviewProposal",
+        "commercial.pilots.upsert",
+        "commercial.quotes.revise",
+        "commercial.quotes.approve",
+        "commercial.quotes.accept"
+      ]
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clientId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clientAuthUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delegationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "result": {
+      "type": "object",
+      "maxProperties": 7,
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 0,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 25,
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "maxProperties": 40,
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "array",
+                "maxItems": 25,
+                "items": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "maxProperties": 40,
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 40,
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "maxProperties": 40,
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "array",
+            "maxItems": 25,
+            "items": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "maxProperties": 40,
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "maxItems": 25,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 25,
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "maxProperties": 40,
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "maxProperties": 40,
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 25,
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "maxProperties": 40,
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "object",
+            "maxProperties": 40,
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 2000
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "maxItems": 25,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "maxProperties": 40,
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "maxItems": 25,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 25,
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "maxProperties": 40,
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "maxProperties": 40,
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 25,
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "maxProperties": 40,
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 2000
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+
+export const salesImportJobDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_import_jobs.schema.json",
+  "title": "SalesImportJobDocument",
+  "description": "Reviewed 25-row maximum import receipt; row details live in a private subcollection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesImportJobs",
+  "x-firestore-path": "salesImportJobs/{importId}",
+  "x-owner": "private Sales import service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "importId",
+    "sourceId",
+    "contentHash",
+    "mappingVersion",
+    "previewHash",
+    "rowCount",
+    "counts",
+    "status",
+    "createdAt",
+    "createdBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "created",
+        "matched",
+        "duplicate",
+        "unresolved",
+        "rejected"
+      ],
+      "properties": {
+        "created": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "matched": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "duplicate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "unresolved": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "rejected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25
+        }
+      }
+    },
+    "status": {
+      "const": "applied"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "x-document-id-field": "importId"
+};
+
+export const salesImportRowDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_import_rows.schema.json",
+  "title": "SalesImportRowDocument",
+  "description": "Unique source-row lineage for successfully matched or created reviewed rows; rowKey is a source ID and row ID hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesImportRows",
+  "x-firestore-path": "salesImportRows/{rowKey}",
+  "x-owner": "private Sales import service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "importId",
+    "sourceId",
+    "sourceRowId",
+    "sourceContentHash",
+    "mappingVersion",
+    "organizerId",
+    "disposition",
+    "reason",
+    "originalScore",
+    "originalResearchStatus",
+    "originalSummary",
+    "importedAt",
+    "importedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "created",
+        "matched",
+        "duplicate",
+        "unresolved",
+        "rejected"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "originalScore": {
+      "anyOf": [
+        {
+          "type": "object",
+          "maxProperties": 12,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 500
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "originalCells": {
+      "anyOf": [
+        {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "column",
+              "value"
+            ],
+            "properties": {
+              "column": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 160
+              },
+              "value": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 2000
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "originalResearchStatus": {
+      "enum": [
+        "new",
+        "needs_research",
+        "ready_for_review",
+        "qualified",
+        "benchmark_only",
+        "no_fit",
+        "archived"
+      ]
+    },
+    "originalSummary": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "importedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "importedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const salesImportJobRowDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_import_job_rows.schema.json",
+  "title": "SalesImportJobRowDocument",
+  "description": "Immutable per-row review result for every row in a bounded import job.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "rows",
+  "x-firestore-path": "salesImportJobs/{importId}/rows/{rowIndex}",
+  "x-owner": "private Sales import service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "importId",
+    "sourceId",
+    "sourceRowId",
+    "sourceContentHash",
+    "mappingVersion",
+    "organizerId",
+    "disposition",
+    "reason",
+    "originalScore",
+    "originalResearchStatus",
+    "originalSummary",
+    "importedAt",
+    "importedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "created",
+        "matched",
+        "duplicate",
+        "unresolved",
+        "rejected"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "originalScore": {
+      "anyOf": [
+        {
+          "type": "object",
+          "maxProperties": 12,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9 _.-]*$"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 500
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "originalCells": {
+      "anyOf": [
+        {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "column",
+              "value"
+            ],
+            "properties": {
+              "column": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 160
+              },
+              "value": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 2000
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "originalResearchStatus": {
+      "enum": [
+        "new",
+        "needs_research",
+        "ready_for_review",
+        "qualified",
+        "benchmark_only",
+        "no_fit",
+        "archived"
+      ]
+    },
+    "originalSummary": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "importedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "importedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const salesSettingDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_settings.schema.json",
+  "title": "SalesSettingDocument",
+  "description": "Private runtime configuration; qualification rule values are not embedded in public source.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesSettings",
+  "x-firestore-path": "salesSettings/{settingId}",
+  "x-owner": "private Sales runtime settings",
+  "required": [
+    "schemaVersion",
+    "classification"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "status": {
+      "const": "active"
+    },
+    "policyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ruleId",
+          "claimKey",
+          "sourceTypes",
+          "confidence",
+          "minimumCount",
+          "distinctSignalIds",
+          "distinctSourceRoots",
+          "maxAgeDays"
+        ],
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "claimKey": {
+            "enum": [
+              "identity",
+              "recurrence",
+              "operation",
+              "stack",
+              "other"
+            ]
+          },
+          "sourceTypes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "first_party",
+                "public_web",
+                "human_note",
+                "import_artifact"
+              ]
+            }
+          },
+          "confidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          "minimumCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "distinctSignalIds": {
+            "type": "boolean"
+          },
+          "distinctSourceRoots": {
+            "type": "boolean"
+          },
+          "maxAgeDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 365
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "normalizedLabels": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "required": [
+            "status",
+            "policyId",
+            "version",
+            "policyHash",
+            "rules"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "normalizedLabels"
+                ]
+              },
+              {
+                "required": [
+                  "updatedAt"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "normalizedLabels",
+            "updatedAt"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "status"
+                ]
+              },
+              {
+                "required": [
+                  "policyId"
+                ]
+              },
+              {
+                "required": [
+                  "version"
+                ]
+              },
+              {
+                "required": [
+                  "policyHash"
+                ]
+              },
+              {
+                "required": [
+                  "rules"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+};
+
+export const salesSuppressionDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_suppression_decisions.schema.json",
+  "title": "SalesSuppressionDecisionDocument",
+  "description": "Append-only human decision. Contact draft review never means send permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesSuppressionDecisions",
+  "x-firestore-path": "salesSuppressionDecisions/{decisionId}",
+  "x-owner": "private Sales suppression and contactability service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "decisionId",
+    "targetType",
+    "organizerId",
+    "contactId",
+    "previousStatus",
+    "status",
+    "reason",
+    "actorUid",
+    "recordedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "targetType": {
+      "enum": [
+        "account",
+        "contact_relationship"
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "previousStatus": {
+      "enum": [
+        "clear",
+        "unknown",
+        "draft_reviewed",
+        "held",
+        "suppressed"
+      ]
+    },
+    "status": {
+      "enum": [
+        "clear",
+        "unknown",
+        "draft_reviewed",
+        "held",
+        "suppressed"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "accountRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "relationshipRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "evidenceId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-document-id-field": "decisionId",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "targetType": {
+            "const": "account"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "accountRevision"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "null"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "relationshipRevision"
+              ]
+            },
+            {
+              "required": [
+                "evidenceId"
+              ]
+            },
+            {
+              "required": [
+                "sendAuthority"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "relationshipRevision",
+          "evidenceId",
+          "sendAuthority"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "not": {
+          "required": [
+            "accountRevision"
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const adminSalesEvidenceProposalsListCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_evidence_proposals_list_payload.schema.json",
+  "title": "admin_sales_evidence_proposals_list_payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+};
+
+export const adminSalesEvidenceProposeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_evidence_propose_payload.schema.json",
+  "title": "admin_sales_evidence_propose_payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "claimKey",
+    "sourceType",
+    "sourceRef",
+    "observedAt",
+    "confidence"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "claimKey": {
+      "enum": [
+        "identity",
+        "recurrence",
+        "operation",
+        "stack",
+        "other"
+      ]
+    },
+    "signalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceType": {
+      "enum": [
+        "first_party",
+        "public_web",
+        "human_note",
+        "import_artifact"
+      ]
+    },
+    "sourceRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validThrough": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "normalizedValue": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "excerpt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminSalesEvidenceReviewProposalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_evidence_review_proposal_payload.schema.json",
+  "title": "admin_sales_evidence_review_proposal_payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "proposalId",
+    "expectedRevision",
+    "decision",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "proposalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "decision": {
+      "enum": [
+        "accept",
+        "reject"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  }
+};
+
+export const adminSalesIntelligenceAssessmentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_assessment_payload.schema.json",
+  "title": "AdminSaveSalesFactorAssessmentPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "factorId",
+    "expectedRevision",
+    "state",
+    "value",
+    "evidenceIds",
+    "reason"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "factorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "enum": [
+        "known",
+        "unknown",
+        "disputed"
+      ]
+    },
+    "value": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 5
+    },
+    "evidenceIds": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminSalesIntelligenceClauseCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_clause_payload.schema.json",
+  "title": "AdminSaveSalesIntelligenceClausePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "clauseId",
+    "organizerId",
+    "expectedRevision",
+    "kind",
+    "text",
+    "evidenceIds",
+    "validUntil",
+    "permission"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "clauseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kind": {
+      "enum": [
+        "observation",
+        "capability",
+        "reference",
+        "cta"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "evidenceIds": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "permission": {
+      "enum": [
+        "not_required",
+        "private_mention",
+        "withdrawn"
+      ]
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminBuildSalesOutreachInputPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_draft_payload.schema.json",
+  "title": "AdminBuildSalesOutreachInputPayload",
+  "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "opportunityId",
+    "observationIds",
+    "capabilityIds",
+    "referenceIds",
+    "ctaIds",
+    "channel",
+    "purpose"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "observationIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "capabilityIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "referenceIds": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "ctaIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "channel": {
+      "enum": [
+        "email",
+        "message"
+      ]
+    },
+    "purpose": {
+      "enum": [
+        "first_message",
+        "follow_up"
+      ]
+    },
+    "priorActivityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminSalesIntelligencePolicyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_policy_payload.schema.json",
+  "title": "AdminSaveSalesIntelligencePolicyPayload",
+  "description": "Admin Owner exact-retry mutation of a private seven-factor runtime policy; no policy values are published in source.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "expectedRevision",
+    "policy"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "version",
+        "status",
+        "factors",
+        "priorityBands",
+        "promptVersion",
+        "playbookVersion"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "paused"
+          ]
+        },
+        "factors": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "weight",
+              "claimKeys",
+              "maxAgeDays"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "weight": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "claimKeys": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "identity",
+                    "recurrence",
+                    "operation",
+                    "stack",
+                    "other"
+                  ]
+                }
+              },
+              "maxAgeDays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 365
+              }
+            }
+          }
+        },
+        "priorityBands": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "high",
+            "medium"
+          ],
+          "properties": {
+            "high": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "medium": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "playbookVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminSalesIntelligenceReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_review_payload.schema.json",
+  "title": "AdminSalesIntelligenceReviewPayload",
+  "description": "Closed review and manual-copy requests. Each callable accepts only its own variant; none grants send authority.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "clauseId",
+        "expectedRevision",
+        "decision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "clauseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decision": {
+          "enum": [
+            "approve",
+            "withdraw"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "draftId",
+        "expectedContentHash",
+        "factualValidity",
+        "tone",
+        "channelReadiness"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedContentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "factualValidity": {
+          "const": "verified"
+        },
+        "tone": {
+          "const": "approved"
+        },
+        "channelReadiness": {
+          "const": "manual_copy_only"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "draftId",
+        "expectedContentHash"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "expectedContentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const adminSalesIntelligenceScoreCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_score_payload.schema.json",
+  "title": "AdminSaveSalesScoreSnapshotPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAccountRevision",
+    "expectedPolicyRevision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAccountRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expectedPolicyRevision": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesDemoManagementCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+  "title": "SalesDemoManagementCallablePayloads",
+  "description": "Admin Owner demo commands and bounded owner reads. A request ID is stable across retries; reads never return grant digests.",
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "expectedRevision",
+        "evidenceRevision",
+        "preview",
+        "formCapabilityReview",
+        "fieldMappings"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidateId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "opportunityId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidenceRevision": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "preview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "brandName",
+            "headline",
+            "scenario",
+            "steps",
+            "retainedTools",
+            "limitations",
+            "cta"
+          ],
+          "properties": {
+            "brandName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "headline": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scenario": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "steps": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "retainedTools": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "cta": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        "formCapabilityReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionTypes",
+            "branching",
+            "requiredFields",
+            "scoringApproval",
+            "uploads"
+          ],
+          "properties": {
+            "questionTypes": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "branching": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "requiredFields": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "scoringApproval": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "uploads": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            }
+          }
+        },
+        "fieldMappings": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceField",
+              "catchField",
+              "disposition"
+            ],
+            "properties": {
+              "sourceField": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "catchField": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "disposition": {
+                "enum": [
+                  "exact",
+                  "manual",
+                  "retained",
+                  "unsupported"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "blueprintRevision",
+        "expiresAt",
+        "sessionCap"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "blueprintRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contactBinding": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "email",
+                    "phone"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 254
+                }
+              }
+            }
+          ]
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sessionCap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "invitationId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blueprintId"
+      ],
+      "properties": {
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invitationId"
+      ],
+      "properties": {
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "cursor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blueprintId"
+      ],
+      "properties": {
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "cursor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "save": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "expectedRevision",
+        "evidenceRevision",
+        "preview",
+        "formCapabilityReview",
+        "fieldMappings"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidateId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "opportunityId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidenceRevision": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "preview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "brandName",
+            "headline",
+            "scenario",
+            "steps",
+            "retainedTools",
+            "limitations",
+            "cta"
+          ],
+          "properties": {
+            "brandName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "headline": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scenario": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "steps": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "retainedTools": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "cta": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        "formCapabilityReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionTypes",
+            "branching",
+            "requiredFields",
+            "scoringApproval",
+            "uploads"
+          ],
+          "properties": {
+            "questionTypes": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "branching": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "requiredFields": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "scoringApproval": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            },
+            "uploads": {
+              "enum": [
+                "exact",
+                "manual",
+                "retained",
+                "unsupported"
+              ]
+            }
+          }
+        },
+        "fieldMappings": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceField",
+              "catchField",
+              "disposition"
+            ],
+            "properties": {
+              "sourceField": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "catchField": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "disposition": {
+                "enum": [
+                  "exact",
+                  "manual",
+                  "retained",
+                  "unsupported"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "blueprintDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "blueprintId",
+        "blueprintRevision",
+        "expiresAt",
+        "sessionCap"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "blueprintRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contactBinding": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "email",
+                    "phone"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 254
+                }
+              }
+            }
+          ]
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sessionCap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
+    },
+    "revoke": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "invitationId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "blueprintRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blueprintId"
+      ],
+      "properties": {
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        }
+      }
+    },
+    "invitationRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invitationId"
+      ],
+      "properties": {
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        }
+      }
+    },
+    "capabilityRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "blueprintList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "cursor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    },
+    "invitationList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blueprintId"
+      ],
+      "properties": {
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "cursor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    }
+  },
+  "x-callables": [
+    "adminSaveSalesDemoBlueprint",
+    "adminReviewSalesDemoBlueprint",
+    "adminWithdrawSalesDemoBlueprint",
+    "adminIssueSalesDemoInvitation",
+    "adminRevokeSalesDemoInvitation",
+    "adminGetSalesDemoBlueprint",
+    "adminGetSalesDemoInvitation",
+    "adminGetSalesDemoCapability",
+    "adminListSalesDemoBlueprints",
+    "adminListSalesDemoInvitations"
+  ]
+};
+
+export const salesDemoPreviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sales_demo_preview.schema.json",
+  "title": "GetSalesDemoPreviewCallablePayload",
+  "description": "Anonymous read-only preview. Fetching never opens or consumes an invitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-callable": "getSalesDemoPreview"
+};
+
+export const salesDemoTrialCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sales_demo_trial.schema.json",
+  "title": "SalesDemoTrialCallablePayloads",
+  "description": "Union of explicit start, exact session read, and bounded synthetic action requests. Auth and App Check are required for every variant.",
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invitationId",
+        "grantToken",
+        "requestId"
+      ],
+      "properties": {
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "grantToken"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "grantToken",
+        "requestId",
+        "expectedRevision",
+        "action"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "action": {
+          "enum": [
+            "reviewApplication",
+            "prepareReply",
+            "admitGuest",
+            "requestAssistance"
+          ]
+        },
+        "choice": {
+          "enum": [
+            "approve",
+            "needs_info",
+            "welcome",
+            "clarify"
+          ]
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "grantToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invitationId",
+        "grantToken",
+        "requestId"
+      ],
+      "properties": {
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        }
+      }
+    },
+    "get": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "grantToken"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "advance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "grantToken",
+        "requestId",
+        "expectedRevision",
+        "action"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "grantToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "action": {
+          "enum": [
+            "reviewApplication",
+            "prepareReply",
+            "admitGuest",
+            "requestAssistance"
+          ]
+        },
+        "choice": {
+          "enum": [
+            "approve",
+            "needs_info",
+            "welcome",
+            "clarify"
+          ]
+        }
+      }
+    }
+  },
+  "x-callables": [
+    "startSalesDemo",
+    "getSalesDemoSession",
+    "advanceSalesDemo"
+  ]
+};
+
+export const salesDemoBlueprintsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_blueprints.schema.json",
+  "title": "SalesDemoBlueprintDocument",
+  "description": "Private reviewed plan; only its preview object can reach an anonymous invitation view.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "blueprintId",
+    "revision",
+    "state",
+    "organizerId",
+    "candidateId",
+    "opportunityId",
+    "capability",
+    "capabilityRevision",
+    "evidenceRevision",
+    "seedVersion",
+    "formCapabilityReview",
+    "fieldMappings",
+    "preview",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "reviewed",
+        "withdrawn"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "candidateId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "opportunityId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "capability": {
+      "const": "synthetic_forms_v1"
+    },
+    "capabilityRevision": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "evidenceRevision": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "seedVersion": {
+      "const": 1
+    },
+    "formCapabilityReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionTypes",
+        "branching",
+        "requiredFields",
+        "scoringApproval",
+        "uploads"
+      ],
+      "properties": {
+        "questionTypes": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        },
+        "branching": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        },
+        "requiredFields": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        },
+        "scoringApproval": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        },
+        "uploads": {
+          "enum": [
+            "exact",
+            "manual",
+            "retained",
+            "unsupported"
+          ]
+        }
+      }
+    },
+    "fieldMappings": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceField",
+          "catchField",
+          "disposition"
+        ],
+        "properties": {
+          "sourceField": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "catchField": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "disposition": {
+            "enum": [
+              "exact",
+              "manual",
+              "retained",
+              "unsupported"
+            ]
+          }
+        }
+      }
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "brandName",
+        "headline",
+        "scenario",
+        "steps",
+        "retainedTools",
+        "limitations",
+        "cta"
+      ],
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "retainedTools": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "cta": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "reviewedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "disposition": {
+      "enum": [
+        "exact",
+        "manual",
+        "retained",
+        "unsupported"
+      ]
+    }
+  },
+  "x-firestore-collection": "salesDemoBlueprints",
+  "x-firestore-path": "salesDemoBlueprints/{blueprintId}",
+  "x-document-id-field": "blueprintId",
+  "x-owner": "sales demo admin callable"
+};
+
+export const salesDemoCapabilitiesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_capabilities.schema.json",
+  "title": "SalesDemoCapabilityGateDocument",
+  "description": "Trusted server-owned current eligibility for the synthetic Forms adapter; absence denies demos.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "capability",
+    "revision",
+    "evidenceRevision",
+    "enabled",
+    "reviewedByUid",
+    "reviewedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "capability": {
+      "const": "synthetic_forms_v1"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "evidenceRevision": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "salesDemoCapabilities",
+  "x-firestore-path": "salesDemoCapabilities/{capability}",
+  "x-document-id-field": "capability",
+  "x-owner": "product capability owner using trusted server administration"
+};
+
+export const salesDemoInvitationsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_invitations.schema.json",
+  "title": "SalesDemoInvitationDocument",
+  "description": "Private digest-only invitation. Contact endpoint is retained only as a keyed digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "invitationId",
+    "blueprintId",
+    "blueprintRevision",
+    "tokenDigest",
+    "contactBinding",
+    "expiresAt",
+    "revoked",
+    "revision",
+    "sessionCap",
+    "sessionCount",
+    "startReceiptCount",
+    "startWindowMinute",
+    "startWindowCount",
+    "currentSessionId",
+    "issuedByUid",
+    "issuedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "invitationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tokenDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "contactBinding": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "digest"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "email",
+                "phone"
+              ]
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sessionCap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "sessionCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "startReceiptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12
+    },
+    "startWindowMinute": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "startWindowCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "currentSessionId": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        }
+      ]
+    },
+    "issuedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revokedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-firestore-collection": "salesDemoInvitations",
+  "x-firestore-path": "salesDemoInvitations/{invitationId}",
+  "x-document-id-field": "invitationId",
+  "x-owner": "sales demo admin and trial callables"
+};
+
+export const salesDemoReceiptsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_receipts.schema.json",
+  "title": "SalesDemoReceiptDocument",
+  "description": "Immutable issuer-bound command result and material hash; trial receipts expire with their session.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "receiptId",
+    "actorUid",
+    "requestId",
+    "action",
+    "targetId",
+    "materialHash",
+    "result",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "action": {
+      "enum": [
+        "salesDemo.blueprint.save",
+        "salesDemo.blueprint.review",
+        "salesDemo.blueprint.withdraw",
+        "salesDemo.invitation.issue",
+        "salesDemo.invitation.revoke",
+        "salesDemo.session.start",
+        "salesDemo.session.reviewApplication",
+        "salesDemo.session.prepareReply",
+        "salesDemo.session.admitGuest",
+        "salesDemo.session.requestAssistance"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "synthetic": {
+          "const": true
+        },
+        "blueprintId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "blueprintRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "withdrawn"
+          ]
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "previewOnly": {
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revoked": {
+          "type": "boolean"
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revokedByUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "completed"
+          ]
+        },
+        "allowedActions": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "enum": [
+              "reviewApplication",
+              "prepareReply",
+              "admitGuest",
+              "requestAssistance"
+            ]
+          }
+        },
+        "actionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "step": {
+          "enum": [
+            "application",
+            "reply",
+            "admission",
+            "complete"
+          ]
+        },
+        "application": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicantName",
+            "request",
+            "review"
+          ],
+          "properties": {
+            "applicantName": {
+              "const": "Sample Applicant"
+            },
+            "request": {
+              "const": "Sample event application"
+            },
+            "review": {
+              "enum": [
+                "pending",
+                "approved",
+                "needs_info"
+              ]
+            }
+          }
+        },
+        "reply": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "template"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "none",
+                "prepared"
+              ]
+            },
+            "template": {
+              "enum": [
+                "none",
+                "welcome",
+                "clarify"
+              ]
+            }
+          }
+        },
+        "guest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "displayName"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "not_admitted",
+                "admitted"
+              ]
+            },
+            "displayName": {
+              "const": "Sample Applicant"
+            }
+          }
+        },
+        "assistanceRequested": {
+          "type": "boolean"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-firestore-collection": "salesDemoReceipts",
+  "x-firestore-path": "salesDemoReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "sales demo transaction and bounded expiry worker"
+};
+
+export const salesDemoSessionsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_sessions.schema.json",
+  "title": "SalesDemoSessionDocument",
+  "description": "Isolated synthetic Forms practice state; no production guest, message, payment or membership references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "sessionId",
+    "invitationId",
+    "blueprintId",
+    "blueprintRevision",
+    "actorUid",
+    "createdAt",
+    "expiresAt",
+    "status",
+    "allowedActions",
+    "revision",
+    "actionCount",
+    "step",
+    "application",
+    "reply",
+    "guest",
+    "assistanceRequested"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "invitationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "completed"
+      ]
+    },
+    "allowedActions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "reviewApplication",
+          "prepareReply",
+          "admitGuest",
+          "requestAssistance"
+        ]
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "actionCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "step": {
+      "enum": [
+        "application",
+        "reply",
+        "admission",
+        "complete"
+      ]
+    },
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicantName",
+        "request",
+        "review"
+      ],
+      "properties": {
+        "applicantName": {
+          "const": "Sample Applicant"
+        },
+        "request": {
+          "const": "Sample event application"
+        },
+        "review": {
+          "enum": [
+            "pending",
+            "approved",
+            "needs_info"
+          ]
+        }
+      }
+    },
+    "reply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "template"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "none",
+            "prepared"
+          ]
+        },
+        "template": {
+          "enum": [
+            "none",
+            "welcome",
+            "clarify"
+          ]
+        }
+      }
+    },
+    "guest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "displayName"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_admitted",
+            "admitted"
+          ]
+        },
+        "displayName": {
+          "const": "Sample Applicant"
+        }
+      }
+    },
+    "assistanceRequested": {
+      "type": "boolean"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-firestore-collection": "salesDemoSessions",
+  "x-firestore-path": "salesDemoSessions/{sessionId}",
+  "x-document-id-field": "sessionId",
+  "x-owner": "sales demo trial callable and bounded expiry worker"
+};
+
+export const salesEvidenceProposalsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_evidence_proposals.schema.json",
+  "title": "SalesEvidenceProposalDocument",
+  "x-firestore-collection": "salesEvidenceProposals",
+  "x-firestore-path": "salesEvidenceProposals/{proposalId}",
+  "x-owner": "private Sales evidence service",
+  "x-document-id-field": "proposalId",
+  "description": "Private suggestions, isolated from employee-reviewed evidence and qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "proposalId",
+    "organizerId",
+    "revision",
+    "status",
+    "evidence",
+    "createdAt",
+    "createdBy",
+    "clientId",
+    "clientAuthUid",
+    "delegationId",
+    "reviewedAt",
+    "reviewerUid",
+    "reviewReason",
+    "promotedEvidenceId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "proposalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "claimKey",
+        "sourceType",
+        "sourceRef",
+        "observedAt",
+        "confidence"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "claimKey": {
+          "enum": [
+            "identity",
+            "recurrence",
+            "operation",
+            "stack",
+            "other"
+          ]
+        },
+        "signalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceType": {
+          "enum": [
+            "first_party",
+            "public_web",
+            "human_note",
+            "import_artifact"
+          ]
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validThrough": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "normalizedValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "excerpt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clientId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clientAuthUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delegationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewerUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reviewReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    },
+    "promotedEvidenceId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const salesInboundIntentsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_inbound_intents.schema.json",
+  "title": "SalesInboundIntentDocument",
+  "description": "Private self-reported host submission, immutable at capture and linked only after identity review.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesInboundIntents",
+  "x-firestore-path": "salesInboundIntents/{intentId}",
+  "x-document-id-field": "intentId",
+  "x-owner": "joinWaitlist and adminLinkSalesInboundIntent",
+  "required": [
+    "schemaVersion",
+    "revision",
+    "classification",
+    "intentId",
+    "source",
+    "submissionId",
+    "requestHash",
+    "waitlistId",
+    "status",
+    "organizerId",
+    "evidenceStatus",
+    "fullName",
+    "email",
+    "city",
+    "entryRoute",
+    "alreadyJoined",
+    "hostApplication",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "intentId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "const": "website"
+    },
+    "submissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "waitlistId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "status": {
+      "enum": [
+        "needs_identity_review",
+        "linked",
+        "dismissed"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidenceStatus": {
+      "const": "self_reported"
+    },
+    "fullName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "entryRoute": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "alreadyJoined": {
+      "type": "boolean"
+    },
+    "hostApplication": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "organizationName": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "organizationType": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "operatingCity": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "communityLink": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "formats": {
+              "type": "array",
+              "maxItems": 10,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 80
+              }
+            },
+            "eventCadence": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "nextEventName": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "nextEventDate": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "eventLocation": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "expectedCapacity": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "bookingPlatform": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "guestListFormat": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "priceRange": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "admissionModel": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "waitlistPlan": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "paymentReadiness": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "eventSuccessModules": {
+              "type": "array",
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "hostGoals": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "operatingNotes": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "linkedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "linkedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "linkRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "linked"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "linkedAt",
+          "linkedBy",
+          "linkRequestId"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "organizerId": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const salesIntelligenceAssessmentsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_assessments.schema.json",
+  "title": "SalesIntelligenceAssessmentDocument",
+  "description": "Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligenceAssessments",
+  "x-firestore-path": "salesIntelligenceAssessments/{assessmentId}",
+  "x-document-id-field": "assessmentId",
+  "x-owner": "private Sales intelligence assessment callable",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "assessmentId",
+    "organizerId",
+    "factorId",
+    "revision",
+    "state",
+    "value",
+    "evidenceIds",
+    "reason",
+    "reviewedAt",
+    "reviewerUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "assessmentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "factorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "enum": [
+        "known",
+        "unknown",
+        "disputed"
+      ]
+    },
+    "value": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 5
+    },
+    "evidenceIds": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesIntelligenceClausesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_clauses.schema.json",
+  "title": "SalesIntelligenceClauseDocument",
+  "description": "Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligenceClauses",
+  "x-firestore-path": "salesIntelligenceClauses/{clauseId}",
+  "x-document-id-field": "clauseId",
+  "x-owner": "private Sales intelligence clause callable",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "clauseId",
+    "organizerId",
+    "revision",
+    "kind",
+    "text",
+    "state",
+    "evidenceIds",
+    "validUntil",
+    "permission",
+    "reviewedAt",
+    "reviewedBy",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "clauseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "kind": {
+      "enum": [
+        "observation",
+        "capability",
+        "reference",
+        "cta"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "approved",
+        "withdrawn"
+      ]
+    },
+    "evidenceIds": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "permission": {
+      "enum": [
+        "not_required",
+        "private_mention",
+        "withdrawn"
+      ]
+    },
+    "reviewedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reviewedBy": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesIntelligencePoliciesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_policies.schema.json",
+  "title": "SalesIntelligencePolicyDocument",
+  "description": "Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligencePolicies",
+  "x-firestore-path": "salesIntelligencePolicies/{policyRecordId}",
+  "x-document-id-field": "policyRecordId",
+  "x-owner": "private Sales intelligence policy callable",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "policyRecordId",
+    "policyId",
+    "revision",
+    "version",
+    "status",
+    "factors",
+    "priorityBands",
+    "promptVersion",
+    "playbookVersion",
+    "updatedAt",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "policyRecordId": {
+      "const": "current"
+    },
+    "policyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "paused"
+      ]
+    },
+    "factors": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "weight",
+          "claimKeys",
+          "maxAgeDays"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "claimKeys": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "identity",
+                "recurrence",
+                "operation",
+                "stack",
+                "other"
+              ]
+            }
+          },
+          "maxAgeDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+          }
+        }
+      }
+    },
+    "priorityBands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "high",
+        "medium"
+      ],
+      "properties": {
+        "high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "medium": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "promptVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "playbookVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesIntelligenceReceiptsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json",
+  "title": "SalesIntelligenceReceiptDocument",
+  "description": "Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligenceReceipts",
+  "x-firestore-path": "salesIntelligenceReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "private Sales intelligence mutation service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "receiptId",
+    "actorUid",
+    "action",
+    "requestId",
+    "materialHash",
+    "result",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "action": {
+      "enum": [
+        "policy.save",
+        "assessment.save",
+        "clause.save",
+        "clause.review",
+        "score.snapshot",
+        "draft.record",
+        "draft.review",
+        "draft.copy"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "result": {
+      "type": "object",
+      "maxProperties": 10
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const salesIntelligenceScoreSnapshotsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_score_snapshots.schema.json",
+  "title": "SalesIntelligenceScoreSnapshotDocument",
+  "description": "Immutable reviewed-source fit snapshot. Unknown or disputed factors yield a null score and unranked priority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligenceScoreSnapshots",
+  "x-firestore-path": "salesIntelligenceScoreSnapshots/{snapshotId}",
+  "x-document-id-field": "snapshotId",
+  "x-owner": "private Sales intelligence score callable",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "snapshotId",
+    "organizerId",
+    "accountRevision",
+    "policyId",
+    "policyRevision",
+    "policyVersion",
+    "sourceHash",
+    "status",
+    "score",
+    "priority",
+    "factors",
+    "evaluatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "snapshotId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "accountRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "policyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "policyRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "needs_research",
+        "review_required"
+      ]
+    },
+    "score": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "priority": {
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "unranked"
+      ]
+    },
+    "factors": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "factorId",
+          "state",
+          "value",
+          "evidenceIds",
+          "reason"
+        ],
+        "properties": {
+          "factorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "state": {
+            "enum": [
+              "known",
+              "unknown",
+              "disputed"
+            ]
+          },
+          "value": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 5
+          },
+          "evidenceIds": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const salesOutreachDraftsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_outreach_drafts.schema.json",
+  "title": "SalesOutreachDraftDocument",
+  "description": "Private Operations-rendered manual-copy-only draft with frozen source request and exact source hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesOutreachDrafts",
+  "x-firestore-path": "salesOutreachDrafts/{draftId}",
+  "x-document-id-field": "draftId",
+  "x-owner": "private Sales intelligence Operations bridge",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "draftId",
+    "organizerId",
+    "contactId",
+    "opportunityId",
+    "sourceRequest",
+    "sourceMaterialHash",
+    "sourceHash",
+    "inputHash",
+    "draft",
+    "status",
+    "createdAt",
+    "createdBy",
+    "reviewedAt",
+    "reviewedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "observationIds",
+        "capabilityIds",
+        "referenceIds",
+        "ctaIds",
+        "channel",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "observationIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "capabilityIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "referenceIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "ctaIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "priorActivityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "sourceMaterialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inputHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "draft": {
+      "title": "OutreachDraft",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "draftId",
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "language",
+        "channel",
+        "subject",
+        "text",
+        "sentences",
+        "selection",
+        "inputHash",
+        "contentHash",
+        "sourceRevisions",
+        "model",
+        "reviewStatus",
+        "sendAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "const": "en"
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "subject": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sentences": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "kind",
+              "sourceIds"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "enum": [
+                  "observation",
+                  "capability",
+                  "reference",
+                  "cta",
+                  "prior_interaction"
+                ]
+              },
+              "sourceIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "selection": {
+          "title": "OutreachDraftingSelection",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "contactId",
+            "opportunityId",
+            "language",
+            "observationId",
+            "capabilityId",
+            "referenceId",
+            "ctaId",
+            "reasonToBlock",
+            "omittedIds"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "language": {
+              "const": "en"
+            },
+            "observationId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "capabilityId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ctaId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasonToBlock": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "omittedIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceRevisions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelId",
+            "promptVersion",
+            "playbookVersion",
+            "cacheHit",
+            "usage"
+          ],
+          "properties": {
+            "modelId": {
+              "type": "string"
+            },
+            "promptVersion": {
+              "type": "string"
+            },
+            "playbookVersion": {
+              "type": "string"
+            },
+            "cacheHit": {
+              "type": "boolean"
+            },
+            "usage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inputTokens",
+                "outputTokens",
+                "costMicros"
+              ],
+              "properties": {
+                "inputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "outputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "costMicros": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "reviewStatus": {
+          "const": "pending_review"
+        },
+        "sendAuthority": {
+          "const": false
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "reviewedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reviewedBy": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ids": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    }
+  }
+};
+
 export const setEventPublicationCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/set_event_publication_payload.schema.json",

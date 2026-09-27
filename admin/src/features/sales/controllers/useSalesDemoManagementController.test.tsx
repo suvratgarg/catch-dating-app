@@ -4,7 +4,7 @@ import type {ReactNode} from "react";
 import {afterEach, expect, it, vi} from "vitest";
 import type {DemoManagementApi, DemoSaveInput} from
   "../api/salesDemoManagement";
-import {useSalesDemoManagement} from "./useSalesDemoManagement";
+import {useSalesDemoManagementController} from "./useSalesDemoManagementController";
 
 afterEach(cleanup);
 const capability = {capability: "synthetic_forms_v1" as const,
@@ -40,7 +40,7 @@ it("retries uncertain save with frozen material and the same request ID",
     saveBlueprint.mockRejectedValueOnce(new Error("network lost"))
       .mockResolvedValueOnce({blueprintId: "blueprint-001", revision: 1,
         state: "draft"});
-    const {result} = renderHook(() => useSalesDemoManagement({
+    const {result} = renderHook(() => useSalesDemoManagementController({
       isAdminOwner: true, actorUid: "owner-001", organizerId: "organizer-001",
       api,
     }), {wrapper});
@@ -59,7 +59,7 @@ it("frees a definitively rejected revision for reviewed resubmission",
     const {api, saveBlueprint, wrapper} = fixture();
     saveBlueprint.mockRejectedValueOnce(Object.assign(new Error("stale"),
       {code: "functions/failed-precondition"}));
-    const {result} = renderHook(() => useSalesDemoManagement({
+    const {result} = renderHook(() => useSalesDemoManagementController({
       isAdminOwner: true, actorUid: "owner-001", organizerId: "organizer-001",
       api,
     }), {wrapper});
@@ -74,7 +74,7 @@ it("treats an aborted transaction as a definitive no-effect rejection",
     const {api, saveBlueprint, wrapper} = fixture();
     saveBlueprint.mockRejectedValueOnce(Object.assign(new Error("aborted"),
       {code: "functions/aborted"}));
-    const {result} = renderHook(() => useSalesDemoManagement({
+    const {result} = renderHook(() => useSalesDemoManagementController({
       isAdminOwner: true, actorUid: "owner-001", organizerId: "organizer-001",
       api,
     }), {wrapper});
@@ -85,7 +85,7 @@ it("treats an aborted transaction as a definitive no-effect rejection",
 
 it("does not read or mutate demos for a non-owner", async () => {
   const {api, saveBlueprint, wrapper} = fixture();
-  const {result} = renderHook(() => useSalesDemoManagement({
+  const {result} = renderHook(() => useSalesDemoManagementController({
     isAdminOwner: false, actorUid: "staff-001", organizerId: "organizer-001",
     api,
   }), {wrapper});
