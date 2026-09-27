@@ -217,6 +217,8 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     CatchOption(value: fn.functionId, label: fn.name),
                 ],
                 selected: selectedFn?.functionId,
+                contractExemption:
+                    'Picks which function column the matrix inspects; RSVP writes carry their own functionId per cell.',
                 onChanged: (id) => setState(() => _selectedFunctionId = id),
               ),
             ),
@@ -504,13 +506,28 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
               const Column(children: [gapH8, CatchLoadingIndicator(), gapH8])
             else
               CatchChoiceInput<String>.segmented(
-                options: const [
-                  CatchOption(value: 'attending', label: 'attending'),
-                  CatchOption(value: 'maybe', label: 'maybe'),
-                  CatchOption(value: 'declined', label: 'declined'),
-                  CatchOption(value: 'pending', label: 'pending'),
+                options: [
+                  CatchOption(
+                    value: 'attending',
+                    label: context.l10n.programsDoorRsvpAttending,
+                  ),
+                  CatchOption(
+                    value: 'maybe',
+                    label: context.l10n.programsDoorRsvpMaybe,
+                  ),
+                  CatchOption(
+                    value: 'declined',
+                    label: context.l10n.programsDoorRsvpDeclined,
+                  ),
+                  CatchOption(
+                    value: 'pending',
+                    label: context.l10n.programsDoorRsvpPending,
+                  ),
                 ],
                 selected: join?.rsvpStatus ?? 'pending',
+                contract: CatchContractConstraints
+                    .recordProgramFunctionRsvpCallablePayloadRsvpStatus,
+                contractValueBuilder: (status) => status,
                 onChanged: (status) => onRsvp(guest, status),
               ),
           ],

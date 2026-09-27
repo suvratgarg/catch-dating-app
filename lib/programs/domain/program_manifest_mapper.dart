@@ -135,7 +135,7 @@ class ProgramManifestMappedRows {
   });
 
   final List<Map<String, Object?>> rows;
-  final List<({int index, String message})> rowIssues;
+  final List<({int index, String reason})> rowIssues;
 }
 
 /// Serializes spreadsheet rows into `importProgramManifest` row payloads.
@@ -147,7 +147,7 @@ ProgramManifestMappedRows mapProgramManifestRows({
 }) {
   final nameColumn = mapping[ProgramManifestField.displayName];
   final resultRows = <Map<String, Object?>>[];
-  final issues = <({int index, String message})>[];
+  final issues = <({int index, String reason})>[];
   String? cell(List<String> row, ProgramManifestField field) {
     final index = mapping[field];
     if (index == null) return null;
@@ -173,7 +173,7 @@ ProgramManifestMappedRows mapProgramManifestRows({
         ? null
         : (nameColumn < row.length ? row[nameColumn].trim() : null);
     if (name == null || name.isEmpty) {
-      issues.add((index: i, message: 'missing display name'));
+      issues.add((index: i, reason: 'missingDisplayName'));
       continue;
     }
     final groupRaw = cell(row, ProgramManifestField.groupLabels);

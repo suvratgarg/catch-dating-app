@@ -185,6 +185,8 @@ class _ProgramWorkspacePageBodyState
                           ),
                       ],
                       selected: _selectedDayIndex,
+                      contractExemption:
+                          'Local day-rail filter over the schedule; no payload field is written from the selection.',
                       onChanged: (index) =>
                           setState(() => _selectedDayIndex = index),
                     ),
@@ -330,6 +332,9 @@ class _ProgramWorkspacePageBodyState
                   ),
                 ],
                 selected: mode,
+                contract: CatchContractConstraints
+                    .applyProgramFunctionInvitationsCallablePayloadInvitationMode,
+                contractValueBuilder: (value) => value,
                 onChanged: (value) => setDialogState(() => mode = value),
               ),
               if (mode == 'selectedGuests') ...[
@@ -634,6 +639,9 @@ class _ProgramFunctionEditDialogState extends State<ProgramFunctionEditDialog> {
               CatchOption(value: status, label: status.name),
           ],
           selected: _status,
+          contract: CatchContractConstraints
+              .upsertProgramFunctionCallablePayloadStatus,
+          contractValueBuilder: (status) => status.name,
           onChanged: (status) => setState(() => _status = status),
         ),
         CatchField.input(

@@ -153,11 +153,14 @@ class ProgramListPageBody extends ConsumerStatefulWidget {
 class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
   @override
   Widget build(BuildContext context) {
-    final programsAsync = ref.watch(organizerProgramListProvider(widget.organizerId));
+    final programsAsync = ref.watch(
+      organizerProgramListProvider(widget.organizerId),
+    );
     return CatchAsyncBoundary<List<OrganizerProgramSummary>>(
       retainDataOn: const {},
       value: programsAsync,
-      onRetry: () => ref.invalidate(organizerProgramListProvider(widget.organizerId)),
+      onRetry: () =>
+          ref.invalidate(organizerProgramListProvider(widget.organizerId)),
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.programsListTitle,
@@ -407,6 +410,9 @@ class _ProgramCreateDialogState extends State<ProgramCreateDialog> {
               CatchOption(value: kind, label: kind.name),
           ],
           selected: _kind,
+          contract: CatchContractConstraints
+              .createOrganizerProgramCallablePayloadKind,
+          contractValueBuilder: (kind) => kind.name,
           onChanged: (kind) => setState(() => _kind = kind),
         ),
         CatchField.input(
