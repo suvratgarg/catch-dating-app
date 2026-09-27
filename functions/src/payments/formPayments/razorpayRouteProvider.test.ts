@@ -110,3 +110,83 @@ test("new orders reject reversed or released transfers", async () => {
       "rzp_test_platform", {amount: 10000, receipt: "frozen_receipt"}));
   }
 });
+
+function settlementFixture(input: {transferPatch?: Record<string, unknown>;
+  paymentPatch?: Record<string, unknown>; losePatchResponse?: boolean;
+} = {}) {
+  let held = true;
+  let patches = 0;
+  const provider = new RazorpayRouteProvider({keyId: "rzp_test_platform",
+    keySecret: "platform-secret", mode: "test", terms: {
+      paymentAmountMinor: 10000, destinationAccountId: "acc_host",
+      transferAmountMinor: 9500, settlementHold: true}},
+  (async (url, init) => {
+    if (init?.method === "PATCH") {
+      assert.equal(String(url), "https://api.razorpay.com/v1/transfers/trf_one");
+      assert.deepEqual(JSON.parse(String(init.body)), {on_hold: false});
+      held = false;
+      patches++;
+      if (input.losePatchResponse) throw new Error("response lost");
+    }
+    const paid = {...order, status: "paid"};
+    const body = String(url).endsWith("/payments/pay_one") ? {
+      entity: "payment", id: "pay_one", order_id: "order_one", amount: 10000,
+      currency: "INR", captured: true, status: "captured", amount_refunded: 0,
+      ...input.paymentPatch,
+    } : String(url).includes("expand[]") ? {...paid,
+      transfers: {entity: "collection", count: 1, items: [{...transfer,
+        on_hold: held, status: "processed",
+        settlement_status: held ? "on_hold" : "pending",
+        ...input.transferPatch}]}} : paid;
+    return new Response(JSON.stringify(body), {status: 200});
+  }) as typeof fetch);
+  return {provider, patches: () => patches};
+}
+const settlement = {orderId: "order_one", paymentId: "pay_one",
+  receipt: "frozen_receipt", transferId: "trf_one"};
+
+test("settlement releases the pinned paid transfer and verifies the result",
+  async () => {
+    const {provider, patches} = settlementFixture();
+    assert.equal((await provider.inspectSettlement("rzp_test_platform",
+      settlement)).onHold, true);
+    const result = await provider.releaseSettlement("rzp_test_platform",
+      settlement);
+    assert.equal(result.onHold, false);
+    assert.equal(result.settlementStatus, "pending");
+    await provider.releaseSettlement("rzp_test_platform", settlement);
+    assert.equal(patches(), 1);
+  });
+
+test("uncertain release resumes from provider state without a second PATCH",
+  async () => {
+    const {provider, patches} = settlementFixture({losePatchResponse: true});
+    await assert.rejects(provider.releaseSettlement("rzp_test_platform",
+      settlement), /outcome is unknown/u);
+    assert.equal((await provider.releaseSettlement("rzp_test_platform",
+      settlement)).onHold, false);
+    assert.equal(patches(), 1);
+  });
+
+test("unsettleable or mismatched funds never release a transfer", async () => {
+  for (const input of [
+    {transferPatch: {recipient: "acc_other"}},
+    {transferPatch: {amount_reversed: 1}},
+    {transferPatch: {status: "pending"}},
+    {transferPatch: {on_hold_until: 99}},
+    {transferPatch: {settlement_status: "settled"}},
+    {paymentPatch: {amount_refunded: 10000, status: "refunded"}},
+    {paymentPatch: {captured: false, status: "authorized"}},
+  ]) {
+    const {provider, patches} = settlementFixture(input);
+    await assert.rejects(provider.releaseSettlement("rzp_test_platform",
+      settlement));
+    assert.equal(patches(), 0);
+  }
+  const {provider, patches} = settlementFixture();
+  await assert.rejects(provider.releaseSettlement("rzp_test_platform",
+    {...settlement, transferId: "trf_other"}));
+  await assert.rejects(provider.releaseSettlement("rzp_test_platform",
+    {...settlement, receipt: "other_receipt"}));
+  assert.equal(patches(), 0);
+});

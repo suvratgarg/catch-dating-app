@@ -10,7 +10,7 @@ import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 
 /** Recovery loads the frozen configuration, regardless of today's default. */
-export async function offerPaymentExecutionFor(input: {
+export async function offerPaymentDependenciesFor(input: {
   db: FirebaseFirestore.Firestore; paymentId: string;
 }, deps: RazorpayCollectionRoutingDeps = razorpayCollectionRoutingDefaults) {
   const {db, paymentId} = input;
@@ -62,9 +62,15 @@ export async function offerPaymentExecutionFor(input: {
   const authority: OfferPaymentAuthority = {resolve,
     assertReady: (tx) => assertRazorpayCollectionBindingReady({db, tx,
       snapshot, nowMillis: Date.now()})};
-  return new OfferPaymentProcessor({db, paymentId, routing: snapshot,
-    authority, provider});
+  return {db, paymentId, routing: snapshot, authority, provider};
 }
 function unavailable(): never {
   throw new HttpsError("failed-precondition", "Payment route is unavailable.");
+}
+
+export async function offerPaymentExecutionFor(input: {
+  db: FirebaseFirestore.Firestore; paymentId: string;
+}, deps: RazorpayCollectionRoutingDeps = razorpayCollectionRoutingDefaults) {
+  return new OfferPaymentProcessor(await offerPaymentDependenciesFor(input,
+    deps));
 }

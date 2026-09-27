@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.153.0
+version: 1.154.0
 updated: 2026-09-27
 owner: recursive_audit_loop
 status: active
@@ -2682,7 +2682,24 @@ Event OAuth selection requires one ready organizer connection in the selected
 mode and rechecks that set inside the new reservation transaction. Existing
 attempts retain their binding. The public screen and provider acceptance remain
 required before event-offer checkout activation; admission does not release
-Route settlement.
+Route settlement during admission.
+
+A separate settlement due queue has no payment-age cutoff. For Route admissions,
+completion and the scheduled end must both be in the past. A host may complete
+an event early, but release still waits for its scheduled end. Current event and
+attendee state plus the immutable paid admission receipt must agree. The worker
+persists release authorization before provider I/O and uses a renewable lease to
+fence stale workers. A lost response is recovered from the exact frozen transfer;
+current cancellation prevents a new release, while a prior uncertain release is
+still observed. Provider `released` and `settled` remain distinct states. An
+externally released hold without Catch authorization requires review. Corrupt
+proofs leave the automatic queue instead of starving later payments.
+
+The adapter uses Razorpay's [settlement hold API](https://razorpay.com/docs/api/payments/route/modify-settlement-hold/)
+and validates the frozen merchant, destination, full capture, receipt, allocation
+and zero reversal before release. This implementation does not establish bank
+receipt or complete the post-admission cancellation/refund workflow; that remains
+an activation prerequisite alongside provider test-mode acceptance.
 
 ### Organizer-connected form payments
 

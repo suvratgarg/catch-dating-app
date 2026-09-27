@@ -602,6 +602,115 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
           "type": "null"
         }
       ]
+    },
+    "settlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.",
+      "required": [
+        "state",
+        "transferId",
+        "nextAttemptAtMillis",
+        "leaseUntilMillis",
+        "leaseId",
+        "authorizedAtMillis",
+        "completedAtMillis",
+        "releasedAtMillis",
+        "settledAtMillis"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "waiting",
+            "releasePending",
+            "released",
+            "settled",
+            "blocked",
+            "reviewRequired"
+          ]
+        },
+        "transferId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^trf_[A-Za-z0-9]+$",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAttemptAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseUntilMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorizedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "releasedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settledAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   }
 } as const;

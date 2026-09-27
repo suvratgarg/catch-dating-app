@@ -605,5 +605,114 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'settlement': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.',
+      'required': <Object?>[
+        'state',
+        'transferId',
+        'nextAttemptAtMillis',
+        'leaseUntilMillis',
+        'leaseId',
+        'authorizedAtMillis',
+        'completedAtMillis',
+        'releasedAtMillis',
+        'settledAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'state': <String, Object?>{
+          'enum': <Object?>[
+            'waiting',
+            'releasePending',
+            'released',
+            'settled',
+            'blocked',
+            'reviewRequired',
+          ],
+        },
+        'transferId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'pattern': '^trf_[A-Za-z0-9]+\$',
+              'maxLength': 128,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'nextAttemptAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'leaseUntilMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'leaseId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{32}\$',
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'authorizedAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'completedAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'releasedAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'settledAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+    },
   },
 };

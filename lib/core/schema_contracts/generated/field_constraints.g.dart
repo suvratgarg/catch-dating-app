@@ -89554,6 +89554,69 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const organizerEventOfferPaymentDocumentSettlementAuthorizedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.authorizedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementCompletedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.completedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementLeaseId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.leaseId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementLeaseUntilMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.leaseUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementNextAttemptAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.nextAttemptAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementReleasedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.releasedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementSettledAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.settledAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementState = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.state',
+    required: true,
+    enumValues: <String>['waiting', 'releasePending', 'released', 'settled', 'blocked', 'reviewRequired'],
+  );
+
+  static const organizerEventOfferPaymentDocumentSettlementTransferId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.settlement.transferId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+    pattern: '^trf_[A-Za-z0-9]+\$',
+  );
+
   static const organizerEventOfferPaymentDocumentStatus = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.status',
     required: true,
@@ -140162,6 +140225,15 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferPaymentDocument.routing.settlementHold': organizerEventOfferPaymentDocumentRoutingSettlementHold,
     'organizerEventOfferPaymentDocument.routing.transferAmountMinor': organizerEventOfferPaymentDocumentRoutingTransferAmountMinor,
     'organizerEventOfferPaymentDocument.routing.version': organizerEventOfferPaymentDocumentRoutingVersion,
+    'organizerEventOfferPaymentDocument.settlement.authorizedAtMillis': organizerEventOfferPaymentDocumentSettlementAuthorizedAtMillis,
+    'organizerEventOfferPaymentDocument.settlement.completedAtMillis': organizerEventOfferPaymentDocumentSettlementCompletedAtMillis,
+    'organizerEventOfferPaymentDocument.settlement.leaseId': organizerEventOfferPaymentDocumentSettlementLeaseId,
+    'organizerEventOfferPaymentDocument.settlement.leaseUntilMillis': organizerEventOfferPaymentDocumentSettlementLeaseUntilMillis,
+    'organizerEventOfferPaymentDocument.settlement.nextAttemptAtMillis': organizerEventOfferPaymentDocumentSettlementNextAttemptAtMillis,
+    'organizerEventOfferPaymentDocument.settlement.releasedAtMillis': organizerEventOfferPaymentDocumentSettlementReleasedAtMillis,
+    'organizerEventOfferPaymentDocument.settlement.settledAtMillis': organizerEventOfferPaymentDocumentSettlementSettledAtMillis,
+    'organizerEventOfferPaymentDocument.settlement.state': organizerEventOfferPaymentDocumentSettlementState,
+    'organizerEventOfferPaymentDocument.settlement.transferId': organizerEventOfferPaymentDocumentSettlementTransferId,
     'organizerEventOfferPaymentDocument.status': organizerEventOfferPaymentDocumentStatus,
     'organizerEventOfferPaymentDocument.updatedAt._nanoseconds': organizerEventOfferPaymentDocumentUpdatedAtNanoseconds,
     'organizerEventOfferPaymentDocument.updatedAt._seconds': organizerEventOfferPaymentDocumentUpdatedAtSeconds,

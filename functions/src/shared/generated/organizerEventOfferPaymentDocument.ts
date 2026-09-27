@@ -104,4 +104,24 @@ export interface OrganizerEventOfferPaymentDocument {
     _nanoseconds: number;
   } | null;
   lastErrorCode: string | null;
+  /**
+   * Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.
+   */
+  settlement?: {
+    state:
+      | "waiting"
+      | "releasePending"
+      | "released"
+      | "settled"
+      | "blocked"
+      | "reviewRequired";
+    transferId: string | null;
+    nextAttemptAtMillis: number;
+    leaseUntilMillis: number;
+    leaseId: string | null;
+    authorizedAtMillis: number | null;
+    completedAtMillis: number | null;
+    releasedAtMillis: number | null;
+    settledAtMillis: number | null;
+  };
 }

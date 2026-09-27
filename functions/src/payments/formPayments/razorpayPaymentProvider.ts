@@ -186,7 +186,7 @@ export class RazorpayPaymentProvider {
   }
 
   protected api(accessToken: string, path: string,
-    method: "GET" | "POST", body?: Record<string, unknown>):
+    method: "GET" | "POST" | "PATCH", body?: Record<string, unknown>):
     Promise<Record<string, unknown>> {
     assertToken(accessToken);
     return this.request(`https://api.razorpay.com${path}`, {

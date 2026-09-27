@@ -6,6 +6,7 @@ import {OFFER_PAYMENT_COLLECTION} from "./offerPaymentReservation";
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
 import type {OfferPaymentProcessor} from "./offerPaymentProcessor";
 import {offerPaymentExecutionFor} from "./offerPaymentRuntime";
+import {reconcileOfferSettlement} from "./offerPaymentSettlement";
 
 /** Bounded oldest-first recovery; expiry is independent of provider outages. */
 export async function reconcileOfferPayments(input: {
@@ -13,6 +14,7 @@ export async function reconcileOfferPayments(input: {
 }, ops: {execution: (input: {db: FirebaseFirestore.Firestore;
     paymentId: string}) => Promise<Pick<OfferPaymentProcessor, "reconcile">>;
   release: typeof releaseOfferPaymentHold; clock: () => number;
+  settle?: typeof reconcileOfferSettlement;
 } = {execution: offerPaymentExecutionFor,
   release: releaseOfferPaymentHold, clock: Date.now}) {
   const {db, nowMillis} = input;
@@ -62,7 +64,41 @@ export async function reconcileOfferPayments(input: {
       else failed++;
     }
   }));
-  return {processed, failed, deferred: jobs.length - cursor};
+  // A separate due queue has no payment-age cutoff: future events may have
+  // been purchased months before completion. Terminal observations leave it.
+  const settlements = await collection.where("settlement.state", "in",
+    ["waiting", "releasePending", "released", "blocked"])
+    .where("settlement.nextAttemptAtMillis", "<=", nowMillis)
+    .orderBy("settlement.nextAttemptAtMillis").limit(20).get();
+  let settlementCursor = 0;
+  await Promise.all(Array.from({length: Math.min(4, settlements.docs.length)},
+    async () => {
+      while (settlementCursor < settlements.docs.length &&
+          ops.clock() < deadline) {
+        const job = settlements.docs[settlementCursor++];
+        try {
+          await (ops.settle ?? reconcileOfferSettlement)({db,
+            paymentId: job.id});
+          processed++;
+        } catch {
+          failed++;
+          // A malformed financial proof can fail before the worker claims it.
+          // Do not let such rows occupy the first page forever. Transient I/O
+          // failures already reschedule themselves and are left untouched.
+          await db.runTransaction(async (tx) => {
+            const current = (await tx.get(job.ref)).data()?.settlement;
+            if (current && current.nextAttemptAtMillis <= nowMillis &&
+                current.leaseUntilMillis <= nowMillis &&
+                ["waiting", "releasePending", "released", "blocked"]
+                  .includes(current.state)) {
+              tx.update(job.ref, {"settlement.state": "reviewRequired"});
+            }
+          }).catch(() => undefined);
+        }
+      }
+    }));
+  return {processed, failed, deferred: jobs.length - cursor +
+    settlements.docs.length - settlementCursor};
 }
 
 export const reconcileOrganizerEventOfferPayments = onSchedule({

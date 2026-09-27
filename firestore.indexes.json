@@ -5009,6 +5009,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "organizerEventOfferPayments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "settlement.state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "settlement.nextAttemptAtMillis",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

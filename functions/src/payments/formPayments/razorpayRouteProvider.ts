@@ -10,6 +10,13 @@ export interface RazorpayRouteTerms {
   settlementHold: boolean;
 }
 
+export interface RouteTransferSettlement {
+  transferId: string;
+  orderId: string;
+  onHold: boolean;
+  settlementStatus: "on_hold" | "pending" | "settled";
+}
+
 /** Platform credentials and explicit frozen transfer terms, without OAuth.
  * The token argument is the bound public key handle, never a merchant token.
  * The caller owns eligibility and durable order/refund idempotency.
@@ -56,6 +63,54 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
   override async fetchOrder(handle: string, orderId: string):
     Promise<FormPaymentOrder> {
     return this.verifiedOrder(handle, orderId, false);
+  }
+
+  /** Current provider proof for a payment's one frozen organizer transfer. */
+  async inspectSettlement(handle: string, input: {
+    orderId: string; paymentId: string; receipt: string;
+  }): Promise<RouteTransferSettlement> {
+    const payment = await super.fetchPayment(handle, input.paymentId);
+    if (payment.orderId !== input.orderId || !payment.captured ||
+        payment.status !== "captured" || payment.amountRefunded !== 0 ||
+        payment.amount !== this.terms.paymentAmountMinor ||
+        payment.currency !== "INR" || !this.terms.settlementHold) {
+      invalidResponse();
+    }
+    const {order, transfer} = await this.verifiedOrderTransfer(handle,
+      input.orderId, false, 0);
+    if (order.receipt !== input.receipt || order.status !== "paid" ||
+        transfer.status !== "processed" ||
+        typeof transfer.on_hold !== "boolean" ||
+        transfer.on_hold && transfer.on_hold_until !== null ||
+        !["on_hold", "pending", "settled"]
+          .includes(String(transfer.settlement_status)) ||
+        (transfer.settlement_status === "on_hold") !== transfer.on_hold) {
+      invalidResponse();
+    }
+    return {transferId: transfer.id as string, orderId: order.id,
+      onHold: transfer.on_hold,
+      settlementStatus: transfer.settlement_status as
+        RouteTransferSettlement["settlementStatus"]};
+  }
+
+  /** State assignment is retryable; only a fresh read proves hold release.
+   * The caller must durably authorize release before invoking this method.
+   * Releasing a hold is not evidence that the bank settlement has completed.
+   */
+  async releaseSettlement(handle: string, input: {
+    orderId: string; paymentId: string; receipt: string; transferId: string;
+  }): Promise<RouteTransferSettlement> {
+    providerId(input.transferId, "trf_");
+    const before = await this.inspectSettlement(handle, input);
+    if (before.transferId !== input.transferId) invalidResponse();
+    if (!before.onHold) return before;
+    await this.api(handle, `/v1/transfers/${input.transferId}`, "PATCH",
+      {on_hold: false});
+    const after = await this.inspectSettlement(handle, input);
+    if (after.transferId !== input.transferId || after.onHold) {
+      invalidResponse();
+    }
+    return after;
   }
 
   override async refundPayment(handle: string, input: {
@@ -127,6 +182,13 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
   private async verifiedOrder(handle: string, orderId: string,
     checkInitialHold: boolean, reversedAmount?: number):
     Promise<FormPaymentOrder> {
+    return (await this.verifiedOrderTransfer(handle, orderId,
+      checkInitialHold, reversedAmount)).order;
+  }
+
+  private async verifiedOrderTransfer(handle: string, orderId: string,
+    checkInitialHold: boolean, reversedAmount?: number):
+    Promise<{order: FormPaymentOrder; transfer: Record<string, unknown>}> {
     // Validate the ordinary order and its expanded transfer separately. The
     // unfiltered expansion must include the single intended transfer even after
     // settlement or reversal. A missing/extra transfer requires review.
@@ -161,7 +223,7 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
     providerId(transfer.id, "trf_");
     if (reversedAmount !== undefined &&
         transfer.amount_reversed !== reversedAmount) invalidResponse();
-    return order;
+    return {order, transfer};
   }
 
   protected override orderFields(amount: number): Record<string, unknown> {

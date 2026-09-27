@@ -35,6 +35,8 @@ import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
 
+import {assertPaidOfferAdmission} from "./offerPaymentAdmissionProof";
+
 type Result = "admitted" | "refundPending" | "unchanged";
 function unavailable(): never {
   throw new HttpsError("failed-precondition", "Paid admission is unavailable.");
@@ -74,43 +76,7 @@ export async function finalizeCapturedOfferPayment(params: {
       if (payment.admissionReceiptId) {
         const receipt = receiptSnap.data();
         const ownership = ownershipSnap.data();
-        if (!validateOrganizerFormAdmissionReceiptDocument(receipt) ||
-            !validateOrganizerFormAdmissionDocument(ownership) ||
-            payment.admissionReceiptId !== receiptId ||
-            receipt.receiptId !== receiptId ||
-            receipt.requestId !== requestId ||
-            receipt.requestHash !== admissionRequestHash(receipt) ||
-            canonicalJson(receipt.paymentSnapshot) !==
-              canonicalJson(payment.paymentSnapshot) ||
-            receipt.providerPayment?.paymentId !== paymentId ||
-            receipt.providerPayment.providerPaymentId !==
-              payment.providerPaymentId ||
-            receipt.providerPayment.providerOrderId !==
-              payment.providerOrderId ||
-            receipt.providerPayment.grantId !== payment.grantId ||
-            receipt.providerPayment.recipientUid !== uid ||
-            canonicalJson(receipt.providerPayment.routing) !==
-              canonicalJson(payment.routing) ||
-            receipt.organizerId !== organizerId ||
-            receipt.eventId !== eventId ||
-            receipt.responseId !== responseId ||
-            receipt.contactId !== payment.contactId ||
-            receipt.offerId !== payment.offerId ||
-            receipt.expectedOfferRevision !== payment.offerRevision ||
-            receipt.expectedOfferGeneration !== payment.offerGeneration ||
-            receipt.canonicalSeatKey !== payment.canonicalSeatKey ||
-            receipt.actorUid !== uid ||
-            ownership.organizerId !== organizerId ||
-            ownership.eventId !== eventId ||
-            ownership.responseId !== responseId ||
-            ownership.offerId !== payment.offerId ||
-            ownership.offerRevision !== payment.offerRevision ||
-            ownership.offerGeneration !== payment.offerGeneration ||
-            ownership.receiptId !== receiptId ||
-            ownership.attendeeId !== receipt.attendeeId ||
-            ownership.canonicalSeatKey !== payment.canonicalSeatKey) {
-          unavailable();
-        }
+        assertPaidOfferAdmission({payment, paymentId, receipt, ownership});
         return "admitted";
       }
       if (payment.status !== "captured") return "unchanged";
@@ -237,7 +203,13 @@ export async function finalizeCapturedOfferPayment(params: {
       tx.create(receiptRef, receipt);
       tx.create(ownershipRef, ownership);
       tx.update(paymentRef, {status: "admitted", admissionReceiptId: receiptId,
-        admittedAt: now, updatedAt: now, lastErrorCode: null});
+        admittedAt: now, updatedAt: now, lastErrorCode: null,
+        ...(payment.routing.selection.route === "razorpayRoute" ? {
+          settlement: {state: "waiting", transferId: null,
+            nextAttemptAtMillis: nowMillis, leaseUntilMillis: 0, leaseId: null,
+            authorizedAtMillis: null, completedAtMillis: null,
+            releasedAtMillis: null, settledAtMillis: null},
+        } : {})});
       return "admitted";
     });
   } catch (error) {

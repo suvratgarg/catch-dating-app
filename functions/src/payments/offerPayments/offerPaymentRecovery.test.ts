@@ -6,9 +6,9 @@ import type {OrganizerEventOfferPaymentDocument as Payment} from
 import {reconcileOfferPayments} from "./offerPaymentRecovery";
 
 function row(id: string, status = "checkoutReady", failsWrite = false) {
-  const updates: Array<Record<string, Timestamp>> = [];
+  const updates: Array<Record<string, unknown>> = [];
   return {id, updates, get: () => status,
-    ref: {update: async (value: Record<string, Timestamp>) => {
+    ref: {update: async (value: Record<string, unknown>) => {
       updates.push(value);
       if (failsWrite) throw new Error("Write unavailable");
     }}};
@@ -16,8 +16,14 @@ function row(id: string, status = "checkoutReady", failsWrite = false) {
 function database(batches: Array<Array<ReturnType<typeof row>>>) {
   let cursor = 0;
   const query = {where: () => query, orderBy: () => query,
-    limit: () => query, get: async () => ({docs: batches[cursor++]})};
-  return {collection: () => query} as unknown as FirebaseFirestore.Firestore;
+    limit: () => query, get: async () => ({docs: batches[cursor++] ?? []})};
+  return {collection: () => query,
+    runTransaction: async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback({get: async () => ({data: () => ({settlement: {
+        state: "waiting", leaseUntilMillis: 0, nextAttemptAtMillis: 0}})}),
+      update: (ref: ReturnType<typeof row>["ref"], value: object) =>
+        ref.update(value as Record<string, unknown>)}),
+  } as unknown as FirebaseFirestore.Firestore;
 }
 
 test("failed expiry, provider and touch do not starve other offer payments",
@@ -49,7 +55,8 @@ test("failed expiry, provider and touch do not starve other offer payments",
     assert.equal(reconciled.includes("review"), false);
     assert.ok(reconciled.includes("healthy"));
     assert.ok(reconciled.includes("admitted"));
-    assert.equal(pending[1].updates[0].updatedAt.toMillis(), 10000);
+    assert.equal((pending[1].updates[0].updatedAt as Timestamp).toMillis(),
+      10000);
   });
 
 test("exhausted offer sweep leaves remaining jobs untouched", async () => {
@@ -66,3 +73,21 @@ test("exhausted offer sweep leaves remaining jobs untouched", async () => {
   assert.deepEqual(result, {processed: 1, failed: 0, deferred: 1});
   assert.equal(pending[1].updates.length, 0);
 });
+
+test("settlement due queue handles old purchases and quarantines bad proofs",
+  async () => {
+    const invalid = row("malformed");
+    const settled: string[] = [];
+    const result = await reconcileOfferPayments({
+      db: database([[], [], [invalid, row("old-purchase")]]),
+      nowMillis: 10000}, {clock: () => 0,
+      release: async () => "admitted",
+      execution: async () => ({reconcile: async () => ({} as Payment)}),
+      settle: async ({paymentId}) => {
+        if (paymentId === "malformed") throw new Error("Invalid proof");
+        settled.push(paymentId);
+      }});
+    assert.deepEqual(settled, ["old-purchase"]);
+    assert.deepEqual(invalid.updates, [{"settlement.state": "reviewRequired"}]);
+    assert.deepEqual(result, {processed: 1, failed: 1, deferred: 0});
+  });
