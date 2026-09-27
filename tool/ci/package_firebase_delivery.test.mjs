@@ -71,7 +71,10 @@ function fixture(deployGroups = ["functions", "firestore-indexes"]) {
   );
   fs.writeFileSync(
     path.join(source, "tool/firebase/list_firebase_function_targets.mjs"),
-    'throw new Error("historical tooling must not execute");\n',
+    'export const dormantFirebaseFunctionTargets = Object.freeze([\n' +
+      '  "functions:expireEventWaitlistOffers",\n' +
+      ']);\n' +
+      'throw new Error("historical tooling must not execute");\n',
   );
   fs.writeFileSync(
     path.join(source, "functions/scripts/set-callable-invokers-public.cjs"),
@@ -335,6 +338,48 @@ test("verification accepts a legacy dormant target set but returns the reduced e
   assert.deepEqual(
     {...effectivePlan, targets: plan.targets},
     plan,
+  );
+});
+
+test("verification replays the source checkout's dormant list, not the control plane's", (t) => {
+  const work = fixture(["functions"]);
+  t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));
+  fs.writeFileSync(
+    path.join(work.source, "functions/src/index.ts"),
+    'export { alpha, beta, gamma } from "./fixture";\n',
+  );
+  fs.writeFileSync(
+    path.join(work.functionsLibDir, "index.js"),
+    "exports.alpha = true; exports.beta = true; exports.gamma = true;\n",
+  );
+  // The source SHA marks gamma dormant while the control plane's copy of the
+  // dormant list does not contain it. Recomputing with the control plane's
+  // list would leak gamma back into the effective target set and fail the
+  // packaged plan; replaying the source's list must succeed instead.
+  fs.writeFileSync(
+    path.join(work.source, "tool/firebase/list_firebase_function_targets.mjs"),
+    'export const dormantFirebaseFunctionTargets = Object.freeze([\n' +
+      '  "functions:gamma",\n' +
+      ']);\n' +
+      'throw new Error("historical tooling must not execute");\n',
+  );
+  const {plan, provenanceManifestPath} = prepare(work, {
+    functionTargets: ["functions:alpha", "functions:beta"],
+  });
+  assert.deepEqual(plan.targets, ["functions:alpha,functions:beta"]);
+  // Omit functionTargets so verification re-derives exports from the source
+  // checkout and must filter gamma through the source's own dormant list.
+  assert.deepEqual(
+    verifyFirebaseDelivery({
+      sourceRoot: work.source,
+      packageDir: work.output,
+      sourceSha,
+      baseSha,
+      sourceCiRunId,
+      sourceCiRunAttempt,
+      provenanceManifestPath,
+    }).targets,
+    plan.targets,
   );
 });
 
