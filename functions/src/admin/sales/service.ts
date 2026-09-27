@@ -20,9 +20,16 @@ import {
   listSalesContacts,
   listSalesEvidence,
   upsertSalesContact,
+  salesRelationshipId,
   type ContactInput,
   type EvidenceInput,
 } from "./records";
+import {
+  setAccountSuppression,
+  setContactability,
+  type AccountSuppressionInput,
+  type ContactabilityInput,
+} from "./suppression";
 import type {
   SalesAccount,
   SalesActionReceipt,
@@ -91,7 +98,9 @@ interface UpsertTaskPayload {
   requestId: string;
   taskId?: string;
   expectedRevision: number;
-  task: Pick<SalesTask, "kind" | "title" | "dueAt" | "ownerUid" | "status">;
+  task: Pick<SalesTask, "kind" | "title" | "dueAt" | "ownerUid" | "status"> & {
+    contactId?: string | null;
+  };
 }
 interface UpsertOpportunityPayload {
   organizerId: string;
@@ -108,6 +117,8 @@ interface LogActivityPayload {
   requestId: string;
   opportunityId?: string;
   type: SalesActivity["type"];
+  channel?: "email" | "whatsapp" | "other";
+  attestation?: "sent_elsewhere_by_actor";
   occurredAt: string;
   note: string;
 }
@@ -136,7 +147,9 @@ type MutationPayload =
   | ImportApply
   | LinkInput
   | ContactInput
-  | EvidenceInput;
+  | EvidenceInput
+  | AccountSuppressionInput
+  | ContactabilityInput;
 
 /** Shared domain boundary for Admin and delegated assistant adapters. */
 export async function executeSalesAction(
@@ -289,6 +302,24 @@ export async function executeSalesAction(
         db,
         principal,
           input as EvidenceInput,
+          timestamp,
+      );
+      break;
+    case "accounts.setSuppression":
+      result = await setAccountSuppression(
+        tx,
+        db,
+        principal,
+          input as AccountSuppressionInput,
+          timestamp,
+      );
+      break;
+    case "contacts.setContactability":
+      result = await setContactability(
+        tx,
+        db,
+        principal,
+          input as ContactabilityInput,
           timestamp,
       );
       break;
@@ -573,11 +604,35 @@ async function upsertTask(
       "Outbound task is blocked by suppression or identity review.",
     );
   }
+  const contactId = input.task.contactId ?? current?.contactId ?? null;
+  if (input.task.status === "open" && outboundTaskKinds.has(input.task.kind)) {
+    if (!contactId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Outbound task needs a reviewed contact relationship.",
+      );
+    }
+    const relationship = await tx.get(
+      db
+        .collection("salesContactRelationships")
+        .doc(salesRelationshipId(input.organizerId, contactId)),
+    );
+    if (
+      !relationship.exists ||
+      relationship.data()?.contactabilityStatus !== "draft_reviewed"
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Contact is not reviewed for draft consideration.",
+      );
+    }
+  }
   const task: SalesTask = {
     schemaVersion: 1,
     classification: "sales_private",
     taskId,
     organizerId: input.organizerId,
+    contactId,
     revision: (current?.revision ?? 0) + 1,
     ...input.task,
     createdAt: current?.createdAt ?? now,
@@ -653,6 +708,22 @@ async function logActivity(
   const activityRef = db.collection(activityCollection).doc(activityId);
   const accountSnap = await tx.get(accountRef);
   requiredAccount(accountSnap);
+  const manualOutbound = input.type === "outreach_sent_manual";
+  if (
+    manualOutbound !==
+    (!!input.channel && input.attestation === "sent_elsewhere_by_actor")
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Manual outbound logs need channel and actor attestation only.",
+    );
+  }
+  if (!manualOutbound && (input.channel || input.attestation)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Channel and attestation belong only to manual outbound logs.",
+    );
+  }
   if (input.opportunityId) {
     const opportunitySnap = await tx.get(
       db.collection(opportunityCollection).doc(input.opportunityId),
@@ -674,6 +745,9 @@ async function logActivity(
     organizerId: input.organizerId,
     opportunityId: input.opportunityId ?? null,
     type: input.type,
+    channel: manualOutbound ? (input.channel ?? null) : null,
+    outcome: manualOutbound ? "actor_attested_sent" : null,
+    providerConfirmed: false,
     occurredAt: input.occurredAt,
     recordedAt: now,
     note: input.note,
@@ -847,8 +921,11 @@ async function searchHosts(
       name: account.name,
       city: account.city,
       market: account.market,
+      marketLabel: account.marketLabel ?? null,
       eventTypes: account.eventTypes,
       researchStatus: account.researchStatus,
+      suppressionStatus: account.suppressionStatus,
+      duplicateReviewRequired: account.duplicateReviewRequired,
       fitLabel: null,
       stage: null,
       assignedOwnerUid: account.assignedOwnerUid,
@@ -913,22 +990,26 @@ async function getHost(
     );
   }
   const organizer = organizerSnap.data() ?? {};
+  const tasks = await filterVisibleTasks(
+    db,
+    new Map([[organizerId, account]]),
+    tasksSnap.docs.map((doc) => doc.data() as SalesTask),
+  );
   return {
     account: publicAccountShape(account),
     organizerSummary: {
       name: safeString(organizer.name, 160) ?? account.name,
       city: safeString(organizer.cityName, 160),
       market: safeString(organizer.locationMarketId, 96),
-      eventTypes: safeStringArray(organizer.entitySubtypes, 12),
+      marketLabel: account.marketLabel ?? null,
+      eventTypes: account.eventTypes,
       appVisibility: safeString(organizer.appVisibility, 40),
       claimStatus: safeString(
         (organizer.claim as Record<string, unknown> | undefined)?.state,
         40,
       ),
     },
-    tasks: tasksSnap.docs
-      .map((doc) => doc.data() as SalesTask)
-      .filter((task) => visibleTask(account, task)),
+    tasks,
     opportunities: opportunitiesSnap.docs.map(
       (doc) => doc.data() as SalesOpportunity,
     ),
@@ -991,10 +1072,11 @@ async function listRecords<T extends { organizerId: string }>(
       }),
     );
     const byId = new Map(accounts);
-    rows = rows.filter((row) => {
-      const account = byId.get(row.organizerId);
-      return account && visibleTask(account, row as unknown as SalesTask);
-    });
+    rows = (await filterVisibleTasks(
+      db,
+      byId,
+      rows as unknown as SalesTask[],
+    )) as unknown as T[];
   }
   return {
     rows,
@@ -1021,6 +1103,50 @@ function visibleTask(account: SalesAccount, task: SalesTask): boolean {
   );
 }
 
+async function filterVisibleTasks(
+  db: FirebaseFirestore.Firestore,
+  accounts: Map<string, SalesAccount | null>,
+  tasks: SalesTask[],
+): Promise<SalesTask[]> {
+  const pairs = [
+    ...new Set(
+      tasks
+        .filter(
+          (task) =>
+            task.status === "open" &&
+            outboundTaskKinds.has(task.kind) &&
+            task.contactId,
+        )
+        .map((task) => `${task.organizerId}\u0000${task.contactId}`),
+    ),
+  ];
+  const reviews = await Promise.all(
+    pairs.map(async (key) => {
+      const [organizerId, contactId] = key.split("\u0000");
+      const snap = await db
+        .collection("salesContactRelationships")
+        .doc(salesRelationshipId(organizerId, contactId))
+        .get();
+      return [
+        key,
+        snap.exists && snap.data()?.contactabilityStatus === "draft_reviewed",
+      ] as const;
+    }),
+  );
+  const reviewed = new Map(reviews);
+  return tasks.filter((task) => {
+    const account = accounts.get(task.organizerId);
+    if (!account || !visibleTask(account, task)) return false;
+    if (task.status !== "open" || !outboundTaskKinds.has(task.kind)) {
+      return true;
+    }
+    return (
+      !!task.contactId &&
+      reviewed.get(`${task.organizerId}\u0000${task.contactId}`) === true
+    );
+  });
+}
+
 function publicAccountShape(
   account: SalesAccount,
 ): Pick<
@@ -1031,6 +1157,10 @@ function publicAccountShape(
   | "assignedOwnerUid"
   | "summary"
   | "nextAction"
+  | "suppressionStatus"
+  | "suppressionReason"
+  | "suppressionAt"
+  | "duplicateReviewRequired"
 > {
   return {
     organizerId: account.organizerId,
@@ -1039,6 +1169,10 @@ function publicAccountShape(
     assignedOwnerUid: account.assignedOwnerUid,
     summary: account.summary,
     nextAction: account.nextAction,
+    suppressionStatus: account.suppressionStatus,
+    suppressionReason: account.suppressionReason ?? null,
+    suppressionAt: account.suppressionAt ?? null,
+    duplicateReviewRequired: account.duplicateReviewRequired,
   };
 }
 
@@ -1251,17 +1385,6 @@ function safeString(value: unknown, maxLength: number): string | null {
     value.length <= maxLength ?
     value :
     null;
-}
-
-function safeStringArray(value: unknown, limit: number): string[] {
-  return Array.isArray(value) ?
-    value
-      .filter(
-        (item) =>
-          typeof item === "string" && item.length > 0 && item.length <= 96,
-      )
-      .slice(0, limit) :
-    [];
 }
 
 function searchTokens(...values: Array<string | null>): string[] {

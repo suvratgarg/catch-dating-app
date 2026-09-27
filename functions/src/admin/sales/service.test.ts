@@ -633,3 +633,220 @@ test("contact read stays scoped and hides endpoints", async () => {
       error instanceof HttpsError && error.code === "permission-denied",
   );
 });
+
+test("account suppression blocks outbound tasks", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const held = await executeSalesAction(
+    employee,
+    "accounts.setSuppression",
+    {
+      organizerId: "org-1",
+      requestId: "req-hold-0001",
+      expectedRevision: 1,
+      status: "suppressed",
+      reason: "Business opt-out recorded by employee",
+    },
+    deps,
+  );
+  assert.equal((held.account as Doc).suppressionStatus, "suppressed");
+  await assert.rejects(
+    executeSalesAction(
+      employee,
+      "tasks.upsert",
+      {
+        organizerId: "org-1",
+        requestId: "req-task-0001",
+        expectedRevision: 0,
+        task: {
+          kind: "follow_up",
+          title: "Do not schedule",
+          dueAt: null,
+          ownerUid: "admin-1",
+          status: "open",
+        },
+      },
+      deps,
+    ),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "failed-precondition",
+  );
+  assert.equal(
+    [...db.docs.keys()].filter((key) =>
+      key.startsWith("salesSuppressionDecisions/"),
+    ).length,
+    1,
+  );
+});
+
+test("contact draft review needs linked evidence", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const created = await executeSalesAction(
+    employee,
+    "contacts.upsert",
+    {
+      organizerId: "org-1",
+      requestId: "req-contact-3",
+      expectedRevision: 0,
+      contact: {displayName: "Synthetic Contact"},
+      relationship: {
+        role: "operator",
+        decisionInfluence: "operator",
+        primary: true,
+        endpoints: [
+          {
+            kind: "email",
+            value: "safe@example.test",
+            verificationStatus: "unverified",
+          },
+        ],
+      },
+    },
+    deps,
+  );
+  const contactId = (created.contact as Doc).contactId as string;
+  const evidence = await executeSalesAction(
+    employee,
+    "evidence.add",
+    {
+      organizerId: "org-1",
+      contactId,
+      requestId: "req-evidence-contact-1",
+      claimKey: "identity",
+      sourceType: "human_note",
+      sourceRef: "synthetic:staff-review",
+      observedAt: "2026-09-27T00:00:00Z",
+      confidence: "medium",
+    },
+    deps,
+  );
+  const evidenceId = (evidence.evidence as Doc).evidenceId;
+  await assert.rejects(
+    executeSalesAction(
+      employee,
+      "contacts.setContactability",
+      {
+        organizerId: "org-1",
+        contactId,
+        requestId: "req-review-0001",
+        expectedRevision: 1,
+        status: "draft_reviewed",
+        reason: "Reviewed for draft only",
+        evidenceId: "evidence-missing",
+      },
+      deps,
+    ),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "failed-precondition",
+  );
+  const review = await executeSalesAction(
+    employee,
+    "contacts.setContactability",
+    {
+      organizerId: "org-1",
+      contactId,
+      requestId: "req-review-0002",
+      expectedRevision: 1,
+      status: "draft_reviewed",
+      reason: "Reviewed for draft only",
+      evidenceId,
+    },
+    deps,
+  );
+  assert.equal((review.relationship as Doc).sendAuthority, false);
+  const task = await executeSalesAction(
+    employee,
+    "tasks.upsert",
+    {
+      organizerId: "org-1",
+      requestId: "req-task-0002",
+      expectedRevision: 0,
+      task: {
+        kind: "follow_up",
+        title: "Prepare a manual draft",
+        dueAt: null,
+        ownerUid: "admin-1",
+        status: "open",
+        contactId,
+      },
+    },
+    deps,
+  );
+  assert.equal((task.task as Doc).contactId, contactId);
+  await executeSalesAction(
+    employee,
+    "contacts.setContactability",
+    {
+      organizerId: "org-1",
+      contactId,
+      requestId: "req-review-0003",
+      expectedRevision: 2,
+      status: "suppressed",
+      reason: "Opted out",
+    },
+    deps,
+  );
+  await assert.rejects(
+    executeSalesAction(
+      employee,
+      "tasks.upsert",
+      {
+        organizerId: "org-1",
+        taskId: (task.task as Doc).taskId,
+        requestId: "req-task-0003",
+        expectedRevision: 1,
+        task: {
+          kind: "follow_up",
+          title: "Blocked after opt-out",
+          dueAt: null,
+          ownerUid: "admin-1",
+          status: "open",
+          contactId,
+        },
+      },
+      deps,
+    ),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "failed-precondition",
+  );
+  assert.equal(db.docs.get("organizers/org-1")?.name, "Example Host");
+});
+
+test("manual sent-elsewhere log has no provider effect", async () => {
+  const {deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  await assert.rejects(
+    executeSalesAction(
+      employee,
+      "activities.log",
+      {
+        organizerId: "org-1",
+        requestId: "req-manual-0001",
+        type: "outreach_sent_manual",
+        occurredAt: "2026-09-27T00:00:00Z",
+        note: "Sent separately",
+        channel: "email",
+      },
+      deps,
+    ),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "invalid-argument",
+  );
+  const logged = await executeSalesAction(
+    employee,
+    "activities.log",
+    {
+      organizerId: "org-1",
+      requestId: "req-manual-0002",
+      type: "outreach_sent_manual",
+      occurredAt: "2026-09-27T00:00:00Z",
+      note: "Sent separately",
+      channel: "email",
+      attestation: "sent_elsewhere_by_actor",
+    },
+    deps,
+  );
+  assert.equal((logged.activity as Doc).outcome, "actor_attested_sent");
+  assert.equal((logged.activity as Doc).providerConfirmed, false);
+});

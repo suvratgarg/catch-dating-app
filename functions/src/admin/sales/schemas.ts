@@ -193,6 +193,7 @@ export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
         kind: taskKind,
         title: shortText,
         dueAt: nullableDateTime,
+        contactId: nullableId,
         ownerUid: id,
         status: taskStatus,
       }),
@@ -223,7 +224,19 @@ export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
       organizerId: id,
       requestId,
       opportunityId: id,
-      type: {enum: ["note", "reply", "call", "demo", "pilot", "correction"]},
+      type: {
+        enum: [
+          "note",
+          "reply",
+          "call",
+          "demo",
+          "pilot",
+          "correction",
+          "outreach_sent_manual",
+        ],
+      },
+      channel: {enum: ["email", "whatsapp", "other"]},
+      attestation: {const: "sent_elsewhere_by_actor"},
       occurredAt: dateTime,
       note,
     },
@@ -324,6 +337,7 @@ export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
     ],
     {
       organizerId: id,
+      contactId: nullableId,
       requestId,
       claimKey: {
         enum: ["identity", "recurrence", "operation", "stack", "other"],
@@ -338,6 +352,35 @@ export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
       confidence: {enum: ["high", "medium", "low"]},
       normalizedValue: nullableText(500),
       excerpt: nullableText(500),
+    },
+  ),
+  "accounts.setSuppression": strict(
+    ["organizerId", "requestId", "expectedRevision", "status", "reason"],
+    {
+      organizerId: id,
+      requestId,
+      expectedRevision: revision,
+      status: {enum: ["clear", "held", "suppressed"]},
+      reason: note,
+    },
+  ),
+  "contacts.setContactability": strict(
+    [
+      "organizerId",
+      "contactId",
+      "requestId",
+      "expectedRevision",
+      "status",
+      "reason",
+    ],
+    {
+      organizerId: id,
+      contactId: id,
+      requestId,
+      expectedRevision: revision,
+      status: {enum: ["unknown", "draft_reviewed", "held", "suppressed"]},
+      reason: note,
+      evidenceId: nullableId,
     },
   ),
 };

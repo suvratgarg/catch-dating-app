@@ -163,6 +163,7 @@ export async function assertQualifiedByRuntimePolicy(
     .filter(
       (row) =>
         row.classification === "sales_private" &&
+        !row.contactId &&
         typeof row.observedAt === "string" &&
         Number.isFinite(Date.parse(row.observedAt)) &&
         Date.parse(row.observedAt) <= nowMs &&

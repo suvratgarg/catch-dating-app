@@ -19,14 +19,7 @@ export function newSalesAccount(
   const name = text(organizer.name, 160) ?? organizerId;
   const city = text(organizer.cityName, 160);
   const market = text(organizer.locationMarketId, 96);
-  const eventTypes = Array.isArray(organizer.entitySubtypes) ?
-    organizer.entitySubtypes
-      .filter(
-        (item): item is string =>
-          typeof item === "string" && item.length > 0 && item.length <= 96,
-      )
-      .slice(0, 12) :
-    [];
+  const eventTypes: string[] = [];
   const searchTokens = [
     ...new Set(
       [name, city, market, organizerId]
@@ -50,11 +43,15 @@ export function newSalesAccount(
     summary: null,
     nextAction: null,
     suppressionStatus: "clear",
+    suppressionReason: null,
+    suppressionAt: null,
+    suppressionBy: null,
     duplicateReviewRequired: false,
     qualificationPolicy: null,
     name,
     city,
     market,
+    marketLabel: null,
     eventTypes,
     cohortIds: [],
     searchTokens,

@@ -25,6 +25,7 @@ export interface ContactInput {
 
 export interface EvidenceInput {
   organizerId: string;
+  contactId?: string | null;
   requestId: string;
   claimKey: "identity" | "recurrence" | "operation" | "stack" | "other";
   signalId?: string;
@@ -41,6 +42,13 @@ function digest(value: string): string {
   return createHash("sha256").update(value).digest("hex").slice(0, 24);
 }
 
+export function salesRelationshipId(
+  organizerId: string,
+  contactId: string,
+): string {
+  return `relationship-${digest(`${organizerId}\u0000${contactId}`)}`;
+}
+
 export async function upsertSalesContact(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
@@ -51,9 +59,7 @@ export async function upsertSalesContact(
   const contactId =
     input.contactId ??
     `contact-${digest(`${principal.uid}\u0000${input.requestId}`)}`;
-  const relationshipId = `relationship-${digest(
-    `${input.organizerId}\u0000${contactId}`,
-  )}`;
+  const relationshipId = salesRelationshipId(input.organizerId, contactId);
   const accountRef = db
     .collection("organizerSalesAccounts")
     .doc(input.organizerId);
@@ -131,6 +137,27 @@ export async function upsertSalesContact(
     role: input.relationship.role,
     decisionInfluence: input.relationship.decisionInfluence,
     primary: input.relationship.primary,
+    contactabilityStatus:
+      input.relationship.endpoints !== undefined ?
+        "unknown" :
+        (current?.contactabilityStatus ?? "unknown"),
+    contactabilityReason:
+      input.relationship.endpoints !== undefined ?
+        "endpoints_changed" :
+        (current?.contactabilityReason ?? null),
+    contactabilityAt:
+      input.relationship.endpoints !== undefined ?
+        now :
+        (current?.contactabilityAt ?? null),
+    contactabilityBy:
+      input.relationship.endpoints !== undefined ?
+        principal.uid :
+        (current?.contactabilityBy ?? null),
+    draftReviewEvidenceId:
+      input.relationship.endpoints !== undefined ?
+        null :
+        (current?.draftReviewEvidenceId ?? null),
+    sendAuthority: false,
     endpoints: input.relationship.endpoints ?? current?.endpoints ?? [],
     createdAt: current?.createdAt ?? now,
     updatedAt: now,
@@ -159,6 +186,21 @@ export async function addSalesEvidence(
   ) {
     throw new HttpsError("not-found", "Sales account not found.");
   }
+  if (input.contactId) {
+    const relationshipRef = db
+      .collection("salesContactRelationships")
+      .doc(salesRelationshipId(input.organizerId, input.contactId));
+    const relationshipSnap = await tx.get(relationshipRef);
+    if (
+      !relationshipSnap.exists ||
+      relationshipSnap.data()?.contactId !== input.contactId
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Contact evidence requires an existing organizer relationship.",
+      );
+    }
+  }
   if (input.claimKey === "operation" && !input.signalId) {
     throw new HttpsError(
       "invalid-argument",
@@ -181,6 +223,7 @@ export async function addSalesEvidence(
     classification: "sales_private",
     evidenceId,
     organizerId: input.organizerId,
+    contactId: input.contactId ?? null,
     claimKey: input.claimKey,
     signalId: input.signalId ?? null,
     sourceType: input.sourceType,

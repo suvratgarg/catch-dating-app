@@ -135,3 +135,5 @@ export const adminLinkSalesInboundIntent = write("intents.link");
 export const adminApplySalesImport = write("imports.apply");
 export const adminUpsertSalesContact = write("contacts.upsert");
 export const adminAddSalesEvidence = write("evidence.add");
+export const adminSetSalesAccountSuppression = write("accounts.setSuppression");
+export const adminSetSalesContactability = write("contacts.setContactability");

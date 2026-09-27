@@ -52,6 +52,9 @@ export interface SalesAccount {
   summary: string | null;
   nextAction: string | null;
   suppressionStatus: "clear" | "held" | "suppressed";
+  suppressionReason?: string | null;
+  suppressionAt?: string | null;
+  suppressionBy?: string | null;
   duplicateReviewRequired: boolean;
   qualificationPolicy: {
     policyId: string;
@@ -61,6 +64,7 @@ export interface SalesAccount {
   name: string;
   city: string | null;
   market: string | null;
+  marketLabel: string | null;
   eventTypes: string[];
   cohortIds: string[];
   searchTokens: string[];
@@ -74,6 +78,7 @@ export interface SalesTask {
   classification: "sales_private";
   taskId: string;
   organizerId: string;
+  contactId: string | null;
   revision: number;
   kind: SalesTaskKind;
   title: string;
@@ -108,7 +113,17 @@ export interface SalesActivity {
   activityId: string;
   organizerId: string;
   opportunityId: string | null;
-  type: "note" | "reply" | "call" | "demo" | "pilot" | "correction";
+  type:
+    | "note"
+    | "reply"
+    | "call"
+    | "demo"
+    | "pilot"
+    | "correction"
+    | "outreach_sent_manual";
+  channel: "email" | "whatsapp" | "other" | null;
+  outcome: "actor_attested_sent" | null;
+  providerConfirmed: false;
   occurredAt: string;
   recordedAt: string;
   note: string;
@@ -152,7 +167,9 @@ export type SalesMutationAction =
   | "intents.link"
   | "imports.apply"
   | "contacts.upsert"
-  | "evidence.add";
+  | "evidence.add"
+  | "accounts.setSuppression"
+  | "contacts.setContactability";
 
 export interface SalesActionReceipt {
   schemaVersion: 1;
