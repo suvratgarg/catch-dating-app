@@ -196,7 +196,7 @@ export async function listOfferEventTargetsHandler(
 export const listOfferEventTargets = onCall(appCheckCallableOptions,
   (request) => listOfferEventTargetsHandler(request));
 
-/** Explicit visibility transition; registration and guest state stay separate. */
+/** Changes visibility; registration and guest state stay separate. */
 export async function setEventPublicationHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
 ) {

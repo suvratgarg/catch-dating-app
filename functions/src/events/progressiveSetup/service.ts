@@ -288,7 +288,10 @@ export function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
   return db.collection("eventSetupReceipts").doc(id);
 }
 
-export function hashRequest(operation: "create" | "update" | "preferences" | "publish" | "unpublish",
+type SetupOperation = "create" | "update" | "preferences" |
+  "publish" | "unpublish";
+
+export function hashRequest(operation: SetupOperation,
   command: unknown
 ): string {
   return createHash("sha256")
@@ -311,7 +314,7 @@ function canonicalJson(value: unknown): string {
 }
 
 export function assertReceipt(receipt: Record<string, unknown>,
-  operation: "create" | "update" | "preferences" | "publish" | "unpublish", actorUid: string,
+  operation: SetupOperation, actorUid: string,
   organizerId: string, requestHash: string,
   eventId?: string): void {
   if (receipt.operation !== operation || receipt.actorUid !== actorUid ||

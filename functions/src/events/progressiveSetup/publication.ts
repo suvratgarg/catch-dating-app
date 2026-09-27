@@ -17,7 +17,7 @@ import {
   receiptFor, requireRevision, ProgressiveSetupDependencies,
 } from "./service";
 
-/** Publication changes visibility only. Registration must be enabled separately.
+/** Publication changes visibility. Registration is enabled separately.
  * The same transaction fences manager, revision, schedule and command replay.
  * Canonical event triggers own search and next-event projection retries.
  */

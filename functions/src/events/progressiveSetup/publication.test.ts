@@ -39,14 +39,14 @@ function setup() {
     serverTimestamp: () => Timestamp.fromMillis(1) as unknown as
       FirebaseFirestore.FieldValue};
   const run = (next: Parameters<typeof setEventPublication>[0]["command"] =
-    command, actorUid = "host1") => setEventPublication({actorUid,
+  command, actorUid = "host1") => setEventPublication({actorUid,
     command: next, deps, nowMillis: () => start - 60_000});
   return {store, event, command, deps, run};
 }
 const errorCode = (expected: string) => (e: unknown) =>
   e instanceof HttpsError && e.code === expected;
 
-test("publish preserves identity and guests, claims schedule and leaves registration closed",
+test("publish preserves guests, claims schedule and keeps registration closed",
   async () => {
     const h = setup();
     h.store.put("eventAttendees/guest1", {eventId: "event1",
@@ -64,14 +64,15 @@ test("publish preserves identity and guests, claims schedule and leaves registra
     assert.equal(event.publicRegistrationRevision, 1);
     assert.ok(event.firstPublishedAt);
     assert.equal(h.store.get("eventAttendees/guest1")!.status, "confirmed");
-    assert.ok(h.store.writes.some((p) => p.startsWith("organizerScheduleLocks/")));
+    assert.ok(h.store.writes.some((p) =>
+      p.startsWith("organizerScheduleLocks/")));
     const receipts = [...h.store.rows].filter(([p]) =>
       p.startsWith("eventSetupReceipts/"));
     assert.equal(receipts.length, 1);
     assert.equal(validateEventSetupReceiptDocument(receipts[0][1]), true);
   });
 
-test("unpublish and republish never reopen registration or erase payment history",
+test("republish keeps registration closed and retains payment history",
   async () => {
     const h = setup();
     await h.run();
@@ -91,13 +92,14 @@ test("unpublish and republish never reopen registration or erase payment history
     assert.ok(locks.every((path) => h.store.get(path)));
     await h.run({...h.command, requestId: "publish-two",
       expectedSetupRevision: 3});
-    assert.equal(h.store.get("events/event1")!.publicRegistrationMode, "closed");
+    assert.equal(h.store.get("events/event1")!.publicRegistrationMode,
+      "closed");
     assert.equal(h.store.get("events/event1")!.firstPublishedAt, stamp);
     assert.equal(h.store.get("publicEventPayments/payment1")!.status,
       "admitted");
   });
 
-test("retry reports original receipt after later unpublish; lost commit is safe",
+test("retry after unpublish reports original receipt without changing state",
   async () => {
     const h = setup();
     h.store.failNextCommit = true;
@@ -124,7 +126,7 @@ test("current manager and deleted-account authority are rechecked on replay",
     await assert.rejects(h.run(), errorCode("failed-precondition"));
   });
 
-test("stale revision, missing details, past event and hidden organizer cannot publish",
+test("publication rejects stale, incomplete, past and hidden events",
   async () => {
     const h = setup();
     await assert.rejects(h.run({...h.command, expectedSetupRevision: 2}),
