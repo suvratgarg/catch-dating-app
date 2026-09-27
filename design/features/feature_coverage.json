@@ -628,6 +628,15 @@
       "debtId": "PROGRAMS-FEATURE-005"
     },
     {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.door",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Function-scoped door roster with check-in, no-show, party-size, and walk-in writes through the offline outbox.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-006"
+    },
+    {
       "authority": "marketing_routes",
       "authorityId": "household_rsvp",
       "status": "excluded",

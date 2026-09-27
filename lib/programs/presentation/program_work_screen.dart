@@ -189,6 +189,9 @@ class ProgramWorkPageBody extends StatelessWidget {
               (hotelScope?.contains(hotel.hotelId) ?? hotelScope == null),
         )
         .toList(growable: false);
+    final functions = access.functions
+        .where((fn) => canReadProgramFunction(access, fn.functionId, now: now))
+        .toList(growable: false);
     final canSeeLedger =
         access.isManager ||
         access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) ||
@@ -327,6 +330,34 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (functions.isNotEmpty)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkDoorTitle,
+                subtitle: context.l10n.programsWorkDoorSubtitle,
+                child: Column(
+                  children: [
+                    for (final fn in functions)
+                      CatchFieldRow.standard(
+                        leading: Icon(CatchIcons.howToRegOutlined),
+                        body: Text(
+                          fn.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        onTap: () => context.pushNamed(
+                          Routes.hostWorkDoorScreen.name,
+                          pathParameters: {
+                            'programId': access.programId,
+                            'functionId': fn.functionId,
+                          },
+                          queryParameters: {'function': fn.name},
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           if (canSeeLedger)
             CatchSectionListItem(
               child: CatchSection.contained(
@@ -349,6 +380,7 @@ class ProgramWorkPageBody extends StatelessWidget {
           if (arrivalsStations.isEmpty &&
               dispatchStations.isEmpty &&
               hotels.isEmpty &&
+              functions.isEmpty &&
               !canSeeLedger)
             CatchSectionListItem(
               child: CatchEmptyState(

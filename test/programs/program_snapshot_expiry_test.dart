@@ -30,6 +30,7 @@ const _manager = {
   'duties': [],
   'capabilities': ['arrivalsTransport'],
   'pickupPoints': [],
+    'functions': [],
   'hotels': [],
   'vehicleClasses': [],
 };

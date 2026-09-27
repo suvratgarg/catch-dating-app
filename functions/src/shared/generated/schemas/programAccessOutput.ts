@@ -22,7 +22,8 @@ export const programAccessCallableResponseSchema: Record<string, unknown> = {
     "capabilities",
     "pickupPoints",
     "hotels",
-    "vehicleClasses"
+    "vehicleClasses",
+    "functions"
   ],
   "properties": {
     "programId": {
@@ -227,6 +228,76 @@ export const programAccessCallableResponseSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 1,
             "maxLength": 140
+          }
+        }
+      }
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 40,
+      "description": "Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "venueName",
+          "startsAtMillis",
+          "endsAtMillis",
+          "checkInEnabled",
+          "status",
+          "expectedCount",
+          "checkedInCount"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "venueName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "checkInEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "expectedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "checkedInCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
           }
         }
       }
