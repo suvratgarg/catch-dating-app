@@ -255,10 +255,11 @@ export async function deleteProgramGuestGroupHandler(
   // until these paged transactions land. Reads tolerate the window.
   while (true) {
     const removed = await db.runTransaction(async (tx) => {
-      const snap = await tx.get(db.collection("programGuests")
+      let query = db.collection("programGuests")
         .where("programId", "==", data.programId)
-        .where("groupIds", "array-contains", data.groupId)
-        .limit(groupScrubPageSize));
+        .limit(groupScrubPageSize);
+      query = query.where("groupIds", "array-contains", data.groupId);
+      const snap = await tx.get(query);
       const now = deps.now();
       for (const doc of snap.docs) {
         const guest = doc.data() as ProgramGuestDocument;
