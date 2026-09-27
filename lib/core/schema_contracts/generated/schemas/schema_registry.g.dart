@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'OrganizerEventOfferRecipientDocument',
+    source: 'firestore/organizer_event_offer_recipients.schema.json',
+    schema: schemaOrganizerEventOfferRecipientDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'PaymentRoutingSnapshot',
     source: 'embedded/payment_routing_snapshot.schema.json',
     schema: schemaPaymentRoutingSnapshotSchema,
@@ -4644,6 +4649,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'OrganizerEventOfferRecipientDocument': schemaOrganizerEventOfferRecipientDocumentSchema,
   'PaymentRoutingSnapshot': schemaPaymentRoutingSnapshotSchema,
   'ManagePaymentRoutingPolicyCallablePayload': schemaManagePaymentRoutingPolicyCallablePayloadSchema,
   'ManagePaymentRoutingPolicyCallableResponse': schemaManagePaymentRoutingPolicyCallableResponseSchema,
@@ -5572,6 +5578,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/organizer_event_offer_recipients.schema.json': schemaOrganizerEventOfferRecipientDocumentSchema,
   'embedded/payment_routing_snapshot.schema.json': schemaPaymentRoutingSnapshotSchema,
   'callables/manage_payment_routing_policy_payload.schema.json': schemaManagePaymentRoutingPolicyCallablePayloadSchema,
   'callable_responses/manage_payment_routing_policy_response.schema.json': schemaManagePaymentRoutingPolicyCallableResponseSchema,

@@ -596,6 +596,7 @@ export 'organizer_event_offer_action_receipt_document.g.dart';
 export 'organizer_event_offer_audit_document.g.dart';
 export 'organizer_event_offer_batch_receipt_document.g.dart';
 export 'organizer_event_offer_document.g.dart';
+export 'organizer_event_offer_recipient_document.g.dart';
 export 'organizer_event_setup_default_receipt_document.g.dart';
 export 'organizer_event_setup_defaults_callable_response.g.dart';
 export 'organizer_event_setup_defaults_document.g.dart';

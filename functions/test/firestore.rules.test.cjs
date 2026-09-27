@@ -1178,7 +1178,7 @@ describe("firestore.rules", () => {
 
     it("keeps atomic form admission ownership and payment receipts server-only", async () => {
       for (const collectionName of ["organizerFormAdmissions",
-        "organizerFormAdmissionReceipts"]) {
+        "organizerFormAdmissionReceipts", "organizerEventOfferRecipients"]) {
         await seed([collectionName, "receipt-1"], {
           organizerId: "organizer-1", eventId: "event-1",
           responseId: "response-1", actorUid: "owner-1",

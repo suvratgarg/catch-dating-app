@@ -3499,6 +3499,21 @@
       "read": "server only; current manager receipt projection",
       "write": "server only; immutable source marker and receipt in one transaction",
       "exportedFunctions": []
+    },
+    {
+      "id": "organizerEventOfferRecipients",
+      "path": "organizerEventOfferRecipients/{documentId}",
+      "rulesMatch": "/organizerEventOfferRecipients/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferRecipientDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "OTP event offer recipient authority",
+      "read": "server only; current recipient projection after OTP claim",
+      "write": "server only; immutable invitation binding and one UID claim",
+      "exportedFunctions": []
     }
   ]
 }

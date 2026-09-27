@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.152.0
+version: 1.153.0
 updated: 2026-09-27
 owner: recursive_audit_loop
 status: active
@@ -2641,6 +2641,29 @@ rate-limit transactions and provider billing rules are separate. Each UI page
 and export worker currently rescans; this diagnostic does not prove deployed
 latency. Production percentiles and representative response sizes must be
 measured before changing batching or the actor/organizer rate ceilings.
+
+### OTP offer recipients
+
+`organizerEventOfferRecipients` is private, server-owned invitation/claim
+state. Its document ID hashes a random 256-bit link token. Stored bindings
+freeze the organizer, event, offer generation/revision, response, CRM origin,
+contact, phone hash and offer expiry. Issuance requires the current manager;
+claim requires Catch phone OTP and a matching current Admin Auth phone. A
+successful claim attaches one UID and never changes the form response identity.
+Repeated claims by that UID preserve the original claim time.
+
+Issuance, claim and consumption reread the current offer and its frozen terms,
+submitted response/version, native application approval or completed CRM
+conversion, current contact/origin and account-deletion tombstone. Withdrawal,
+reissue, expiry, contact merge, changed phone/UID or revoked source invalidates
+the old grant. The seat identity resolver accepts this narrow verified-recipient
+path alongside the existing verified-form-respondent path; it retains the
+canonical seat and rejects conflicting aliases. Raw token/phone data is absent
+from the grant, and all direct client access is denied.
+
+These are tested server primitives. The recipient callable/screen, payment
+attempt, captured-payment admission and expiry/refund worker must be wired
+before event-offer checkout is activated.
 
 ### Organizer-connected form payments
 

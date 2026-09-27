@@ -88907,6 +88907,130 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerEventOfferRecipientDocumentClaimedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.claimedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferRecipientDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferRecipientDocumentIssuedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.issuedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferRecipientDocumentIssuedByUid = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.issuedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentOfferGeneration = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.offerGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferRecipientDocumentOfferId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentOfferRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.offerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferRecipientDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentOriginId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.originId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentPhoneHash = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.phoneHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentRecipientUid = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerEventOfferRecipientDocumentRevokedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferRecipientDocument.revokedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerEventSetupDefaultReceiptDocumentActorUid = CatchContractFieldConstraints(
     path: 'organizerEventSetupDefaultReceiptDocument.actorUid',
     required: true,
@@ -139043,6 +139167,21 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferDocument.sourceKind': organizerEventOfferDocumentSourceKind,
     'organizerEventOfferDocument.status': organizerEventOfferDocumentStatus,
     'organizerEventOfferDocument.updatedAtMillis': organizerEventOfferDocumentUpdatedAtMillis,
+    'organizerEventOfferRecipientDocument.claimedAtMillis': organizerEventOfferRecipientDocumentClaimedAtMillis,
+    'organizerEventOfferRecipientDocument.contactId': organizerEventOfferRecipientDocumentContactId,
+    'organizerEventOfferRecipientDocument.eventId': organizerEventOfferRecipientDocumentEventId,
+    'organizerEventOfferRecipientDocument.expiresAtMillis': organizerEventOfferRecipientDocumentExpiresAtMillis,
+    'organizerEventOfferRecipientDocument.issuedAtMillis': organizerEventOfferRecipientDocumentIssuedAtMillis,
+    'organizerEventOfferRecipientDocument.issuedByUid': organizerEventOfferRecipientDocumentIssuedByUid,
+    'organizerEventOfferRecipientDocument.offerGeneration': organizerEventOfferRecipientDocumentOfferGeneration,
+    'organizerEventOfferRecipientDocument.offerId': organizerEventOfferRecipientDocumentOfferId,
+    'organizerEventOfferRecipientDocument.offerRevision': organizerEventOfferRecipientDocumentOfferRevision,
+    'organizerEventOfferRecipientDocument.organizerId': organizerEventOfferRecipientDocumentOrganizerId,
+    'organizerEventOfferRecipientDocument.originId': organizerEventOfferRecipientDocumentOriginId,
+    'organizerEventOfferRecipientDocument.phoneHash': organizerEventOfferRecipientDocumentPhoneHash,
+    'organizerEventOfferRecipientDocument.recipientUid': organizerEventOfferRecipientDocumentRecipientUid,
+    'organizerEventOfferRecipientDocument.responseId': organizerEventOfferRecipientDocumentResponseId,
+    'organizerEventOfferRecipientDocument.revokedAtMillis': organizerEventOfferRecipientDocumentRevokedAtMillis,
     'organizerEventSetupDefaultReceiptDocument.actorUid': organizerEventSetupDefaultReceiptDocumentActorUid,
     'organizerEventSetupDefaultReceiptDocument.appliedRevision': organizerEventSetupDefaultReceiptDocumentAppliedRevision,
     'organizerEventSetupDefaultReceiptDocument.createdAt._nanoseconds': organizerEventSetupDefaultReceiptDocumentCreatedAtNanoseconds,

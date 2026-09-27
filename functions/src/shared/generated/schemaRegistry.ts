@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {organizerEventOfferRecipientDocumentSchema} from "./schemas/organizerEventOfferRecipientDocument";
 export {paymentRoutingSnapshotSchema} from "./schemas/paymentRoutingSnapshot";
 export {managePaymentRoutingPolicyCallablePayloadSchema} from "./schemas/managePaymentRoutingPolicyInput";
 export {managePaymentRoutingPolicyCallableResponseSchema} from "./schemas/managePaymentRoutingPolicyOutput";

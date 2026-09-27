@@ -545,6 +545,27 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Private OTP recipient invitation and single-UID claim. Document ID hashes a random token; raw tokens and phone numbers are never persisted. Immutable offer/source/phone bindings are rechecked in every payment transaction.
+ */
+export interface OrganizerEventOfferRecipientDocument {
+  organizerId: string;
+  eventId: string;
+  offerId: string;
+  responseId: string;
+  originId: string;
+  contactId: string;
+  issuedByUid: string;
+  offerGeneration: number;
+  offerRevision: number;
+  issuedAtMillis: number;
+  expiresAtMillis: number;
+  phoneHash: string;
+  recipientUid: string | null;
+  claimedAtMillis: number | null;
+  revokedAtMillis: number | null;
+}
+
+/**
  * Server-owned immutable organizer/event/response admission ownership. Created atomically with the seat and request receipt; new request IDs cannot admit this source again.
  */
 export interface OrganizerFormAdmissionDocument {

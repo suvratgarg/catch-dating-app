@@ -1049,6 +1049,9 @@ service cloud.firestore {
     // atomic during the released-client migration window.
     // Private configuration is exposed only through current-manager callables.
     // Immutable admission/payment evidence has no direct client access.
+    match /organizerEventOfferRecipients/{documentId} {
+      allow read, write: if false;
+    }
     match /organizerFormAdmissions/{documentId} {
       allow read, write: if false;
     }
