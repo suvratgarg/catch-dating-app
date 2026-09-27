@@ -6,19 +6,21 @@ export type SalesTaskStatus = "open" | "completed" | "cancelled";
 export type SalesTaskKind = "research" | "reply" | "follow_up" | "demo" |
   "pilot" | "duplicate_review" | "opt_out" | "service_commitment";
 export type SalesActivityType = "note" | "reply" | "call" | "demo" |
-  "pilot" | "correction";
+  "pilot" | "correction" | "outreach_sent_manual";
 
 export interface SalesAccountSummary {
   organizerId: string;
   name: string;
   city?: string | null;
   market?: string | null;
+  marketLabel?: string | null;
   eventTypes?: string[];
   researchStatus: SalesResearchStatus;
   fitLabel?: string | null;
   stage?: string | null;
   assignedOwnerUid?: string | null;
   nextAction?: string | null;
+  suppressionStatus?: "clear" | "held" | "suppressed";
 }
 
 export interface SalesAccount {
@@ -28,12 +30,14 @@ export interface SalesAccount {
   assignedOwnerUid?: string | null;
   summary?: string | null;
   nextAction?: string | null;
+  suppressionStatus?: "clear" | "held" | "suppressed";
 }
 
 export interface SalesOrganizerSummary {
   name: string;
   city?: string | null;
   market?: string | null;
+  marketLabel?: string | null;
   eventTypes?: string[];
   appVisibility?: string | null;
   claimStatus?: string | null;
@@ -44,6 +48,9 @@ export interface SalesActivity {
   type: SalesActivityType;
   occurredAt: string;
   note: string;
+  channel?: "email" | "whatsapp" | "other" | null;
+  outcome?: "actor_attested_sent" | null;
+  providerConfirmed?: boolean;
 }
 
 export interface SalesTask {
@@ -79,6 +86,82 @@ export interface SalesAccountDetail {
 }
 
 export type SalesCustomFieldType = "string" | "number" | "boolean" | "date" | "enum";
+
+export interface SalesContact {
+  contactId: string;
+  displayName: string;
+  relationship: {
+    revision: number;
+    role: string;
+    decisionInfluence: "unknown" | "decision_maker" | "influencer" | "operator";
+    primary: boolean;
+    contactabilityStatus: "unknown" | "draft_reviewed" | "held" | "suppressed";
+    contactabilityReason?: string | null;
+    draftReviewEvidenceId?: string | null;
+    sendAuthority: false;
+    endpoints?: Array<{kind: "email" | "phone"; value: string;
+      verificationStatus: "unverified" | "verified"; evidenceId?: string | null}>;
+  };
+}
+
+export interface SalesEvidence {
+  evidenceId: string;
+  organizerId: string;
+  contactId: string | null;
+  claimKey: "identity" | "recurrence" | "operation" | "stack" | "other";
+  signalId: string | null;
+  sourceType: "first_party" | "public_web" | "human_note" | "import_artifact";
+  sourceRef: string;
+  observedAt: string;
+  validThrough: string | null;
+  confidence: "high" | "medium" | "low";
+  normalizedValue: string | null;
+  excerpt: string | null;
+}
+
+export interface SalesContactInput {
+  organizerId: string;
+  requestId: string;
+  contactId?: string;
+  expectedRevision: number;
+  linkExisting?: boolean;
+  contact: {displayName: string};
+  relationship: Pick<SalesContact["relationship"],
+    "role" | "decisionInfluence" | "primary" | "endpoints">;
+}
+
+export interface SalesEvidenceInput {
+  organizerId: string;
+  contactId?: string | null;
+  requestId: string;
+  claimKey: SalesEvidence["claimKey"];
+  signalId?: string;
+  sourceType: SalesEvidence["sourceType"];
+  sourceRef: string;
+  observedAt: string;
+  validThrough?: string | null;
+  confidence: SalesEvidence["confidence"];
+  normalizedValue?: string | null;
+  excerpt?: string | null;
+}
+
+export interface SalesImportPacket {
+  sourceId: string;
+  contentHash: string;
+  mappingVersion: string;
+  rows: Array<{sourceRowId: string; organizerId: string | null;
+    name: string; researchStatus: SalesResearchStatus; summary?: string | null;
+    originalScore?: Record<string, string | number | boolean | null> | null}>;
+}
+
+export interface SalesImportPreview {
+  previewHash: string;
+  rows: Array<{sourceRowId: string; organizerId: string | null;
+    disposition: "created" | "matched" | "duplicate" | "unresolved" | "rejected";
+    reason: string; accountRevision: number | null}>;
+  counts: Record<string, number>;
+  effectsApplied: false;
+}
 
 export interface SalesCustomFieldDefinition {
   fieldId: string;
@@ -196,9 +279,29 @@ export interface SalesRecordActivityInput {
   occurredAt: string;
   note: string;
   opportunityId?: string;
+  channel?: "email" | "whatsapp" | "other";
+  attestation?: "sent_elsewhere_by_actor";
 }
 
 export interface SalesCreateAccountInput {
   organizerId: string;
   requestId: string;
+}
+
+export interface SalesSetAccountSuppressionInput {
+  organizerId: string;
+  requestId: string;
+  expectedRevision: number;
+  status: "clear" | "held" | "suppressed";
+  reason: string;
+}
+
+export interface SalesSetContactabilityInput {
+  organizerId: string;
+  contactId: string;
+  requestId: string;
+  expectedRevision: number;
+  status: SalesContact["relationship"]["contactabilityStatus"];
+  reason: string;
+  evidenceId?: string;
 }

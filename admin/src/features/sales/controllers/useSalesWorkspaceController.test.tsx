@@ -21,6 +21,14 @@ const repository = vi.hoisted(() => ({
   updateSalesAccount: vi.fn(),
   upsertSalesTask: vi.fn(),
   upsertSalesOpportunity: vi.fn(),
+  listSalesContacts: vi.fn(),
+  listSalesEvidence: vi.fn(),
+  upsertSalesContact: vi.fn(),
+  addSalesEvidence: vi.fn(),
+  setSalesAccountSuppression: vi.fn(),
+  setSalesContactability: vi.fn(),
+  previewSalesImport: vi.fn(),
+  applySalesImport: vi.fn(),
 }));
 vi.mock("../api/salesRepository", () => repository);
 
@@ -40,6 +48,8 @@ describe("useSalesWorkspaceController", () => {
     repository.listSalesInboundIntents.mockResolvedValue({rows: [], nextCursor: null});
     repository.listSalesCustomFields.mockResolvedValue({rows: []});
     repository.searchCanonicalOrganizers.mockResolvedValue([]);
+    repository.listSalesContacts.mockResolvedValue({rows: [], nextCursor: null});
+    repository.listSalesEvidence.mockResolvedValue({rows: [], nextCursor: null});
   });
 
   it("passes filters and the opaque cursor to the bounded server query", async () => {
@@ -104,5 +114,47 @@ describe("useSalesWorkspaceController", () => {
     } finally {
       process.env.TZ = originalTimezone;
     }
+  });
+
+  it("pages contacts and evidence by organizer without an all-record scan", async () => {
+    const {wrapper} = createQueryHarness();
+    repository.getSalesAccount.mockResolvedValue({account: {organizerId: "host-one"},
+      organizerSummary: {}, activities: [], opportunities: [], tasks: []});
+    repository.listSalesContacts.mockResolvedValueOnce({rows: [],
+      nextCursor: "contact-page-two"}).mockResolvedValue({rows: [], nextCursor: null});
+    repository.listSalesEvidence.mockResolvedValueOnce({rows: [],
+      nextCursor: "evidence-page-two"}).mockResolvedValue({rows: [], nextCursor: null});
+    const {result} = renderHook(() => useSalesWorkspaceController({
+      area: "hosts", selectedOrganizerId: "host-one",
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper});
+    await waitFor(() => expect(result.current.contacts.data?.nextCursor)
+      .toBe("contact-page-two"));
+    await waitFor(() => expect(result.current.evidence.data?.nextCursor)
+      .toBe("evidence-page-two"));
+    act(() => {result.current.nextContactPage(); result.current.nextEvidencePage();});
+    await waitFor(() => expect(repository.listSalesContacts)
+      .toHaveBeenCalledWith("host-one", "contact-page-two"));
+    await waitFor(() => expect(repository.listSalesEvidence)
+      .toHaveBeenCalledWith("host-one", "evidence-page-two"));
+  });
+
+  it("does not report an import apply success when the server rejects the reviewed hash", async () => {
+    const {wrapper} = createQueryHarness();
+    const onError = vi.fn();
+    const onNotice = vi.fn();
+    repository.applySalesImport.mockRejectedValue(new Error(
+      "Import changed since the reviewed preview."));
+    const {result} = renderHook(() => useSalesWorkspaceController({
+      area: "settings", selectedOrganizerId: null, onError, onNotice,
+    }), {wrapper});
+    const packet = {sourceId: "file-a", contentHash: "a".repeat(64),
+      mappingVersion: "csv-v1", rows: [{sourceRowId: "row-2", organizerId: null,
+        name: "Host", researchStatus: "needs_research" as const}]};
+    let saved = true;
+    await act(async () => {saved = await result.current.applyImport(packet, "reviewed");});
+    expect(saved).toBe(false);
+    expect(onError).toHaveBeenCalledWith("Import changed since the reviewed preview.");
+    expect(onNotice).not.toHaveBeenCalledWith("Reviewed import applied.");
   });
 });

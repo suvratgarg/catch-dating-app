@@ -18,6 +18,8 @@ import type {
   SalesInboundIntent, SalesOpportunity,
   SalesResearchStatus, SalesTask,
 } from "../api/salesTypes";
+import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
+import {SalesImportWorkspace} from "./SalesImportPanel";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "people" | "workflow" | "activity" |
@@ -111,13 +113,9 @@ export function SalesWorkspaceScreen({
         {dataMode() === "sample" ? " Sample data is shown." : ""}
       </PageHeader>
       {!selectedOrganizerId ? (
-        <SegmentedControl
-          ariaLabel="Sales area"
-          mobileLayout="content"
-          options={areaOptions}
-          value={area}
-          onChange={onAreaChange}
-        />
+        <SegmentedControl ariaLabel="Sales area" mobileLayout="content"
+          mobileSelectLabel="Sales area" options={areaOptions}
+          value={area} onChange={onAreaChange} />
       ) : null}
       {selectedOrganizerId ? (
         <HostDetail controller={controller} currentUserUid={currentUserUid}
@@ -285,8 +283,8 @@ function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
       </tr></thead><tbody>
         {rows.map((row) => <AdminTableRow key={row.organizerId}>
           <td><strong>{row.name}</strong></td>
-          <td>{[row.city, row.market].filter(Boolean).join(", ") || "—"}</td>
-          <td>{row.eventTypes?.join(", ") || "—"}</td>
+          <td>{[row.city, row.marketLabel].filter(Boolean).join(", ") || "Not recorded"}</td>
+          <td>{row.eventTypes?.join(", ") || "Not recorded"}</td>
           <td>{row.fitLabel || "Needs review"}</td>
           <td>{labelFor(row.researchStatus)}</td>
           <td>{labelFor(row.stage)}</td>
@@ -424,7 +422,7 @@ function InboundReview({controller, onOpenIntake}: {
       <SelectField label="Existing host" value={matchId} onChange={setMatchId}
         options={[{value: "", label: "Choose a reviewed match"},
           ...matches.map((row) => ({value: row.organizerId,
-            label: `${row.name} · ${row.city || row.market || "Location unknown"}`}))]} />
+            label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))]} />
       {controller.identityMatches.isPending ? <p>Searching hosts…</p> : null}
       {controller.identitySearch.trim() &&
         !/^[A-Za-z0-9]{2,80}$/u.test(controller.identitySearch.trim()) ?
@@ -507,7 +505,7 @@ function SettingsView({controller}: {controller: SalesWorkspaceController}) {
     }});
     if (saved) {setLabel(""); setHelpText(""); setEnumText("");}
   };
-  return <Panel title="Sales settings" icon={<ClipboardList size={18} />}>
+  return <><Panel title="Sales settings" icon={<ClipboardList size={18} />}>
     <p>Add a private account field when the team needs the same information for
       several hosts. Check existing fields first.</p>
     <QueryState loading={controller.customFields.isPending}
@@ -540,7 +538,7 @@ function SettingsView({controller}: {controller: SalesWorkspaceController}) {
         Add private field
       </AdminButton>
     </AdminForm>
-  </Panel>;
+  </Panel><SalesImportWorkspace controller={controller} /></>;
 }
 
 function HostDetail({controller, currentUserUid, onOpenOrganizer}: {
@@ -564,21 +562,22 @@ function HostDetail({controller, currentUserUid, onOpenOrganizer}: {
       </AdminButton>
     </AdminToolbar>
     <SegmentedControl ariaLabel="Host detail tab" mobileLayout="content"
-      options={detailTabs} value={tab} onChange={setTab} />
+      mobileSelectLabel="Host detail section" options={detailTabs}
+      value={tab} onChange={setTab} />
     {tab === "overview" || tab === "research" ?
       <HostAccountEditor key={detail.account.organizerId} detail={detail}
         controller={controller} currentUserUid={currentUserUid} /> : null}
     {tab === "activity" ? <HostActivity detail={detail} controller={controller} /> : null}
     {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
-    {tab === "people" ? <Panel title="People" icon={<ClipboardList size={18} />}>
-      <EmptyState>Verified business contacts will appear here when their
-        relationship and access contract is available.</EmptyState>
-    </Panel> : null}
-    {tab === "workflow" ? <Panel title="Workflow" icon={<ClipboardList size={18} />}>
-      <EmptyState>Research observations and reviewed workflow mappings will appear
-        here when available for this host.</EmptyState>
-    </Panel> : null}
+    {tab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
+      controller={controller} /> : null}
+    {tab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
+      controller={controller} /> : null}
+    {tab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}
+      controller={controller} /> : null}
+    {tab === "overview" || tab === "research" ? <SalesRecordsWorkspace
+      section="suppression" detail={detail} controller={controller} /> : null}
     {tab === "overview" || tab === "research" ? <HostCustomFields
       detail={detail} controller={controller} /> : null}
     <HostTasks detail={detail} controller={controller}
@@ -685,7 +684,7 @@ function HostAccountEditor({detail, controller, currentUserUid}: {
       onClick={() => void save()}>{controller.isSaving ? "Saving…" : "Save research"}</AdminButton>
   }>
     <p>{detail.organizerSummary.name} ·
-      {[detail.organizerSummary.city, detail.organizerSummary.market]
+      {[detail.organizerSummary.city, detail.organizerSummary.marketLabel]
         .filter(Boolean).join(", ") || "Location not recorded"}</p>
     {changedElsewhere ? <p role="alert">This host changed since you started editing.
       Compare the latest version below; your edits are retained.</p> : null}
@@ -727,15 +726,20 @@ function HostAccountEditor({detail, controller, currentUserUid}: {
 function HostActivity({detail, controller}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
 }) {
-  const [type, setType] = useState<"note" | "reply" | "call" | "demo" | "pilot">("note");
+  const [type, setType] = useState<"note" | "reply" | "call" | "demo" | "pilot" |
+    "outreach_sent_manual">("note");
+  const [channel, setChannel] = useState<"email" | "whatsapp" | "other">("email");
   const [note, setNote] = useState("");
   const [occurredAt, setOccurredAt] = useState(() =>
     toLocalDateTimeInput(new Date()));
   const save = async () => {
-    if (!note.trim()) return;
+    if (!note.trim() || Number.isNaN(new Date(occurredAt).getTime())) return;
     const saved = await controller.logActivity({
       organizerId: detail.account.organizerId, type,
       occurredAt: new Date(occurredAt).toISOString(), note: note.trim(),
+      ...(type === "outreach_sent_manual" ? {
+        channel, attestation: "sent_elsewhere_by_actor" as const,
+      } : {}),
     });
     if (saved) setNote("");
   };
@@ -749,7 +753,17 @@ function HostActivity({detail, controller}: {
           {value: "reply", label: "Reply received"},
           {value: "demo", label: "Demo"},
           {value: "pilot", label: "Pilot update"},
+          {value: "outreach_sent_manual", label: "Sent elsewhere (manual log)"},
         ]} />
+      {type === "outreach_sent_manual" ? <>
+        <SelectField label="Channel" value={channel}
+          onChange={(value) => setChannel(value as typeof channel)} options={[
+            {value: "email", label: "Email"},
+            {value: "whatsapp", label: "WhatsApp"},
+            {value: "other", label: "Other"},
+          ]} />
+        <p>You attest this was sent outside Catch. Delivery is unconfirmed.</p>
+      </> : null}
       <TextField label="When" type="datetime-local" value={occurredAt}
         onChange={setOccurredAt} />
       <TextareaField label="What should the team know?" rows={3} value={note}
@@ -759,7 +773,10 @@ function HostActivity({detail, controller}: {
     </AdminForm>
     {detail.activities.length ? detail.activities.map((activity) =>
       <StateRow key={activity.activityId} label={labelFor(activity.type)}
-        value={<>{dateLabel(activity.occurredAt)} · {activity.note}</>} />
+        value={<>{dateLabel(activity.occurredAt)} · {activity.note}
+          {activity.type === "outreach_sent_manual" ?
+            ` · ${activity.channel || "other"} · Actor-attested; delivery unconfirmed` : ""}
+        </>} />
     ) : <EmptyState>No activity recorded yet.</EmptyState>}
   </Panel>;
 }

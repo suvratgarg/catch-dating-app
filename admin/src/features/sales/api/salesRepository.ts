@@ -13,6 +13,9 @@ import type {
   SalesRecordActivityInput, SalesSetCustomFieldValueInput,
   SalesTask, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput, SalesUpsertTaskInput,
+  SalesContact, SalesContactInput, SalesEvidence, SalesEvidenceInput,
+  SalesImportPacket, SalesImportPreview, SalesSetAccountSuppressionInput,
+  SalesSetContactabilityInput,
 } from "./salesTypes";
 
 type MutationReceipt = {requestId: string; revision: number};
@@ -76,6 +79,8 @@ const sampleDetails = new Map<string, SalesAccountDetail>(sampleNames.map(
 
 const sampleReceipts = new Map<string, unknown>();
 const sampleCustomFields: SalesCustomFieldDefinition[] = [];
+const sampleContacts = new Map<string, SalesContact[]>();
+const sampleEvidence = new Map<string, SalesEvidence[]>();
 
 function sampleDetail(organizerId: string): SalesAccountDetail {
   const detail = sampleDetails.get(organizerId);
@@ -110,6 +115,7 @@ export async function listSalesAccounts(
     name: detail.organizerSummary.name,
     city: detail.organizerSummary.city,
     market: detail.organizerSummary.market,
+    marketLabel: detail.organizerSummary.marketLabel,
     eventTypes: detail.organizerSummary.eventTypes,
     researchStatus: detail.account.researchStatus,
     fitLabel: detail.account.researchStatus === "qualified" ? "Strong fit" : null,
@@ -288,6 +294,9 @@ export async function recordSalesActivity(input: SalesRecordActivityInput): Prom
     const activity: SalesActivity = {
       activityId: crypto.randomUUID(), type: input.type,
       occurredAt: input.occurredAt, note: input.note,
+      channel: input.channel ?? null,
+      outcome: input.type === "outreach_sent_manual" ? "actor_attested_sent" : null,
+      providerConfirmed: false,
     };
     detail.activities.unshift(activity);
     return {activity, receipt: {requestId: input.requestId, revision: 1}};
@@ -316,4 +325,132 @@ export async function upsertSalesOpportunity(
     return {opportunity, receipt: {requestId: input.requestId,
       revision: opportunity.revision}};
   });
+}
+
+export async function listSalesContacts(organizerId: string, cursor?: string):
+Promise<SalesPage<SalesContact>> {
+  if (dataMode() !== "sample") return call("adminListSalesContacts", {
+    organizerId, limit: 25, cursor,
+  });
+  return pageRows(structuredClone(sampleContacts.get(organizerId) ?? []), cursor, 25);
+}
+
+export async function listSalesEvidence(organizerId: string, cursor?: string):
+Promise<SalesPage<SalesEvidence>> {
+  if (dataMode() !== "sample") return call("adminListSalesEvidence", {
+    organizerId, limit: 25, cursor,
+  });
+  return pageRows(structuredClone(sampleEvidence.get(organizerId) ?? []), cursor, 25);
+}
+
+export async function upsertSalesContact(input: SalesContactInput): Promise<{
+  contact: {contactId: string; displayName: string};
+  relationship: SalesContact["relationship"]; receipt: MutationReceipt;
+}> {
+  if (dataMode() !== "sample") return call("adminUpsertSalesContact", input);
+  return replayOrStore(input.requestId, () => {
+    sampleDetail(input.organizerId);
+    const rows = sampleContacts.get(input.organizerId) ?? [];
+    const current = rows.find((item) => item.contactId === input.contactId);
+    if ((current?.relationship.revision ?? 0) !== input.expectedRevision) {
+      throw new Error("Contact relationship changed since review.");
+    }
+    const contactId = current?.contactId ?? crypto.randomUUID();
+    const relationship: SalesContact["relationship"] = {
+      ...input.relationship, revision: input.expectedRevision + 1,
+      contactabilityStatus: current?.relationship.contactabilityStatus ?? "unknown",
+      contactabilityReason: current?.relationship.contactabilityReason ?? null,
+      draftReviewEvidenceId: current?.relationship.draftReviewEvidenceId ?? null,
+      sendAuthority: false,
+    };
+    const row = {contactId, displayName: input.contact.displayName, relationship};
+    sampleContacts.set(input.organizerId, [...rows.filter((item) =>
+      item.contactId !== contactId), row]);
+    return {contact: {contactId, displayName: row.displayName}, relationship,
+      receipt: {requestId: input.requestId, revision: relationship.revision}};
+  });
+}
+
+export async function addSalesEvidence(input: SalesEvidenceInput): Promise<{
+  evidence: SalesEvidence; receipt: MutationReceipt;
+}> {
+  if (dataMode() !== "sample") return call("adminAddSalesEvidence", input);
+  return replayOrStore(input.requestId, () => {
+    sampleDetail(input.organizerId);
+    if (input.contactId && !(sampleContacts.get(input.organizerId) ?? [])
+      .some((row) => row.contactId === input.contactId)) {
+      throw new Error("Contact evidence requires an existing relationship.");
+    }
+    const evidence: SalesEvidence = {
+      evidenceId: crypto.randomUUID(), organizerId: input.organizerId,
+      contactId: input.contactId ?? null, claimKey: input.claimKey,
+      signalId: input.signalId ?? null, sourceType: input.sourceType,
+      sourceRef: input.sourceRef, observedAt: input.observedAt,
+      validThrough: input.validThrough ?? null, confidence: input.confidence,
+      normalizedValue: input.normalizedValue ?? null, excerpt: input.excerpt ?? null,
+    };
+    sampleEvidence.set(input.organizerId, [evidence,
+      ...(sampleEvidence.get(input.organizerId) ?? [])]);
+    return {evidence, receipt: {requestId: input.requestId, revision: 1}};
+  });
+}
+
+export async function setSalesAccountSuppression(
+  input: SalesSetAccountSuppressionInput
+): Promise<{account: SalesAccount; decision: unknown; receipt: MutationReceipt}> {
+  if (dataMode() !== "sample") return call("adminSetSalesAccountSuppression", input);
+  return replayOrStore(input.requestId, () => {
+    const detail = sampleDetail(input.organizerId);
+    if (detail.account.revision !== input.expectedRevision) {
+      throw new Error("Account changed since review.");
+    }
+    detail.account = {...detail.account, suppressionStatus: input.status,
+      revision: detail.account.revision + 1};
+    return {account: structuredClone(detail.account), decision: {reason: input.reason},
+      receipt: {requestId: input.requestId, revision: detail.account.revision}};
+  });
+}
+
+export async function setSalesContactability(
+  input: SalesSetContactabilityInput
+): Promise<{relationship: SalesContact["relationship"];
+  decision: unknown; receipt: MutationReceipt}> {
+  if (dataMode() !== "sample") return call("adminSetSalesContactability", input);
+  return replayOrStore(input.requestId, () => {
+    const rows = sampleContacts.get(input.organizerId) ?? [];
+    const current = rows.find((row) => row.contactId === input.contactId);
+    if (!current) throw new Error("Contact was not found.");
+    if (current.relationship.revision !== input.expectedRevision) {
+      throw new Error("Contact relationship changed since review.");
+    }
+    if (input.status === "draft_reviewed" && !(sampleEvidence.get(input.organizerId) ?? [])
+      .some((row) => row.evidenceId === input.evidenceId &&
+        row.contactId === input.contactId)) {
+      throw new Error("Reviewed contact evidence is required.");
+    }
+    const relationship: SalesContact["relationship"] = {
+      ...current.relationship, revision: current.relationship.revision + 1,
+      contactabilityStatus: input.status, contactabilityReason: input.reason,
+      draftReviewEvidenceId: input.status === "draft_reviewed" ? input.evidenceId : null,
+      sendAuthority: false,
+    };
+    sampleContacts.set(input.organizerId, rows.map((row) =>
+      row.contactId === input.contactId ? {...row, relationship} : row));
+    return {relationship, decision: {reason: input.reason},
+      receipt: {requestId: input.requestId, revision: relationship.revision}};
+  });
+}
+
+export async function previewSalesImport(packet: SalesImportPacket):
+Promise<SalesImportPreview> {
+  if (dataMode() !== "sample") return call("adminPreviewSalesImport", packet);
+  throw new Error("Reviewed imports require a live employee workspace.");
+}
+
+export async function applySalesImport(input: SalesImportPacket & {
+  requestId: string; previewHash: string;
+}): Promise<{importId: string; rows: SalesImportPreview["rows"];
+  counts: Record<string, number>; effectsApplied: true; receipt: MutationReceipt}> {
+  if (dataMode() !== "sample") return call("adminApplySalesImport", input);
+  throw new Error("Reviewed imports require a live employee workspace.");
 }

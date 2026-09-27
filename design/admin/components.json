@@ -34,6 +34,8 @@
       "workspace_marketing_ops",
       "route_organizer_publishing",
       "route_sales_workspace",
+      "workspace_sales_records",
+      "workspace_sales_import",
       "workspace_organizer_publishing",
       "route_overview",
       "route_safety_triage",
@@ -78,6 +80,26 @@
         "states": ["today", "hosts", "pipeline", "detail", "save-conflict"]
       },
       "notes": "Private Sales route with server-paged host, task and opportunity queries; account, task, activity and opportunity changes use revision checks and request receipts."
+    },
+    {
+      "id": "workspace_sales_records",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesRecordsPanels.tsx",
+      "exportName": "SalesRecordsWorkspace",
+      "css": ["admin/src/styles.css"],
+      "preview": {"status": "planned", "states": ["contacts", "evidence", "suppression", "draft-blocked"]},
+      "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
+    },
+    {
+      "id": "workspace_sales_import",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesImportPanel.tsx",
+      "exportName": "SalesImportWorkspace",
+      "css": ["admin/src/styles.css"],
+      "preview": {"status": "planned", "states": ["csv-mapping", "batch-preview", "batch-applied"]},
+      "notes": "CSV mapping and explicit server preview before each bounded import batch is applied."
     },
     {
       "id": "provider_admin_feedback_provider",

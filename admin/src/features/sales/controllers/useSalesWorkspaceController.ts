@@ -9,6 +9,9 @@ import {
   recordSalesActivity, searchCanonicalOrganizers, setSalesCustomFieldValue,
   updateSalesAccount,
   upsertSalesOpportunity, upsertSalesTask,
+  addSalesEvidence, applySalesImport, listSalesContacts, listSalesEvidence,
+  previewSalesImport, setSalesAccountSuppression, setSalesContactability,
+  upsertSalesContact,
 } from "../api/salesRepository";
 import type {
   SalesAccount, SalesCreateAccountInput, SalesCreateCustomFieldInput,
@@ -18,6 +21,8 @@ import type {
   SalesResearchStatus, SalesSetCustomFieldValueInput, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput,
   SalesUpsertTaskInput,
+  SalesContactInput, SalesEvidenceInput, SalesImportPacket, SalesImportPreview,
+  SalesSetAccountSuppressionInput, SalesSetContactabilityInput,
 } from "../api/salesTypes";
 
 export const researchStatusOptions: Array<{value: SalesResearchStatus; label: string}> = [
@@ -81,6 +86,12 @@ export function useSalesWorkspaceController({
   const [taskCursor, setTaskCursor] = useState<string | undefined>();
   const [taskPreviousCursors, setTaskPreviousCursors] =
     useState<Array<string | undefined>>([]);
+  const [contactCursor, setContactCursor] = useState<string | undefined>();
+  const [contactPreviousCursors, setContactPreviousCursors] =
+    useState<Array<string | undefined>>([]);
+  const [evidenceCursor, setEvidenceCursor] = useState<string | undefined>();
+  const [evidencePreviousCursors, setEvidencePreviousCursors] =
+    useState<Array<string | undefined>>([]);
   const pendingRequestIds = useRef(new Map<string, string>());
 
   useEffect(() => {
@@ -97,6 +108,12 @@ export function useSalesWorkspaceController({
       setDebouncedCanonicalSearch(canonicalSearch.trim()), 250);
     return () => window.clearTimeout(timer);
   }, [canonicalSearch]);
+  useEffect(() => {
+    setContactCursor(undefined);
+    setContactPreviousCursors([]);
+    setEvidenceCursor(undefined);
+    setEvidencePreviousCursors([]);
+  }, [selectedOrganizerId]);
 
   const listInput = useMemo<SalesListAccountsInput>(() => ({
     limit: 25, cursor,
@@ -152,6 +169,16 @@ export function useSalesWorkspaceController({
     queryKey: ["sales", "account", selectedOrganizerId],
     queryFn: () => getSalesAccount(selectedOrganizerId!),
   });
+  const contacts = useQuery({
+    enabled: Boolean(selectedOrganizerId),
+    queryKey: ["sales", "contacts", selectedOrganizerId, contactCursor],
+    queryFn: () => listSalesContacts(selectedOrganizerId!, contactCursor),
+  });
+  const evidence = useQuery({
+    enabled: Boolean(selectedOrganizerId),
+    queryKey: ["sales", "evidence", selectedOrganizerId, evidenceCursor],
+    queryFn: () => listSalesEvidence(selectedOrganizerId!, evidenceCursor),
+  });
 
   const accountMutation = useMutation({mutationFn: updateSalesAccount});
   const createAccountMutation = useMutation({mutationFn: createSalesAccount});
@@ -161,6 +188,12 @@ export function useSalesWorkspaceController({
   const inboundLinkMutation = useMutation({mutationFn: linkSalesInboundIntent});
   const createCustomFieldMutation = useMutation({mutationFn: createSalesCustomField});
   const setCustomValueMutation = useMutation({mutationFn: setSalesCustomFieldValue});
+  const contactMutation = useMutation({mutationFn: upsertSalesContact});
+  const evidenceMutation = useMutation({mutationFn: addSalesEvidence});
+  const accountSuppressionMutation = useMutation({mutationFn: setSalesAccountSuppression});
+  const contactabilityMutation = useMutation({mutationFn: setSalesContactability});
+  const importPreviewMutation = useMutation({mutationFn: previewSalesImport});
+  const importApplyMutation = useMutation({mutationFn: applySalesImport});
 
   const invalidate = useCallback(async () => {
     await Promise.all([
@@ -170,6 +203,8 @@ export function useSalesWorkspaceController({
       queryClient.invalidateQueries({queryKey: ["sales", "inbound"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "custom-fields"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "account"]}),
+      queryClient.invalidateQueries({queryKey: ["sales", "contacts"]}),
+      queryClient.invalidateQueries({queryKey: ["sales", "evidence"]}),
     ]);
   }, [queryClient]);
 
@@ -200,9 +235,17 @@ export function useSalesWorkspaceController({
       if (/aborted|revision mismatch|record changed since review/iu.test(
         error instanceof Error ? error.message : String(error)
       ) && selectedOrganizerId) {
-        void queryClient.invalidateQueries({
-          queryKey: ["sales", "account", selectedOrganizerId],
-        });
+        void Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["sales", "account", selectedOrganizerId],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["sales", "contacts", selectedOrganizerId],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["sales", "evidence", selectedOrganizerId],
+          }),
+        ]);
       }
       return false;
     } finally {
@@ -258,6 +301,38 @@ export function useSalesWorkspaceController({
   ) => execute("custom-value", input, (requestId) =>
     setCustomValueMutation.mutateAsync({...input, requestId}),
   "Field value saved."), [execute, setCustomValueMutation]);
+
+  const saveContact = useCallback((input: Omit<SalesContactInput, "requestId">) =>
+    execute("contact", input, (requestId) =>
+      contactMutation.mutateAsync({...input, requestId}), "Contact saved."),
+  [contactMutation, execute]);
+  const saveEvidence = useCallback((input: Omit<SalesEvidenceInput, "requestId">) =>
+    execute("evidence", input, (requestId) =>
+      evidenceMutation.mutateAsync({...input, requestId}), "Evidence recorded."),
+  [evidenceMutation, execute]);
+  const saveAccountSuppression = useCallback((
+    input: Omit<SalesSetAccountSuppressionInput, "requestId">
+  ) => execute("account-suppression", input, (requestId) =>
+    accountSuppressionMutation.mutateAsync({...input, requestId}),
+  "Account restriction recorded. This does not grant outreach permission."),
+  [accountSuppressionMutation, execute]);
+  const saveContactability = useCallback((
+    input: Omit<SalesSetContactabilityInput, "requestId">
+  ) => execute("contactability", input, (requestId) =>
+    contactabilityMutation.mutateAsync({...input, requestId}),
+  "Contact review recorded. No send permission was granted."),
+  [contactabilityMutation, execute]);
+  const previewImport = useCallback(async (packet: SalesImportPacket):
+    Promise<SalesImportPreview | null> => {
+    onError(null);
+    try {return await importPreviewMutation.mutateAsync(packet);} catch (error) {
+      onError(salesErrorMessage(error)); return null;
+    }
+  }, [importPreviewMutation, onError]);
+  const applyImport = useCallback((packet: SalesImportPacket, previewHash: string) =>
+    execute("import", {packet, previewHash}, (requestId) =>
+      importApplyMutation.mutateAsync({...packet, previewHash, requestId}),
+    "Reviewed import applied."), [execute, importApplyMutation]);
 
   const setAccountFilters = useCallback((next: {
     query?: string; researchStatus?: "all" | SalesResearchStatus; ownerUid?: string;
@@ -318,10 +393,33 @@ export function useSalesWorkspaceController({
     setTaskPreviousCursors((stack) => stack.slice(0, -1));
   }, [taskPreviousCursors]);
 
+  const nextContactPage = useCallback(() => {
+    if (!contacts.data?.nextCursor) return;
+    setContactPreviousCursors((stack) => [...stack, contactCursor]);
+    setContactCursor(contacts.data.nextCursor);
+  }, [contactCursor, contacts.data?.nextCursor]);
+  const previousContactPage = useCallback(() => {
+    setContactCursor(contactPreviousCursors.at(-1));
+    setContactPreviousCursors((stack) => stack.slice(0, -1));
+  }, [contactPreviousCursors]);
+  const nextEvidencePage = useCallback(() => {
+    if (!evidence.data?.nextCursor) return;
+    setEvidencePreviousCursors((stack) => [...stack, evidenceCursor]);
+    setEvidenceCursor(evidence.data.nextCursor);
+  }, [evidenceCursor, evidence.data?.nextCursor]);
+  const previousEvidencePage = useCallback(() => {
+    setEvidenceCursor(evidencePreviousCursors.at(-1));
+    setEvidencePreviousCursors((stack) => stack.slice(0, -1));
+  }, [evidencePreviousCursors]);
+
   return {
     accounts, tasks, opportunities, inboundIntents, identityMatches,
     canonicalMatches, canonicalSearch, setCanonicalSearch,
     customFields,
+    contacts, evidence, nextContactPage, previousContactPage,
+    hasPreviousContactPage: contactPreviousCursors.length > 0,
+    nextEvidencePage, previousEvidencePage,
+    hasPreviousEvidencePage: evidencePreviousCursors.length > 0,
     identitySearch, setIdentitySearch, detail, query,
     researchStatus, ownerUid, validAccountQuery,
     opportunityStage, setStageFilter, nextOpportunityPage, previousOpportunityPage,
@@ -335,11 +433,15 @@ export function useSalesWorkspaceController({
     saveAccount, addAccount, saveTask, logActivity, saveOpportunity,
     linkInboundIntent,
     addCustomField, saveCustomValue,
+    saveContact, saveEvidence, saveAccountSuppression, saveContactability,
+    previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
     isSaving: accountMutation.isPending || createAccountMutation.isPending ||
       taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
       inboundLinkMutation.isPending || createCustomFieldMutation.isPending ||
-      setCustomValueMutation.isPending,
+      setCustomValueMutation.isPending || contactMutation.isPending ||
+      evidenceMutation.isPending || accountSuppressionMutation.isPending ||
+      contactabilityMutation.isPending || importApplyMutation.isPending,
   };
 }
 
