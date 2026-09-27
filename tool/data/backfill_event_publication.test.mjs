@@ -168,3 +168,13 @@ test("blocked legacy diagnostics expose invalid paths without source values", ()
   assert.ok(result.validationIssues.some((issue) => issue.startsWith("/startTime:")));
   assert.ok(!JSON.stringify(result).includes("private source text"));
 });
+
+
+test("missing-field diagnostics name the schema field without values", () => {
+  const source = event({meetingPoint: "private source text"});
+  delete source.capacityLimit;
+  const result = classifyEventPublication(source);
+  assert.equal(result.action, "blocked");
+  assert.ok(result.validationIssues.includes("/capacityLimit:required"));
+  assert.ok(!JSON.stringify(result).includes("private source text"));
+});
