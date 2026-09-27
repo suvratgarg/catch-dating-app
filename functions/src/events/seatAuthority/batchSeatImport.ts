@@ -3,7 +3,8 @@ import {normalizeRosterPhone} from "../eventAttendees";
 import {seatIdentityAliasId, SeatIdentityAlias,
   seatIdentityValueHash} from "../seatIdentityAuthority";
 import {deriveEventSeatPolicy} from "./firestoreAdapter";
-import {SeatAuthorityError, SeatLedger, SeatReceipt,
+import {assertReadySeatState, checkoutHeldCount,
+  SeatAuthorityError, SeatLedger, SeatReceipt,
   SeatReservation} from "./seatAuthority";
 
 type AliasKind = "attendee" | "phone" | "external";
@@ -207,6 +208,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
       ledger.migrationRevision < 1) {
     fail("Event seat ledger needs reconciliation.");
   }
+  checkoutHeldCount(ledger);
   const seenAlias = new Map<string, string>();
   const seenRows = new Set<string>();
   const seenAttendees = new Set<string>();
@@ -277,18 +279,13 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
     const active = row.status === "registered" ||
       row.status === "checkedIn";
     const existing = item.reservation;
-    if (existing && (existing.eventId !== eventId ||
-        existing.canonicalKey !== canonicalKey ||
-        existing.identityRevision !== 1 ||
-        !Number.isSafeInteger(existing.revision) ||
-        existing.revision < 1 ||
-        typeof existing.active !== "boolean" ||
-        existing.active && existing.releasedAtMillis !== null ||
-        !existing.active && existing.releasedAtMillis === null)) {
-      fail("Existing seat reservation is malformed.");
+    assertReadySeatState(eventId, {key: canonicalKey, revision: 1},
+      ledger, existing);
+    if (existing && existing.identityRevision !== 1) {
+      fail("Imported identity needs reconciliation.");
     }
-    if (existing?.active && ledger.occupied === 0) {
-      fail("Active reservation conflicts with empty ledger.");
+    if (existing?.checkoutHold) {
+      fail("Import cannot change a seat held for checkout.");
     }
     if (prior && (!active || !existing?.active)) {
       fail("Replayed import no longer matches an active seat.");
@@ -319,7 +316,8 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
             (existing?.revision ?? 0) + 1}});
     }
   }
-  if (ledger.occupied + newSeats > ledger.capacity) {
+  if (ledger.occupied + checkoutHeldCount(ledger) + newSeats >
+      ledger.capacity) {
     fail("Import exceeds the event seat capacity.");
   }
   const nextLedger = newSeats > 0 ? {...ledger,

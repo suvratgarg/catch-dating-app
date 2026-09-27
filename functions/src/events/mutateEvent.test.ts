@@ -1700,7 +1700,8 @@ test("unused ready event capacity edits advance ledger atomically and replay",
 
 test("ready ledger occupancy or stale policy prevents unsafe capacity edit",
   async () => {
-    for (const patch of [{occupied: 1}, {policyHash: "f".repeat(64)},
+    for (const patch of [{occupied: 1}, {checkoutHeld: 1},
+      {policyHash: "f".repeat(64)},
       {revision: Number.MAX_SAFE_INTEGER}, {capacityRevision: 0}]) {
       const docs = readySeatDocs();
       docs["eventSeatLedgers/event-1"] =

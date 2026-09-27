@@ -1,6 +1,7 @@
 import {createHash} from "crypto";
 import {
-  CanonicalSeatIdentity, SeatAuthorityError, SeatLedger, SeatOperation,
+  assertReadySeatState, checkoutHeldCount, CanonicalSeatIdentity,
+  SeatAuthorityError, SeatLedger, SeatOperation,
   SeatReceipt, SeatReservation, SeatTransaction,
 } from "./seatAuthority";
 
@@ -97,6 +98,7 @@ export async function prepareSeatBatch<Subject>(params: {
       !/^[a-f0-9]{64}$/u.test(ledger.policyHash)) {
     fail("unavailable", "Seat authority is not reconciled and ready.");
   }
+  checkoutHeldCount(ledger);
   params.validateLedger?.(ledger);
   const rows = await Promise.all(command.operations.map(async (operation,
     index) => ({
@@ -118,18 +120,7 @@ export async function prepareSeatBatch<Subject>(params: {
     const operation = command.operations[i];
     const identity = identities[i];
     const {reservation, receipt} = rows[i];
-    if (reservation && (reservation.eventId !== command.eventId ||
-        reservation.canonicalKey !== identity.key ||
-        !safe(reservation.revision) || reservation.revision < 1 ||
-        reservation.revision === Number.MAX_SAFE_INTEGER ||
-        !safe(reservation.identityRevision) ||
-        !safe(reservation.reservedAtMillis) ||
-        !(reservation.releasedAtMillis === null ||
-          safe(reservation.releasedAtMillis)) ||
-        typeof reservation.active !== "boolean" ||
-        reservation.active === (reservation.releasedAtMillis !== null))) {
-      fail("unavailable", "Seat reservation is malformed.");
-    }
+    assertReadySeatState(command.eventId, identity, ledger, reservation);
     const requestHash = digest([batchHash, operation.requestId]);
     if (receipt) {
       if (receipt.eventId !== command.eventId ||
@@ -153,6 +144,9 @@ export async function prepareSeatBatch<Subject>(params: {
         operation.expectedReservationRevision ||
         reservation && reservation.identityRevision !== identity.revision) {
       fail("conflict", "Seat reservation or identity changed.");
+    }
+    if (reservation?.checkoutHold) {
+      fail("conflict", "This identity has a checkout in progress.");
     }
     if (operation.operation === "release" && !reservation?.active) {
       fail("conflict", "There is no active seat to release.");
@@ -186,7 +180,7 @@ export async function prepareSeatBatch<Subject>(params: {
     fail("conflict", "Seat capacity or migration changed; review again.");
   }
   if (replayCount === 0 && (ledger.occupied + delta < 0 ||
-      ledger.occupied + delta > ledger.capacity ||
+      ledger.occupied + checkoutHeldCount(ledger) + delta > ledger.capacity ||
       releaseCount > ledger.occupied)) {
     fail("conflict", "This event has insufficient seats.");
   }

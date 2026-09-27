@@ -1,3 +1,4 @@
+import {checkoutHeldCount} from "./seatAuthority/seatAuthority";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
@@ -312,6 +313,7 @@ export async function signUpUserForEvent(
     const baseRoster = {
       ...rosterFromEvent(event),
       totalBooked: currentBookedCount +
+        (seatLedger ? checkoutHeldCount(seatLedger) : 0) +
         Math.max(0, event.crossPathsPairHeldCount ?? 0),
     };
     const reservedRoster = await rosterWithReservedWaitlistOffersInTransaction(

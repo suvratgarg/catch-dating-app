@@ -901,3 +901,14 @@ when checking remaining capacity. It refuses Cross Paths pair inventory, cohort
 caps/ratios and membership policies until their verified eligibility and shared
 reservation paths are integrated. The Host preview reports this limitation; it
 does not reinterpret CRM answers as verified membership or cohort evidence.
+
+
+Event-offer checkout will reserve a seat for 15 minutes from checkout start,
+then confirm admission only after verified payment. Issuing an offer alone does
+not reserve capacity. The shared seat core now tracks checkout-held capacity
+separately from confirmed attendance and blocks competing admission/import or
+identity-replacement operations. Retrying checkout cannot extend its deadline;
+late capture requires payment reconciliation and refund rather than admission.
+The provider-to-admission bridge, expiry worker and recipient checkout surface
+must be wired and verified before this behavior is enabled. Route transfer
+release continues to follow event settlement policy, separately from admission.

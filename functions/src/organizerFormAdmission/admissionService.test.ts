@@ -747,3 +747,21 @@ test("approved source follows a merged contact origin without a second seat",
     assert.equal(receipt.contactId, contactId);
     assert.equal(store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
   });
+
+
+test("checkout holds and waitlist offers share remaining admission capacity",
+  async () => {
+    const {store, commit} = fixture();
+    store.get(`eventSeatLedgers/${eventId}`)!.checkoutHeld = 1;
+    store.put("eventWaitlistOffers/waitlist1", {eventId, uid: "waiting1",
+      status: "active", cohortAtOffer: "queerOrOpen", expiresAt: ts(3000)});
+    const participationId = eventParticipationId(eventId, "waiting1");
+    store.put(`eventParticipations/${participationId}`,
+      {eventId, uid: "waiting1", status: "waitlisted"});
+    await assert.rejects(commit(), denied);
+    assert.deepEqual(store.writes, []);
+    store.get("eventWaitlistOffers/waitlist1")!.expiresAt = ts(1000);
+    await commit();
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.checkoutHeld, 1);
+  });

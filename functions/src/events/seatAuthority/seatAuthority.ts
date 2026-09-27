@@ -5,6 +5,8 @@ export interface SeatLedger {
   eventId: string;
   capacity: number;
   occupied: number;
+  /** Missing means zero. Never include held seats in bookedCount. */
+  checkoutHeld?: number;
   revision: number;
   capacityRevision: number;
   policyVersion: "legacy" | "v1" | "v2";
@@ -21,13 +23,15 @@ export interface SeatReservation {
   revision: number;
   reservedAtMillis: number;
   releasedAtMillis: number | null;
+  checkoutHold?: {paymentId: string; expiresAtMillis: number};
 }
 
 export interface SeatReceipt {
   eventId: string;
   requestId: string;
   requestHash: string;
-  operation: "reserve" | "release";
+  operation: "reserve" | "release" | "checkoutHold" |
+    "confirmCheckoutHold" | "releaseCheckoutHold";
   canonicalKey: string;
   appliedLedgerRevision: number;
   appliedReservationRevision: number;
@@ -101,6 +105,19 @@ function hash(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
+export const CHECKOUT_HOLD_MILLIS = 15 * 60 * 1000;
+
+/** Expired holds still consume capacity until atomically released. */
+export function checkoutHeldCount(ledger: SeatLedger): number {
+  const held = ledger.checkoutHeld === undefined ? 0 : ledger.checkoutHeld;
+  if (!nonnegative(held) || !nonnegative(ledger.occupied) ||
+      !Number.isSafeInteger(ledger.occupied + held) ||
+      ledger.occupied + held > ledger.capacity) {
+    fail("unavailable", "Checkout seat inventory needs reconciliation.");
+  }
+  return held;
+}
+
 /** Validate existing authority without creating a reservation or receipt.
  * Identity revision equality remains a caller decision for historical replay.
  */
@@ -125,6 +142,15 @@ export function assertReadySeatState(eventId: string,
       ledger.migrationRevision === 0) {
     fail("unavailable", "Seat authority is not reconciled and ready.");
   }
+  const held = checkoutHeldCount(ledger);
+  const hold = reservation?.checkoutHold;
+  if (hold !== undefined && (!hold || typeof hold !== "object" ||
+      !validId(hold.paymentId) || !nonnegative(hold.expiresAtMillis) ||
+      hold.expiresAtMillis !== reservation!.reservedAtMillis +
+        CHECKOUT_HOLD_MILLIS || reservation!.active ||
+      reservation!.releasedAtMillis !== null || held < 1)) {
+    fail("unavailable", "Checkout seat hold is malformed.");
+  }
   if (reservation && (reservation.eventId !== eventId ||
       reservation.canonicalKey !== identity.key ||
       !nonnegative(reservation.revision) ||
@@ -135,7 +161,8 @@ export function assertReadySeatState(eventId: string,
       !(reservation.releasedAtMillis === null ||
         nonnegative(reservation.releasedAtMillis)) ||
       reservation.active && reservation.releasedAtMillis !== null ||
-      !reservation.active && reservation.releasedAtMillis === null ||
+      !reservation.active && !hold &&
+        reservation.releasedAtMillis === null ||
       typeof reservation.active !== "boolean")) {
     fail("unavailable", "Seat reservation is malformed.");
   }
@@ -209,13 +236,17 @@ export async function prepareSeatCommand<Subject>(params: {
   if (reservation && reservation.identityRevision !== identity.revision) {
     fail("conflict", "Canonical identity changed; reconcile it first.");
   }
+  if (reservation?.checkoutHold) {
+    fail("conflict", "This identity has a checkout in progress.");
+  }
   if (command.operation === "reserve" && reservation?.active) {
     fail("conflict", "This identity already has a confirmed seat.");
   }
   if (command.operation === "release" && !reservation?.active) {
     fail("conflict", "There is no active seat to release.");
   }
-  if (command.operation === "reserve" && ledger.occupied >= ledger.capacity) {
+  if (command.operation === "reserve" &&
+      ledger.occupied + checkoutHeldCount(ledger) >= ledger.capacity) {
     fail("conflict", "This event is full.");
   }
   const active = command.operation === "reserve";

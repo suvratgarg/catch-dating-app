@@ -1,3 +1,4 @@
+import {checkoutHeldCount} from "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";
 import {rosterWithReservedWaitlistOffersInTransaction} from
   "../events/eventPolicy";
@@ -591,7 +592,8 @@ async function executeAdmission(
     if (decision.seatAction === "reserve") {
       const withOffers = await rosterWithReservedWaitlistOffersInTransaction(
         tx, db, payload.eventId, {bookedCountsByCohort: {},
-          waitlistedCountsByCohort: {}, totalBooked: ledger.occupied},
+          waitlistedCountsByCohort: {},
+          totalBooked: ledger.occupied + checkoutHeldCount(ledger)},
         {nowMillis: now});
       if (withOffers.totalBooked >= ledger.capacity) {
         unavailable("Available seats are reserved by current waitlist offers.");

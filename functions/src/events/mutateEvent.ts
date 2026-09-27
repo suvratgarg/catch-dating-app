@@ -110,7 +110,7 @@ import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
-import {SeatLedger} from "./seatAuthority/seatAuthority";
+import {checkoutHeldCount, SeatLedger} from "./seatAuthority/seatAuthority";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
 
@@ -533,7 +533,7 @@ export async function updateEventHandler(
     const seatState = seatMode === "ready" ?
       await prepareEventMutationLedger(db, tx, data.eventId, event,
         nextEvent) : null;
-    if (seatState && seatState.occupied > 0 &&
+    if (seatState && seatState.reserved > 0 &&
         (hasScheduleTimeChange(data.fields) || hasPolicyChange(data.fields))) {
       throw new HttpsError("failed-precondition",
         "Events with reserved seats cannot change schedule or policy.");
@@ -919,7 +919,7 @@ async function prepareEventMutationLedger(
   eventId: string,
   before: EventDocument,
   after: EventDocument
-): Promise<{update: SeatLedger | null; occupied: number}> {
+): Promise<{update: SeatLedger | null; reserved: number}> {
   const snap = await tx.get(db.collection("eventSeatLedgers").doc(eventId));
   const ledger = snap.data() as SeatLedger | undefined;
   let previous;
@@ -947,14 +947,19 @@ async function prepareEventMutationLedger(
     throw new HttpsError("failed-precondition",
       "Seat capacity needs reconciliation before this edit.");
   }
-  if (previous.policyHash === next.policyHash) {
-    return {update: null, occupied: ledger.occupied};
+  const reserved = ledger.occupied + checkoutHeldCount(ledger);
+  if (next.capacity < reserved) {
+    throw new HttpsError("failed-precondition",
+      "Capacity cannot be smaller than confirmed seats and checkout holds.");
   }
-  if (ledger.occupied > 0) {
+  if (previous.policyHash === next.policyHash) {
+    return {update: null, reserved};
+  }
+  if (reserved > 0) {
     throw new HttpsError("failed-precondition",
       "Events with reserved seats cannot change admission policy.");
   }
-  return {occupied: ledger.occupied, update: {...ledger,
+  return {reserved, update: {...ledger,
     capacity: next.capacity, policyHash: next.policyHash,
     policyVersion: next.policyVersion, revision: ledger.revision + 1,
     capacityRevision: ledger.capacityRevision + 1}};

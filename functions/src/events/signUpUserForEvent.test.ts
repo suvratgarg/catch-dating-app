@@ -753,3 +753,19 @@ test("signUpUserForEvent allows adjacent user bookings", async () => {
 function scheduleSlot(iso: string): number {
   return Math.floor(Date.parse(iso) / 60000);
 }
+
+
+test("Catch signup respects another checkout hold with zero confirmed bookings",
+  async () => {
+    const sourceEvent = event({capacityLimit: 1, bookedCount: 0});
+    const rows = readySeatDocs(sourceEvent, "runner-1");
+    rows["eventSeatLedgers/event-1"].checkoutHeld = 1;
+    const db = firestore({"events/event-1": sourceEvent,
+      "users/runner-1": user(), ...rows});
+    await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+      undefined, {loadCurrentAuthPhone: async () => null}));
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 0);
+    assert.equal(fake.get("eventSeatLedgers/event-1")?.checkoutHeld, 1);
+    assert.equal(fake.get("eventParticipations/event-1_runner-1"), undefined);
+  });
