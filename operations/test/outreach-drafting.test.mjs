@@ -185,6 +185,23 @@ test("unknown model clauses and target changes are rejected without rendering", 
     {...base, language: "hi"}, eligible), {code: "INVALID_OUTREACH_SELECTION"});
 });
 
+test("evidence that expires during review cannot produce a draft", async (t) => {
+  let clock = at;
+  let reads = 0;
+  const snapshot = input();
+  const f = await fixture({clock: () => new Date(clock),
+    eligibilityPort: {getCurrent: async () => {
+      if (++reads === 2) clock = "2026-11-01T00:00:00.000Z";
+      return current(snapshot);
+    }}});
+  t.after(() => fs.rm(f.directory, {recursive: true, force: true}));
+  const result = await f.engine.start(f.workflow.createPlan({inputs: [snapshot], now: at}));
+  const [item] = await f.store.listWorkItems({runId: result.run.runId});
+  assert.equal(item.primaryStage, "blocked");
+  assert.deepEqual(item.blockers, ["research_needed"]);
+  assert.equal(item.decisionProvenance.draft, undefined);
+});
+
 test("input validation rejects invented evidence, unrelated identity and fake follow-up", async (t) => {
   const f = await fixture();
   t.after(() => fs.rm(f.directory, {recursive: true, force: true}));

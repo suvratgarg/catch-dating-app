@@ -260,7 +260,9 @@ export class OutreachDraftingWorkflow {
         reasonToBlock: null, omittedIds: []};
     }
     await this.assertCurrent(input); // cache hits do not bypass current eligibility
-    this.assertSelection(input, selection, eligible);
+    const currentEligible = eligibleClauses(input, this.clock().toISOString());
+    if (!currentEligible.ok) return blockedOutcome(item, now, currentEligible.reason);
+    this.assertSelection(input, selection, currentEligible);
     if (selection.reasonToBlock) return blockedOutcome(item, now, "model_abstained");
     const draft = this.render(input, selection, model);
     return {primaryStage: "human_review", lifecycleStatus: "active",
