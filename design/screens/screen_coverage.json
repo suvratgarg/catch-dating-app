@@ -466,6 +466,41 @@
       "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
     },
     {
+      "routeId": "hostProgramsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.list",
+      "reason": "Covered by screen.programs.list as the organizer program discovery surface."
+    },
+    {
+      "routeId": "hostProgramWorkspaceScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.workspace",
+      "reason": "Covered by screen.programs.workspace as the organizer schedule and function overview."
+    },
+    {
+      "routeId": "hostProgramGuestsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.guests",
+      "reason": "Covered by screen.programs.guests as the household and function RSVP matrix."
+    },
+    {
+      "routeId": "hostProgramTeamScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.team",
+      "reason": "Covered by screen.programs.team as the staff roster and duties surface."
+    },
+    {
+      "routeId": "hostProgramImportScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.import",
+      "reason": "Covered by screen.programs.import as the manifest mapping and import result surface."
+    },
+    {
       "routeId": "hostOrganizerScreen",
       "status": "contracted",
       "priority": "P1",

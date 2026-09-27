@@ -1,0 +1,175 @@
+import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'program_workspace_controller.g.dart';
+
+/// Organizer workspace mutations for the program screens. Widgets go through
+/// this controller rather than reaching into repository providers directly.
+@riverpod
+class ProgramWorkspaceController extends _$ProgramWorkspaceController {
+  @override
+  void build() {}
+
+  ProgramSetupRepository get _repository =>
+      ref.read(programSetupRepositoryProvider);
+
+  Future<ProgramMutationResult> createProgram({
+    required String organizerId,
+    required String kind,
+    required String title,
+    required String timezone,
+    required DateTime startsAt,
+    required DateTime endsAt,
+  }) => _repository.createProgram(
+    organizerId: organizerId,
+    kind: kind,
+    title: title,
+    timezone: timezone,
+    startsAt: startsAt,
+    endsAt: endsAt,
+  );
+
+  Future<ProgramMutationResult> upsertFunction({
+    required String programId,
+    required String name,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required String venueName,
+    String? functionId,
+    int? expectedRevision,
+    String? venueNotes,
+    String? status,
+  }) => _repository.upsertFunction(
+    programId: programId,
+    name: name,
+    startsAt: startsAt,
+    endsAt: endsAt,
+    venueName: venueName,
+    functionId: functionId,
+    expectedRevision: expectedRevision,
+    venueNotes: venueNotes,
+    status: status,
+  );
+
+  Future<ProgramMutationResult> applyFunctionInvitations({
+    required String programId,
+    required String functionId,
+    required String invitationMode,
+    required int expectedRevision,
+    List<String>? selectedGuestIds,
+  }) => _repository.applyFunctionInvitations(
+    programId: programId,
+    functionId: functionId,
+    invitationMode: invitationMode,
+    expectedRevision: expectedRevision,
+    selectedGuestIds: selectedGuestIds,
+  );
+
+  Future<ProgramMutationResult> recordFunctionRsvp({
+    required String programId,
+    required String functionId,
+    required String guestId,
+    required String rsvpStatus,
+    int? partySize,
+    bool allowUninvited = false,
+  }) => _repository.recordFunctionRsvp(
+    programId: programId,
+    functionId: functionId,
+    guestId: guestId,
+    rsvpStatus: rsvpStatus,
+    partySize: partySize,
+    allowUninvited: allowUninvited,
+  );
+
+  Future<ProgramMutationResult> upsertGuest({
+    required String programId,
+    required String displayName,
+    String? guestId,
+    int? expectedRevision,
+    String? householdId,
+    List<String>? groupIds,
+    String? phoneE164,
+    String? email,
+    String? externalReference,
+  }) => _repository.upsertGuest(
+    programId: programId,
+    displayName: displayName,
+    guestId: guestId,
+    expectedRevision: expectedRevision,
+    householdId: householdId,
+    groupIds: groupIds,
+    phoneE164: phoneE164,
+    email: email,
+    externalReference: externalReference,
+  );
+
+  Future<ProgramMutationResult> upsertGuestGroup({
+    required String programId,
+    required String label,
+    required String dimension,
+    String? groupId,
+    int? expectedRevision,
+    int? sortOrder,
+  }) => _repository.upsertGuestGroup(
+    programId: programId,
+    label: label,
+    dimension: dimension,
+    groupId: groupId,
+    expectedRevision: expectedRevision,
+    sortOrder: sortOrder,
+  );
+
+  Future<ProgramMutationResult> deleteGuestGroup({
+    required String programId,
+    required String groupId,
+    required int expectedRevision,
+  }) => _repository.deleteGuestGroup(
+    programId: programId,
+    groupId: groupId,
+    expectedRevision: expectedRevision,
+  );
+
+  Future<ProgramMutationResult> inviteStaff({
+    required String programId,
+    required String phoneNumber,
+    required String displayName,
+    required List<ProgramDutyAssignment> duties,
+    required DateTime expiresAt,
+  }) => _repository.inviteStaff(
+    programId: programId,
+    phoneNumber: phoneNumber,
+    displayName: displayName,
+    duties: duties,
+    expiresAt: expiresAt,
+  );
+
+  Future<ProgramMutationResult> grantStaff({
+    required String programId,
+    required String phoneNumber,
+    required List<ProgramDutyAssignment> duties,
+    required DateTime expiresAt,
+  }) => _repository.grantStaff(
+    programId: programId,
+    phoneNumber: phoneNumber,
+    duties: duties,
+    expiresAt: expiresAt,
+  );
+
+  Future<ProgramMutationResult> revokeStaff({
+    required String programId,
+    required ProgramStaffMember member,
+  }) => _repository.revokeStaff(programId: programId, member: member);
+
+  Future<ProgramManifestImportResult> importManifest({
+    required String programId,
+    required String mode,
+    required String clientOperationId,
+    required List<Map<String, Object?>> rows,
+  }) => _repository.importManifest(
+    programId: programId,
+    mode: mode,
+    clientOperationId: clientOperationId,
+    rows: rows,
+  );
+}

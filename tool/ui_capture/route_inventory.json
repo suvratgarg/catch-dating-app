@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "0123e9c8bf682d4cd3311c87e44c1cb10ddff76eece2411da9e36c284d21394f",
-    "routeContractSha256": "08f022a4068e52a32f0d441252f46bd158a92bdb021a91e0721632fd33163fc7",
-    "goRouteCount": 102,
+    "normalizedFileSha256": "45f7f28eece794cc7eb986fe7382914266bcda66562986d4f84402acec5fe027",
+    "routeContractSha256": "777a2f3e26593073c9dee8d67679f35bc62ad1c5289f257e9aa82ee51290fbd6",
+    "goRouteCount": 107,
     "shellBranchCount": 9,
-    "enumRouteCount": 87,
-    "referencedRouteCount": 87,
-    "runtimeRouteCount": 87,
+    "enumRouteCount": 92,
+    "referencedRouteCount": 92,
+    "runtimeRouteCount": 92,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -658,7 +658,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostTodayScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostTodayScreen(initialOrganizerId:state.uri.queryParameters['organizerId']??state.uri.queryParameters['clubId'])",
+      "presentationExpression": "(context,state)=>HostTodayScreen(initialOrganizerId:_routeOrganizerQueryId(state))",
       "presentationTarget": "HostTodayScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -688,7 +688,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventsScreen(initialOrganizerId:state.uri.queryParameters['organizerId']??state.uri.queryParameters['clubId'])",
+      "presentationExpression": "(context,state)=>HostEventsScreen(initialOrganizerId:_routeOrganizerQueryId(state))",
       "presentationTarget": "HostEventsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -703,7 +703,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAudienceScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>hostAudienceScreenForUri(state.uri,initialContactDisplayName:switch(state.extra){HostCustomerDetailRouteArguments(:final displayName)=>displayName,_=>null})",
+      "presentationExpression": "(context,state)=>hostAudienceScreenForUri(state.uri,initialContactDisplayName:_routeContactNameExtra(state))",
       "presentationTarget": "hostAudienceScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -931,7 +931,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'people/:contactId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostCustomerDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',contactId:state.pathParameters['contactId']!,initialDisplayName:switch(state.extra){HostCustomerDetailRouteArguments(:final displayName)=>displayName,_=>null})",
+      "presentationExpression": "(context,state)=>HostCustomerDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',contactId:state.pathParameters['contactId']!,initialDisplayName:_routeContactNameExtra(state))",
       "presentationTarget": "HostCustomerDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1101,6 +1101,89 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>ProgramTripsScreen(programId:state.pathParameters['programId']!)",
       "presentationTarget": "ProgramTripsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramsScreen",
+      "path": "/host/programs",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/programs",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostProgramsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramListScreen(initialOrganizerId:_routeOrganizerQueryId(state))",
+      "presentationTarget": "ProgramListScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramWorkspaceScreen",
+      "path": "/host/programs/:programId",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostProgramWorkspaceScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramWorkspaceScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramWorkspaceScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramGuestsScreen",
+      "path": "/host/programs/:programId/guests",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/guests",
+      "runtimeParentId": "hostProgramWorkspaceScreen",
+      "runtimePathExpression": "'guests'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramGuestsScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramGuestsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramTeamScreen",
+      "path": "/host/programs/:programId/team",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/team",
+      "runtimeParentId": "hostProgramWorkspaceScreen",
+      "runtimePathExpression": "'team'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramTeamScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramTeamScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramImportScreen",
+      "path": "/host/programs/:programId/import",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/import",
+      "runtimeParentId": "hostProgramWorkspaceScreen",
+      "runtimePathExpression": "'import'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramImportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramImportScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1430,7 +1513,7 @@
       "runtimeParentId": "hostInboxScreen",
       "runtimePathExpression": "':matchId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>ChatScreen(matchId:state.pathParameters['matchId']!,otherProfile:switch(state.extra){final PublicProfile profile=>profile,_=>null})",
+      "presentationExpression": "(context,state)=>ChatScreen(matchId:state.pathParameters['matchId']!,otherProfile:_routePublicProfileExtra(state))",
       "presentationTarget": "ChatScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1616,6 +1699,11 @@
     "hostOperatorEventScreen",
     "hostOrganizerMessagingScreen",
     "hostOrganizerScreen",
+    "hostProgramGuestsScreen",
+    "hostProgramImportScreen",
+    "hostProgramsScreen",
+    "hostProgramTeamScreen",
+    "hostProgramWorkspaceScreen",
     "hostSavedAudienceDetailScreen",
     "hostTodayFocusScreen",
     "hostTodayScreen",

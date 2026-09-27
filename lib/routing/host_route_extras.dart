@@ -18,6 +18,56 @@ HostSavedAudience? _routeAudienceExtra(GoRouterState state) =>
       _ => null,
     };
 
+String? _routeOrganizerQueryId(GoRouterState state) =>
+    state.uri.queryParameters['organizerId'] ??
+    state.uri.queryParameters['clubId'];
+
+String? _routeContactNameExtra(GoRouterState state) => switch (state.extra) {
+  HostCustomerDetailRouteArguments(:final displayName) => displayName,
+  _ => null,
+};
+
+PublicProfile? _routePublicProfileExtra(GoRouterState state) =>
+    switch (state.extra) {
+      final PublicProfile profile => profile,
+      _ => null,
+    };
+
+void _wireRouterRefresh(
+  Ref ref,
+  _RouterRefreshNotifier notifier, {
+  required bool isHostApp,
+}) {
+  ref.listen(uidProvider, (_, _) => notifier.notify());
+  ref.listen(authControllerProvider, (previous, next) {
+    if (previous?.hasPendingVerification != next.hasPendingVerification) {
+      notifier.notify();
+    }
+  });
+  if (!isHostApp) {
+    ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
+  }
+  ref.onDispose(notifier.dispose);
+}
+
+String? _appRedirectFor(
+  Ref ref,
+  GoRouterState state, {
+  required bool isHostApp,
+}) {
+  return appRedirect(
+    uidAsync: ref.read(uidProvider),
+    userProfileAsync: isHostApp
+        ? const AsyncData<UserProfile?>(null)
+        : ref.read(watchUserProfileProvider),
+    hasPendingAuthVerification: ref
+        .read(authControllerProvider)
+        .hasPendingVerification,
+    matchedLocation: state.matchedLocation,
+    uri: state.uri,
+  );
+}
+
 /// Compatibility provider for test harnesses that intentionally exercise both
 /// role graphs in one Dart process. Installable app roots use one of the two
 /// compile-time role providers above.

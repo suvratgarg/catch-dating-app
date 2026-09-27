@@ -12921,6 +12921,275 @@
               "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
             }
           ]
+        },
+        {
+          "id": "programs.list",
+          "routeId": "hostProgramsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_list_screen.dart",
+            "lib/programs/data/program_setup_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.confirm_dialog",
+            "catch.empty_state",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "W1 organizer program workspace surface is specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while organizer and program providers resolve."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry for clubs and program list."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Program index with kind, status, date range and workspace navigation."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "No programs or no operable organizer render the empty state with create entry."
+            }
+          ]
+        },
+        {
+          "id": "programs.workspace",
+          "routeId": "hostProgramWorkspaceScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_workspace_screen.dart",
+            "lib/programs/presentation/program_workspace_controller.dart",
+            "lib/programs/data/program_setup_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.chip",
+            "catch.confirm_dialog",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "W1 organizer program workspace surface is specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while organizerProgramDetail resolves."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Day rail plus function tiles, stations, hotels and counts."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Program without functions renders the day rail with an empty schedule section."
+            }
+          ]
+        },
+        {
+          "id": "programs.guests",
+          "routeId": "hostProgramGuestsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_guests_screen.dart",
+            "lib/programs/presentation/program_workspace_controller.dart",
+            "lib/programs/data/program_setup_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.confirm_dialog",
+            "catch.empty_state",
+            "catch.field",
+            "catch.icon_button",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "W1 organizer program workspace surface is specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewports while program detail and guest list resolve."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry for detail and guest list."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Household sections render the function RSVP matrix with group chips and edit controls."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Programs without guests render the empty state with add and import calls to action."
+            }
+          ]
+        },
+        {
+          "id": "programs.team",
+          "routeId": "hostProgramTeamScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_team_screen.dart",
+            "lib/programs/presentation/program_workspace_controller.dart",
+            "lib/programs/data/program_setup_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.confirm_dialog",
+            "catch.empty_state",
+            "catch.field",
+            "catch.icon_button",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "W1 organizer program workspace surface is specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while programStaffList resolves."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Staff rows with duty badges, scope chips, expiry and revoke control."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Programs without staff render the empty state with grant and invite calls to action."
+            }
+          ]
+        },
+        {
+          "id": "programs.import",
+          "routeId": "hostProgramImportScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_import_screen.dart",
+            "lib/programs/presentation/program_workspace_controller.dart",
+            "lib/programs/domain/program_manifest_mapper.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "W1 organizer program workspace surface is specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Parse, preview and commit phases show progress while importProgramManifest runs."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Parse failures and commit row errors surface localized error content."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Mapped rows, preview counts and commit results render the result section."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Before a file is chosen only the picker call to action renders."
+            }
+          ]
         }
       ],
       "lintCandidates": [],
