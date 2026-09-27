@@ -78530,6 +78530,30 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-fA-F0-9]{64}\$',
   );
 
+  static const manageEventOfferCheckoutCallablePayloadCancellationPolicyEventStartsAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.cancellationPolicy.eventStartsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadCancellationPolicyRefundDeadlineMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.cancellationPolicy.refundDeadlineMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadExpectedRefundAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.expectedRefundAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
   static const manageEventOfferCheckoutCallablePayloadGrantId = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallablePayload.grantId',
     required: true,
@@ -78564,6 +78588,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 100,
     maximum: 100000000,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantCancellationPolicyEventStartsAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.eventStartsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantCancellationPolicyRefundDeadlineMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.refundDeadlineMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const manageEventOfferCheckoutCallableResponseGrantCurrency = CatchContractFieldConstraints(
@@ -78619,10 +78659,34 @@ abstract final class CatchContractConstraints {
     maximum: 100000000,
   );
 
+  static const manageEventOfferCheckoutCallableResponsePaymentCancellationPolicyEventStartsAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.cancellationPolicy.eventStartsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCancellationPolicyRefundDeadlineMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.cancellationPolicy.refundDeadlineMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCancellationQuoteRefundAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.cancellationQuote.refundAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
   static const manageEventOfferCheckoutCallableResponsePaymentCancellationReason = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.payment.cancellationReason',
     required: true,
-    enumValues: <String>['eventCancelled'],
+    enumValues: <String>['eventCancelled', 'guestCancelled'],
   );
 
   static const manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise = CatchContractFieldConstraints(
@@ -78705,7 +78769,7 @@ abstract final class CatchContractConstraints {
   static const manageEventOfferCheckoutCallableResponsePaymentStatus = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.payment.status',
     required: true,
-    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed', 'cancelled'],
   );
 
   static const manageEventOfferCheckoutCallableResponseServerTimeMillis = CatchContractFieldConstraints(
@@ -89160,13 +89224,14 @@ abstract final class CatchContractConstraints {
   static const organizerEventOfferPaymentDocumentCancellationReason = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.cancellation.reason',
     required: true,
+    enumValues: <String>['eventCancelled', 'guestCancelled'],
   );
 
   static const organizerEventOfferPaymentDocumentCancellationRefundAmountPaise = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.cancellation.refundAmountPaise',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 100,
+    minimum: 0,
     maximum: 100000000,
   );
 
@@ -89182,6 +89247,22 @@ abstract final class CatchContractConstraints {
     path: 'organizerEventOfferPaymentDocument.cancellation.seatRetained',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationPolicyEventStartsAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellationPolicy.eventStartsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentCancellationPolicyRefundDeadlineMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.cancellationPolicy.refundDeadlineMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const organizerEventOfferPaymentDocumentCanonicalSeatKey = CatchContractFieldConstraints(
@@ -89669,7 +89750,7 @@ abstract final class CatchContractConstraints {
   static const organizerEventOfferPaymentDocumentStatus = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.status',
     required: true,
-    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed', 'cancelled'],
   );
 
   static const organizerEventOfferPaymentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -139387,11 +139468,16 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallablePayload.action': manageEventOfferCheckoutCallablePayloadAction,
     'manageEventOfferCheckoutCallablePayload.callback.paymentId': manageEventOfferCheckoutCallablePayloadCallbackPaymentId,
     'manageEventOfferCheckoutCallablePayload.callback.signature': manageEventOfferCheckoutCallablePayloadCallbackSignature,
+    'manageEventOfferCheckoutCallablePayload.cancellationPolicy.eventStartsAtMillis': manageEventOfferCheckoutCallablePayloadCancellationPolicyEventStartsAtMillis,
+    'manageEventOfferCheckoutCallablePayload.cancellationPolicy.refundDeadlineMillis': manageEventOfferCheckoutCallablePayloadCancellationPolicyRefundDeadlineMillis,
+    'manageEventOfferCheckoutCallablePayload.expectedRefundAmountPaise': manageEventOfferCheckoutCallablePayloadExpectedRefundAmountPaise,
     'manageEventOfferCheckoutCallablePayload.grantId': manageEventOfferCheckoutCallablePayloadGrantId,
     'manageEventOfferCheckoutCallablePayload.paymentId': manageEventOfferCheckoutCallablePayloadPaymentId,
     'manageEventOfferCheckoutCallablePayload.requestId': manageEventOfferCheckoutCallablePayloadRequestId,
     'manageEventOfferCheckoutCallablePayload.token': manageEventOfferCheckoutCallablePayloadToken,
     'manageEventOfferCheckoutCallableResponse.grant.amountPaise': manageEventOfferCheckoutCallableResponseGrantAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.eventStartsAtMillis': manageEventOfferCheckoutCallableResponseGrantCancellationPolicyEventStartsAtMillis,
+    'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.refundDeadlineMillis': manageEventOfferCheckoutCallableResponseGrantCancellationPolicyRefundDeadlineMillis,
     'manageEventOfferCheckoutCallableResponse.grant.currency': manageEventOfferCheckoutCallableResponseGrantCurrency,
     'manageEventOfferCheckoutCallableResponse.grant.eventId': manageEventOfferCheckoutCallableResponseGrantEventId,
     'manageEventOfferCheckoutCallableResponse.grant.eventName': manageEventOfferCheckoutCallableResponseGrantEventName,
@@ -139399,6 +139485,9 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.grant.grantId': manageEventOfferCheckoutCallableResponseGrantGrantId,
     'manageEventOfferCheckoutCallableResponse.grant.startTimeMillis': manageEventOfferCheckoutCallableResponseGrantStartTimeMillis,
     'manageEventOfferCheckoutCallableResponse.payment.amountPaise': manageEventOfferCheckoutCallableResponsePaymentAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.payment.cancellationPolicy.eventStartsAtMillis': manageEventOfferCheckoutCallableResponsePaymentCancellationPolicyEventStartsAtMillis,
+    'manageEventOfferCheckoutCallableResponse.payment.cancellationPolicy.refundDeadlineMillis': manageEventOfferCheckoutCallableResponsePaymentCancellationPolicyRefundDeadlineMillis,
+    'manageEventOfferCheckoutCallableResponse.payment.cancellationQuote.refundAmountPaise': manageEventOfferCheckoutCallableResponsePaymentCancellationQuoteRefundAmountPaise,
     'manageEventOfferCheckoutCallableResponse.payment.cancellationReason': manageEventOfferCheckoutCallableResponsePaymentCancellationReason,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.amountPaise': manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.currency': manageEventOfferCheckoutCallableResponsePaymentCheckoutCurrency,
@@ -140852,6 +140941,8 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferPaymentDocument.cancellation.refundAmountPaise': organizerEventOfferPaymentDocumentCancellationRefundAmountPaise,
     'organizerEventOfferPaymentDocument.cancellation.requestedAtMillis': organizerEventOfferPaymentDocumentCancellationRequestedAtMillis,
     'organizerEventOfferPaymentDocument.cancellation.seatRetained': organizerEventOfferPaymentDocumentCancellationSeatRetained,
+    'organizerEventOfferPaymentDocument.cancellationPolicy.eventStartsAtMillis': organizerEventOfferPaymentDocumentCancellationPolicyEventStartsAtMillis,
+    'organizerEventOfferPaymentDocument.cancellationPolicy.refundDeadlineMillis': organizerEventOfferPaymentDocumentCancellationPolicyRefundDeadlineMillis,
     'organizerEventOfferPaymentDocument.canonicalSeatKey': organizerEventOfferPaymentDocumentCanonicalSeatKey,
     'organizerEventOfferPaymentDocument.capturedAt._nanoseconds': organizerEventOfferPaymentDocumentCapturedAtNanoseconds,
     'organizerEventOfferPaymentDocument.capturedAt._seconds': organizerEventOfferPaymentDocumentCapturedAtSeconds,

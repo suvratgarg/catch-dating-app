@@ -8,6 +8,8 @@ import {readVerifiedOfferRecipient} from
 import {assertRazorpayCollectionBindingReady} from
   "../razorpayCollectionRouting";
 
+import {offerGuestCancellationQuote} from "./offerCancellationPolicy";
+
 /** Account-owned financial history remains readable after invitation expiry. */
 export async function projectOfferPayment(input: {
   db: FirebaseFirestore.Firestore; paymentId: string; payment: Payment;
@@ -41,9 +43,29 @@ export async function projectOfferPayment(input: {
       }
     }
   }
+  let cancellationQuote = offerGuestCancellationQuote(payment, nowMillis);
+  if (cancellationQuote) {
+    const [eventSnap, attendeeSnap] = await Promise.all([
+      db.collection("events").doc(payment.eventId).get(),
+      db.collection("organizerFormAdmissionReceipts")
+        .doc(payment.admissionReceiptId!).get(),
+    ]);
+    const event = eventSnap.data();
+    const attendeeId = attendeeSnap.data()?.attendeeId;
+    const attendee = typeof attendeeId === "string" ?
+      (await db.collection("eventAttendees").doc(attendeeId).get()).data() :
+      null;
+    const start = event?.startTime?.toMillis?.();
+    if (event?.status !== "active" || !Number.isSafeInteger(start) ||
+        start <= nowMillis || attendee?.status !== "registered" ||
+        attendee.linkedUid !== uid || attendee.eventId !== payment.eventId) {
+      cancellationQuote = null;
+    }
+  }
   return {paymentId, status: payment.status, amountPaise: payment.amountPaise,
     currency: "INR", mode: payment.routing.selection.mode,
     refundedAmountPaise: payment.refundedAmountPaise,
     cancellationReason: payment.cancellation?.reason ?? null,
+    cancellationPolicy: payment.cancellationPolicy ?? null, cancellationQuote,
     expiresAtMillis: payment.checkoutExpiresAt.toMillis(), checkout};
 }

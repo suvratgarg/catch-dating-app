@@ -1,3 +1,5 @@
+import {offerCancellationPolicy, assertReviewedCancellationPolicy,
+  type OfferCancellationPolicy} from "./offerCancellationPolicy";
 import {assertUnpartitionedAdmission} from
   "../../organizerFormAdmission/admissionEligibility";
 import {createHash} from "node:crypto";
@@ -54,10 +56,23 @@ export function parseOfferPayment(raw: unknown, paymentId: string): Payment {
       payment.paymentSnapshot.currency !== payment.currency ||
       payment.paymentSnapshot.expiresAtMillis <
         payment.checkoutExpiresAt.toMillis()) unavailable();
+  if (payment.cancellationPolicy &&
+    payment.cancellationPolicy.refundDeadlineMillis >
+      payment.cancellationPolicy.eventStartsAtMillis ||
+      payment.status === "cancelled" && !payment.cancellation ||
+      payment.cancellation?.reason === "guestCancelled" &&
+        !payment.cancellationPolicy) unavailable();
   if (payment.cancellation && (!payment.admissionReceiptId ||
       !payment.reservationReleased ||
-      payment.cancellation.refundAmountPaise !== payment.amountPaise ||
-      !["refundPending", "refunded", "reviewRequired"]
+      ![0,
+        payment.amountPaise].includes(payment.cancellation.refundAmountPaise) ||
+      payment.cancellation.reason === "eventCancelled" &&
+        payment.cancellation.refundAmountPaise !== payment.amountPaise ||
+      payment.cancellation.refundAmountPaise === 0 &&
+        payment.status !== "cancelled" && payment.status !== "reviewRequired" ||
+      payment.status === "cancelled" &&
+        payment.cancellation.refundAmountPaise !== 0 ||
+      !["cancelled", "refundPending", "refunded", "reviewRequired"]
         .includes(payment.status))) {
     unavailable();
   }
@@ -76,6 +91,7 @@ export function parseOfferPayment(raw: unknown, paymentId: string): Payment {
 export async function reserveOfferPayment(params: {
   db: FirebaseFirestore.Firestore; grantId: string; uid: string;
   requestId: string; routing: PaymentRoutingSnapshot;
+  cancellationPolicy?: OfferCancellationPolicy;
   nowMillis?: () => number; loadCurrentAuthUser?: LoadRecipientAuth;
 }): Promise<{paymentId: string; payment: Payment; replayed: boolean}> {
   const {db, grantId, uid, requestId, routing} = params;
@@ -107,6 +123,9 @@ export async function reserveOfferPayment(params: {
     // let an approved form bypass them while that shared integration is absent.
     const event = source.event;
     assertUnpartitionedAdmission(event);
+    const cancellationPolicy = offerCancellationPolicy(event);
+    assertReviewedCancellationPolicy(params.cancellationPolicy,
+      cancellationPolicy);
     const [ownership, legacyAdmission] = await Promise.all([
       tx.get(db.collection("organizerFormAdmissions").doc(
         formAdmissionOwnershipId(organizerId, eventId, responseId))),
@@ -151,7 +170,7 @@ export async function reserveOfferPayment(params: {
       offerRevision: grant.offerRevision,
       canonicalSeatKey: identity.identity.key,
       identityRevision: identity.identity.revision,
-      migrationRevision: ledger.migrationRevision, routing,
+      migrationRevision: ledger.migrationRevision, routing, cancellationPolicy,
       paymentSnapshot: {...paymentTerms,
         expectedAmountMinor: paymentTerms.expectedAmountMinor},
       amountPaise: paymentTerms.expectedAmountMinor,

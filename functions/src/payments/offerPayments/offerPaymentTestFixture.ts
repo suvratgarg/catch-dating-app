@@ -12,6 +12,9 @@ import {reserveOfferPayment, OFFER_PAYMENT_COLLECTION} from
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
 import {finalizeCapturedOfferPayment} from "./offerPaymentAdmission";
 
+import {offerCancellationPolicy} from "./offerCancellationPolicy";
+import type {EventDocument} from "../../shared/generated/firestoreAdminTypes";
+
 export const phone = "+919999999999";
 export const uid = "recipient1";
 export const now = 2000;
@@ -55,6 +58,9 @@ export async function setup() {
   const reserve = (requestId = "checkout_request1", at = now,
     selected = routing) => reserveOfferPayment({db: h.store.db(),
     grantId: invitation.grantId, uid, requestId, routing: selected,
+    cancellationPolicy:
+      offerCancellationPolicy(h.store.get(`events/${eventId}`) as unknown as
+        EventDocument),
     nowMillis: () => at, loadCurrentAuthUser: auth});
   const expire = (paymentId: string, at = now + CHECKOUT_HOLD_MILLIS,
     reason: "expired" | "fulfillmentFailed" = "expired") =>

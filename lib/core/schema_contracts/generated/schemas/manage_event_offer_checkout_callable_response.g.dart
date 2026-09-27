@@ -29,6 +29,7 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
             'amountPaise',
             'currency',
             'expiresAtMillis',
+            'cancellationPolicy',
           ],
           'properties': <String, Object?>{
             'grantId': <String, Object?>{
@@ -64,6 +65,26 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
               'minimum': 1,
               'maximum': 9007199254740991,
             },
+            'cancellationPolicy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'refundDeadlineMillis',
+                'eventStartsAtMillis',
+              ],
+              'properties': <String, Object?>{
+                'refundDeadlineMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'eventStartsAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
           },
         },
         <String, Object?>{
@@ -86,6 +107,8 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
             'expiresAtMillis',
             'checkout',
             'cancellationReason',
+            'cancellationPolicy',
+            'cancellationQuote',
           ],
           'properties': <String, Object?>{
             'paymentId': <String, Object?>{
@@ -105,6 +128,7 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
                 'refunded',
                 'reviewRequired',
                 'failed',
+                'cancelled',
               ],
             },
             'amountPaise': <String, Object?>{
@@ -181,7 +205,56 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
             'cancellationReason': <String, Object?>{
               'enum': <Object?>[
                 'eventCancelled',
+                'guestCancelled',
                 null,
+              ],
+            },
+            'cancellationPolicy': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'refundDeadlineMillis',
+                    'eventStartsAtMillis',
+                  ],
+                  'properties': <String, Object?>{
+                    'refundDeadlineMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'eventStartsAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'cancellationQuote': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'refundAmountPaise',
+                  ],
+                  'properties': <String, Object?>{
+                    'refundAmountPaise': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 100000000,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
               ],
             },
           },

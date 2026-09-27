@@ -26,7 +26,8 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
             "startTimeMillis",
             "amountPaise",
             "currency",
-            "expiresAtMillis"
+            "expiresAtMillis",
+            "cancellationPolicy"
           ],
           "properties": {
             "grantId": {
@@ -61,6 +62,26 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740991
+            },
+            "cancellationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "refundDeadlineMillis",
+                "eventStartsAtMillis"
+              ],
+              "properties": {
+                "refundDeadlineMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         },
@@ -83,7 +104,9 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
             "refundedAmountPaise",
             "expiresAtMillis",
             "checkout",
-            "cancellationReason"
+            "cancellationReason",
+            "cancellationPolicy",
+            "cancellationQuote"
           ],
           "properties": {
             "paymentId": {
@@ -102,7 +125,8 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
                 "refundPending",
                 "refunded",
                 "reviewRequired",
-                "failed"
+                "failed",
+                "cancelled"
               ]
             },
             "amountPaise": {
@@ -179,7 +203,56 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
             "cancellationReason": {
               "enum": [
                 "eventCancelled",
+                "guestCancelled",
                 null
+              ]
+            },
+            "cancellationPolicy": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundDeadlineMillis",
+                    "eventStartsAtMillis"
+                  ],
+                  "properties": {
+                    "refundDeadlineMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "eventStartsAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationQuote": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundAmountPaise"
+                  ],
+                  "properties": {
+                    "refundAmountPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }

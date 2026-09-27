@@ -392,7 +392,8 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
         "refundPending",
         "refunded",
         "reviewRequired",
-        "failed"
+        "failed",
+        "cancelled"
       ]
     },
     "providerOrderId": {
@@ -725,7 +726,10 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
       ],
       "properties": {
         "reason": {
-          "const": "eventCancelled"
+          "enum": [
+            "eventCancelled",
+            "guestCancelled"
+          ]
         },
         "requestedAtMillis": {
           "type": "integer",
@@ -739,11 +743,31 @@ export const organizerEventOfferPaymentDocumentSchema: Record<string, unknown> =
         },
         "refundAmountPaise": {
           "type": "integer",
-          "minimum": 100,
+          "minimum": 0,
           "maximum": 100000000
         },
         "seatRetained": {
           "type": "boolean"
+        }
+      }
+    },
+    "cancellationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundDeadlineMillis",
+        "eventStartsAtMillis"
+      ],
+      "properties": {
+        "refundDeadlineMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventStartsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         }
       }
     }

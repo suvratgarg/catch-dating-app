@@ -19,8 +19,9 @@ function fixture(count: number) {
     queries++;
     assert.equal(pageLimit, 50);
     assert.deepEqual(filters.splice(0), [["eventId", "==", "event1"],
-      ["status", "==", "admitted"]]);
-    const docs = [...rows].filter(([, row]) => row.status === "admitted")
+      ["status", "in", ["admitted", "cancelled"]]]);
+    const docs = [...rows].filter(([, row]) => ["admitted",
+      "cancelled"].includes(row.status))
       .slice(0, pageLimit).map(([id]) => ({id, ref: {id}}));
     return {empty: docs.length === 0, docs};
   }};
@@ -45,6 +46,7 @@ function fixture(count: number) {
 test("host cancellation pages every admission and retries without duplicates",
   async () => {
     const h = fixture(121);
+    h.rows.get("payment0")!.status = "cancelled";
     let active = 0;
     let maximum = 0;
     const deps = {now: () => 1000, cancel: async ({paymentId}: {

@@ -40,13 +40,32 @@ export const eventOfferCopy = {
   "phoneError": "Include your country code, for example +91.",
   "sendError": "We couldn’t send the code. Check your number and try again.",
   "codeError": "That code couldn’t be verified. Check it and try again.",
+  "cancellationTerms": "Cancellation policy",
+  "cancelAdmission": "Cancel my place",
+  "cancellation": "Cancellation",
+  "cancelTitle": "Cancel your place?",
+  "confirmCancellation": "Confirm cancellation",
+  "keepAdmission": "Keep my place",
+  "cancelling": "Cancelling",
+  "noRefund": "No refund applies. Cancelling releases your place and cannot be undone.",
+  "cancelUnavailable": "This admission cannot be cancelled online now. Contact your host for help.",
+  "cancelError": "We couldn’t confirm cancellation. Refresh your status, then review the current refund before trying again.",
   "responseError": "We couldn’t verify the invitation response. Please retry."
 } as const;
 
 export const offerCodeSent = (phone: string) => `We sent a six-digit code to ${phone}.`;
 export const offerHoldEnds = (time: string) => `Your seat hold ends at ${time}.`;
 
-export function offerPaymentCopy(status: string, hasCheckout: boolean, cancellationReason: "eventCancelled" | null = null) {
+export const offerRefundDeadline = (time: string) => `Full cash refund if you cancel by ${time}. After that, no refund. Online cancellation closes when the event starts.`;
+export const offerCancellationRefund = (amount: string) => `Your place will be released and ${amount} refunded to your original payment method. Your bank may take a few days to show it.`;
+
+export function offerPaymentCopy(status: string, hasCheckout: boolean, cancellationReason: "eventCancelled" | "guestCancelled" | null = null) {
+  if (cancellationReason === "guestCancelled" && status === "cancelled") return {
+    title: "Your place is cancelled", body: "Your place was released. No refund applies under the cancellation terms you confirmed."};
+  if (cancellationReason === "guestCancelled" && status === "refundPending") return {
+    title: "Your place is cancelled", body: "Your refund is underway. Don’t pay again."};
+  if (cancellationReason === "guestCancelled" && status === "refunded") return {
+    title: "Your refund is processed", body: "Your place was cancelled. Your bank may take a few days to show the refund."};
   if (cancellationReason === "eventCancelled" && status === "refundPending") return {
     title: "The event was cancelled",
     body: "Your admission is cancelled and your refund is underway. Don’t pay again."};

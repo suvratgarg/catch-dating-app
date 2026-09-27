@@ -30,6 +30,11 @@ import {projectOfferPayment} from
 import {issueOfferRecipientInvitation, claimOfferRecipientInvitation,
   readVerifiedOfferRecipient, offerRecipientGrantId} from "./recipientGrant";
 
+import {offerCancellationPolicy} from
+  "../payments/offerPayments/offerCancellationPolicy";
+import {cancelPaidOfferForCancelledEvent} from
+  "../payments/offerPayments/offerPaymentCancellation";
+
 export const recipientCallableDefaults = {
   db: () => admin.firestore(), rateLimit: checkRateLimit,
   enabled: eventOfferIntegrationReady, now: Date.now,
@@ -37,7 +42,7 @@ export const recipientCallableDefaults = {
   readRecipient: readVerifiedOfferRecipient,
   prepareRouting: prepareRazorpayCollectionRouting,
   reserve: reserveOfferPayment, execution: offerPaymentExecutionFor,
-  project: projectOfferPayment,
+  project: projectOfferPayment, cancel: cancelPaidOfferForCancelledEvent,
 };
 type Deps = typeof recipientCallableDefaults;
 
@@ -90,7 +95,8 @@ export async function manageEventOfferCheckoutHandler(
       eventName: (source.event.name?.trim() || "Your event").slice(0, 200),
       startTimeMillis: source.event.startTime.toMillis(),
       amountPaise: terms.expectedAmountMinor, currency: "INR",
-      expiresAtMillis: claimed.expiresAtMillis};
+      expiresAtMillis: claimed.expiresAtMillis,
+      cancellationPolicy: offerCancellationPolicy(source.event)};
   } else if (data.action === "find") {
     result.payment = await findOwnedPayment(db, uid, data.grantId, deps);
   } else {
@@ -119,7 +125,19 @@ export async function manageEventOfferCheckoutHandler(
         amountMinor: terms.expectedAmountMinor});
       payment = (await deps.reserve({db, grantId: data.grantId,
         uid, requestId: data.requestId, routing,
+        cancellationPolicy: data.cancellationPolicy,
         nowMillis: deps.now})).payment;
+    }
+    if (data.action === "cancelAdmission") {
+      const cancelled = await deps.cancel({db, paymentId, nowMillis: deps.now(),
+        guest: {uid, expectedRefundAmountPaise:
+          data.expectedRefundAmountPaise}});
+      if (!cancelled) {
+        throw new HttpsError("failed-precondition",
+          "This admission cannot be cancelled. Refresh its status.");
+      }
+      payment = parseOfferPayment((await db.collection(OFFER_PAYMENT_COLLECTION)
+        .doc(paymentId).get()).data(), paymentId);
     }
     // Ended history stays readable without provider readiness or activation.
     if (!payment.admissionReceiptId &&

@@ -1,4 +1,4 @@
-import {eventOfferCopy as text, offerCodeSent, offerHoldEnds} from "../../content/eventOffer";
+import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadline, offerCancellationRefund} from "../../content/eventOffer";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
@@ -12,8 +12,11 @@ export function EventOfferPage({credential}: {credential: OfferCredential | null
   return <EventOfferView {...controller} />;
 }
 export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutController>) {
-  const {phase, pending, grant, payment} = controller;
-  const copy = payment ? paymentCopy(payment) : {
+  const {phase, pending, grant, payment, cancellationReview} = controller;
+  const policy = payment?.cancellationPolicy ?? grant?.cancellationPolicy;
+  const copy = cancellationReview ? {title: text.cancelTitle,
+    body: cancellationReview.refundAmountPaise > 0 ?
+      offerCancellationRefund(formatOfferAmount(cancellationReview.refundAmountPaise)) : text.noRefund} : payment ? paymentCopy(payment) : {
     title: grant?.eventName ?? text.invitationTitle,
     body: text.invitationBody,
   };
@@ -50,7 +53,7 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
             <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink>
           </EventRuntimeActionGrid>
         </EventRuntimeSectionStack>
-      </EventRuntimePanel> : <EventRuntimePanel kicker={payment?.status === "admitted" ? text.confirmed : text.admission}
+      </EventRuntimePanel> : <EventRuntimePanel kicker={cancellationReview ? text.cancellation : payment?.status === "admitted" ? text.confirmed : text.admission}
         title={copy.title} body={copy.body}>
         <EventRuntimeSectionStack>
           <EventRuntimeModule title={payment?.status === "refunded" ? text.refund : text.bookingAmount}>
@@ -59,13 +62,22 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
             {payment?.mode === "test" ? <p role="status">{text.testMode}</p> : null}
             {payment?.checkout ? <p>{offerHoldEnds(new Intl.DateTimeFormat("en-IN", {timeStyle: "short"}).format(payment.expiresAtMillis))}</p> : null}
           </EventRuntimeModule>
+          {policy && !cancellationReview ? <EventRuntimeModule title={text.cancellationTerms}>
+            <p>{offerRefundDeadline(new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(policy.refundDeadlineMillis))}</p>
+          </EventRuntimeModule> : null}
+          {cancellationReview ? <EventRuntimeActionGrid>
+              <Button type="button" onClick={() => void controller.cancelAdmission()} loading={pending} loadingLabel={text.cancelling}>{text.confirmCancellation}</Button>
+              <Button type="button" variant="ghost" onClick={controller.dismissCancellation} disabled={pending} autoFocus>{text.keepAdmission}</Button>
+          </EventRuntimeActionGrid> : null}
           <FormStatus status={controller.status} />
           <EventRuntimeActionGrid>
+            {payment?.cancellationQuote && !cancellationReview ? <Button type="button" variant="ghost"
+              onClick={() => void controller.reviewCancellation()} disabled={pending}>{text.cancelAdmission}</Button> : null}
             {!payment || payment.checkout ? <Button type="button" onClick={() => void controller.pay()}
               loading={pending} loadingLabel={text.checkingPayment}>{payment ? text.continueCheckout : text.reservePay}</Button> : null}
-            {payment && !["admitted", "refunded"].includes(payment.status) ? <Button type="button"
+            {payment && !cancellationReview && !["refunded", "cancelled"].includes(payment.status) ? <Button type="button"
               variant="ghost" onClick={() => void controller.check()} disabled={pending}>{text.refresh}</Button> : null}
-            {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "reviewRequired" ?
+            {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "cancelled" || payment?.status === "reviewRequired" ?
               <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink> : null}
           </EventRuntimeActionGrid>
         </EventRuntimeSectionStack>

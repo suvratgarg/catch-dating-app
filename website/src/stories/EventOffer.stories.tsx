@@ -9,14 +9,17 @@ const empty = () => undefined;
 const fixture: ReturnType<typeof useOfferCheckoutController> = {
   hasInvitation: true, phase: "ready", phone: "+91 98765 43210", setPhone: empty, code: "", setCode: empty,
   grant: {grantId: "a".repeat(64), eventId: "demo", eventName: "Sunday morning at Lodhi",
+    cancellationPolicy: {refundDeadlineMillis: 1790989200000, eventStartsAtMillis: 1791075600000},
     startTimeMillis: 1791075600000, amountPaise: 85000, currency: "INR", expiresAtMillis: 9e12},
   payment: null, pending: false, status: {message: "", tone: ""}, recaptchaId: "preview-otp",
   sendCode: async () => undefined, verifyCode: async () => undefined, changePhone: empty,
+  cancellationReview: null, reviewCancellation: async () => undefined,
+  cancelAdmission: async () => undefined, dismissCancellation: empty,
   pay: async () => undefined, check: async () => undefined, load: async () => undefined,
 };
 const payment = {paymentId: `ep_${"a".repeat(32)}`, status: "verifying" as const,
   amountPaise: 85000, currency: "INR" as const, mode: "test" as const,
-  refundedAmountPaise: 0, cancellationReason: null, expiresAtMillis: 9e12, checkout: null};
+  refundedAmountPaise: 0, cancellationReason: null, cancellationPolicy: fixture.grant!.cancellationPolicy, cancellationQuote: null, expiresAtMillis: 9e12, checkout: null};
 export const EventOffer: Story = {parameters: {
   catchRoute: {id: "event_offer", path: "/offer/", reviewStates: ["phone", "otp", "ready", "pending", "admitted", "refund", "unavailable"],
     stateCoverage: {storybook: ["phone", "otp", "ready", "pending", "admitted", "refund", "unavailable"], manual: []}},
@@ -41,3 +44,12 @@ export const Refund: Story = {render: () => <EventOfferView {...fixture} payment
 export const Cancelled: Story = {render: () => <EventOfferView {...fixture} payment={{...payment,
   status: "refundPending", cancellationReason: "eventCancelled"}} />};
 export const Unavailable: Story = {render: () => <EventOfferView {...fixture} grant={null} phase="unavailable" />};
+
+export const CancellationReview: Story = {render: () => <EventOfferView {...fixture} grant={null}
+  payment={{...payment, status: "admitted", cancellationQuote: {refundAmountPaise: 85000}}}
+  cancellationReview={{paymentId: payment.paymentId, refundAmountPaise: 85000}} />};
+export const NoRefundReview: Story = {render: () => <EventOfferView {...fixture} grant={null}
+  payment={{...payment, status: "admitted", cancellationQuote: {refundAmountPaise: 0}}}
+  cancellationReview={{paymentId: payment.paymentId, refundAmountPaise: 0}} />};
+export const GuestCancelled: Story = {render: () => <EventOfferView {...fixture} grant={null}
+  payment={{...payment, status: "cancelled", cancellationReason: "guestCancelled"}} />};

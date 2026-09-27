@@ -17,6 +17,7 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
   const [code, setCode] = useState("");
   const [grant, setGrant] = useState<OfferGrant | null>(null);
   const [payment, setPayment] = useState<OfferPayment | null>(null);
+  const [cancellationReview, setCancellationReview] = useState<{paymentId: string; refundAmountPaise: number} | null>(null);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
   const recaptchaId = `offer-otp-${useId().replace(/[^a-zA-Z0-9_-]/gu, "")}`;
   const challenge = useRef<Challenge | null>(null);
@@ -61,7 +62,7 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
       requestId.current = null;
       lastTime.current = 0;
       abortCheckout.current?.abort();
-      reset(); setGrant(null); setPayment(null);
+      reset(); setGrant(null); setPayment(null); setCancellationReview(null);
       setStatus({message: "", tone: ""});
       setUser(uid ? next : null);
       setPhase(uid ? "loading" : "phone");
@@ -118,13 +119,42 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
     }
   }), [user, payment, command, apply, run]);
   useEffect(() => {
-    if (!payment || ["admitted", "refunded", "reviewRequired"].includes(payment.status)) return;
+    if (!payment || ["admitted", "cancelled", "refunded", "reviewRequired"].includes(payment.status)) return;
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") void check();
     }, 15_000);
     return () => window.clearInterval(timer);
   }, [payment?.status, check]);
 
+  const reviewCancellation = () => run(async () => {
+    if (!user || !payment || payment.status !== "admitted") return;
+    const epoch = scope.current.epoch;
+    try {
+      const latest = apply(await command({action: "status", paymentId: payment.paymentId,
+        callback: null}), epoch, payment.paymentId);
+      if (!current(epoch)) return;
+      setCancellationReview(latest?.cancellationQuote ? {paymentId: latest.paymentId,
+        refundAmountPaise: latest.cancellationQuote.refundAmountPaise} : null);
+      if (!latest?.cancellationQuote) setStatus({message: eventOfferCopy.cancelUnavailable, tone: "is-error"});
+    } catch {
+      if (current(epoch)) setStatus({message: eventOfferCopy.statusError, tone: "is-error"});
+    }
+  });
+  const cancelAdmission = () => run(async () => {
+    if (!user || !cancellationReview || payment?.paymentId !== cancellationReview.paymentId) return;
+    const epoch = scope.current.epoch;
+    try {
+      const latest = apply(await command({action: "cancelAdmission", paymentId: cancellationReview.paymentId,
+        expectedRefundAmountPaise: cancellationReview.refundAmountPaise}), epoch, cancellationReview.paymentId);
+      if (current(epoch) && latest) setCancellationReview(null);
+    } catch {
+      if (current(epoch)) {
+        setCancellationReview(null);
+        setStatus({message: eventOfferCopy.cancelError, tone: "is-error"});
+      }
+    }
+  });
+  const dismissCancellation = () => {if (!busy.current) setCancellationReview(null);};
   const pay = () => run(async () => {
     if (!user || !grant && !payment?.checkout) return;
     const epoch = scope.current.epoch;
@@ -133,7 +163,7 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
       if (!ready) {
         requestId.current ??= crypto.randomUUID();
         ready = apply(await command({action: "prepare", grantId: grant!.grantId,
-          requestId: requestId.current}), epoch);
+          requestId: requestId.current, cancellationPolicy: grant!.cancellationPolicy}), epoch);
       } else {
         ready = apply(await command({action: "status", paymentId: ready.paymentId, callback: null}), epoch, ready.paymentId);
       }
@@ -181,5 +211,6 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
     setCode(""); setPhase("phone"); setStatus({message: "", tone: ""});
   };
   return {hasInvitation: credential !== null, phase, phone, setPhone, code, setCode, grant, payment, pending, status,
+    cancellationReview, reviewCancellation, cancelAdmission, dismissCancellation,
     recaptchaId, sendCode, verifyCode, changePhone, pay, check, load};
 }

@@ -36,11 +36,22 @@ export interface OfferPaymentProcessorDeps {
 /** Shared financial rules; offer fulfillment owns its seat and receipt. */
 function observeDecision(ledger: Payment, observation: FormProviderPayment) {
   const decision = decideFormPaymentObservation({...ledger,
-    responseId: ledger.cancellation ? null : ledger.admissionReceiptId,
-    status: ledger.status === "admitted" ? "submitted" : ledger.status},
+    responseId: ledger.cancellation?.refundAmountPaise ?
+      null : ledger.admissionReceiptId,
+    status: (ledger.status === "admitted" || ledger.status === "cancelled") ?
+      "submitted" : ledger.status},
   observation);
+  // A provider-side refund after a confirmed no-refund cancellation is an
+  // anomaly; retain the guest decision and route the financial fact to review.
+  if (ledger.cancellation?.refundAmountPaise === 0 &&
+      decision.refundedAmountPaise > 0) {
+    return {...decision, action: "review" as const,
+      status: "reviewRequired" as const};
+  }
   return {...decision,
-    status: decision.status === "submitted" ? "admitted" : decision.status};
+    status: decision.status === "submitted" ?
+      ledger.cancellation?.refundAmountPaise === 0 ? "cancelled" : "admitted" :
+      decision.status};
 }
 
 /** One runtime is pinned to one immutable payment and merchant snapshot. */
@@ -141,7 +152,7 @@ export class OfferPaymentProcessor {
     // Inventory expiry must not depend on provider availability.
     await this.expire();
     let ledger = await this.ensureOrder();
-    if (ledger.status === "admitted") {
+    if (ledger.status === "admitted" || ledger.status === "cancelled") {
       await cancelPaidOfferForCancelledEvent({db: this.deps.db,
         paymentId: this.deps.paymentId, nowMillis: this.now()});
       ledger = await this.read();

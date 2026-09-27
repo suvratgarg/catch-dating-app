@@ -11,6 +11,10 @@ export interface ManageEventOfferCheckoutCallableResponse {
     amountPaise: number;
     currency: "INR";
     expiresAtMillis: number;
+    cancellationPolicy: {
+      refundDeadlineMillis: number;
+      eventStartsAtMillis: number;
+    };
   } | null;
   payment: {
     paymentId: string;
@@ -25,7 +29,8 @@ export interface ManageEventOfferCheckoutCallableResponse {
       | "refundPending"
       | "refunded"
       | "reviewRequired"
-      | "failed";
+      | "failed"
+      | "cancelled";
     amountPaise: number;
     currency: "INR";
     mode: "test" | "live";
@@ -39,7 +44,14 @@ export interface ManageEventOfferCheckoutCallableResponse {
       description: string;
       expiresAtMillis: number;
     } | null;
-    cancellationReason: "eventCancelled" | null;
+    cancellationReason: "eventCancelled" | "guestCancelled" | null;
+    cancellationPolicy: {
+      refundDeadlineMillis: number;
+      eventStartsAtMillis: number;
+    } | null;
+    cancellationQuote: {
+      refundAmountPaise: number;
+    } | null;
   } | null;
   serverTimeMillis: number;
 }

@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
+import {act, cleanup, renderHook, waitFor, render, screen, fireEvent} from "@testing-library/react";
 import {StrictMode, type PropsWithChildren} from "react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import type {User} from "../../firebase";
@@ -9,11 +9,14 @@ vi.mock("../../firebase", () => ({manageEventOfferCheckout: api.call,
 vi.mock("../../shared/payments/razorpayCheckout", () => ({openRazorpayCheckout: api.open}));
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 
+import {EventOfferPage} from "./EventOfferPage";
+
 const credential = {token: "s".repeat(43), instance: "opaque-page"};
 const grant = {grantId: "a".repeat(64), eventName: "Morning run", eventId: "event1",
+  cancellationPolicy: {refundDeadlineMillis: 8e12, eventStartsAtMillis: 9e12},
   startTimeMillis: 9e12, amountPaise: 10000, currency: "INR", expiresAtMillis: 9e12};
 const ready = {paymentId: `ep_${"b".repeat(32)}`, status: "checkoutReady", amountPaise: 10000,
-  currency: "INR", mode: "test", refundedAmountPaise: 0, cancellationReason: null, expiresAtMillis: 9e12,
+  currency: "INR", mode: "test", refundedAmountPaise: 0, cancellationReason: null, cancellationPolicy: null, cancellationQuote: null, expiresAtMillis: 9e12,
   checkout: {publicToken: "rzp_test_key", orderId: "order_one", amountPaise: 10000,
     currency: "INR", description: "Admission", expiresAtMillis: 9e12}};
 let auth: (user: User | null) => void;
@@ -133,4 +136,60 @@ describe("offer recipient flow", () => {
     expect(api.open).not.toHaveBeenCalled();
   });
 
+});
+
+it("reviews fresh refund terms and confirms exactly that amount", async () => {
+  const admitted = {...ready, status: "admitted", checkout: null,
+    cancellationPolicy: grant.cancellationPolicy, cancellationQuote: {refundAmountPaise: 10000}};
+  api.call.mockImplementation(async (input) => response(input.action === "cancelAdmission" ?
+    {...admitted, status: "refundPending", cancellationReason: "guestCancelled", cancellationQuote: null} : admitted));
+  const {result} = renderHook(() => useOfferCheckoutController(credential), {wrapper});
+  await waitFor(() => expect(result.current.payment?.status).toBe("admitted"));
+  expect(result.current.cancellationReview).toBeNull();
+  await act(async () => {await result.current.cancelAdmission();});
+  expect(api.call.mock.calls.some(([input]) => input.action === "cancelAdmission")).toBe(false);
+  await act(async () => {await result.current.reviewCancellation();});
+  expect(result.current.cancellationReview?.refundAmountPaise).toBe(10000);
+  await act(async () => {await result.current.cancelAdmission();});
+  expect(api.call).toHaveBeenLastCalledWith({action: "cancelAdmission", paymentId: ready.paymentId,
+    expectedRefundAmountPaise: 10000});
+  expect(result.current.payment?.status).toBe("refundPending");
+  expect(result.current.cancellationReview).toBeNull();
+  expect(api.open).not.toHaveBeenCalled();
+});
+
+it("requires another review after an uncertain cancellation and clears it on account change", async () => {
+  const admitted = {...ready, status: "admitted", checkout: null,
+    cancellationPolicy: grant.cancellationPolicy, cancellationQuote: {refundAmountPaise: 0}};
+  api.call.mockImplementation(async (input) => {
+    if (input.action === "cancelAdmission") throw new Error("Lost response");
+    return response(admitted);
+  });
+  const {result} = renderHook(() => useOfferCheckoutController(credential), {wrapper});
+  await waitFor(() => expect(result.current.payment?.status).toBe("admitted"));
+  await act(async () => {await result.current.reviewCancellation();});
+  await act(async () => {await result.current.cancelAdmission();});
+  expect(result.current.cancellationReview).toBeNull();
+  expect(result.current.status.tone).toBe("is-error");
+  await act(async () => {await result.current.reviewCancellation();});
+  expect(result.current.cancellationReview?.refundAmountPaise).toBe(0);
+  act(() => auth(null));
+  expect(result.current.cancellationReview).toBeNull();
+});
+
+it("shows a no-refund warning before cancellation and focuses the safe action", async () => {
+  const admitted = {...ready, status: "admitted", checkout: null,
+    cancellationPolicy: grant.cancellationPolicy, cancellationQuote: {refundAmountPaise: 0}};
+  api.call.mockImplementation(async (input) => response(input.action === "cancelAdmission" ?
+    {...admitted, status: "cancelled", cancellationReason: "guestCancelled", cancellationQuote: null} : admitted));
+  render(<EventOfferPage credential={credential} />, {wrapper});
+  const start = await screen.findByRole("button", {name: "Cancel my place"});
+  fireEvent.click(start);
+  await screen.findByRole("heading", {name: "Cancel your place?"});
+  expect(screen.getByText(/No refund applies. Cancelling releases/u)).toBeTruthy();
+  expect(document.activeElement).toBe(screen.getByRole("button", {name: "Keep my place"}));
+  expect(api.call.mock.calls.some(([input]) => input.action === "cancelAdmission")).toBe(false);
+  fireEvent.click(screen.getByRole("button", {name: "Confirm cancellation"}));
+  await screen.findByRole("heading", {name: "Your place is cancelled"});
+  expect(screen.queryByRole("button", {name: "Reserve a seat and pay"})).toBeNull();
 });

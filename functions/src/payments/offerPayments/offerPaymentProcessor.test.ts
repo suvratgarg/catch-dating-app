@@ -11,6 +11,8 @@ import {OfferPaymentProcessor, type OfferPaymentProcessorDeps} from
 import type {FormProviderPayment, FormPaymentOrder} from
   "../formPayments/razorpayPaymentProvider";
 
+import {cancelPaidOfferForCancelledEvent} from "./offerPaymentCancellation";
+
 async function processorFixture() {
   const h = await setup();
   const {paymentId} = await h.reserve();
@@ -236,3 +238,29 @@ test("revoked source refunds capture and duplicate capture requires review",
     assert.equal(review.providerPaymentId, "pay_one");
     assert.equal(h.calls.refund.length, 0);
   });
+
+for (const amount of [0, 10000]) {
+  test(`guest ${amount} refund survives provider replay without readmission`,
+    async () => {
+      const h = await processorFixture();
+      await h.processor.ensureOrder(); h.observe();
+      await h.processor.reconcile();
+    h.store.get("organizerEventOfferPayments/" +
+      h.paymentId)!.cancellationPolicy = {
+        refundDeadlineMillis: amount ? 3000 : 2000, eventStartsAtMillis:
+        5_000_000};
+    await cancelPaidOfferForCancelledEvent({db: h.store.db(), paymentId:
+      h.paymentId,
+    nowMillis: 3000, guest: {uid, expectedRefundAmountPaise: amount}});
+    h.advance(3001);
+    assert.equal((await h.processor.reconcile()).status, amount ? "refunded" :
+      "cancelled");
+    await h.processor.reconcile();
+    assert.equal(h.calls.refund.length, amount ? 1 : 0);
+    assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 0);
+    if (!amount) {
+      h.observe({amountRefunded: 10000, status: "refunded"});
+      assert.equal((await h.processor.reconcile()).status, "reviewRequired");
+    }
+    });
+}

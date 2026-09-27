@@ -23,7 +23,8 @@ export async function queueCancelledEventOfferRefunds(input: {
     const event = (await db.collection("events").doc(eventId).get()).data();
     if (event?.status !== "cancelled") return {queued, review};
     const page = await db.collection(OFFER_PAYMENT_COLLECTION)
-      .where("eventId", "==", eventId).where("status", "==", "admitted")
+      .where("eventId", "==", eventId).where("status", "in", ["admitted",
+        "cancelled"])
       .limit(50).get();
     if (page.empty) return {queued, review};
     let cursor = 0;
@@ -45,7 +46,7 @@ export async function queueCancelledEventOfferRefunds(input: {
           await db.runTransaction(async (tx) => {
             const current = (await tx.get(row.ref)).data();
             if (current?.eventId !== eventId ||
-                  current.status !== "admitted") return;
+                  !["admitted", "cancelled"].includes(current.status)) return;
             tx.update(row.ref, {status: "reviewRequired",
               lastErrorCode: "cancellationNeedsReview",
               updatedAt: Timestamp.fromMillis(deps.now())});

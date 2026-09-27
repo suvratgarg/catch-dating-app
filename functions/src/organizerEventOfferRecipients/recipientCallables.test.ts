@@ -12,6 +12,14 @@ import {claimOfferRecipientInvitation, readVerifiedOfferRecipient} from
 import {manageEventOfferCheckoutHandler, prepareEventOfferInvitationHandler,
   recipientCallableDefaults} from "./recipientCallables";
 
+import {offerCancellationPolicy} from
+  "../payments/offerPayments/offerCancellationPolicy";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+
+import {finalizeCapturedOfferPayment} from
+  "../payments/offerPayments/offerPaymentAdmission";
+import {Timestamp} from "firebase-admin/firestore";
+
 const request = (data: unknown, user = uid, verifiedPhone: unknown = phone) =>
   ({data, auth: {uid: user, token: {phone_number: verifiedPhone}}}) as
   CallableRequest<unknown>;
@@ -62,7 +70,10 @@ async function harness() {
       status: payment.status, amountPaise: payment.amountPaise,
       currency: "INR" as const, mode: payment.routing.selection.mode,
       refundedAmountPaise: payment.refundedAmountPaise,
-      cancellationReason: null,
+      cancellationReason: payment.cancellation?.reason ?? null,
+      cancellationPolicy:
+        payment.cancellationPolicy ?? null,
+      cancellationQuote: null,
       expiresAtMillis: payment.checkoutExpiresAt.toMillis(), checkout: null}),
   } as unknown as typeof recipientCallableDefaults;
   return {...h, deps, executions: () => executions, routes: () => routes,
@@ -93,7 +104,9 @@ test("prepare replays its frozen attempt without selecting another route",
   async () => {
     const h = await harness();
     const input = request({action: "prepare", grantId: h.invitation.grantId,
-      requestId: "checkout_request1"});
+      requestId: "checkout_request1", cancellationPolicy:
+        offerCancellationPolicy(
+          h.store.get(`events/${eventId}`) as unknown as EventDocument)});
     const first = await manageEventOfferCheckoutHandler(input, h.deps);
     assert.ok(first.payment);
     assert.equal(h.routes(), 1);
@@ -143,3 +156,25 @@ test("invitation links are manager-only and keep secrets in the fragment",
     assert.equal(url.search, "");
     assert.match(url.hash, /^#[A-Za-z0-9_-]{43}$/u);
   });
+
+test("owned cancellation survives a disabled checkout gate", async () => {
+  const h = await harness();
+  const {paymentId} = await h.reserve();
+  Object.assign(h.store.get(`${OFFER_PAYMENT_COLLECTION}/${paymentId}`)!, {
+    status: "captured", providerOrderId: "order_one",
+    providerPaymentId: "pay_one", capturedAt: Timestamp.fromMillis(now + 10),
+  });
+  await finalizeCapturedOfferPayment({db: h.store.db(), paymentId,
+    nowMillis: now + 20, loadCurrentAuthUser: h.auth});
+  h.disable();
+  const command = {action: "cancelAdmission", paymentId,
+    expectedRefundAmountPaise: 0};
+  await assert.rejects(manageEventOfferCheckoutHandler(
+    request(command, "other"), h.deps));
+  const first = await manageEventOfferCheckoutHandler(request(command), h.deps);
+  assert.equal(first.payment?.status, "cancelled");
+  assert.equal(first.payment?.cancellationReason, "guestCancelled");
+  await manageEventOfferCheckoutHandler(request(command), h.deps);
+  assert.equal(h.executions(), 0);
+  assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 0);
+});

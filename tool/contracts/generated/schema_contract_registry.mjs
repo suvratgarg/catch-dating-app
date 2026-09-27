@@ -391,7 +391,8 @@ export const organizerEventOfferPaymentDocumentSchema = {
         "refundPending",
         "refunded",
         "reviewRequired",
-        "failed"
+        "failed",
+        "cancelled"
       ]
     },
     "providerOrderId": {
@@ -724,7 +725,10 @@ export const organizerEventOfferPaymentDocumentSchema = {
       ],
       "properties": {
         "reason": {
-          "const": "eventCancelled"
+          "enum": [
+            "eventCancelled",
+            "guestCancelled"
+          ]
         },
         "requestedAtMillis": {
           "type": "integer",
@@ -738,11 +742,31 @@ export const organizerEventOfferPaymentDocumentSchema = {
         },
         "refundAmountPaise": {
           "type": "integer",
-          "minimum": 100,
+          "minimum": 0,
           "maximum": 100000000
         },
         "seatRetained": {
           "type": "boolean"
+        }
+      }
+    },
+    "cancellationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundDeadlineMillis",
+        "eventStartsAtMillis"
+      ],
+      "properties": {
+        "refundDeadlineMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventStartsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         }
       }
     }
@@ -1361,7 +1385,8 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
       "required": [
         "action",
         "grantId",
-        "requestId"
+        "requestId",
+        "cancellationPolicy"
       ],
       "properties": {
         "action": {
@@ -1374,6 +1399,26 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
         "requestId": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{8,120}$"
+        },
+        "cancellationPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "refundDeadlineMillis",
+            "eventStartsAtMillis"
+          ],
+          "properties": {
+            "refundDeadlineMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "eventStartsAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -1434,6 +1479,29 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "expectedRefundAmountPaise"
+      ],
+      "properties": {
+        "action": {
+          "const": "cancelAdmission"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "expectedRefundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
         }
       }
     }
@@ -1541,7 +1609,8 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
             "startTimeMillis",
             "amountPaise",
             "currency",
-            "expiresAtMillis"
+            "expiresAtMillis",
+            "cancellationPolicy"
           ],
           "properties": {
             "grantId": {
@@ -1576,6 +1645,26 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740991
+            },
+            "cancellationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "refundDeadlineMillis",
+                "eventStartsAtMillis"
+              ],
+              "properties": {
+                "refundDeadlineMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         },
@@ -1598,7 +1687,9 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
             "refundedAmountPaise",
             "expiresAtMillis",
             "checkout",
-            "cancellationReason"
+            "cancellationReason",
+            "cancellationPolicy",
+            "cancellationQuote"
           ],
           "properties": {
             "paymentId": {
@@ -1617,7 +1708,8 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
                 "refundPending",
                 "refunded",
                 "reviewRequired",
-                "failed"
+                "failed",
+                "cancelled"
               ]
             },
             "amountPaise": {
@@ -1694,7 +1786,56 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
             "cancellationReason": {
               "enum": [
                 "eventCancelled",
+                "guestCancelled",
                 null
+              ]
+            },
+            "cancellationPolicy": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundDeadlineMillis",
+                    "eventStartsAtMillis"
+                  ],
+                  "properties": {
+                    "refundDeadlineMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "eventStartsAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationQuote": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundAmountPaise"
+                  ],
+                  "properties": {
+                    "refundAmountPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }

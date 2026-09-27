@@ -5,7 +5,8 @@ import {eventId, org} from
   "../../organizerFormAdmission/admissionTestFixture";
 import type {RouteTransferSettlement} from
   "../formPayments/razorpayRouteProvider";
-import {capturedFixture} from "./offerPaymentTestFixture";
+import {cancelPaidOfferForCancelledEvent} from "./offerPaymentCancellation";
+import {capturedFixture, uid} from "./offerPaymentTestFixture";
 import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 import {reconcileOfferSettlement} from "./offerPaymentSettlement";
@@ -180,4 +181,22 @@ test("active lease and stale owner cannot release or overwrite a new owner",
     assert.equal(h.settlement().leaseId, "b".repeat(32));
     await h.run();
     assert.equal(h.counts().inspectCount, 1);
+  });
+
+test("no-refund guest cancellation settles only after the event completes",
+  async () => {
+    const h = await fixture();
+  h.store.get(h.path)!.cancellationPolicy = {
+    refundDeadlineMillis: 2000, eventStartsAtMillis: 5_000_000};
+  await cancelPaidOfferForCancelledEvent({db: h.store.db(), paymentId:
+    h.paymentId,
+  nowMillis: 3000, guest: {uid, expectedRefundAmountPaise: 0}});
+  h.plan.status = "live";
+  await h.run();
+  assert.equal(h.counts().releaseCount, 0);
+  h.plan.status = "complete";
+  h.advance();
+  await h.run();
+  assert.equal(h.counts().releaseCount, 1);
+  assert.equal(h.payment().status, "cancelled");
   });

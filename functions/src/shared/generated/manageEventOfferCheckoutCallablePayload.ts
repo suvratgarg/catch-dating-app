@@ -11,6 +11,10 @@ export type ManageEventOfferCheckoutCallablePayload =
       action: "prepare";
       grantId: string;
       requestId: string;
+      cancellationPolicy: {
+        refundDeadlineMillis: number;
+        eventStartsAtMillis: number;
+      };
     }
   | {
       action: "find";
@@ -23,4 +27,9 @@ export type ManageEventOfferCheckoutCallablePayload =
         paymentId: string;
         signature: string;
       } | null;
+    }
+  | {
+      action: "cancelAdmission";
+      paymentId: string;
+      expectedRefundAmountPaise: number;
     };

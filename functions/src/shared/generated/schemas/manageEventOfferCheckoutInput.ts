@@ -30,7 +30,8 @@ export const manageEventOfferCheckoutCallablePayloadSchema: Record<string, unkno
       "required": [
         "action",
         "grantId",
-        "requestId"
+        "requestId",
+        "cancellationPolicy"
       ],
       "properties": {
         "action": {
@@ -43,6 +44,26 @@ export const manageEventOfferCheckoutCallablePayloadSchema: Record<string, unkno
         "requestId": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{8,120}$"
+        },
+        "cancellationPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "refundDeadlineMillis",
+            "eventStartsAtMillis"
+          ],
+          "properties": {
+            "refundDeadlineMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "eventStartsAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -103,6 +124,29 @@ export const manageEventOfferCheckoutCallablePayloadSchema: Record<string, unkno
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "expectedRefundAmountPaise"
+      ],
+      "properties": {
+        "action": {
+          "const": "cancelAdmission"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "expectedRefundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
         }
       }
     }

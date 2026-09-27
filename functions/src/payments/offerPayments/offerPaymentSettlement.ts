@@ -53,10 +53,15 @@ async function completedEvent(input: {
 }): Promise<number | null> {
   const {db, tx, payment, paymentId, nowMillis} = input;
   const {eventId, organizerId, responseId} = payment;
-  if (payment.status !== "admitted" || !payment.admissionReceiptId ||
+  const cancelledWithoutRefund = payment.status === "cancelled" &&
+    payment.cancellation?.reason === "guestCancelled" &&
+    payment.cancellation.refundAmountPaise === 0;
+  if (payment.status !== "admitted" && !cancelledWithoutRefund ||
+    !payment.admissionReceiptId ||
       !payment.providerOrderId || !payment.providerPaymentId ||
       !payment.capturedAt || !payment.admittedAt ||
-      payment.refundedAmountPaise !== 0 || payment.reservationReleased ||
+      payment.refundedAmountPaise !== 0 ||
+      payment.reservationReleased && !cancelledWithoutRefund ||
       payment.routing.selection.route !== "razorpayRoute" ||
       payment.routing.settlementHold !== true) return null;
   const [eventSnap, planSnap, receiptSnap, ownershipSnap] = await Promise.all([
@@ -87,7 +92,8 @@ async function completedEvent(input: {
       !validateEventAttendeeDocument(attendee) ||
       attendee.eventId !== eventId || attendee.organizerId !== organizerId ||
       attendee.linkedUid !== payment.recipientUid ||
-      !["registered", "checkedIn"].includes(attendee.status) ||
+      !(cancelledWithoutRefund ? ["cancelled"] : ["registered", "checkedIn"])
+        .includes(attendee.status) ||
       attendee.revenueOrderReference !== payment.providerOrderId ||
       attendee.revenueAmountMinor !== payment.amountPaise) return null;
   return completed;

@@ -395,6 +395,7 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
         'refunded',
         'reviewRequired',
         'failed',
+        'cancelled',
       ],
     },
     'providerOrderId': <String, Object?>{
@@ -727,7 +728,10 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
       ],
       'properties': <String, Object?>{
         'reason': <String, Object?>{
-          'const': 'eventCancelled',
+          'enum': <Object?>[
+            'eventCancelled',
+            'guestCancelled',
+          ],
         },
         'requestedAtMillis': <String, Object?>{
           'type': 'integer',
@@ -741,11 +745,31 @@ const schemaOrganizerEventOfferPaymentDocumentSchema = <String, Object?>{
         },
         'refundAmountPaise': <String, Object?>{
           'type': 'integer',
-          'minimum': 100,
+          'minimum': 0,
           'maximum': 100000000,
         },
         'seatRetained': <String, Object?>{
           'type': 'boolean',
+        },
+      },
+    },
+    'cancellationPolicy': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'refundDeadlineMillis',
+        'eventStartsAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'refundDeadlineMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'eventStartsAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
         },
       },
     },

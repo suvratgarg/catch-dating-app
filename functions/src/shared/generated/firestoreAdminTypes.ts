@@ -603,7 +603,8 @@ export interface OrganizerEventOfferPaymentDocument {
     | "refundPending"
     | "refunded"
     | "reviewRequired"
-    | "failed";
+    | "failed"
+    | "cancelled";
   providerOrderId: string | null;
   providerPaymentId: string | null;
   providerRefundId: string | null;
@@ -639,11 +640,15 @@ export interface OrganizerEventOfferPaymentDocument {
     settledAtMillis: number | null;
   };
   cancellation?: {
-    reason: "eventCancelled";
+    reason: "eventCancelled" | "guestCancelled";
     requestedAtMillis: number;
     attendeeId: string;
     refundAmountPaise: number;
     seatRetained: boolean;
+  };
+  cancellationPolicy?: {
+    refundDeadlineMillis: number;
+    eventStartsAtMillis: number;
   };
 }
 

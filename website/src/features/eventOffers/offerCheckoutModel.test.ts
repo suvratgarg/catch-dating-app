@@ -27,7 +27,7 @@ describe("private invitation contract", () => {
   });
   it("rejects unknown fields and mismatched checkout amounts", () => {
     const payment = {paymentId: `ep_${"a".repeat(32)}`, status: "checkoutReady",
-      amountPaise: 10000, currency: "INR", mode: "test", refundedAmountPaise: 0, cancellationReason: null,
+      amountPaise: 10000, currency: "INR", mode: "test", refundedAmountPaise: 0, cancellationReason: null, cancellationPolicy: null, cancellationQuote: null,
       expiresAtMillis: 9e12, checkout: {publicToken: "rzp_test_key", orderId: "order_one",
         amountPaise: 10001, currency: "INR", description: "", expiresAtMillis: 9e12}};
     expect(() => assertOfferResponse({grant: null, payment, serverTimeMillis: 1000})).toThrow();
@@ -36,7 +36,7 @@ describe("private invitation contract", () => {
   it("only server admission uses confirmation language", () => {
     const payment = {paymentId: `ep_${"a".repeat(32)}`, status: "captured" as const,
       amountPaise: 10000, currency: "INR" as const, mode: "test" as const,
-      refundedAmountPaise: 0, cancellationReason: null, expiresAtMillis: 9e12, checkout: null};
+      refundedAmountPaise: 0, cancellationReason: null, cancellationPolicy: null, cancellationQuote: null, expiresAtMillis: 9e12, checkout: null};
     expect(paymentCopy(payment).title).toBe("Checking your payment");
     expect(paymentCopy({...payment, status: "admitted"}).title).toBe("You’re on the guest list");
     expect(paymentCopy({...payment, status: "refundPending", cancellationReason: "eventCancelled"}).title)

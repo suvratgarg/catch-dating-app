@@ -33,6 +33,7 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
         'action',
         'grantId',
         'requestId',
+        'cancellationPolicy',
       ],
       'properties': <String, Object?>{
         'action': <String, Object?>{
@@ -45,6 +46,26 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
         'requestId': <String, Object?>{
           'type': 'string',
           'pattern': '^[A-Za-z0-9_-]{8,120}\$',
+        },
+        'cancellationPolicy': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'refundDeadlineMillis',
+            'eventStartsAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'refundDeadlineMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'eventStartsAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+          },
         },
       },
     },
@@ -105,6 +126,29 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
               'type': 'null',
             },
           ],
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'action',
+        'paymentId',
+        'expectedRefundAmountPaise',
+      ],
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'cancelAdmission',
+        },
+        'paymentId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^ep_[a-f0-9]{32}\$',
+        },
+        'expectedRefundAmountPaise': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100000000,
         },
       },
     },

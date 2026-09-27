@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.156.0
-updated: 2026-09-27
+version: 1.157.0
+updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
 ---
@@ -2724,8 +2724,26 @@ retain retryable work. Refund and settlement leases exclude each other's provide
 I/O. Refund completion requires the original merchant's verified refund, including
 full Route transfer reversal; `reversed` is terminal for the settlement queue.
 Recipient history distinguishes host cancellation from failed initial admission.
-Guest-initiated cancellation and its credit policy remain activation prerequisites
-alongside provider test-mode acceptance.
+Guest checkout freezes the event's cash-refund deadline and start time before
+reservation. Paid offers without a paid canonical event policy use the standard
+24-hour cash cutoff, including minimal private and external-companion events;
+this does not rewrite their base price or provenance. The recipient reviews these exact terms before paying; a changed
+policy requires reopening the invitation. Phone-authenticated, UID-owned
+`cancelAdmission` confirms the server-quoted refund amount, checks current event
+and attendee state, and atomically cancels the admission and releases its seat.
+The cash deadline is inclusive. After it, cancellation has no refund; online
+cancellation closes at the earlier of the frozen and current event start.
+Checked-in admissions and legacy payments without frozen terms need host help.
+Catch credits are explicitly deferred and are not promised by this checkout.
+
+A full cash refund enters the durable refund queue. A zero-refund cancellation
+remains `cancelled`, retains its immutable paid receipt, and can settle only after
+the event completes. Provider callbacks cannot re-admit that guest. An unexpected
+provider refund requires review. A later host cancellation upgrades a prior
+zero-refund guest cancellation to a full refund without releasing its seat again.
+Exact cancellation retries replay the saved decision. Recipient history survives
+invitation expiry and disabled new-checkout gates. Provider test-mode acceptance
+remains required before activation.
 
 ### Organizer-connected form payments
 
