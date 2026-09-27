@@ -69,6 +69,7 @@ export function assertPublicRegistrationTerms(
   assertUnpartitionedAdmission(event);
   const policy = eventPolicyFromEvent(configured);
   if (
+    (event.currency ?? "INR") !== "INR" ||
     event.eventPolicy?.admission.privateAccessPolicy?.mode ===
       "inviteCode" ||
     policy.admission.format !== "open" ||

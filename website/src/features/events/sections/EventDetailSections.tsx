@@ -38,7 +38,7 @@ export function EventDetailHeroSection({
 }) {
   const isExternal = event.supply === "external";
   const hasWebRegistration = event.registrationState === "webOtp";
-  const webWaitlistOnly = hasWebRegistration && event.remainingCapacity === 0;
+  const webWaitlistOnly = hasWebRegistration && event.registrationMode === "free" && event.remainingCapacity === 0;
   const listingPath = event.listing.path;
   const organizerPolicy = organizerPolicyForListing(event.listing);
   const activity = activityForKind(event.activityKind);
@@ -136,25 +136,25 @@ export function EventDetailHeroSection({
       />
       <EventDetailActionPanel
         date={event.date}
-        description={isExternal
+        description={event.registrationState === "closed" ? eventDetailCopy.details.registrationClosed : isExternal
           ? eventDetailCopy.hero.externalActionBody
           : hasWebRegistration
-            ? webWaitlistOnly
+            ? event.registrationMode === "paid" ? eventDetailCopy.hero.webPaidBody : webWaitlistOnly
               ? eventDetailCopy.hero.webWaitlistBody
               : eventDetailCopy.hero.webActionBody
             : eventDetailCopy.hero.catchActionBody}
-        title={isExternal
+        title={event.registrationState === "closed" ? eventDetailCopy.hero.closedHeading : isExternal
           ? interpolateContent(eventDetailCopy.hero.externalActionHeading, {
             source: event.sourceLabel,
           })
           : hasWebRegistration
-            ? webWaitlistOnly
+            ? event.registrationMode === "paid" ? eventDetailCopy.hero.webPaidHeading : webWaitlistOnly
               ? eventDetailCopy.hero.webWaitlistHeading
               : eventDetailCopy.hero.webActionHeading
             : eventDetailCopy.hero.catchActionHeading}
       >
-        {hasWebRegistration ? (
-          <PublicEventRegistration eventId={event.eventId} />
+        {event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : <p>{eventDetailCopy.details.registrationClosed}</p> : hasWebRegistration ? (
+          <PublicEventRegistration eventId={event.eventId} mode={event.registrationMode === "paid" ? "paid" : "free"} />
         ) : isExternal && event.sourceHref ? (
           <ActionGroup variant="flow">
             <ButtonLink

@@ -44,6 +44,7 @@ test("public hold replay neither renews nor admits", async () => {
 test("changed terms or unavailable identities block checkout", async () => {
   for (const kind of [
     "quote",
+    "currency",
     "disabled",
     "phone",
     "deleted",
@@ -54,6 +55,7 @@ test("changed terms or unavailable identities block checkout", async () => {
     const h = await publicFixture();
     const reviewed = h.quote();
     if (kind === "quote") h.event.priceInPaise = 20000;
+    if (kind === "currency") h.event.currency = "USD";
     if (kind === "closed") h.event.publicRegistrationEnabled = false;
     if (kind === "private") h.event.publicationState = "private";
     if (kind === "deleted") h.store.put(`deletedUsers/${uid}`, {});

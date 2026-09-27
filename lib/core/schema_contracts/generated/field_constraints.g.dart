@@ -114732,6 +114732,17 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const resolveEventInviteLandingCallableResponsePaidBookingAvailable = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.paidBookingAvailable',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseRegistrationMode = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.registrationMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['closed', 'free', 'paid'],
+  );
+
   static const resolveEventInviteLandingCallableResponseSourceLabel = CatchContractFieldConstraints(
     path: 'resolveEventInviteLandingCallableResponse.sourceLabel',
     maxLength: 80,
@@ -129083,6 +129094,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsAmountPaise = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.amountPaise',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsBookedCount = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.bookedCount',
     required: true,
@@ -129147,6 +129165,12 @@ abstract final class CatchContractConstraints {
   static const websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled',
     valueTypes: <String>['boolean'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsRegistrationMode = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.registrationMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['closed', 'free', 'paid'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsRequirements = CatchContractFieldConstraints(
@@ -145711,6 +145735,8 @@ abstract final class CatchContractConstraints {
     'resolveEventInviteLandingCallableResponse.endTimeMillis': resolveEventInviteLandingCallableResponseEndTimeMillis,
     'resolveEventInviteLandingCallableResponse.eventId': resolveEventInviteLandingCallableResponseEventId,
     'resolveEventInviteLandingCallableResponse.locationName': resolveEventInviteLandingCallableResponseLocationName,
+    'resolveEventInviteLandingCallableResponse.paidBookingAvailable': resolveEventInviteLandingCallableResponsePaidBookingAvailable,
+    'resolveEventInviteLandingCallableResponse.registrationMode': resolveEventInviteLandingCallableResponseRegistrationMode,
     'resolveEventInviteLandingCallableResponse.sourceLabel': resolveEventInviteLandingCallableResponseSourceLabel,
     'resolveEventInviteLandingCallableResponse.startTimeMillis': resolveEventInviteLandingCallableResponseStartTimeMillis,
     'resolveEventInviteLandingCallableResponse.title': resolveEventInviteLandingCallableResponseTitle,
@@ -147687,6 +147713,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents': websiteHostListingProjectionCatchEvents,
     'websiteHostListingProjection.catchEvents.items.accessibility': websiteHostListingProjectionCatchEventsItemsAccessibility,
     'websiteHostListingProjection.catchEvents.items.activityKind': websiteHostListingProjectionCatchEventsItemsActivityKind,
+    'websiteHostListingProjection.catchEvents.items.amountPaise': websiteHostListingProjectionCatchEventsItemsAmountPaise,
     'websiteHostListingProjection.catchEvents.items.bookedCount': websiteHostListingProjectionCatchEventsItemsBookedCount,
     'websiteHostListingProjection.catchEvents.items.capacityLimit': websiteHostListingProjectionCatchEventsItemsCapacityLimit,
     'websiteHostListingProjection.catchEvents.items.checkedInCount': websiteHostListingProjectionCatchEventsItemsCheckedInCount,
@@ -147697,6 +147724,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.locationDetails': websiteHostListingProjectionCatchEventsItemsLocationDetails,
     'websiteHostListingProjection.catchEvents.items.priceLabel': websiteHostListingProjectionCatchEventsItemsPriceLabel,
     'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
+    'websiteHostListingProjection.catchEvents.items.registrationMode': websiteHostListingProjectionCatchEventsItemsRegistrationMode,
     'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
     'websiteHostListingProjection.catchEvents.items.startTime': websiteHostListingProjectionCatchEventsItemsStartTime,

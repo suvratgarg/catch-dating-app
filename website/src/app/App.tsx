@@ -46,6 +46,9 @@ const EventDetailPage = lazy(async () => ({
 const EventRuntimePage = lazy(async () => ({
   default: (await import("../features/eventRuntime/EventRuntimePage")).EventRuntimePage,
 }));
+const PublicBookingPage = lazy(async () => ({
+  default: (await import("../features/events/PublicBookingPage")).PublicBookingPage,
+}));
 const EventOfferPage = lazy(async () => ({
   default: (await import("../features/eventOffers/EventOfferPage")).EventOfferPage,
 }));
@@ -110,7 +113,7 @@ function MarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
-  const routeKey = page === "event_assistance" || page === "event_offer" ||
+  const routeKey = page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
@@ -130,7 +133,7 @@ function MarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={page === "event_assistance" || page === "event_offer" || page === "household_rsvp" ?
+          hash={page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ?
             "" : location.hash}
         />
         <Routes>
@@ -166,6 +169,7 @@ function MarketingRouteShell() {
             path={marketingRoutePaths.event_runtime}
             element={<EventRuntimePage />}
           />
+          <Route path={marketingRoutePaths.event_booking} element={<PublicBookingPage />} />
           <Route path={marketingRoutePaths.event_offer} element={<EventOfferRoute />} />
           <Route
             path={marketingRoutePaths.event_assistance}
@@ -229,7 +233,7 @@ function MarketingRouteShell() {
         </Routes>
       </Suspense>
       {page === "event_runtime" || page === "event_rehearsal" ||
-       page === "event_assistance" || page === "event_offer" ||
+       page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
        page === "household_rsvp" ||
        page === "public_form" ?

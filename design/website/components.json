@@ -3639,6 +3639,85 @@
         ]
       },
       "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+    },
+    {
+      "id": "public_paid_registration",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicPaidEventRegistration.tsx",
+      "exportName": "PublicPaidEventRegistration",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "PublicCheckout",
+        "states": [
+          "phone",
+          "otp",
+          "review",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Public phone-verified fixed-price checkout; shared financial engine, current attendee proof, and explicit cash cancellation review."
+    },
+    {
+      "id": "public_paid_registration_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicPaidEventRegistration.tsx",
+      "exportName": "PublicPaidRegistrationView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "Review",
+        "states": [
+          "phone",
+          "otp",
+          "review",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Public phone-verified fixed-price checkout; shared financial engine, current attendee proof, and explicit cash cancellation review."
+    },
+    {
+      "id": "route_event_booking",
+      "kind": "route",
+      "routeIds": [
+        "event_booking"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicBookingPage.tsx",
+      "exportName": "PublicBookingPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "BookingManagement",
+        "states": [
+          "phone",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Authenticated booking management survives public listing removal; cannot create a new booking."
     }
   ]
 }

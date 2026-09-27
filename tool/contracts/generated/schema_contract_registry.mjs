@@ -196877,6 +196877,17 @@ export const resolveEventInviteLandingCallableResponseSchema = {
       ],
       "maxLength": 2048
     },
+    "paidBookingAvailable": {
+      "type": "boolean"
+    },
+    "registrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    },
     "sourceLabel": {
       "type": "string",
       "minLength": 1,
@@ -256981,6 +256992,22 @@ export const websiteHostListingProjectionSchema = {
           "publicRegistrationEnabled": {
             "type": "boolean"
           },
+          "registrationMode": {
+            "type": "string",
+            "enum": [
+              "closed",
+              "free",
+              "paid"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "currency": {
+            "const": "INR"
+          },
           "priceLabel": {
             "type": "string",
             "minLength": 1
@@ -257948,6 +257975,22 @@ export const websiteHostListingProjectionSchema = {
         },
         "publicRegistrationEnabled": {
           "type": "boolean"
+        },
+        "registrationMode": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "free",
+            "paid"
+          ]
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {
+          "const": "INR"
         },
         "priceLabel": {
           "type": "string",

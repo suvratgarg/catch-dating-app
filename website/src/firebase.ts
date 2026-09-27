@@ -1,3 +1,5 @@
+import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
+import type {ManagePublicEventCheckoutCallableResponse} from "../../functions/src/shared/generated/managePublicEventCheckoutCallableResponse";
 import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
 import type {ManageEventOfferCheckoutCallableResponse} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallableResponse";
 import type {ListEventSmsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventSmsPreferencesInput";
@@ -1195,4 +1197,8 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
   if (!projectId) return null;
   return `https://asia-south1-${projectId}.cloudfunctions.net/` +
     `programHouseholdItineraryIcs?token=${encodeURIComponent(token)}`;
+}
+
+export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {
+  return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
 }

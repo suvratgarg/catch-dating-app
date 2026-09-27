@@ -101,6 +101,10 @@
       ],
       "rewrites": [
         {
+          "source": "/booking/**",
+          "destination": "/booking/index.html"
+        },
+        {
           "source": "/offer/**",
           "destination": "/offer/index.html"
         },

@@ -17,5 +17,7 @@ export interface ResolveEventInviteLandingCallableResponse {
     | "externalBooking"
     | "marketingLanding";
   destinationUrl: string | null;
+  paidBookingAvailable?: boolean;
+  registrationMode?: "closed" | "free" | "paid";
   sourceLabel: string;
 }

@@ -1,4 +1,5 @@
 export const eventInviteCopy = {
+  registrationClosed: "Registration is closed for this event.",
   brand: "Catch invitation",
   brandWord: "Catch",
   loading: "Opening your invitation",

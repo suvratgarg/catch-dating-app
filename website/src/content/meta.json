@@ -43,7 +43,7 @@
     },
     "organizers": {
       "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
+      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"
@@ -99,6 +99,13 @@
       "description": "Verify your phone to open your private event invitation and check your booking.",
       "canonicalPath": "/offer/",
       "twitterDescription": "Your private event invitation.",
+      "robots": "noindex, follow"
+    },
+    "event_booking": {
+      "title": "Your event booking | Catch",
+      "description": "Verify your phone to check your booking, payment or refund.",
+      "canonicalPath": "/booking/",
+      "twitterDescription": "Manage your event booking with Catch.",
       "robots": "noindex, follow"
     }
   },

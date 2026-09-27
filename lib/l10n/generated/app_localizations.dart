@@ -18950,7 +18950,7 @@ abstract class AppLocalizations {
   /// Host public event registration control title.
   ///
   /// In en, this message translates to:
-  /// **'Free Catch registration'**
+  /// **'Catch registration'**
   String get hostsHostPublicRegistrationTitle;
 
   /// Enabled website registration state.
@@ -18992,7 +18992,7 @@ abstract class AppLocalizations {
   /// Explains why standalone website registration cannot safely bypass payment or identity gates.
   ///
   /// In en, this message translates to:
-  /// **'Free registration is available for open events. Paid, invite-only, approval, membership, and profile-balanced events need their payment or eligibility checks first.'**
+  /// **'Website registration supports open events with one fixed price. Invitation, approval, membership, balanced capacity, and variable pricing require their own eligibility checks.'**
   String get hostsHostPublicRegistrationBodyUnsupported;
 
   /// Enable website registration CTA.
@@ -19000,6 +19000,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable free registration'**
   String get hostsHostPublicRegistrationActionEnable;
+
+  /// Explicit paid public registration opt-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable paid registration'**
+  String get hostsHostPublicRegistrationActionEnablePaid;
+
+  /// Paid checkout and provider readiness disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests verify their phone, review the price and refund policy, then pay on Catch. Checkout holds a seat for 15 minutes; verified payment confirms admission. Your payment account must be ready before registration can open.'**
+  String get hostsHostPublicRegistrationBodyPaid;
 
   /// Disable website registration CTA.
   ///

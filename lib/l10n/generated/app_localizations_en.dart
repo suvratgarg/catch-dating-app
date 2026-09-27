@@ -12143,7 +12143,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Make organizer private';
 
   @override
-  String get hostsHostPublicRegistrationTitle => 'Free Catch registration';
+  String get hostsHostPublicRegistrationTitle => 'Catch registration';
 
   @override
   String get hostsHostPublicRegistrationSubtitleEnabled =>
@@ -12169,11 +12169,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationBodyUnsupported =>
-      'Free registration is available for open events. Paid, invite-only, approval, membership, and profile-balanced events need their payment or eligibility checks first.';
+      'Website registration supports open events with one fixed price. Invitation, approval, membership, balanced capacity, and variable pricing require their own eligibility checks.';
 
   @override
   String get hostsHostPublicRegistrationActionEnable =>
       'Enable free registration';
+
+  @override
+  String get hostsHostPublicRegistrationActionEnablePaid =>
+      'Enable paid registration';
+
+  @override
+  String get hostsHostPublicRegistrationBodyPaid =>
+      'Guests verify their phone, review the price and refund policy, then pay on Catch. Checkout holds a seat for 15 minutes; verified payment confirms admission. Your payment account must be ready before registration can open.';
 
   @override
   String get hostsHostPublicRegistrationActionDisable => 'Close registration';

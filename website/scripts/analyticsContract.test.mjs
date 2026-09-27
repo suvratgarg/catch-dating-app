@@ -167,7 +167,7 @@ test("private event updates do not enter analytics or attribution storage", () =
 
 test("private offer links never enter analytics or attribution storage", () => {
   const previous = window.location;
-  for (const pathname of ["/offer", "/offer/"]) {
+  for (const pathname of ["/offer", "/offer/", "/booking/event-id/"]) {
     window.localStorage.clear(); window.dataLayer = [];
     window.location = {pathname, search: "", href: `https://catchdates.test${pathname}#secret`};
     try {

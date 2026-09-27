@@ -1,3 +1,4 @@
+import {publicEventRegistrationProjection} from "./publicEventRegistrationProjection.mjs";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {createRequire} from "node:module";
@@ -281,6 +282,7 @@ function publicCatchEventsByHostId(eventDocuments, attendeeCounts) {
       checkedInCount: Math.max(event.checkedInCount ?? 0, counts.checkedIn),
       waitlistedCount: Math.max(event.waitlistedCount ?? 0, counts.waitlisted),
       publicRegistrationEnabled: event.publicRegistrationEnabled === true,
+      ...publicEventRegistrationProjection(event),
       priceLabel: firestoreEventPriceLabel(event),
     };
     const events = grouped.get(organizerId) ?? [];
@@ -297,18 +299,7 @@ function publicCatchEventsByHostId(eventDocuments, attendeeCounts) {
 }
 
 function standalonePublicRegistrationEligible(event) {
-  if (event?.publicRegistrationEnabled !== true) return false;
-  const policy = event.eventPolicy;
-  if (policy) {
-    return Number(policy.pricing?.basePriceInPaise ?? 0) === 0 &&
-      policy.admission?.format === "open" &&
-      policy.admission?.inviteRequired !== true &&
-      policy.admission?.membershipRequired !== true &&
-      policy.admission?.manualApprovalRequired !== true;
-  }
-  return Number(event.priceInPaise ?? 0) === 0 &&
-    event.constraints?.maxMen == null &&
-    event.constraints?.maxWomen == null;
+  return publicEventRegistrationProjection(event) !== null;
 }
 
 function withPublicCatchEvents(listing) {
