@@ -32,6 +32,7 @@ export const hash = (...parts: string[]) => createHash("sha256")
 
 export class Store {
   rows = new Map<string, Row>();
+  failNextCommit = false;
   updateTimes = new Map<string, Timestamp>();
   timeline: string[] = [];
   writes: string[] = [];
@@ -89,6 +90,10 @@ export class Store {
         stage("update", ref, value),
     } as unknown as FirebaseFirestore.Transaction;
     return callback(tx).then((result) => {
+      if (this.failNextCommit) {
+        this.failNextCommit = false;
+        throw new Error("Interrupted commit");
+      }
       pending.forEach((apply) => apply());
       return result;
     });

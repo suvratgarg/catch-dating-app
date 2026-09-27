@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateOrganizerEventOfferPaymentDocument} from "./validators/organizerEventOfferPaymentDocument";
 export {validateOrganizerEventOfferRecipientDocument} from "./validators/organizerEventOfferRecipientDocument";
 export {validatePaymentRoutingSnapshot} from "./validators/paymentRoutingSnapshot";
 export {validateManagePaymentRoutingPolicyCallablePayload} from "./validators/managePaymentRoutingPolicyInput";

@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `functions/src/shared/generated/organizerEventOfferPaymentDocument.ts` |
 | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `functions/src/shared/generated/organizerEventOfferRecipientDocument.ts` |
 | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
 | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` |
@@ -943,6 +944,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaOrganizerEventOfferPaymentDocumentSchema` | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_payment_document.g.dart` |
 | `schemaOrganizerEventOfferRecipientDocumentSchema` | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_recipient_document.g.dart` |
 | `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
 | `schemaManagePaymentRoutingPolicyCallablePayloadSchema` | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_payload.g.dart` |

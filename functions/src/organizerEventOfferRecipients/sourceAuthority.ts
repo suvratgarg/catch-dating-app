@@ -120,8 +120,10 @@ export async function readOfferRecipientSource(params: {
         target.defaultTargetId === null ||
         target.defaultTargetKind === "event" &&
         target.defaultTargetId === scope.eventId)) recipientUnavailable();
+  let applicationApproval = null;
   if ((offer.sourceKind ?? "application") === "application") {
-    await readApplicationAdmissionApproval({db, tx, response,
+    applicationApproval = await readApplicationAdmissionApproval({
+      db, tx, response,
       responseId: scope.responseId, version, origin, offer, nowMillis});
   } else if (!["registration", "intake"].includes(target.purpose) ||
       offer.applicationId !== scope.responseId || !conversion ||
@@ -131,6 +133,6 @@ export async function readOfferRecipientSource(params: {
       conversion.kind !== "crmContact" || conversion.status !== "completed" ||
       conversion.resultId !== origin.originContactId) recipientUnavailable();
   return {organizer, event, offer, response, version, origin, contact,
-    originId, phoneE164: contact.phoneE164,
+    originId, applicationApproval, phoneE164: contact.phoneE164,
     phoneHash: recipientPhoneHash(contact.phoneE164)};
 }

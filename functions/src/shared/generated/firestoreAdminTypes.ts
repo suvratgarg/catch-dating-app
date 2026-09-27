@@ -545,6 +545,81 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.
+ */
+export interface OrganizerEventOfferPaymentDocument {
+  organizerId: string;
+  eventId: string;
+  offerId: string;
+  responseId: string;
+  contactId: string;
+  originId: string;
+  recipientUid: string;
+  grantId: string;
+  requestId: string;
+  canonicalSeatKey: string;
+  offerGeneration: number;
+  offerRevision: number;
+  identityRevision: number;
+  migrationRevision: number;
+  routing: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  amountPaise: number;
+  currency: "INR";
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "admitted"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired"
+    | "failed";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  admissionReceiptId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  admittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
  * Private OTP recipient invitation and single-UID claim. Document ID hashes a random token; raw tokens and phone numbers are never persisted. Immutable offer/source/phone bindings are rechecked in every payment transaction.
  */
 export interface OrganizerEventOfferRecipientDocument {
@@ -608,6 +683,43 @@ export interface OrganizerFormAdmissionReceiptDocument {
     contactId: string;
     revision: number;
     reviewedAtMillis: number;
+  };
+  /**
+   * Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.
+   */
+  providerPayment?: {
+    paymentId: string;
+    providerOrderId: string;
+    providerPaymentId: string;
+    recipientUid: string;
+    grantId: string;
+    capturedAtMillis: number;
+    routing: {
+      version: 1;
+      amountMinor: number;
+      transferAmountMinor: number | null;
+      settlementHold: boolean | null;
+      purpose: "formFee" | "eventAdmission";
+      organizerId: string;
+      selection: {
+        route:
+          | "razorpayRoute"
+          | "razorpayOAuth"
+          | "stripeConnectDirect"
+          | "stripeConnectDestination";
+        mode: "test" | "live";
+        currency: string;
+        merchantCountry: string;
+      };
+      policySource: "app" | "organizer" | "legacy";
+      appRevision: number;
+      organizerRevision: number;
+      bindingId: string;
+      merchantAccountId: string;
+      destinationAccountId: string | null;
+      configurationVersion: string;
+      checkoutKey: string | null;
+    };
   };
 }
 

@@ -1,3 +1,5 @@
+import {assertUnpartitionedAdmission} from "./admissionEligibility";
+import {newFormAttendee} from "./admissionRoster";
 import {checkoutHeldCount} from "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";
 import {rosterWithReservedWaitlistOffersInTransaction} from
@@ -176,28 +178,6 @@ function attestedRevenueFields(offer: EventOffer):
     revenueCurrency: manual.attestedCurrency,
     revenueSource: "hostAttested", revenueAllocation: "perAttendee",
     revenueOrderReference: null, revenueOrderAmountMinor: null};
-}
-
-function newFormAttendee(eventId: string, organizerId: string,
-  responseId: string, contact: OrganizerContactDocument,
-  response: OrganizerFormResponseDocument, verifiedPhone: string | null,
-  now: FirebaseFirestore.Timestamp): EventAttendeeDocument {
-  const displayName = contact.displayNameOverride?.trim() ||
-    contact.displayName.trim() || response.identity.displayName?.trim() ||
-    "Guest";
-  const linkedUid = response.respondentUid === contact.linkedUid ?
-    response.respondentUid : null;
-  return {eventId, clubId: organizerId, organizerId,
-    displayName, searchName: displayName.toLocaleLowerCase("en"),
-    source: "hostManual", status: "registered",
-    linkedUid,
-    phoneE164: verifiedPhone === contact.phoneE164 ? verifiedPhone : null,
-    email: contact.email,
-    externalReference: responseId, arrivalGroup: null, ticketType: null,
-    importId: null, sourceRowId: responseId.slice(0, 120),
-    createdAt: now, updatedAt: now, registeredAt: now,
-    waitlistedAt: null, checkedInAt: null, cancelledAt: null,
-    checkedInBy: null, linkedAt: linkedUid ? now : null};
 }
 
 /** Commits only after re-reading the complete admission authority chain. */
@@ -428,21 +408,7 @@ async function executeAdmission(
     }
     // App-free CRM provenance does not establish a cohort or pair-hold right.
     // Keep these policies closed until their shared reservation path is wired.
-    const admission = event.eventPolicy?.admission;
-    if (admission?.crossPathsPairInventory?.enabled ||
-        (event.crossPathsPairHeldCount ?? 0) !== 0 ||
-        (event.crossPathsPairConfirmedCount ?? 0) !== 0 ||
-        Object.values(event.crossPathsPairHeldCohortCounts ?? {})
-          .some((count) => count !== 0) ||
-        Object.keys(admission?.cohortCapacityLimits ?? {}).length > 0 ||
-        admission?.balancedRatioPolicy != null ||
-        ["balancedRatio", "fixedCohortCaps", "membersOnly"].includes(
-          admission?.format ?? "") || admission?.membershipRequired ||
-        event.constraints?.maxMen != null ||
-        event.constraints?.maxWomen != null) {
-      unavailable("This event requires its cohort, membership or Cross Paths " +
-        "admission flow.");
-    }
+    assertUnpartitionedAdmission(event);
     const fence = await readSeatMigrationWriterFence({db, tx,
       eventId: payload.eventId});
     if (fence !== "ready") unavailable("Seat migration is not ready.");

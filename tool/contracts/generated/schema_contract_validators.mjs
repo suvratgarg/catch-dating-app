@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  organizerEventOfferPaymentDocumentSchema,
   organizerEventOfferRecipientDocumentSchema,
   paymentRoutingSnapshotSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
@@ -953,6 +954,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateOrganizerEventOfferPaymentDocument = ajv.compile(organizerEventOfferPaymentDocumentSchema);
 export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organizerEventOfferRecipientDocumentSchema);
 export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);

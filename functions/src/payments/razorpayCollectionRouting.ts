@@ -4,7 +4,8 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerPaymentConnectionDocument as Connection} from
   "../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../shared/validation";
-import {PaymentRoutingRegistry, readPaymentRoute,
+import {PaymentRoutingRegistry, readPaymentRoute, assertPaymentRouteCurrent,
+  assertPaymentRouteSnapshot,
   type PaymentPurpose, type PaymentRoutingSnapshot} from "./paymentRouting";
 import {RazorpayPlatformPaymentConfigLoader,
   razorpayPlatformPaymentConfigVersion,
@@ -125,4 +126,36 @@ function unavailable(): never {
 
 export function loadRazorpayPlatformProfile(configurationVersion: string) {
   return platformLoader().load(configurationVersion);
+}
+
+/** Recheck server-owned selection and account binding before a new hold/order.
+ * Existing payment recovery uses its snapshot, never current policy selection.
+ */
+export async function assertRazorpayCollectionRoutingCurrent(params: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  snapshot: PaymentRoutingSnapshot; nowMillis: number;
+}): Promise<void> {
+  const {db, tx, snapshot, nowMillis} = params;
+  assertPaymentRouteSnapshot(snapshot, {organizerId: snapshot.organizerId,
+    purpose: snapshot.purpose, currency: "INR"});
+  await assertPaymentRouteCurrent(params);
+  if (snapshot.selection.route === "razorpayRoute") {
+    const {account} = await readReadyRouteAccount({db, tx,
+      organizerId: snapshot.organizerId,
+      expectedBindingId: snapshot.bindingId});
+    if (account.providerAccountId !== snapshot.destinationAccountId ||
+        snapshot.settlementHold !== (snapshot.purpose === "eventAdmission")) {
+      unavailable();
+    }
+    return;
+  }
+  if (snapshot.selection.route !== "razorpayOAuth") unavailable();
+  const connection = requireDoc<Connection>(await tx.get(db
+    .collection("organizerPaymentConnections").doc(snapshot.bindingId)),
+  "OrganizerPaymentConnectionDocument");
+  const ready = requireReadyFormPaymentConnection(connection,
+    snapshot.organizerId, nowMillis);
+  if (ready.accountId !== snapshot.merchantAccountId ||
+      ready.mode !== snapshot.selection.mode ||
+      ready.publicToken !== snapshot.checkoutKey) unavailable();
 }

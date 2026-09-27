@@ -3514,6 +3514,21 @@
       "read": "server only; current recipient projection after OTP claim",
       "write": "server only; immutable invitation binding and one UID claim",
       "exportedFunctions": []
+    },
+    {
+      "id": "organizerEventOfferPayments",
+      "path": "organizerEventOfferPayments/{documentId}",
+      "rulesMatch": "/organizerEventOfferPayments/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "event offer checkout and admission service",
+      "read": "server only; recipient payment projection",
+      "write": "server only; atomic hold, captured admission, expiry and refund lifecycle",
+      "exportedFunctions": []
     }
   ]
 }

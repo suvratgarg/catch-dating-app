@@ -88907,6 +88907,474 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerEventOfferPaymentDocumentAdmissionReceiptId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.admissionReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentAdmittedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.admittedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentAdmittedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.admittedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventOfferPaymentDocumentAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentCanonicalSeatKey = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.canonicalSeatKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCapturedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.capturedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentCapturedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.capturedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCheckoutExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.checkoutExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentCheckoutExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.checkoutExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventOfferPaymentDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventOfferPaymentDocumentCurrency = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.currency',
+    required: true,
+  );
+
+  static const organizerEventOfferPaymentDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentGrantId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentLastErrorCode = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.lastErrorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentLeaseUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.leaseUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentLeaseUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.leaseUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventOfferPaymentDocumentMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentOfferGeneration = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.offerGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentOfferId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentOfferRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.offerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentOriginId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.originId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotCollectionMode = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.collectionMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotCurrency = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotEventPaymentHash = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.eventPaymentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotEventPaymentRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.eventPaymentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotMessageTemplate = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.messageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotPaymentInstructions = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotPersonalPaymentLink = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.personalPaymentLink',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerEventOfferPaymentDocumentPaymentSnapshotReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.paymentSnapshot.reusablePaymentPageUrl',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerEventOfferPaymentDocumentProviderOrderId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.providerOrderId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.providerPaymentId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentProviderRefundId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.providerRefundId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+    pattern: '^rfnd_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentReceipt = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.receipt',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ep_[a-f0-9]{32}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentRecipientUid = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentReservationReleased = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.reservationReleased',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEventOfferPaymentDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingAppRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.appRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingBindingId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCheckoutKey = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.checkoutKey',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.configurationVersion',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingDestinationAccountId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.destinationAccountId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingMerchantAccountId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.merchantAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingPolicySource = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.policySource',
+    required: true,
+    enumValues: <String>['app', 'organizer', 'legacy'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingPurpose = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.purpose',
+    required: true,
+    enumValues: <String>['formFee', 'eventAdmission'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingSelectionCurrency = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.selection.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingSelectionMerchantCountry = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.selection.merchantCountry',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingSelectionMode = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.selection.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingSelectionRoute = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.selection.route',
+    required: true,
+    enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingSettlementHold = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.settlementHold',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingTransferAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.transferAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingVersion = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.version',
+    required: true,
+  );
+
+  static const organizerEventOfferPaymentDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.status',
+    required: true,
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed'],
+  );
+
+  static const organizerEventOfferPaymentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventOfferPaymentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerEventOfferRecipientDocumentClaimedAtMillis = CatchContractFieldConstraints(
     path: 'organizerEventOfferRecipientDocument.claimedAtMillis',
     valueTypes: <String>['integer'],
@@ -90032,6 +90500,175 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
     format: 'uri',
     pattern: '^https://',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentCapturedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.capturedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentGrantId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentPaymentId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ep_[a-f0-9]{32}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentProviderOrderId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.providerOrderId',
+    maxLength: 128,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.providerPaymentId',
+    maxLength: 128,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRecipientUid = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingAppRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.appRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingBindingId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCheckoutKey = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.checkoutKey',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingConfigurationVersion = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.configurationVersion',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingDestinationAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.destinationAccountId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingMerchantAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.merchantAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingPolicySource = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.policySource',
+    required: true,
+    enumValues: <String>['app', 'organizer', 'legacy'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.purpose',
+    required: true,
+    enumValues: <String>['formFee', 'eventAdmission'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionMerchantCountry = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.merchantCountry',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionMode = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionRoute = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.route',
+    required: true,
+    enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSettlementHold = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.settlementHold',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingTransferAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.transferAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingVersion = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.version',
+    required: true,
   );
 
   static const organizerFormAdmissionReceiptDocumentReceiptId = CatchContractFieldConstraints(
@@ -139167,6 +139804,71 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferDocument.sourceKind': organizerEventOfferDocumentSourceKind,
     'organizerEventOfferDocument.status': organizerEventOfferDocumentStatus,
     'organizerEventOfferDocument.updatedAtMillis': organizerEventOfferDocumentUpdatedAtMillis,
+    'organizerEventOfferPaymentDocument.admissionReceiptId': organizerEventOfferPaymentDocumentAdmissionReceiptId,
+    'organizerEventOfferPaymentDocument.admittedAt._nanoseconds': organizerEventOfferPaymentDocumentAdmittedAtNanoseconds,
+    'organizerEventOfferPaymentDocument.admittedAt._seconds': organizerEventOfferPaymentDocumentAdmittedAtSeconds,
+    'organizerEventOfferPaymentDocument.amountPaise': organizerEventOfferPaymentDocumentAmountPaise,
+    'organizerEventOfferPaymentDocument.canonicalSeatKey': organizerEventOfferPaymentDocumentCanonicalSeatKey,
+    'organizerEventOfferPaymentDocument.capturedAt._nanoseconds': organizerEventOfferPaymentDocumentCapturedAtNanoseconds,
+    'organizerEventOfferPaymentDocument.capturedAt._seconds': organizerEventOfferPaymentDocumentCapturedAtSeconds,
+    'organizerEventOfferPaymentDocument.checkoutExpiresAt._nanoseconds': organizerEventOfferPaymentDocumentCheckoutExpiresAtNanoseconds,
+    'organizerEventOfferPaymentDocument.checkoutExpiresAt._seconds': organizerEventOfferPaymentDocumentCheckoutExpiresAtSeconds,
+    'organizerEventOfferPaymentDocument.contactId': organizerEventOfferPaymentDocumentContactId,
+    'organizerEventOfferPaymentDocument.createdAt._nanoseconds': organizerEventOfferPaymentDocumentCreatedAtNanoseconds,
+    'organizerEventOfferPaymentDocument.createdAt._seconds': organizerEventOfferPaymentDocumentCreatedAtSeconds,
+    'organizerEventOfferPaymentDocument.currency': organizerEventOfferPaymentDocumentCurrency,
+    'organizerEventOfferPaymentDocument.eventId': organizerEventOfferPaymentDocumentEventId,
+    'organizerEventOfferPaymentDocument.grantId': organizerEventOfferPaymentDocumentGrantId,
+    'organizerEventOfferPaymentDocument.identityRevision': organizerEventOfferPaymentDocumentIdentityRevision,
+    'organizerEventOfferPaymentDocument.lastErrorCode': organizerEventOfferPaymentDocumentLastErrorCode,
+    'organizerEventOfferPaymentDocument.leaseUntil._nanoseconds': organizerEventOfferPaymentDocumentLeaseUntilNanoseconds,
+    'organizerEventOfferPaymentDocument.leaseUntil._seconds': organizerEventOfferPaymentDocumentLeaseUntilSeconds,
+    'organizerEventOfferPaymentDocument.migrationRevision': organizerEventOfferPaymentDocumentMigrationRevision,
+    'organizerEventOfferPaymentDocument.offerGeneration': organizerEventOfferPaymentDocumentOfferGeneration,
+    'organizerEventOfferPaymentDocument.offerId': organizerEventOfferPaymentDocumentOfferId,
+    'organizerEventOfferPaymentDocument.offerRevision': organizerEventOfferPaymentDocumentOfferRevision,
+    'organizerEventOfferPaymentDocument.organizerId': organizerEventOfferPaymentDocumentOrganizerId,
+    'organizerEventOfferPaymentDocument.originId': organizerEventOfferPaymentDocumentOriginId,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.collectionMode': organizerEventOfferPaymentDocumentPaymentSnapshotCollectionMode,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.currency': organizerEventOfferPaymentDocumentPaymentSnapshotCurrency,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.eventPaymentHash': organizerEventOfferPaymentDocumentPaymentSnapshotEventPaymentHash,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.eventPaymentRevision': organizerEventOfferPaymentDocumentPaymentSnapshotEventPaymentRevision,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.expectedAmountMinor': organizerEventOfferPaymentDocumentPaymentSnapshotExpectedAmountMinor,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.expiresAtMillis': organizerEventOfferPaymentDocumentPaymentSnapshotExpiresAtMillis,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.messageTemplate': organizerEventOfferPaymentDocumentPaymentSnapshotMessageTemplate,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.paymentInstructions': organizerEventOfferPaymentDocumentPaymentSnapshotPaymentInstructions,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.personalPaymentLink': organizerEventOfferPaymentDocumentPaymentSnapshotPersonalPaymentLink,
+    'organizerEventOfferPaymentDocument.paymentSnapshot.reusablePaymentPageUrl': organizerEventOfferPaymentDocumentPaymentSnapshotReusablePaymentPageUrl,
+    'organizerEventOfferPaymentDocument.providerOrderId': organizerEventOfferPaymentDocumentProviderOrderId,
+    'organizerEventOfferPaymentDocument.providerPaymentId': organizerEventOfferPaymentDocumentProviderPaymentId,
+    'organizerEventOfferPaymentDocument.providerRefundId': organizerEventOfferPaymentDocumentProviderRefundId,
+    'organizerEventOfferPaymentDocument.receipt': organizerEventOfferPaymentDocumentReceipt,
+    'organizerEventOfferPaymentDocument.recipientUid': organizerEventOfferPaymentDocumentRecipientUid,
+    'organizerEventOfferPaymentDocument.refundedAmountPaise': organizerEventOfferPaymentDocumentRefundedAmountPaise,
+    'organizerEventOfferPaymentDocument.requestId': organizerEventOfferPaymentDocumentRequestId,
+    'organizerEventOfferPaymentDocument.reservationReleased': organizerEventOfferPaymentDocumentReservationReleased,
+    'organizerEventOfferPaymentDocument.responseId': organizerEventOfferPaymentDocumentResponseId,
+    'organizerEventOfferPaymentDocument.routing.amountMinor': organizerEventOfferPaymentDocumentRoutingAmountMinor,
+    'organizerEventOfferPaymentDocument.routing.appRevision': organizerEventOfferPaymentDocumentRoutingAppRevision,
+    'organizerEventOfferPaymentDocument.routing.bindingId': organizerEventOfferPaymentDocumentRoutingBindingId,
+    'organizerEventOfferPaymentDocument.routing.checkoutKey': organizerEventOfferPaymentDocumentRoutingCheckoutKey,
+    'organizerEventOfferPaymentDocument.routing.configurationVersion': organizerEventOfferPaymentDocumentRoutingConfigurationVersion,
+    'organizerEventOfferPaymentDocument.routing.destinationAccountId': organizerEventOfferPaymentDocumentRoutingDestinationAccountId,
+    'organizerEventOfferPaymentDocument.routing.merchantAccountId': organizerEventOfferPaymentDocumentRoutingMerchantAccountId,
+    'organizerEventOfferPaymentDocument.routing.organizerId': organizerEventOfferPaymentDocumentRoutingOrganizerId,
+    'organizerEventOfferPaymentDocument.routing.organizerRevision': organizerEventOfferPaymentDocumentRoutingOrganizerRevision,
+    'organizerEventOfferPaymentDocument.routing.policySource': organizerEventOfferPaymentDocumentRoutingPolicySource,
+    'organizerEventOfferPaymentDocument.routing.purpose': organizerEventOfferPaymentDocumentRoutingPurpose,
+    'organizerEventOfferPaymentDocument.routing.selection.currency': organizerEventOfferPaymentDocumentRoutingSelectionCurrency,
+    'organizerEventOfferPaymentDocument.routing.selection.merchantCountry': organizerEventOfferPaymentDocumentRoutingSelectionMerchantCountry,
+    'organizerEventOfferPaymentDocument.routing.selection.mode': organizerEventOfferPaymentDocumentRoutingSelectionMode,
+    'organizerEventOfferPaymentDocument.routing.selection.route': organizerEventOfferPaymentDocumentRoutingSelectionRoute,
+    'organizerEventOfferPaymentDocument.routing.settlementHold': organizerEventOfferPaymentDocumentRoutingSettlementHold,
+    'organizerEventOfferPaymentDocument.routing.transferAmountMinor': organizerEventOfferPaymentDocumentRoutingTransferAmountMinor,
+    'organizerEventOfferPaymentDocument.routing.version': organizerEventOfferPaymentDocumentRoutingVersion,
+    'organizerEventOfferPaymentDocument.status': organizerEventOfferPaymentDocumentStatus,
+    'organizerEventOfferPaymentDocument.updatedAt._nanoseconds': organizerEventOfferPaymentDocumentUpdatedAtNanoseconds,
+    'organizerEventOfferPaymentDocument.updatedAt._seconds': organizerEventOfferPaymentDocumentUpdatedAtSeconds,
     'organizerEventOfferRecipientDocument.claimedAtMillis': organizerEventOfferRecipientDocumentClaimedAtMillis,
     'organizerEventOfferRecipientDocument.contactId': organizerEventOfferRecipientDocumentContactId,
     'organizerEventOfferRecipientDocument.eventId': organizerEventOfferRecipientDocumentEventId,
@@ -139317,6 +140019,30 @@ abstract final class CatchContractConstraints {
     'organizerFormAdmissionReceiptDocument.paymentSnapshot.paymentInstructions': organizerFormAdmissionReceiptDocumentPaymentSnapshotPaymentInstructions,
     'organizerFormAdmissionReceiptDocument.paymentSnapshot.personalPaymentLink': organizerFormAdmissionReceiptDocumentPaymentSnapshotPersonalPaymentLink,
     'organizerFormAdmissionReceiptDocument.paymentSnapshot.reusablePaymentPageUrl': organizerFormAdmissionReceiptDocumentPaymentSnapshotReusablePaymentPageUrl,
+    'organizerFormAdmissionReceiptDocument.providerPayment.capturedAtMillis': organizerFormAdmissionReceiptDocumentProviderPaymentCapturedAtMillis,
+    'organizerFormAdmissionReceiptDocument.providerPayment.grantId': organizerFormAdmissionReceiptDocumentProviderPaymentGrantId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.paymentId': organizerFormAdmissionReceiptDocumentProviderPaymentPaymentId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.providerOrderId': organizerFormAdmissionReceiptDocumentProviderPaymentProviderOrderId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.providerPaymentId': organizerFormAdmissionReceiptDocumentProviderPaymentProviderPaymentId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.recipientUid': organizerFormAdmissionReceiptDocumentProviderPaymentRecipientUid,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.amountMinor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingAmountMinor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.appRevision': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingAppRevision,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.bindingId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingBindingId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.checkoutKey': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCheckoutKey,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.configurationVersion': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingConfigurationVersion,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.destinationAccountId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingDestinationAccountId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.merchantAccountId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingMerchantAccountId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.organizerId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingOrganizerId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.organizerRevision': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingOrganizerRevision,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.policySource': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingPolicySource,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.purpose': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingPurpose,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.currency': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionCurrency,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.merchantCountry': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionMerchantCountry,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.mode': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionMode,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.selection.route': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSelectionRoute,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.settlementHold': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingSettlementHold,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.transferAmountMinor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingTransferAmountMinor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.version': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingVersion,
     'organizerFormAdmissionReceiptDocument.receiptId': organizerFormAdmissionReceiptDocumentReceiptId,
     'organizerFormAdmissionReceiptDocument.requestHash': organizerFormAdmissionReceiptDocumentRequestHash,
     'organizerFormAdmissionReceiptDocument.requestId': organizerFormAdmissionReceiptDocumentRequestId,

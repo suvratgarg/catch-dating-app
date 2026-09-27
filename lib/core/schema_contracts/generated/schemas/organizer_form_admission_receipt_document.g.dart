@@ -420,5 +420,185 @@ const schemaOrganizerFormAdmissionReceiptDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'providerPayment': <String, Object?>{
+      'description': 'Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'paymentId',
+        'providerOrderId',
+        'providerPaymentId',
+        'recipientUid',
+        'grantId',
+        'capturedAtMillis',
+        'routing',
+      ],
+      'properties': <String, Object?>{
+        'paymentId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^ep_[a-f0-9]{32}\$',
+        },
+        'providerOrderId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^order_[A-Za-z0-9]+\$',
+          'maxLength': 128,
+        },
+        'providerPaymentId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^pay_[A-Za-z0-9]+\$',
+          'maxLength': 128,
+        },
+        'recipientUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'grantId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'capturedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'routing': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'version',
+            'purpose',
+            'organizerId',
+            'selection',
+            'policySource',
+            'appRevision',
+            'organizerRevision',
+            'bindingId',
+            'merchantAccountId',
+            'destinationAccountId',
+            'configurationVersion',
+            'checkoutKey',
+            'amountMinor',
+            'transferAmountMinor',
+            'settlementHold',
+          ],
+          'properties': <String, Object?>{
+            'version': <String, Object?>{
+              'const': 1,
+            },
+            'amountMinor': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'transferAmountMinor': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'settlementHold': <String, Object?>{
+              'type': <Object?>[
+                'boolean',
+                'null',
+              ],
+            },
+            'purpose': <String, Object?>{
+              'enum': <Object?>[
+                'formFee',
+                'eventAdmission',
+              ],
+            },
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'selection': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'route',
+                'mode',
+                'currency',
+                'merchantCountry',
+              ],
+              'properties': <String, Object?>{
+                'route': <String, Object?>{
+                  'enum': <Object?>[
+                    'razorpayRoute',
+                    'razorpayOAuth',
+                    'stripeConnectDirect',
+                    'stripeConnectDestination',
+                  ],
+                },
+                'mode': <String, Object?>{
+                  'enum': <Object?>[
+                    'test',
+                    'live',
+                  ],
+                },
+                'currency': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{3}\$',
+                },
+                'merchantCountry': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{2}\$',
+                },
+              },
+            },
+            'policySource': <String, Object?>{
+              'enum': <Object?>[
+                'app',
+                'organizer',
+                'legacy',
+              ],
+            },
+            'appRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'organizerRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'bindingId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'merchantAccountId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'destinationAccountId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'configurationVersion': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 512,
+            },
+            'checkoutKey': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 256,
+            },
+          },
+        },
+      },
+    },
   },
 };

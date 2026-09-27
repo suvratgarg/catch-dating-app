@@ -159,6 +159,51 @@
           }
         }
       ]
+    },
+    "providerPayment": {
+      "description": "Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "providerOrderId",
+        "providerPaymentId",
+        "recipientUid",
+        "grantId",
+        "capturedAtMillis",
+        "routing"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "providerOrderId": {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "providerPaymentId": {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "recipientUid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capturedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "routing": {
+          "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
+        }
+      }
     }
   }
 }

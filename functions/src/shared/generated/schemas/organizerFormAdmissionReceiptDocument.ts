@@ -417,6 +417,186 @@ export const organizerFormAdmissionReceiptDocumentSchema: Record<string, unknown
           }
         }
       ]
+    },
+    "providerPayment": {
+      "description": "Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "providerOrderId",
+        "providerPaymentId",
+        "recipientUid",
+        "grantId",
+        "capturedAtMillis",
+        "routing"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "providerOrderId": {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "providerPaymentId": {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "recipientUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capturedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "routing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "selection",
+            "policySource",
+            "appRevision",
+            "organizerRevision",
+            "bindingId",
+            "merchantAccountId",
+            "destinationAccountId",
+            "configurationVersion",
+            "checkoutKey",
+            "amountMinor",
+            "transferAmountMinor",
+            "settlementHold"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "transferAmountMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "settlementHold": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "purpose": {
+              "enum": [
+                "formFee",
+                "eventAdmission"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "selection": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            },
+            "policySource": {
+              "enum": [
+                "app",
+                "organizer",
+                "legacy"
+              ]
+            },
+            "appRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bindingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "merchantAccountId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "destinationAccountId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "configurationVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "checkoutKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      }
     }
   }
 } as const;
