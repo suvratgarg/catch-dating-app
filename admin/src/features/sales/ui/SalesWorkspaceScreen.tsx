@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {ArrowLeft, CalendarDays, CheckCircle2, ClipboardList, Search} from "lucide-react";
+import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
   AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
   AdminForm, AdminTableRow, AdminTag, AdminToolbar, DataTable, EmptyState,
@@ -580,7 +580,7 @@ function HostDetail({controller, currentUserUid, onOpenOrganizer}: {
       section="suppression" detail={detail} controller={controller} /> : null}
     {tab === "overview" || tab === "research" ? <HostCustomFields
       detail={detail} controller={controller} /> : null}
-    <HostTasks detail={detail} controller={controller}
+    <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
       currentUserUid={currentUserUid} />
   </AdminDetailScreenStack>;
 }
@@ -778,46 +778,6 @@ function HostActivity({detail, controller}: {
             ` · ${activity.channel || "other"} · Actor-attested; delivery unconfirmed` : ""}
         </>} />
     ) : <EmptyState>No activity recorded yet.</EmptyState>}
-  </Panel>;
-}
-
-function HostTasks({detail, controller, currentUserUid}: {
-  detail: SalesAccountDetail; controller: SalesWorkspaceController;
-  currentUserUid: string;
-}) {
-  const [title, setTitle] = useState("");
-  const [dueAt, setDueAt] = useState("");
-  const add = async () => {
-    if (!title.trim() || !dueAt || !currentUserUid) return;
-    const saved = await controller.saveTask({organizerId: detail.account.organizerId,
-      expectedRevision: 0,
-      task: {kind: "follow_up", title: title.trim(), ownerUid: currentUserUid,
-        dueAt: new Date(dueAt).toISOString(), status: "open"}});
-    if (saved) {setTitle(""); setDueAt("");}
-  };
-  return <Panel title="Next steps" icon={<ClipboardList size={18} />}>
-    {detail.tasks.map((task) => <StateRow key={task.taskId}
-      label={task.title} value={<>
-      {dateLabel(task.dueAt)} · {ownerLabel(task.ownerUid, currentUserUid)} ·
-        {labelFor(task.status)}{" "}
-      {task.status === "open" ? <AdminButton disabled={controller.isSaving}
-        icon={<CheckCircle2 size={15} />}
-        onClick={() => void controller.saveTask({
-          organizerId: detail.account.organizerId, taskId: task.taskId,
-          expectedRevision: task.revision,
-          task: {kind: task.kind, title: task.title, dueAt: task.dueAt,
-            ownerUid: task.ownerUid, status: "completed"},
-        })}>Mark done</AdminButton> : null}
-    </>} />)}
-    {!detail.tasks.length ? <EmptyState>No tasks for this host.</EmptyState> : null}
-    <AdminForm onSubmit={(event) => {event.preventDefault(); void add();}}>
-      <TextField label="New task" value={title} onChange={setTitle} />
-      <p>Assigned to you</p>
-      <TextField label="Due" type="datetime-local" value={dueAt}
-        onChange={setDueAt} />
-      <AdminButton type="submit" disabled={!title.trim() || !currentUserUid ||
-        !dueAt || controller.isSaving}>Add task</AdminButton>
-    </AdminForm>
   </Panel>;
 }
 

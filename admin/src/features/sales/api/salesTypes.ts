@@ -62,6 +62,7 @@ export interface SalesTask {
   ownerUid: string;
   status: SalesTaskStatus;
   revision: number;
+  contactId?: string | null;
   reason?: string | null;
 }
 
@@ -261,7 +262,8 @@ export interface SalesUpsertTaskInput {
   taskId?: string;
   requestId: string;
   expectedRevision: number;
-  task: Pick<SalesTask, "kind" | "title" | "dueAt" | "ownerUid" | "status">;
+  task: Pick<SalesTask, "kind" | "title" | "dueAt" | "ownerUid" | "status"> &
+    {contactId?: string | null};
 }
 
 export interface SalesUpsertOpportunityInput {

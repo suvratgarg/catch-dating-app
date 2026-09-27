@@ -123,33 +123,41 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
   return <EventRuntimeModule title="Try the sample workflow">
     <p>{cta}</p>
     {!controller.authReady ? <EventRuntimeLoading label="Checking sign-in…" /> :
-      controller.canTry ? <>
+      <>
+      {controller.canTry ? <>
         <p>Signed in as {controller.viewer?.email ||
           controller.viewer?.phoneNumber || "verified account"}.
           The server will check this identity against the invitation.</p>
         <Button type="button" onClick={() => void controller.start()}
-          disabled={controller.pending} loading={controller.pending}
+          disabled={controller.pending || authPending} loading={controller.pending}
           loadingLabel="Opening sample…">Open interactive example</Button>
-      </> : <>
-        <p>Sign in with the invited email or verify the invited phone. Entering
-          contact text alone does not grant access; the server checks the
-          verified Firebase identity.</p>
+      </> : null}
+        <p>Use the invited email or verify the invited phone. If you are signed
+          in with another account, you can change it below.</p>
         <EventRuntimeActionGrid><Button type="button" onClick={() => void google()}
-          disabled={authPending} loading={authPending}>Continue with Google</Button>
+          disabled={authPending || controller.pending} loading={authPending}>
+          {controller.viewer ? "Use another Google account" : "Continue with Google"}
+        </Button>
         </EventRuntimeActionGrid>
         <TextField id="sales-demo-phone" label="Or verify phone (international format)"
           type="tel" autoComplete="tel" value={phone}
+          disabled={authPending || controller.pending || Boolean(challenge)}
           onChange={(event) => setPhone(event.target.value)}
           placeholder="+91…" />
         <div id="sales-demo-recaptcha" />
         {!challenge ? <Button type="button" variant="ghost"
-          disabled={authPending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())}
+          disabled={authPending || controller.pending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())}
           onClick={() => void sendCode()}>Send verification code</Button> : <>
           <TextField id="sales-demo-code" label="Verification code" value={code}
             onChange={(event) => setCode(event.target.value)}
             inputMode="numeric" autoComplete="one-time-code" />
-          <Button type="button" variant="ghost" disabled={authPending || !code.trim()}
+          <Button type="button" variant="ghost" disabled={authPending || controller.pending || !code.trim()}
             onClick={() => void verifyCode()}>Verify phone</Button>
+          <Button type="button" variant="ghost"
+            disabled={authPending || controller.pending}
+            onClick={() => {setChallenge(null); setCode(""); setAuthError("");}}>
+            Change number or resend code
+          </Button>
         </>}
       </>}
     {authError ? <FormStatus status={{message: authError, tone: "is-error"}} /> : null}

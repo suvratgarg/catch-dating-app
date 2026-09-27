@@ -11,7 +11,10 @@ type PendingAction = ActionInput & {requestId: string; expectedRevision: number}
 function errorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (/permission-denied|verified contact does not match/iu.test(message)) {
-    return "This signed-in contact is not approved for the interactive example. Ask the inviter to review the link.";
+    return "This account does not match the invitation. Use the invited email or verify the invited phone below, or ask the inviter to review the link.";
+  }
+  if (/retry later/iu.test(message)) {
+    return "Please wait a minute before trying again. Your invitation is still available.";
   }
   if (/resource-exhausted|renewed invitation/iu.test(message)) {
     return "This invitation has reached its trial limit. Ask the inviter for a renewed link.";
