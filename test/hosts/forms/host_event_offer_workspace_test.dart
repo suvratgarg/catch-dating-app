@@ -225,8 +225,9 @@ void main() {
     );
   });
 
-  test('newly saved manager target bypasses first-page discovery but still '
-      'revalidates responses and current event configuration', () async {
+  for (final applicationId in [null, 'application-one']) {
+    test('saved target revalidates response and admission source '
+        'for ${applicationId ?? 'registration'}', () async {
     final source = _Query();
     final query = HostResponseQueryController(source);
     final offers = HostEventOfferController(_Offers());
@@ -254,7 +255,7 @@ void main() {
             required organizerId,
             required eventId,
             required contactId,
-          }) async => _existingOffer(),
+          }) async => _existingOffer(applicationId: applicationId),
       prepareHandoff: ({required offer}) async => const HostOfferHandoff(
         kind: 'blocked',
         offerId: 'offer-one',
@@ -263,7 +264,7 @@ void main() {
       copyMessage: (_) async {},
       openHandoff: (_) async => false,
       targets: targets,
-      getResponseDetail: (_) async => _detail('contact-one'),
+      getResponseDetail: (_) async => _detail('contact-one', applicationId: applicationId),
       openResponseForConversion: (_) async {},
       openEventSettings: (_) async => targets.revision = 2,
       now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
@@ -284,64 +285,7 @@ void main() {
     await workspace.openSettings();
     expect(workspace.event?.setupRevision, 2);
     expect(targets.configurationCalls, 3);
-    source.hash = 'changed';
-    await workspace.choose(workspace.event!);
-    expect(workspace.selectionStale, isTrue);
-    expect(targets.configurationCalls, 3);
-  });
-
-  test('approved applications retain their source and resolve admission response', () async {
-    final source = _Query();
-    final query = HostResponseQueryController(source);
-    final offers = HostEventOfferController(_Offers());
-    final targets = _Targets();
-    addTearDown(query.dispose);
-    addTearDown(offers.dispose);
-    await query.apply(
-      const HostResponseQueryRequest(
-        organizerId: 'org',
-        formId: 'form',
-        versionId: 'form_v1',
-      ),
-    );
-    query.toggleSelection('response-one');
-    final workspace = HostEventOfferWorkspaceController(
-      organizerId: 'org',
-      accountId: 'manager',
-      queryController: query,
-      offerController: offers,
-      listOffers:
-          ({required organizerId, required eventId, afterOfferId}) async =>
-              const {'items': <Object>[], 'nextCursor': null},
-      getOffer:
-          ({
-            required organizerId,
-            required eventId,
-            required contactId,
-          }) async => _existingOffer(applicationId: 'application-one'),
-      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
-        kind: 'blocked',
-        offerId: 'offer-one',
-        blockers: ['fixture'],
-      ),
-      copyMessage: (_) async {},
-      openHandoff: (_) async => false,
-      targets: targets,
-      getResponseDetail: (_) async => _detail('contact-one', applicationId: 'application-one'),
-      openResponseForConversion: (_) async {},
-      openEventSettings: (_) async => targets.revision = 2,
-      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
-      initialEventTarget: HostOfferEventTarget(
-        eventId: 'event-one',
-        name: 'Freshly saved',
-        startTime: _start,
-        timezone: 'Asia/Kolkata',
-        publicationState: 'private',
-        setupRevision: 1,
-      ),
-    );
-    addTearDown(workspace.dispose);
-    await workspace.start();
+    if (applicationId != null) {
     expect(workspace.draft!.rows.single.sourceKind,
         HostOfferSourceKind.application);
     expect(workspace.draft!.rows.single.sourceId, 'application-one');
@@ -356,7 +300,13 @@ void main() {
     expect(scope.offerId, 'offer-one');
     workspace.manualUpdated(_existingOffer(applicationId: 'another-application'));
     expect(workspace.selectedResponseId, isNull);
+    }
+    source.hash = 'changed';
+    await workspace.choose(workspace.event!);
+    expect(workspace.selectionStale, isTrue);
+    expect(targets.configurationCalls, 3);
   });
+  }
 
   test('workspace controller invalidates selected offer context when the '
       'underlying query selection changes', () async {
