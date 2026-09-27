@@ -101588,6 +101588,148 @@ abstract final class CatchContractConstraints {
     maximum: 200,
   );
 
+  static const previewOrganizerFormAdmissionCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallablePayloadOfferId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallablePayload.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseBlockerCode = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.blocker.code',
+    required: true,
+    enumValues: <String>['unavailable', 'stale', 'conflict'],
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseBlockerMessage = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.blocker.message',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseCanCommit = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.canCommit',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseExpectedLedgerRevision = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.expectedLedgerRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.expectedOfferGeneration',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.expectedOfferRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseOfferId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponsePaymentAuthority = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.paymentAuthority',
+    required: true,
+    enumValues: <String>['explicitFree', 'hostAttested'],
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseResponseId = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const previewOrganizerFormAdmissionCallableResponseSeatAlreadyOccupied = CatchContractFieldConstraints(
+    path: 'previewOrganizerFormAdmissionCallableResponse.seatAlreadyOccupied',
+    valueTypes: <String>['boolean'],
+  );
+
   static const previewOrganizerFormConversionCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'previewOrganizerFormConversionCallablePayload.eventId',
     maxLength: 180,
@@ -139952,6 +140094,24 @@ abstract final class CatchContractConstraints {
     'previewOrganizerApplicationImportCallableResponse.sampleRows.items.errors.items.questionId': previewOrganizerApplicationImportCallableResponseSampleRowsItemsErrorsItemsQuestionId,
     'previewOrganizerApplicationImportCallableResponse.sampleRows.items.rowId': previewOrganizerApplicationImportCallableResponseSampleRowsItemsRowId,
     'previewOrganizerApplicationImportCallableResponse.validRowCount': previewOrganizerApplicationImportCallableResponseValidRowCount,
+    'previewOrganizerFormAdmissionCallablePayload.contactId': previewOrganizerFormAdmissionCallablePayloadContactId,
+    'previewOrganizerFormAdmissionCallablePayload.eventId': previewOrganizerFormAdmissionCallablePayloadEventId,
+    'previewOrganizerFormAdmissionCallablePayload.offerId': previewOrganizerFormAdmissionCallablePayloadOfferId,
+    'previewOrganizerFormAdmissionCallablePayload.organizerId': previewOrganizerFormAdmissionCallablePayloadOrganizerId,
+    'previewOrganizerFormAdmissionCallablePayload.responseId': previewOrganizerFormAdmissionCallablePayloadResponseId,
+    'previewOrganizerFormAdmissionCallableResponse.blocker.code': previewOrganizerFormAdmissionCallableResponseBlockerCode,
+    'previewOrganizerFormAdmissionCallableResponse.blocker.message': previewOrganizerFormAdmissionCallableResponseBlockerMessage,
+    'previewOrganizerFormAdmissionCallableResponse.canCommit': previewOrganizerFormAdmissionCallableResponseCanCommit,
+    'previewOrganizerFormAdmissionCallableResponse.contactId': previewOrganizerFormAdmissionCallableResponseContactId,
+    'previewOrganizerFormAdmissionCallableResponse.eventId': previewOrganizerFormAdmissionCallableResponseEventId,
+    'previewOrganizerFormAdmissionCallableResponse.expectedLedgerRevision': previewOrganizerFormAdmissionCallableResponseExpectedLedgerRevision,
+    'previewOrganizerFormAdmissionCallableResponse.expectedOfferGeneration': previewOrganizerFormAdmissionCallableResponseExpectedOfferGeneration,
+    'previewOrganizerFormAdmissionCallableResponse.expectedOfferRevision': previewOrganizerFormAdmissionCallableResponseExpectedOfferRevision,
+    'previewOrganizerFormAdmissionCallableResponse.offerId': previewOrganizerFormAdmissionCallableResponseOfferId,
+    'previewOrganizerFormAdmissionCallableResponse.organizerId': previewOrganizerFormAdmissionCallableResponseOrganizerId,
+    'previewOrganizerFormAdmissionCallableResponse.paymentAuthority': previewOrganizerFormAdmissionCallableResponsePaymentAuthority,
+    'previewOrganizerFormAdmissionCallableResponse.responseId': previewOrganizerFormAdmissionCallableResponseResponseId,
+    'previewOrganizerFormAdmissionCallableResponse.seatAlreadyOccupied': previewOrganizerFormAdmissionCallableResponseSeatAlreadyOccupied,
     'previewOrganizerFormConversionCallablePayload.eventId': previewOrganizerFormConversionCallablePayloadEventId,
     'previewOrganizerFormConversionCallablePayload.kind': previewOrganizerFormConversionCallablePayloadKind,
     'previewOrganizerFormConversionCallablePayload.organizerId': previewOrganizerFormConversionCallablePayloadOrganizerId,

@@ -238,6 +238,7 @@ export 'callables/prepare_event_success_rotation_draft_callable_request.g.dart';
 export 'callables/preview_event_assignment_features_callable_request.g.dart';
 export 'callables/preview_event_offers_callable_request.g.dart';
 export 'callables/preview_organizer_application_import_callable_request.g.dart';
+export 'callables/preview_organizer_form_admission_callable_request.g.dart';
 export 'callables/preview_organizer_form_conversion_callable_request.g.dart';
 export 'callables/preview_organizer_saved_audience_callable_request.g.dart';
 export 'callables/program_function_scope_callable_request.g.dart';

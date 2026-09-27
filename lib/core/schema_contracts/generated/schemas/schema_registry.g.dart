@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'PreviewOrganizerFormAdmissionCallablePayload',
+    source: 'callables/preview_organizer_form_admission_payload.schema.json',
+    schema: schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PreviewOrganizerFormAdmissionCallableResponse',
+    source: 'callable_responses/preview_organizer_form_admission_response.schema.json',
+    schema: schemaPreviewOrganizerFormAdmissionCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OrganizerFormAdmissionDocument',
     source: 'firestore/organizer_form_admissions.schema.json',
     schema: schemaOrganizerFormAdmissionDocumentSchema,
@@ -4594,6 +4604,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'PreviewOrganizerFormAdmissionCallablePayload': schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
+  'PreviewOrganizerFormAdmissionCallableResponse': schemaPreviewOrganizerFormAdmissionCallableResponseSchema,
   'OrganizerFormAdmissionDocument': schemaOrganizerFormAdmissionDocumentSchema,
   'CommitOrganizerFormAdmissionCallablePayload': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
   'CommitOrganizerFormAdmissionCallableResponse': schemaCommitOrganizerFormAdmissionCallableResponseSchema,
@@ -5512,6 +5524,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/preview_organizer_form_admission_payload.schema.json': schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
+  'callable_responses/preview_organizer_form_admission_response.schema.json': schemaPreviewOrganizerFormAdmissionCallableResponseSchema,
   'firestore/organizer_form_admissions.schema.json': schemaOrganizerFormAdmissionDocumentSchema,
   'callables/commit_organizer_form_admission_payload.schema.json': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
   'callable_responses/commit_organizer_form_admission_response.schema.json': schemaCommitOrganizerFormAdmissionCallableResponseSchema,

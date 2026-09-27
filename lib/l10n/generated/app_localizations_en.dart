@@ -22759,4 +22759,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostResponseQueryVersionScope({required int version}) {
     return 'Published version $version · All review statuses';
   }
+
+  @override
+  String get hostFormAdmissionTitle => 'Event admission';
+
+  @override
+  String get hostFormAdmissionComplete =>
+      'Admission confirmed. The guest is on the event roster.';
+
+  @override
+  String get hostFormAdmissionSaved =>
+      'A saved admission needs to be resolved before starting another.';
+
+  @override
+  String get hostFormAdmissionRetain =>
+      'This person already occupies a seat. Confirm to link this response without reserving another seat.';
+
+  @override
+  String get hostFormAdmissionReady =>
+      'Payment and capacity checks passed. Confirm to add this guest to the roster. Availability is checked again when you confirm.';
+
+  @override
+  String get hostFormAdmissionReview =>
+      'Review the response, payment evidence and available capacity before admitting this guest.';
+
+  @override
+  String get hostFormAdmissionReviewAgain => 'Review admission again';
+
+  @override
+  String get hostFormAdmissionRetry => 'Retry saved admission';
+
+  @override
+  String get hostFormAdmissionConfirm => 'Confirm admission';
+
+  @override
+  String get hostFormAdmissionCheck => 'Check admission';
 }

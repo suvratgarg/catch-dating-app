@@ -6,6 +6,8 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -100,6 +102,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     this.initialEventId,
     this.initialEventTarget,
     this.onCreateEvent,
+    this.createAdmissionController,
   });
 
   final String organizerId;
@@ -132,6 +135,8 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   /// selection is revalidated before any offer is drafted. Null keeps the
   /// create action hidden while private event setup stays release gated.
   final Future<void> Function()? onCreateEvent;
+  final HostFormAdmissionController Function(HostEventOffer offer)?
+      createAdmissionController;
 
   @override
   State<HostEventOfferWorkspaceSection> createState() =>
@@ -380,6 +385,15 @@ class _HostEventOfferWorkspaceSectionState
                   ),
               ]),
             if (_controller.selectedOffer case final selected?) ...[
+              if (widget.createAdmissionController != null &&
+                  selected.sourceKind == HostOfferSourceKind.formResponse &&
+                  selected.effectiveStatus == HostOfferStatus.offered)
+                HostFormAdmissionSection(
+                  key: ValueKey('admission-${widget.accountId}-${selected.offerId}-'
+                    '${selected.revision}-${selected.generation}'),
+                  createController: () => widget.createAdmissionController!(selected),
+                  onAdmitted: _controller.refreshOffers,
+                ),
               if (selected.effectiveStatus == HostOfferStatus.offered)
                 HostManualPaymentReviewSection(
                   key: ValueKey('offer-manual-${selected.offerId}-'

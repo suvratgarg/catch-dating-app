@@ -677,6 +677,8 @@ export 'preview_event_assignment_features_callable_response.g.dart';
 export 'preview_event_offers_callable_payload.g.dart';
 export 'preview_organizer_application_import_callable_payload.g.dart';
 export 'preview_organizer_application_import_callable_response.g.dart';
+export 'preview_organizer_form_admission_callable_payload.g.dart';
+export 'preview_organizer_form_admission_callable_response.g.dart';
 export 'preview_organizer_form_conversion_callable_payload.g.dart';
 export 'preview_organizer_form_conversion_callable_response.g.dart';
 export 'preview_organizer_saved_audience_callable_payload.g.dart';

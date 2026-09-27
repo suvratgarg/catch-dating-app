@@ -733,3 +733,6 @@ export {
 
 export {commitOrganizerFormAdmission} from
   "./organizerFormAdmission/callable";
+
+export {previewOrganizerFormAdmission} from
+  "./organizerFormAdmission/previewCallable";

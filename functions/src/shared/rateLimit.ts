@@ -76,6 +76,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getEventOfferConfiguration: {maxRequests: 60, windowMs: 60 * 1000},
   prepareEventOfferHandoff: {maxRequests: 30, windowMs: 60 * 1000},
   previewEventOffers: {maxRequests: 20, windowMs: 60 * 1000},
+  previewOrganizerFormAdmission: {maxRequests: 30, windowMs: 60 * 1000},
   commitOrganizerFormAdmission: {maxRequests: 20, windowMs: 60 * 1000},
   commitEventOffers: {maxRequests: 10, windowMs: 60 * 1000},
   mutateEventOffer: {maxRequests: 30, windowMs: 60 * 1000},

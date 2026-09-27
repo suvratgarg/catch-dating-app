@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  previewOrganizerFormAdmissionCallablePayloadSchema,
+  previewOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionDocumentSchema,
   commitOrganizerFormAdmissionCallablePayloadSchema,
   commitOrganizerFormAdmissionCallableResponseSchema,
@@ -942,6 +944,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validatePreviewOrganizerFormAdmissionCallablePayload = ajv.compile(previewOrganizerFormAdmissionCallablePayloadSchema);
+export const validatePreviewOrganizerFormAdmissionCallableResponse = ajv.compile(previewOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionDocument = ajv.compile(organizerFormAdmissionDocumentSchema);
 export const validateCommitOrganizerFormAdmissionCallablePayload = ajv.compile(commitOrganizerFormAdmissionCallablePayloadSchema);
 export const validateCommitOrganizerFormAdmissionCallableResponse = ajv.compile(commitOrganizerFormAdmissionCallableResponseSchema);

@@ -36606,6 +36606,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Published version {version} · All review statuses'**
   String hostResponseQueryVersionScope({required int version});
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Event admission'**
+  String get hostFormAdmissionTitle;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission confirmed. The guest is on the event roster.'**
+  String get hostFormAdmissionComplete;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved admission needs to be resolved before starting another.'**
+  String get hostFormAdmissionSaved;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'This person already occupies a seat. Confirm to link this response without reserving another seat.'**
+  String get hostFormAdmissionRetain;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment and capacity checks passed. Confirm to add this guest to the roster. Availability is checked again when you confirm.'**
+  String get hostFormAdmissionReady;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the response, payment evidence and available capacity before admitting this guest.'**
+  String get hostFormAdmissionReview;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Review admission again'**
+  String get hostFormAdmissionReviewAgain;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry saved admission'**
+  String get hostFormAdmissionRetry;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm admission'**
+  String get hostFormAdmissionConfirm;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Check admission'**
+  String get hostFormAdmissionCheck;
 }
 
 class _AppLocalizationsDelegate

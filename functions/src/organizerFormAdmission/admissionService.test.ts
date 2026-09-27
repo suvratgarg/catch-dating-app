@@ -3,6 +3,7 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId} from "../events/eventAttendees";
 import {deriveEventSeatPolicy} from
   "../events/seatAuthority/firestoreAdapter";
@@ -17,7 +18,8 @@ import {eventOfferId} from
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {AdmissionPolicyError} from "./admissionPolicy";
-import {commitOrganizerFormAdmission, formAdmissionOwnershipId,
+import {commitOrganizerFormAdmission, previewOrganizerFormAdmission,
+  formAdmissionOwnershipId,
   formAdmissionReceiptId} from "./admissionService";
 
 type Row = Record<string, unknown>;
@@ -38,15 +40,15 @@ class Store {
   timeline: string[] = [];
   writes: string[] = [];
   collection(name: string) {
-    const query = (filters: Array<[string, unknown]>) => ({
+    const query = (filters: Array<[string, string, unknown]>) => ({
       collection: name, filters,
-      where: (field: string, _op: string, value: unknown) =>
-        query([...filters, [field, value]]),
+      where: (field: string, op: string, value: unknown) =>
+        query([...filters, [field, op, value]]),
       limit: (count: number) => ({collection: name, filters, count}),
     });
     return {doc: (id: string) => ({path: `${name}/${id}`}),
-      where: (field: string, _op: string, value: unknown) =>
-        query([[field, value]])};
+      where: (field: string, op: string, value: unknown) =>
+        query([[field, op, value]])};
   }
   runTransaction<T>(callback: (tx: FirebaseFirestore.Transaction) =>
     Promise<T>): Promise<T> {
@@ -66,16 +68,17 @@ class Store {
     };
     const tx = {
       get: async (ref: {path?: string; collection?: string;
-        filters?: Array<[string, unknown]>; count?: number}) => {
+        filters?: Array<[string, string, unknown]>; count?: number}) => {
         assert.equal(startedWrite, false, "no Firestore read after write");
         if (ref.collection && ref.filters) {
           this.timeline.push(`query:${ref.collection}`);
           const docs = [...this.rows].filter(([path, row]) =>
             path.startsWith(`${ref.collection}/`) &&
-            ref.filters!.every(([field, value]) => row[field] === value))
+            ref.filters!.every(([field, op, value]) => op === "in" ?
+              (value as unknown[]).includes(row[field]) : row[field] === value))
             .slice(0, ref.count).map(([path, row]) => ({
               id: path.split("/").at(-1), data: () => row}));
-          return {docs};
+          return {docs, empty: docs.length === 0};
         }
         assert.ok(ref.path);
         this.timeline.push(`read:${ref.path}`);
@@ -546,3 +549,87 @@ test("foreign roster and mismatched payment proof leave zero writes",
     await assert.rejects(payment.commit());
     assert.deepEqual(payment.store.writes, []);
   });
+
+
+test("preview uses current revisions without staging any writes",
+  async () => {
+    const {store, payload, commit} = fixture();
+    const scope = {organizerId: org, eventId, responseId, contactId, offerId};
+    const result = await previewOrganizerFormAdmission({db: store.db(),
+      actorUid, payload: scope, nowMillis: () => 2000});
+    assert.equal(result.canCommit, true);
+    assert.equal(result.expectedLedgerRevision, 3);
+    assert.equal(result.expectedOfferRevision, 2);
+    assert.equal(result.expectedOfferGeneration, 1);
+    assert.equal(result.paymentAuthority, "explicitFree");
+    assert.deepEqual(store.writes, []);
+    assert.ok(store.timeline.every((item) => !item.startsWith("write:")));
+    store.get(`organizerEventOffers/${offerId}`)!.revision = 3;
+    await assert.rejects(commit(), denied);
+    assert.deepEqual(store.writes, []);
+    const updated = await previewOrganizerFormAdmission({db: store.db(),
+      actorUid, payload: scope, nowMillis: () => 2000});
+    assert.equal(updated.expectedOfferRevision, 3);
+    const receipt = await commit({...payload, expectedOfferRevision: 3});
+    assert.equal(receipt.resultingLedgerRevision, 4);
+  });
+
+test("preview rejects full, locked, unpaid and revoked sources without writes",
+  async () => {
+    for (const change of [
+      (store: Store) => {
+        store.get(`eventSeatLedgers/${eventId}`)!.occupied = 2;
+      },
+      (store: Store) => {
+        store.get(`eventSeatMigrationFences/${eventId}`)!.state = "locked";
+      },
+      (store: Store) => {
+        const offer = store.get(`organizerEventOffers/${offerId}`)!;
+        (offer.paymentSnapshot as Row).expectedAmountMinor = 100;
+      },
+      (store: Store) => {
+        store.put(`deletedUsers/${actorUid}`, {deletedAt: ts(1900)});
+      },
+    ]) {
+      const {store} = fixture();
+      change(store);
+      await assert.rejects(previewOrganizerFormAdmission({db: store.db(),
+        actorUid, payload: {organizerId: org, eventId, responseId,
+          contactId, offerId}, nowMillis: () => 2000}), denied);
+      assert.deepEqual(store.writes, []);
+    }
+  });
+
+
+test("form admission cannot bypass cohort and Cross Paths inventory",
+  async () => {
+    for (const patch of [
+      {crossPathsPairHeldCount: 1}, {crossPathsPairConfirmedCount: 1},
+      {constraints: {maxMen: 5}},
+      {eventPolicy: {version: 2, admission: {capacityLimit: 2,
+        crossPathsPairInventory: {enabled: true, reservedPairCapacity: 1}}}},
+      {eventPolicy: {version: 2, admission: {capacityLimit: 2,
+        cohortCapacityLimits: {menInterestedInWomen: 1}}}},
+    ]) {
+      const {store, commit} = fixture();
+      Object.assign(store.get(`events/${eventId}`)!, patch);
+      await assert.rejects(commit(), denied);
+      assert.deepEqual(store.writes, []);
+    }
+  });
+
+
+test("active waitlist offers protect the last seat until expiry", async () => {
+  const {store, commit} = fixture();
+  store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
+  store.get(`events/${eventId}`)!.bookedCount = 1;
+  store.put("eventWaitlistOffers/waitlist1", {eventId, uid: "waiting1",
+    status: "active", cohortAtOffer: "queerOrOpen", expiresAt: ts(3000)});
+  store.put(`eventParticipations/${eventParticipationId(eventId, "waiting1")}`,
+    {eventId, uid: "waiting1", status: "waitlisted"});
+  await assert.rejects(commit(), denied);
+  assert.deepEqual(store.writes, []);
+  store.get("eventWaitlistOffers/waitlist1")!.expiresAt = ts(1000);
+  await commit();
+  assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 2);
+});

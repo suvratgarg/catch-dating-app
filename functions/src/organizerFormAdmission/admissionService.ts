@@ -1,6 +1,12 @@
 import {createHash} from "node:crypto";
+import {rosterWithReservedWaitlistOffersInTransaction} from
+  "../events/eventPolicy";
 import {eventSourceRevision} from "../events/eventSourceRevision";
 import * as admin from "firebase-admin";
+import type {PreviewOrganizerFormAdmissionCallablePayload} from
+  "../shared/generated/previewOrganizerFormAdmissionCallablePayload";
+import type {PreviewOrganizerFormAdmissionCallableResponse} from
+  "../shared/generated/previewOrganizerFormAdmissionCallableResponse";
 import type {CommitOrganizerFormAdmissionCallablePayload} from
   "../shared/generated/commitOrganizerFormAdmissionCallablePayload";
 import type {CommitOrganizerFormAdmissionCallableResponse} from
@@ -188,29 +194,49 @@ function newFormAttendee(eventId: string, organizerId: string,
     checkedInBy: null, linkedAt: linkedUid ? now : null};
 }
 
-/**
- * Commits a reviewed organizer-form admission in one Firestore transaction.
- * All source, payment, identity, capacity and roster reads precede every write.
- * Endpoint and rules registration is owned by the shared API layer.
- */
+/** Commits only after re-reading the complete admission authority chain. */
 export async function commitOrganizerFormAdmission(
   params: FormAdmissionServiceDeps
 ): Promise<CommitOrganizerFormAdmissionCallableResponse> {
+  const result = await executeAdmission(params, true);
+  if ("canCommit" in result) conflict("Admission result changed.");
+  return result;
+}
+
+/** Runs the same preparation without applying any of its staged writes. */
+export async function previewOrganizerFormAdmission(
+  params: Omit<FormAdmissionServiceDeps, "payload"> & {
+    payload: PreviewOrganizerFormAdmissionCallablePayload;
+  }
+): Promise<PreviewOrganizerFormAdmissionCallableResponse> {
+  const result = await executeAdmission(params, false);
+  if (!("canCommit" in result)) conflict("Admission preview changed.");
+  return result;
+}
+
+async function executeAdmission(
+  params: Omit<FormAdmissionServiceDeps, "payload"> & {
+    payload: PreviewOrganizerFormAdmissionCallablePayload |
+      CommitOrganizerFormAdmissionCallablePayload;
+  }, commit: boolean
+): Promise<CommitOrganizerFormAdmissionCallableResponse |
+  PreviewOrganizerFormAdmissionCallableResponse> {
   const {db, payload, actorUid} = params;
-  const command: AdmissionCommand = {...payload, actorUid};
+  const reviewed = commit ? payload as
+    CommitOrganizerFormAdmissionCallablePayload : null;
   if (![actorUid, payload.organizerId, payload.eventId,
     payload.responseId, payload.contactId, payload.offerId]
     .every((value) => typeof value === "string" && ID.test(value)) ||
-    !REQUEST_ID.test(payload.requestId) ||
-    ![payload.expectedOfferRevision, payload.expectedOfferGeneration,
-      payload.expectedLedgerRevision].every((value) =>
-      Number.isSafeInteger(value) && value > 0)) {
+    reviewed && (!REQUEST_ID.test(reviewed.requestId) ||
+      ![reviewed.expectedOfferRevision, reviewed.expectedOfferGeneration,
+        reviewed.expectedLedgerRevision].every((value) =>
+        Number.isSafeInteger(value) && value > 0))) {
     throw new AdmissionPolicyError("invalid", "Invalid admission scope.");
   }
   const ownershipId = formAdmissionOwnershipId(payload.organizerId,
     payload.eventId, payload.responseId);
   const receiptId = formAdmissionReceiptId(payload.organizerId,
-    payload.requestId);
+    reviewed?.requestId ?? "preview_admission");
   const nowMillis = params.nowMillis ?? Date.now;
   const loadAuth = params.loadCurrentAuthUser ?? (async (uid: string) => {
     const user = await admin.auth().getUser(uid);
@@ -224,7 +250,8 @@ export async function commitOrganizerFormAdmission(
       read(db, tx, "organizers", payload.organizerId),
       read(db, tx, "users", actorUid),
       read(db, tx, "deletedUsers", actorUid),
-      read(db, tx, "organizerFormAdmissionReceipts", receiptId),
+      reviewed ? read(db, tx, "organizerFormAdmissionReceipts", receiptId) :
+        Promise.resolve(undefined),
       read(db, tx, "organizerFormAdmissions", ownershipId),
     ]);
     const organizer = organizerRaw as OrganizerDocument | undefined;
@@ -259,7 +286,8 @@ export async function commitOrganizerFormAdmission(
       const replayFacts = {manager, receipt: priorReceipt,
         sourceAdmission: sourceAdmission ?? null, nowMillis: now} as
         AdmissionFacts;
-      const decision = decideFormAdmission(command, replayFacts);
+      const decision = decideFormAdmission({...reviewed!, actorUid},
+        replayFacts);
       if (decision.kind !== "replay") conflict("Admission replay changed.");
       return publicReceipt(decision.receipt, true);
     }
@@ -385,6 +413,23 @@ export async function commitOrganizerFormAdmission(
         (!response.respondentUid || !verifiedPhone ||
           response.identity.phoneE164 !== verifiedPhone)) {
       unavailable("Verified respondent phone changed.");
+    }
+    // App-free CRM provenance does not establish a cohort or pair-hold right.
+    // Keep these policies closed until their shared reservation path is wired.
+    const admission = event.eventPolicy?.admission;
+    if (admission?.crossPathsPairInventory?.enabled ||
+        (event.crossPathsPairHeldCount ?? 0) !== 0 ||
+        (event.crossPathsPairConfirmedCount ?? 0) !== 0 ||
+        Object.values(event.crossPathsPairHeldCohortCounts ?? {})
+          .some((count) => count !== 0) ||
+        Object.keys(admission?.cohortCapacityLimits ?? {}).length > 0 ||
+        admission?.balancedRatioPolicy != null ||
+        ["balancedRatio", "fixedCohortCaps", "membersOnly"].includes(
+          admission?.format ?? "") || admission?.membershipRequired ||
+        event.constraints?.maxMen != null ||
+        event.constraints?.maxWomen != null) {
+      unavailable("This event requires its cohort, membership or Cross Paths " +
+        "admission flow.");
     }
     const fence = await readSeatMigrationWriterFence({db, tx,
       eventId: payload.eventId});
@@ -524,8 +569,23 @@ export async function commitOrganizerFormAdmission(
         sourceAttendeeId: identity.sourceAttendeeId,
         rosterTarget, catchParticipation},
       receipt: null, sourceAdmission: null, nowMillis: now};
+    // Preview expectations come from this transaction, never from the client.
+    const command: AdmissionCommand = reviewed ? {...reviewed, actorUid} :
+      {...payload, actorUid, requestId: "preview_admission",
+        expectedOfferRevision: offer.revision,
+        expectedOfferGeneration: offer.generation,
+        expectedLedgerRevision: ledger.revision};
     const decision = decideFormAdmission(command, facts);
     if (decision.kind !== "commit") conflict("Admission decision changed.");
+    if (decision.seatAction === "reserve") {
+      const withOffers = await rosterWithReservedWaitlistOffersInTransaction(
+        tx, db, payload.eventId, {bookedCountsByCohort: {},
+          waitlistedCountsByCohort: {}, totalBooked: ledger.occupied},
+        {nowMillis: now});
+      if (withOffers.totalBooked >= ledger.capacity) {
+        unavailable("Available seats are reserved by current waitlist offers.");
+      }
+    }
     // A reserve preparation may perform more reads and cannot stage writes.
     const preparedSeat = decision.seatAction === "reserve" ?
       await prepareFirestoreSeat({db, tx,
@@ -594,17 +654,27 @@ export async function commitOrganizerFormAdmission(
         attendeeAliasRaw.state !== "ready")) {
       conflict("Existing Catch roster alias is not current.");
     }
+    if (!reviewed) {
+      return {organizerId: payload.organizerId, eventId: payload.eventId,
+        responseId: payload.responseId, contactId: payload.contactId,
+        offerId: payload.offerId, canCommit: true,
+        expectedOfferRevision: offer.revision,
+        expectedOfferGeneration: offer.generation,
+        expectedLedgerRevision: ledger.revision,
+        seatAlreadyOccupied: decision.seatAction === "retain",
+        paymentAuthority: decision.paymentAuthority, blocker: null};
+    }
     const resultingLedgerRevision = preparedSeat ?
       preparedSeat.plan.result.receipt.appliedLedgerRevision :
       identity.resultingLedgerRevision;
     const receipt: AdmissionReceipt = {organizerId: payload.organizerId,
       eventId: payload.eventId, responseId: payload.responseId,
       contactId: payload.contactId, offerId: payload.offerId,
-      requestId: payload.requestId, receiptId,
+      requestId: reviewed.requestId, receiptId,
       requestHash: decision.requestHash,
-      expectedOfferRevision: payload.expectedOfferRevision,
-      expectedOfferGeneration: payload.expectedOfferGeneration,
-      expectedLedgerRevision: payload.expectedLedgerRevision,
+      expectedOfferRevision: reviewed.expectedOfferRevision,
+      expectedOfferGeneration: reviewed.expectedOfferGeneration,
+      expectedLedgerRevision: reviewed.expectedLedgerRevision,
       attendeeId, canonicalSeatKey: identity.identity.key,
       resultingLedgerRevision, admittedAtMillis: now,
       seatAlreadyOccupied: decision.seatAction === "retain", actorUid};
@@ -612,8 +682,8 @@ export async function commitOrganizerFormAdmission(
       organizerId: payload.organizerId, eventId: payload.eventId,
       responseId: payload.responseId, receiptId, attendeeId,
       canonicalSeatKey: identity.identity.key, offerId: payload.offerId,
-      offerRevision: payload.expectedOfferRevision,
-      offerGeneration: payload.expectedOfferGeneration};
+      offerRevision: reviewed.expectedOfferRevision,
+      offerGeneration: reviewed.expectedOfferGeneration};
     const storedReceipt = {...receipt,
       paymentSnapshot: offer.paymentSnapshot,
       manualPayment: offer.manualPayment};

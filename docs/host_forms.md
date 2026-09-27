@@ -808,3 +808,15 @@ contact scope, **Filter by answers** opens the typed query workspace for that
 published version across all review statuses. Returning to **Review inbox**
 clears query selection and preserves inbox filters. This read-only query surface
 is available independently of the private-event and offer rollout gates.
+
+`previewOrganizerFormAdmission` executes the same transaction preparation as
+commit without applying identity, capacity, roster or receipt writes. It returns
+current offer and ledger revisions only when all checks pass. A preview does
+not reserve capacity; the commit rechecks the complete chain. Missing migration
+readiness is a blocker, never inferred from `bookedCount`.
+
+The current form-response admission adapter preserves active waitlist offers
+when checking remaining capacity. It refuses Cross Paths pair inventory, cohort
+caps/ratios and membership policies until their verified eligibility and shared
+reservation paths are integrated. The Host preview reports this limitation; it
+does not reinterpret CRM answers as verified membership or cohort evidence.

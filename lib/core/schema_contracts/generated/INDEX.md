@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallablePayload.ts` |
+| PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `functions/src/shared/generated/organizerFormAdmissionDocument.ts` |
 | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts` |
 | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts` |
@@ -932,6 +934,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaPreviewOrganizerFormAdmissionCallablePayloadSchema` | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_payload.g.dart` |
+| `schemaPreviewOrganizerFormAdmissionCallableResponseSchema` | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionDocumentSchema` | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_document.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallablePayloadSchema` | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_payload.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallableResponseSchema` | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_response.g.dart` |
@@ -1852,6 +1856,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
 | ConfigureEventOfferPreferencesCallableRequest | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/configure_event_offer_preferences_callable_request.g.dart` |
 | ListOfferEventTargetsCallableRequest | ListOfferEventTargetsCallablePayload | `callables/list_offer_event_targets_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_offer_event_targets_callable_request.g.dart` |
