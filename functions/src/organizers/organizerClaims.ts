@@ -323,7 +323,8 @@ export async function adminDecideOrganizerClaimHandler(
       hostAvatarUrl: avatarUrl,
       hostUserIds: [claimRequest.requesterUid],
       hostProfiles: [ownerProfile],
-      appVisibility: "discoverable",
+      // Ownership approval does not publish the organizer. The publication
+      // action owns appVisibility and publicPage, including route reservation.
       supplyCapabilities: organizerSupplyCapabilitiesFor({
         ownershipState: "claimed",
         claimState: "claimed",
