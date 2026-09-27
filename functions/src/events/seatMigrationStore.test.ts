@@ -29,6 +29,10 @@ class Query {
     return new Query(this.collectionPath, this.rows, [...this.filters,
       [field, value]], this.after, this.max);
   }
+  select(...fields: string[]) {
+    void fields;
+    return this;
+  }
   orderBy(_field: unknown) {
     void _field;
     return this;
@@ -410,3 +414,69 @@ test("integrated source writer is blocked while a scan is in progress",
     assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
       "unreconciled");
   });
+
+
+test("outstanding holds block before locking writers", async () => {
+  for (const [collection, value] of [
+    ["eventWaitlistOffers", {status: "active"}],
+    ["eventWaitlistOffers", {status: "accepted"}],
+    ["crossPathsPairHolds", {status: "active"}],
+    ["razorpayPendingOrders", {status: "pending"}],
+    ["payments", {status: "pending"}],
+    ["payments", {status: "completed", signUpFailed: true}],
+    ["publicEventPayments", {status: "checkoutReady"}],
+    ["organizerEventOfferPayments", {status: "captured"}],
+    ["eventSeatReservations", {checkoutHold: {paymentId: "payment1"}}],
+    ["eventWaitlistOffers", {status: "unknown"}],
+  ] as const) {
+    const h = setup();
+    h.store.rows.set(`${collection}/hold1`, {eventId: "event1", ...value});
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(h.store.writes.length, 0);
+  }
+});
+
+test("settled financial history permits roster migration", async () => {
+  const h = setup();
+  for (const [collection, value] of [
+    ["eventWaitlistOffers", {status: "expired"}],
+    ["crossPathsPairHolds", {status: "confirmed",
+      requesterBookingStatus: "confirmed"}],
+    ["razorpayPendingOrders", {status: "failed"}],
+    ["payments", {status: "completed", signUpFailed: false}],
+    ["publicEventPayments", {status: "refunded"}],
+    ["organizerEventOfferPayments", {status: "cancelled"}],
+  ] as const) {
+    h.store.rows.set(`${collection}/old1`, {eventId: "event1", ...value});
+  }
+  assert.equal((await h.bootstrap()).occupied, 1);
+});
+
+test("a new hold during migration prevents activation", async () => {
+  const h = setup();
+  h.store.beforeTransaction = () => {
+    const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+    if (run?.phase === "apply" && run.outputCursor === run.outputCount) {
+      h.store.rows.set("publicEventPayments/late1", {
+        eventId: "event1", status: "checkoutReady"});
+    }
+  };
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+    "locked");
+});
+
+
+test("combined roster reservations may exceed one source bound", async () => {
+  const h = setup(150);
+  h.store.rows.set("events/event1", {...event(), bookedCount: 150,
+    capacityLimit: 400});
+  for (let index = 0; index < 150; index++) {
+    h.store.rows.set(`eventParticipations/edge${index}`, {
+      eventId: "event1", organizerId: "org1", uid: `uid${index}`,
+      status: "signedUp"});
+  }
+  assert.equal((await h.bootstrap()).occupied, 300);
+});

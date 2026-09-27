@@ -14,6 +14,8 @@ import {planEventSeatMigration, SeatMigrationAttendee,
   SeatMigrationFormReceipt, SeatMigrationParticipation,
   SeatMigrationVerifiedPhone} from "./seatMigration";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {assertNoOutstandingMigrationHolds} from
+  "./seatAuthority/migrationOutstandingHolds";
 import {assertLiveMigrationSourcesMatchStage,
   MAX_LIVE_MIGRATION_SOURCE_ROWS} from
   "./seatAuthority/liveMigrationSource";
@@ -251,6 +253,8 @@ async function initialize(command: PagedSeatBootstrapCommand,
     if (base.policy.status !== "active") {
       unavailable("Event capacity is unavailable.");
     }
+    await assertNoOutstandingMigrationHolds({db: deps.db, tx,
+      eventId: command.eventId});
     const token = `mig_${digest([command.eventId,
       command.migrationRevision, command.asOfMillis]).slice(0, 48)}`;
     const run: MigrationRun = {eventId: command.eventId,
@@ -431,6 +435,8 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
     }
   });
   if (params.verifyLiveSources) {
+    await assertNoOutstandingMigrationHolds({db: deps.db, tx,
+      eventId: command.eventId});
     await assertLiveMigrationSourcesMatchStage({db: deps.db, tx,
       eventId: command.eventId, organizerId: command.organizerId,
       migrationRevision: command.migrationRevision,
