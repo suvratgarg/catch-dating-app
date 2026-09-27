@@ -120745,6 +120745,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateEventCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.expectedSetupRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
   static const updateEventCallablePayloadFieldsCapacityLimit = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.capacityLimit',
     valueTypes: <String>['integer'],
@@ -146827,6 +146834,7 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.tags': updateClubPatchTags,
     'updateClubPatch.tags.items': updateClubPatchTagsItems,
     'updateEventCallablePayload.eventId': updateEventCallablePayloadEventId,
+    'updateEventCallablePayload.expectedSetupRevision': updateEventCallablePayloadExpectedSetupRevision,
     'updateEventCallablePayload.fields.capacityLimit': updateEventCallablePayloadFieldsCapacityLimit,
     'updateEventCallablePayload.fields.constraints.maxAge': updateEventCallablePayloadFieldsConstraintsMaxAge,
     'updateEventCallablePayload.fields.constraints.maxMen': updateEventCallablePayloadFieldsConstraintsMaxMen,

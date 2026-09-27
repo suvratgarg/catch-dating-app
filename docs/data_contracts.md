@@ -1821,8 +1821,15 @@ Host journals the exact publication request before sending it. An uncertain
 result retries that request; only an exact server rejection proving that the
 request did not commit can discard it. A replayed receipt is followed by a fresh
 read, so an older publish receipt cannot overwrite a later unpublish in the UI.
-Rich edits remain on the published editor; its progressive-event integration is
-still a rollout prerequisite.
+Rich edits use the published editor. Progressive events require the loaded
+`expectedSetupRevision`; successful edits increment it and preserve the stored
+IANA timezone while deriving matching local date/time for schedule changes.
+Unchanged schedule/policy values in a complete form save do not count as a
+reschedule or policy change. Actual changes retain guest/offer/seat fences;
+private drafts cannot use this rich edit path. Published progressive events also
+use the shared cancellation/refund lifecycle and invalidate older setup edits.
+A retry after an uncertain rich edit must reload current state rather than
+blindly repeat a stale revision.
 
 The private event picker reads at most 51 event documents for a 50-row page,
 with composite indexes on organizer, private publication state, status,
@@ -1839,25 +1846,24 @@ duration and the venue/format snapshot. Clear the venue through Details before
 changing city. A dependent event plan or guest/offer/payment history still blocks
 basics edits. These UI affordances never replace the transaction's final checks.
 
-The compatibility stage retains legacy public event list queries because
-installed clients do not constrain `publicationState`, and the legacy
-publication backfill is not yet complete. The current `/events` list rule is
-therefore permissive. **No private event document may be stored in `/events`
-while this rule is deployed.** The production private-create callable has a
-server-owned, immutable false migration gate, and the Host private-create route
-is disabled. The latest full migration dry run, live writer inventory, and
-these source gates must remain release checks; client-side filtering is not a
-privacy boundary. A privileged out-of-band Admin write of a private document
-would be readable by old list clients and is prohibited in this stage.
+The source privacy cutover now constrains consumer discovery, organizer
+published-event timelines, recommendations, saved events and participation
+lookups to `publicationState == published` before rich decoding or pagination.
+Matching composite indexes are checked by the query-index parity scanner.
+The `/events` list rule requires the same publication constraint even for
+organizer managers; private inventory uses the separate authorized callable.
+Unrestricted, organizer-only and private-state list queries are denied.
 
-The later privacy cutover must backfill or reconcile every legacy event, deploy
-and verify the published-query indexes, release compatible clients, and retire
-old list readers before changing `/events` list rules to require
-`publicationState == published` (with a separate manager read path). The
-role-scoped Remote Config build minimum is helpful but is not a sufficient
-barrier by itself: old clients may start offline or use bundled nonblocking
-defaults when the fetch fails. Only after the restrictive rules are live and
-tested may the production private-create gate and Host route be enabled.
+**This source cutover is not deployed or activated.** The previously deployed
+compatibility rule permitted unrestricted lists. No private event document may
+be stored in `/events` while that rule remains deployed. Production private
+create/mutate callables and the Host entry retain their immutable closed gates.
+Before deploying this source, reconcile every legacy event, complete the
+publication backfill, deploy and verify indexes, and release compatible clients.
+The required role-scoped Remote Config build minimum must use the actual
+released build numbers. It is not a privacy barrier: old clients can start
+offline or use bundled nonblocking defaults when the fetch fails. Restrictive
+rules must be live and tested before either private-setup gate is enabled.
 Individual legacy document reads remain compatible only when neither
 `publicationState` nor `setupRevision` exists.
 Direct private event reads require a current organizer manager or active viewRoster
