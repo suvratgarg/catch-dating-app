@@ -83,6 +83,7 @@ type AdminNavId =
   | "cross-paths"
   | "growth"
   | "marketing-ops"
+  | "sales"
   | "organizer-intake"
   | "organizers"
   | "events"
@@ -171,6 +172,11 @@ const AdminActionExecutionsScreen = lazy(() =>
     (module) => ({default: module.AdminActionExecutionsScreen})
   )
 );
+const SalesWorkspaceScreen = lazy(() =>
+  import("../features/sales/ui/SalesWorkspaceScreen").then((module) => ({
+    default: module.SalesWorkspaceScreen,
+  }))
+);
 
 interface AdminNavigationItem {
   id: AdminNavId;
@@ -188,6 +194,7 @@ const navigationGroups: Array<{
     label: "Work queues",
     items: [
       {id: "overview", label: "Overview", icon: Activity},
+      {id: "sales", label: "Sales", icon: HeartHandshake},
       {id: "safety", label: "Safety", icon: ShieldAlert},
       {id: "access", label: "Launch access", icon: UserCheck},
       {id: "cross-paths", label: "Cross Paths", icon: HeartHandshake},
@@ -238,6 +245,7 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
   growth: ["adminOwner", "analyticsViewer"],
   "marketing-ops": ["admin", "adminOwner", "support"],
+  sales: ["admin", "adminOwner"],
   "organizer-intake": ["admin", "adminOwner", "support"],
   organizers: ["admin", "adminOwner", "support"],
   events: ["admin", "adminOwner", "support"],
@@ -282,6 +290,7 @@ const adminSectionTitles: Record<AdminNavId, string> = {
   "cross-paths": "Cross Paths showcase",
   growth: "Growth",
   "marketing-ops": "Marketing",
+  sales: "Sales",
   "organizer-intake": "Intake",
   organizers: "Organizers",
   events: "Events",
@@ -693,7 +702,24 @@ function AdminRouteApp() {
             </StatusBanner>
           )}
 
-          {currentNav === "safety" ? (
+          {currentNav === "sales" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Sales" />}>
+            <SalesWorkspaceScreen
+              area={salesAreaForPath(location.pathname)}
+              currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
+              selectedOrganizerId={salesOrganizerIdForPath(location.pathname)}
+              onAreaChange={(area) => navigate(`/sales/${area}`)}
+              onOpenHost={(organizerId) => navigate(
+                `/sales/hosts/${encodeURIComponent(organizerId)}`
+              )}
+              onBackToHosts={() => navigate("/sales/hosts")}
+              onOpenIntake={() => navigate("/intake/organizers")}
+              onOpenOrganizer={(organizerId) => navigate(
+                `/organizers/${encodeURIComponent(organizerId)}`
+              )}
+            />
+          </Suspense>
+        ) : currentNav === "safety" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Safety" />}>
             <SafetyTriageScreen
               onError={setError}
@@ -953,7 +979,22 @@ function adminPathForNav(nav: AdminNavId): string {
   if (nav === "overview") return "/overview";
   if (nav === "marketing-ops") return "/marketing";
   if (nav === "organizer-intake") return "/intake/organizers";
+  if (nav === "sales") return "/sales/today";
   return `/${nav}`;
+}
+
+function salesAreaForPath(pathname: string):
+  "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings" {
+  const area = pathname.split("/")[2];
+  if (area === "hosts" || area === "pipeline" || area === "research" ||
+    area === "pilots" || area === "settings") return area;
+  return "today";
+}
+
+function salesOrganizerIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/sales\/hosts\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try { return decodeURIComponent(match[1]); } catch { return match[1]; }
 }
 
 function isAdminNavId(value: string): value is AdminNavId {
