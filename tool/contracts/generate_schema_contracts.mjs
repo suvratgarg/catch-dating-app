@@ -1815,6 +1815,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programGuestDocument.ts",
   },
   {
+    name: "ProgramGuestGroupDocument",
+    source: "firestore/program_guest_groups.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programGuestGroupDocument.ts",
+  },
+  {
     name: "ProgramHouseholdDocument",
     source: "firestore/program_households.schema.json",
     typeOutput: "functions/src/shared/generated/programHouseholdDocument.ts",
@@ -1999,6 +2005,20 @@ const schemaSpecs = [
     source: "callables/upsert_program_guest_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/upsertProgramGuestCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramGuestGroupCallablePayload",
+    source: "callables/upsert_program_guest_group_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramGuestGroupCallablePayload.ts",
+  },
+  {
+    name: "DeleteProgramGuestGroupCallablePayload",
+    source: "callables/delete_program_guest_group_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "deleteProgramGuestGroupCallablePayload.ts",
   },
   {
     name: "ApplyProgramFunctionInvitationsCallablePayload",
@@ -2296,6 +2316,14 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "programGuestListCallableResponse.ts",
+  },
+  {
+    name: "ProgramGuestGroupListCallableResponse",
+    source:
+      "callable_responses/program_guest_group_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programGuestGroupListCallableResponse.ts",
   },
   {
     name: "ProgramArrivalsRosterCallableResponse",

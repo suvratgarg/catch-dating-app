@@ -361,6 +361,7 @@ import {
   programFunctionGuestDocumentSchema,
   programDoorJournalDocumentSchema,
   programGuestDocumentSchema,
+  programGuestGroupDocumentSchema,
   programHouseholdDocumentSchema,
   programStaffGrantDocumentSchema,
   programStaffInviteDocumentSchema,
@@ -394,6 +395,8 @@ import {
   claimProgramStaffInviteCallablePayloadSchema,
   revokeProgramStaffInviteCallablePayloadSchema,
   upsertProgramGuestCallablePayloadSchema,
+  upsertProgramGuestGroupCallablePayloadSchema,
+  deleteProgramGuestGroupCallablePayloadSchema,
   applyProgramFunctionInvitationsCallablePayloadSchema,
   recordProgramFunctionRsvpCallablePayloadSchema,
   issueProgramHouseholdRsvpLinkCallablePayloadSchema,
@@ -433,6 +436,7 @@ import {
   programInviteClaimCallableResponseSchema,
   programStaffListCallableResponseSchema,
   programGuestListCallableResponseSchema,
+  programGuestGroupListCallableResponseSchema,
   programArrivalsRosterCallableResponseSchema,
   programTransportPlanCallableResponseSchema,
   programHotelInboundCallableResponseSchema,
@@ -1306,6 +1310,7 @@ export const validateProgramFunctionDocument = ajv.compile(programFunctionDocume
 export const validateProgramFunctionGuestDocument = ajv.compile(programFunctionGuestDocumentSchema);
 export const validateProgramDoorJournalDocument = ajv.compile(programDoorJournalDocumentSchema);
 export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
+export const validateProgramGuestGroupDocument = ajv.compile(programGuestGroupDocumentSchema);
 export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
 export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);
 export const validateProgramStaffInviteDocument = ajv.compile(programStaffInviteDocumentSchema);
@@ -1339,6 +1344,8 @@ export const validateInviteProgramStaffCallablePayload = ajv.compile(inviteProgr
 export const validateClaimProgramStaffInviteCallablePayload = ajv.compile(claimProgramStaffInviteCallablePayloadSchema);
 export const validateRevokeProgramStaffInviteCallablePayload = ajv.compile(revokeProgramStaffInviteCallablePayloadSchema);
 export const validateUpsertProgramGuestCallablePayload = ajv.compile(upsertProgramGuestCallablePayloadSchema);
+export const validateUpsertProgramGuestGroupCallablePayload = ajv.compile(upsertProgramGuestGroupCallablePayloadSchema);
+export const validateDeleteProgramGuestGroupCallablePayload = ajv.compile(deleteProgramGuestGroupCallablePayloadSchema);
 export const validateApplyProgramFunctionInvitationsCallablePayload = ajv.compile(applyProgramFunctionInvitationsCallablePayloadSchema);
 export const validateRecordProgramFunctionRsvpCallablePayload = ajv.compile(recordProgramFunctionRsvpCallablePayloadSchema);
 export const validateIssueProgramHouseholdRsvpLinkCallablePayload = ajv.compile(issueProgramHouseholdRsvpLinkCallablePayloadSchema);
@@ -1378,6 +1385,7 @@ export const validateOrganizerProgramCallableResponse = ajv.compile(organizerPro
 export const validateProgramInviteClaimCallableResponse = ajv.compile(programInviteClaimCallableResponseSchema);
 export const validateProgramStaffListCallableResponse = ajv.compile(programStaffListCallableResponseSchema);
 export const validateProgramGuestListCallableResponse = ajv.compile(programGuestListCallableResponseSchema);
+export const validateProgramGuestGroupListCallableResponse = ajv.compile(programGuestGroupListCallableResponseSchema);
 export const validateProgramArrivalsRosterCallableResponse = ajv.compile(programArrivalsRosterCallableResponseSchema);
 export const validateProgramTransportPlanCallableResponse = ajv.compile(programTransportPlanCallableResponseSchema);
 export const validateProgramHotelInboundCallableResponse = ajv.compile(programHotelInboundCallableResponseSchema);

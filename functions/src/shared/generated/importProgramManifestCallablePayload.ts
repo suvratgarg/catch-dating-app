@@ -26,6 +26,10 @@ export interface ImportProgramManifestCallablePayload {
      */
     householdLabel?: string | null;
     /**
+     * Semicolon-separated program guest group memberships, at most 10 entries. Each entry is a label, or `dimension:label` where the first colon splits the dimension key; bare labels land on the `custom` dimension. Entries match programGuestGroups case-insensitively per dimension; unmatched entries create a group.
+     */
+    groupLabels?: string | null;
+    /**
      * Ride-together travel party label; matched or created per program.
      */
     partyLabel?: string | null;

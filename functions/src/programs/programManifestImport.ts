@@ -17,6 +17,7 @@ import {
 } from "../shared/generated/validators/importProgramManifestInput";
 import type {
   ProgramGuestDocument,
+  ProgramGuestGroupDocument,
   ProgramHouseholdDocument,
   ProgramHotelDocument,
   ProgramPickupPointDocument,
@@ -64,7 +65,7 @@ async function loadManifest(
   programId: string,
   tx?: FirebaseFirestore.Transaction,
 ) {
-  const [guests, legs, households, parties, hotels, pickupPoints] =
+  const [guests, legs, households, parties, hotels, pickupPoints, groups] =
     await Promise.all([
       listByProgram<ProgramGuestDocument>(
         db, "programGuests", programId, tx),
@@ -78,9 +79,11 @@ async function loadManifest(
         db, "programHotels", programId, tx),
       listByProgram<ProgramPickupPointDocument>(
         db, "programPickupPoints", programId, tx),
+      listByProgram<ProgramGuestGroupDocument>(
+        db, "programGuestGroups", programId, tx),
     ]);
 
-  return {guests, legs, households, parties, hotels, pickupPoints};
+  return {guests, legs, households, parties, hotels, pickupPoints, groups};
 }
 
 export async function importProgramManifestHandler(
@@ -113,7 +116,7 @@ export async function importProgramManifestHandler(
   const emptyResult = (): ProgramManifestImportCallableResponse => ({
     mode: data.mode, totalRows: data.rows.length, guestsCreated: 0,
     guestsUpdated: 0, legsCreated: 0, legsUpdated: 0, householdsCreated: 0,
-    partiesCreated: 0, rowErrors: [], alreadyApplied: false,
+    partiesCreated: 0, groupsCreated: 0, rowErrors: [], alreadyApplied: false,
   });
   const addResult = (
     result: ProgramManifestImportCallableResponse,
@@ -130,6 +133,8 @@ export async function importProgramManifestHandler(
       .filter((p) => p.legAction === "update").length,
     householdsCreated: result.householdsCreated + planned.newHouseholds.size,
     partiesCreated: result.partiesCreated + planned.newParties.size,
+    // Receipts persisted by older deployments lack groupsCreated.
+    groupsCreated: (result.groupsCreated ?? 0) + planned.newGroups.size,
     rowErrors: [...result.rowErrors, ...planned.issues]
       .sort((a, b) => a.index - b.index),
   });

@@ -363,6 +363,7 @@ export {programFunctionDocumentSchema} from "./schemas/programFunctionDocument";
 export {programFunctionGuestDocumentSchema} from "./schemas/programFunctionGuestDocument";
 export {programDoorJournalDocumentSchema} from "./schemas/programDoorJournalDocument";
 export {programGuestDocumentSchema} from "./schemas/programGuestDocument";
+export {programGuestGroupDocumentSchema} from "./schemas/programGuestGroupDocument";
 export {programHouseholdDocumentSchema} from "./schemas/programHouseholdDocument";
 export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocument";
 export {programStaffInviteDocumentSchema} from "./schemas/programStaffInviteDocument";
@@ -396,6 +397,8 @@ export {inviteProgramStaffCallablePayloadSchema} from "./schemas/inviteProgramSt
 export {claimProgramStaffInviteCallablePayloadSchema} from "./schemas/claimProgramStaffInviteInput";
 export {revokeProgramStaffInviteCallablePayloadSchema} from "./schemas/revokeProgramStaffInviteInput";
 export {upsertProgramGuestCallablePayloadSchema} from "./schemas/upsertProgramGuestInput";
+export {upsertProgramGuestGroupCallablePayloadSchema} from "./schemas/upsertProgramGuestGroupInput";
+export {deleteProgramGuestGroupCallablePayloadSchema} from "./schemas/deleteProgramGuestGroupInput";
 export {applyProgramFunctionInvitationsCallablePayloadSchema} from "./schemas/applyProgramFunctionInvitationsInput";
 export {recordProgramFunctionRsvpCallablePayloadSchema} from "./schemas/recordProgramFunctionRsvpInput";
 export {issueProgramHouseholdRsvpLinkCallablePayloadSchema} from "./schemas/issueProgramHouseholdRsvpLinkInput";
@@ -435,6 +438,7 @@ export {organizerProgramCallableResponseSchema} from "./schemas/organizerProgram
 export {programInviteClaimCallableResponseSchema} from "./schemas/programInviteClaimOutput";
 export {programStaffListCallableResponseSchema} from "./schemas/programStaffListOutput";
 export {programGuestListCallableResponseSchema} from "./schemas/programGuestListOutput";
+export {programGuestGroupListCallableResponseSchema} from "./schemas/programGuestGroupListOutput";
 export {programArrivalsRosterCallableResponseSchema} from "./schemas/programArrivalsRosterOutput";
 export {programTransportPlanCallableResponseSchema} from "./schemas/programTransportPlanOutput";
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";

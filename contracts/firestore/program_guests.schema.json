@@ -18,6 +18,7 @@
     "phoneE164",
     "email",
     "externalReference",
+    "groupIds",
     "invitationStatus",
     "rsvpStatus",
     "source",
@@ -76,6 +77,15 @@
       ],
       "maxLength": 180,
       "description": "Planner-side reference such as a spreadsheet id or invitation code."
+    },
+    "groupIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "description": "Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import."
     },
     "invitationStatus": {
       "$ref": "../shared/program_common.schema.json#/definitions/programInvitationStatus"

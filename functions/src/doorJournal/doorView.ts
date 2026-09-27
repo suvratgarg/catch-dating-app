@@ -361,6 +361,7 @@ export async function createProgramWalkInHandler(
       phoneE164: null,
       email: null,
       externalReference: null,
+      groupIds: [],
       invitationStatus: "notInvited",
       rsvpStatus: "pending",
       source: "manual",

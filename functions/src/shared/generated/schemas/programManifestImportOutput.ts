@@ -21,6 +21,7 @@ export const programManifestImportCallableResponseSchema: Record<string, unknown
     "legsUpdated",
     "householdsCreated",
     "partiesCreated",
+    "groupsCreated",
     "rowErrors",
     "alreadyApplied"
   ],
@@ -59,6 +60,11 @@ export const programManifestImportCallableResponseSchema: Record<string, unknown
     "partiesCreated": {
       "type": "integer",
       "minimum": 0
+    },
+    "groupsCreated": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "programGuestGroups documents created by label resolution during this import."
     },
     "rowErrors": {
       "type": "array",

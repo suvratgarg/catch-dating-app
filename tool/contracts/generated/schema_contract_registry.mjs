@@ -134995,6 +134995,7 @@ export const programGuestDocumentSchema = {
     "phoneE164",
     "email",
     "externalReference",
+    "groupIds",
     "invitationStatus",
     "rsvpStatus",
     "source",
@@ -135058,6 +135059,17 @@ export const programGuestDocumentSchema = {
       "maxLength": 180,
       "description": "Planner-side reference such as a spreadsheet id or invitation code."
     },
+    "groupIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import."
+    },
     "invitationStatus": {
       "type": "string",
       "enum": [
@@ -135084,6 +135096,111 @@ export const programGuestDocumentSchema = {
         "import",
         "formResponse"
       ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programGuestGroupDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_guest_groups.schema.json",
+  "title": "ProgramGuestGroupDocument",
+  "description": "Server-owned organizer-defined guest grouping for a program. Guests carry groupIds[] on their own documents — that array is membership truth; the group document carries the queryable label, dimension, and denormalized memberCount used for headcount cuts, room allocation, and group-targeted Moments. Dimensions are free-form keys suggested per program kind (weddings: side/lineage/relation; corporate: company/delegation/country); labels are always organizer-defined. The wedding couple-side axis remains programHouseholds.side with organizerPrograms.householdSideLabels; groups are the general mechanism for every other cut.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programGuestGroups",
+  "x-firestore-path": "programGuestGroups/{groupId}",
+  "x-document-id-field": "groupId",
+  "x-owner": "program guest management and reviewed conversion callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "label",
+    "dimension",
+    "sortOrder",
+    "memberCount",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Organizer-defined display label, e.g. \"Sharma family\" or \"Acme delegation\"."
+    },
+    "dimension": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "description": "Grouping axis key. Conventional values per program kind (weddings: side/lineage/relation; corporate: company/delegation/country); other keys are allowed so organizers can model arbitrary cuts."
+    },
+    "sortOrder": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Organizer-controlled ordering within a dimension; lower sorts first."
+    },
+    "memberCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete."
     },
     "createdAt": {
       "type": "object",
@@ -140458,6 +140575,17 @@ export const upsertProgramGuestCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "groupIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "When present, replaces the guest's programGuestGroups membership. Every id must belong to the same program and organizer. Omitted preserves existing membership."
+    },
     "phoneE164": {
       "type": [
         "string",
@@ -140487,6 +140615,83 @@ export const upsertProgramGuestCallablePayloadSchema = {
         "declined",
         "maybe"
       ]
+    }
+  }
+};
+
+export const upsertProgramGuestGroupCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_guest_group_payload.schema.json",
+  "title": "UpsertProgramGuestGroupCallablePayload",
+  "description": "Create or update an organizer-defined guest group for a program. label and dimension are always supplied; sortOrder preserves the existing value when omitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "label",
+    "dimension"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "dimension": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "description": "Grouping axis key. Conventional values per program kind (weddings: side/lineage/relation; corporate: company/delegation/country); other keys are allowed."
+    },
+    "sortOrder": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    }
+  }
+};
+
+export const deleteProgramGuestGroupCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/delete_program_guest_group_payload.schema.json",
+  "title": "DeleteProgramGuestGroupCallablePayload",
+  "description": "Delete a program guest group and scrub its id from member programGuests.groupIds in bounded batches.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "groupId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
     }
   }
 };
@@ -142000,6 +142205,14 @@ export const importProgramManifestCallablePayloadSchema = {
             ],
             "maxLength": 140,
             "description": "Matched against program households by case-insensitive label; unmatched labels create a household."
+          },
+          "groupLabels": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 600,
+            "description": "Semicolon-separated program guest group memberships, at most 10 entries. Each entry is a label, or `dimension:label` where the first colon splits the dimension key; bare labels land on the `custom` dimension. Entries match programGuestGroups case-insensitively per dimension; unmatched entries create a group."
           },
           "partyLabel": {
             "type": [
@@ -143887,6 +144100,7 @@ export const programGuestListCallableResponseSchema = {
     "guests",
     "households",
     "functionGuests",
+    "groups",
     "nextCursor"
   ],
   "properties": {
@@ -143908,6 +144122,7 @@ export const programGuestListCallableResponseSchema = {
           "phoneE164",
           "email",
           "externalReference",
+          "groupIds",
           "invitationStatus",
           "rsvpStatus",
           "revision"
@@ -143950,6 +144165,16 @@ export const programGuestListCallableResponseSchema = {
               "null"
             ],
             "maxLength": 180
+          },
+          "groupIds": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "programGuestGroups ids this guest belongs to. Resolve labels via the groups array on this response."
           },
           "invitationStatus": {
             "type": "string",
@@ -144073,12 +144298,125 @@ export const programGuestListCallableResponseSchema = {
         }
       }
     },
+    "groups": {
+      "type": "array",
+      "maxItems": 500,
+      "description": "programGuestGroups documents referenced by groupIds on the paged guests. Page-scoped like households; a group referenced but absent here is corrupt and surfaces as a reconciliation error.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "label",
+          "dimension",
+          "sortOrder",
+          "memberCount",
+          "revision"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "dimension": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "memberCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
     "nextCursor": {
       "type": [
         "string",
         "null"
       ],
       "maxLength": 240
+    }
+  }
+};
+
+export const programGuestGroupListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_guest_group_list_response.schema.json",
+  "title": "ProgramGuestGroupListCallableResponse",
+  "description": "Coordinator-facing inventory of organizer-defined guest groups for a program, with denormalized member counts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "groups"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "groups": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "label",
+          "dimension",
+          "sortOrder",
+          "memberCount",
+          "revision"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "dimension": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "memberCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
     }
   }
 };
@@ -145252,6 +145590,7 @@ export const programManifestImportCallableResponseSchema = {
     "legsUpdated",
     "householdsCreated",
     "partiesCreated",
+    "groupsCreated",
     "rowErrors",
     "alreadyApplied"
   ],
@@ -145290,6 +145629,11 @@ export const programManifestImportCallableResponseSchema = {
     "partiesCreated": {
       "type": "integer",
       "minimum": 0
+    },
+    "groupsCreated": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "programGuestGroups documents created by label resolution during this import."
     },
     "rowErrors": {
       "type": "array",

@@ -13,6 +13,7 @@ final class UpsertProgramGuestCallableRequest {
     this.expectedRevision,
     required this.displayName,
     this.householdId,
+    this.groupIds,
     this.phoneE164,
     this.email,
     this.externalReference,
@@ -24,6 +25,7 @@ final class UpsertProgramGuestCallableRequest {
   final int? expectedRevision;
   final String displayName;
   final String? householdId;
+  final List<String>? groupIds;
   final String? phoneE164;
   final String? email;
   final String? externalReference;
@@ -35,6 +37,7 @@ final class UpsertProgramGuestCallableRequest {
     'expectedRevision': ?expectedRevision,
     'displayName': displayName,
     'householdId': ?householdId,
+    'groupIds': ?groupIds,
     'phoneE164': ?phoneE164,
     'email': ?email,
     'externalReference': ?externalReference,

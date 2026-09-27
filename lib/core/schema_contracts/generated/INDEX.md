@@ -370,6 +370,7 @@ Do not edit it by hand.
 | ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `functions/src/shared/generated/programFunctionGuestDocument.ts` |
 | ProgramDoorJournalDocument | `firestore/program_door_journal.schema.json` | `functions/src/shared/generated/programDoorJournalDocument.ts` |
 | ProgramGuestDocument | `firestore/program_guests.schema.json` | `functions/src/shared/generated/programGuestDocument.ts` |
+| ProgramGuestGroupDocument | `firestore/program_guest_groups.schema.json` | `functions/src/shared/generated/programGuestGroupDocument.ts` |
 | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `functions/src/shared/generated/programHouseholdDocument.ts` |
 | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `functions/src/shared/generated/programStaffGrantDocument.ts` |
 | ProgramStaffInviteDocument | `firestore/program_staff_invites.schema.json` | `functions/src/shared/generated/programStaffInviteDocument.ts` |
@@ -403,6 +404,8 @@ Do not edit it by hand.
 | ClaimProgramStaffInviteCallablePayload | `callables/claim_program_staff_invite_payload.schema.json` | `functions/src/shared/generated/claimProgramStaffInviteCallablePayload.ts` |
 | RevokeProgramStaffInviteCallablePayload | `callables/revoke_program_staff_invite_payload.schema.json` | `functions/src/shared/generated/revokeProgramStaffInviteCallablePayload.ts` |
 | UpsertProgramGuestCallablePayload | `callables/upsert_program_guest_payload.schema.json` | `functions/src/shared/generated/upsertProgramGuestCallablePayload.ts` |
+| UpsertProgramGuestGroupCallablePayload | `callables/upsert_program_guest_group_payload.schema.json` | `functions/src/shared/generated/upsertProgramGuestGroupCallablePayload.ts` |
+| DeleteProgramGuestGroupCallablePayload | `callables/delete_program_guest_group_payload.schema.json` | `functions/src/shared/generated/deleteProgramGuestGroupCallablePayload.ts` |
 | ApplyProgramFunctionInvitationsCallablePayload | `callables/apply_program_function_invitations_payload.schema.json` | `functions/src/shared/generated/applyProgramFunctionInvitationsCallablePayload.ts` |
 | RecordProgramFunctionRsvpCallablePayload | `callables/record_program_function_rsvp_payload.schema.json` | `functions/src/shared/generated/recordProgramFunctionRsvpCallablePayload.ts` |
 | IssueProgramHouseholdRsvpLinkCallablePayload | `callables/issue_program_household_rsvp_link_payload.schema.json` | `functions/src/shared/generated/issueProgramHouseholdRsvpLinkCallablePayload.ts` |
@@ -442,6 +445,7 @@ Do not edit it by hand.
 | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `functions/src/shared/generated/programInviteClaimCallableResponse.ts` |
 | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `functions/src/shared/generated/programStaffListCallableResponse.ts` |
 | ProgramGuestListCallableResponse | `callable_responses/program_guest_list_response.schema.json` | `functions/src/shared/generated/programGuestListCallableResponse.ts` |
+| ProgramGuestGroupListCallableResponse | `callable_responses/program_guest_group_list_response.schema.json` | `functions/src/shared/generated/programGuestGroupListCallableResponse.ts` |
 | ProgramArrivalsRosterCallableResponse | `callable_responses/program_arrivals_roster_response.schema.json` | `functions/src/shared/generated/programArrivalsRosterCallableResponse.ts` |
 | ProgramTransportPlanCallableResponse | `callable_responses/program_transport_plan_response.schema.json` | `functions/src/shared/generated/programTransportPlanCallableResponse.ts` |
 | ProgramHotelInboundCallableResponse | `callable_responses/program_hotel_inbound_response.schema.json` | `functions/src/shared/generated/programHotelInboundCallableResponse.ts` |
@@ -1296,6 +1300,7 @@ Do not edit it by hand.
 | `schemaProgramFunctionGuestDocumentSchema` | ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_guest_document.g.dart` |
 | `schemaProgramDoorJournalDocumentSchema` | ProgramDoorJournalDocument | `firestore/program_door_journal.schema.json` | `lib/core/schema_contracts/generated/schemas/program_door_journal_document.g.dart` |
 | `schemaProgramGuestDocumentSchema` | ProgramGuestDocument | `firestore/program_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_document.g.dart` |
+| `schemaProgramGuestGroupDocumentSchema` | ProgramGuestGroupDocument | `firestore/program_guest_groups.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_group_document.g.dart` |
 | `schemaProgramHouseholdDocumentSchema` | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `lib/core/schema_contracts/generated/schemas/program_household_document.g.dart` |
 | `schemaProgramStaffGrantDocumentSchema` | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_grant_document.g.dart` |
 | `schemaProgramStaffInviteDocumentSchema` | ProgramStaffInviteDocument | `firestore/program_staff_invites.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_invite_document.g.dart` |
@@ -1329,6 +1334,8 @@ Do not edit it by hand.
 | `schemaClaimProgramStaffInviteCallablePayloadSchema` | ClaimProgramStaffInviteCallablePayload | `callables/claim_program_staff_invite_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_program_staff_invite_callable_payload.g.dart` |
 | `schemaRevokeProgramStaffInviteCallablePayloadSchema` | RevokeProgramStaffInviteCallablePayload | `callables/revoke_program_staff_invite_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/revoke_program_staff_invite_callable_payload.g.dart` |
 | `schemaUpsertProgramGuestCallablePayloadSchema` | UpsertProgramGuestCallablePayload | `callables/upsert_program_guest_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_guest_callable_payload.g.dart` |
+| `schemaUpsertProgramGuestGroupCallablePayloadSchema` | UpsertProgramGuestGroupCallablePayload | `callables/upsert_program_guest_group_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_guest_group_callable_payload.g.dart` |
+| `schemaDeleteProgramGuestGroupCallablePayloadSchema` | DeleteProgramGuestGroupCallablePayload | `callables/delete_program_guest_group_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_program_guest_group_callable_payload.g.dart` |
 | `schemaApplyProgramFunctionInvitationsCallablePayloadSchema` | ApplyProgramFunctionInvitationsCallablePayload | `callables/apply_program_function_invitations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/apply_program_function_invitations_callable_payload.g.dart` |
 | `schemaRecordProgramFunctionRsvpCallablePayloadSchema` | RecordProgramFunctionRsvpCallablePayload | `callables/record_program_function_rsvp_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_program_function_rsvp_callable_payload.g.dart` |
 | `schemaIssueProgramHouseholdRsvpLinkCallablePayloadSchema` | IssueProgramHouseholdRsvpLinkCallablePayload | `callables/issue_program_household_rsvp_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/issue_program_household_rsvp_link_callable_payload.g.dart` |
@@ -1368,6 +1375,7 @@ Do not edit it by hand.
 | `schemaProgramInviteClaimCallableResponseSchema` | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_invite_claim_callable_response.g.dart` |
 | `schemaProgramStaffListCallableResponseSchema` | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_list_callable_response.g.dart` |
 | `schemaProgramGuestListCallableResponseSchema` | ProgramGuestListCallableResponse | `callable_responses/program_guest_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_list_callable_response.g.dart` |
+| `schemaProgramGuestGroupListCallableResponseSchema` | ProgramGuestGroupListCallableResponse | `callable_responses/program_guest_group_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_group_list_callable_response.g.dart` |
 | `schemaProgramArrivalsRosterCallableResponseSchema` | ProgramArrivalsRosterCallableResponse | `callable_responses/program_arrivals_roster_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_arrivals_roster_callable_response.g.dart` |
 | `schemaProgramTransportPlanCallableResponseSchema` | ProgramTransportPlanCallableResponse | `callable_responses/program_transport_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_transport_plan_callable_response.g.dart` |
 | `schemaProgramHotelInboundCallableResponseSchema` | ProgramHotelInboundCallableResponse | `callable_responses/program_hotel_inbound_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_hotel_inbound_callable_response.g.dart` |
@@ -1956,6 +1964,8 @@ Do not edit it by hand.
 | ClaimProgramStaffInviteCallableRequest | ClaimProgramStaffInviteCallablePayload | `callables/claim_program_staff_invite_payload.schema.json` | `lib/core/schema_contracts/generated/callables/claim_program_staff_invite_callable_request.g.dart` |
 | RevokeProgramStaffInviteCallableRequest | RevokeProgramStaffInviteCallablePayload | `callables/revoke_program_staff_invite_payload.schema.json` | `lib/core/schema_contracts/generated/callables/revoke_program_staff_invite_callable_request.g.dart` |
 | UpsertProgramGuestCallableRequest | UpsertProgramGuestCallablePayload | `callables/upsert_program_guest_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_guest_callable_request.g.dart` |
+| UpsertProgramGuestGroupCallableRequest | UpsertProgramGuestGroupCallablePayload | `callables/upsert_program_guest_group_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_guest_group_callable_request.g.dart` |
+| DeleteProgramGuestGroupCallableRequest | DeleteProgramGuestGroupCallablePayload | `callables/delete_program_guest_group_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_program_guest_group_callable_request.g.dart` |
 | ApplyProgramFunctionInvitationsCallableRequest | ApplyProgramFunctionInvitationsCallablePayload | `callables/apply_program_function_invitations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/apply_program_function_invitations_callable_request.g.dart` |
 | RecordProgramFunctionRsvpCallableRequest | RecordProgramFunctionRsvpCallablePayload | `callables/record_program_function_rsvp_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_program_function_rsvp_callable_request.g.dart` |
 | IssueProgramHouseholdRsvpLinkCallableRequest | IssueProgramHouseholdRsvpLinkCallablePayload | `callables/issue_program_household_rsvp_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/issue_program_household_rsvp_link_callable_request.g.dart` |

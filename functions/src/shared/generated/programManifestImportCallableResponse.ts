@@ -14,6 +14,10 @@ export interface ProgramManifestImportCallableResponse {
   legsUpdated: number;
   householdsCreated: number;
   partiesCreated: number;
+  /**
+   * programGuestGroups documents created by label resolution during this import.
+   */
+  groupsCreated: number;
   rowErrors: {
     index: number;
     message: string;

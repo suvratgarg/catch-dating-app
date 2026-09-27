@@ -660,6 +660,11 @@ export {
   listProgramHouseholds,
 } from "./programs/programGuests";
 export {
+  upsertProgramGuestGroup,
+  listProgramGuestGroups,
+  deleteProgramGuestGroup,
+} from "./programs/programGuestGroups";
+export {
   upsertOrganizerMoment,
   armOrganizerMoment,
   pauseOrganizerMoment,

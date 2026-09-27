@@ -11,6 +11,12 @@ export interface UpsertProgramGuestCallablePayload {
   expectedRevision?: number;
   displayName: string;
   householdId?: string | null;
+  /**
+   * When present, replaces the guest's programGuestGroups membership. Every id must belong to the same program and organizer. Omitted preserves existing membership.
+   *
+   * @maxItems 20
+   */
+  groupIds?: string[];
   phoneE164?: string | null;
   email?: string | null;
   externalReference?: string | null;
