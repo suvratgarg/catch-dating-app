@@ -8,6 +8,7 @@ import {adminRolesFromToken, requireAdminRole} from "../adminAuth";
 import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {
+  assertSalesFinanceAuthority,
   executeSalesAction,
   executeSalesRead,
   type SalesServiceDeps,
@@ -102,7 +103,8 @@ async function handleAction(
     firestore: () => db,
     now: () => new Date(),
     authorizeInTransaction: async () => {
-      await currentSalesEmployee(request);
+      const current = await currentSalesEmployee(request);
+      assertSalesFinanceAuthority(current, action, request.data);
     },
   };
   return executeSalesAction(principal, action, request.data, deps);
@@ -151,3 +153,5 @@ export const adminUpsertSalesPilotPlan = write("commercial.pilots.upsert");
 export const adminReviseSalesQuote = write("commercial.quotes.revise");
 export const adminApproveSalesQuote = write("commercial.quotes.approve");
 export const adminAcceptSalesQuote = write("commercial.quotes.accept");
+
+export const adminAttestSalesHostSettlement = write("commercial.finance.attest");

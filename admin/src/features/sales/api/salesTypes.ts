@@ -267,6 +267,8 @@ export interface SalesUpsertTaskInput {
 }
 
 export interface SalesUpsertOpportunityInput {
+  financeAttestationId?: string;
+  transitionReason?: string;
   organizerId: string;
   opportunityId?: string;
   requestId: string;

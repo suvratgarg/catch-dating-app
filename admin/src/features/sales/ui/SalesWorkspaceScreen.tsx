@@ -801,6 +801,7 @@ function HostOpportunities({detail, controller, currentUserUid}: {
 }) {
   const [selectedId, setSelectedId] = useState("");
   const [selectedRevision, setSelectedRevision] = useState(0);
+  const [transitionReason, setTransitionReason] = useState("");
   const selected = useMemo(() => detail.opportunities.find((item) =>
     item.opportunityId === selectedId), [detail.opportunities, selectedId]);
   const [motion, setMotion] = useState("first_workflow_pilot");
@@ -809,6 +810,7 @@ function HostOpportunities({detail, controller, currentUserUid}: {
   const [nextStep, setNextStep] = useState("");
   const [nextStepAt, setNextStepAt] = useState("");
   const select = (item: SalesOpportunity | null) => {
+    setTransitionReason("");
     setSelectedId(item?.opportunityId ?? "");
     setSelectedRevision(item?.revision ?? 0);
     setMotion(item?.motion ?? "first_workflow_pilot");
@@ -825,6 +827,7 @@ function HostOpportunities({detail, controller, currentUserUid}: {
       organizerId: detail.account.organizerId,
       opportunityId: selected?.opportunityId,
       expectedRevision: selectedRevision,
+      ...(transitionReason.trim() ? {transitionReason: transitionReason.trim()} : {}),
       fields: {motion, stage, ownerUid: ownerUid.trim(),
         nextStep: nextStep.trim(), nextStepAt: new Date(nextStepAt).toISOString()},
     });
@@ -852,15 +855,24 @@ function HostOpportunities({detail, controller, currentUserUid}: {
         {value: "renewal", label: "Renewal"},
       ]} />
       <SelectField label="Stage" value={stage} onChange={setStage}
-        options={stageOptions.filter((item) => item.value)} />
+        options={stageOptions.filter((item) => item.value &&
+          (item.value !== "closed_won" || selected?.stage === "closed_won"))} />
       <StateRow label="Owner" value={ownerLabel(ownerUid, currentUserUid)} />
       {ownerUid !== currentUserUid ? <AdminButton onClick={() =>
         setOwnerUid(currentUserUid)}>Assign to me</AdminButton> : null}
+      {stage === "closed_lost" || selected?.stage === "closed_lost" ? (
+        <TextareaField label="Reason for closing or reopening" value={transitionReason}
+          onChange={setTransitionReason} rows={3} />
+      ) : null}
+      {stage === "closed_won" ? <p>Payment-backed closing is managed in Pilot &amp; terms.</p> : null}
       <TextField label="Next step" value={nextStep} onChange={setNextStep} />
       <TextField label="Due" type="datetime-local" value={nextStepAt}
         onChange={setNextStepAt} />
       <AdminButton type="submit" variant="primary" disabled={controller.isSaving ||
         (selected && selected.revision !== selectedRevision) ||
+        stage === "closed_won" ||
+        ((stage === "closed_lost" || selected?.stage === "closed_lost") &&
+          !transitionReason.trim()) ||
         !ownerUid.trim() || !nextStep.trim() || !nextStepAt}>
         {selected ? "Save opportunity" : "Add opportunity"}
       </AdminButton>

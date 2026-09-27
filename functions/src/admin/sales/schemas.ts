@@ -217,6 +217,7 @@ const baseActionSchemas = {
       requestId,
       expectedRevision: revision,
       opportunityId: id,
+      financeAttestationId: id,
       transitionReason: {type: "string", minLength: 1, maxLength: 1000},
       fields: strict(
         ["motion", "stage", "ownerUid", "nextStep", "nextStepAt"],

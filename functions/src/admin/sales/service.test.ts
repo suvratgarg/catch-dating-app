@@ -1,3 +1,4 @@
+import {commercialQuoteId} from "../salesCommercial/ids";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import path from "node:path";
@@ -1035,4 +1036,70 @@ test("commercial authority, receipts and stage gates", async () => {
       nextStepAt: "2026-09-29T00:00:00Z"}}, deps);
   assert.equal([...db.docs.keys()]
     .filter((k) => k.startsWith("salesOpportunityStageHistory/")).length, 3);
+});
+
+test("finance closing binds owner authority, accepted terms and replay", async () => {
+  const {db, deps} = fixture();
+  const owner = {...employee, roles: ["adminOwner"]};
+  await executeSalesAction(owner, "hosts.create", create, deps);
+  const fields = {motion: "synthetic", stage: "commercial_discussion",
+    ownerUid: owner.uid, nextStep: "Review settlement",
+    nextStepAt: "2026-09-29T00:00:00Z"};
+  const created = await executeSalesAction(owner, "opportunities.upsert", {
+    organizerId: "org-1", opportunityId: "finance-opp",
+    requestId: "finance-opportunity-create", expectedRevision: 0, fields}, deps);
+  const opportunityId = (created.opportunity as Doc).opportunityId as string;
+  const quoteId = commercialQuoteId(opportunityId);
+  const scope = {classification: "sales_private", organizerId: "org-1",
+    opportunityId, quoteId, termVersion: 1};
+  db.docs.set(`salesQuotes/${quoteId}`, {...scope, revision: 3,
+    status: "accepted_reviewed", acceptedDecisionId: "finance-acceptance"});
+  db.docs.set(`salesQuoteVersions/${quoteId}-v1`, {...scope,
+    termsHash: "a".repeat(64), terms: {amountMinor: 120000,
+      currency: "INR", billingCadence: "one_time"}});
+  db.docs.set("salesCommercialDecisions/finance-acceptance", {...scope,
+    kind: "terms_acceptance_reviewed", termsHash: "a".repeat(64)});
+  db.docs.set("salesEvidence/finance-confirmation", {
+    classification: "sales_private", organizerId: "org-1",
+    evidenceId: "finance-confirmation", reviewerUid: owner.uid,
+    sourceType: "first_party", sourceRef: "synthetic:bank-confirmation",
+    observedAt: "2026-09-27T00:00:00Z", validThrough: null});
+  const close = {organizerId: "org-1", opportunityId,
+    requestId: "finance-close-request", expectedRevision: 1,
+    fields: {...fields, stage: "closed_won", nextStep: null, nextStepAt: null}};
+  await assert.rejects(executeSalesAction(owner, "opportunities.upsert",
+    close, deps), /finance attestation/);
+  const settle = {organizerId: "org-1", opportunityId,
+    requestId: "finance-settlement-request", expectedQuoteRevision: 3,
+    termVersion: 1, amountMinor: 120000, currency: "INR",
+    purpose: "host_subscription", receivedAt: "2026-09-27T00:00:00Z",
+    settlementMethod: "bank_transfer", servicePeriod: null,
+    evidence: {evidenceId: "finance-confirmation"}};
+  const result = await executeSalesAction(owner, "commercial.finance.attest",
+    settle, deps);
+  assert.deepEqual(await executeSalesAction(owner, "commercial.finance.attest",
+    settle, deps), result);
+  await assert.rejects(executeSalesAction(employee, "commercial.finance.attest",
+    settle, deps), /Owner finance authority/);
+  const attestationId = (result.attestation as Doc).attestationId;
+  const wonRequest = {...close, financeAttestationId: attestationId};
+  const won = await executeSalesAction(owner, "opportunities.upsert",
+    wonRequest, deps);
+  assert.equal((won.opportunity as Doc).stage, "closed_won");
+  assert.deepEqual(await executeSalesAction(owner, "opportunities.upsert",
+    wonRequest, deps), won);
+  await assert.rejects(executeSalesAction(employee, "opportunities.upsert",
+    wonRequest, deps), /Owner finance authority/);
+  await assert.rejects(executeSalesAction(owner, "opportunities.upsert",
+    wonRequest, {...deps, authorizeInTransaction: async () => {
+      throw new HttpsError("permission-denied", "Fresh role revoked");
+    }}), /Fresh role revoked/);
+  const history = [...db.docs.entries()].filter(([key]) =>
+    key.startsWith("salesOpportunityStageHistory/")).map(([, data]) => data);
+  assert.equal(history.length, 2);
+  assert.equal(history.find((row) => row.toStage === "closed_won")?.reason,
+    `manual_host_settlement:${attestationId}`);
+  await assert.rejects(executeSalesAction(owner, "opportunities.upsert", {
+    ...wonRequest, requestId: "finance-proof-wrong-stage", expectedRevision: 2,
+    fields}, deps), /applies only to closed won/);
 });

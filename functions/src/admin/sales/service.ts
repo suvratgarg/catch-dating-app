@@ -1,5 +1,6 @@
 import {executeCommercialActionInTransaction, executeCommercialRead,
   appendOpportunityStageHistory} from "../salesCommercial/service";
+import {validateHostFinanceCloseInTransaction} from "../salesCommercial/finance";
 import type {CommercialPayload} from "../salesCommercial/types";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
@@ -109,6 +110,7 @@ interface UpsertTaskPayload {
   };
 }
 interface UpsertOpportunityPayload {
+  financeAttestationId?: string;
   transitionReason?: string;
   organizerId: string;
   requestId: string;
@@ -160,6 +162,20 @@ type MutationPayload =
   | AccountSuppressionInput
   | ContactabilityInput;
 
+/** Required again with fresh Auth roles inside each transaction attempt. */
+export function assertSalesFinanceAuthority(
+  principal: SalesPrincipal, action: SalesMutationAction, payload: unknown,
+): void {
+  const data = payload as {fields?: {stage?: string}} | null;
+  const finance = action === "commercial.finance.attest" ||
+    action === "opportunities.upsert" && data?.fields?.stage === "closed_won";
+  if (finance && (!principal.uid || principal.clientId ||
+    !principal.roles.includes("adminOwner"))) {
+    throw new HttpsError("permission-denied",
+      "Current Admin Owner finance authority is required.");
+  }
+}
+
 /** Shared domain boundary for Admin and delegated assistant adapters. */
 export async function executeSalesAction(
   principal: SalesPrincipal,
@@ -171,6 +187,7 @@ export async function executeSalesAction(
   const input = payload as MutationPayload;
   const organizerId = "organizerId" in input ? input.organizerId : null;
   authorize(principal, action, organizerId);
+  assertSalesFinanceAuthority(principal, action, payload);
   requireDelegationHooks(principal, deps);
   const fieldId =
     "fieldId" in input ?
@@ -219,6 +236,7 @@ export async function executeSalesAction(
     case "commercial.quotes.revise":
     case "commercial.quotes.approve":
     case "commercial.quotes.accept":
+    case "commercial.finance.attest":
       result = await executeCommercialActionInTransaction(tx, db, principal,
         action, input, timestamp);
       break;
@@ -699,12 +717,21 @@ async function upsertOpportunity(
     );
   }
   expectRevision(current?.revision ?? 0, input.expectedRevision);
+  if (input.financeAttestationId && input.fields.stage !== "closed_won") {
+    throw new HttpsError("invalid-argument",
+      "Finance attestation applies only to closed won.");
+  }
+  const financeCloseProof = input.fields.stage === "closed_won" ?
+    await validateHostFinanceCloseInTransaction(tx, db, principal,
+      input.organizerId, opportunityId, input.financeAttestationId ?? null,
+      now) : null;
   assertOpportunityTransition(
     current?.stage ?? null,
     input.fields.stage,
     input.fields.nextStep,
     input.fields.nextStepAt,
     input.transitionReason,
+    Boolean(financeCloseProof),
   );
   if (["pilot_agreed", "pilot_running"].includes(input.fields.stage)) {
     const plan = await tx.get(
@@ -732,7 +759,7 @@ async function upsertOpportunity(
     updatedBy: principal.uid,
   };
   appendOpportunityStageHistory(tx, db, principal, current, opportunity,
-    input.requestId, input.transitionReason ?? null);
+    input.requestId, input.transitionReason ?? null, financeCloseProof);
   if (current) tx.set(ref, opportunity);
   else tx.create(ref, opportunity);
   return {opportunity};
@@ -1254,6 +1281,7 @@ function assertOpportunityTransition(
   nextStep: string | null,
   nextStepAt: string | null,
   transitionReason?: string,
+  hasFinanceProof = false,
 ): void {
   if (
     previous &&
@@ -1287,10 +1315,10 @@ function assertOpportunityTransition(
       "Active opportunity stage requires a dated next step.",
     );
   }
-  if (next === "closed_won") {
+  if (next === "closed_won" && !hasFinanceProof) {
     throw new HttpsError(
       "failed-precondition",
-      "Commercial evidence must be recorded by the later offer owner.",
+      "Closed won requires current finance evidence.",
     );
   }
 }
