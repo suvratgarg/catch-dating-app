@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
+  "title": "SalesDemoManagementCallablePayloads",
+  "description": "Admin Owner save, review, withdraw, issue and revoke command inputs. Exact owner reads take one ID only. A request ID is stable across retries.",
+  "anyOf": [{"$ref": "#/definitions/save"}, {"$ref": "#/definitions/blueprintDecision"}, {"$ref": "#/definitions/issue"}, {"$ref": "#/definitions/revoke"}, {"$ref": "#/definitions/blueprintRead"}, {"$ref": "#/definitions/invitationRead"}],
+  "definitions": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"},
+    "save": {"type": "object", "additionalProperties": false, "required": ["requestId", "blueprintId", "expectedRevision", "evidenceRevision", "preview", "formCapabilityReview", "fieldMappings"], "properties": {
+      "requestId": {"$ref": "#/definitions/requestId"},
+      "blueprintId": {"$ref": "#/definitions/id"},
+      "expectedRevision": {"type": "integer", "minimum": 0},
+      "organizerId": {"anyOf": [{"$ref": "#/definitions/id"}, {"type": "null"}]},
+      "candidateId": {"anyOf": [{"$ref": "#/definitions/id"}, {"type": "null"}]},
+      "opportunityId": {"anyOf": [{"$ref": "#/definitions/id"}, {"type": "null"}]},
+      "evidenceRevision": {"$ref": "#/definitions/id"},
+      "preview": {"$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/preview"},
+      "formCapabilityReview": {"$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/formCapabilityReview"},
+      "fieldMappings": {"$ref": "../firestore/sales_demo_blueprints.schema.json#/properties/fieldMappings"}
+    }},
+    "blueprintDecision": {"type": "object", "additionalProperties": false, "required": ["requestId", "blueprintId", "expectedRevision"], "properties": {
+      "requestId": {"$ref": "#/definitions/requestId"},
+      "blueprintId": {"$ref": "#/definitions/id"},
+      "expectedRevision": {"type": "integer", "minimum": 1}
+    }},
+    "issue": {"type": "object", "additionalProperties": false, "required": ["requestId", "blueprintId", "blueprintRevision", "expiresAt", "sessionCap"], "properties": {
+      "requestId": {"$ref": "#/definitions/requestId"},
+      "blueprintId": {"$ref": "#/definitions/id"},
+      "blueprintRevision": {"type": "integer", "minimum": 1},
+      "contactBinding": {"anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["kind", "value"], "properties": {
+        "kind": {"enum": ["email", "phone"]},
+        "value": {"type": "string", "maxLength": 254}
+      }}]},
+      "expiresAt": {"type": "string", "format": "date-time"},
+      "sessionCap": {"type": "integer", "minimum": 1, "maximum": 3}
+    }},
+    "revoke": {"type": "object", "additionalProperties": false, "required": ["requestId", "invitationId", "expectedRevision"], "properties": {
+      "requestId": {"$ref": "#/definitions/requestId"},
+      "invitationId": {"$ref": "#/definitions/id"},
+      "expectedRevision": {"type": "integer", "minimum": 1}
+    }},
+    "blueprintRead": {"type": "object", "additionalProperties": false, "required": ["blueprintId"], "properties": {"blueprintId": {"$ref": "#/definitions/id"}}},
+    "invitationRead": {"type": "object", "additionalProperties": false, "required": ["invitationId"], "properties": {"invitationId": {"$ref": "#/definitions/id"}}}
+  },
+  "x-callables": ["adminSaveSalesDemoBlueprint", "adminReviewSalesDemoBlueprint", "adminWithdrawSalesDemoBlueprint", "adminIssueSalesDemoInvitation", "adminRevokeSalesDemoInvitation", "adminGetSalesDemoBlueprint", "adminGetSalesDemoInvitation"]
+}

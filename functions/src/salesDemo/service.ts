@@ -1,0 +1,679 @@
+import {createHash, createHmac, timingSafeEqual} from "node:crypto";
+import {DEMO_ACTIONS, DEMO_CAPABILITY, Blueprint, ContactBinding,
+  CurrentUser, DemoAction, Identity, Invitation, Preview, Session,
+  contact, fail, fieldMappings, formReview, grantToken, id, only,
+  optionalId, positive, preview,
+  record, requestId, revision} from "./model";
+
+const BLUEPRINTS = "salesDemoBlueprints";
+const INVITATIONS = "salesDemoInvitations";
+const SESSIONS = "salesDemoSessions";
+const RECEIPTS = "salesDemoReceipts";
+const CAPABILITIES = "salesDemoCapabilities";
+const MAX_SESSION_ACTIONS = 20;
+const DAY = 86_400_000;
+
+export interface DemoDeps {
+  db: FirebaseFirestore.Firestore;
+  now(): Date;
+  getUser(uid: string): Promise<CurrentUser>;
+  tokenKey(): Uint8Array;
+}
+
+function key(deps: DemoDeps): Uint8Array {
+  const secret = deps.tokenKey();
+  if (secret.length < 32) {
+    return fail("failed-precondition", "Demo signing key is unavailable.");
+  }
+  return secret;
+}
+function hash(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+function hmac(secret: Uint8Array, value: string): Buffer {
+  return createHmac("sha256", secret).update(value).digest();
+}
+function receiptId(uid: string, stableRequestId: string): string {
+  return hash(`${uid}\u0000${stableRequestId}`);
+}
+function invitationIdFor(secret: Uint8Array, uid: string,
+  stableRequestId: string): string {
+  return hmac(secret, `invitation\u0000${uid}\u0000${stableRequestId}`)
+    .subarray(0, 18).toString("base64url");
+}
+function tokenFor(secret: Uint8Array, uid: string,
+  stableRequestId: string, invitationId: string): string {
+  return hmac(secret,
+    `grant\u0000${uid}\u0000${stableRequestId}\u0000${invitationId}`)
+    .toString("base64url");
+}
+function contactDigest(secret: Uint8Array,
+  value: {kind: "email" | "phone"; value: string}): ContactBinding {
+  return {kind: value.kind,
+    digest: hmac(secret, `contact\u0000${value.kind}\u0000${value.value}`)
+      .toString("hex")};
+}
+function exactDigest(expected: string, actual: string): boolean {
+  const a = Buffer.from(expected, "hex");
+  const b = Buffer.from(actual, "hex");
+  return a.length === 32 && b.length === 32 && timingSafeEqual(a, b);
+}
+function boundContact(identity: Identity, user: CurrentUser,
+  binding: ContactBinding, secret: Uint8Array): boolean {
+  if (binding.kind === "email") {
+    if (identity.token.email_verified !== true ||
+        user.emailVerified !== true ||
+        typeof identity.token.email !== "string" || !user.email ||
+        identity.token.email.trim().toLowerCase() !==
+          user.email.trim().toLowerCase()) return false;
+    return exactDigest(binding.digest, contactDigest(secret, {kind: "email",
+      value: user.email.trim().toLowerCase()}).digest);
+  }
+  if (typeof identity.token.phone_number !== "string" ||
+      !user.phoneNumber || identity.token.phone_number !== user.phoneNumber) {
+    return false;
+  }
+  return exactDigest(binding.digest, contactDigest(secret, {kind: "phone",
+    value: user.phoneNumber}).digest);
+}
+async function owner(deps: DemoDeps, identity: Identity): Promise<void> {
+  const user = await deps.getUser(identity.uid);
+  if (user.disabled || user.customClaims?.adminOwner !== true ||
+      identity.token === undefined) {
+    fail("permission-denied", "Current Admin Owner required.");
+  }
+}
+function material(action: string, target: string,
+  payload: Record<string, unknown>): string {
+  return hash(JSON.stringify({action, target, payload}));
+}
+interface MutationResult {result: Record<string, unknown>;
+  beforeRevision: number; afterRevision: number}
+interface CapabilityGate {capability: typeof DEMO_CAPABILITY;
+  revision: string; evidenceRevision: string; enabled: boolean}
+async function currentCapability(deps: DemoDeps,
+  tx?: FirebaseFirestore.Transaction): Promise<CapabilityGate> {
+  const ref = deps.db.collection(CAPABILITIES).doc(DEMO_CAPABILITY);
+  const snap = tx ? await tx.get(ref) : await ref.get();
+  const gate = snap.data() as CapabilityGate | undefined;
+  if (!gate || gate.capability !== DEMO_CAPABILITY ||
+      gate.enabled !== true || typeof gate.revision !== "string" ||
+      gate.revision.length < 3 ||
+      typeof gate.evidenceRevision !== "string" ||
+      gate.evidenceRevision.length < 3) {
+    return fail("failed-precondition", "Current demo capability unavailable.");
+  }
+  return gate;
+}
+async function adminMutation(deps: DemoDeps, identity: Identity,
+  action: string, target: string, stableRequestId: string,
+  input: Record<string, unknown>, apply: (tx: FirebaseFirestore.Transaction) =>
+    Promise<MutationResult>): Promise<Record<string, unknown>> {
+  await owner(deps, identity);
+  const digest = material(action, target, input);
+  const receiptRef = deps.db.collection(RECEIPTS)
+    .doc(receiptId(identity.uid, stableRequestId));
+  const auditRef = deps.db.collection("adminAuditLogs")
+    .doc(`sales_demo_${receiptRef.id}`);
+  return deps.db.runTransaction(async (tx) => {
+    await owner(deps, identity);
+    const receipt = await tx.get(receiptRef);
+    if (receipt.exists) {
+      const saved = receipt.data();
+      if (saved?.actorUid !== identity.uid || saved?.action !== action ||
+          saved?.targetId !== target || saved?.materialHash !== digest) {
+        return fail("already-exists", "Request id has different material.");
+      }
+      return saved.result as Record<string, unknown>;
+    }
+    const changed = await apply(tx);
+    const createdAt = deps.now().toISOString();
+    tx.create(receiptRef, {schemaVersion: 1,
+      classification: "sales_private", receiptId: receiptRef.id,
+      actorUid: identity.uid, requestId: stableRequestId,
+      action, targetId: target, materialHash: digest,
+      result: changed.result, createdAt});
+    tx.create(auditRef, {actorUid: identity.uid, roles: ["adminOwner"],
+      action, targetPath: action.includes("blueprint") ?
+        `${BLUEPRINTS}/${target}` : `${INVITATIONS}/${target}`,
+      requestId: stableRequestId, beforeRevision: changed.beforeRevision,
+      afterRevision: changed.afterRevision, materialHash: digest, createdAt});
+    return changed.result;
+  });
+}
+
+/** Save a draft; editing a reviewed blueprint creates a new draft revision. */
+export async function saveBlueprint(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["requestId", "blueprintId", "expectedRevision",
+    "organizerId", "candidateId", "opportunityId", "evidenceRevision",
+    "preview", "formCapabilityReview", "fieldMappings"]);
+  const stableRequestId = requestId(body.requestId);
+  const blueprintId = id(body.blueprintId);
+  const expected = revision(body.expectedRevision);
+  const organizerId = optionalId(body.organizerId);
+  const candidateId = optionalId(body.candidateId);
+  if (Boolean(organizerId) === Boolean(candidateId)) {
+    return fail("invalid-argument", "Choose one organizer or candidate.");
+  }
+  const opportunityId = optionalId(body.opportunityId);
+  const evidenceRevision = id(body.evidenceRevision);
+  const publicPreview = preview(body.preview);
+  const capabilityReview = formReview(body.formCapabilityReview);
+  const mappings = fieldMappings(body.fieldMappings);
+  if (publicPreview.limitations.length === 0) {
+    return fail("invalid-argument", "Disclose simulation limitations.");
+  }
+  const ref = deps.db.collection(BLUEPRINTS).doc(blueprintId);
+  return adminMutation(deps, identity, "salesDemo.blueprint.save",
+    blueprintId, stableRequestId,
+    {expected, organizerId, candidateId, opportunityId, evidenceRevision,
+      publicPreview, capabilityReview, mappings}, async (tx) => {
+      const [old, gate] = await Promise.all([
+        tx.get(ref), currentCapability(deps, tx),
+      ]);
+      const current = old.data() as Blueprint | undefined;
+      if (Number(current?.revision ?? 0) !== expected) {
+        return fail("failed-precondition", "Blueprint revision changed.");
+      }
+      if (current?.state === "withdrawn" ||
+          evidenceRevision !== gate.evidenceRevision) {
+        return fail("failed-precondition", "Current evidence review required.");
+      }
+      const updatedAt = deps.now().toISOString();
+      const next: Blueprint = {schemaVersion: 1,
+        classification: "sales_private", blueprintId,
+        revision: expected + 1, state: "draft", organizerId, candidateId,
+        opportunityId, capability: DEMO_CAPABILITY,
+        capabilityRevision: gate.revision, evidenceRevision,
+        seedVersion: 1, formCapabilityReview: capabilityReview,
+        fieldMappings: mappings, preview: publicPreview, reviewedByUid: null,
+        reviewedAt: null, updatedAt, updatedByUid: identity.uid};
+      tx.set(ref, next);
+      return {result: {blueprintId, revision: next.revision,
+        state: next.state}, beforeRevision: expected,
+      afterRevision: next.revision};
+    });
+}
+
+export async function reviewBlueprint(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["requestId", "blueprintId", "expectedRevision"]);
+  const stableRequestId = requestId(body.requestId);
+  const blueprintId = id(body.blueprintId);
+  const expected = revision(body.expectedRevision);
+  const ref = deps.db.collection(BLUEPRINTS).doc(blueprintId);
+  return adminMutation(deps, identity, "salesDemo.blueprint.review",
+    blueprintId, stableRequestId, {expected}, async (tx) => {
+      const [snap, gate] = await Promise.all([
+        tx.get(ref), currentCapability(deps, tx),
+      ]);
+      const source = snap.data() as Blueprint | undefined;
+      if (!source || source.state !== "draft" ||
+          source.revision !== expected ||
+          source.capability !== DEMO_CAPABILITY ||
+          source.capabilityRevision !== gate.revision ||
+          source.evidenceRevision !== gate.evidenceRevision) {
+        return fail("failed-precondition", "Current draft review required.");
+      }
+      const reviewedAt = deps.now().toISOString();
+      const result = {blueprintId, revision: expected + 1,
+        state: "reviewed", reviewedAt};
+      tx.update(ref, {...result, reviewedByUid: identity.uid,
+        updatedAt: reviewedAt, updatedByUid: identity.uid});
+      return {result, beforeRevision: expected,
+        afterRevision: expected + 1};
+    });
+}
+
+export async function withdrawBlueprint(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["requestId", "blueprintId", "expectedRevision"]);
+  const stableRequestId = requestId(body.requestId);
+  const blueprintId = id(body.blueprintId);
+  const expected = revision(body.expectedRevision);
+  const ref = deps.db.collection(BLUEPRINTS).doc(blueprintId);
+  return adminMutation(deps, identity, "salesDemo.blueprint.withdraw",
+    blueprintId, stableRequestId, {expected}, async (tx) => {
+      const snap = await tx.get(ref);
+      const source = snap.data() as Blueprint | undefined;
+      if (!source || source.state === "withdrawn" ||
+          source.revision !== expected) {
+        return fail("failed-precondition", "Blueprint revision changed.");
+      }
+      const updatedAt = deps.now().toISOString();
+      const result = {blueprintId, revision: expected + 1,
+        state: "withdrawn"};
+      tx.update(ref, {...result, updatedAt, updatedByUid: identity.uid});
+      return {result, beforeRevision: expected,
+        afterRevision: expected + 1};
+    });
+}
+
+export async function issueInvitation(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["requestId", "blueprintId", "blueprintRevision",
+    "contactBinding", "expiresAt", "sessionCap"]);
+  const stableRequestId = requestId(body.requestId);
+  const blueprintId = id(body.blueprintId);
+  const blueprintRevision = revision(body.blueprintRevision);
+  const binding = contact(body.contactBinding);
+  const expiresAt = typeof body.expiresAt === "string" ?
+    Date.parse(body.expiresAt) : Number.NaN;
+  if (!Number.isFinite(expiresAt)) {
+    return fail("invalid-argument", "Valid invitation expiry required.");
+  }
+  const sessionCap = positive(body.sessionCap, 3);
+  const secret = key(deps);
+  await owner(deps, identity);
+  const prior = await deps.db.collection(RECEIPTS)
+    .doc(receiptId(identity.uid, stableRequestId)).get();
+  const previousId = prior.data()?.action === "salesDemo.invitation.issue" ?
+    prior.data()?.result?.invitationId : null;
+  const invitationId = typeof previousId === "string" ?
+    id(previousId) : invitationIdFor(secret, identity.uid, stableRequestId);
+  const issuedToken = tokenFor(secret, identity.uid, stableRequestId,
+    invitationId);
+  const bindingDigest = binding ? contactDigest(secret, binding) : null;
+  const ref = deps.db.collection(INVITATIONS).doc(invitationId);
+  const result = await adminMutation(deps, identity,
+    "salesDemo.invitation.issue", invitationId, stableRequestId,
+    {blueprintId, blueprintRevision, contactBinding: binding,
+      expiresAt: new Date(expiresAt).toISOString(), sessionCap},
+    async (tx) => {
+      const [old, blueprintSnap, gate] = await Promise.all([
+        tx.get(ref),
+        tx.get(deps.db.collection(BLUEPRINTS).doc(blueprintId)),
+        currentCapability(deps, tx),
+      ]);
+      const blueprint = blueprintSnap.data() as Blueprint | undefined;
+      if (old.exists || !blueprint || blueprint.state !== "reviewed" ||
+          blueprint.revision !== blueprintRevision ||
+          blueprint.capability !== DEMO_CAPABILITY ||
+          blueprint.capabilityRevision !== gate.revision ||
+          blueprint.evidenceRevision !== gate.evidenceRevision) {
+        return fail("failed-precondition", "Reviewed blueprint required.");
+      }
+      const now = deps.now();
+      if (expiresAt <= now.getTime() ||
+          expiresAt > now.getTime() + 7 * DAY) {
+        return fail("invalid-argument", "Expiry must be within seven days.");
+      }
+      const issuedAt = now.toISOString();
+      const doc: Invitation = {schemaVersion: 1,
+        classification: "sales_private", invitationId, blueprintId,
+        blueprintRevision, tokenDigest: hash(issuedToken),
+        contactBinding: bindingDigest, expiresAt: new Date(expiresAt)
+          .toISOString(), revoked: false, revision: 1, sessionCap,
+        sessionCount: 0, currentSessionId: null,
+        issuedByUid: identity.uid, issuedAt};
+      tx.create(ref, doc);
+      return {result: {invitationId, blueprintId,
+        blueprintRevision, previewOnly: !bindingDigest,
+        expiresAt: doc.expiresAt, revision: 1},
+      beforeRevision: 0, afterRevision: 1};
+    });
+  const currentInvite = await ref.get();
+  if (!exactDigest(String(currentInvite.data()?.tokenDigest ?? ""),
+    hash(issuedToken))) {
+    return fail("failed-precondition",
+      "Grant key changed; issue a new invitation.");
+  }
+  // The grant is recomputed on exact replay; only its digest is persisted.
+  return {...result, grantToken: issuedToken};
+}
+
+export async function revokeInvitation(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["requestId", "invitationId", "expectedRevision"]);
+  const stableRequestId = requestId(body.requestId);
+  const invitationId = id(body.invitationId);
+  const expected = revision(body.expectedRevision);
+  const ref = deps.db.collection(INVITATIONS).doc(invitationId);
+  return adminMutation(deps, identity, "salesDemo.invitation.revoke",
+    invitationId, stableRequestId, {expected}, async (tx) => {
+      const snap = await tx.get(ref);
+      const current = snap.data() as Invitation | undefined;
+      if (!current || current.revoked || current.revision !== expected) {
+        return fail("failed-precondition", "Invitation revision changed.");
+      }
+      const revokedAt = deps.now().toISOString();
+      const result = {invitationId, revoked: true,
+        revision: expected + 1, revokedAt, revokedByUid: identity.uid};
+      tx.update(ref, result);
+      return {result, beforeRevision: expected,
+        afterRevision: expected + 1};
+    });
+}
+
+async function validInvitation(deps: DemoDeps,
+  invitation: Invitation | undefined,
+  blueprint: Blueprint | undefined,
+  tx?: FirebaseFirestore.Transaction): Promise<Invitation> {
+  const gate = await currentCapability(deps, tx);
+  if (!invitation || invitation.revoked ||
+      Date.parse(invitation.expiresAt) <= deps.now().getTime() ||
+      !blueprint || blueprint.state !== "reviewed" ||
+      blueprint.revision !== invitation.blueprintRevision ||
+      blueprint.capability !== DEMO_CAPABILITY ||
+      blueprint.capabilityRevision !== gate.revision ||
+      blueprint.evidenceRevision !== gate.evidenceRevision) {
+    return fail("permission-denied", "Invitation is unavailable.");
+  }
+  return invitation;
+}
+
+/** Anonymous, minimal and deliberately free of writes or access counters. */
+export async function getPreview(deps: DemoDeps, raw: unknown): Promise<{
+  schemaVersion: 1; invitationId: string; preview: Preview;
+  interactiveAvailable: boolean; expiresAt: string;
+  synthetic: true; notice: string}> {
+  const body = record(raw);
+  only(body, ["invitationId"]);
+  const invitationId = id(body.invitationId);
+  const inviteSnap = await deps.db.collection(INVITATIONS)
+    .doc(invitationId).get();
+  const invitation = inviteSnap.data() as Invitation | undefined;
+  if (!invitation) return fail("not-found", "Preview unavailable.");
+  const source = await deps.db.collection(BLUEPRINTS)
+    .doc(invitation.blueprintId).get();
+  await validInvitation(deps, invitation,
+    source.data() as Blueprint | undefined);
+  const blueprint = source.data() as Blueprint;
+  return {schemaVersion: 1, invitationId, preview: blueprint.preview,
+    interactiveAvailable: Boolean(invitation.contactBinding),
+    expiresAt: invitation.expiresAt, synthetic: true,
+    notice: "Sample workflow only. No real messages, charges or admission."};
+}
+
+async function grant(deps: DemoDeps, identity: Identity,
+  invitation: Invitation | undefined, blueprint: Blueprint | undefined,
+  token: string, tx?: FirebaseFirestore.Transaction): Promise<Invitation> {
+  const current = await validInvitation(deps, invitation, blueprint, tx);
+  const supplied = hash(grantToken(token));
+  if (!exactDigest(current.tokenDigest, supplied) ||
+      !current.contactBinding) {
+    return fail("permission-denied", "Interactive grant unavailable.");
+  }
+  const user = await deps.getUser(identity.uid);
+  if (user.disabled || !boundContact(identity, user,
+    current.contactBinding, key(deps))) {
+    return fail("permission-denied", "Verified contact does not match.");
+  }
+  return current;
+}
+function initialSession(sessionId: string, invitation: Invitation,
+  actorUid: string, now: Date): Session {
+  const expires = Math.min(Date.parse(invitation.expiresAt),
+    now.getTime() + DAY);
+  return {schemaVersion: 1, classification: "sales_private", sessionId,
+    invitationId: invitation.invitationId,
+    blueprintId: invitation.blueprintId,
+    blueprintRevision: invitation.blueprintRevision, actorUid,
+    createdAt: now.toISOString(), expiresAt: new Date(expires).toISOString(),
+    status: "active", allowedActions: [...DEMO_ACTIONS],
+    revision: 1, actionCount: 0, step: "application",
+    application: {applicantName: "Sample Applicant",
+      request: "Sample event application", review: "pending"},
+    reply: {status: "none", template: "none"},
+    guest: {status: "not_admitted", displayName: "Sample Applicant"},
+    assistanceRequested: false};
+}
+function sessionProjection(session: Session): Record<string, unknown> {
+  const {schemaVersion, classification, actorUid, ...safe} = session;
+  void schemaVersion;
+  void classification;
+  void actorUid;
+  return {schemaVersion: 1, synthetic: true, ...safe};
+}
+function receiptMaterial(action: string, target: string,
+  payload: Record<string, unknown>): string {
+  return material(action, target, payload);
+}
+function assertReceipt(saved: FirebaseFirestore.DocumentData | undefined,
+  identity: Identity, action: string, target: string, digest: string): void {
+  if (saved?.actorUid !== identity.uid || saved?.action !== action ||
+      saved?.targetId !== target || saved?.materialHash !== digest) {
+    fail("already-exists", "Request id has different material.");
+  }
+}
+
+export async function startSession(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["invitationId", "grantToken", "requestId"]);
+  const invitationId = id(body.invitationId);
+  const token = grantToken(body.grantToken);
+  const stableRequestId = requestId(body.requestId);
+  const digest = receiptMaterial("salesDemo.session.start", invitationId, {});
+  const inviteRef = deps.db.collection(INVITATIONS).doc(invitationId);
+  const receiptRef = deps.db.collection(RECEIPTS)
+    .doc(receiptId(identity.uid, stableRequestId));
+  const candidateSessionId = hash(
+    `session\u0000${invitationId}\u0000${identity.uid}`+
+    `\u0000${stableRequestId}`).slice(0, 40);
+  return deps.db.runTransaction(async (tx) => {
+    const inviteSnap = await tx.get(inviteRef);
+    const invitation = inviteSnap.data() as Invitation | undefined;
+    if (!invitation) {
+      return fail("permission-denied", "Invitation unavailable.");
+    }
+    const [blueprintSnap, receiptSnap] = await Promise.all([
+      tx.get(deps.db.collection(BLUEPRINTS).doc(invitation.blueprintId)),
+      tx.get(receiptRef),
+    ]);
+    await grant(deps, identity, invitation,
+      blueprintSnap.data() as Blueprint | undefined, token, tx);
+    if (receiptSnap.exists) {
+      assertReceipt(receiptSnap.data(), identity,
+        "salesDemo.session.start", invitationId, digest);
+      const savedId = receiptSnap.data()?.result?.sessionId;
+      if (typeof savedId !== "string") {
+        return fail("failed-precondition", "Invalid start receipt.");
+      }
+      const saved = await tx.get(deps.db.collection(SESSIONS).doc(savedId));
+      const session = saved.data() as Session | undefined;
+      if (!session || session.actorUid !== identity.uid ||
+          Date.parse(session.expiresAt) <= deps.now().getTime()) {
+        return fail("failed-precondition", "Start a new trial session.");
+      }
+      return sessionProjection(session);
+    }
+    let active: Session | undefined;
+    if (invitation.currentSessionId) {
+      const snap = await tx.get(deps.db.collection(SESSIONS)
+        .doc(invitation.currentSessionId));
+      active = snap.data() as Session | undefined;
+    }
+    const now = deps.now();
+    if (!active || active.status !== "active" ||
+        Date.parse(active.expiresAt) <= now.getTime()) {
+      if (invitation.sessionCount >= invitation.sessionCap) {
+        return fail("resource-exhausted", "Ask for a renewed invitation.");
+      }
+      active = initialSession(candidateSessionId, invitation,
+        identity.uid, now);
+      tx.create(deps.db.collection(SESSIONS).doc(candidateSessionId), active);
+      tx.update(inviteRef, {currentSessionId: candidateSessionId,
+        sessionCount: invitation.sessionCount + 1});
+    } else if (active.actorUid !== identity.uid) {
+      return fail("permission-denied", "Trial belongs to another account.");
+    }
+    tx.create(receiptRef, {schemaVersion: 1,
+      classification: "sales_private", receiptId: receiptRef.id,
+      actorUid: identity.uid, requestId: stableRequestId,
+      action: "salesDemo.session.start", targetId: invitationId,
+      materialHash: digest, result: {sessionId: active.sessionId},
+      createdAt: now.toISOString(), expiresAt: active.expiresAt});
+    return sessionProjection(active);
+  });
+}
+
+export async function getSession(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["sessionId", "grantToken"]);
+  const sessionId = id(body.sessionId);
+  const token = grantToken(body.grantToken);
+  const snap = await deps.db.collection(SESSIONS).doc(sessionId).get();
+  const session = snap.data() as Session | undefined;
+  if (!session || session.actorUid !== identity.uid ||
+      Date.parse(session.expiresAt) <= deps.now().getTime()) {
+    return fail("permission-denied", "Session unavailable.");
+  }
+  const inviteSnap = await deps.db.collection(INVITATIONS)
+    .doc(session.invitationId).get();
+  const invitation = inviteSnap.data() as Invitation | undefined;
+  if (!invitation) return fail("permission-denied", "Invitation unavailable.");
+  const blueprintSnap = await deps.db.collection(BLUEPRINTS)
+    .doc(invitation.blueprintId).get();
+  await grant(deps, identity, invitation,
+    blueprintSnap.data() as Blueprint | undefined, token);
+  return sessionProjection(session);
+}
+
+/** Explicitly synthetic Forms practice; no live handler or outbox is called. */
+export function reduceSyntheticForms(session: Session, action: DemoAction,
+  choice: unknown): Session {
+  if ((session.status !== "active" && action !== "requestAssistance") ||
+      session.actionCount >= MAX_SESSION_ACTIONS) {
+    return fail("failed-precondition", "Trial is no longer active.");
+  }
+  const next: Session = {...session, revision: session.revision + 1,
+    actionCount: session.actionCount + 1};
+  if (!session.allowedActions.includes(action)) {
+    return fail("permission-denied", "Action is outside trial scope.");
+  }
+  switch (action) {
+  case "reviewApplication":
+    if (session.step !== "application" ||
+        (choice !== "approve" && choice !== "needs_info")) {
+      return fail("failed-precondition", "Choose a synthetic review.");
+    }
+    next.application = {...session.application,
+      review: choice === "approve" ? "approved" : "needs_info"};
+    next.step = "reply";
+    return next;
+  case "prepareReply":
+    if (session.step !== "reply" ||
+        (choice !== "welcome" && choice !== "clarify") ||
+        (session.application.review === "needs_info" &&
+          choice !== "clarify")) {
+      return fail("failed-precondition", "Choose a sample reply template.");
+    }
+    next.reply = {status: "prepared", template: choice};
+    next.step = session.application.review === "approved" ?
+      "admission" : "complete";
+    if (next.step === "complete") next.status = "completed";
+    return next;
+  case "admitGuest":
+    if (session.step !== "admission" || choice !== undefined ||
+        session.application.review !== "approved" ||
+        session.reply.status !== "prepared") {
+      return fail("failed-precondition", "Sample guest is not eligible.");
+    }
+    next.guest = {...session.guest, status: "admitted"};
+    next.step = "complete";
+    next.status = "completed";
+    return next;
+  case "requestAssistance":
+    if (choice !== undefined || session.assistanceRequested) {
+      return fail("failed-precondition", "Assistance already requested.");
+    }
+    next.assistanceRequested = true;
+    return next;
+  }
+}
+
+export async function advanceSession(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, ["sessionId", "grantToken", "requestId",
+    "expectedRevision", "action", "choice"]);
+  const sessionId = id(body.sessionId);
+  const token = grantToken(body.grantToken);
+  const stableRequestId = requestId(body.requestId);
+  const expected = revision(body.expectedRevision);
+  if (!DEMO_ACTIONS.includes(body.action as DemoAction)) {
+    return fail("invalid-argument", "Unsupported synthetic action.");
+  }
+  const action = body.action as DemoAction;
+  const digest = receiptMaterial(`salesDemo.session.${action}`, sessionId,
+    {expected, ...(Object.prototype.hasOwnProperty.call(body, "choice") ?
+      {choice: body.choice} : {})});
+  const sessionRef = deps.db.collection(SESSIONS).doc(sessionId);
+  const receiptRef = deps.db.collection(RECEIPTS)
+    .doc(receiptId(identity.uid, stableRequestId));
+  return deps.db.runTransaction(async (tx) => {
+    const sessionSnap = await tx.get(sessionRef);
+    const session = sessionSnap.data() as Session | undefined;
+    if (!session || session.actorUid !== identity.uid ||
+        Date.parse(session.expiresAt) <= deps.now().getTime()) {
+      return fail("permission-denied", "Session unavailable.");
+    }
+    const inviteRef = deps.db.collection(INVITATIONS)
+      .doc(session.invitationId);
+    const [inviteSnap, receiptSnap] = await Promise.all([
+      tx.get(inviteRef), tx.get(receiptRef),
+    ]);
+    const invitation = inviteSnap.data() as Invitation | undefined;
+    if (!invitation) {
+      return fail("permission-denied", "Invitation unavailable.");
+    }
+    const blueprintSnap = await tx.get(deps.db.collection(BLUEPRINTS)
+      .doc(invitation.blueprintId));
+    await grant(deps, identity, invitation,
+      blueprintSnap.data() as Blueprint | undefined, token, tx);
+    if (session.blueprintId !== invitation.blueprintId ||
+        session.blueprintRevision !== invitation.blueprintRevision) {
+      return fail("permission-denied", "Trial blueprint changed.");
+    }
+    if (receiptSnap.exists) {
+      assertReceipt(receiptSnap.data(), identity,
+        `salesDemo.session.${action}`, sessionId, digest);
+      return receiptSnap.data()?.result as Record<string, unknown>;
+    }
+    if (session.revision !== expected) {
+      return fail("failed-precondition", "Session revision changed.");
+    }
+    const next = reduceSyntheticForms(session, action, body.choice);
+    const result = sessionProjection(next);
+    tx.update(sessionRef, next);
+    tx.create(receiptRef, {schemaVersion: 1,
+      classification: "sales_private", receiptId: receiptRef.id,
+      actorUid: identity.uid, requestId: stableRequestId,
+      action: `salesDemo.session.${action}`, targetId: sessionId,
+      materialHash: digest, result, createdAt: deps.now().toISOString(),
+      expiresAt: session.expiresAt});
+    return result;
+  });
+}
+
+export async function adminGetBlueprint(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Blueprint> {
+  await owner(deps, identity);
+  const body = record(raw);
+  only(body, ["blueprintId"]);
+  const snap = await deps.db.collection(BLUEPRINTS)
+    .doc(id(body.blueprintId)).get();
+  if (!snap.exists) return fail("not-found", "Blueprint not found.");
+  return snap.data() as Blueprint;
+}
+export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Omit<Invitation, "tokenDigest" | "contactBinding">> {
+  await owner(deps, identity);
+  const body = record(raw);
+  only(body, ["invitationId"]);
+  const snap = await deps.db.collection(INVITATIONS)
+    .doc(id(body.invitationId)).get();
+  if (!snap.exists) return fail("not-found", "Invitation not found.");
+  const {tokenDigest, contactBinding, ...safe} = snap.data() as Invitation;
+  void tokenDigest;
+  void contactBinding;
+  return safe;
+}
