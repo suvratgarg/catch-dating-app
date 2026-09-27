@@ -706,6 +706,7 @@ function AdminRouteApp() {
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Sales" />}>
             <SalesWorkspaceScreen
               area={salesAreaForPath(location.pathname)}
+              isAdminOwner={adminRoles.includes("adminOwner")}
               currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
               selectedOrganizerId={salesOrganizerIdForPath(location.pathname)}
               onAreaChange={(area) => navigate(`/sales/${area}`)}

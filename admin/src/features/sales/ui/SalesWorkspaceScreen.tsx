@@ -20,10 +20,11 @@ import type {
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {SalesImportWorkspace} from "./SalesImportPanel";
+import {SalesDemoWorkspace} from "./SalesDemoPanel";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "people" | "workflow" | "activity" |
-  "opportunities" | "research";
+  "opportunities" | "research" | "demo";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -37,6 +38,7 @@ const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
   {id: "people", label: "People"},
   {id: "workflow", label: "Workflow"},
+  {id: "demo", label: "Private demo"},
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
   {id: "research", label: "Research"},
@@ -77,6 +79,7 @@ function ownerLabel(uid: string | null | undefined, currentUserUid: string): str
 export function SalesWorkspaceScreen({
   area,
   currentUserUid,
+  isAdminOwner = false,
   selectedOrganizerId,
   onAreaChange,
   onOpenHost,
@@ -86,6 +89,7 @@ export function SalesWorkspaceScreen({
 }: {
   area: SalesArea;
   currentUserUid: string;
+  isAdminOwner?: boolean;
   selectedOrganizerId: string | null;
   onAreaChange: (area: SalesArea) => void;
   onOpenHost: (organizerId: string) => void;
@@ -119,7 +123,7 @@ export function SalesWorkspaceScreen({
       ) : null}
       {selectedOrganizerId ? (
         <HostDetail controller={controller} currentUserUid={currentUserUid}
-          onOpenOrganizer={onOpenOrganizer} />
+          isAdminOwner={isAdminOwner} onOpenOrganizer={onOpenOrganizer} />
       ) : area === "today" ? (
         <TodayView controller={controller} currentUserUid={currentUserUid}
           onOpenHost={onOpenHost} />
@@ -541,8 +545,9 @@ function SettingsView({controller}: {controller: SalesWorkspaceController}) {
   </Panel><SalesImportWorkspace controller={controller} /></>;
 }
 
-function HostDetail({controller, currentUserUid, onOpenOrganizer}: {
+function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}: {
   controller: SalesWorkspaceController; currentUserUid: string;
+  isAdminOwner: boolean;
   onOpenOrganizer: (id: string) => void;
 }) {
   const [tab, setTab] = useState<DetailTab>("overview");
@@ -572,6 +577,11 @@ function HostDetail({controller, currentUserUid, onOpenOrganizer}: {
       controller={controller} currentUserUid={currentUserUid} /> : null}
     {tab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
       controller={controller} /> : null}
+    {tab === "demo" ? <SalesDemoWorkspace
+      key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
+      organizerId={detail.account.organizerId}
+      organizerName={detail.organizerSummary.name}
+      isAdminOwner={isAdminOwner} currentUserUid={currentUserUid} /> : null}
     {tab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
     {tab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}

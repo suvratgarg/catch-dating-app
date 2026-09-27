@@ -92,6 +92,16 @@
       "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
     },
     {
+      "id": "workspace_sales_demo",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesDemoPanel.tsx",
+      "exportName": "SalesDemoWorkspace",
+      "css": ["admin/src/styles.css"],
+      "preview": {"status": "planned", "states": ["unavailable", "draft", "reviewed", "invitation", "conflict"]},
+      "notes": "Owner-reviewed private synthetic demo setup and revocable invitations; grants remain only in memory."
+    },
+    {
       "id": "workspace_sales_import",
       "kind": "workspace",
       "owner": "features/sales",
