@@ -343,11 +343,17 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           replayed: true,
         );
         _savedBasics = basics;
-        _canEditSavedBasics = summary.canEditBasics;
-        _canChangeSavedCity = summary.canChangeCity;
-        _savedEventActive = summary.status == 'active';
+        _savedEventActive = summary.status == 'active' &&
+            summary.startTimeMillis > DateTime.now().millisecondsSinceEpoch;
+        _canEditSavedBasics = _savedEventActive && summary.canEditBasics;
+        _canChangeSavedCity = _savedEventActive && summary.canChangeCity;
+        if (!_savedEventActive) {
+          _pendingUpdate = null;
+          _editingSavedBasics = false;
+          _loadingSavedEvent = false;
+        }
       });
-      await _loadPendingUpdate();
+      if (_savedEventActive) await _loadPendingUpdate();
     } catch (error) {
       if (!mounted) {
         return;

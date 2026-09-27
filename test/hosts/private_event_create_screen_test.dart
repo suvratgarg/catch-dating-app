@@ -136,6 +136,49 @@ void main() {
     expect(saved, ['event-inline']);
   });
 
+  for (final status in ['active', 'cancelled']) {
+    testWidgets('$status past private event reopens without setup actions', (
+      tester,
+    ) async {
+      final date = DateTime.now().subtract(const Duration(days: 2));
+      await tester.pumpWidget(ProviderScope(
+        overrides: [uidProvider.overrideWithValue(
+          const AsyncData<String?>('host-1'))],
+        child: MaterialApp(
+          theme: CatchTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PrivateEventCreateScreen(
+            club: buildClub(), promptForDraftsOnStart: false,
+            initialSavedEventId: 'history-1',
+            readSaved: ({required organizerId, required eventId}) async =>
+              PrivateEventBasicSummary(
+                eventId: eventId, organizerId: organizerId, setupRevision: 1,
+                name: 'Previous mixer', city: const EventSetupCity(
+                  cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+                localDate: '${date.year}-${date.month.toString().padLeft(2, '0')}-'
+                  '${date.day.toString().padLeft(2, '0')}',
+                localStartTime: '19:00', timezone: 'Asia/Kolkata',
+                startTimeMillis: date.millisecondsSinceEpoch, status: status,
+                setupDefaults: const {}, detailsConfigured: false,
+                eventPreferences: null, canEditBasics: status == 'active',
+                canChangeCity: status == 'active',
+              ),
+          ),
+        ),
+      ));
+      await pumpFeatureUi(tester);
+      final screen = tester.widget<PrivateEventSetupScreen>(
+        find.byType(PrivateEventSetupScreen));
+      expect(screen.readOnly, isTrue);
+      expect(screen.onEditBasics, isNull);
+      expect(screen.onEditPayments, isNull);
+      expect(screen.onEditDetails, isNull);
+      expect(find.text('Event history'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   test('restores canonical and legacy local draft times', () {
     final canonical = EventDraft(
       id: 'canonical',

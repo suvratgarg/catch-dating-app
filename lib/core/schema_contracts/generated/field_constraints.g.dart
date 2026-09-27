@@ -78124,6 +78124,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listPrivateEventSetupsCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'listPrivateEventSetupsCallablePayload.scope',
+    valueTypes: <String>['string'],
+    enumValues: <String>['upcoming', 'past', 'cancelled'],
+  );
+
   static const listProgramGuestsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listProgramGuestsCallablePayload.cursor',
     maxLength: 240,
@@ -105352,6 +105358,7 @@ abstract final class CatchContractConstraints {
     path: 'privateEventSetupListCallableResponse.events.items.status',
     required: true,
     valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled'],
   );
 
   static const privateEventSetupListCallableResponseEventsItemsTimezone = CatchContractFieldConstraints(
@@ -139411,6 +139418,7 @@ abstract final class CatchContractConstraints {
     'listPrivateEventSetupsCallablePayload.cursor': listPrivateEventSetupsCallablePayloadCursor,
     'listPrivateEventSetupsCallablePayload.limit': listPrivateEventSetupsCallablePayloadLimit,
     'listPrivateEventSetupsCallablePayload.organizerId': listPrivateEventSetupsCallablePayloadOrganizerId,
+    'listPrivateEventSetupsCallablePayload.scope': listPrivateEventSetupsCallablePayloadScope,
     'listProgramGuestsCallablePayload.cursor': listProgramGuestsCallablePayloadCursor,
     'listProgramGuestsCallablePayload.limit': listProgramGuestsCallablePayloadLimit,
     'listProgramGuestsCallablePayload.programId': listProgramGuestsCallablePayloadProgramId,

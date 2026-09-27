@@ -1762,7 +1762,11 @@ The contract layer owns:
 
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics`, `getPrivateEventSetup`, and
-`listPrivateEventSetups` payload contracts.
+`listPrivateEventSetups` payload contracts. The manager inventory defaults to
+upcoming active events and accepts explicit `past` or `cancelled` scopes. History
+is ordered newest first; pages are bounded to 50 and cursors bind the organizer,
+scope, first-page clock and timestamp/document-ID position for at most 24 hours.
+History reopens in a read-only Host view and never expands offer eligibility.
 `updatePrivateEventDetails` adds or clears duration, venue and format on the
 same private event, with setup revision, reviewed defaults hash and durable
 request identity. Duration and saved venue can inherit reviewed organizer
@@ -1786,8 +1790,9 @@ checks occur in the same transaction as the current event read. Published
 events use the published event editor instead.
 
 The private event picker reads at most 51 event documents for a 50-row page,
-with a composite index on organizer, private publication state, active status,
-start time and document ID. Its cursor keeps the first page's time cutoff and
+with composite indexes on organizer, private publication state, status,
+start time and document ID. Upcoming pages ascend; past and cancelled history
+pages descend. Its cursor keeps the first page's time cutoff and
 expires after 24 hours; every page rechecks current manager and deleted-account
 authority. It cannot expose private payment settings. Basic date/city edits
 check roster, import, participation, waitlist, offer and payment commitments

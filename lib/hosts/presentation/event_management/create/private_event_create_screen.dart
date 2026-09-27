@@ -480,6 +480,7 @@ class _PrivateEventCreateScreenState
     }
     if (receipt != null && !_editingSavedBasics) {
       return PrivateEventSetupScreen(
+        readOnly: !_savedEventActive,
         club: widget.club,
         receipt: receipt,
         name: _nameController.text.trim(),

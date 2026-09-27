@@ -21,6 +21,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
     required this.start,
     required this.cityLabel,
     this.pendingRosterFileName,
+    this.readOnly = false,
     required this.onClose,
     this.onReturnToResponses,
     this.onLinkForm,
@@ -40,6 +41,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
   final TimeOfDay start;
   final String cityLabel;
   final String? pendingRosterFileName;
+  final bool readOnly;
   final VoidCallback onClose;
   final VoidCallback? onReturnToResponses;
   final VoidCallback? onLinkForm;
@@ -101,7 +103,15 @@ class PrivateEventSetupScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        CatchSection.fieldRows(
+                        if (readOnly)
+                          CatchSection.fieldRows(
+                            children: [CatchField.read(
+                              copy: copy,
+                              title: context.l10n.hostsPrivateEventHistoryTitle,
+                              body: context.l10n.hostsPrivateEventHistoryBody,
+                            )],
+                          ),
+                        if (!readOnly) CatchSection.fieldRows(
                           title: context.l10n.hostsPrivateEventSetupHeading,
                           children: [
                             if (pendingRosterFileName != null)
@@ -197,8 +207,8 @@ class PrivateEventSetupScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    gapH4,
-                    Text(
+                    if (!readOnly) gapH4,
+                    if (!readOnly) Text(
                       context.l10n.hostsPrivateEventRosterNote,
                       style: Theme.of(context)
                           .textTheme.bodyMedium?.copyWith(color: t.ink2),

@@ -6192,6 +6192,14 @@ export const listPrivateEventSetupsCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 1024,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ]
     }
   }
 };
@@ -6278,7 +6286,10 @@ export const privateEventSetupListCallableResponseSchema = {
           },
           "status": {
             "type": "string",
-            "const": "active"
+            "enum": [
+              "active",
+              "cancelled"
+            ]
           },
           "detailsConfigured": {
             "type": "boolean"

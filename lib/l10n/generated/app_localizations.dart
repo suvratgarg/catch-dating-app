@@ -36448,8 +36448,44 @@ abstract class AppLocalizations {
   /// Manager private event inventory copy.
   ///
   /// In en, this message translates to:
-  /// **'Private event setups'**
+  /// **'Private events'**
   String get hostsPrivateEventInventoryTitle;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get hostsPrivateEventInventoryUpcoming;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get hostsPrivateEventInventoryPast;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostsPrivateEventInventoryCancelled;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No private events in this view.'**
+  String get hostsPrivateEventInventoryHistoryEmpty;
+
+  /// Read-only private event history.
+  ///
+  /// In en, this message translates to:
+  /// **'Event history'**
+  String get hostsPrivateEventHistoryTitle;
+
+  /// Read-only private event history.
+  ///
+  /// In en, this message translates to:
+  /// **'This event has started or was cancelled. Its saved details are available for reference.'**
+  String get hostsPrivateEventHistoryBody;
 
   /// Manager private event inventory copy.
   ///

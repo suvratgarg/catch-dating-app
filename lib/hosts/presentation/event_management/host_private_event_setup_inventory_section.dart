@@ -3,15 +3,17 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef ReadPrivateEventSetupInventory = Future<PrivateEventSetupInventoryPage>
-    Function({required String organizerId, required int limit, String? cursor});
+    Function({required String organizerId, required int limit, String? cursor,
+      PrivateEventSetupScope? scope});
 
-/// Upcoming private events are read from the manager API, never from the
+/// Private events are read from the manager API, never from the
 /// public rich Event feed or this device's local draft store.
 class HostPrivateEventSetupInventorySection extends StatefulWidget {
   const HostPrivateEventSetupInventorySection({
@@ -40,6 +42,7 @@ class _HostPrivateEventSetupInventorySectionState
   bool _loading = false;
   bool _opening = false;
   int _generation = 0;
+  PrivateEventSetupScope _scope = PrivateEventSetupScope.upcoming;
 
   @override
   void initState() {
@@ -83,6 +86,7 @@ class _HostPrivateEventSetupInventorySectionState
         organizerId: organizerId,
         limit: 20,
         cursor: cursor,
+        scope: _scope,
       );
       if (!mounted || generation != _generation) return;
       setState(() {
@@ -105,6 +109,17 @@ class _HostPrivateEventSetupInventorySectionState
     }
   }
 
+  void _selectScope(PrivateEventSetupScope scope) {
+    if (scope == _scope || _opening) return;
+    _generation++;
+    setState(() {
+      _scope = scope;
+      _loaded = false;
+      _loading = false;
+    });
+    unawaited(_load(reset: true));
+  }
+
   Future<void> _open(String eventId) async {
     if (_opening) return;
     setState(() => _opening = true);
@@ -122,9 +137,7 @@ class _HostPrivateEventSetupInventorySectionState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    return CatchSection.fieldRows(
-      title: l10n.hostsPrivateEventInventoryTitle,
-      children: [
+    final rows = <Widget>[
         if (_loading && !_loaded)
           CatchField.read(
             copy: copy,
@@ -134,13 +147,16 @@ class _HostPrivateEventSetupInventorySectionState
         if (_loaded && _events.isEmpty)
           CatchField.read(
             copy: copy,
-            title: l10n.hostsPrivateEventInventoryEmpty,
+            title: _scope == PrivateEventSetupScope.upcoming
+                ? l10n.hostsPrivateEventInventoryEmpty
+                : l10n.hostsPrivateEventInventoryHistoryEmpty,
             icon: CatchIcons.eventAvailableOutlined,
           ),
         for (final event in _events)
           CatchField.action(
             copy: copy,
             title: event.name,
+            emphasis: CatchFieldEmphasis.title,
             body: _summary(context, event),
             icon: CatchIcons.eventAvailableOutlined,
             onTap: _opening ? null : () => unawaited(_open(event.eventId)),
@@ -162,10 +178,35 @@ class _HostPrivateEventSetupInventorySectionState
           CatchField.action(
             copy: copy,
             title: l10n.hostsPrivateEventRetryDefaultsRead,
-            onTap: _loading ? null : () => unawaited(_load(reset: !_loaded)),
+            onTap: _loading ? null : () => unawaited(_load(reset: true)),
           ),
         ],
-      ],
+    ];
+    return CatchSection.content(
+      title: l10n.hostsPrivateEventInventoryTitle,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchChoiceInput<PrivateEventSetupScope>.segmented(
+            contract: CatchContractConstraints.listPrivateEventSetupsCallablePayloadScope,
+            contractValueBuilder: (scope) => scope.name,
+            selected: _scope,
+            onChanged: _selectScope,
+            variant: CatchChoiceInputVariant.summary,
+            scrollable: true,
+            options: [
+              CatchOption(value: PrivateEventSetupScope.upcoming,
+                label: l10n.hostsPrivateEventInventoryUpcoming),
+              CatchOption(value: PrivateEventSetupScope.past,
+                label: l10n.hostsPrivateEventInventoryPast),
+              CatchOption(value: PrivateEventSetupScope.cancelled,
+                label: l10n.hostsPrivateEventInventoryCancelled),
+            ],
+          ),
+          if (rows.isNotEmpty) CatchFieldLanes.divided(children: rows),
+        ],
+      ),
     );
   }
 

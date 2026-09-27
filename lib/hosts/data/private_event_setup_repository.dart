@@ -541,6 +541,7 @@ class PrivateEventSetupRepository {
   /// through the public rich Event model or a device-local draft list.
   Future<PrivateEventSetupInventoryPage> list({
     required String organizerId,
+    PrivateEventSetupScope? scope,
     int limit = ReadLimitPolicy.privateEventSetupPage,
     String? cursor,
   }) {
@@ -554,6 +555,7 @@ class PrivateEventSetupRepository {
         final response = await _functions
             .httpsCallable('listPrivateEventSetups')
             .call<Object?>({
+              'scope': (scope ?? PrivateEventSetupScope.upcoming).name,
               'organizerId': organizerId,
               'limit': limit,
               'cursor': ?cursor,
@@ -572,6 +574,8 @@ class PrivateEventSetupRepository {
 final _setupInventoryId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 final _setupInventoryCursor = RegExp(r'^[A-Za-z0-9_-]{1,1024}$');
 
+enum PrivateEventSetupScope { upcoming, past, cancelled }
+
 class PrivateEventSetupInventoryItem {
   const PrivateEventSetupInventoryItem({
     required this.eventId,
@@ -583,6 +587,7 @@ class PrivateEventSetupInventoryItem {
     required this.startTimeMillis,
     required this.setupRevision,
     required this.detailsConfigured,
+    this.status = 'active',
   });
 
   final String eventId;
@@ -594,6 +599,7 @@ class PrivateEventSetupInventoryItem {
   final int startTimeMillis;
   final int setupRevision;
   final bool detailsConfigured;
+  final String status;
 
   factory PrivateEventSetupInventoryItem.fromResponse(Object? response) {
     if (response is! Map) {
@@ -628,7 +634,8 @@ class PrivateEventSetupInventoryItem {
         localDate is! String || localStartTime is! String ||
         timezone is! String || timezone.isEmpty || timezone.length > 100 ||
         startTimeMillis is! int || revision is! int || revision < 1 ||
-        data['status'] != 'active' || configured is! bool) {
+        !const ['active', 'cancelled'].contains(data['status']) ||
+        configured is! bool) {
       throw const FormatException('Invalid private event inventory item');
     }
     final basics = PrivateEventBasics(
@@ -656,6 +663,7 @@ class PrivateEventSetupInventoryItem {
       startTimeMillis: startTimeMillis,
       setupRevision: revision,
       detailsConfigured: configured,
+      status: data['status'] as String,
     );
   }
 }

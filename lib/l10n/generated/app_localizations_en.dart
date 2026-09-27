@@ -22654,7 +22654,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'These settings apply to future offers. Existing offers keep their recorded terms.';
 
   @override
-  String get hostsPrivateEventInventoryTitle => 'Private event setups';
+  String get hostsPrivateEventInventoryTitle => 'Private events';
+
+  @override
+  String get hostsPrivateEventInventoryUpcoming => 'Upcoming';
+
+  @override
+  String get hostsPrivateEventInventoryPast => 'Past';
+
+  @override
+  String get hostsPrivateEventInventoryCancelled => 'Cancelled';
+
+  @override
+  String get hostsPrivateEventInventoryHistoryEmpty =>
+      'No private events in this view.';
+
+  @override
+  String get hostsPrivateEventHistoryTitle => 'Event history';
+
+  @override
+  String get hostsPrivateEventHistoryBody =>
+      'This event has started or was cancelled. Its saved details are available for reference.';
 
   @override
   String get hostsPrivateEventInventoryLoading => 'Loading private events…';
