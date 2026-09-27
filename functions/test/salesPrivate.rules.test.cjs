@@ -15,6 +15,8 @@ const privatePaths = [
   "salesInboundIntents/intent-one", "salesContacts/contact-one",
   "salesContactRelationships/relationship-one", "salesEvidence/evidence-one",
   "salesImportJobs/import-one", "salesImportRows/row-one",
+  "salesImportJobs/import-one/rows/row-one",
+  "salesSuppressionDecisions/decision-one",
   "assistantClients/client-one", "assistantDelegations/delegation-one",
   "assistantGatewayBudgets/budget-one",
   "assistantManagementReceipts/receipt-one",

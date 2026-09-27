@@ -120,7 +120,15 @@ export interface SalesActivity {
     | "demo"
     | "pilot"
     | "correction"
-    | "outreach_sent_manual";
+    | "outreach_sent_manual"
+    | "claim_requested"
+    | "claim_approved"
+    | "claim_rejected";
+  source?: {
+    kind: "organizer_claim";
+    claimRequestId: string;
+    transitionId: string;
+  };
   channel: "email" | "whatsapp" | "other" | null;
   outcome: "actor_attested_sent" | null;
   providerConfirmed: false;

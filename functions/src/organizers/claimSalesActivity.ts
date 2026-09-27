@@ -1,4 +1,5 @@
 import {createHash} from "node:crypto";
+import type {SalesActivity} from "../admin/sales/types";
 
 export interface ClaimSalesTransition {
   organizerId: string;
@@ -45,7 +46,7 @@ export async function prepareClaimSalesTransition(
       source: {kind: "organizer_claim",
         claimRequestId: transition.claimRequestId,
         transitionId: transition.transitionId},
-    });
+    } satisfies SalesActivity);
     // The canonical claim queue owns the review. Sales receives a follow-up
     // only when an employee is already assigned; a claimant is never assigned
     // as an internal sales employee merely because they submitted a claim.

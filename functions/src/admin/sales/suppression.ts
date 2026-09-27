@@ -21,6 +21,44 @@ export interface ContactabilityInput {
   evidenceId?: string | null;
 }
 
+function currentContactEvidence(
+  evidence: FirebaseFirestore.DocumentData | undefined,
+  organizerId: string,
+  contactId: string,
+  now: string,
+): boolean {
+  const observed = Date.parse(String(evidence?.observedAt ?? ""));
+  const validThrough = evidence?.validThrough ?
+    Date.parse(String(evidence.validThrough)) : Infinity;
+  const at = Date.parse(now);
+  return evidence?.classification === "sales_private" &&
+    evidence.organizerId === organizerId && evidence.contactId === contactId &&
+    Number.isFinite(observed) && observed <= at && validThrough > at;
+}
+
+/** Contact review is reconsidered at use time, not just when it was saved. */
+export async function hasCurrentDraftContact(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  contactId: string,
+  now: string,
+  tx?: FirebaseFirestore.Transaction,
+): Promise<boolean> {
+  const relationshipRef = db.collection("salesContactRelationships")
+    .doc(salesRelationshipId(organizerId, contactId));
+  const read = (ref: FirebaseFirestore.DocumentReference) =>
+    tx ? tx.get(ref) : ref.get();
+  const relationship = (await read(relationshipRef)).data();
+  if (relationship?.classification !== "sales_private" ||
+      relationship.organizerId !== organizerId ||
+      relationship.contactId !== contactId ||
+      relationship.contactabilityStatus !== "draft_reviewed" ||
+      typeof relationship.draftReviewEvidenceId !== "string") return false;
+  const evidence = await read(db.collection("salesEvidence")
+    .doc(relationship.draftReviewEvidenceId));
+  return currentContactEvidence(evidence.data(), organizerId, contactId, now);
+}
+
 function decisionId(principal: SalesPrincipal, requestId: string): string {
   const hash = createHash("sha256")
     .update(`${principal.uid}\u0000${requestId}`)
@@ -112,29 +150,8 @@ export async function setContactability(
     const evidenceSnap = await tx.get(
       db.collection("salesEvidence").doc(input.evidenceId),
     );
-    if (
-      !evidenceSnap.exists ||
-      evidenceSnap.data()?.organizerId !== input.organizerId ||
-      evidenceSnap.data()?.contactId !== input.contactId ||
-      evidenceSnap.data()?.classification !== "sales_private"
-    ) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Draft review evidence does not match this organizer.",
-      );
-    }
-    const evidence = evidenceSnap.data() ?? {};
-    const observed = Date.parse(String(evidence.observedAt ?? ""));
-    const validThrough = evidence.validThrough ?
-      Date.parse(String(evidence.validThrough)) :
-      Infinity;
-    const at = Date.parse(now);
-    if (
-      !Number.isFinite(observed) ||
-      observed > at ||
-      Number.isNaN(validThrough) ||
-      validThrough < at
-    ) {
+    if (!currentContactEvidence(evidenceSnap.data(), input.organizerId,
+      input.contactId, now)) {
       throw new HttpsError(
         "failed-precondition",
         "Draft review evidence is not current.",

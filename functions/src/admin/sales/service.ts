@@ -20,13 +20,13 @@ import {
   listSalesContacts,
   listSalesEvidence,
   upsertSalesContact,
-  salesRelationshipId,
   type ContactInput,
   type EvidenceInput,
 } from "./records";
 import {
   setAccountSuppression,
   setContactability,
+  hasCurrentDraftContact,
   type AccountSuppressionInput,
   type ContactabilityInput,
 } from "./suppression";
@@ -397,7 +397,8 @@ export async function executeSalesRead(
     response = await searchHosts(db, principal, input);
     break;
   case "hosts.get":
-    response = await getHost(db, principal, input.organizerId as string);
+    response = await getHost(db, principal, input.organizerId as string,
+      deps.now().toISOString());
     break;
   case "tasks.list":
     response = await listRecords<SalesTask>(
@@ -406,6 +407,7 @@ export async function executeSalesRead(
       taskCollection,
       input,
       ["ownerUid", "status"],
+      deps.now().toISOString(),
     );
     break;
   case "opportunities.list":
@@ -415,6 +417,7 @@ export async function executeSalesRead(
       opportunityCollection,
       input,
       ["ownerUid", "stage"],
+      deps.now().toISOString(),
     );
     break;
   case "intents.list":
@@ -612,15 +615,8 @@ async function upsertTask(
         "Outbound task needs a reviewed contact relationship.",
       );
     }
-    const relationship = await tx.get(
-      db
-        .collection("salesContactRelationships")
-        .doc(salesRelationshipId(input.organizerId, contactId)),
-    );
-    if (
-      !relationship.exists ||
-      relationship.data()?.contactabilityStatus !== "draft_reviewed"
-    ) {
+    if (!await hasCurrentDraftContact(db, input.organizerId,
+      contactId, now, tx)) {
       throw new HttpsError(
         "failed-precondition",
         "Contact is not reviewed for draft consideration.",
@@ -950,6 +946,7 @@ async function getHost(
   db: FirebaseFirestore.Firestore,
   principal: SalesPrincipal,
   organizerId: string,
+  now: string,
 ): Promise<Record<string, unknown>> {
   const accountRef = db.collection(accountCollection).doc(organizerId);
   const [
@@ -994,6 +991,7 @@ async function getHost(
     db,
     new Map([[organizerId, account]]),
     tasksSnap.docs.map((doc) => doc.data() as SalesTask),
+    now,
   );
   return {
     account: publicAccountShape(account),
@@ -1029,6 +1027,7 @@ async function listRecords<T extends { organizerId: string }>(
   collection: string,
   input: Record<string, unknown>,
   filterFields: string[],
+  now: string,
 ): Promise<Record<string, unknown>> {
   const limit = Number(input.limit ?? 25);
   const scope = scopeIds(principal);
@@ -1076,6 +1075,7 @@ async function listRecords<T extends { organizerId: string }>(
       db,
       byId,
       rows as unknown as SalesTask[],
+      now,
     )) as unknown as T[];
   }
   return {
@@ -1107,6 +1107,7 @@ async function filterVisibleTasks(
   db: FirebaseFirestore.Firestore,
   accounts: Map<string, SalesAccount | null>,
   tasks: SalesTask[],
+  now: string,
 ): Promise<SalesTask[]> {
   const pairs = [
     ...new Set(
@@ -1123,13 +1124,9 @@ async function filterVisibleTasks(
   const reviews = await Promise.all(
     pairs.map(async (key) => {
       const [organizerId, contactId] = key.split("\u0000");
-      const snap = await db
-        .collection("salesContactRelationships")
-        .doc(salesRelationshipId(organizerId, contactId))
-        .get();
       return [
         key,
-        snap.exists && snap.data()?.contactabilityStatus === "draft_reviewed",
+        await hasCurrentDraftContact(db, organizerId, contactId, now),
       ] as const;
     }),
   );
