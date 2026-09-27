@@ -65,17 +65,29 @@ export async function prepareRazorpayCollectionRouting(input: {
   purpose: PaymentPurpose; connectionId: string | null; amountMinor: number;
 }, deps: RazorpayCollectionRoutingDeps = razorpayCollectionRoutingDefaults):
   Promise<PaymentRoutingSnapshot> {
-  const {db, organizerId, purpose, connectionId, amountMinor} = input;
+  const {db, organizerId, purpose, amountMinor} = input;
+  let {connectionId} = input;
   if (!["formFee", "eventAdmission"].includes(purpose)) unavailable();
   const connectionSnap = connectionId ? await db
     .collection("organizerPaymentConnections").doc(connectionId).get() : null;
-  const connection = connectionSnap?.exists ? requireDoc<Connection>(
+  let connection = connectionSnap?.exists ? requireDoc<Connection>(
     connectionSnap, "OrganizerPaymentConnectionDocument") : null;
   const selected = await readPaymentRoute({db, organizerId, purpose,
     legacySelection: purpose === "formFee" && connection ? {
       route: "razorpayOAuth", mode: connection.mode,
       currency: "INR", merchantCountry: "IN"} :
       undefined});
+  if (purpose === "eventAdmission" && !connectionId &&
+      selected.selection.route === "razorpayOAuth") {
+    const candidates = await db.collection("organizerPaymentConnections")
+      .where("organizerId", "==", organizerId).where("status", "==", "ready")
+      .where("mode", "==", selected.selection.mode).limit(2).get();
+    // Multiple merchants require Host reconciliation, never a guessed choice.
+    if (candidates.docs.length !== 1) unavailable();
+    connectionId = candidates.docs[0].id;
+    connection = requireDoc<Connection>(candidates.docs[0],
+      "OrganizerPaymentConnectionDocument");
+  }
   const registry = new PaymentRoutingRegistry<PaymentRoutingSnapshot>({
     razorpayOAuth: {
       prepare: async ({selection}) => {
@@ -139,6 +151,16 @@ export async function assertRazorpayCollectionRoutingCurrent(params: {
   assertPaymentRouteSnapshot(snapshot, {organizerId: snapshot.organizerId,
     purpose: snapshot.purpose, currency: "INR"});
   await assertPaymentRouteCurrent(params);
+  if (snapshot.purpose === "eventAdmission" &&
+      snapshot.selection.route === "razorpayOAuth") {
+    const candidates = await params.tx.get(params.db
+      .collection("organizerPaymentConnections")
+      .where("organizerId", "==", snapshot.organizerId)
+      .where("status", "==", "ready")
+      .where("mode", "==", snapshot.selection.mode).limit(2));
+    if (candidates.docs.length !== 1 ||
+        candidates.docs[0].id !== snapshot.bindingId) unavailable();
+  }
   await assertRazorpayCollectionBindingReady(params);
 }
 

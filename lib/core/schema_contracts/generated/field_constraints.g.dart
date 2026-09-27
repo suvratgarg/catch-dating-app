@@ -78503,6 +78503,205 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const manageEventOfferCheckoutCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.action',
+    required: true,
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadCallbackPaymentId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.callback.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadCallbackSignature = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.callback.signature',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-fA-F0-9]{64}\$',
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadGrantId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadPaymentId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ep_[a-f0-9]{32}\$',
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{8,120}\$',
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadToken = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.token',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantCurrency = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.currency',
+    required: true,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantEventId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantEventName = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.eventName',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantGrantId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantStartTimeMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutCurrency = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.currency',
+    required: true,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutDescription = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.description',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutOrderId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.orderId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCheckoutPublicToken = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.checkout.publicToken',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentCurrency = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.currency',
+    required: true,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentMode = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentPaymentId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ep_[a-f0-9]{32}\$',
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentStatus = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.status',
+    required: true,
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const manageOrganizerFormDomainCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageOrganizerFormDomainCallablePayload.action',
     required: true,
@@ -101968,6 +102167,75 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.expectedOfferGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.expectedOfferRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadOfferId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
+  static const prepareEventOfferInvitationCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
+  static const prepareEventOfferInvitationCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const prepareEventOfferInvitationCallableResponseUrl = CatchContractFieldConstraints(
+    path: 'prepareEventOfferInvitationCallableResponse.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
   );
 
   static const prepareEventSuccessRotationDraftCallablePayloadEventId = CatchContractFieldConstraints(
@@ -138374,6 +138642,34 @@ abstract final class CatchContractConstraints {
     'manageEventChatMemberCallablePayload.targetUid': manageEventChatMemberCallablePayloadTargetUid,
     'manageEventChatMemberCallableResponse.replayed': manageEventChatMemberCallableResponseReplayed,
     'manageEventChatMemberCallableResponse.revision': manageEventChatMemberCallableResponseRevision,
+    'manageEventOfferCheckoutCallablePayload.action': manageEventOfferCheckoutCallablePayloadAction,
+    'manageEventOfferCheckoutCallablePayload.callback.paymentId': manageEventOfferCheckoutCallablePayloadCallbackPaymentId,
+    'manageEventOfferCheckoutCallablePayload.callback.signature': manageEventOfferCheckoutCallablePayloadCallbackSignature,
+    'manageEventOfferCheckoutCallablePayload.grantId': manageEventOfferCheckoutCallablePayloadGrantId,
+    'manageEventOfferCheckoutCallablePayload.paymentId': manageEventOfferCheckoutCallablePayloadPaymentId,
+    'manageEventOfferCheckoutCallablePayload.requestId': manageEventOfferCheckoutCallablePayloadRequestId,
+    'manageEventOfferCheckoutCallablePayload.token': manageEventOfferCheckoutCallablePayloadToken,
+    'manageEventOfferCheckoutCallableResponse.grant.amountPaise': manageEventOfferCheckoutCallableResponseGrantAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.grant.currency': manageEventOfferCheckoutCallableResponseGrantCurrency,
+    'manageEventOfferCheckoutCallableResponse.grant.eventId': manageEventOfferCheckoutCallableResponseGrantEventId,
+    'manageEventOfferCheckoutCallableResponse.grant.eventName': manageEventOfferCheckoutCallableResponseGrantEventName,
+    'manageEventOfferCheckoutCallableResponse.grant.expiresAtMillis': manageEventOfferCheckoutCallableResponseGrantExpiresAtMillis,
+    'manageEventOfferCheckoutCallableResponse.grant.grantId': manageEventOfferCheckoutCallableResponseGrantGrantId,
+    'manageEventOfferCheckoutCallableResponse.grant.startTimeMillis': manageEventOfferCheckoutCallableResponseGrantStartTimeMillis,
+    'manageEventOfferCheckoutCallableResponse.payment.amountPaise': manageEventOfferCheckoutCallableResponsePaymentAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.amountPaise': manageEventOfferCheckoutCallableResponsePaymentCheckoutAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.currency': manageEventOfferCheckoutCallableResponsePaymentCheckoutCurrency,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.description': manageEventOfferCheckoutCallableResponsePaymentCheckoutDescription,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.expiresAtMillis': manageEventOfferCheckoutCallableResponsePaymentCheckoutExpiresAtMillis,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.orderId': manageEventOfferCheckoutCallableResponsePaymentCheckoutOrderId,
+    'manageEventOfferCheckoutCallableResponse.payment.checkout.publicToken': manageEventOfferCheckoutCallableResponsePaymentCheckoutPublicToken,
+    'manageEventOfferCheckoutCallableResponse.payment.currency': manageEventOfferCheckoutCallableResponsePaymentCurrency,
+    'manageEventOfferCheckoutCallableResponse.payment.expiresAtMillis': manageEventOfferCheckoutCallableResponsePaymentExpiresAtMillis,
+    'manageEventOfferCheckoutCallableResponse.payment.mode': manageEventOfferCheckoutCallableResponsePaymentMode,
+    'manageEventOfferCheckoutCallableResponse.payment.paymentId': manageEventOfferCheckoutCallableResponsePaymentPaymentId,
+    'manageEventOfferCheckoutCallableResponse.payment.refundedAmountPaise': manageEventOfferCheckoutCallableResponsePaymentRefundedAmountPaise,
+    'manageEventOfferCheckoutCallableResponse.payment.status': manageEventOfferCheckoutCallableResponsePaymentStatus,
+    'manageEventOfferCheckoutCallableResponse.serverTimeMillis': manageEventOfferCheckoutCallableResponseServerTimeMillis,
     'manageOrganizerFormDomainCallablePayload.action': manageOrganizerFormDomainCallablePayloadAction,
     'manageOrganizerFormDomainCallablePayload.formId': manageOrganizerFormDomainCallablePayloadFormId,
     'manageOrganizerFormDomainCallablePayload.hostname': manageOrganizerFormDomainCallablePayloadHostname,
@@ -141630,6 +141926,14 @@ abstract final class CatchContractConstraints {
     'prepareEventOfferHandoffCallablePayload.expectedGeneration': prepareEventOfferHandoffCallablePayloadExpectedGeneration,
     'prepareEventOfferHandoffCallablePayload.expectedOfferRevision': prepareEventOfferHandoffCallablePayloadExpectedOfferRevision,
     'prepareEventOfferHandoffCallablePayload.organizerId': prepareEventOfferHandoffCallablePayloadOrganizerId,
+    'prepareEventOfferInvitationCallablePayload.eventId': prepareEventOfferInvitationCallablePayloadEventId,
+    'prepareEventOfferInvitationCallablePayload.expectedOfferGeneration': prepareEventOfferInvitationCallablePayloadExpectedOfferGeneration,
+    'prepareEventOfferInvitationCallablePayload.expectedOfferRevision': prepareEventOfferInvitationCallablePayloadExpectedOfferRevision,
+    'prepareEventOfferInvitationCallablePayload.offerId': prepareEventOfferInvitationCallablePayloadOfferId,
+    'prepareEventOfferInvitationCallablePayload.organizerId': prepareEventOfferInvitationCallablePayloadOrganizerId,
+    'prepareEventOfferInvitationCallablePayload.responseId': prepareEventOfferInvitationCallablePayloadResponseId,
+    'prepareEventOfferInvitationCallableResponse.expiresAtMillis': prepareEventOfferInvitationCallableResponseExpiresAtMillis,
+    'prepareEventOfferInvitationCallableResponse.url': prepareEventOfferInvitationCallableResponseUrl,
     'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
     'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
     'prepareOrganizerManualSendTaskCallablePayload.contactId': prepareOrganizerManualSendTaskCallablePayloadContactId,

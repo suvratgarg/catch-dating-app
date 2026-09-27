@@ -8,6 +8,10 @@ import {
   paymentRoutingSnapshotSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
   managePaymentRoutingPolicyCallableResponseSchema,
+  manageEventOfferCheckoutCallablePayloadSchema,
+  prepareEventOfferInvitationCallablePayloadSchema,
+  prepareEventOfferInvitationCallableResponseSchema,
+  manageEventOfferCheckoutCallableResponseSchema,
   previewOrganizerFormAdmissionCallablePayloadSchema,
   previewOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionDocumentSchema,
@@ -959,6 +963,10 @@ export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organize
 export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
 export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallablePayload = ajv.compile(prepareEventOfferInvitationCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallableResponse = ajv.compile(prepareEventOfferInvitationCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallableResponse = ajv.compile(manageEventOfferCheckoutCallableResponseSchema);
 export const validatePreviewOrganizerFormAdmissionCallablePayload = ajv.compile(previewOrganizerFormAdmissionCallablePayloadSchema);
 export const validatePreviewOrganizerFormAdmissionCallableResponse = ajv.compile(previewOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionDocument = ajv.compile(organizerFormAdmissionDocumentSchema);

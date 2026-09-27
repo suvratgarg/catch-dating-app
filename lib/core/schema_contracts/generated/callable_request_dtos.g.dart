@@ -235,6 +235,7 @@ export 'callables/override_event_success_rotations_callable_request.g.dart';
 export 'callables/place_details_callable_request.g.dart';
 export 'callables/places_autocomplete_callable_request.g.dart';
 export 'callables/prepare_event_offer_handoff_callable_request.g.dart';
+export 'callables/prepare_event_offer_invitation_callable_request.g.dart';
 export 'callables/prepare_event_success_rotation_draft_callable_request.g.dart';
 export 'callables/preview_event_assignment_features_callable_request.g.dart';
 export 'callables/preview_event_offers_callable_request.g.dart';

@@ -60,7 +60,7 @@ export async function setup() {
     reason: "expired" | "fulfillmentFailed" = "expired") =>
     releaseOfferPaymentHold({db: h.store.db(), paymentId,
       nowMillis: at, reason});
-  return {...h, routing, reserve, expire, bindingId};
+  return {...h, routing, reserve, expire, bindingId, invitation, auth};
 }
 
 export async function capturedFixture() {

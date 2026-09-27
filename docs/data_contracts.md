@@ -2675,7 +2675,12 @@ webhook inbox routes verified provider orders by ledger receipt and exact
 merchant binding. The bounded offer recovery sweep releases expired inventory
 before attempting provider work, retains manual-review anomalies and retries
 full refunds using a stable payment-specific key. Route refunds require full
-transfer reversal. The recipient callable/screen and provider acceptance remain
+transfer reversal. Recipient callables require App Check and phone-authenticated
+UID ownership. A returning payer can recover the saved payment from the original
+invitation even after source expiry; this grants no new admission authority.
+Event OAuth selection requires one ready organizer connection in the selected
+mode and rechecks that set inside the new reservation transaction. Existing
+attempts retain their binding. The public screen and provider acceptance remain
 required before event-offer checkout activation; admission does not release
 Route settlement.
 

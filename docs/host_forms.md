@@ -916,6 +916,9 @@ ownership and immutable admission receipt in one transaction. Withdrawal,
 revocation or expiry releases the hold and enters full-refund recovery. The
 signed webhook inbox routes form fees and offer payments to their own ledgers;
 a bounded offer sweep releases expiry independently of provider availability.
-The recipient callable/screen and provider test-mode acceptance remain required
-before checkout activation. Route transfer release continues to follow event
+Recipient callables now prepare manager-only fragment links, claim by phone
+OTP, discover owned attempts and resume checkout or financial history. Returning
+payers can recover payment state through the original link after offer expiry
+or source withdrawal. The public screen and provider test-mode acceptance remain
+required before checkout activation. Route transfer release continues to follow event
 settlement policy, separately from admission.

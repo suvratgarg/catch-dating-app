@@ -1189,6 +1189,378 @@ export const managePaymentRoutingPolicyCallableResponseSchema = {
   }
 };
 
+export const manageEventOfferCheckoutCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_offer_checkout_payload.schema.json",
+  "title": "ManageEventOfferCheckoutCallablePayload",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "token"
+      ],
+      "properties": {
+        "action": {
+          "const": "claim"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "grantId",
+        "requestId"
+      ],
+      "properties": {
+        "action": {
+          "const": "prepare"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{8,120}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "grantId"
+      ],
+      "properties": {
+        "action": {
+          "const": "find"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "callback"
+      ],
+      "properties": {
+        "action": {
+          "const": "status"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "callback": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "paymentId",
+                "signature"
+              ],
+              "properties": {
+                "paymentId": {
+                  "type": "string",
+                  "pattern": "^pay_[A-Za-z0-9]+$"
+                },
+                "signature": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const prepareEventOfferInvitationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_event_offer_invitation_payload.schema.json",
+  "title": "PrepareEventOfferInvitationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "offerId",
+    "responseId",
+    "expectedOfferGeneration",
+    "expectedOfferRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "expectedOfferGeneration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedOfferRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const prepareEventOfferInvitationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/prepare_event_offer_invitation_response.schema.json",
+  "title": "PrepareEventOfferInvitationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "url",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://",
+      "maxLength": 2048
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const manageEventOfferCheckoutCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_offer_checkout_response.schema.json",
+  "title": "ManageEventOfferCheckoutCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "grant",
+    "payment",
+    "serverTimeMillis"
+  ],
+  "properties": {
+    "grant": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "grantId",
+            "eventName",
+            "eventId",
+            "startTimeMillis",
+            "amountPaise",
+            "currency",
+            "expiresAtMillis"
+          ],
+          "properties": {
+            "grantId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9_:-]+$"
+            },
+            "startTimeMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "payment": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "amountPaise",
+            "currency",
+            "mode",
+            "refundedAmountPaise",
+            "expiresAtMillis",
+            "checkout"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^ep_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "admitted",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired",
+                "failed"
+              ]
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "checkout": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "publicToken",
+                    "orderId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "publicToken": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "pattern": "^order_[A-Za-z0-9]+$"
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 100000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const previewOrganizerFormAdmissionCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/preview_organizer_form_admission_payload.schema.json",

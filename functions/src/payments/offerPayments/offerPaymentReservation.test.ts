@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import {createFormPaymentFixture} from
+  "../formPayments/formPaymentTestStore";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {eventId, contactId, offerId, responseId} from
@@ -208,5 +210,35 @@ test("historical receipt mismatch cannot report admission or trigger refund",
       await assert.rejects(h.finalize());
       assert.equal(h.store.writes.length, before);
       assert.equal(payment.status, "admitted");
+    }
+  });
+
+test("new OAuth reservation rejects a merchant that became ambiguous",
+  async () => {
+    for (const ambiguous of [false, true]) {
+      const h = await setup();
+      const form = createFormPaymentFixture();
+      const connection: Record<string, unknown> = {...form.store.records.get(
+        "organizerPaymentConnections/connection")!, organizerId: "org1"};
+      h.store.put("organizerPaymentConnections/merchant1", connection);
+      if (ambiguous) {
+        h.store.put("organizerPaymentConnections/merchant2", {...connection});
+      }
+      const selection = {...h.routing.selection,
+        route: "razorpayOAuth" as const};
+      h.store.get("paymentRoutingPolicies/app")!.eventAdmission = selection;
+      const routing = {...h.routing, selection, bindingId: "merchant1",
+        merchantAccountId: connection.accountId as string,
+        checkoutKey: connection.publicToken as string,
+        destinationAccountId: null, transferAmountMinor: null,
+        settlementHold: null};
+      const writes = h.store.writes.length;
+      if (ambiguous) {
+        await assert.rejects(h.reserve("checkout_request1", now, routing));
+        assert.equal(h.store.writes.length, writes);
+      } else {
+        const result = await h.reserve("checkout_request1", now, routing);
+        assert.equal(result.payment.routing.bindingId, "merchant1");
+      }
     }
   });

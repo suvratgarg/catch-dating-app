@@ -51,6 +51,8 @@ import {validateConfigureEventOfferPreferencesCallablePayload} from
 import {validateConfigureEventOfferPreferencesCallableResponse} from
   "../shared/generated/validators/configureEventOfferPreferencesOutput";
 
+import {eventOfferIntegrationReady} from "./offerIntegration";
+
 export interface OfferCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   repository: (db: FirebaseFirestore.Firestore) => OfferRepository;
@@ -62,7 +64,7 @@ const defaultDeps: OfferCallableDependencies = {
   firestore: () => admin.firestore(),
   repository: (db) => new FirestoreEventOfferRepository(db),
   checkRateLimit,
-  integrationReady: () => false,
+  integrationReady: eventOfferIntegrationReady,
 };
 
 async function execute<T>(params: {

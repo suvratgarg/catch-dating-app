@@ -17,6 +17,10 @@ Do not edit it by hand.
 | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
 | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` |
 | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts` |
+| ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts` |
+| PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferInvitationCallablePayload.ts` |
+| PrepareEventOfferInvitationCallableResponse | `callable_responses/prepare_event_offer_invitation_response.schema.json` | `functions/src/shared/generated/prepareEventOfferInvitationCallableResponse.ts` |
+| ManageEventOfferCheckoutCallableResponse | `callable_responses/manage_event_offer_checkout_response.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallableResponse.ts` |
 | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallablePayload.ts` |
 | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `functions/src/shared/generated/organizerFormAdmissionDocument.ts` |
@@ -949,6 +953,10 @@ Do not edit it by hand.
 | `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
 | `schemaManagePaymentRoutingPolicyCallablePayloadSchema` | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_payload.g.dart` |
 | `schemaManagePaymentRoutingPolicyCallableResponseSchema` | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_response.g.dart` |
+| `schemaManageEventOfferCheckoutCallablePayloadSchema` | ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_offer_checkout_callable_payload.g.dart` |
+| `schemaPrepareEventOfferInvitationCallablePayloadSchema` | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_invitation_callable_payload.g.dart` |
+| `schemaPrepareEventOfferInvitationCallableResponseSchema` | PrepareEventOfferInvitationCallableResponse | `callable_responses/prepare_event_offer_invitation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_invitation_callable_response.g.dart` |
+| `schemaManageEventOfferCheckoutCallableResponseSchema` | ManageEventOfferCheckoutCallableResponse | `callable_responses/manage_event_offer_checkout_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_offer_checkout_callable_response.g.dart` |
 | `schemaPreviewOrganizerFormAdmissionCallablePayloadSchema` | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_payload.g.dart` |
 | `schemaPreviewOrganizerFormAdmissionCallableResponseSchema` | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionDocumentSchema` | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_document.g.dart` |
@@ -1876,6 +1884,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
 | ConfigureEventOfferPreferencesCallableRequest | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/configure_event_offer_preferences_callable_request.g.dart` |
@@ -2230,6 +2239,7 @@ Do not edit it by hand.
 | Schema | Reason |
 |---|---|
 | ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |
+| ManageEventOfferCheckoutCallablePayload | not an object schema |
 | SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceRuntimeConfigCallablePayload | cannot map field "command" (no type) |
 | SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |

@@ -218,3 +218,41 @@ test("organizer event override is independent of the app form route",
     assert.equal(event.organizerRevision, 2);
     assert.equal((await h.prepare()).snapshot.policySource, "app");
   });
+
+test("event OAuth selects one ready organizer merchant and rejects ambiguity",
+  async () => {
+    for (const count of [0, 1, 2]) {
+      const h = createFormPaymentFixture();
+      const connection = h.store.records.get(
+        "organizerPaymentConnections/connection")!;
+      connection.tokenExpiresAt = Timestamp.fromMillis(Date.now() + 3600_000);
+      h.store.records.delete("organizerPaymentConnections/connection");
+      for (let index = 0; index < count; index++) {
+        h.store.records.set(`organizerPaymentConnections/merchant${index}`,
+          {...connection});
+      }
+      h.store.records.set("paymentRoutingPolicies/app", {
+        scope: "app", organizerId: null, revision: 1, updatedAt: now,
+        formFee: null, eventAdmission: {route: "razorpayOAuth", mode: "test",
+          currency: "INR", merchantCountry: "IN"}});
+      let accesses = 0;
+      const deps = {...fixture().deps, oauth: async () => ({mode: "test",
+        configurationVersion: version, credentials: {access: async () => {
+          accesses++;
+        }}})} as unknown as NonNullable<Parameters<
+          typeof prepareRazorpayCollectionRouting>[1]>;
+      const prepare = () => prepareRazorpayCollectionRouting({db: h.db,
+        organizerId: "org", purpose: "eventAdmission", connectionId: null,
+        amountMinor: 10000}, deps);
+      if (count === 1) {
+        const snapshot = await prepare();
+        assert.equal(snapshot.bindingId, "merchant0");
+        assert.equal(snapshot.selection.route, "razorpayOAuth");
+        assert.equal(snapshot.purpose, "eventAdmission");
+        assert.equal(accesses, 1);
+      } else {
+        await assert.rejects(prepare());
+        assert.equal(accesses, 0);
+      }
+    }
+  });
