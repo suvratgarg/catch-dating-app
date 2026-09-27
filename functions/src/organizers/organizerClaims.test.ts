@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
-import {adminDecideOrganizerClaimHandler} from "./organizerClaims";
+import {adminDecideOrganizerClaimHandler,
+  requestOrganizerClaimHandler} from "./organizerClaims";
 
 type Data = Record<string, unknown>;
 class Ref {
@@ -42,6 +43,10 @@ function fixture(visibility: "hidden" | "discoverable" | undefined) {
             structuredClone(docs.get(ref.path))};
         },
         set,
+        create: (ref: Ref, value: Data) => {
+          assert.equal(docs.has(ref.path), false);
+          set(ref, value);
+        },
         update: (ref: Ref, value: Data) => set(ref, value, {merge: true}),
       });
       pending.forEach((write) => write());
@@ -82,4 +87,61 @@ test("claim approval still requires an authorized reviewer", async () => {
   await assert.rejects(adminDecideOrganizerClaimHandler(request, deps),
     {code: "permission-denied"});
   assert.deepEqual([...docs], before);
+});
+
+test("claim request retries and approval project one follow-up into private Sales", async () => {
+  const {docs, deps, request} = fixture("hidden");
+  const organizer = docs.get("organizers/example-host")!;
+  organizer.claim = {state: "unclaimed"};
+  docs.set("organizerSalesAccounts/example-host", {
+    classification: "sales_private", organizerId: "example-host",
+    assignedOwnerUid: "sales-employee", suppressionStatus: "suppressed",
+    privateNote: "Never copied to the claim or public organizer",
+  });
+  const claim = {auth: {uid: "host-one", token: {}}, data: {
+    organizerId: "example-host", requesterName: "Example Owner",
+    requesterRole: "owner",
+  }} as unknown as CallableRequest<unknown>;
+  const first = await requestOrganizerClaimHandler(claim, deps);
+  assert.deepEqual(await requestOrganizerClaimHandler(claim, deps), first);
+  const salesRows = (prefix: string) => [...docs.entries()]
+    .filter(([key]) => key.startsWith(prefix)).map(([, value]) => value);
+  assert.equal(salesRows("salesActivities/").length, 1);
+  assert.equal(salesRows("salesTasks/").length, 1);
+  assert.equal(docs.get("organizers/example-host")?.ownerUserId, undefined);
+  request.data = {requestId: first.requestId, decision: "approve"};
+  await adminDecideOrganizerClaimHandler(request, deps);
+  assert.deepEqual(salesRows("salesActivities/").map((row) => row.type),
+    ["claim_requested", "claim_approved"]);
+  const [task] = salesRows("salesTasks/");
+  assert.equal(salesRows("salesTasks/").length, 1);
+  assert.equal(task.revision, 2);
+  assert.equal(task.ownerUid, "sales-employee");
+  assert.equal(task.kind, "service_commitment");
+  assert.equal(docs.get("organizers/example-host")?.appVisibility, "hidden");
+  assert.equal(JSON.stringify(docs.get("organizers/example-host"))
+    .includes("privateNote"), false);
+  assert.equal(JSON.stringify(docs.get(`organizerClaimRequests/${first.requestId}`))
+    .includes("privateNote"), false);
+  await assert.rejects(adminDecideOrganizerClaimHandler(request, deps),
+    {code: "failed-precondition"});
+  assert.equal(salesRows("salesActivities/").length, 2);
+  assert.equal(salesRows("salesTasks/")[0].revision, 2);
+});
+
+test("claim rejection records its outcome without granting ownership", async () => {
+  const {docs, deps, request} = fixture("hidden");
+  docs.set("organizerSalesAccounts/example-host", {
+    classification: "sales_private", organizerId: "example-host",
+    assignedOwnerUid: null,
+  });
+  request.data = {requestId: "claim-one", decision: "reject"};
+  await adminDecideOrganizerClaimHandler(request, deps);
+  const activities = [...docs].filter(([path]) =>
+    path.startsWith("salesActivities/"));
+  assert.equal(activities.length, 1);
+  assert.equal(activities[0][1].type, "claim_rejected");
+  assert.equal(docs.get("organizers/example-host")?.ownerUserId, undefined);
+  assert.equal([...docs.keys()].some((path) =>
+    path.startsWith("salesTasks/")), false);
 });
