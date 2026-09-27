@@ -3583,6 +3583,62 @@
         "exportName": "SharedPreference"
       },
       "notes": "Shared sender preference presentation with channel-owned copy and availability. Controllers retain channel-specific authority and grant evidence."
+    },
+    {
+      "id": "route_event_offer",
+      "kind": "route",
+      "routeIds": [
+        "event_offer"
+      ],
+      "owner": "features/eventOffers",
+      "source": "website/src/features/eventOffers/EventOfferPage.tsx",
+      "exportName": "EventOfferPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventOffer.stories.tsx",
+        "exportName": "EventOffer",
+        "states": [
+          "phone",
+          "otp",
+          "ready",
+          "pending",
+          "admitted",
+          "refund",
+          "unavailable"
+        ]
+      },
+      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+    },
+    {
+      "id": "event_offer_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_offer"
+      ],
+      "owner": "features/eventOffers",
+      "source": "website/src/features/eventOffers/EventOfferPage.tsx",
+      "exportName": "EventOfferView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventOffer.stories.tsx",
+        "exportName": "Invitation",
+        "states": [
+          "phone",
+          "otp",
+          "ready",
+          "pending",
+          "admitted",
+          "refund",
+          "unavailable"
+        ]
+      },
+      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
     }
   ]
 }

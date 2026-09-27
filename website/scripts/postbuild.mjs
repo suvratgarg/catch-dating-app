@@ -38,6 +38,7 @@ writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
 writeRoute("/join/", staticRouteMeta(websiteMeta, "event_runtime", baseUrl));
+writeRoute("/offer/", staticRouteMeta(websiteMeta, "event_offer", baseUrl));
 writeRoute("/event-update/", staticRouteMeta(websiteMeta, "event_assistance", baseUrl));
 writeRoute("/rehearse/", staticRouteMeta(websiteMeta, "event_rehearsal", baseUrl));
 writeRoute("/invite/", staticRouteMeta(websiteMeta, "event_invite", baseUrl));

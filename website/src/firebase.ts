@@ -1,3 +1,5 @@
+import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
+import type {ManageEventOfferCheckoutCallableResponse} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallableResponse";
 import type {ListEventSmsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventSmsPreferencesInput";
 import type {ListEventSmsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventSmsPreferencesOutput";
 import type {GetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload";
@@ -315,6 +317,15 @@ export async function promoteFormCommunicationIntent(
     publicFormsFirebaseConfigured,
     "Public form messaging preferences"
   );
+}
+
+export type EventOfferCheckoutResponse = ManageEventOfferCheckoutCallableResponse;
+
+export async function manageEventOfferCheckout(
+  payload: ManageEventOfferCheckoutCallablePayload
+): Promise<ManageEventOfferCheckoutCallableResponse> {
+  return invokeWebsiteCallable("manageEventOfferCheckout", payload,
+    publicFormsFirebaseConfigured, "Event invitation checkout");
 }
 
 export type PublicOrganizerFormPayment = GetOrganizerFormPaymentCallableResponse;

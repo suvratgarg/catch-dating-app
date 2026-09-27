@@ -101,6 +101,14 @@
       ],
       "rewrites": [
         {
+          "source": "/offer/**",
+          "destination": "/offer/index.html"
+        },
+        {
+          "source": "/offer",
+          "destination": "/offer/index.html"
+        },
+        {
           "source": "/api/form-domain",
           "function": {
             "functionId": "resolvePublicFormDomain",

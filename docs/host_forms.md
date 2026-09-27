@@ -332,7 +332,7 @@ hold. Full failed-fulfillment refunds request `reverse_all`; partial refunds nee
 a separate allocation plan. A customer refund is not marked complete until
 provider reads also prove the exact organizer transfer reversal. Form fees
 currently transfer without a settlement hold; event payments retain their
-separate settlement policy and unfinished offer-checkout integration.
+separate settlement policy; event settlement release remains unfinished.
 These operations follow Razorpay's
 [order transfer API](https://razorpay.com/docs/api/payments/route/create-transfers-orders/),
 [transfer lookup](https://razorpay.com/docs/api/payments/route/fetch-transfer-order)
@@ -904,7 +904,7 @@ does not reinterpret CRM answers as verified membership or cohort evidence.
 
 
 Event-offer checkout reserves a seat for 15 minutes from checkout start,
-then confirm admission only after verified payment. Issuing an offer alone does
+then confirms admission only after verified payment. Issuing an offer alone does
 not reserve capacity. The shared seat core now tracks checkout-held capacity
 separately from confirmed attendance and blocks competing admission/import or
 identity-replacement operations. Retrying checkout cannot extend its deadline;
@@ -919,6 +919,11 @@ a bounded offer sweep releases expiry independently of provider availability.
 Recipient callables now prepare manager-only fragment links, claim by phone
 OTP, discover owned attempts and resume checkout or financial history. Returning
 payers can recover payment state through the original link after offer expiry
-or source withdrawal. The public screen and provider test-mode acceptance remain
-required before checkout activation. Route transfer release continues to follow event
-settlement policy, separately from admission.
+or source withdrawal. The `/offer/` website uses existing phone OTP and Catch
+runtime primitives. It keeps the token out of storage and analytics, saves only
+UID-authorized grant/payment references in the current history entry for reload,
+and reports admission only from the server. Host message preparation issues the
+same private link after source and communication checks; it does not send or
+record delivery. Provider test-mode and deployed acceptance remain required
+before activation. Route transfer release remains unfinished and must follow
+event settlement policy separately from admission.

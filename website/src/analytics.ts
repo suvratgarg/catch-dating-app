@@ -315,5 +315,6 @@ function writeJson(key: string, value: unknown) {
 }
 
 function isPrivateEventUpdate(): boolean {
-  return window.location.pathname.startsWith("/event-update/");
+  return window.location.pathname.startsWith("/event-update/") ||
+    window.location.pathname === "/offer" || window.location.pathname === "/offer/";
 }

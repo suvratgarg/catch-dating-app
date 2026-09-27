@@ -816,3 +816,40 @@ test("event configuration uses current terms and server expiry with no writes",
     store.state.managers.clear();
     await assert.rejects(read, (error) => assertCode(error, "denied"));
   });
+
+test("automatic handoff checks communication before issuing an invitation",
+  async () => {
+    const store = new AtomicStore();
+    store.state.paymentTerms.set(row.eventId, {
+      ...store.state.paymentTerms.get(row.eventId)!,
+      preferredCollection: "catchCheckout", expectedAmountMinor: 1800,
+      currency: "INR",
+    });
+    const preview = await previewEventOffers({repository: store, actor, input});
+    await commitEventOffers({repository: store, actor,
+      input: {...input, requestId: "automatic-handoff-offer",
+        planDigest: preview.planDigest}});
+    const offer = [...store.state.offers.values()][0];
+    const calls: unknown[] = [];
+    const prepare = () => prepareEventOfferHandoff({repository: store, actor,
+      organizerId: row.organizerId, eventId: row.eventId,
+      contactId: row.contactId, expectedOfferRevision: offer.revision,
+      expectedGeneration: offer.generation,
+      issueInvitation: async (scope) => {
+        calls.push(scope);
+        return `https://catchdates.com/offer#${"a".repeat(43)}`;
+      }});
+    store.handoffPermission = "optedOut";
+    assert.equal((await prepare()).kind, "blocked");
+    assert.equal(calls.length, 0);
+    store.handoffPermission = "available";
+    const prepared = await prepare();
+    assert.equal(prepared.kind, "prepared");
+    assert.deepEqual(calls, [{organizerId: row.organizerId,
+      eventId: row.eventId, offerId: offer.offerId, responseId: "response-one",
+      actorUid: actor.uid, expectedOfferGeneration: offer.generation,
+      expectedOfferRevision: offer.revision}]);
+    if (prepared.kind === "prepared") {
+      assert.match(prepared.copyText, /https:\/\/catchdates.com\/offer#/u);
+    }
+  });

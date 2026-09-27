@@ -1,3 +1,5 @@
+import {issueOfferRecipientInvitation} from
+  "../organizerEventOfferRecipients/recipientGrant";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -59,12 +61,22 @@ export interface OfferCallableDependencies {
   checkRateLimit: typeof checkRateLimit;
   /** Release boundary; no request or environment flag may bypass it. */
   integrationReady: () => boolean;
+  issueInvitation?: Parameters<typeof prepareHandoff>[0]["issueInvitation"];
 }
 const defaultDeps: OfferCallableDependencies = {
   firestore: () => admin.firestore(),
   repository: (db) => new FirestoreEventOfferRepository(db),
   checkRateLimit,
   integrationReady: eventOfferIntegrationReady,
+  issueInvitation: async (input) => {
+    const invitation = await issueOfferRecipientInvitation({
+      db: admin.firestore(), actorUid: input.actorUid,
+      scope: {organizerId: input.organizerId, eventId: input.eventId,
+        offerId: input.offerId, responseId: input.responseId},
+      expectedOfferGeneration: input.expectedOfferGeneration,
+      expectedOfferRevision: input.expectedOfferRevision});
+    return `https://catchdates.com/offer#${invitation.token}`;
+  },
 };
 
 async function execute<T>(params: {
@@ -173,7 +185,8 @@ export async function prepareEventOfferHandoffHandler(
   const input = validateCallableWithAjv(request,
     validatePrepareEventOfferHandoffCallablePayload);
   return execute({uid, action: "prepareEventOfferHandoff", deps,
-    run: (repository) => prepareHandoff({repository, actor: {uid}, ...input}),
+    run: (repository) => prepareHandoff({repository, actor: {uid}, ...input,
+      issueInvitation: deps.issueInvitation}),
     validate: validateEventOfferHandoffCallableResponse});
 }
 export const prepareEventOfferHandoff = onCall(appCheckCallableOptions,

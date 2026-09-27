@@ -165,6 +165,21 @@ test("private event updates do not enter analytics or attribution storage", () =
   }
 });
 
+test("private offer links never enter analytics or attribution storage", () => {
+  const previous = window.location;
+  for (const pathname of ["/offer", "/offer/"]) {
+    window.localStorage.clear(); window.dataLayer = [];
+    window.location = {pathname, search: "", href: `https://catchdates.test${pathname}#secret`};
+    try {
+      analytics.initializeMarketingAnalytics();
+      analytics.trackPageView("event_offer");
+      analytics.trackMarketingEvent("client_error", {page_location: window.location.href});
+      assert.deepEqual(window.dataLayer, []);
+      assert.equal(window.localStorage.getItem("catch_marketing_attribution_v1"), null);
+    } finally {window.location = previous;}
+  }
+});
+
 function latestEvent(eventName) {
   return [...window.dataLayer]
     .reverse()

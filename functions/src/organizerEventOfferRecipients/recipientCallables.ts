@@ -167,9 +167,11 @@ function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "This invitation is unavailable.");
 }
-const options = appCheckCallableOptionsWithLimits({timeoutSeconds: 120,
-  maxInstances: 10, concurrency: 10});
-export const prepareEventOfferInvitation = onCall(options,
+export const prepareEventOfferInvitation = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 120,
+    maxInstances: 10, concurrency: 10}),
   (request) => prepareEventOfferInvitationHandler(request));
-export const manageEventOfferCheckout = onCall(options,
+export const manageEventOfferCheckout = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 120,
+    maxInstances: 10, concurrency: 10}),
   (request) => manageEventOfferCheckoutHandler(request));
