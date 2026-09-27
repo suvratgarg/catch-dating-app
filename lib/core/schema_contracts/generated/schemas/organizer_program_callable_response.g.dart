@@ -202,6 +202,13 @@ const schemaOrganizerProgramCallableResponseSchema = <String, Object?>{
           'endsAtMillis',
           'venueName',
           'status',
+          'invitationMode',
+          'checkInEnabled',
+          'dressCode',
+          'instructions',
+          'expectedCount',
+          'checkedInCount',
+          'revision',
         ],
         'properties': <String, Object?>{
           'functionId': <String, Object?>{
@@ -234,6 +241,49 @@ const schemaOrganizerProgramCallableResponseSchema = <String, Object?>{
               'completed',
               'cancelled',
             ],
+          },
+          'invitationMode': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'allGuests',
+              'selectedGuests',
+            ],
+            'description': 'Effective mode; absent document field reads as allGuests.',
+          },
+          'checkInEnabled': <String, Object?>{
+            'type': 'boolean',
+          },
+          'dressCode': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 140,
+          },
+          'instructions': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 2000,
+          },
+          'expectedCount': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+          },
+          'checkedInCount': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+          },
+          'revision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
           },
         },
       },

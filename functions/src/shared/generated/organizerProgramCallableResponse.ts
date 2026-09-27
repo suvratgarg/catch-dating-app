@@ -66,6 +66,16 @@ export interface OrganizerProgramCallableResponse {
     endsAtMillis: number;
     venueName: string;
     status: "scheduled" | "completed" | "cancelled";
+    /**
+     * Effective mode; absent document field reads as allGuests.
+     */
+    invitationMode: "allGuests" | "selectedGuests";
+    checkInEnabled: boolean;
+    dressCode: string | null;
+    instructions: string | null;
+    expectedCount: number | null;
+    checkedInCount: number | null;
+    revision: number;
   }[];
   /**
    * @maxItems 32
