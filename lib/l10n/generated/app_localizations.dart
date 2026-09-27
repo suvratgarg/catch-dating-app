@@ -18950,19 +18950,19 @@ abstract class AppLocalizations {
   /// Host public event registration control title.
   ///
   /// In en, this message translates to:
-  /// **'Website registration'**
+  /// **'Catch registration'**
   String get hostsHostPublicRegistrationTitle;
 
   /// Enabled website registration state.
   ///
   /// In en, this message translates to:
-  /// **'Phone OTP sign-up is enabled'**
+  /// **'Guests can register on Catch'**
   String get hostsHostPublicRegistrationSubtitleEnabled;
 
   /// Disabled website registration state.
   ///
   /// In en, this message translates to:
-  /// **'Consumer booking is optional'**
+  /// **'Catch registration is closed'**
   String get hostsHostPublicRegistrationSubtitleDisabled;
 
   /// Open website registration badge.
@@ -18980,7 +18980,7 @@ abstract class AppLocalizations {
   /// Explains standalone website registration.
   ///
   /// In en, this message translates to:
-  /// **'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.'**
+  /// **'Guests register on the event page using their name and verified phone number, and join this event’s guest list. The original event source and bookings on other platforms stay unchanged.'**
   String get hostsHostPublicRegistrationBodyPublished;
 
   /// Publication prerequisite for website registration.
@@ -18992,19 +18992,31 @@ abstract class AppLocalizations {
   /// Explains why standalone website registration cannot safely bypass payment or identity gates.
   ///
   /// In en, this message translates to:
-  /// **'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.'**
+  /// **'Website registration supports open events with one fixed price. Invitation, approval, membership, balanced capacity, and variable pricing require their own eligibility checks.'**
   String get hostsHostPublicRegistrationBodyUnsupported;
 
   /// Enable website registration CTA.
   ///
   /// In en, this message translates to:
-  /// **'Enable phone OTP sign-up'**
+  /// **'Enable free registration'**
   String get hostsHostPublicRegistrationActionEnable;
+
+  /// Explicit paid public registration opt-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable paid registration'**
+  String get hostsHostPublicRegistrationActionEnablePaid;
+
+  /// Paid checkout and provider readiness disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests verify their phone, review the price and refund policy, then pay on Catch. Checkout holds a seat for 15 minutes; verified payment confirms admission. Your payment account must be ready before registration can open.'**
+  String get hostsHostPublicRegistrationBodyPaid;
 
   /// Disable website registration CTA.
   ///
   /// In en, this message translates to:
-  /// **'Disable website sign-up'**
+  /// **'Close registration'**
   String get hostsHostPublicRegistrationActionDisable;
 
   /// Past attendee count label.
@@ -22629,29 +22641,11 @@ abstract class AppLocalizations {
   /// **'Add context for your team'**
   String get hostApplicationReviewNoteHint;
 
-  /// Application review transition action.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark in review'**
-  String get hostApplicationMarkInReview;
-
   /// Application approval action.
   ///
   /// In en, this message translates to:
   /// **'Accept and add to People'**
   String get hostApplicationApprove;
-
-  /// Application waitlist action.
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlist'**
-  String get hostApplicationWaitlist;
-
-  /// Application decline action.
-  ///
-  /// In en, this message translates to:
-  /// **'Decline'**
-  String get hostApplicationDecline;
 
   /// Successful application review mutation message.
   ///
@@ -24306,12 +24300,6 @@ abstract class AppLocalizations {
   /// **'Add to People'**
   String get hostFormConvertCrm;
 
-  /// Reviews a response to event attendee proposal conversion.
-  ///
-  /// In en, this message translates to:
-  /// **'Propose attendee'**
-  String get hostFormConvertAttendee;
-
   /// Conversion preview confirmation title.
   ///
   /// In en, this message translates to:
@@ -24500,18 +24488,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access revoked'**
   String get hostFormResponseOriginRevoked;
-
-  /// Event attendee proposal picker title.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose an event'**
-  String get hostFormSelectEventTitle;
-
-  /// Empty attendee proposal event picker guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'No upcoming events are available for an attendee proposal.'**
-  String get hostFormSelectEventEmpty;
 
   /// Conversion preview existing-record notice.
   ///
@@ -32058,7 +32034,7 @@ abstract class AppLocalizations {
   /// Form payment setup: Help.
   ///
   /// In en, this message translates to:
-  /// **'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.'**
+  /// **'Collect a fee before a response is submitted. Payment does not accept an application or book an event.'**
   String get hostFormPaymentHelp;
 
   /// Form payment setup: Unavailable.
@@ -35416,7 +35392,7 @@ abstract class AppLocalizations {
   /// Saves a private event and returns to the form response selection that opened the event editor.
   ///
   /// In en, this message translates to:
-  /// **'Save & return to responses'**
+  /// **'Save & return to review'**
   String get hostsPrivateEventSaveReturnResponses;
 
   /// Copy for the progressive private event setup flow.
@@ -36082,7 +36058,7 @@ abstract class AppLocalizations {
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Choose an event'**
+  /// **'Available events'**
   String get hostEventOfferSelectEvent;
 
   /// Host forms to event offer action or state.
@@ -36094,13 +36070,13 @@ abstract class AppLocalizations {
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Convert this response to a CRM contact before offering an event.'**
+  /// **'Review these responses and add them to People before offering an event.'**
   String get hostEventOfferNeedsContact;
 
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Create CRM contact'**
+  /// **'Review response'**
   String get hostEventOfferConvertContact;
 
   /// Host forms to event offer action or state.
@@ -36334,19 +36310,19 @@ abstract class AppLocalizations {
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Record offers'**
+  /// **'Create offers'**
   String get hostEventOfferCommit;
 
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Recording offers…'**
+  /// **'Creating offers…'**
   String get hostEventOfferCommitting;
 
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Offers recorded'**
+  /// **'Offers created'**
   String get hostEventOfferCommitted;
 
   /// Host forms event offer review copy.
@@ -36358,7 +36334,7 @@ abstract class AppLocalizations {
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'No seat or admission is created.'**
+  /// **'Creating an offer does not reserve a place.'**
   String get hostEventOfferNoReservation;
 
   /// Host forms event offer review copy.
@@ -36430,7 +36406,7 @@ abstract class AppLocalizations {
   /// Host forms existing offer handoff copy.
   ///
   /// In en, this message translates to:
-  /// **'Prepare personal handoff'**
+  /// **'Share invitation'**
   String get hostEventOfferHandoffPrepare;
 
   /// Host forms existing offer handoff copy.
@@ -36484,8 +36460,44 @@ abstract class AppLocalizations {
   /// Manager private event inventory copy.
   ///
   /// In en, this message translates to:
-  /// **'Private event setups'**
+  /// **'Private events'**
   String get hostsPrivateEventInventoryTitle;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get hostsPrivateEventInventoryUpcoming;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get hostsPrivateEventInventoryPast;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostsPrivateEventInventoryCancelled;
+
+  /// Manager private event inventory filter and empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No private events in this view.'**
+  String get hostsPrivateEventInventoryHistoryEmpty;
+
+  /// Read-only private event history.
+  ///
+  /// In en, this message translates to:
+  /// **'Event history'**
+  String get hostsPrivateEventHistoryTitle;
+
+  /// Read-only private event history.
+  ///
+  /// In en, this message translates to:
+  /// **'This event has started or was cancelled. Its saved details are available for reference.'**
+  String get hostsPrivateEventHistoryBody;
 
   /// Manager private event inventory copy.
   ///
@@ -36558,6 +36570,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load your events. Try again.'**
   String get hostFormTargetLoadFailed;
+
+  /// Refresh the current response query.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh responses'**
+  String get hostResponseQueryRefresh;
+
+  /// Ascending order for a form answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get hostResponseQueryAscending;
+
+  /// Descending order for a form answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get hostResponseQueryDescending;
+
+  /// Total responses in the exact filtered result.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 response} other{{count} responses}}'**
+  String hostResponseQueryResultCount({required int count});
+
+  /// Number of active advanced response filter conditions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 condition} other{{count} conditions}}'**
+  String hostResponseQueryFilterCount({required int count});
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Review inbox'**
+  String get hostResponseQueryReviewInbox;
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by answers'**
+  String get hostResponseQueryOpenAnswers;
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Published version {version} · All review statuses'**
+  String hostResponseQueryVersionScope({required int version});
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Event admission'**
+  String get hostFormAdmissionTitle;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission confirmed. The guest is on the event roster.'**
+  String get hostFormAdmissionComplete;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved admission needs to be resolved before starting another.'**
+  String get hostFormAdmissionSaved;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'This person already occupies a seat. Confirm to link this response without reserving another seat.'**
+  String get hostFormAdmissionRetain;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment and capacity checks passed. Confirm to add this guest to the roster. Availability is checked again when you confirm.'**
+  String get hostFormAdmissionReady;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the response, payment evidence and available capacity before admitting this guest.'**
+  String get hostFormAdmissionReview;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Review admission again'**
+  String get hostFormAdmissionReviewAgain;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry saved admission'**
+  String get hostFormAdmissionRetry;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm admission'**
+  String get hostFormAdmissionConfirm;
+
+  /// Host reviewed form-to-event admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Check admission'**
+  String get hostFormAdmissionCheck;
+
+  /// Host form payment setup: hostFormPaymentCatchCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collects payments'**
+  String get hostFormPaymentCatchCollection;
+
+  /// Host form payment setup: hostFormPaymentCatchCollectionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collects the fee and transfers the organizer share to your linked payout account.'**
+  String get hostFormPaymentCatchCollectionHelp;
+
+  /// Host form payment setup: hostFormPaymentCatchSetupRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collection is selected. Complete your linked payout account setup and ask Catch to verify collection is ready.'**
+  String get hostFormPaymentCatchSetupRequired;
+
+  /// Selected form collection method is disabled or unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected collection method is not ready. Ask Catch to review your payment configuration.'**
+  String get hostFormPaymentCollectionUnavailable;
 
   /// Program workspace copy: programsListTitle.
   ///
@@ -37260,6 +37404,273 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick a CSV or XLSX manifest to map columns.'**
   String get programsImportEmptyMessage;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get hostsEventPreferenceNotSet;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Review changes'**
+  String get hostsEventPreferenceReviewTitle;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Review current organizer defaults and your edits before applying.'**
+  String get hostsEventPreferenceReviewHint;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued offers and shared payment links keep their original terms. Review those offers separately if their payment instructions are outdated.'**
+  String get hostsEventPreferenceOfferWarning;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'No settings have changed'**
+  String get hostsEventPreferenceNoChanges;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing preview…'**
+  String get hostsEventPreferenceReviewLoading;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview changes and current defaults'**
+  String get hostsEventPreferencePreview;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply reviewed changes'**
+  String get hostsEventPreferenceApply;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {before}\nAfter applying: {after}'**
+  String hostsEventPreferenceBeforeAfter({
+    required String before,
+    required String after,
+  });
+
+  /// Currency-formatted amount in the settings change preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected amount'**
+  String get hostsEventPreferenceExpectedAmount;
+
+  /// Response-to-event offer flow: hostResponseOfferEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Offer an event'**
+  String get hostResponseOfferEvent;
+
+  /// Response-to-event offer flow: hostResponseReviewDecision
+  ///
+  /// In en, this message translates to:
+  /// **'Review status'**
+  String get hostResponseReviewDecision;
+
+  /// Response-to-event offer flow: hostResponseContactDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get hostResponseContactDetails;
+
+  /// Response-to-event offer flow: hostEventOfferChangeEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Change event'**
+  String get hostEventOfferChangeEvent;
+
+  /// Response-to-event offer flow: hostEventOfferUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Event offers are not available yet. Return to the response to continue reviewing.'**
+  String get hostEventOfferUnavailable;
+
+  /// Response-to-event offer flow: hostEventOfferRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get hostEventOfferRecipient;
+
+  /// Response-to-event offer flow: hostEventOfferAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Admission price'**
+  String get hostEventOfferAmount;
+
+  /// Response-to-event offer flow: hostEventOfferFree
+  ///
+  /// In en, this message translates to:
+  /// **'Free admission'**
+  String get hostEventOfferFree;
+
+  /// Return to the preserved offer selection after response review.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to offer'**
+  String get hostResponseContinueOffer;
+
+  /// Offer expiry in the review summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until'**
+  String get hostEventOfferExpiry;
+
+  /// Explains that selecting an event does not accept the application.
+  ///
+  /// In en, this message translates to:
+  /// **'Acceptance is required before creating the offer.'**
+  String get hostResponseChooseBeforeAcceptance;
+
+  /// Explains the minimal inline event save and return to response review.
+  ///
+  /// In en, this message translates to:
+  /// **'Save these basics and return to your selected responses. You can finish event details later.'**
+  String get hostsPrivateEventReturnToReviewHint;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose meeting place on map'**
+  String get hostsPrivateEventDetailPickLocation;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'A map location is required before publishing. A name alone is fine while planning.'**
+  String get hostsPrivateEventDetailLocationNeeded;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting place is ready for directions and the public listing.'**
+  String get hostsPrivateEventDetailLocationReady;
+
+  /// Private event admission terms section
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity and price'**
+  String get hostsPrivateEventAdmissionTerms;
+
+  /// Explains explicit event terms without enabling registration
+  ///
+  /// In en, this message translates to:
+  /// **'Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.'**
+  String get hostsPrivateEventAdmissionTermsHint;
+
+  /// Saves the reviewed admission terms together
+  ///
+  /// In en, this message translates to:
+  /// **'Save capacity and price'**
+  String get hostsPrivateEventSaveTerms;
+
+  /// Cash refund choice without credits
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund until {hours} hours before; no refund after'**
+  String hostsPrivateEventRefundCutoff({required int hours});
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future date for an active event'**
+  String get hostsPublicationNeedsFuture;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make the organizer visible in Catch'**
+  String get hostsPublicationNeedsOrganizer;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Set the distance and pace'**
+  String get hostsPublicationNeedsDistance;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Review the event details before publishing'**
+  String get hostsPublicationNeedsReview;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.'**
+  String get hostsPublicationPublishExplanation;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.'**
+  String get hostsPublicationUnpublishExplanation;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility change awaiting confirmation'**
+  String get hostsPublicationPending;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'The result has not been confirmed. Retry the same change to recover its result before making another change.'**
+  String get hostsPublicationPendingBody;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility change saved'**
+  String get hostsPublicationSaved;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Registration remains closed after a visibility change. Configure registration separately when you are ready.'**
+  String get hostsPublicationRegistrationSeparate;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh readiness'**
+  String get hostsPublicationRefresh;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Recover visibility change'**
+  String get hostsPublicationRetry;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make event private'**
+  String get hostsPublicationUnpublish;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Publish event'**
+  String get hostsPublicationPublish;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'This event is published. Visibility and registration are managed separately.'**
+  String get hostsPublicationPublishedBody;
 }
 
 class _AppLocalizationsDelegate

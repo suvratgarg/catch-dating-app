@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.23.1
-updated: 2026-09-23
+version: 0.23.2
+updated: 2026-09-27
 owner: web_platform
 status: active
 ---
@@ -1171,6 +1171,18 @@ channel permission or mount in rehearsal.
 ### No-Download Event Runtime And Invite Landing
 
 The React marketing runtime owns the following non-SEO transactional routes:
+
+- `/offer/` owns private, phone-verified invitation checkout. The token is
+  consumed from the URL fragment before rendering and remains in page memory;
+  this route excludes marketing analytics, consent banners and attribution.
+  Only non-secret grant/payment IDs are saved in the current history entry for
+  reload recovery, and every API operation checks the authenticated payer. The existing
+  Catch OTP and shared provider window lead to server-verified payment and
+  admission; the provider callback cannot confirm a seat. Retry preserves the
+  attempt identity, account changes discard stale results, and expired or
+  refunded attempts remain readable. The route uses shared event runtime
+  primitives, owned content and Storybook states. Hosting activation and real
+  provider evidence are separate from this source implementation.
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster

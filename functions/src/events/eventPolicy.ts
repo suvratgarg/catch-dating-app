@@ -310,6 +310,13 @@ export function quotePriceInPaise(params: {
   return Math.max(0, Math.trunc(amount));
 }
 
+/** Last instant that the configured policy returns the full cash payment. */
+export function fullRefundDeadlineMillis(policyId: EventCancellationPolicyId,
+  startTimeMillis: number): number {
+  const window = cancellationWindow(policyId);
+  return Math.max(0, startTimeMillis - window.fullRefundBeforeStartMillis);
+}
+
 export function quoteAttendeeCancellation(params: {
   policy: EventPolicyBundleDocument;
   paidAmountInPaise: number;

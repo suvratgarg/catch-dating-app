@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_event_admission_receipts.schema.json",
+  "title": "PublicEventAdmissionReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "recipientUid",
+    "attendeeId",
+    "canonicalSeatKey",
+    "identityRevision",
+    "migrationRevision",
+    "registrationRevision",
+    "amountPaise",
+    "currency",
+    "routing",
+    "paymentId",
+    "providerOrderId",
+    "providerPaymentId",
+    "admittedAtMillis",
+    "resultingLedgerRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "recipientUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "canonicalSeatKey": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "routing": {
+      "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
+    },
+    "paymentId": {
+      "type": "string",
+      "pattern": "^pp_[a-f0-9]{32}$"
+    },
+    "providerOrderId": {
+      "type": "string",
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": "string",
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "admittedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "resultingLedgerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "publicEventAdmissionReceipts",
+  "x-firestore-path": "publicEventAdmissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "public event checkout admission service"
+}

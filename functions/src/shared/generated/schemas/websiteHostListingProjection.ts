@@ -342,6 +342,22 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "publicRegistrationEnabled": {
             "type": "boolean"
           },
+          "registrationMode": {
+            "type": "string",
+            "enum": [
+              "closed",
+              "free",
+              "paid"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "currency": {
+            "const": "INR"
+          },
           "priceLabel": {
             "type": "string",
             "minLength": 1
@@ -1309,6 +1325,22 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         },
         "publicRegistrationEnabled": {
           "type": "boolean"
+        },
+        "registrationMode": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "free",
+            "paid"
+          ]
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {
+          "const": "INR"
         },
         "priceLabel": {
           "type": "string",

@@ -28,7 +28,10 @@ export function classifyEventPublication(data) {
     return {action: "blocked", reason: "organizer_mismatch"};
   }
   if (!validateEventDocument(data)) {
-    return {action: "blocked", reason: "invalid_legacy_event"};
+    // Include paths and validation keywords, never source field values or PII.
+    const validationIssues = [...new Set((validateEventDocument.errors ?? [])
+      .map((error) => `${error.instancePath || "/"}:${error.keyword}`))].sort();
+    return {action: "blocked", reason: "invalid_legacy_event", validationIssues};
   }
   return {action: "publish", reason: "legacy_public_event"};
 }

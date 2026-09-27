@@ -41,6 +41,12 @@ import {validateListOfferEventTargetsCallablePayload} from
 import {validateOfferEventTargetListCallableResponse} from
   "../../shared/generated/validators/offerEventTargetListOutput";
 
+import {setEventPublication as setPublication} from "./publication";
+import {validateSetEventPublicationCallablePayload} from
+  "../../shared/generated/validators/setEventPublicationInput";
+import {validateEventPublicationCallableResponse} from
+  "../../shared/generated/validators/eventPublicationOutput";
+
 export interface SetupCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -55,6 +61,9 @@ const defaultDeps: SetupCallableDependencies = {
     // Must stay closed until canonical schema + rules/public readers migrate.
     // No request field or environment toggle can bypass this release boundary.
     privacyMigrationReady: () => false,
+    // Ordinary event seat writers use the shared fence. The fresh initializer
+    // excludes demo-owned events, whose seed tooling has a legacy writer.
+    freshEventSeatWritersReady: () => true,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
     assertBasicsEditable: assertPrivateEventBasicsEditable,
@@ -189,3 +198,23 @@ export async function listOfferEventTargetsHandler(
 }
 export const listOfferEventTargets = onCall(appCheckCallableOptions,
   (request) => listOfferEventTargetsHandler(request));
+
+/** Changes visibility; registration and guest state stay separate. */
+export async function setEventPublicationHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateSetEventPublicationCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "setEventPublication");
+  const result = await setPublication({actorUid, command,
+    deps: deps.service(db)});
+  if (!validateEventPublicationCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event publication result.");
+  }
+  return result;
+}
+export const setEventPublication = onCall(appCheckCallableOptions,
+  (request) => setEventPublicationHandler(request));

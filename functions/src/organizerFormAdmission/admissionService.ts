@@ -1,6 +1,15 @@
+import {assertUnpartitionedAdmission} from "./admissionEligibility";
+import {newFormAttendee} from "./admissionRoster";
+import {checkoutHeldCount} from "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";
+import {rosterWithReservedWaitlistOffersInTransaction} from
+  "../events/eventPolicy";
 import {eventSourceRevision} from "../events/eventSourceRevision";
 import * as admin from "firebase-admin";
+import type {PreviewOrganizerFormAdmissionCallablePayload} from
+  "../shared/generated/previewOrganizerFormAdmissionCallablePayload";
+import type {PreviewOrganizerFormAdmissionCallableResponse} from
+  "../shared/generated/previewOrganizerFormAdmissionCallableResponse";
 import type {CommitOrganizerFormAdmissionCallablePayload} from
   "../shared/generated/commitOrganizerFormAdmissionCallablePayload";
 import type {CommitOrganizerFormAdmissionCallableResponse} from
@@ -49,6 +58,9 @@ import {parseStoredEventOffer} from
 import {AdmissionCommand, AdmissionFacts, AdmissionOwnership,
   AdmissionPolicyError, AdmissionReceipt, decideFormAdmission} from
   "./admissionPolicy";
+
+import {ApplicationAdmissionApproval, readApplicationAdmissionApproval} from
+  "./applicationAuthority";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u;
 const REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$/u;
@@ -105,8 +117,10 @@ function publicReceipt(receipt: AdmissionReceipt, replayed: boolean):
 
 function sourceFacts(response: OrganizerFormResponseDocument,
   version: OrganizerFormVersionDocument,
-  conversion: OrganizerFormConversionReceiptDocument,
-  responseId: string): AdmissionFacts["source"] {
+  conversion: OrganizerFormConversionReceiptDocument | undefined,
+  responseId: string,
+  applicationApproval: ApplicationAdmissionApproval | null):
+  AdmissionFacts["source"] {
   return {organizerId: response.organizerId, responseId,
     formId: response.formId, versionId: response.versionId,
     status: response.status, withdrawn: response.withdrawnAt !== null,
@@ -114,8 +128,8 @@ function sourceFacts(response: OrganizerFormResponseDocument,
     purpose: version.definition.purpose,
     targetKind: version.definition.defaultTargetKind,
     targetId: version.definition.defaultTargetId,
-    crmReceiptCompleted: conversion.status === "completed",
-    crmReceiptContactId: conversion.resultId};
+    crmReceiptCompleted: conversion?.status === "completed",
+    crmReceiptContactId: conversion?.resultId ?? null, applicationApproval};
 }
 
 /** No fabricated phone/email may leak from users/{uid} or Admin Auth. */
@@ -166,51 +180,49 @@ function attestedRevenueFields(offer: EventOffer):
     revenueOrderReference: null, revenueOrderAmountMinor: null};
 }
 
-function newFormAttendee(eventId: string, organizerId: string,
-  responseId: string, contact: OrganizerContactDocument,
-  response: OrganizerFormResponseDocument, verifiedPhone: string | null,
-  now: FirebaseFirestore.Timestamp): EventAttendeeDocument {
-  const displayName = contact.displayNameOverride?.trim() ||
-    contact.displayName.trim() || response.identity.displayName?.trim() ||
-    "Guest";
-  const linkedUid = response.respondentUid === contact.linkedUid ?
-    response.respondentUid : null;
-  return {eventId, clubId: organizerId, organizerId,
-    displayName, searchName: displayName.toLocaleLowerCase("en"),
-    source: "hostManual", status: "registered",
-    linkedUid,
-    phoneE164: verifiedPhone === contact.phoneE164 ? verifiedPhone : null,
-    email: contact.email,
-    externalReference: responseId, arrivalGroup: null, ticketType: null,
-    importId: null, sourceRowId: responseId.slice(0, 120),
-    createdAt: now, updatedAt: now, registeredAt: now,
-    waitlistedAt: null, checkedInAt: null, cancelledAt: null,
-    checkedInBy: null, linkedAt: linkedUid ? now : null};
-}
-
-/**
- * Commits a reviewed organizer-form admission in one Firestore transaction.
- * All source, payment, identity, capacity and roster reads precede every write.
- * Endpoint and rules registration is owned by the shared API layer.
- */
+/** Commits only after re-reading the complete admission authority chain. */
 export async function commitOrganizerFormAdmission(
   params: FormAdmissionServiceDeps
 ): Promise<CommitOrganizerFormAdmissionCallableResponse> {
+  const result = await executeAdmission(params, true);
+  if ("canCommit" in result) conflict("Admission result changed.");
+  return result;
+}
+
+/** Runs the same preparation without applying any of its staged writes. */
+export async function previewOrganizerFormAdmission(
+  params: Omit<FormAdmissionServiceDeps, "payload"> & {
+    payload: PreviewOrganizerFormAdmissionCallablePayload;
+  }
+): Promise<PreviewOrganizerFormAdmissionCallableResponse> {
+  const result = await executeAdmission(params, false);
+  if (!("canCommit" in result)) conflict("Admission preview changed.");
+  return result;
+}
+
+async function executeAdmission(
+  params: Omit<FormAdmissionServiceDeps, "payload"> & {
+    payload: PreviewOrganizerFormAdmissionCallablePayload |
+      CommitOrganizerFormAdmissionCallablePayload;
+  }, commit: boolean
+): Promise<CommitOrganizerFormAdmissionCallableResponse |
+  PreviewOrganizerFormAdmissionCallableResponse> {
   const {db, payload, actorUid} = params;
-  const command: AdmissionCommand = {...payload, actorUid};
+  const reviewed = commit ? payload as
+    CommitOrganizerFormAdmissionCallablePayload : null;
   if (![actorUid, payload.organizerId, payload.eventId,
     payload.responseId, payload.contactId, payload.offerId]
     .every((value) => typeof value === "string" && ID.test(value)) ||
-    !REQUEST_ID.test(payload.requestId) ||
-    ![payload.expectedOfferRevision, payload.expectedOfferGeneration,
-      payload.expectedLedgerRevision].every((value) =>
-      Number.isSafeInteger(value) && value > 0)) {
+    reviewed && (!REQUEST_ID.test(reviewed.requestId) ||
+      ![reviewed.expectedOfferRevision, reviewed.expectedOfferGeneration,
+        reviewed.expectedLedgerRevision].every((value) =>
+        Number.isSafeInteger(value) && value > 0))) {
     throw new AdmissionPolicyError("invalid", "Invalid admission scope.");
   }
   const ownershipId = formAdmissionOwnershipId(payload.organizerId,
     payload.eventId, payload.responseId);
   const receiptId = formAdmissionReceiptId(payload.organizerId,
-    payload.requestId);
+    reviewed?.requestId ?? "preview_admission");
   const nowMillis = params.nowMillis ?? Date.now;
   const loadAuth = params.loadCurrentAuthUser ?? (async (uid: string) => {
     const user = await admin.auth().getUser(uid);
@@ -224,7 +236,8 @@ export async function commitOrganizerFormAdmission(
       read(db, tx, "organizers", payload.organizerId),
       read(db, tx, "users", actorUid),
       read(db, tx, "deletedUsers", actorUid),
-      read(db, tx, "organizerFormAdmissionReceipts", receiptId),
+      reviewed ? read(db, tx, "organizerFormAdmissionReceipts", receiptId) :
+        Promise.resolve(undefined),
       read(db, tx, "organizerFormAdmissions", ownershipId),
     ]);
     const organizer = organizerRaw as OrganizerDocument | undefined;
@@ -259,7 +272,8 @@ export async function commitOrganizerFormAdmission(
       const replayFacts = {manager, receipt: priorReceipt,
         sourceAdmission: sourceAdmission ?? null, nowMillis: now} as
         AdmissionFacts;
-      const decision = decideFormAdmission(command, replayFacts);
+      const decision = decideFormAdmission({...reviewed!, actorUid},
+        replayFacts);
       if (decision.kind !== "replay") conflict("Admission replay changed.");
       return publicReceipt(decision.receipt, true);
     }
@@ -287,7 +301,7 @@ export async function commitOrganizerFormAdmission(
     const event = eventRaw as EventDocument | undefined;
     const conversion = conversionRaw as
       OrganizerFormConversionReceiptDocument | undefined;
-    if (!response || !event || !conversion || !offerRaw ||
+    if (!response || !event || !offerRaw ||
         !validateOrganizerFormResponseDocument(responseRaw) ||
         response.organizerId !== payload.organizerId ||
         !ID.test(response.formId) || !ID.test(response.versionId) ||
@@ -303,13 +317,7 @@ export async function commitOrganizerFormAdmission(
           !response.respondentUid) ||
         event.clubId !== payload.organizerId ||
         event.organizerId !== undefined &&
-          event.organizerId !== payload.organizerId ||
-        conversion.organizerId !== payload.organizerId ||
-        conversion.responseId !== payload.responseId ||
-        conversion.formId !== response.formId ||
-        conversion.kind !== "crmContact" ||
-        conversion.status !== "completed" ||
-        !ID.test(conversion.resultId ?? "")) {
+          event.organizerId !== payload.organizerId) {
       unavailable("Current form, CRM or event source is unavailable.");
     }
     const expectedOfferId = eventOfferId({organizerId: payload.organizerId,
@@ -318,9 +326,15 @@ export async function commitOrganizerFormAdmission(
       conflict("Offer identity does not match this contact and event.");
     }
     const offer = parseStoredEventOffer(offerRaw, payload.offerId);
-    if (offer.applicationId !== payload.responseId ||
-        offer.sourceKind !== "formResponse") {
-      unavailable("Issued offer has a different response source.");
+    const applicationSource = (offer.sourceKind ?? "application") ===
+      "application";
+    if (!applicationSource && (offer.applicationId !== payload.responseId ||
+        !conversion || conversion.organizerId !== payload.organizerId ||
+        conversion.responseId !== payload.responseId ||
+        conversion.formId !== response.formId ||
+        conversion.kind !== "crmContact" || conversion.status !== "completed" ||
+        !ID.test(conversion.resultId ?? ""))) {
+      unavailable("Issued offer or CRM conversion has a different source.");
     }
     const [formRaw, versionRaw, originRaw] = await Promise.all([
       read(db, tx, "organizerForms", response.formId),
@@ -339,7 +353,8 @@ export async function commitOrganizerFormAdmission(
         version.organizerId !== payload.organizerId ||
         version.formId !== response.formId ||
         !version.definition ||
-        !["registration", "intake"].includes(version.definition.purpose) ||
+        !["registration", "intake", "application"]
+          .includes(version.definition.purpose) ||
         !["event", "organizer", "campaign"].includes(
           version.definition.defaultTargetKind) ||
         form.purpose !== version.definition.purpose ||
@@ -350,10 +365,15 @@ export async function commitOrganizerFormAdmission(
         origin.responseId !== payload.responseId ||
         origin.formId !== response.formId ||
         origin.eventId !== null ||
-        origin.originContactId !== conversion.resultId ||
+        !applicationSource &&
+          origin.originContactId !== conversion?.resultId ||
         origin.currentContactId !== payload.contactId) {
       unavailable("Immutable form version or CRM origin is unavailable.");
     }
+    const applicationApproval = applicationSource ?
+      await readApplicationAdmissionApproval({db, tx, response,
+        responseId: payload.responseId, version, origin, offer,
+        nowMillis: now}) : null;
     const contactRaw = await read(db, tx, "organizerContacts",
       payload.contactId);
     const contact = contactRaw as OrganizerContactDocument | undefined;
@@ -386,6 +406,9 @@ export async function commitOrganizerFormAdmission(
           response.identity.phoneE164 !== verifiedPhone)) {
       unavailable("Verified respondent phone changed.");
     }
+    // App-free CRM provenance does not establish a cohort or pair-hold right.
+    // Keep these policies closed until their shared reservation path is wired.
+    assertUnpartitionedAdmission(event);
     const fence = await readSeatMigrationWriterFence({db, tx,
       eventId: payload.eventId});
     if (fence !== "ready") unavailable("Seat migration is not ready.");
@@ -495,7 +518,7 @@ export async function commitOrganizerFormAdmission(
     }
     const facts: AdmissionFacts = {manager,
       source: sourceFacts(response, version, conversion,
-        payload.responseId),
+        payload.responseId, applicationApproval),
       origin: {organizerId: origin.organizerId,
         responseId: payload.responseId, formId: response.formId,
         originContactId: origin.originContactId,
@@ -508,7 +531,7 @@ export async function commitOrganizerFormAdmission(
         sourceRevision: sourceRevision ?? 0},
       offer: {offerId: offer.offerId, organizerId: offer.organizerId,
         eventId: offer.eventId, contactId: offer.contactId,
-        responseId: offer.applicationId,
+        responseId: payload.responseId,
         sourceKind: offer.sourceKind ?? "application",
         status: offer.status, generation: offer.generation,
         revision: offer.revision,
@@ -524,8 +547,24 @@ export async function commitOrganizerFormAdmission(
         sourceAttendeeId: identity.sourceAttendeeId,
         rosterTarget, catchParticipation},
       receipt: null, sourceAdmission: null, nowMillis: now};
+    // Preview expectations come from this transaction, never from the client.
+    const command: AdmissionCommand = reviewed ? {...reviewed, actorUid} :
+      {...payload, actorUid, requestId: "preview_admission",
+        expectedOfferRevision: offer.revision,
+        expectedOfferGeneration: offer.generation,
+        expectedLedgerRevision: ledger.revision};
     const decision = decideFormAdmission(command, facts);
     if (decision.kind !== "commit") conflict("Admission decision changed.");
+    if (decision.seatAction === "reserve") {
+      const withOffers = await rosterWithReservedWaitlistOffersInTransaction(
+        tx, db, payload.eventId, {bookedCountsByCohort: {},
+          waitlistedCountsByCohort: {},
+          totalBooked: ledger.occupied + checkoutHeldCount(ledger)},
+        {nowMillis: now});
+      if (withOffers.totalBooked >= ledger.capacity) {
+        unavailable("Available seats are reserved by current waitlist offers.");
+      }
+    }
     // A reserve preparation may perform more reads and cannot stage writes.
     const preparedSeat = decision.seatAction === "reserve" ?
       await prepareFirestoreSeat({db, tx,
@@ -594,17 +633,27 @@ export async function commitOrganizerFormAdmission(
         attendeeAliasRaw.state !== "ready")) {
       conflict("Existing Catch roster alias is not current.");
     }
+    if (!reviewed) {
+      return {organizerId: payload.organizerId, eventId: payload.eventId,
+        responseId: payload.responseId, contactId: payload.contactId,
+        offerId: payload.offerId, canCommit: true,
+        expectedOfferRevision: offer.revision,
+        expectedOfferGeneration: offer.generation,
+        expectedLedgerRevision: ledger.revision,
+        seatAlreadyOccupied: decision.seatAction === "retain",
+        paymentAuthority: decision.paymentAuthority, blocker: null};
+    }
     const resultingLedgerRevision = preparedSeat ?
       preparedSeat.plan.result.receipt.appliedLedgerRevision :
       identity.resultingLedgerRevision;
     const receipt: AdmissionReceipt = {organizerId: payload.organizerId,
       eventId: payload.eventId, responseId: payload.responseId,
       contactId: payload.contactId, offerId: payload.offerId,
-      requestId: payload.requestId, receiptId,
+      requestId: reviewed.requestId, receiptId,
       requestHash: decision.requestHash,
-      expectedOfferRevision: payload.expectedOfferRevision,
-      expectedOfferGeneration: payload.expectedOfferGeneration,
-      expectedLedgerRevision: payload.expectedLedgerRevision,
+      expectedOfferRevision: reviewed.expectedOfferRevision,
+      expectedOfferGeneration: reviewed.expectedOfferGeneration,
+      expectedLedgerRevision: reviewed.expectedLedgerRevision,
       attendeeId, canonicalSeatKey: identity.identity.key,
       resultingLedgerRevision, admittedAtMillis: now,
       seatAlreadyOccupied: decision.seatAction === "retain", actorUid};
@@ -612,11 +661,11 @@ export async function commitOrganizerFormAdmission(
       organizerId: payload.organizerId, eventId: payload.eventId,
       responseId: payload.responseId, receiptId, attendeeId,
       canonicalSeatKey: identity.identity.key, offerId: payload.offerId,
-      offerRevision: payload.expectedOfferRevision,
-      offerGeneration: payload.expectedOfferGeneration};
+      offerRevision: reviewed.expectedOfferRevision,
+      offerGeneration: reviewed.expectedOfferGeneration};
     const storedReceipt = {...receipt,
       paymentSnapshot: offer.paymentSnapshot,
-      manualPayment: offer.manualPayment};
+      manualPayment: offer.manualPayment, applicationApproval};
     if (!validateOrganizerFormAdmissionReceiptDocument(storedReceipt) ||
         !validateOrganizerFormAdmissionDocument(ownership)) {
       conflict("Prepared admission receipt is invalid.");

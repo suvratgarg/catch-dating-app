@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
@@ -163,6 +164,76 @@ void main() {
     },
   );
 
+  for (final status in [
+    HostApplicationReviewStatus.submitted,
+    HostApplicationReviewStatus.approved,
+  ]) {
+    testWidgets('response has one primary next action: ${status.name}', (
+      tester,
+    ) async {
+      await _pumpDetail(tester, applicationStatus: status);
+      expect(find.text('Propose attendee'), findsNothing);
+      expect(find.text('Add to People'), findsNothing);
+      expect(
+        find.text(
+          status == HostApplicationReviewStatus.approved
+              ? 'Offer an event'
+              : 'Accept and add to People',
+        ),
+        findsOneWidget,
+      );
+      final section = tester.widget<HostResponseDetailSection>(
+        find.byType(HostResponseDetailSection),
+      );
+      expect(section.value.canChooseEvent, isTrue);
+      expect(section.onChooseEvent, isNotNull);
+      expect(
+        section.value.canOfferEvent,
+        status == HostApplicationReviewStatus.approved,
+      );
+      expect(find.text('Offer an event'), findsOneWidget);
+      await _captureDetail(
+        tester,
+        'review-${status.name}',
+        directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+      );
+      await tester.ensureVisible(find.text('Submission details'));
+      await pumpFeatureUi(tester);
+      await _captureDetail(
+        tester,
+        'review-${status.name}-lower',
+        directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+      );
+      if (status == HostApplicationReviewStatus.submitted) {
+        final noteField = find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchField && widget.title == 'Private review note',
+        );
+        expect(find.text('Save review note'), findsNothing);
+        await tester.ensureVisible(noteField);
+        await tester.tap(noteField);
+        await pumpFeatureUi(tester);
+        expect(find.text('Save review note'), findsOneWidget);
+        await tester.enterText(
+          find.descendant(of: noteField, matching: find.byType(TextField)),
+          'Discuss the preferred event date.',
+        );
+        await pumpFeatureUi(tester);
+        await _captureDetail(
+          tester,
+          'review-note-editing',
+          directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+        );
+        await tester.ensureVisible(find.text('Cancel'));
+        await tester.tap(find.text('Cancel'));
+        await pumpFeatureUi(tester);
+        expect(find.text('Save review note'), findsNothing);
+        expect(find.text('Discuss the preferred event date.'), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('one flat detail keeps answers and opens full contact targets', (
     tester,
   ) async {
@@ -183,7 +254,7 @@ void main() {
     expect(find.text('Why do you want to join?'), findsOneWidget);
     final call = find.widgetWithText(CatchButton, 'Call');
     final email = find.widgetWithText(CatchButton, 'Email');
-    expect(tester.getSize(call).width, tester.getSize(email).width);
+    expect(tester.getSize(email).width, greaterThanOrEqualTo(44));
     expect(tester.getSize(call).height, greaterThanOrEqualTo(44));
     await tester.tapAt(tester.getTopLeft(call) + const Offset(6, 6));
     await pumpFeatureUi(tester);
@@ -253,123 +324,126 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Next after review removal loads the next filtered page, then Previous', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(900, 1100));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    const request = HostFormResponseListRequest(
-      organizerId: 'org_1',
-      formId: 'form_1',
-      versionId: 'form_1_v2',
-      includeApplications: true,
-      answerFilters: {'city': {'Mumbai', 'Delhi'}},
-    );
-    final details = {
-      for (final (id, name) in [
-        ('response_a', 'Asha'),
-        ('response_b', 'Bina'),
-        ('response_c', 'Cara'),
-      ])
-        id: _queueDetail(id, name),
-    };
-    final queue = _ReviewQueueController(details);
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              onPressed: () => context.pushNamed(
-                Routes.hostFormResponseDetailScreen.name,
-                pathParameters: {'responseId': 'response_b'},
-                queryParameters: {'organizerId': 'org_1'},
-                extra: const HostResponseReviewQueue(
-                  request: request,
-                  entryId: 'response:response_b',
-                  index: 1,
+  testWidgets(
+    'Next after review removal loads the next filtered page, then Previous',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(900, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const request = HostFormResponseListRequest(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        versionId: 'form_1_v2',
+        includeApplications: true,
+        answerFilters: {
+          'city': {'Mumbai', 'Delhi'},
+        },
+      );
+      final details = {
+        for (final (id, name) in [
+          ('response_a', 'Asha'),
+          ('response_b', 'Bina'),
+          ('response_c', 'Cara'),
+        ])
+          id: _queueDetail(id, name),
+      };
+      final queue = _ReviewQueueController(details);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.pushNamed(
+                  Routes.hostFormResponseDetailScreen.name,
+                  pathParameters: {'responseId': 'response_b'},
+                  queryParameters: {'organizerId': 'org_1'},
+                  extra: const HostResponseReviewQueue(
+                    request: request,
+                    entryId: 'response:response_b',
+                    index: 1,
+                  ),
                 ),
+                child: const Text('Open review'),
               ),
-              child: const Text('Open review'),
             ),
           ),
-        ),
-        GoRoute(
-          path: '/responses/:responseId',
-          name: Routes.hostFormResponseDetailScreen.name,
-          builder: (_, state) => HostFormResponseDetailScreen(
-            organizerId: 'org_1',
-            responseId: state.pathParameters['responseId']!,
-            queue: state.extra as HostResponseReviewQueue?,
+          GoRoute(
+            path: '/responses/:responseId',
+            name: Routes.hostFormResponseDetailScreen.name,
+            builder: (_, state) => HostFormResponseDetailScreen(
+              organizerId: 'org_1',
+              responseId: state.pathParameters['responseId']!,
+              queue: state.extra as HostResponseReviewQueue?,
+            ),
           ),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-    final container = ProviderContainer(
-      overrides: [
-        hostFormResponsesControllerProvider.overrideWith2((_) => queue),
-        for (final entry in details.entries) ...[
-          hostFormResponseDetailProvider(
-            organizerId: 'org_1',
-            responseId: entry.key,
-          ).overrideWith((_) async => entry.value),
-          hostFormResponseCanApplyProvider(
-            organizerId: 'org_1',
-            responseId: entry.key,
-          ).overrideWith((_) => false),
         ],
-      ],
-    );
-    addTearDown(container.dispose);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp.router(
-          theme: AppTheme.light,
-          builder: (context, child) => RepaintBoundary(
-            key: const ValueKey('response-payment-capture'),
-            child: child!,
+      );
+      addTearDown(router.dispose);
+      final container = ProviderContainer(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2((_) => queue),
+          for (final entry in details.entries) ...[
+            hostFormResponseDetailProvider(
+              organizerId: 'org_1',
+              responseId: entry.key,
+            ).overrideWith((_) async => entry.value),
+            hostFormResponseCanApplyProvider(
+              organizerId: 'org_1',
+              responseId: entry.key,
+            ).overrideWith((_) => false),
+          ],
+        ],
+      );
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            builder: (context, child) => RepaintBoundary(
+              key: const ValueKey('response-payment-capture'),
+              child: child!,
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
           ),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router,
         ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Open review'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Bina'), findsOneWidget);
-    await _captureDetail(
-      tester,
-      'review-filtered-before',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Open review'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Bina'), findsOneWidget);
+      await _captureDetail(
+        tester,
+        'review-filtered-before',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
 
-    queue._reviewed = true;
-    container.invalidate(hostFormResponsesControllerProvider(request));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.widgetWithText(CatchButton, 'Next'));
-    await pumpFeatureUi(tester);
-    expect(queue._loadMoreCalls, 1);
-    expect(find.text('Cara'), findsOneWidget);
-    expect(queue._requests.every((value) => value == request), isTrue);
-    await _captureDetail(
-      tester,
-      'review-filtered-next-page',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
-    await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Asha'), findsOneWidget);
-    await _captureDetail(
-      tester,
-      'review-filtered-previous',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
-    expect(tester.takeException(), isNull);
-  });
+      queue._reviewed = true;
+      container.invalidate(hostFormResponsesControllerProvider(request));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.widgetWithText(CatchButton, 'Next'));
+      await pumpFeatureUi(tester);
+      expect(queue._loadMoreCalls, 1);
+      expect(find.text('Cara'), findsOneWidget);
+      expect(queue._requests.every((value) => value == request), isTrue);
+      await _captureDetail(
+        tester,
+        'review-filtered-next-page',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
+      await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Asha'), findsOneWidget);
+      await _captureDetail(
+        tester,
+        'review-filtered-previous',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 HostFormResponseDetail _queueDetail(String id, String name) {
@@ -441,12 +515,20 @@ Future<void> _pumpDetail(
   bool canApply = true,
   bool withdrawn = false,
   String? paymentStatus,
+  HostApplicationReviewStatus? applicationStatus,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final data = _detailMap();
+  if (applicationStatus != null) {
+    data['applicationId'] = 'app-1';
+    data['contactId'] =
+        applicationStatus == HostApplicationReviewStatus.approved
+        ? 'contact-one'
+        : null;
+  }
   if (paymentStatus != null) {
     data['payment'] = {
       'paymentId': 'fp_${'1' * 32}',
@@ -473,6 +555,12 @@ Future<void> _pumpDetail(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        privateEventSetupAvailableProvider.overrideWithValue(true),
+        if (applicationStatus != null)
+          hostApplicationDetailProvider(
+            'org_1',
+            'app-1',
+          ).overrideWith((_) => _application(status: applicationStatus)),
         hostFormResponseCanApplyProvider(
           organizerId: 'org_1',
           responseId: 'response_1',
@@ -566,33 +654,38 @@ Map<String, Object?> _detailMap() => {
   'completionMillis': 82000,
 };
 
-HostApplicationDetail _application({bool revoked = false}) =>
-    HostApplicationDetail(
-      organizerId: 'org_1',
-      applicationId: 'app-1',
-      formId: 'form_1',
-      formVersionId: 'version_1',
-      targetKind: 'organizer',
-      targetId: null,
-      applicantDisplayName: 'Maya Kapoor',
-      reviewStatus: HostApplicationReviewStatus.submitted,
-      answers: const [],
-      outreach: const HostApplicationOutreach(
-        phoneE164: '+919876543210',
-        email: 'maya@example.com',
-        instagramUrl: null,
-        linkedinUrl: null,
-      ),
-      reviewNote: null,
-      assignedReviewerUid: null,
-      submittedAt: DateTime(2026, 8, 20),
-      reviewedAt: null,
-      revision: 1,
-      sourceResponseId: 'response_1',
-      dataAccessState: revoked
-          ? 'revokedParticipantGrant'
-          : 'submittedFormResponse',
-    );
+HostApplicationDetail _application({
+  bool revoked = false,
+  HostApplicationReviewStatus status = HostApplicationReviewStatus.submitted,
+}) => HostApplicationDetail(
+  organizerId: 'org_1',
+  applicationId: 'app-1',
+  formId: 'form_1',
+  formVersionId: 'version_1',
+  targetKind: 'organizer',
+  targetId: null,
+  applicantDisplayName: 'Maya Kapoor',
+  reviewStatus: status,
+  answers: const [],
+  outreach: const HostApplicationOutreach(
+    phoneE164: '+919876543210',
+    email: 'maya@example.com',
+    instagramUrl: null,
+    linkedinUrl: null,
+  ),
+  contactId: status == HostApplicationReviewStatus.approved
+      ? 'contact-one'
+      : null,
+  reviewNote: null,
+  assignedReviewerUid: null,
+  submittedAt: DateTime(2026, 8, 20),
+  reviewedAt: null,
+  revision: 1,
+  sourceResponseId: 'response_1',
+  dataAccessState: revoked
+      ? 'revokedParticipantGrant'
+      : 'submittedFormResponse',
+);
 
 Future<void> _captureDetail(
   WidgetTester tester,

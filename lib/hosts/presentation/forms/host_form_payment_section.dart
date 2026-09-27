@@ -66,9 +66,22 @@ class HostFormPaymentSetupSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final fee = definition.payment;
+    final collection = state.setup.collection;
+    final throughCatch = collection?.throughCatch ?? false;
+    final oauth = collection == null || collection.throughOrganizer;
     final ready = state.setup.connections
-        .where((connection) => connection.ready)
+        .where(
+          (connection) =>
+              connection.ready &&
+              (collection?.mode == null || connection.mode == collection!.mode),
+        )
         .toList();
+    final canCollect = throughCatch
+        ? collection!.ready
+        : oauth &&
+              state.setup.available &&
+              (collection?.ready ?? true) &&
+              ready.isNotEmpty;
     final phoneVerified =
         definition.identityPolicy == HostFormIdentityPolicy.phoneVerified;
     return CatchSection.fieldRows(
@@ -89,11 +102,22 @@ class HostFormPaymentSetupSection extends StatelessWidget {
           body: l10n.hostFormPaymentHelp,
           bodyMaxLines: 6,
         ),
-        if (!state.setup.available)
+        if (throughCatch)
+          CatchField.content(
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostFormPaymentCatchCollection,
+            body: collection!.ready
+                ? l10n.hostFormPaymentCatchCollectionHelp
+                : l10n.hostFormPaymentCatchSetupRequired,
+            bodyMaxLines: 6,
+          )
+        else if (!oauth || !state.setup.available)
           CatchField.content(
             copy: catchFieldCopy(l10n),
             title: l10n.hostFormPaymentConnect,
-            body: l10n.hostFormPaymentUnavailable,
+            body: !oauth
+                ? l10n.hostFormPaymentCollectionUnavailable
+                : l10n.hostFormPaymentUnavailable,
             bodyMaxLines: 6,
           )
         else ...[
@@ -149,7 +173,7 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             body: l10n.hostFormPaymentPhoneRequired,
             bodyMaxLines: 5,
           ),
-        if (state.setup.available && ready.isEmpty)
+        if (oauth && state.setup.available && ready.isEmpty)
           CatchField.content(
             copy: catchFieldCopy(l10n),
             title: l10n.hostFormPaymentConfigure,
@@ -163,11 +187,7 @@ class HostFormPaymentSetupSection extends StatelessWidget {
               : l10n.hostFormPaymentEdit,
           body: fee?.refundPolicy,
           bodyMaxLines: 6,
-          onTap:
-              state.pending ||
-                  !state.setup.available ||
-                  ready.isEmpty ||
-                  !phoneVerified
+          onTap: state.pending || !canCollect || !phoneVerified
               ? null
               : () => _edit(context, ready),
         ),
@@ -187,8 +207,12 @@ class HostFormPaymentSetupSection extends StatelessWidget {
   ) async {
     final fee = await showCatchBottomSheet<HostFormPayment>(
       context: context,
-      builder: (_) =>
-          HostFormPaymentSheet(payment: definition.payment, connections: ready),
+      builder: (_) => HostFormPaymentSheet(
+        payment: definition.payment,
+        connections: ready,
+        collectThroughCatch: state.setup.collection?.throughCatch ?? false,
+        collectionMode: state.setup.collection?.mode,
+      ),
     );
     if (fee != null) onChanged(fee);
   }

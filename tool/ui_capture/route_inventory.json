@@ -19,8 +19,8 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 13,
-    "imperativePageTargetCount": 9
+    "imperativePageRouteCount": 18,
+    "imperativePageTargetCount": 12
   },
   "routes": [
     {
@@ -1584,6 +1584,15 @@
       "fullscreenDialogExpression": "true"
     },
     {
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
+      "line": 49,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
       "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
       "line": 326,
@@ -1593,12 +1602,48 @@
       "fullscreenDialogExpression": "true"
     },
     {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+      "line": 559,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId)",
+      "presentationTarget": "HostResponseOfferScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
       "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:1",
       "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
-      "line": 265,
+      "line": 290,
       "ordinal": 1,
-      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(key:ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
+      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,queryController:queryController)",
+      "presentationTarget": "HostResponseOfferScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "line": 146,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:2",
+      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "line": 267,
+      "ordinal": 2,
+      "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
+      "presentationTarget": "HostFormResponseDetailScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/host_event_manage_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "line": 197,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>PrivateEventCreateScreen(club:club,initialSavedEventId:event.id,initialPublicationReview:true,promptForDraftsOnStart:false)",
+      "presentationTarget": "PrivateEventCreateScreen",
       "fullscreenDialogExpression": null
     },
     {

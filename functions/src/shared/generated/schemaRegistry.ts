@@ -5,12 +5,33 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {setEventPublicationCallablePayloadSchema} from "./schemas/setEventPublicationInput";
+export {eventPublicationCallableResponseSchema} from "./schemas/eventPublicationOutput";
+export {publicEventPaymentDocumentSchema} from "./schemas/publicEventPaymentDocument";
+export {publicEventAdmissionReceiptDocumentSchema} from "./schemas/publicEventAdmissionReceiptDocument";
+export {eventRegistrationReceiptDocumentSchema} from "./schemas/eventRegistrationReceiptDocument";
+export {managePublicEventCheckoutCallablePayloadSchema} from "./schemas/managePublicEventCheckoutInput";
+export {managePublicEventCheckoutCallableResponseSchema} from "./schemas/managePublicEventCheckoutOutput";
+export {configureEventRegistrationCallablePayloadSchema} from "./schemas/configureEventRegistrationInput";
+export {configureEventRegistrationCallableResponseSchema} from "./schemas/configureEventRegistrationOutput";
+export {organizerEventOfferPaymentDocumentSchema} from "./schemas/organizerEventOfferPaymentDocument";
+export {organizerEventOfferRecipientDocumentSchema} from "./schemas/organizerEventOfferRecipientDocument";
+export {paymentRoutingSnapshotSchema} from "./schemas/paymentRoutingSnapshot";
+export {managePaymentRoutingPolicyCallablePayloadSchema} from "./schemas/managePaymentRoutingPolicyInput";
+export {managePaymentRoutingPolicyCallableResponseSchema} from "./schemas/managePaymentRoutingPolicyOutput";
+export {manageEventOfferCheckoutCallablePayloadSchema} from "./schemas/manageEventOfferCheckoutInput";
+export {prepareEventOfferInvitationCallablePayloadSchema} from "./schemas/prepareEventOfferInvitationInput";
+export {prepareEventOfferInvitationCallableResponseSchema} from "./schemas/prepareEventOfferInvitationOutput";
+export {manageEventOfferCheckoutCallableResponseSchema} from "./schemas/manageEventOfferCheckoutOutput";
+export {previewOrganizerFormAdmissionCallablePayloadSchema} from "./schemas/previewOrganizerFormAdmissionInput";
+export {previewOrganizerFormAdmissionCallableResponseSchema} from "./schemas/previewOrganizerFormAdmissionOutput";
 export {organizerFormAdmissionDocumentSchema} from "./schemas/organizerFormAdmissionDocument";
 export {commitOrganizerFormAdmissionCallablePayloadSchema} from "./schemas/commitOrganizerFormAdmissionInput";
 export {commitOrganizerFormAdmissionCallableResponseSchema} from "./schemas/commitOrganizerFormAdmissionOutput";
 export {organizerFormAdmissionReceiptDocumentSchema} from "./schemas/organizerFormAdmissionReceiptDocument";
 export {configureEventOfferPreferencesCallablePayloadSchema} from "./schemas/configureEventOfferPreferencesInput";
 export {configureEventOfferPreferencesCallableResponseSchema} from "./schemas/configureEventOfferPreferencesOutput";
+export {previewEventOfferPreferencesCallableResponseSchema} from "./schemas/previewEventOfferPreferencesOutput";
 export {eventOfferConfigurationReceiptDocumentSchema} from "./schemas/eventOfferConfigurationReceiptDocument";
 export {listOfferEventTargetsCallablePayloadSchema} from "./schemas/listOfferEventTargetsInput";
 export {offerEventTargetListCallableResponseSchema} from "./schemas/offerEventTargetListOutput";
@@ -301,6 +322,7 @@ export {organizerFormDocumentSchema} from "./schemas/organizerFormDocument";
 export {organizerFormDomainDocumentSchema} from "./schemas/organizerFormDomainDocument";
 export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
 export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
+export {paymentRoutingPolicyDocumentSchema} from "./schemas/paymentRoutingPolicyDocument";
 export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
 export {organizerFormPaymentWebhookDocumentSchema} from "./schemas/organizerFormPaymentWebhookDocument";
 export {organizerFormDraftDocumentSchema} from "./schemas/organizerFormDraftDocument";

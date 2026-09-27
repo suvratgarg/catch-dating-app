@@ -20,7 +20,9 @@
         "create",
         "update",
         "preferences",
-        "details"
+        "details",
+        "publish",
+        "unpublish"
       ]
     },
     "actorUid": {

@@ -1,3 +1,4 @@
+import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {randomBytes} from "crypto";
@@ -69,7 +70,6 @@ import {
 } from "./eventPayloadNormalization";
 import {
   EventPolicyBundleDocument,
-  eventPolicyFromEvent,
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
@@ -109,8 +109,7 @@ import {
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
-import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
-import {SeatLedger} from "./seatAuthority/seatAuthority";
+import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
 
@@ -533,7 +532,7 @@ export async function updateEventHandler(
     const seatState = seatMode === "ready" ?
       await prepareEventMutationLedger(db, tx, data.eventId, event,
         nextEvent) : null;
-    if (seatState && seatState.occupied > 0 &&
+    if (seatState && seatState.reserved > 0 &&
         (hasScheduleTimeChange(data.fields) || hasPolicyChange(data.fields))) {
       throw new HttpsError("failed-precondition",
         "Events with reserved seats cannot change schedule or policy.");
@@ -912,53 +911,6 @@ export async function deleteEventHandler(
   return {deleted: true};
 }
 
-/** Keep permitted event policy edits atomic with their capacity authority. */
-async function prepareEventMutationLedger(
-  db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction,
-  eventId: string,
-  before: EventDocument,
-  after: EventDocument
-): Promise<{update: SeatLedger | null; occupied: number}> {
-  const snap = await tx.get(db.collection("eventSeatLedgers").doc(eventId));
-  const ledger = snap.data() as SeatLedger | undefined;
-  let previous;
-  let next;
-  try {
-    previous = deriveEventSeatPolicy(before);
-    next = deriveEventSeatPolicy(after);
-  } catch {
-    throw new HttpsError("failed-precondition",
-      "Invalid seat capacity policy.");
-  }
-  if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
-      ledger.capacity !== previous.capacity ||
-      ledger.policyHash !== previous.policyHash ||
-      ledger.policyVersion !== previous.policyVersion ||
-      !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
-      ledger.occupied > ledger.capacity ||
-      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
-      ledger.revision >= Number.MAX_SAFE_INTEGER ||
-      !Number.isSafeInteger(ledger.capacityRevision) ||
-      ledger.capacityRevision < 1 ||
-      ledger.capacityRevision >= Number.MAX_SAFE_INTEGER ||
-      !Number.isSafeInteger(ledger.migrationRevision) ||
-      ledger.migrationRevision < 1 || next.capacity < ledger.occupied) {
-    throw new HttpsError("failed-precondition",
-      "Seat capacity needs reconciliation before this edit.");
-  }
-  if (previous.policyHash === next.policyHash) {
-    return {update: null, occupied: ledger.occupied};
-  }
-  if (ledger.occupied > 0) {
-    throw new HttpsError("failed-precondition",
-      "Events with reserved seats cannot change admission policy.");
-  }
-  return {occupied: ledger.occupied, update: {...ledger,
-    capacity: next.capacity, policyHash: next.policyHash,
-    policyVersion: next.policyVersion, revision: ledger.revision + 1,
-    capacityRevision: ledger.capacityRevision + 1}};
-}
 
 async function cleanupRemovedEventMedia(
   deps: EventMutationDeps,
@@ -1748,7 +1700,24 @@ function buildUpdateEventPatch(
     patch.eventFormat = normalizeEventFormat(fields.eventFormat);
   }
   if (fields.publicRegistrationEnabled !== undefined) {
+    if (event.publicRegistrationMode === "paid" &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      throw new HttpsError("failed-precondition",
+        "Use event registration settings to change paid registration.");
+    }
     patch.publicRegistrationEnabled = fields.publicRegistrationEnabled;
+    if (event.publicRegistrationMode !== undefined &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      const revision = event.publicRegistrationRevision ?? 0;
+      if (!Number.isSafeInteger(revision) ||
+          revision >= Number.MAX_SAFE_INTEGER) {
+        throw new HttpsError("failed-precondition",
+          "Invalid registration revision.");
+      }
+      patch.publicRegistrationMode = fields.publicRegistrationEnabled ?
+        "free" : "closed";
+      patch.publicRegistrationRevision = revision + 1;
+    }
   }
   if (fields.constraints !== undefined) {
     patch.constraints = normalizeConstraints(fields.constraints);
@@ -2119,22 +2088,8 @@ function assertStandalonePublicRegistrationPolicy(
       event.constraints,
     eventPolicy: fields.eventPolicy ?? event.eventPolicy,
   };
-  const policy = eventPolicyFromEvent(mergedEvent);
-  if (policy.pricing.basePriceInPaise > 0) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Disable website OTP registration before making this a paid event."
-    );
-  }
-  if (policy.admission.format !== "open" ||
-      policy.admission.inviteRequired === true ||
-      policy.admission.membershipRequired === true ||
-      policy.admission.manualApprovalRequired === true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website OTP registration currently supports open-admission events."
-    );
-  }
+  assertPublicRegistrationTerms(mergedEvent,
+    event.publicRegistrationMode === "paid" ? "paid" : "free");
 }
 
 /**

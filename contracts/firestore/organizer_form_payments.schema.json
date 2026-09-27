@@ -38,6 +38,9 @@
     "lastErrorCode"
   ],
   "properties": {
+    "routing": {
+      "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
+    },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
@@ -54,7 +57,7 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
     "connectionId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]
     },
     "accountId": {
       "type": "string",

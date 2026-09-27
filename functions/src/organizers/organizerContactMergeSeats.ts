@@ -146,6 +146,9 @@ function reservationCore(value: FirebaseFirestore.DocumentData | undefined,
   eventId: string, key: string, revision: number):
   ReservationCore | null {
   if (!value) return null;
+  if (value.checkoutHold !== undefined) {
+    fail("A checkout hold must finish before merging or unmerging contacts.");
+  }
   if (value.eventId !== eventId || value.canonicalKey !== key ||
       value.identityRevision !== revision || !positive(value.revision) ||
       typeof value.active !== "boolean") {

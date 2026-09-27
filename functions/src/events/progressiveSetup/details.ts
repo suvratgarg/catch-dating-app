@@ -1,7 +1,7 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {OrganizerEventVenueDocument} from
+import type {EventDocument, OrganizerEventVenueDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
@@ -15,6 +15,8 @@ import {projectManagerEventSetupDefaults} from
 import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
 import {assertPrivateEventBasicsEditable} from "./commitments";
+import {eventListingTermsPatch, preparePrivateListingTerms} from
+  "./listingTerms";
 import {assertPrivacyReady, authorizeSetupManager, receiptFor,
   requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
@@ -38,7 +40,6 @@ function duration(value: unknown): number {
 
 function venueName(value: unknown): string {
   if (!value || typeof value !== "object" ||
-      Object.keys(value).join(",") !== "name" ||
       typeof (value as {name?: unknown}).name !== "string") {
     throw new HttpsError("invalid-argument", "Invalid event venue.");
   }
@@ -148,6 +149,7 @@ export async function updatePrivateEventDetails(params: {
     const next: Record<string, unknown> = {...event};
     const patch: Record<string, unknown> = {};
     const drop = (key: string) => {
+      if (!(key in next)) return;
       delete next[key];
       patch[key] = admin.firestore.FieldValue.delete();
     };
@@ -155,6 +157,19 @@ export async function updatePrivateEventDetails(params: {
       next[key] = value;
       patch[key] = value;
     };
+    if (command.details.description !== undefined) {
+      set("description", command.details.description.trim());
+    }
+    if (command.details.distanceKm !== undefined) {
+      set("distanceKm", command.details.distanceKm);
+    }
+    if (command.details.pace !== undefined) set("pace", command.details.pace);
+    const terms = command.details.admissionTerms;
+    if (terms) {
+      const termsPatch = eventListingTermsPatch(
+        event as unknown as EventDocument, terms);
+      for (const [key, value] of Object.entries(termsPatch)) set(key, value);
+    }
     const durationDecision = command.details.durationMinutes;
     if (durationDecision) {
       if (durationDecision.mode === "clear") {
@@ -174,13 +189,26 @@ export async function updatePrivateEventDetails(params: {
           minutes * 60_000));
       }
     }
+    if (event.firstPublishedAt !== undefined &&
+        canonicalJson(event.endTime) !== canonicalJson(next.endTime)) {
+      throw new HttpsError("failed-precondition",
+        "A previously published schedule needs the event change flow.");
+    }
     if (venueDecision) {
       for (const key of ["meetingPoint", "meetingLocation", "sourceVenueId",
         "startingPointLat", "startingPointLng", "locationDetails"]) {
         drop(key);
       }
       if (venueDecision.mode === "set") {
-        set("meetingPoint", venueName(venueDecision.value));
+        const location = venueDecision.value;
+        const name = venueName(location);
+        set("meetingPoint", name);
+        if ("latitude" in location && "longitude" in location) {
+          set("meetingLocation", {...location, name});
+          set("startingPointLat", location.latitude);
+          set("startingPointLng", location.longitude);
+          set("locationDetails", location.notes ?? null);
+        }
       } else if (venueDecision.mode === "inherit" && savedVenue) {
         set("meetingPoint", savedVenue.meetingLocation.name);
         set("meetingLocation", savedVenue.meetingLocation);
@@ -195,6 +223,18 @@ export async function updatePrivateEventDetails(params: {
     if (formatDecision?.mode === "set") {
       set("eventFormat", formatDecision.value);
     }
+    if (formatDecision?.mode === "set") {
+      const distanceKinds = ["socialRun", "running", "walking", "cycling"];
+      if (!distanceKinds.includes(formatDecision.value.activityKind)) {
+        // Compatibility fields are hidden for non-distance formats by readers.
+        set("distanceKm", 0);
+        set("pace", "easy");
+      } else if (!event.eventFormat ||
+          !distanceKinds.includes(event.eventFormat.activityKind)) {
+        if (command.details.distanceKm === undefined) drop("distanceKm");
+        if (command.details.pace === undefined) drop("pace");
+      }
+    }
     // Hosts can complete location/duration after offers or roster import.
     // Format changes can alter cohort/rotation expectations, so they retain
     // the same commitment guard as date/city changes. Unchanged format is
@@ -207,6 +247,18 @@ export async function updatePrivateEventDetails(params: {
     }
     if (!validateEventDocument(next)) {
       throw new HttpsError("invalid-argument", "Invalid event details.");
+    }
+    const ledger = terms ? await preparePrivateListingTerms({db, tx,
+      eventId: command.eventId, before: event as unknown as EventDocument,
+      after: next as unknown as EventDocument,
+      allWritersIntegrated: deps.freshEventSeatWritersReady}) : null;
+    if (ledger?.ledger) {
+      tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
+        ledger.ledger);
+    }
+    if (ledger?.fence) {
+      tx.create(db.collection("eventSeatMigrationFences")
+        .doc(command.eventId), ledger.fence);
     }
     tx.update(eventRef, {...patch, setupRevision: revision + 1,
       updatedAt: deps.serverTimestamp()});

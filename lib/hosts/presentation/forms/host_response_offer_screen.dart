@@ -1,0 +1,302 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/clipboard.dart';
+import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+/// Shared continuation for one response or a reviewed query selection.
+/// The originating page stays mounted; save/cancel returns to the same context.
+class HostResponseOfferScreen extends ConsumerStatefulWidget {
+  const HostResponseOfferScreen({
+    super.key,
+    required this.organizerId,
+    this.responseId,
+    this.queryController,
+  }) : assert((responseId == null) != (queryController == null));
+  final String organizerId;
+  final String? responseId;
+  final HostResponseQueryController? queryController;
+  @override
+  ConsumerState<HostResponseOfferScreen> createState() =>
+      _HostResponseOfferScreenState();
+}
+
+class _HostResponseOfferScreenState
+    extends ConsumerState<HostResponseOfferScreen> {
+  HostEventOfferController? _offers;
+  String? _accountId;
+  bool _accountLost = false;
+  HostOfferEventTarget? _created;
+  bool _creating = false;
+  final _primaryAction = ValueNotifier<Widget?>(null);
+  Widget? _pendingAction;
+  bool _actionUpdateScheduled = false;
+
+  bool _current(String accountId) =>
+      mounted &&
+      !_accountLost &&
+      _accountId == accountId &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
+
+  @override
+  void dispose() {
+    _offers?.dispose();
+    _primaryAction.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createEvent() async {
+    final account = _accountId;
+    final selection = widget.queryController?.selectionIntent;
+    if (_creating ||
+        account == null ||
+        !_current(account) ||
+        !ref.read(privateEventSetupAvailableProvider)) {
+      return;
+    }
+    setState(() => _creating = true);
+    try {
+      final eventId = await context.pushNamed<String>(
+        Routes.hostCreateEventScreen.name,
+        pathParameters: {'clubId': widget.organizerId},
+        extra: const HostCreateEventRouteArguments(
+          returnToResponsesOnSave: true,
+        ),
+      );
+      if (eventId == null || !_current(account)) return;
+      if (widget.queryController case final query?) {
+        if (selection == null ||
+            !await query.revalidateSelection(
+              ids: selection.ids,
+              resultHash: selection.resultHash,
+            )) {
+          throw StateError('Response selection changed.');
+        }
+      }
+      final summary = await PrivateEventSetupRepository(
+        ref.read(firebaseFunctionsProvider),
+      ).get(organizerId: widget.organizerId, eventId: eventId);
+      if (!_current(account)) return;
+      if (summary.organizerId != widget.organizerId ||
+          summary.eventId != eventId ||
+          summary.status != 'active') {
+        throw StateError('Event changed.');
+      }
+      final current = widget.queryController?.selectionIntent;
+      if (selection != null &&
+          (current?.resultHash != selection.resultHash ||
+              current!.ids.join('\u0000') != selection.ids.join('\u0000'))) {
+        throw StateError('Response selection changed.');
+      }
+      setState(
+        () => _created = HostOfferEventTarget(
+          eventId: summary.eventId,
+          name: summary.name,
+          startTime: DateTime.fromMillisecondsSinceEpoch(
+            summary.startTimeMillis,
+          ),
+          timezone: summary.timezone,
+          publicationState: 'private',
+          setupRevision: summary.setupRevision,
+        ),
+      );
+    } on Object catch (error) {
+      if (mounted && _current(account)) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.event,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _creating = false);
+    }
+  }
+
+  Future<void> _settings(String eventId) async {
+    final account = _accountId;
+    if (account == null || !_current(account)) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (routeContext) => HostEventOfferPreferencesScreen(
+          organizerId: widget.organizerId,
+          eventId: eventId,
+          onBack: () => Navigator.of(routeContext).pop(),
+        ),
+      ),
+    );
+  }
+
+  HostFormAdmissionController _admission(
+    HostEventOffer offer,
+    String responseId,
+  ) {
+    final gateway = CallableHostFormAdmissionGateway(
+      ref.read(firebaseFunctionsProvider),
+    );
+    String? currentAccount() => ref.read(firebaseAuthProvider).currentUser?.uid;
+    return HostFormAdmissionController(
+      accountId: _accountId!,
+      scope: HostFormAdmissionScope.fromOffer(offer, responseId: responseId),
+      gateway: gateway,
+      currentAccountId: currentAccount,
+      outbox: JournalHostFormAdmissionOutbox(
+        gateway: gateway,
+        storage: ref.read(commandJournalStorageProvider),
+        currentAccountId: currentAccount,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = ref.watch(privateEventSetupAvailableProvider);
+    final uid = enabled ? ref.watch(uidProvider).asData?.value : null;
+    final liveUid = enabled
+        ? ref.watch(firebaseAuthProvider).currentUser?.uid
+        : null;
+    if (_accountId != null && (uid != _accountId || liveUid != _accountId)) {
+      _accountLost = true;
+      _offers?.dispose();
+      _offers = null;
+    }
+    final available = enabled && !_accountLost && uid != null && uid == liveUid;
+    if (available && _offers == null) {
+      _accountId = uid;
+      _offers = HostEventOfferController.forCallables(
+        functions: ref.read(firebaseFunctionsProvider),
+        storage: ref.read(commandJournalStorageProvider),
+        currentAccountId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      );
+    }
+    final gateway = available
+        ? CallableHostEventOfferGateway(ref.read(firebaseFunctionsProvider))
+        : null;
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        title: context.l10n.hostResponseOfferEvent,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+      ),
+      footer: available
+          ? ValueListenableBuilder<Widget?>(
+              valueListenable: _primaryAction,
+              builder: (_, action, _) => action ?? const SizedBox.shrink(),
+            )
+          : null,
+      body: CatchRouteBody.standardSections(
+        sections: [
+          CatchSectionListItem(
+            child: !available
+                ? Text(
+                    context.l10n.hostEventOfferUnavailable,
+                    style: CatchTextStyles.supporting(context),
+                  )
+                : HostEventOfferWorkspaceSection(
+                    organizerId: widget.organizerId,
+                    accountId: _accountId,
+                    responseId: widget.responseId,
+                    queryController: widget.queryController,
+                    offerController: _offers!,
+                    initiallyReviewSelection: true,
+                    initialEventTarget: _created,
+                    onCreateEvent: _creating ? null : _createEvent,
+                    listOffers: gateway!.listOffers,
+                    getOffer: gateway.getOffer,
+                    prepareHandoff: gateway.prepareHandoff,
+                    copyMessage: (text) =>
+                        ref.read(clipboardControllerProvider).copyText(text),
+                    openHandoff: (uri) => ref
+                        .read(externalLinkControllerProvider)
+                        .openExternal(uri),
+                    targets: CallableHostOfferEventTargetsGateway(
+                      ref.read(firebaseFunctionsProvider),
+                    ),
+                    getResponseDetail: (id) => ref.refresh(
+                      hostFormResponseDetailProvider(
+                        organizerId: widget.organizerId,
+                        responseId: id,
+                      ).future,
+                    ),
+                    isResponseReviewed: (detail) async {
+                      final id = detail.applicationId;
+                      if (id == null) return true;
+                      final application = await ref.refresh(
+                        hostApplicationDetailProvider(
+                          widget.organizerId,
+                          id,
+                        ).future,
+                      );
+                      return application.reviewStatus ==
+                              HostApplicationReviewStatus.approved &&
+                          application.dataAccessState !=
+                              'revokedParticipantGrant';
+                    },
+                    openResponseForConversion: (id) async {
+                      await Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => HostFormResponseDetailScreen(
+                            organizerId: widget.organizerId,
+                            responseId: id,
+                            returnToOffer: true,
+                          ),
+                        ),
+                      );
+                    },
+                    openEventSettings: _settings,
+                    createAdmissionController: _admission,
+                    copy: hostEventOfferWorkspaceCopy(context.l10n),
+                    now: DateTime.now,
+                    layoutBuilder: _offerLayout,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Publish only the footer after the content build. Its listenable rebuilds
+  // the footer alone, so changing an action never remounts the workspace or
+  // feeds a parent-build loop. Coalesce updates before the next frame.
+  Widget _offerLayout(Widget body, Widget? action) {
+    _pendingAction = action;
+    if (!_actionUpdateScheduled) {
+      _actionUpdateScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _actionUpdateScheduled = false;
+        if (mounted && !_accountLost) _primaryAction.value = _pendingAction;
+      });
+    }
+    return body;
+  }
+}

@@ -41,6 +41,8 @@ export interface ProgressiveSetupDependencies {
   db: FirebaseFirestore.Firestore;
   /** Trusted deployment gate; it is never read from a client command. */
   privacyMigrationReady: () => boolean;
+  /** Server-owned deployment assertion; never accepted from a request. */
+  freshEventSeatWritersReady?: () => boolean;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   /** Integration must fence roster, offer and payment commitments in tx. */
@@ -288,7 +290,10 @@ export function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
   return db.collection("eventSetupReceipts").doc(id);
 }
 
-export function hashRequest(operation: "create" | "update" | "preferences",
+type SetupOperation = "create" | "update" | "preferences" |
+  "publish" | "unpublish";
+
+export function hashRequest(operation: SetupOperation,
   command: unknown
 ): string {
   return createHash("sha256")
@@ -311,7 +316,7 @@ function canonicalJson(value: unknown): string {
 }
 
 export function assertReceipt(receipt: Record<string, unknown>,
-  operation: "create" | "update" | "preferences", actorUid: string,
+  operation: SetupOperation, actorUid: string,
   organizerId: string, requestHash: string,
   eventId?: string): void {
   if (receipt.operation !== operation || receipt.actorUid !== actorUid ||

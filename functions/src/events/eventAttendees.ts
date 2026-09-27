@@ -1,3 +1,4 @@
+import {checkoutHeldCount} from "./seatAuthority/seatAuthority";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
@@ -150,6 +151,10 @@ async function prepareAttendanceSeatChange(params: {
   } catch {
     throw new HttpsError("failed-precondition",
       "Guest attendance and seat authority disagree.");
+  }
+  if (reservation?.checkoutHold) {
+    throw new HttpsError("failed-precondition",
+      "Finish checkout before changing this guest attendance.");
   }
   const wasActive = occupiesSeat(params.previous) || independentCatchActive;
   const willBeActive = occupiesSeat(nextStatus) || independentCatchActive;
@@ -847,7 +852,7 @@ export async function registerPublicEventHandler(
         throw new HttpsError("failed-precondition",
           "Event seat authority needs reconciliation.");
       }
-      readyCount = ledger.occupied;
+      readyCount = ledger.occupied + checkoutHeldCount(ledger);
       if (existing && existing.eventId !== payload.eventId ||
           existing?.linkedUid && existing.linkedUid !== uid ||
           existing?.phoneE164 !== undefined &&
@@ -884,13 +889,17 @@ export async function registerPublicEventHandler(
       }
       const reservation = await seats.reservation(payload.eventId,
         identity.key);
+      if (reservation?.checkoutHold) {
+        throw new HttpsError("failed-precondition",
+          "Finish or cancel the current checkout before registering.");
+      }
       const isActive = reservation?.active === true;
       if (existing && isActive !== occupiesSeat(existing.status) ||
           !existing && isActive && !registrationReplay) {
         throw new HttpsError("failed-precondition",
           "Guest roster and seat authority disagree.");
       }
-      if (!isActive && ledger.occupied < ledger.capacity) {
+      if (!isActive && readyCount < ledger.capacity) {
         const prepared = await prepareFirestoreSeat({db, tx,
           identityAuthority: {resolve: async () => identity},
           command: {eventId: payload.eventId,

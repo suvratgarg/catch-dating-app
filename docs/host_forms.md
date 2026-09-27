@@ -55,6 +55,44 @@ A Host can complete this loop:
 7. Pause, revise, republish, duplicate, archive, or delete eligible drafts
    without corrupting historical responses.
 
+## Response-to-event continuation
+
+Response and application routes share one detail page for answers and review.
+Contact actions remain visible for repeated triage; submission metadata is a
+disclosure. Private notes use the shared explicit-save field: Save and Cancel
+appear only while editing, and saving a note preserves the review status. A single review
+status control contains In review, Waitlisted and Declined; acceptance remains
+the primary action and explicitly links People. Application review no longer
+exposes a competing Add to People action. Ordinary forms retain CRM linkage
+without being forced into application review.
+
+Offer an event is available before acceptance so organizers can choose or
+create the event first. Acceptance stays a separate review action; choosing an
+event never approves the application or creates an offer. After acceptance and
+CRM linkage, Offer an event becomes the primary continuation; Open person is
+secondary. Single-response and query-selection entry points use
+`HostResponseOfferScreen` and the same offer controller. The chooser always
+provides Create event, including when other events exist. Saving a private draft
+returns it selected through Save & return to review; the helper copy makes clear
+that full event setup can wait. Cancellation preserves the originating page and
+selection.
+The return rechecks manager, selection and event identity. Missing CRM or
+unapproved applications return to the same response review and then continue the
+preserved offer. Imported applications without a native response retain review
+and CRM; this continuation does not synthesize response IDs for them.
+
+Selection, offer review and existing-offer handling are successive states of
+that continuation. The route owns one content gutter and the bottom action area:
+Preview, Create and Record reference remain reachable below scrolling content.
+A single existing offer opens directly. Payment evidence
+controls apply only to paid external/manual collection; free and Catch checkout
+offers do not expose bank-attestation fields. Offer issuance, personal sharing,
+verified payment and admission remain separate commands. The former Propose
+attendee UI and its direct roster-import picker are removed; old-client backend
+conversion compatibility is not a new-product entry point. Private event and
+offer activation gates remain closed until their existing release requirements
+are met.
+
 ## Product Boundary
 
 ### In scope
@@ -272,14 +310,83 @@ copy is optional and bounded; safe system copy is the fallback.
 
 ### Payment and profile extension acceptance
 
+Payment routing is selected separately for form fees and event admission.
+Finance/Admin Owner uses `managePaymentRoutingPolicy` with `organizerId: null`
+for app defaults, or the exact organizer ID for an override. Read with
+`action: "read"` and null `expectedRevision`, `formFee` and `eventAdmission`.
+Replace with the returned revision and both purpose choices. Each choice is
+null, `{ "route": "disabled" }`, or an object such as
+`{ "route": "razorpayRoute", "mode": "test", "currency": "INR", "merchantCountry": "IN" }`.
+Null inherits at organizer scope and disables at app scope. The other Razorpay
+choice is `razorpayOAuth`. `stripeConnectDirect` and
+`stripeConnectDestination` reserve explicit adapter choices for future supported
+account/country integrations; no Stripe execution adapter is installed by this
+configuration foundation. Configuration does not fall back from an unavailable
+provider to a different merchant. New payments must freeze their chosen binding;
+old payments retain that binding for reconciliation and refunds.
+
+This configuration surface is source support, not activation of Route payments.
+Before activation, verify each selected adapter's credentials, account binding,
+webhook, capture/refund/transfer recovery and applicable provider eligibility.
+Keep existing OAuth credentials available for outstanding OAuth payments when
+changing defaults. Platform Route setup does not require an OAuth partner
+application; merchant OAuth setup below remains a separate route.
+
+The platform adapter uses the separate
+`RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION` deployment variable. Its value must
+pin a numeric Secret Manager version in the deployment project, never `latest`.
+The secret is an object with `schema: "catch.razorpay-platform-payments/v1"`,
+`mode`, `platformAccountId`, `keyId`, `keySecret`, `webhookSecret`, and explicit
+`feeBasisPoints: {formFee, eventAdmission}`. No commission is inferred from a
+missing field. Keys must match the configured test/live mode. Keep this variable
+empty until the profile and selected linked accounts are ready. Configure the
+reference in the matching GitHub deployment environment; the promotion workflow
+materializes it without copying secret values into dotenv output. Retain pinned
+versions needed by outstanding payments.
+
+Form-fee Route checkout uses Catch's platform profile and the canonical
+organizer owner's activated `hostPaymentAccounts/{uid}_razorpay` record. It
+checks the linked account/product with Razorpay before reservation, then
+rechecks the policy revision and owner/account binding in the transaction.
+The fee definition may have a null OAuth `connectionId`; it never needs a fake
+OAuth connection. Existing attempts resume their saved profile and allocation,
+including after a policy or owner change. New orders still require a ready
+organizer account. Publication checks the selected route and server account;
+checkout additionally verifies the provider and pinned runtime configuration.
+
+Configure the existing `organizerFormPaymentWebhook` endpoint with
+`?platformVersion=N`, where N is the numeric version in the current platform
+profile reference. Use that profile's `webhookSecret` and enable
+`payment.authorized`, `payment.captured`, `payment.failed`, `refund.processed`
+and `refund.failed`. Only the current configured version is accepted from the
+public URL. Coordinate webhook URL/secret changes with profile promotion;
+the background sweep recovers missed callbacks, and already persisted receipts
+retain their pinned profile. Do not delete old profiles needed by receipts or
+payments. Route receipt processing and the sweep do not require OAuth setup.
+
+The Route adapter creates the quoted organizer transfer with its order, verifies
+the expanded beneficiary/amount, and requires the requested initial settlement
+hold. Full failed-fulfillment refunds request `reverse_all`; partial refunds need
+a separate allocation plan. A customer refund is not marked complete until
+provider reads also prove the exact organizer transfer reversal. Form fees
+currently transfer without a settlement hold; event payments retain their
+separate settlement policy; event settlement release remains unfinished.
+These operations follow Razorpay's
+[order transfer API](https://razorpay.com/docs/api/payments/route/create-transfers-orders/),
+[transfer lookup](https://razorpay.com/docs/api/payments/route/fetch-transfer-order)
+and [refund/reversal API](https://razorpay.com/docs/api/payments/route/refund-payments-and-reverse-transfer).
+Provider transport tests use fixtures; they are not Razorpay test-mode receipts.
+
 The payment/profile/chat extension is in implementation. Merchant connections,
 payment recovery, submission finalization and webhook receipt processing live
 under `functions/src/payments/formPayments/`. Their presence alone does not
 enable paid forms. The full release requires the following end-to-end behavior
 and checks:
 
-- A Host connects their existing Razorpay merchant through Catch's Technology
-  Partner OAuth application. Test and live credentials are isolated. Server
+- The selected collection route uses either Catch's Route account and the
+  organizer owner's linked payout account, or an organizer merchant connected
+  through Catch's Technology Partner OAuth application. Test and live
+  credentials are isolated. Server
   credentials stay in Secret Manager, with pinned versions bound to organizer,
   connection, account, and mode. No merchant secret is collected in a form or
   shown to respondents.
@@ -322,9 +429,10 @@ forms and legacy organizer-only mappings must retain their behavior. This work
 does not authorize sharing private CRM data or implicitly buying event admission.
 
 The Host builder places form payment setup under Settings, after Access, on
-phone and desktop. It distinguishes unavailable partner setup, an unfinished
-connection, a ready test/live merchant, reconnect-required state, and a
-disconnected account. Fee editing requires a ready account and verified-phone
+phone and desktop. It shows Catch collection readiness independently of OAuth
+availability, and otherwise distinguishes unavailable partner setup, an
+unfinished connection, a ready test/live merchant, reconnect-required state,
+and a disconnected account. Fee editing requires a ready account and verified-phone
 identity; the amount is entered as decimal INR and converted exactly to integer
 paise. Description and refund policy are mandatory. Removing a fee changes only
 the draft until publishing. Disconnecting requires confirmation because it stops
@@ -785,3 +893,75 @@ identity for private photo links, with read-only Storage permissions. Their IAM 
 bound to the validated draft, form question, fixed object path, file type, size,
 and expiry; finalization still verifies uploaded metadata before attachment.
 The shared runtime account does not receive a new signing permission.
+
+### Atomic form admission endpoint
+
+Native application admission uses the current approved application and its
+submitted response in the same seat transaction. It does not require or create
+a separate CRM conversion receipt. The immutable version, application target,
+respondent identity, response access, customer origin and current survivor must
+agree. The offer workspace preserves the application source when drafting and
+resolves its actual submitted response for admission. Revoked approval blocks a
+new admission; a completed command can still replay its historical receipt.
+Admission receipts preserve the approval ID, revision, customer and review time.
+Legacy participant-grant/import applications remain outside this form endpoint.
+
+`commitOrganizerFormAdmission` is the authenticated, App Check-protected
+command boundary for a reviewed registration/intake response or an approved
+native application from a generic form. It validates the
+exact input, applies the actor rate limit, and delegates to the existing single
+Firestore transaction. The transaction rechecks current manager/account, CRM
+origin/contact, immutable submitted version, current issued offer, exact payment
+evidence and canonical seat ledger revisions before writing the attendee and
+immutable ownership/receipt together. Replaying the same request returns its
+receipt only after current manager authority is checked.
+
+This endpoint does not initialize seat ledgers, infer payment from a form fee,
+create an approved application, or bypass the event-offer activation boundary.
+Unreconciled capacity, ambiguous identity, stale offer/ledger revisions and
+missing payment proof return a typed precondition error requiring fresh review.
+
+The response inbox remains the default Host view, including review status queues
+and version filters. For a selected published form without external search or
+contact scope, **Filter by answers** opens the typed query workspace for that
+published version across all review statuses. Returning to **Review inbox**
+clears query selection and preserves inbox filters. This read-only query surface
+is available independently of the private-event and offer rollout gates.
+
+`previewOrganizerFormAdmission` executes the same transaction preparation as
+commit without applying identity, capacity, roster or receipt writes. It returns
+current offer and ledger revisions only when all checks pass. A preview does
+not reserve capacity; the commit rechecks the complete chain. Missing migration
+readiness is a blocker, never inferred from `bookedCount`.
+
+The current form-response admission adapter preserves active waitlist offers
+when checking remaining capacity. It refuses Cross Paths pair inventory, cohort
+caps/ratios and membership policies until their verified eligibility and shared
+reservation paths are integrated. The Host preview reports this limitation; it
+does not reinterpret CRM answers as verified membership or cohort evidence.
+
+
+Event-offer checkout reserves a seat for 15 minutes from checkout start,
+then confirms admission only after verified payment. Issuing an offer alone does
+not reserve capacity. The shared seat core now tracks checkout-held capacity
+separately from confirmed attendance and blocks competing admission/import or
+identity-replacement operations. Retrying checkout cannot extend its deadline;
+late capture requires payment reconciliation and refund rather than admission.
+The server payment ledger freezes the verified recipient, issued terms and
+collection route. Order creation records uncertainty before the provider call;
+retries recover by receipt. Verified capture confirms the held seat, roster,
+ownership and immutable admission receipt in one transaction. Withdrawal,
+revocation or expiry releases the hold and enters full-refund recovery. The
+signed webhook inbox routes form fees and offer payments to their own ledgers;
+a bounded offer sweep releases expiry independently of provider availability.
+Recipient callables now prepare manager-only fragment links, claim by phone
+OTP, discover owned attempts and resume checkout or financial history. Returning
+payers can recover payment state through the original link after offer expiry
+or source withdrawal. The `/offer/` website uses existing phone OTP and Catch
+runtime primitives. It keeps the token out of storage and analytics, saves only
+UID-authorized grant/payment references in the current history entry for reload,
+and reports admission only from the server. Host message preparation issues the
+same private link after source and communication checks; it does not send or
+record delivery. Provider test-mode and deployed acceptance remain required
+before activation. Route transfer release remains unfinished and must follow
+event settlement policy separately from admission.

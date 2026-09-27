@@ -51,3 +51,20 @@ ambiguous authority fails closed. `applyFirestoreSeat` stages deterministic
 ledger/reservation/receipt writes only after the caller completes its other
 reads. The core does not authorize actor, payment, offer, event timing or
 cohort policy; those remain the integrating callable's responsibility.
+
+
+Checkout holds use `checkoutHeld` separately from confirmed `occupied` seats.
+Missing `checkoutHeld` on older ledgers means zero. `prepareCheckoutHold`
+creates one 15-minute hold for a canonical identity and immutable payment
+attempt. Issuing an offer does not call this operation. Retrying the original
+request never renews the deadline. Ordinary reserve/release, batch imports,
+contact merges and capacity edits cannot overwrite an outstanding hold.
+
+Confirmation converts the owning, unexpired hold into one confirmed seat;
+release only returns its held capacity. Even an expired hold consumes capacity
+until its release transaction completes. The payment integration must reconcile
+expiry and late capture, and atomically apply confirmation with the admission,
+roster and payment receipt. Neither this core nor a browser success callback
+proves payment. The payment worker must keep capture, admission, refund and
+Route settlement as separate states; admission does not release a Route hold.
+The checkout primitive alone does not enable a public checkout endpoint.

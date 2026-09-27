@@ -36,6 +36,9 @@ export async function updatePrivateEventPreferences(params: {
     throw new HttpsError("invalid-argument", "Invalid event preferences.");
   }
   assertPrivacyReady(deps);
+  if (command.expectedActorUid && command.expectedActorUid !== actorUid) {
+    throw new HttpsError("permission-denied", "The signed-in account changed.");
+  }
   const {db} = deps;
   const eventRef = db.collection("events").doc(command.eventId);
   const preferencesRef = db.collection("eventSetupPreferences")
@@ -81,7 +84,10 @@ export async function updatePrivateEventPreferences(params: {
     }
     if (setupRevision !== command.expectedSetupRevision ||
         revision !== command.expectedPreferencesRevision) {
-      throw new HttpsError("aborted", "Event settings changed. Reload them.");
+      throw new HttpsError("aborted", "Event settings changed. Reload them.",
+        {reason: "event-preferences-review-stale",
+          requestId: command.requestId, eventId: command.eventId,
+          organizerId: command.organizerId});
     }
     const projected = projectManagerEventSetupDefaults(command.organizerId,
       organizer, defaultsSnap.data(), eventSetupDefaultsDependencies(db));
@@ -102,7 +108,10 @@ export async function updatePrivateEventPreferences(params: {
     } catch (error) {
       if (error instanceof EventPreferenceError) {
         throw new HttpsError(error.code === "stale" ? "aborted" :
-          "invalid-argument", error.message);
+          "invalid-argument", error.message, error.code === "stale" ?
+          {reason: "event-preferences-review-stale",
+            requestId: command.requestId, eventId: command.eventId,
+            organizerId: command.organizerId} : undefined);
       }
       throw error;
     }

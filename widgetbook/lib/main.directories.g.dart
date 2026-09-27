@@ -233,6 +233,8 @@ import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_offer_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_admission_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_admission_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
@@ -10629,6 +10631,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAdmissionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Admission readiness and confirmation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_admission_use_cases
+                            .hostFormAdmissionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostManualPaymentReviewSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10692,6 +10705,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_rsvp_review_use_cases
                             .responseGroupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseOfferScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event offer release gate',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostResponseOfferReleaseGate,
                   ),
                 ],
               ),

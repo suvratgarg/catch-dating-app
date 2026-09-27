@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_listing_fields.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +23,69 @@ class PrivateEventDetailsScreen extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onBack,
+    this.pickLocation,
   });
 
   final PrivateEventDetailsController controller;
   final VoidCallback onBack;
+  final Future<EventMeetingLocation?> Function(EventMeetingLocation?)?
+  pickLocation;
+
+  Future<void> _chooseLocation(BuildContext context) async {
+    if (!controller.canEdit) return;
+    final current = controller.event?.eventDetails.meetingLocation;
+    try {
+      EventMeetingLocation? location;
+      if (pickLocation != null) {
+        location = await pickLocation!(current);
+      } else {
+        final city = defaultCityOptions
+            .where(
+              (option) =>
+                  option.effectiveCityId == controller.event?.city.cityId,
+            )
+            .firstOrNull;
+        final result = await Navigator.of(context).push<LocationPickerResult>(
+          MaterialPageRoute(
+            builder: (_) => LocationPickerScreen(
+              countryIsoCode: city?.countryIsoCode,
+              initialLocation: current == null
+                  ? null
+                  : LocationCoordinate(current.latitude, current.longitude),
+              initialCenter: city == null
+                  ? null
+                  : LocationCoordinate(city.latitude, city.longitude),
+              initialLabel:
+                  current?.name ?? controller.event?.eventDetails.venueName,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+        if (result == null) return;
+        final name =
+            result.displayName ??
+            current?.name ??
+            controller.event?.eventDetails.venueName;
+        if (name == null || name.trim().isEmpty) {
+          throw const FormatException('Choose a named meeting place');
+        }
+        location = EventMeetingLocation(
+          name: name.trim(),
+          latitude: result.coordinate.latitude,
+          longitude: result.coordinate.longitude,
+          address: result.address,
+          placeId: result.placeId,
+        );
+      }
+      if (location != null && controller.canEdit) {
+        await controller.save(
+          PrivateEventDetailsPatch(meetingLocation: location),
+        );
+      }
+    } catch (error) {
+      controller.reportValidationError(error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -36,7 +100,8 @@ class PrivateEventDetailsScreen extends StatelessWidget {
       final editable = controller.canEdit;
       final end = details?.endTimeMillis;
       final duration = end == null || event == null
-          ? null : (end - event.startTimeMillis) ~/ 60000;
+          ? null
+          : (end - event.startTimeMillis) ~/ 60000;
       final suggestedDuration = defaults?.usualDurationMinutes;
       final suggestedVenue = defaults?.preferredVenueId;
       final currentVenue = details?.venueName;
@@ -91,24 +156,32 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 CatchField.action(
                                   copy: copy,
                                   title: l10n.hostsEventPreferenceRetry,
-                                  onTap: controller.saving ? null :
-                                      () => unawaited(controller.retryPending()),
+                                  onTap: controller.saving
+                                      ? null
+                                      : () => unawaited(
+                                          controller.retryPending(),
+                                        ),
                                 ),
                               ],
                               if (controller.error != null) ...[
                                 CatchField.read(
                                   copy: copy,
                                   title: l10n.hostsEventPreferenceError,
-                                  body: appErrorMessage(controller.error!,
-                                    l10n: l10n, context: AppErrorContext.event),
+                                  body: appErrorMessage(
+                                    controller.error!,
+                                    l10n: l10n,
+                                    context: AppErrorContext.event,
+                                  ),
                                   icon: CatchIcons.errorOutlineRounded,
                                 ),
                                 if (controller.pending == null)
                                   CatchField.action(
                                     copy: copy,
-                                    title: l10n.hostsPrivateEventRetryDefaultsRead,
-                                    onTap: controller.loading ? null :
-                                        () => unawaited(controller.load()),
+                                    title:
+                                        l10n.hostsPrivateEventRetryDefaultsRead,
+                                    onTap: controller.loading
+                                        ? null
+                                        : () => unawaited(controller.load()),
                                   ),
                               ],
                             ],
@@ -118,18 +191,23 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                             children: [
                               CatchField.read(
                                 copy: copy,
-                                title: l10n.hostsPrivateEventDetailCurrentDuration,
+                                title:
+                                    l10n.hostsPrivateEventDetailCurrentDuration,
                                 body: duration == null
                                     ? l10n.hostsPrivateEventDetailNotSet
-                                    : l10n.hostsPrivateEventDetailMinutes(minutes: duration),
+                                    : l10n.hostsPrivateEventDetailMinutes(
+                                        minutes: duration,
+                                      ),
                                 icon: CatchIcons.scheduleOutlined,
                               ),
                               CatchField.input(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailDuration,
-                                contractExemption: 'Optional duration writes actual end time.',
+                                contractExemption:
+                                    'Optional duration writes actual end time.',
                                 initialValue: duration?.toString() ?? '',
-                                inputHint: l10n.hostsPrivateEventDetailDurationHint,
+                                inputHint:
+                                    l10n.hostsPrivateEventDetailDurationHint,
                                 inputMode: editable
                                     ? CatchTextInputMode.editable
                                     : CatchTextInputMode.inactive,
@@ -138,24 +216,37 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                   final text = value?.trim() ?? '';
                                   if (text.isEmpty) return null;
                                   final minutes = int.tryParse(text);
-                                  return minutes != null && minutes >= 15 &&
+                                  return minutes != null &&
+                                          minutes >= 15 &&
                                           minutes <= 240
-                                      ? null : l10n.hostsEventPreferenceInvalidValue;
+                                      ? null
+                                      : l10n.hostsEventPreferenceInvalidValue;
                                 },
-                                onSubmitted: editable ? (text) {
-                                  final minutes = int.tryParse(text.trim());
-                                  if (minutes == null || minutes < 15 ||
-                                      minutes > 240) {
-                                    controller.reportValidationError(const FormatException(
-                                      'Invalid event duration'));
-                                    return;
-                                  }
-                                  unawaited(controller.save(
-                                    PrivateEventDetailsPatch(
-                                      durationMinutes: EventSetupValue.set(minutes),
-                                    ),
-                                  ));
-                                } : null,
+                                onSubmitted: editable
+                                    ? (text) {
+                                        final minutes = int.tryParse(
+                                          text.trim(),
+                                        );
+                                        if (minutes == null ||
+                                            minutes < 15 ||
+                                            minutes > 240) {
+                                          controller.reportValidationError(
+                                            const FormatException(
+                                              'Invalid event duration',
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        unawaited(
+                                          controller.save(
+                                            PrivateEventDetailsPatch(
+                                              durationMinutes:
+                                                  EventSetupValue.set(minutes),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    : null,
                               ),
                               CatchField.action(
                                 copy: copy,
@@ -163,24 +254,32 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 body: suggestedDuration == null
                                     ? l10n.hostsPrivateEventDetailNoDurationSuggestion
                                     : l10n.hostsPrivateEventDetailMinutes(
-                                        minutes: suggestedDuration),
+                                        minutes: suggestedDuration,
+                                      ),
                                 onTap: editable && suggestedDuration != null
-                                    ? () => unawaited(controller.save(
-                                        const PrivateEventDetailsPatch(
-                                          durationMinutes: EventSetupValue.inherit(),
+                                    ? () => unawaited(
+                                        controller.save(
+                                          const PrivateEventDetailsPatch(
+                                            durationMinutes:
+                                                EventSetupValue.inherit(),
+                                          ),
                                         ),
-                                      ))
+                                      )
                                     : null,
                               ),
                               CatchField.action(
                                 copy: copy,
-                                title: l10n.hostsPrivateEventDetailClearDuration,
+                                title:
+                                    l10n.hostsPrivateEventDetailClearDuration,
                                 onTap: editable && end != null
-                                    ? () => unawaited(controller.save(
-                                        const PrivateEventDetailsPatch(
-                                          durationMinutes: EventSetupValue.clear(),
+                                    ? () => unawaited(
+                                        controller.save(
+                                          const PrivateEventDetailsPatch(
+                                            durationMinutes:
+                                                EventSetupValue.clear(),
+                                          ),
                                         ),
-                                      ))
+                                      )
                                     : null,
                               ),
                             ],
@@ -191,61 +290,87 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                               CatchField.read(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailCurrentVenue,
-                                body: currentVenue ??
+                                body:
+                                    currentVenue ??
                                     l10n.hostsPrivateEventDetailNotSet,
                                 icon: CatchIcons.locationOnOutlined,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: l10n.hostsPrivateEventDetailPickLocation,
+                                body: details?.meetingLocation == null
+                                    ? l10n.hostsPrivateEventDetailLocationNeeded
+                                    : l10n.hostsPrivateEventDetailLocationReady,
+                                icon: CatchIcons.locationOnOutlined,
+                                onTap: editable
+                                    ? () => unawaited(_chooseLocation(context))
+                                    : null,
                               ),
                               CatchField.input(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailVenueName,
-                                contractExemption: 'Named venue only; no GPS location inferred.',
+                                contractExemption:
+                                    'Named venue only; no GPS location inferred.',
                                 initialValue: currentVenue ?? '',
-                                inputHint: l10n.hostsPrivateEventDetailVenueHint,
+                                inputHint:
+                                    l10n.hostsPrivateEventDetailVenueHint,
                                 inputMode: editable
                                     ? CatchTextInputMode.editable
                                     : CatchTextInputMode.inactive,
                                 maxLength: 240,
                                 onValidate: (value) =>
                                     (value?.trim().isEmpty ?? true)
-                                        ? l10n.hostsEventPreferenceInvalidValue
-                                        : null,
-                                onSubmitted: editable ? (text) {
-                                  final name = text.trim();
-                                  if (name.isEmpty || name.length > 240) {
-                                    controller.reportValidationError(const FormatException(
-                                      'Invalid event venue'));
-                                    return;
-                                  }
-                                  unawaited(controller.save(
-                                    PrivateEventDetailsPatch(
-                                      venue: EventSetupValue.set(name),
-                                    ),
-                                  ));
-                                } : null,
+                                    ? l10n.hostsEventPreferenceInvalidValue
+                                    : null,
+                                onSubmitted: editable
+                                    ? (text) {
+                                        final name = text.trim();
+                                        if (name.isEmpty || name.length > 240) {
+                                          controller.reportValidationError(
+                                            const FormatException(
+                                              'Invalid event venue',
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        unawaited(
+                                          controller.save(
+                                            PrivateEventDetailsPatch(
+                                              venue: EventSetupValue.set(name),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    : null,
                               ),
                               CatchField.action(
                                 copy: copy,
-                                title: l10n.hostsPrivateEventDetailUseSavedPlace,
+                                title:
+                                    l10n.hostsPrivateEventDetailUseSavedPlace,
                                 body: suggestedVenue == null
                                     ? l10n.hostsPrivateEventDetailNoSavedPlace
                                     : l10n.hostsPrivateEventDetailSavedPlaceHint,
                                 onTap: editable && suggestedVenue != null
-                                    ? () => unawaited(controller.save(
-                                        const PrivateEventDetailsPatch(
-                                          venue: EventSetupValue.inherit(),
+                                    ? () => unawaited(
+                                        controller.save(
+                                          const PrivateEventDetailsPatch(
+                                            venue: EventSetupValue.inherit(),
+                                          ),
                                         ),
-                                      ))
+                                      )
                                     : null,
                               ),
                               CatchField.action(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailClearVenue,
                                 onTap: editable && currentVenue != null
-                                    ? () => unawaited(controller.save(
-                                        const PrivateEventDetailsPatch(
-                                          venue: EventSetupValue.clear(),
+                                    ? () => unawaited(
+                                        controller.save(
+                                          const PrivateEventDetailsPatch(
+                                            venue: EventSetupValue.clear(),
+                                          ),
                                         ),
-                                      ))
+                                      )
                                     : null,
                               ),
                             ],
@@ -255,15 +380,18 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                             children: [
                               CatchField.read(
                                 copy: copy,
-                                title: l10n.hostsPrivateEventDetailCurrentFormat,
-                                body: currentFormat?.label ??
+                                title:
+                                    l10n.hostsPrivateEventDetailCurrentFormat,
+                                body:
+                                    currentFormat?.label ??
                                     l10n.hostsPrivateEventDetailNotSet,
                                 icon: CatchIcons.eventAvailableOutlined,
                               ),
                               CatchField<ActivityKind>.control(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailFormat,
-                                contractExemption: 'Activity choice writes a versioned event format.',
+                                contractExemption:
+                                    'Activity choice writes a versioned event format.',
                                 child: CatchChoiceInput<ActivityKind>(
                                   values: ActivityKind.values,
                                   itemLabelBuilder: (kind) => kind.label,
@@ -272,33 +400,49 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                       : {currentFormat.activityKind},
                                   mode: CatchChipMode.single,
                                   autoClose: true,
-                                  onChanged: controller.canEditFormat ? (selection) {
-                                    if (selection.isEmpty) return;
-                                    unawaited(controller.save(
-                                      PrivateEventDetailsPatch(
-                                        eventFormat: EventSetupValue.set(
-                                          EventFormatSnapshot.fromActivityKind(
-                                            selection.single,
-                                          ),
-                                        ),
-                                      ),
-                                    ));
-                                  } : null,
+                                  onChanged: controller.canEditFormat
+                                      ? (selection) {
+                                          if (selection.isEmpty) return;
+                                          unawaited(
+                                            controller.save(
+                                              PrivateEventDetailsPatch(
+                                                eventFormat: EventSetupValue.set(
+                                                  EventFormatSnapshot.fromActivityKind(
+                                                    selection.single,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      : null,
                                 ),
                               ),
                               CatchField.action(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailClearFormat,
-                                onTap: controller.canEditFormat && currentFormat != null
-                                    ? () => unawaited(controller.save(
-                                        const PrivateEventDetailsPatch(
-                                          eventFormat: EventSetupValue.clear(),
+                                onTap:
+                                    controller.canEditFormat &&
+                                        currentFormat != null
+                                    ? () => unawaited(
+                                        controller.save(
+                                          const PrivateEventDetailsPatch(
+                                            eventFormat:
+                                                EventSetupValue.clear(),
+                                          ),
                                         ),
-                                      ))
+                                      )
                                     : null,
                               ),
                             ],
                           ),
+                          if (event != null)
+                            PrivateEventListingFields(
+                              key: ValueKey(
+                                '${event.eventId}:${event.city.cityId}',
+                              ),
+                              controller: controller,
+                            ),
                         ],
                       ),
                     ],

@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
@@ -15,18 +20,114 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_works
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
+import '../../ui_captures/support/capture_device.dart';
+import '../../ui_captures/support/capture_pump.dart';
 
 void main() {
+  testWidgets(
+    'release-gated shared route renders without Firebase initialization',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const HostResponseOfferScreen(
+              organizerId: 'org',
+              responseId: 'response-one',
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(
+        find.text(AppLocalizationsEn().hostEventOfferUnavailable),
+        findsOneWidget,
+      );
+      expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('route footer follows event choice and clears on account loss', (
+    tester,
+  ) async {
+    final auth = _SwitchingAuth('manager');
+    final accounts = StreamController<String?>();
+    final storage = MemoryCommandJournalStorage();
+    addTearDown(accounts.close);
+    addTearDown(storage.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          privateEventSetupAvailableProvider.overrideWithValue(true),
+          uidProvider.overrideWith((ref) => accounts.stream),
+          firebaseAuthProvider.overrideWithValue(auth),
+          firebaseFunctionsProvider.overrideWithValue(_RouteFunctions()),
+          commandJournalStorageProvider.overrideWithValue(() async => storage),
+          hostFormResponseDetailProvider(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ).overrideWith((ref) async => _detail('contact-one')),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HostResponseOfferScreen(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ),
+        ),
+      ),
+    );
+    accounts.add('manager');
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('offer-target-event-one')),
+    );
+    final workspaceState = tester.state(
+      find.byType(HostEventOfferWorkspaceSection),
+    );
+    final preview = AppLocalizationsEn().hostEventOfferPreview;
+    expect(find.text(preview), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpUntilFound(tester, find.text(preview));
+    final dock = find.byType(CatchDockSurface);
+    expect(dock, findsOneWidget);
+    expect(tester.getBottomLeft(dock).dy, greaterThan(500));
+    expect(
+      tester.state(find.byType(HostEventOfferWorkspaceSection)),
+      same(workspaceState),
+    );
+    await tester.tap(find.text('Sunday run'));
+    await pumpFeatureUi(tester);
+    expect(find.text(preview), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpUntilFound(tester, find.text(preview));
+    auth.uid = null;
+    accounts.add(null);
+    await pumpFeatureUi(tester);
+    expect(find.text(preview), findsNothing);
+    expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('legacy response cache is hidden until the new manager read '
       'resolves', (tester) async {
     final accounts = StreamController<String?>();
@@ -35,27 +136,36 @@ void main() {
     final responses = _SwitchingLegacyResponses();
     var accountId = 'host-one';
     late StateSetter updateRoute;
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        uidProvider.overrideWith((ref) => accounts.stream),
-        firebaseAuthProvider.overrideWithValue(auth),
-        hostFormResponsesControllerProvider.overrideWith2((_) => responses),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: StatefulBuilder(builder: (context, setState) {
-          updateRoute = setState;
-          return Scaffold(body: CustomScrollView(slivers: [
-            HostFormResponsesPanel(
-              organizerId: 'org', accountId: accountId,
-              requireAccount: true,
-            ),
-          ]));
-        }),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => accounts.stream),
+          firebaseAuthProvider.overrideWithValue(auth),
+          hostFormResponsesControllerProvider.overrideWith2((_) => responses),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: StatefulBuilder(
+            builder: (context, setState) {
+              updateRoute = setState;
+              return Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    HostFormResponsesPanel(
+                      organizerId: 'org',
+                      accountId: accountId,
+                      requireAccount: true,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
-    ));
+    );
     accounts.add('host-one');
     await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
@@ -74,17 +184,23 @@ void main() {
     expect(find.text('Maya'), findsNothing);
 
     responses._nextResponse = Completer<HostFormResponsesState>();
-    tester.widget<CatchLocalizedSliverErrorState>(
-      find.byType(CatchLocalizedSliverErrorState),
-    ).onRetry!();
+    tester
+        .widget<CatchLocalizedSliverErrorState>(
+          find.byType(CatchLocalizedSliverErrorState),
+        )
+        .onRetry!();
     await tester.pump();
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
 
-    responses._nextResponse!.complete(HostFormResponsesState(
-      responses: [_SwitchingLegacyResponses.response('Rohan', 'response-two')],
-      nextCursor: null,
-    ));
+    responses._nextResponse!.complete(
+      HostFormResponsesState(
+        responses: [
+          _SwitchingLegacyResponses.response('Rohan', 'response-two'),
+        ],
+        nextCursor: null,
+      ),
+    );
     await pumpFeatureUi(tester);
     expect(find.text('Rohan'), findsOneWidget);
     expect(find.text('Maya'), findsNothing);
@@ -99,36 +215,77 @@ void main() {
     final query = _SwitchingQuery();
     final l10n = AppLocalizationsEn();
     final selectedLabel = find.text(l10n.hostResponseQuerySelected(count: 1));
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        uidProvider.overrideWith((ref) => accounts.stream),
-        firebaseAuthProvider.overrideWithValue(auth),
-        firebaseFunctionsProvider.overrideWithValue(_UnusedFunctions()),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: CustomScrollView(slivers: [
-          HostFormResponsesPanel(
-            organizerId: 'org', formId: 'form',
-            queryCapability: HostResponseQueryCapability(
-              versionId: 'form_v1',
-              copy: hostResponseQueryCapability(
-                AppLocalizationsEn(), versionId: 'form_v1').copy,
-              gateway: query,
-              onReviewSelection: (_, _) {},
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => accounts.stream),
+          firebaseAuthProvider.overrideWithValue(auth),
+          firebaseFunctionsProvider.overrideWithValue(_UnusedFunctions()),
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _SwitchingLegacyResponses(),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                HostFormResponsesPanel(
+                  organizerId: 'org',
+                  formId: 'form',
+                  queryCapability: HostResponseQueryCapability(
+                    versionId: 'form_v1',
+                    copy: hostResponseQueryCapability(
+                      AppLocalizationsEn(),
+                      versionId: 'form_v1',
+                    ).copy,
+                    gateway: query,
+                    onReviewSelection: (_, _) {},
+                  ),
+                ),
+              ],
             ),
           ),
-        ])),
+        ),
       ),
-    ));
+    );
     accounts.add('host-one');
-    await pumpUntilFound(tester, find.text('Maya'));
+    await pumpUntilFound(tester, find.text(l10n.hostResponseQueryOpenAnswers));
+    expect(query.calls, 0);
+    expect(
+      find.byKey(const ValueKey('host-responses-lifecycle')),
+      findsOneWidget,
+    );
+    await tester.tap(find.text(l10n.hostResponseQueryOpenAnswers));
+    await pumpUntilFound(
+      tester,
+      find.byTooltip('${l10n.hostResponseQuerySelect}: Maya'),
+    );
     expect(find.text('Maya'), findsOneWidget);
-    await tester.tap(find.text(l10n.hostResponseQuerySelect));
+    await tester.tap(find.byTooltip('${l10n.hostResponseQuerySelect}: Maya'));
     await pumpFeatureUi(tester);
     expect(selectedLabel, findsOneWidget);
+
+    await tester.tap(find.text(l10n.hostResponseQueryReviewInbox));
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey('host-responses-lifecycle')),
+      findsOneWidget,
+    );
+    expect(selectedLabel, findsNothing);
+    await tester.tap(find.text(l10n.hostResponseQueryOpenAnswers));
+    await pumpFeatureUi(tester);
+    expect(selectedLabel, findsNothing);
+    expect(
+      find.text(l10n.hostResponseQueryVersionScope(version: 1)),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip('${l10n.hostResponseQuerySelect}: Maya'));
+    await pumpFeatureUi(tester);
+    expect(selectedLabel, findsOneWidget);
+    final beforeSwitch = query.calls;
 
     query.nextResponse = Completer<HostResponseQueryPage>();
     auth.uid = 'host-two';
@@ -137,7 +294,7 @@ void main() {
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
     expect(selectedLabel, findsNothing);
-    expect(query.calls, 2);
+    expect(query.calls, beforeSwitch + 1);
 
     query.nextResponse!.complete(_SwitchingQuery.page('Rohan', 'response-two'));
     await pumpFeatureUi(tester);
@@ -147,61 +304,360 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  test('answer filtering does not require the offer rollout', () {
+    final capability = hostResponseQueryCapability(
+      AppLocalizationsEn(),
+      versionId: 'form_v1',
+    );
+    expect(capability.offerWorkspace, isNull);
+    expect(
+      hostResponseQueryCapability(
+        AppLocalizationsEn(),
+        versionId: 'form_v1',
+        offersEnabled: true,
+      ).offerWorkspace,
+      isNotNull,
+    );
+  });
+
   test('response query mount preserves external search and contact scope', () {
     bool allowed({String? search, String? contact}) =>
-        canMountHostResponseQuery(enabled: true, formId: 'form',
-          searchQuery: search, contactId: contact);
+        canMountHostResponseQuery(
+          enabled: true,
+          formId: 'form',
+          searchQuery: search,
+          contactId: contact,
+        );
     expect(allowed(), isTrue);
     expect(allowed(search: 'Maya'), isFalse);
     expect(allowed(contact: 'contact-one'), isFalse);
-    expect(canMountHostResponseQuery(enabled: true, formId: null,
-      searchQuery: null, contactId: null), isFalse);
+    expect(
+      canMountHostResponseQuery(
+        enabled: true,
+        formId: null,
+        searchQuery: null,
+        contactId: null,
+      ),
+      isFalse,
+    );
   });
 
-  test('newly saved manager target bypasses first-page discovery but still '
-      'revalidates responses and current event configuration', () async {
-    final source = _Query();
-    final query = HostResponseQueryController(source);
-    final offers = HostEventOfferController(_Offers());
-    final targets = _Targets();
-    addTearDown(query.dispose);
-    addTearDown(offers.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
-    query.toggleSelection('response-one');
-    final workspace = HostEventOfferWorkspaceController(
-      organizerId: 'org', accountId: 'manager',
-      queryController: query, offerController: offers,
-      listOffers: ({required organizerId, required eventId,
-          afterOfferId}) async => const {'items': <Object>[], 'nextCursor': null},
-      getOffer: ({required organizerId, required eventId,
-          required contactId}) async => _existingOffer(),
-      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
-        kind: 'blocked', offerId: 'offer-one', blockers: ['fixture']),
-      copyMessage: (_) async {}, openHandoff: (_) async => false,
-      targets: targets,
-      getResponseDetail: (_) async => _detail('contact-one'),
-      openResponseForConversion: (_) async {},
-      openEventSettings: (_) async => targets.revision = 2,
-      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
-      initialEventTarget: HostOfferEventTarget(
-        eventId: 'event-one', name: 'Freshly saved', startTime: _start,
-        timezone: 'Asia/Kolkata', publicationState: 'private',
-        setupRevision: 1),
+  if (Platform.environment['CATCH_RSVP_FLOW_REVIEW_DIR'] case final output?) {
+    setUpAll(loadCatchTestFonts);
+    for (final stage in ['choose', 'empty', 'review', 'confirm', 'existing']) {
+      for (final scale in [1.0, 2.0]) {
+        testWidgets('capture unified offer $stage at $scale', (tester) async {
+          final controller = HostEventOfferController(_Offers());
+          addTearDown(controller.dispose);
+          await captureCatchWidget(
+            tester,
+            id: 'offer-$stage-$scale',
+            device: CaptureDevice.iphone17Pro,
+            textScale: scale,
+            outputDirectory: Directory(output),
+            builder: (context) => HostEventOfferWorkspaceSection(
+              organizerId: 'org',
+              accountId: 'manager',
+              responseId: 'response-one',
+              offerController: controller,
+              targets: _Targets(empty: stage == 'empty'),
+              initiallyReviewSelection: true,
+              listOffers:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    afterOfferId,
+                  }) async => {
+                    'items': stage == 'existing'
+                        ? [
+                            {
+                              'offerId': 'offer-one',
+                              'eventId': 'event-one',
+                              'contactId': 'contact-one',
+                              'effectiveStatus': 'offered',
+                            },
+                          ]
+                        : <Object>[],
+                    'nextCursor': null,
+                  },
+              getOffer:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    required contactId,
+                  }) async => _existingOffer(),
+              prepareHandoff: ({required offer}) async => HostOfferHandoff(
+                kind: 'prepared',
+                offerId: offer.offerId,
+                blockers: const [],
+                contactId: offer.contactId,
+                editableText:
+                    'Hi Maya, you have an offer for Sunday run. Open your invitation to confirm your place.',
+                copyText: 'Synthetic invitation for review',
+              ),
+              copyMessage: (_) async {},
+              openHandoff: (_) async => false,
+              getResponseDetail: (_) async => _detail('contact-one'),
+              openResponseForConversion: (_) async {},
+              openEventSettings: (_) async {},
+              onCreateEvent: () async {},
+              copy: hostEventOfferWorkspaceCopy(context.l10n),
+              now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+              layoutBuilder: (body, action) => CatchRouteScaffold(
+                topBarBuilder: (context, scrolledUnder) =>
+                    const CatchTopBar.route(
+                      title: 'Offer an event',
+                      navigation: CatchTopBarNavigation(
+                        mode: CatchTopBarNavigationMode.back,
+                      ),
+                    ),
+                footer: action,
+                body: CatchRouteBody.standardSections(
+                  sections: [CatchSectionListItem(child: body)],
+                ),
+              ),
+            ),
+            drive: (tester) async {
+              await pumpFeatureUi(tester);
+              if (stage != 'choose' && stage != 'empty') {
+                await tester.tap(
+                  find.byKey(const ValueKey('offer-target-event-one')),
+                );
+                await pumpFeatureUi(tester);
+              }
+              if (stage == 'confirm') {
+                await tester.ensureVisible(find.text('Preview offers'));
+                await tester.tap(find.text('Preview offers'));
+                await pumpFeatureUi(tester);
+              }
+              if (stage == 'review' ||
+                  stage == 'confirm' ||
+                  stage == 'existing') {
+                final dock = find.byKey(
+                  const ValueKey('catch_bottom_action.page_action'),
+                );
+                expect(dock, findsOneWidget);
+                final viewportHeight =
+                    tester.view.physicalSize.height /
+                    tester.view.devicePixelRatio;
+                expect(
+                  tester.getBottomLeft(dock).dy,
+                  lessThanOrEqualTo(viewportHeight),
+                );
+                expect(
+                  tester.getBottomLeft(dock).dy,
+                  greaterThan(viewportHeight - 100),
+                );
+              }
+              if ((stage == 'review' || stage == 'confirm') && scale == 1) {
+                expect(
+                  tester.getTopLeft(find.text('Sunday run')).dx,
+                  closeTo(tester.getTopLeft(find.text('Recipient')).dx, 1),
+                );
+              }
+              expect(tester.takeException(), isNull);
+            },
+          );
+        });
+      }
+    }
+  }
+
+  for (final approved in [false, true]) {
+    test(
+      'single response uses the shared flow and checks application review: $approved',
+      () async {
+        final offers = HostEventOfferController(_Offers());
+        final targets = _Targets();
+        var reviewed = approved;
+        var reads = 0;
+        final workspace = HostEventOfferWorkspaceController(
+          organizerId: 'org',
+          accountId: 'manager',
+          responseId: 'response-one',
+          offerController: offers,
+          targets: targets,
+          listOffers:
+              ({required organizerId, required eventId, afterOfferId}) async =>
+                  const {'items': <Object>[], 'nextCursor': null},
+          getOffer:
+              ({
+                required organizerId,
+                required eventId,
+                required contactId,
+              }) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+            kind: 'blocked',
+            offerId: 'offer-one',
+            blockers: [],
+          ),
+          copyMessage: (_) async {},
+          openHandoff: (_) async => false,
+          getResponseDetail: (_) async {
+            reads++;
+            return _detail('contact-one', applicationId: 'application-one');
+          },
+          isResponseReviewed: (_) async => reviewed,
+          openResponseForConversion: (_) async => reviewed = true,
+          openEventSettings: (_) async {},
+          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+        );
+        addTearDown(workspace.dispose);
+        addTearDown(offers.dispose);
+        await workspace.start();
+        await workspace.choose(workspace.events.single);
+        expect(workspace.missingContacts.isEmpty, approved);
+        if (!approved) {
+          expect(workspace.draft, isNull);
+          await workspace.returnForConversion('response-one');
+          expect(reads, 2);
+        }
+        expect(workspace.draft!.rows.single.sourceId, 'application-one');
+        final chosen = workspace.event!;
+        workspace.changeEvent();
+        expect(workspace.event, isNull);
+        expect(workspace.draft, isNull);
+        await workspace.choose(chosen);
+        expect(workspace.draft!.rows.single.contactId, 'contact-one');
+      },
     );
-    addTearDown(workspace.dispose);
-    await workspace.start();
-    expect(targets.listCalls, 0);
-    expect(targets.configurationCalls, 1);
-    expect(workspace.event?.name, 'Freshly saved');
-    await workspace.openSettings();
-    expect(workspace.event?.setupRevision, 2);
-    expect(targets.configurationCalls, 3);
-    source.hash = 'changed';
-    await workspace.choose(workspace.event!);
-    expect(workspace.selectionStale, isTrue);
-    expect(targets.configurationCalls, 3);
-  });
+  }
+
+  test(
+    'single response rejects an identity changed by an asynchronous detail read',
+    () async {
+      final offers = HostEventOfferController(_Offers());
+      final workspace = HostEventOfferWorkspaceController(
+        organizerId: 'org',
+        accountId: 'manager',
+        responseId: 'different-response',
+        offerController: offers,
+        targets: _Targets(),
+        listOffers:
+            ({required organizerId, required eventId, afterOfferId}) async =>
+                const {'items': <Object>[], 'nextCursor': null},
+        getOffer:
+            ({
+              required organizerId,
+              required eventId,
+              required contactId,
+            }) async => _existingOffer(),
+        prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+          kind: 'blocked',
+          offerId: 'offer-one',
+          blockers: [],
+        ),
+        copyMessage: (_) async {},
+        openHandoff: (_) async => false,
+        getResponseDetail: (_) async => _detail('contact-one'),
+        openResponseForConversion: (_) async {},
+        openEventSettings: (_) async {},
+        now: DateTime.now,
+      );
+      addTearDown(workspace.dispose);
+      addTearDown(offers.dispose);
+      await workspace.start();
+      await workspace.choose(workspace.events.single);
+      expect(workspace.hasError, isTrue);
+      expect(workspace.draft, isNull);
+    },
+  );
+
+  for (final applicationId in [null, 'application-one']) {
+    test('saved target revalidates response and admission source '
+        'for ${applicationId ?? 'registration'}', () async {
+      final source = _Query();
+      final query = HostResponseQueryController(source);
+      final offers = HostEventOfferController(_Offers());
+      final targets = _Targets();
+      addTearDown(query.dispose);
+      addTearDown(offers.dispose);
+      await query.apply(
+        const HostResponseQueryRequest(
+          organizerId: 'org',
+          formId: 'form',
+          versionId: 'form_v1',
+        ),
+      );
+      query.toggleSelection('response-one');
+      final workspace = HostEventOfferWorkspaceController(
+        organizerId: 'org',
+        accountId: 'manager',
+        queryController: query,
+        offerController: offers,
+        listOffers:
+            ({required organizerId, required eventId, afterOfferId}) async =>
+                const {'items': <Object>[], 'nextCursor': null},
+        getOffer:
+            ({
+              required organizerId,
+              required eventId,
+              required contactId,
+            }) async => _existingOffer(applicationId: applicationId),
+        prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+          kind: 'blocked',
+          offerId: 'offer-one',
+          blockers: ['fixture'],
+        ),
+        copyMessage: (_) async {},
+        openHandoff: (_) async => false,
+        targets: targets,
+        getResponseDetail: (_) async =>
+            _detail('contact-one', applicationId: applicationId),
+        openResponseForConversion: (_) async {},
+        openEventSettings: (_) async => targets.revision = 2,
+        now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+        initialEventTarget: HostOfferEventTarget(
+          eventId: 'event-one',
+          name: 'Freshly saved',
+          startTime: _start,
+          timezone: 'Asia/Kolkata',
+          publicationState: 'private',
+          setupRevision: 1,
+        ),
+      );
+      addTearDown(workspace.dispose);
+      await workspace.start();
+      expect(targets.listCalls, 0);
+      expect(targets.configurationCalls, 1);
+      expect(workspace.event?.name, 'Freshly saved');
+      await workspace.openSettings();
+      expect(workspace.event?.setupRevision, 2);
+      expect(targets.configurationCalls, 3);
+      if (applicationId != null) {
+        expect(
+          workspace.draft!.rows.single.sourceKind,
+          HostOfferSourceKind.application,
+        );
+        expect(workspace.draft!.rows.single.sourceId, 'application-one');
+        await workspace.selectExisting({
+          'offerId': 'offer-one',
+          'eventId': 'event-one',
+          'contactId': 'contact-one',
+        });
+        expect(workspace.selectedResponseId, 'response-one');
+        final offer = workspace.selectedOffer!;
+        expect(
+          () => HostFormAdmissionScope.fromOffer(offer),
+          throwsFormatException,
+        );
+        final scope = HostFormAdmissionScope.fromOffer(
+          offer,
+          responseId: workspace.selectedResponseId,
+        );
+        expect(scope.responseId, 'response-one');
+        expect(scope.offerId, 'offer-one');
+        workspace.manualUpdated(
+          _existingOffer(applicationId: 'another-application'),
+        );
+        expect(workspace.selectedResponseId, isNull);
+      }
+      source.hash = 'changed';
+      await workspace.choose(workspace.event!);
+      expect(workspace.selectionStale, isTrue);
+      expect(targets.configurationCalls, 3);
+    });
+  }
 
   test('workspace controller invalidates selected offer context when the '
       'underlying query selection changes', () async {
@@ -209,22 +665,37 @@ void main() {
     final offers = HostEventOfferController(_Offers());
     addTearDown(query.dispose);
     addTearDown(offers.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    await query.apply(
+      const HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v1',
+      ),
+    );
     query.toggleSelection('response-one');
     final workspace = HostEventOfferWorkspaceController(
-      organizerId: 'org', accountId: 'manager',
-      queryController: query, offerController: offers,
-      listOffers: ({required organizerId, required eventId,
-          afterOfferId}) async => const {
-        'items': <Object>[], 'nextCursor': null,
-      },
-      getOffer: ({required organizerId, required eventId,
-          required contactId}) async => _existingOffer(),
+      organizerId: 'org',
+      accountId: 'manager',
+      queryController: query,
+      offerController: offers,
+      listOffers:
+          ({required organizerId, required eventId, afterOfferId}) async =>
+              const {'items': <Object>[], 'nextCursor': null},
+      getOffer:
+          ({
+            required organizerId,
+            required eventId,
+            required contactId,
+          }) async => _existingOffer(),
       prepareHandoff: ({required offer}) async => const HostOfferHandoff(
-        kind: 'blocked', offerId: 'offer-one', blockers: ['fixture']),
-      copyMessage: (_) async {}, openHandoff: (_) async => false,
-      targets: _Targets(), getResponseDetail: (_) async => _detail('contact-one'),
+        kind: 'blocked',
+        offerId: 'offer-one',
+        blockers: ['fixture'],
+      ),
+      copyMessage: (_) async {},
+      openHandoff: (_) async => false,
+      targets: _Targets(),
+      getResponseDetail: (_) async => _detail('contact-one'),
       openResponseForConversion: (_) async {},
       openEventSettings: (_) async {},
       now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
@@ -247,35 +718,56 @@ void main() {
     final offerController = HostEventOfferController(offers);
     addTearDown(query.dispose);
     addTearDown(offerController.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    await query.apply(
+      const HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v1',
+      ),
+    );
     query.toggleSelection('response-one');
     String? contactId;
-    await tester.pumpWidget(MaterialApp(
-      theme: AppTheme.light,
-      home: Scaffold(body: SingleChildScrollView(
-        child: HostEventOfferWorkspaceSection(
-          organizerId: 'org', accountId: 'manager',
-          queryController: query, offerController: offerController,
-          listOffers: ({required organizerId, required eventId,
-              afterOfferId}) async => const {
-            'items': <Object>[], 'nextCursor': null,
-          },
-          getOffer: ({required organizerId, required eventId,
-              required contactId}) async => _existingOffer(),
-          prepareHandoff: ({required offer}) async =>
-              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
-                blockers: ['fixture']),
-          copyMessage: (_) async {}, openHandoff: (_) async => false,
-          targets: _Targets(),
-          getResponseDetail: (_) async => _detail(contactId),
-          openResponseForConversion: (_) async => contactId = 'contact-one',
-          openEventSettings: (_) async {},
-          copy: _copy,
-          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: HostEventOfferWorkspaceSection(
+              organizerId: 'org',
+              accountId: 'manager',
+              queryController: query,
+              offerController: offerController,
+              listOffers:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    afterOfferId,
+                  }) async => const {'items': <Object>[], 'nextCursor': null},
+              getOffer:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    required contactId,
+                  }) async => _existingOffer(),
+              prepareHandoff: ({required offer}) async =>
+                  const HostOfferHandoff(
+                    kind: 'blocked',
+                    offerId: 'offer-one',
+                    blockers: ['fixture'],
+                  ),
+              copyMessage: (_) async {},
+              openHandoff: (_) async => false,
+              targets: _Targets(),
+              getResponseDetail: (_) async => _detail(contactId),
+              openResponseForConversion: (_) async => contactId = 'contact-one',
+              openEventSettings: (_) async {},
+              copy: _copy,
+              now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+            ),
+          ),
         ),
-      )),
-    ));
+      ),
+    );
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Create event offers'));
     await pumpFeatureUi(tester);
@@ -295,183 +787,312 @@ void main() {
     expect(offers.previewed!.rows.single.sourceId, 'response-one');
   });
 
-  testWidgets('changed query result blocks event choice without partial offers',
-      (tester) async {
-    final source = _Query();
-    final query = HostResponseQueryController(source);
-    final offers = _Offers();
-    final offerController = HostEventOfferController(offers);
-    addTearDown(query.dispose);
-    addTearDown(offerController.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
-    query.toggleSelection('response-one');
-    var detailReads = 0;
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light,
-      home: Scaffold(body: SingleChildScrollView(
-        child: HostEventOfferWorkspaceSection(
-          organizerId: 'org', accountId: 'manager',
-          queryController: query, offerController: offerController,
-          listOffers: ({required organizerId, required eventId,
-              afterOfferId}) async => const {
-            'items': <Object>[], 'nextCursor': null,
-          },
-          getOffer: ({required organizerId, required eventId,
-              required contactId}) async => _existingOffer(),
-          prepareHandoff: ({required offer}) async =>
-              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
-                blockers: ['fixture']),
-          copyMessage: (_) async {}, openHandoff: (_) async => false,
-          targets: _Targets(),
-          getResponseDetail: (_) async {
-            detailReads++;
-            return _detail('contact-one');
-          },
-          openResponseForConversion: (_) async {},
-          openEventSettings: (_) async {}, copy: _copy,
-          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+  testWidgets(
+    'changed query result blocks event choice without partial offers',
+    (tester) async {
+      final source = _Query();
+      final query = HostResponseQueryController(source);
+      final offers = _Offers();
+      final offerController = HostEventOfferController(offers);
+      addTearDown(query.dispose);
+      addTearDown(offerController.dispose);
+      await query.apply(
+        const HostResponseQueryRequest(
+          organizerId: 'org',
+          formId: 'form',
+          versionId: 'form_v1',
         ),
-      )),
-    ));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Create event offers'));
-    await pumpFeatureUi(tester);
-    source.hash = 'changed';
-    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
-    await pumpFeatureUi(tester);
-    expect(find.text('Selection changed'), findsOneWidget);
-    expect(detailReads, 0);
-    expect(offers.previewCalls, 0);
-  });
-
-  testWidgets('existing offer opens reviewed manual state and prepared handoff '
-      'without recording a send', (tester) async {
-    final query = HostResponseQueryController(_Query());
-    final offers = _Offers();
-    final controller = HostEventOfferController(offers);
-    addTearDown(query.dispose);
-    addTearDown(controller.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
-    query.toggleSelection('response-one');
-    final copied = <String>[];
-    final opened = <Uri>[];
-    var preparations = 0;
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light,
-      home: Scaffold(body: SingleChildScrollView(
-        child: HostEventOfferWorkspaceSection(
-          organizerId: 'org', accountId: 'manager',
-          queryController: query, offerController: controller,
-          listOffers: ({required organizerId, required eventId,
-              afterOfferId}) async => const {
-            'items': [
-              {'offerId': 'offer-one', 'eventId': 'event-one',
-                'contactId': 'contact-one', 'effectiveStatus': 'offered'},
-              {'offerId': 'unrelated-offer', 'eventId': 'event-one',
-                'contactId': 'another-contact', 'effectiveStatus': 'offered'},
-            ], 'nextCursor': null,
-          },
-          getOffer: ({required organizerId, required eventId,
-              required contactId}) async => _existingOffer(),
-          prepareHandoff: ({required offer}) async {
-            preparations++;
-            return HostOfferHandoff(kind: 'prepared', blockers: const [],
-              offerId: offer.offerId, contactId: offer.contactId,
-              editableText: 'Hi Maya', copyText: 'Hi Maya',
-              whatsappUrl: Uri.parse('https://wa.me/911234567890'));
-          },
-          copyMessage: (text) async => copied.add(text),
-          openHandoff: (uri) async { opened.add(uri); return true; },
-          targets: _Targets(),
-          getResponseDetail: (_) async => _detail('contact-one'),
-          openResponseForConversion: (_) async {},
-          openEventSettings: (_) async {}, copy: _copy,
-          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+      );
+      query.toggleSelection('response-one');
+      var detailReads = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: HostEventOfferWorkspaceSection(
+                organizerId: 'org',
+                accountId: 'manager',
+                queryController: query,
+                offerController: offerController,
+                listOffers:
+                    ({
+                      required organizerId,
+                      required eventId,
+                      afterOfferId,
+                    }) async => const {'items': <Object>[], 'nextCursor': null},
+                getOffer:
+                    ({
+                      required organizerId,
+                      required eventId,
+                      required contactId,
+                    }) async => _existingOffer(),
+                prepareHandoff: ({required offer}) async =>
+                    const HostOfferHandoff(
+                      kind: 'blocked',
+                      offerId: 'offer-one',
+                      blockers: ['fixture'],
+                    ),
+                copyMessage: (_) async {},
+                openHandoff: (_) async => false,
+                targets: _Targets(),
+                getResponseDetail: (_) async {
+                  detailReads++;
+                  return _detail('contact-one');
+                },
+                openResponseForConversion: (_) async {},
+                openEventSettings: (_) async {},
+                copy: _copy,
+                now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+              ),
+            ),
+          ),
         ),
-      )),
-    ));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Create event offers'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
-    await pumpFeatureUi(tester);
-    expect(find.byKey(const ValueKey('offer-existing-unrelated-offer')),
-      findsNothing);
-    await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
-    final manualReview = find.byType(HostManualPaymentReviewSection);
-    await pumpUntilFound(tester, manualReview);
-    final referenceInput = find.descendant(
-      of: manualReview, matching: find.byType(TextField));
-    expect(referenceInput, findsOneWidget);
-    // Empty row inputs show an inline Add prompt; editing reveals the label.
-    await tester.ensureVisible(referenceInput);
-    await tester.enterText(referenceInput, 'demo-reference');
-    await pumpFeatureUi(tester);
-    expect(find.text('Payment reference'), findsOneWidget);
-    FocusManager.instance.primaryFocus?.unfocus();
-    await tester.ensureVisible(find.text('Prepare personal handoff'));
-    await tester.tap(find.text('Prepare personal handoff'));
-    await pumpFeatureUi(tester);
-    expect(preparations, 1);
-    expect(find.text('Hi Maya'), findsOneWidget);
-    await tester.ensureVisible(find.text('Copy message'));
-    await tester.tap(find.text('Copy message'));
-    await pumpFeatureUi(tester);
-    expect(copied, ['Hi Maya']);
-    await tester.ensureVisible(find.text('Open WhatsApp'));
-    await tester.tap(find.text('Open WhatsApp'));
-    await pumpFeatureUi(tester);
-    expect(opened.single.host, 'wa.me');
-    expect(find.text('Message copied. Sending is your choice.'),
-      findsOneWidget);
-    expect(offers.previewCalls, 0);
-  });
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Create event offers'));
+      await pumpFeatureUi(tester);
+      source.hash = 'changed';
+      await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+      await pumpFeatureUi(tester);
+      expect(find.text('Selection changed'), findsOneWidget);
+      expect(detailReads, 0);
+      expect(offers.previewCalls, 0);
+    },
+  );
 
-  testWidgets('existing offer discovers and replays saved manual command',
+  for (final payment in [
+    (amount: 50000, mode: 'manualInstructions'),
+    (amount: 0, mode: 'manualInstructions'),
+    (amount: 50000, mode: 'catchCheckout'),
+  ]) {
+    testWidgets(
+      'existing ${payment.mode} ${payment.amount} offer shows appropriate payment controls and handoff',
       (tester) async {
+        final query = HostResponseQueryController(_Query());
+        final offers = _Offers();
+        final controller = HostEventOfferController(offers);
+        addTearDown(query.dispose);
+        addTearDown(controller.dispose);
+        await query.apply(
+          const HostResponseQueryRequest(
+            organizerId: 'org',
+            formId: 'form',
+            versionId: 'form_v1',
+          ),
+        );
+        query.toggleSelection('response-one');
+        final copied = <String>[];
+        final opened = <Uri>[];
+        var preparations = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: HostEventOfferWorkspaceSection(
+                  organizerId: 'org',
+                  accountId: 'manager',
+                  queryController: query,
+                  offerController: controller,
+                  listOffers:
+                      ({
+                        required organizerId,
+                        required eventId,
+                        afterOfferId,
+                      }) async => const {
+                        'items': [
+                          {
+                            'offerId': 'offer-one',
+                            'eventId': 'event-one',
+                            'contactId': 'contact-one',
+                            'effectiveStatus': 'offered',
+                          },
+                          {
+                            'offerId': 'unrelated-offer',
+                            'eventId': 'event-one',
+                            'contactId': 'another-contact',
+                            'effectiveStatus': 'offered',
+                          },
+                        ],
+                        'nextCursor': null,
+                      },
+                  getOffer:
+                      ({
+                        required organizerId,
+                        required eventId,
+                        required contactId,
+                      }) async => _existingOffer(
+                        amount: payment.amount,
+                        mode: payment.mode,
+                      ),
+                  prepareHandoff: ({required offer}) async {
+                    preparations++;
+                    return HostOfferHandoff(
+                      kind: 'prepared',
+                      blockers: const [],
+                      offerId: offer.offerId,
+                      contactId: offer.contactId,
+                      editableText: 'Hi Maya',
+                      copyText: 'Hi Maya',
+                      whatsappUrl: Uri.parse('https://wa.me/911234567890'),
+                    );
+                  },
+                  copyMessage: (text) async => copied.add(text),
+                  openHandoff: (uri) async {
+                    opened.add(uri);
+                    return true;
+                  },
+                  targets: _Targets(),
+                  getResponseDetail: (_) async => _detail('contact-one'),
+                  openResponseForConversion: (_) async {},
+                  openEventSettings: (_) async {},
+                  copy: _copy,
+                  now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+                ),
+              ),
+            ),
+          ),
+        );
+        await pumpFeatureUi(tester);
+        await tester.tap(find.text('Create event offers'));
+        await pumpFeatureUi(tester);
+        await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+        await pumpFeatureUi(tester);
+        expect(
+          find.byKey(const ValueKey('offer-existing-unrelated-offer')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const ValueKey('offer-existing-offer-one')),
+          findsNothing,
+        );
+        // The single existing offer opens automatically.
+        final manualReview = find.byType(HostManualPaymentReviewSection);
+        if (payment.amount > 0 && payment.mode == 'manualInstructions') {
+          await pumpUntilFound(tester, manualReview);
+          final referenceInput = find.descendant(
+            of: manualReview,
+            matching: find.byType(TextField),
+          );
+          expect(referenceInput, findsOneWidget);
+          // Empty row inputs show an inline Add prompt; editing reveals the label.
+          await tester.ensureVisible(referenceInput);
+          await tester.enterText(referenceInput, 'demo-reference');
+          await pumpFeatureUi(tester);
+          expect(find.text('Payment reference'), findsOneWidget);
+          FocusManager.instance.primaryFocus?.unfocus();
+        } else {
+          expect(manualReview, findsNothing);
+        }
+        await tester.ensureVisible(find.text('Prepare personal handoff'));
+        await tester.tap(find.text('Prepare personal handoff'));
+        await pumpFeatureUi(tester);
+        expect(preparations, 1);
+        expect(find.text('Hi Maya'), findsOneWidget);
+        await tester.ensureVisible(find.text('Copy message'));
+        await tester.tap(find.text('Copy message'));
+        await pumpFeatureUi(tester);
+        expect(copied, ['Hi Maya']);
+        await tester.ensureVisible(find.text('Open WhatsApp'));
+        await tester.tap(find.text('Open WhatsApp'));
+        await pumpFeatureUi(tester);
+        expect(opened.single.host, 'wa.me');
+        expect(
+          find.text('Message copied. Sending is your choice.'),
+          findsOneWidget,
+        );
+        expect(offers.previewCalls, 0);
+      },
+    );
+  }
+
+  testWidgets('existing offer discovers and replays saved manual command', (
+    tester,
+  ) async {
     final query = HostResponseQueryController(_Query());
     final pending = _PendingMutation();
-    final controller = HostEventOfferController(_Offers(),
-      mutationOutbox: pending, accountId: 'manager');
+    final controller = HostEventOfferController(
+      _Offers(),
+      mutationOutbox: pending,
+      accountId: 'manager',
+    );
     addTearDown(query.dispose);
     addTearDown(controller.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    await query.apply(
+      const HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v1',
+      ),
+    );
     query.toggleSelection('response-one');
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light,
-      home: Scaffold(body: SingleChildScrollView(
-        child: HostEventOfferWorkspaceSection(
-          organizerId: 'org', accountId: 'manager',
-          queryController: query, offerController: controller,
-          listOffers: ({required organizerId, required eventId,
-              afterOfferId}) async => const {
-            'items': [{'offerId': 'offer-one', 'eventId': 'event-one',
-              'contactId': 'contact-one', 'effectiveStatus': 'offered'}],
-            'nextCursor': null,
-          },
-          getOffer: ({required organizerId, required eventId,
-              required contactId}) async => _existingOffer(),
-          prepareHandoff: ({required offer}) async => HostOfferHandoff(
-            kind: 'blocked', offerId: offer.offerId, blockers: const ['fixture']),
-          copyMessage: (_) async {}, openHandoff: (_) async => false,
-          targets: _Targets(),
-          getResponseDetail: (_) async => _detail('contact-one'),
-          openResponseForConversion: (_) async {},
-          openEventSettings: (_) async {}, copy: _copy,
-          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: HostEventOfferWorkspaceSection(
+              organizerId: 'org',
+              accountId: 'manager',
+              queryController: query,
+              offerController: controller,
+              listOffers:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    afterOfferId,
+                  }) async => const {
+                    'items': [
+                      {
+                        'offerId': 'offer-one',
+                        'eventId': 'event-one',
+                        'contactId': 'contact-one',
+                        'effectiveStatus': 'offered',
+                      },
+                    ],
+                    'nextCursor': null,
+                  },
+              getOffer:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    required contactId,
+                  }) async => _existingOffer(),
+              prepareHandoff: ({required offer}) async => HostOfferHandoff(
+                kind: 'blocked',
+                offerId: offer.offerId,
+                blockers: const ['fixture'],
+              ),
+              copyMessage: (_) async {},
+              openHandoff: (_) async => false,
+              targets: _Targets(),
+              getResponseDetail: (_) async => _detail('contact-one'),
+              openResponseForConversion: (_) async {},
+              openEventSettings: (_) async {},
+              copy: _copy,
+              now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+            ),
+          ),
         ),
-      )),
-    ));
+      ),
+    );
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Create event offers'));
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
     await pumpFeatureUi(tester);
-    await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
+    expect(
+      find.byKey(const ValueKey('offer-existing-offer-one')),
+      findsNothing,
+    );
+    // The single existing offer opens automatically.
     await pumpFeatureUi(tester);
     expect(pending.reads, greaterThan(0));
-    expect(find.byKey(const ValueKey('offer-retry-saved-mutation')),
-      findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('offer-retry-saved-mutation')),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('offer-retry-saved-mutation')));
     await pumpFeatureUi(tester);
     expect(pending.replays, 1);
@@ -485,36 +1106,55 @@ void main() {
     final offerController = HostEventOfferController(offers);
     addTearDown(query.dispose);
     addTearDown(offerController.dispose);
-    await query.apply(const HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    await query.apply(
+      const HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v1',
+      ),
+    );
     query.toggleSelection('response-one');
     var createCalls = 0;
     Widget section({Future<void> Function()? onCreateEvent}) => MaterialApp(
       theme: AppTheme.light,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: SingleChildScrollView(
-        child: HostEventOfferWorkspaceSection(
-          organizerId: 'org', accountId: 'manager',
-          queryController: query, offerController: offerController,
-          listOffers: ({required organizerId, required eventId,
-              afterOfferId}) async => const {
-            'items': <Object>[], 'nextCursor': null,
-          },
-          getOffer: ({required organizerId, required eventId,
-              required contactId}) async => _existingOffer(),
-          prepareHandoff: ({required offer}) async =>
-              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
-                blockers: ['fixture']),
-          copyMessage: (_) async {}, openHandoff: (_) async => false,
-          targets: _Targets(),
-          getResponseDetail: (_) async => _detail('contact-one'),
-          openResponseForConversion: (_) async {},
-          openEventSettings: (_) async {}, copy: _copy,
-          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
-          onCreateEvent: onCreateEvent,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: HostEventOfferWorkspaceSection(
+            organizerId: 'org',
+            accountId: 'manager',
+            queryController: query,
+            offerController: offerController,
+            listOffers:
+                ({
+                  required organizerId,
+                  required eventId,
+                  afterOfferId,
+                }) async => const {'items': <Object>[], 'nextCursor': null},
+            getOffer:
+                ({
+                  required organizerId,
+                  required eventId,
+                  required contactId,
+                }) async => _existingOffer(),
+            prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+              kind: 'blocked',
+              offerId: 'offer-one',
+              blockers: ['fixture'],
+            ),
+            copyMessage: (_) async {},
+            openHandoff: (_) async => false,
+            targets: _Targets(),
+            getResponseDetail: (_) async => _detail('contact-one'),
+            openResponseForConversion: (_) async {},
+            openEventSettings: (_) async {},
+            copy: _copy,
+            now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+            onCreateEvent: onCreateEvent,
+          ),
         ),
-      )),
+      ),
     );
     const createButton = Key('offer-create-event');
     await tester.pumpWidget(section());
@@ -562,18 +1202,36 @@ class _SwitchingQuery implements HostResponseQueryGateway {
   static HostResponseQueryPage page(String name, String responseId) =>
       HostResponseQueryPage(
         form: const HostResponseQueryForm(
-          formId: 'form', title: 'Form', versionId: 'form_v1', version: 1),
-        items: [HostResponseQueryRow.fromMap({
-          'responseId': responseId, 'formId': 'form',
-          'formTitle': 'Form', 'versionId': 'form_v1', 'version': 1,
-          'status': 'submitted', 'identityKind': 'phoneVerified',
-          'identity': {'displayName': name, 'email': null,
-            'phoneE164': null, 'origin': 'respondentGranted'},
-          'sourceLinkId': null, 'submittedAtMillis': 1790000000000,
-          'withdrawnAtMillis': null,
-        })],
-        nextCursor: null, total: 1, selectedIds: {responseId},
-        queryHash: 'query', resultHash: 'result-$responseId',
+          formId: 'form',
+          title: 'Form',
+          versionId: 'form_v1',
+          version: 1,
+        ),
+        items: [
+          HostResponseQueryRow.fromMap({
+            'responseId': responseId,
+            'formId': 'form',
+            'formTitle': 'Form',
+            'versionId': 'form_v1',
+            'version': 1,
+            'status': 'submitted',
+            'identityKind': 'phoneVerified',
+            'identity': {
+              'displayName': name,
+              'email': null,
+              'phoneE164': null,
+              'origin': 'respondentGranted',
+            },
+            'sourceLinkId': null,
+            'submittedAtMillis': 1790000000000,
+            'withdrawnAtMillis': null,
+          }),
+        ],
+        nextCursor: null,
+        total: 1,
+        selectedIds: {responseId},
+        queryHash: 'query',
+        resultHash: 'result-$responseId',
         fieldCatalog: const [],
       );
 }
@@ -583,19 +1241,35 @@ class _SwitchingLegacyResponses extends HostFormResponsesController {
 
   @override
   Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
-      _nextResponse?.future ?? Future.value(HostFormResponsesState(
-        responses: [response('Maya', 'response-one')], nextCursor: null));
+      _nextResponse?.future ??
+      Future.value(
+        HostFormResponsesState(
+          responses: [response('Maya', 'response-one')],
+          nextCursor: null,
+        ),
+      );
 
   static HostFormResponseSummary response(String name, String id) =>
       HostFormResponseSummary.fromMap({
-        'responseId': id, 'formId': 'form', 'formTitle': 'Form',
-        'versionId': 'form_v1', 'version': 1, 'status': 'submitted',
+        'responseId': id,
+        'formId': 'form',
+        'formTitle': 'Form',
+        'versionId': 'form_v1',
+        'version': 1,
+        'status': 'submitted',
         'identityKind': 'phoneVerified',
-        'identity': {'displayName': name, 'email': null,
-          'phoneE164': null, 'origin': 'respondentGranted'},
-        'sourceLinkId': null, 'sourceLabel': null,
-        'submittedAtMillis': 1790000000000, 'withdrawnAtMillis': null,
-        'highlights': const <Object>[], 'conversionKinds': const <Object>[],
+        'identity': {
+          'displayName': name,
+          'email': null,
+          'phoneE164': null,
+          'origin': 'respondentGranted',
+        },
+        'sourceLinkId': null,
+        'sourceLabel': null,
+        'submittedAtMillis': 1790000000000,
+        'withdrawnAtMillis': null,
+        'highlights': const <Object>[],
+        'conversionKinds': const <Object>[],
       });
 }
 
@@ -606,26 +1280,39 @@ class _PendingMutation implements HostOfferMutationOutbox {
   int newMutations = 0;
 
   @override
-  Future<HostOfferPendingMutation?> pendingMutation({required String accountId,
-      required String organizerId, required String eventId}) async {
+  Future<HostOfferPendingMutation?> pendingMutation({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  }) async {
     reads++;
-    return unresolved ? const HostOfferPendingMutation(
-      requestId: 'reference_saved', contactId: 'contact-one',
-      kind: 'recordEvidence', decision: null) : null;
+    return unresolved
+        ? const HostOfferPendingMutation(
+            requestId: 'reference_saved',
+            contactId: 'contact-one',
+            kind: 'recordEvidence',
+            decision: null,
+          )
+        : null;
   }
 
   @override
-  Future<HostEventOffer> replayMutation({required String accountId,
-      required String organizerId, required String eventId}) async {
+  Future<HostEventOffer> replayMutation({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  }) async {
     replays++;
     unresolved = false;
     return _existingOffer();
   }
 
   @override
-  Future<HostEventOffer> mutate({required String accountId,
-      required HostEventOffer offer,
-      required Map<String, Object?> action}) async {
+  Future<HostEventOffer> mutate({
+    required String accountId,
+    required HostEventOffer offer,
+    required Map<String, Object?> action,
+  }) async {
     newMutations++;
     return offer;
   }
@@ -638,70 +1325,118 @@ class _Query implements HostResponseQueryGateway {
   Future<HostResponseQueryPage> query(HostResponseQueryRequest request) async =>
       HostResponseQueryPage(
         form: const HostResponseQueryForm(
-          formId: 'form', title: 'Form', versionId: 'form_v1', version: 1),
-        items: [HostResponseQueryRow.fromMap(const {
-          'responseId': 'response-one', 'formId': 'form',
-          'formTitle': 'Form', 'versionId': 'form_v1', 'version': 1,
-          'status': 'submitted', 'identityKind': 'phoneVerified',
-          'identity': {'displayName': 'Maya', 'email': null,
-            'phoneE164': null, 'origin': 'respondentGranted'},
-          'sourceLinkId': null, 'submittedAtMillis': 1790000000000,
-          'withdrawnAtMillis': null,
-        })],
-        nextCursor: null, total: 1, selectedIds: const {'response-one'},
-        queryHash: 'query', resultHash: hash, fieldCatalog: const [],
+          formId: 'form',
+          title: 'Form',
+          versionId: 'form_v1',
+          version: 1,
+        ),
+        items: [
+          HostResponseQueryRow.fromMap(const {
+            'responseId': 'response-one',
+            'formId': 'form',
+            'formTitle': 'Form',
+            'versionId': 'form_v1',
+            'version': 1,
+            'status': 'submitted',
+            'identityKind': 'phoneVerified',
+            'identity': {
+              'displayName': 'Maya',
+              'email': null,
+              'phoneE164': null,
+              'origin': 'respondentGranted',
+            },
+            'sourceLinkId': null,
+            'submittedAtMillis': 1790000000000,
+            'withdrawnAtMillis': null,
+          }),
+        ],
+        nextCursor: null,
+        total: 1,
+        selectedIds: const {'response-one'},
+        queryHash: 'query',
+        resultHash: hash,
+        fieldCatalog: const [],
       );
 }
 
 class _Targets implements HostOfferEventTargetsGateway {
+  _Targets({this.empty = false});
+  final bool empty;
   int listCalls = 0;
   int configurationCalls = 0;
   int revision = 1;
   @override
-  Future<HostOfferEventTargetPage> list({required String organizerId,
-      String? cursor}) async {
+  Future<HostOfferEventTargetPage> list({
+    required String organizerId,
+    String? cursor,
+  }) async {
     listCalls++;
+    if (empty) return const HostOfferEventTargetPage([], null);
     return HostOfferEventTargetPage([
-        HostOfferEventTarget(
-          eventId: 'event-one', name: 'Sunday run',
-          startTime: _start, timezone: 'Asia/Kolkata',
-          publicationState: 'private', setupRevision: 1),
-      ], null);
+      HostOfferEventTarget(
+        eventId: 'event-one',
+        name: 'Sunday run',
+        startTime: _start,
+        timezone: 'Asia/Kolkata',
+        publicationState: 'private',
+        setupRevision: 1,
+      ),
+    ], null);
   }
 
   @override
   Future<HostOfferEventConfiguration> configuration({
-    required String organizerId, required String eventId,
+    required String organizerId,
+    required String eventId,
   }) async {
     configurationCalls++;
     return HostOfferEventConfiguration(
-    organizerId: organizerId, eventId: eventId,
-    eventSourceRevision: revision, startsAt: _start,
-    serverNow: DateTime.fromMillisecondsSinceEpoch(1799990000000),
-    paymentTerms: const {'preferredCollection': 'manualInstructions'},
-    suggestedExpiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
-  );
+      organizerId: organizerId,
+      eventId: eventId,
+      eventSourceRevision: revision,
+      startsAt: _start,
+      serverNow: DateTime.fromMillisecondsSinceEpoch(1799990000000),
+      paymentTerms: const {
+        'preferredCollection': 'manualInstructions',
+        'expectedAmountMinor': 50000,
+        'currency': 'INR',
+      },
+      suggestedExpiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
+    );
   }
 }
 
 final _start = DateTime.fromMillisecondsSinceEpoch(1800000000000);
 
-HostFormResponseDetail _detail(String? contactId) => HostFormResponseDetail(
-  response: HostFormResponseSummary(
-    responseId: 'response-one', formId: 'form', formTitle: 'Form',
-    versionId: 'form_v1', version: 1,
-    status: HostFormResponseStatus.submitted,
-    identityKind: HostFormResponseIdentityKind.phoneVerified,
-    identity: const HostFormResponseIdentity(
-      displayName: 'Maya', email: null, phoneE164: null,
-      origin: HostFormDataOrigin.respondentGranted),
-    sourceLinkId: null, sourceLabel: null,
-    submittedAt: DateTime.fromMillisecondsSinceEpoch(1790000000000),
-    withdrawnAt: null, highlights: const [], conversionKinds: const {},
-  ),
-  contactId: contactId, answers: const [], consentVersion: 'v1',
-  completionMillis: 1790000000000,
-);
+HostFormResponseDetail _detail(String? contactId, {String? applicationId}) =>
+    HostFormResponseDetail(
+      applicationId: applicationId,
+      response: HostFormResponseSummary(
+        responseId: 'response-one',
+        formId: 'form',
+        formTitle: 'Form',
+        versionId: 'form_v1',
+        version: 1,
+        status: HostFormResponseStatus.submitted,
+        identityKind: HostFormResponseIdentityKind.phoneVerified,
+        identity: const HostFormResponseIdentity(
+          displayName: 'Maya',
+          email: null,
+          phoneE164: null,
+          origin: HostFormDataOrigin.respondentGranted,
+        ),
+        sourceLinkId: null,
+        sourceLabel: null,
+        submittedAt: DateTime.fromMillisecondsSinceEpoch(1790000000000),
+        withdrawnAt: null,
+        highlights: const [],
+        conversionKinds: const {},
+      ),
+      contactId: contactId,
+      answers: const [],
+      consentVersion: 'v1',
+      completionMillis: 1790000000000,
+    );
 
 class _Offers implements HostEventOfferGateway {
   int previewCalls = 0;
@@ -711,71 +1446,185 @@ class _Offers implements HostEventOfferGateway {
   Future<HostOfferPreview> preview(HostOfferBatchDraft draft) async {
     previewCalls++;
     previewed = draft;
-    return const HostOfferPreview(planDigest: 'digest', rows: [
-      HostOfferPreviewRow(offerId: 'offer-one', revision: 0,
-        generation: 0, status: 'new'),
-    ]);
+    return const HostOfferPreview(
+      planDigest: 'digest',
+      rows: [
+        HostOfferPreviewRow(
+          offerId: 'offer-one',
+          revision: 0,
+          generation: 0,
+          status: 'new',
+        ),
+      ],
+    );
   }
 
   @override
-  Future<HostOfferCommitReceipt> commit({required HostOfferBatchDraft draft,
-      required HostOfferPreview preview, required String requestId}) =>
-      throw UnimplementedError();
+  Future<HostOfferCommitReceipt> commit({
+    required HostOfferBatchDraft draft,
+    required HostOfferPreview preview,
+    required String requestId,
+  }) => throw UnimplementedError();
 
   @override
-  Future<HostEventOffer> recordReference({required HostEventOffer offer,
-      required String reference, required String requestId}) =>
-      throw UnimplementedError();
+  Future<HostEventOffer> recordReference({
+    required HostEventOffer offer,
+    required String reference,
+    required String requestId,
+  }) => throw UnimplementedError();
 
   @override
-  Future<HostEventOffer> reviewReference({required HostEventOffer offer,
-      required HostManualPaymentStatus decision, required String note,
-      required bool bankReceiptChecked, required String requestId}) =>
-      throw UnimplementedError();
+  Future<HostEventOffer> reviewReference({
+    required HostEventOffer offer,
+    required HostManualPaymentStatus decision,
+    required String note,
+    required bool bankReceiptChecked,
+    required String requestId,
+  }) => throw UnimplementedError();
 }
 
 final _copy = HostEventOfferWorkspaceCopy(
-  create: 'Create event offers', selectEvent: 'Choose an event',
-  emptyEvents: 'No events', untitledEvent: 'Untitled event',
-  loadMoreEvents: 'Load more events', needsContact: 'Convert response first',
-  convertContact: 'Create CRM contact', selectionChanged: 'Selection changed',
-  loadFailed: 'Load failed', issued: 'Offers recorded', refresh: 'Refresh',
-  existing: 'Existing offers', noOffers: 'No offers',
-  configurePayment: 'Configure payment', openSettings: 'Open settings',
-  statusDraft: 'Draft', statusOffered: 'Offered',
-  statusWithdrawn: 'Withdrawn', statusExpired: 'Expired',
+  create: 'Create event offers',
+  selectEvent: 'Choose an event',
+  emptyEvents: 'No events',
+  untitledEvent: 'Untitled event',
+  loadMoreEvents: 'Load more events',
+  needsContact: 'Convert response first',
+  convertContact: 'Create CRM contact',
+  selectionChanged: 'Selection changed',
+  loadFailed: 'Load failed',
+  issued: 'Offers recorded',
+  refresh: 'Refresh',
+  existing: 'Existing offers',
+  noOffers: 'No offers',
+  configurePayment: 'Configure payment',
+  openSettings: 'Open settings',
+  statusDraft: 'Draft',
+  statusOffered: 'Offered',
+  statusWithdrawn: 'Withdrawn',
+  statusExpired: 'Expired',
   personalPaymentLink: (name) => 'Personal payment link for $name',
   openExisting: 'Review offer',
   handoffPrepare: 'Prepare personal handoff',
   handoffBlocked: 'Handoff unavailable',
   handoffDisclosure: 'Review and send in WhatsApp; Catch cannot track it.',
-  openWhatsapp: 'Open WhatsApp', copyMessage: 'Copy message',
+  openWhatsapp: 'Open WhatsApp',
+  copyMessage: 'Copy message',
   messageCopied: 'Message copied. Sending is your choice.',
   handoffOpenFailed: 'Could not open WhatsApp.',
   review: HostEventOfferReviewCopy(
-    title: 'Event offer', preview: 'Preview offers',
-    previewing: 'Checking', review: 'Review offer details',
-    expires: (date) => 'Expires $date', commit: 'Record offers',
-    committing: 'Recording', committed: 'Recorded', failed: 'Failed',
-    noReservation: 'No seat or admission', paymentReference: 'Payment reference',
-    recordReference: 'Record', evidenceSubmitted: 'Submitted',
-    bankReceiptChecked: 'Checked', reviewNote: 'Note',
-    attestReceived: 'Attest', rejectReference: 'Reject',
-    hostAttested: 'Attested', rejected: 'Rejected',
+    title: 'Event offer',
+    preview: 'Preview offers',
+    previewing: 'Checking',
+    review: 'Review offer details',
+    expires: (date) => 'Expires $date',
+    commit: 'Record offers',
+    committing: 'Recording',
+    committed: 'Recorded',
+    failed: 'Failed',
+    noReservation: 'No seat or admission',
+    paymentReference: 'Payment reference',
+    recordReference: 'Record',
+    evidenceSubmitted: 'Submitted',
+    bankReceiptChecked: 'Checked',
+    reviewNote: 'Note',
+    attestReceived: 'Attest',
+    rejectReference: 'Reject',
+    hostAttested: 'Attested',
+    rejected: 'Rejected',
   ),
 );
 
-HostEventOffer _existingOffer() => HostEventOffer(
-  offerId: 'offer-one', organizerId: 'org', eventId: 'event-one',
-  contactId: 'contact-one', sourceId: 'response-one',
-  sourceKind: HostOfferSourceKind.formResponse,
+HostEventOffer _existingOffer({
+  String? applicationId,
+  int amount = 50000,
+  String mode = 'manualInstructions',
+}) => HostEventOffer(
+  offerId: 'offer-one',
+  organizerId: 'org',
+  eventId: 'event-one',
+  contactId: 'contact-one',
+  sourceId: applicationId ?? 'response-one',
+  sourceKind: applicationId == null
+      ? HostOfferSourceKind.formResponse
+      : HostOfferSourceKind.application,
   status: HostOfferStatus.offered,
   effectiveStatus: HostOfferStatus.offered,
-  generation: 1, revision: 2,
+  generation: 1,
+  revision: 2,
   expiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
   organizerPaymentLink: null,
+  paymentSnapshot: HostOfferPaymentSnapshot(
+    eventPaymentRevision: 1,
+    eventPaymentHash: 'payment-hash',
+    collectionMode: mode,
+    expectedAmountMinor: amount,
+    currency: 'INR',
+    reusablePaymentPageUrl: null,
+    paymentInstructions: 'Bank transfer',
+    messageTemplate: null,
+    personalPaymentLink: null,
+    expiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
+  ),
   manualPayment: const HostManualPaymentReview(
-    status: HostManualPaymentStatus.none, evidenceReference: null,
-    evidenceRecordedAt: null, reviewedByUid: null, reviewedAt: null,
-    reviewNote: null, bankReceiptChecked: false),
+    status: HostManualPaymentStatus.none,
+    evidenceReference: null,
+    evidenceRecordedAt: null,
+    reviewedByUid: null,
+    reviewedAt: null,
+    reviewNote: null,
+    bankReceiptChecked: false,
+  ),
 );
+
+class _RouteFunctions extends Fake implements FirebaseFunctions {
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
+      _RouteCallable(name);
+}
+
+class _RouteCallable extends Fake implements HttpsCallable {
+  _RouteCallable(this.name);
+  final String name;
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final Object data = switch (name) {
+      'listOfferEventTargets' => {
+        'events': [
+          {
+            'eventId': 'event-one',
+            'name': 'Sunday run',
+            'startTimeMillis': 2100000000000,
+            'timezone': 'Asia/Kolkata',
+            'publicationState': 'private',
+            'setupRevision': 1,
+          },
+        ],
+        'nextCursor': null,
+      },
+      'getEventOfferConfiguration' => {
+        'organizerId': 'org',
+        'eventId': 'event-one',
+        'eventSourceRevision': 1,
+        'startsAtMillis': 2100000000000,
+        'nowMillis': now,
+        'paymentTerms': {
+          'preferredCollection': 'manualInstructions',
+          'expectedAmountMinor': 50000,
+          'currency': 'INR',
+        },
+        'suggestedExpiresAtMillis': now + 3600000,
+      },
+      'listEventOffers' => {'items': <Object>[], 'nextCursor': null},
+      _ => throw StateError('Unexpected callable: $name'),
+    };
+    return _RouteResult<T>(data as T);
+  }
+}
+
+class _RouteResult<T> extends Fake implements HttpsCallableResult<T> {
+  _RouteResult(this.data);
+  @override
+  final T data;
+}

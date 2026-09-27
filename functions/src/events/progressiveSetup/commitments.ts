@@ -35,6 +35,7 @@ export async function assertPrivateEventBasicsEditable(params: {
       event.status !== "active" ||
       event.clubId !== event.organizerId ||
       event.eventOrigin !== undefined ||
+      event.firstPublishedAt !== undefined ||
       event.eventSuccessPlanId !== undefined ||
       !Number.isSafeInteger(event.setupRevision) ||
       Number(event.setupRevision) < 1 ||

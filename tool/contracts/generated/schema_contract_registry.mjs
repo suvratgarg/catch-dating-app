@@ -1,6 +1,3693 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const setEventPublicationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_publication_payload.schema.json",
+  "title": "SetEventPublicationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "eventId",
+    "expectedSetupRevision",
+    "publicationState"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483646
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ]
+    }
+  }
+};
+
+export const eventPublicationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_publication_response.schema.json",
+  "title": "EventPublicationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "setupRevision",
+    "replayed",
+    "publicationState"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "replayed": {
+      "type": "boolean"
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ]
+    }
+  }
+};
+
+export const publicEventPaymentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_event_payments.schema.json",
+  "title": "PublicEventPaymentDocument",
+  "description": "Server-owned public OTP checkout. Holds and financial recovery share the event payment engine; no application approval or form-offer identity is implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "recipientUid",
+    "requestId",
+    "canonicalSeatKey",
+    "identityRevision",
+    "migrationRevision",
+    "routing",
+    "amountPaise",
+    "currency",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "admissionReceiptId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "admittedAt",
+    "lastErrorCode",
+    "registrationRevision",
+    "attendeeId",
+    "phoneE164",
+    "displayName",
+    "eventName",
+    "requestHash",
+    "inviteLinkId",
+    "cancellationPolicy"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "canonicalSeatKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "selection",
+        "policySource",
+        "appRevision",
+        "organizerRevision",
+        "bindingId",
+        "merchantAccountId",
+        "destinationAccountId",
+        "configurationVersion",
+        "checkoutKey",
+        "amountMinor",
+        "transferAmountMinor",
+        "settlementHold"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "transferAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "settlementHold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "formFee",
+            "eventAdmission"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "currency",
+            "merchantCountry"
+          ],
+          "properties": {
+            "route": {
+              "enum": [
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "merchantCountry": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        },
+        "policySource": {
+          "enum": [
+            "app",
+            "organizer",
+            "legacy"
+          ]
+        },
+        "appRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "merchantAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "destinationAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "configurationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkoutKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^pp_[a-f0-9]{32}$"
+    },
+    "status": {
+      "enum": [
+        "creatingOrder",
+        "orderUnknown",
+        "checkoutReady",
+        "verifying",
+        "captured",
+        "admitted",
+        "expired",
+        "refundPending",
+        "refunded",
+        "reviewRequired",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "providerOrderId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerPaymentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerRefundId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rfnd_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "admissionReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "checkoutExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "capturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admittedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.",
+      "required": [
+        "state",
+        "transferId",
+        "nextAttemptAtMillis",
+        "leaseUntilMillis",
+        "leaseId",
+        "authorizedAtMillis",
+        "completedAtMillis",
+        "releasedAtMillis",
+        "settledAtMillis"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "waiting",
+            "releasePending",
+            "released",
+            "settled",
+            "blocked",
+            "reviewRequired",
+            "reversed"
+          ]
+        },
+        "transferId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^trf_[A-Za-z0-9]+$",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAttemptAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseUntilMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorizedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "releasedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settledAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "cancellation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "requestedAtMillis",
+        "attendeeId",
+        "refundAmountPaise",
+        "seatRetained"
+      ],
+      "properties": {
+        "reason": {
+          "enum": [
+            "eventCancelled",
+            "guestCancelled"
+          ]
+        },
+        "requestedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "refundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "seatRetained": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cancellationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundDeadlineMillis",
+        "eventStartsAtMillis"
+      ],
+      "properties": {
+        "refundDeadlineMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventStartsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "eventName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inviteLinkId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "publicEventPayments",
+  "x-firestore-path": "publicEventPayments/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "public event checkout service"
+};
+
+export const publicEventAdmissionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_event_admission_receipts.schema.json",
+  "title": "PublicEventAdmissionReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "recipientUid",
+    "attendeeId",
+    "canonicalSeatKey",
+    "identityRevision",
+    "migrationRevision",
+    "registrationRevision",
+    "amountPaise",
+    "currency",
+    "routing",
+    "paymentId",
+    "providerOrderId",
+    "providerPaymentId",
+    "admittedAtMillis",
+    "resultingLedgerRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "canonicalSeatKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "selection",
+        "policySource",
+        "appRevision",
+        "organizerRevision",
+        "bindingId",
+        "merchantAccountId",
+        "destinationAccountId",
+        "configurationVersion",
+        "checkoutKey",
+        "amountMinor",
+        "transferAmountMinor",
+        "settlementHold"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "transferAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "settlementHold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "formFee",
+            "eventAdmission"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "currency",
+            "merchantCountry"
+          ],
+          "properties": {
+            "route": {
+              "enum": [
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "merchantCountry": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        },
+        "policySource": {
+          "enum": [
+            "app",
+            "organizer",
+            "legacy"
+          ]
+        },
+        "appRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "merchantAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "destinationAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "configurationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkoutKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "paymentId": {
+      "type": "string",
+      "pattern": "^pp_[a-f0-9]{32}$"
+    },
+    "providerOrderId": {
+      "type": "string",
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": "string",
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "admittedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "resultingLedgerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "publicEventAdmissionReceipts",
+  "x-firestore-path": "publicEventAdmissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "public event checkout admission service"
+};
+
+export const eventRegistrationReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_registration_receipts.schema.json",
+  "title": "EventRegistrationReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "actorUid",
+    "requestHash",
+    "registrationRevision",
+    "mode",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "eventRegistrationReceipts",
+  "x-firestore-path": "eventRegistrationReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "explicit event registration configuration service"
+};
+
+export const managePublicEventCheckoutCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_public_event_checkout_payload.schema.json",
+  "title": "ManagePublicEventCheckoutCallablePayload",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId"
+      ],
+      "properties": {
+        "action": {
+          "const": "quote"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId",
+        "requestId",
+        "displayName",
+        "reviewedQuote",
+        "inviteToken"
+      ],
+      "properties": {
+        "action": {
+          "const": "prepare"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "reviewedQuote": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "eventName",
+            "registrationRevision",
+            "startTimeMillis",
+            "amountPaise",
+            "currency",
+            "cancellationPolicy"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "registrationRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "startTimeMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "cancellationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "refundDeadlineMillis",
+                "eventStartsAtMillis"
+              ],
+              "properties": {
+                "refundDeadlineMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          }
+        },
+        "inviteToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "callback"
+      ],
+      "properties": {
+        "action": {
+          "const": "status"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^pp_[a-f0-9]{32}$"
+        },
+        "callback": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "paymentId",
+                "signature"
+              ],
+              "properties": {
+                "paymentId": {
+                  "type": "string",
+                  "pattern": "^pay_[A-Za-z0-9]+$"
+                },
+                "signature": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "expectedRefundAmountPaise"
+      ],
+      "properties": {
+        "action": {
+          "const": "cancelAdmission"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^pp_[a-f0-9]{32}$"
+        },
+        "expectedRefundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId"
+      ],
+      "properties": {
+        "action": {
+          "const": "find"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    }
+  ]
+};
+
+export const managePublicEventCheckoutCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_public_event_checkout_response.schema.json",
+  "title": "ManagePublicEventCheckoutCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "quote",
+    "payment",
+    "admission",
+    "serverTimeMillis"
+  ],
+  "properties": {
+    "quote": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "eventName",
+            "registrationRevision",
+            "startTimeMillis",
+            "amountPaise",
+            "currency",
+            "cancellationPolicy"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "registrationRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "startTimeMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "cancellationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "refundDeadlineMillis",
+                "eventStartsAtMillis"
+              ],
+              "properties": {
+                "refundDeadlineMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "payment": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "amountPaise",
+            "currency",
+            "mode",
+            "refundedAmountPaise",
+            "expiresAtMillis",
+            "checkout",
+            "cancellationReason",
+            "cancellationPolicy",
+            "cancellationQuote",
+            "eventId",
+            "eventName",
+            "startTimeMillis"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^pp_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "admitted",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "checkout": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "publicToken",
+                    "orderId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "publicToken": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "pattern": "^order_[A-Za-z0-9]+$"
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 100000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationReason": {
+              "enum": [
+                "eventCancelled",
+                "guestCancelled",
+                null
+              ]
+            },
+            "cancellationPolicy": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundDeadlineMillis",
+                    "eventStartsAtMillis"
+                  ],
+                  "properties": {
+                    "refundDeadlineMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "eventStartsAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationQuote": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundAmountPaise"
+                  ],
+                  "properties": {
+                    "refundAmountPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "startTimeMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admission": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "attendeeId",
+            "status"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "status": {
+              "enum": [
+                "registered",
+                "checkedIn"
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const configureEventRegistrationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/configure_event_registration_payload.schema.json",
+  "title": "ConfigureEventRegistrationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "expectedRegistrationRevision",
+    "mode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "expectedRegistrationRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    }
+  }
+};
+
+export const configureEventRegistrationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/configure_event_registration_response.schema.json",
+  "title": "ConfigureEventRegistrationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "registrationRevision",
+    "mode",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const organizerEventOfferPaymentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_offer_payments.schema.json",
+  "title": "OrganizerEventOfferPaymentDocument",
+  "description": "Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "offerId",
+    "responseId",
+    "contactId",
+    "originId",
+    "recipientUid",
+    "grantId",
+    "requestId",
+    "canonicalSeatKey",
+    "offerGeneration",
+    "offerRevision",
+    "identityRevision",
+    "migrationRevision",
+    "routing",
+    "paymentSnapshot",
+    "amountPaise",
+    "currency",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "admissionReceiptId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "admittedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "grantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "canonicalSeatKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "offerGeneration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "offerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "selection",
+        "policySource",
+        "appRevision",
+        "organizerRevision",
+        "bindingId",
+        "merchantAccountId",
+        "destinationAccountId",
+        "configurationVersion",
+        "checkoutKey",
+        "amountMinor",
+        "transferAmountMinor",
+        "settlementHold"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "transferAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "settlementHold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "formFee",
+            "eventAdmission"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "currency",
+            "merchantCountry"
+          ],
+          "properties": {
+            "route": {
+              "enum": [
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "merchantCountry": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        },
+        "policySource": {
+          "enum": [
+            "app",
+            "organizer",
+            "legacy"
+          ]
+        },
+        "appRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "merchantAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "destinationAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "configurationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkoutKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "paymentSnapshot": {
+      "title": "EventOfferPaymentSnapshot",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventPaymentRevision",
+        "eventPaymentHash",
+        "expectedAmountMinor",
+        "currency",
+        "reusablePaymentPageUrl",
+        "paymentInstructions",
+        "messageTemplate",
+        "expiresAtMillis",
+        "collectionMode",
+        "personalPaymentLink"
+      ],
+      "properties": {
+        "eventPaymentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "eventPaymentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expectedAmountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reusablePaymentPageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "paymentInstructions": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messageTemplate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expiresAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "collectionMode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "manualInstructions",
+                "reusablePage",
+                "personalRequest",
+                "catchCheckout"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "personalPaymentLink": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^ep_[a-f0-9]{32}$"
+    },
+    "status": {
+      "enum": [
+        "creatingOrder",
+        "orderUnknown",
+        "checkoutReady",
+        "verifying",
+        "captured",
+        "admitted",
+        "expired",
+        "refundPending",
+        "refunded",
+        "reviewRequired",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "providerOrderId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerPaymentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerRefundId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rfnd_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "admissionReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "checkoutExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "capturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admittedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.",
+      "required": [
+        "state",
+        "transferId",
+        "nextAttemptAtMillis",
+        "leaseUntilMillis",
+        "leaseId",
+        "authorizedAtMillis",
+        "completedAtMillis",
+        "releasedAtMillis",
+        "settledAtMillis"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "waiting",
+            "releasePending",
+            "released",
+            "settled",
+            "blocked",
+            "reviewRequired",
+            "reversed"
+          ]
+        },
+        "transferId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^trf_[A-Za-z0-9]+$",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAttemptAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseUntilMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorizedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "releasedAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settledAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "cancellation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "requestedAtMillis",
+        "attendeeId",
+        "refundAmountPaise",
+        "seatRetained"
+      ],
+      "properties": {
+        "reason": {
+          "enum": [
+            "eventCancelled",
+            "guestCancelled"
+          ]
+        },
+        "requestedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "refundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "seatRetained": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cancellationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundDeadlineMillis",
+        "eventStartsAtMillis"
+      ],
+      "properties": {
+        "refundDeadlineMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventStartsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
+export const organizerEventOfferRecipientDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_offer_recipients.schema.json",
+  "title": "OrganizerEventOfferRecipientDocument",
+  "description": "Private OTP recipient invitation and single-UID claim. Document ID hashes a random token; raw tokens and phone numbers are never persisted. Immutable offer/source/phone bindings are rechecked in every payment transaction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "offerId",
+    "responseId",
+    "originId",
+    "contactId",
+    "issuedByUid",
+    "offerGeneration",
+    "offerRevision",
+    "issuedAtMillis",
+    "expiresAtMillis",
+    "phoneHash",
+    "recipientUid",
+    "claimedAtMillis",
+    "revokedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "offerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "issuedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "offerGeneration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "offerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "issuedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "phoneHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recipientUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claimedAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const paymentRoutingSnapshotSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "purpose",
+    "organizerId",
+    "selection",
+    "policySource",
+    "appRevision",
+    "organizerRevision",
+    "bindingId",
+    "merchantAccountId",
+    "destinationAccountId",
+    "configurationVersion",
+    "checkoutKey",
+    "amountMinor",
+    "transferAmountMinor",
+    "settlementHold"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "transferAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "settlementHold": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "purpose": {
+      "enum": [
+        "formFee",
+        "eventAdmission"
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "mode",
+        "currency",
+        "merchantCountry"
+      ],
+      "properties": {
+        "route": {
+          "enum": [
+            "razorpayRoute",
+            "razorpayOAuth",
+            "stripeConnectDirect",
+            "stripeConnectDestination"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "merchantCountry": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    },
+    "policySource": {
+      "enum": [
+        "app",
+        "organizer",
+        "legacy"
+      ]
+    },
+    "appRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "organizerRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bindingId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "merchantAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "destinationAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "configurationVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "checkoutKey": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "title": "PaymentRoutingSnapshot"
+};
+
+export const managePaymentRoutingPolicyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_payment_routing_policy_payload.schema.json",
+  "title": "ManagePaymentRoutingPolicyCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "organizerId",
+    "expectedRevision",
+    "formFee",
+    "eventAdmission"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "read",
+        "replace"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const managePaymentRoutingPolicyCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_payment_routing_policy_response.schema.json",
+  "title": "ManagePaymentRoutingPolicyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policyId",
+    "organizerId",
+    "revision",
+    "formFee",
+    "eventAdmission",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "policyId": {
+      "type": "string",
+      "pattern": "^(app|org_[a-f0-9]{64})$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+};
+
+export const manageEventOfferCheckoutCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_offer_checkout_payload.schema.json",
+  "title": "ManageEventOfferCheckoutCallablePayload",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "token"
+      ],
+      "properties": {
+        "action": {
+          "const": "claim"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "grantId",
+        "requestId",
+        "cancellationPolicy"
+      ],
+      "properties": {
+        "action": {
+          "const": "prepare"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{8,120}$"
+        },
+        "cancellationPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "refundDeadlineMillis",
+            "eventStartsAtMillis"
+          ],
+          "properties": {
+            "refundDeadlineMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "eventStartsAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "grantId"
+      ],
+      "properties": {
+        "action": {
+          "const": "find"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "callback"
+      ],
+      "properties": {
+        "action": {
+          "const": "status"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "callback": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "paymentId",
+                "signature"
+              ],
+              "properties": {
+                "paymentId": {
+                  "type": "string",
+                  "pattern": "^pay_[A-Za-z0-9]+$"
+                },
+                "signature": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "paymentId",
+        "expectedRefundAmountPaise"
+      ],
+      "properties": {
+        "action": {
+          "const": "cancelAdmission"
+        },
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "expectedRefundAmountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    }
+  ]
+};
+
+export const prepareEventOfferInvitationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_event_offer_invitation_payload.schema.json",
+  "title": "PrepareEventOfferInvitationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "offerId",
+    "responseId",
+    "expectedOfferGeneration",
+    "expectedOfferRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "expectedOfferGeneration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedOfferRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const prepareEventOfferInvitationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/prepare_event_offer_invitation_response.schema.json",
+  "title": "PrepareEventOfferInvitationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "url",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://",
+      "maxLength": 2048
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const manageEventOfferCheckoutCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_offer_checkout_response.schema.json",
+  "title": "ManageEventOfferCheckoutCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "grant",
+    "payment",
+    "serverTimeMillis"
+  ],
+  "properties": {
+    "grant": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "grantId",
+            "eventName",
+            "eventId",
+            "startTimeMillis",
+            "amountPaise",
+            "currency",
+            "expiresAtMillis",
+            "cancellationPolicy"
+          ],
+          "properties": {
+            "grantId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9_:-]+$"
+            },
+            "startTimeMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "cancellationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "refundDeadlineMillis",
+                "eventStartsAtMillis"
+              ],
+              "properties": {
+                "refundDeadlineMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "payment": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "amountPaise",
+            "currency",
+            "mode",
+            "refundedAmountPaise",
+            "expiresAtMillis",
+            "checkout",
+            "cancellationReason",
+            "cancellationPolicy",
+            "cancellationQuote"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^ep_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "admitted",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "checkout": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "publicToken",
+                    "orderId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "publicToken": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "pattern": "^order_[A-Za-z0-9]+$"
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 100000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationReason": {
+              "enum": [
+                "eventCancelled",
+                "guestCancelled",
+                null
+              ]
+            },
+            "cancellationPolicy": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundDeadlineMillis",
+                    "eventStartsAtMillis"
+                  ],
+                  "properties": {
+                    "refundDeadlineMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "eventStartsAtMillis": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellationQuote": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "refundAmountPaise"
+                  ],
+                  "properties": {
+                    "refundAmountPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const previewOrganizerFormAdmissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_form_admission_payload.schema.json",
+  "title": "PreviewOrganizerFormAdmissionCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "responseId",
+    "contactId",
+    "offerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    }
+  }
+};
+
+export const previewOrganizerFormAdmissionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_organizer_form_admission_response.schema.json",
+  "title": "PreviewOrganizerFormAdmissionCallableResponse",
+  "description": "Read-only admission review of the same source, payment, identity and seat checks as commit. Never reserves a seat.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "responseId",
+    "contactId",
+    "offerId",
+    "canCommit",
+    "expectedOfferRevision",
+    "expectedOfferGeneration",
+    "expectedLedgerRevision",
+    "seatAlreadyOccupied",
+    "paymentAuthority",
+    "blocker"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "canCommit": {
+      "type": "boolean"
+    },
+    "expectedOfferRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedOfferGeneration": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedLedgerRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "seatAlreadyOccupied": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "paymentAuthority": {
+      "enum": [
+        "explicitFree",
+        "hostAttested",
+        null
+      ]
+    },
+    "blocker": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message"
+          ],
+          "properties": {
+            "code": {
+              "enum": [
+                "unavailable",
+                "stale",
+                "conflict"
+              ]
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
 export const organizerFormAdmissionDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_admissions.schema.json",
@@ -622,6 +4309,226 @@ export const organizerFormAdmissionReceiptDocumentSchema = {
           ]
         }
       }
+    },
+    "applicationApproval": {
+      "description": "Current native form application approval checked atomically at admission. Absent on legacy receipts.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicationId",
+            "revision",
+            "contactId",
+            "reviewedAtMillis"
+          ],
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "reviewedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "providerPayment": {
+      "description": "Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "providerOrderId",
+        "providerPaymentId",
+        "recipientUid",
+        "grantId",
+        "capturedAtMillis",
+        "routing"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^ep_[a-f0-9]{32}$"
+        },
+        "providerOrderId": {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "providerPaymentId": {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        "recipientUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capturedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "routing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "selection",
+            "policySource",
+            "appRevision",
+            "organizerRevision",
+            "bindingId",
+            "merchantAccountId",
+            "destinationAccountId",
+            "configurationVersion",
+            "checkoutKey",
+            "amountMinor",
+            "transferAmountMinor",
+            "settlementHold"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "transferAmountMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "settlementHold": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "purpose": {
+              "enum": [
+                "formFee",
+                "eventAdmission"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "selection": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            },
+            "policySource": {
+              "enum": [
+                "app",
+                "organizer",
+                "legacy"
+              ]
+            },
+            "appRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bindingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "merchantAccountId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "destinationAccountId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "configurationVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "checkoutKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -1185,6 +5092,11 @@ export const configureEventOfferPreferencesCallablePayloadSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "expectedActorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -1213,6 +5125,1199 @@ export const configureEventOfferPreferencesCallableResponseSchema = {
     },
     "replayed": {
       "type": "boolean"
+    }
+  }
+};
+
+export const previewEventOfferPreferencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_event_offer_preferences_response.schema.json",
+  "title": "PreviewEventOfferPreferencesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "eventSourceRevision",
+    "current",
+    "candidate",
+    "existingOffersKeepOriginalTerms"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "eventSourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "current": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "preferences",
+            "paymentTerms"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000000
+            },
+            "preferences": {
+              "title": "ResolvedEventPreferences",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "defaultsRevision",
+                "defaultsHash",
+                "usualDurationMinutes",
+                "preferredVenueId",
+                "offerValidityMinutes",
+                "collectionPreference",
+                "currency",
+                "offerMessageTemplate",
+                "paymentInstructions",
+                "reusablePaymentPage",
+                "admissionPreset",
+                "expectedAmountMinor"
+              ],
+              "properties": {
+                "defaultsRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000000
+                },
+                "defaultsHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "usualDurationMinutes": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 15,
+                          "maximum": 240
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "preferredVenueId": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "offerValidityMinutes": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 5,
+                          "maximum": 10080
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "collectionPreference": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "manualInstructions",
+                            "reusablePage",
+                            "personalRequest",
+                            "catchCheckout"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "currency": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[A-Z]{3}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "offerMessageTemplate": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "paymentInstructions": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "reusablePaymentPage": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "url",
+                            "reusableForEvents"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048
+                            },
+                            "reusableForEvents": {
+                              "type": "boolean",
+                              "const": true
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "admissionPreset": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "openCapacity",
+                            "inviteOnly",
+                            "balancedSingles",
+                            "fixedCohortCaps"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                },
+                "expectedAmountMinor": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "source"
+                  ],
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "paymentTerms": {
+              "title": "EventPaymentTerms",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "preferredCollection",
+                "reusablePaymentPage",
+                "paymentInstructions",
+                "expectedAmountMinor",
+                "currency",
+                "offerValidityMinutes",
+                "offerMessageTemplate",
+                "sourceDefaultsRevision",
+                "sourceDefaultsHash",
+                "fieldSources"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "preferredCollection": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "manualInstructions",
+                        "reusablePage",
+                        "personalRequest",
+                        "catchCheckout"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reusablePaymentPage": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "url",
+                        "reusableForEvents"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048
+                        },
+                        "reusableForEvents": {
+                          "type": "boolean",
+                          "const": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "paymentInstructions": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedAmountMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "currency": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "offerValidityMinutes": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 5,
+                      "maximum": 10080
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "offerMessageTemplate": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "sourceDefaultsRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000000
+                },
+                "sourceDefaultsHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "fieldSources": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "preferredCollection",
+                    "reusablePaymentPage",
+                    "paymentInstructions",
+                    "expectedAmountMinor",
+                    "currency",
+                    "offerValidityMinutes",
+                    "offerMessageTemplate"
+                  ],
+                  "properties": {
+                    "preferredCollection": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "reusablePaymentPage": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "paymentInstructions": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "expectedAmountMinor": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "currency": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "offerValidityMinutes": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    },
+                    "offerMessageTemplate": {
+                      "type": "string",
+                      "enum": [
+                        "organizer",
+                        "event",
+                        "cleared"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "preferences",
+        "paymentTerms"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "preferences": {
+          "title": "ResolvedEventPreferences",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "defaultsRevision",
+            "defaultsHash",
+            "usualDurationMinutes",
+            "preferredVenueId",
+            "offerValidityMinutes",
+            "collectionPreference",
+            "currency",
+            "offerMessageTemplate",
+            "paymentInstructions",
+            "reusablePaymentPage",
+            "admissionPreset",
+            "expectedAmountMinor"
+          ],
+          "properties": {
+            "defaultsRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "defaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "usualDurationMinutes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 15,
+                      "maximum": 240
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "preferredVenueId": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "offerValidityMinutes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 5,
+                      "maximum": 10080
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "collectionPreference": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "manualInstructions",
+                        "reusablePage",
+                        "personalRequest",
+                        "catchCheckout"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "offerMessageTemplate": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "paymentInstructions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "reusablePaymentPage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "url",
+                        "reusableForEvents"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048
+                        },
+                        "reusableForEvents": {
+                          "type": "boolean",
+                          "const": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "admissionPreset": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "openCapacity",
+                        "inviteOnly",
+                        "balancedSingles",
+                        "fixedCohortCaps"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "expectedAmountMinor": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "paymentTerms": {
+          "title": "EventPaymentTerms",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "preferredCollection",
+            "reusablePaymentPage",
+            "paymentInstructions",
+            "expectedAmountMinor",
+            "currency",
+            "offerValidityMinutes",
+            "offerMessageTemplate",
+            "sourceDefaultsRevision",
+            "sourceDefaultsHash",
+            "fieldSources"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000000
+            },
+            "preferredCollection": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "manualInstructions",
+                    "reusablePage",
+                    "personalRequest",
+                    "catchCheckout"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reusablePaymentPage": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "url",
+                    "reusableForEvents"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048
+                    },
+                    "reusableForEvents": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "paymentInstructions": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "expectedAmountMinor": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "currency": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offerValidityMinutes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 10080
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offerMessageTemplate": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceDefaultsRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "sourceDefaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "fieldSources": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "preferredCollection",
+                "reusablePaymentPage",
+                "paymentInstructions",
+                "expectedAmountMinor",
+                "currency",
+                "offerValidityMinutes",
+                "offerMessageTemplate"
+              ],
+              "properties": {
+                "preferredCollection": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "reusablePaymentPage": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "paymentInstructions": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "expectedAmountMinor": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "offerValidityMinutes": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                },
+                "offerMessageTemplate": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "existingOffersKeepOriginalTerms": {
+      "type": "boolean",
+      "const": true
     }
   }
 };
@@ -2154,18 +7259,71 @@ export const updatePrivateEventDetailsCallablePayloadSchema = {
                   "type": "string"
                 },
                 "value": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "name"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 240
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+                      "required": [
+                        "name",
+                        "latitude",
+                        "longitude"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "address": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "placeId": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "latitude": {
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        },
+                        "longitude": {
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        "notes": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 1000
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             },
@@ -2567,6 +7725,59 @@ export const updatePrivateEventDetailsCallablePayloadSchema = {
               }
             }
           ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "admissionTerms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capacityLimit",
+            "priceInPaise",
+            "currency",
+            "cancellationPolicyId"
+          ],
+          "properties": {
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "priceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "cancellationPolicyId": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "distanceKm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "moderate",
+            "fast",
+            "competitive"
+          ]
         }
       },
       "minProperties": 1
@@ -2751,6 +7962,14 @@ export const listPrivateEventSetupsCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 1024,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ]
     }
   }
 };
@@ -2837,7 +8056,10 @@ export const privateEventSetupListCallableResponseSchema = {
           },
           "status": {
             "type": "string",
-            "const": "active"
+            "enum": [
+              "active",
+              "cancelled"
+            ]
           },
           "detailsConfigured": {
             "type": "boolean"
@@ -5116,6 +10338,11 @@ export const updatePrivateEventPreferencesCallablePayloadSchema = {
           ]
         }
       }
+    },
+    "expectedActorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -5142,7 +10369,9 @@ export const eventSetupReceiptDocumentSchema = {
         "create",
         "update",
         "preferences",
-        "details"
+        "details",
+        "publish",
+        "unpublish"
       ]
     },
     "actorUid": {
@@ -116698,6 +121927,214 @@ export const organizerPaymentOauthStateDocumentSchema = {
   "x-owner": "organizer form payment server operations"
 };
 
+export const paymentRoutingPolicyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/payment_routing_policies.schema.json",
+  "title": "PaymentRoutingPolicyDocument",
+  "description": "Operator-owned app defaults and organizer overrides. Null inherits at organizer scope and disables at app scope. An explicit disabled selection never inherits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "revision",
+    "formFee",
+    "eventAdmission",
+    "updatedAt"
+  ],
+  "properties": {
+    "scope": {
+      "enum": [
+        "app",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastMutationHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "app"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "organizerId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "organizerId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "x-firestore-collection": "paymentRoutingPolicies",
+  "x-firestore-path": "paymentRoutingPolicies/{policyId}",
+  "x-document-id-field": "policyId",
+  "x-owner": "payment routing server operations"
+};
+
 export const organizerFormPaymentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
@@ -116738,6 +122175,142 @@ export const organizerFormPaymentDocumentSchema = {
     "lastErrorCode"
   ],
   "properties": {
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "selection",
+        "policySource",
+        "appRevision",
+        "organizerRevision",
+        "bindingId",
+        "merchantAccountId",
+        "destinationAccountId",
+        "configurationVersion",
+        "checkoutKey",
+        "amountMinor",
+        "transferAmountMinor",
+        "settlementHold"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "transferAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "settlementHold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "formFee",
+            "eventAdmission"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "currency",
+            "merchantCountry"
+          ],
+          "properties": {
+            "route": {
+              "enum": [
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "merchantCountry": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        },
+        "policySource": {
+          "enum": [
+            "app",
+            "organizer",
+            "legacy"
+          ]
+        },
+        "appRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "merchantAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "destinationAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "configurationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkoutKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -116764,9 +122337,16 @@ export const organizerFormPaymentDocumentSchema = {
       "maxLength": 180
     },
     "connectionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "accountId": {
       "type": "string",
@@ -117094,9 +122674,16 @@ export const organizerFormPaymentWebhookDocumentSchema = {
   ],
   "properties": {
     "connectionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "accountId": {
       "type": "string",
@@ -117220,12 +122807,42 @@ export const organizerFormPaymentWebhookDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "platformConfigurationVersion": {
+      "type": "string",
+      "pattern": "^projects/[a-z][a-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$",
+      "maxLength": 500
     }
   },
   "x-firestore-collection": "organizerFormPaymentWebhooks",
   "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "organizer form payment server operations"
+  "x-owner": "organizer form payment server operations",
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "platformConfigurationVersion"
+        ]
+      },
+      "then": {
+        "properties": {
+          "connectionId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const organizerFormDraftDocumentSchema = {
@@ -117976,9 +123593,16 @@ export const organizerFormDraftDocumentSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -118926,9 +124550,16 @@ export const organizerFormVersionDocumentSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -129498,6 +135129,43 @@ export const eventDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ],
+      "description": "Explicit registration capability. Older enabled events without this field support free OTP registration only.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstPublishedAt": {
+      "type": "object",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [
@@ -129591,6 +135259,60 @@ export const eventDocumentSchema = {
           "eventTimezone",
           "setupDefaults"
         ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicRegistrationRevision",
+          "publicRegistrationEnabled"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "const": "closed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "enum": [
+              "free",
+              "paid"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": true
+          }
+        }
       }
     }
   ]
@@ -186566,7 +192288,10 @@ export const privateEventSetupCallableResponseSchema = {
     },
     "publicationState": {
       "type": "string",
-      "const": "private"
+      "enum": [
+        "private",
+        "published"
+      ]
     },
     "status": {
       "type": "string",
@@ -187741,6 +193466,167 @@ export const privateEventSetupCallableResponseSchema = {
               }
             }
           ]
+        },
+        "meetingLocation": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+              "required": [
+                "name",
+                "latitude",
+                "longitude"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "address": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "placeId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "latitude": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "longitude": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
+            }
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "admissionTerms": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capacityLimit",
+                "priceInPaise",
+                "currency",
+                "cancellationPolicyId"
+              ],
+              "properties": {
+                "capacityLimit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "priceInPaise": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "cancellationPolicyId": {
+                  "type": "string",
+                  "enum": [
+                    "notApplicable",
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "distanceKm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "easy",
+                "moderate",
+                "fast",
+                "competitive"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "publicationReadiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canPublish",
+        "missing"
+      ],
+      "properties": {
+        "canPublish": {
+          "type": "boolean"
+        },
+        "missing": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 9,
+          "items": {
+            "type": "string",
+            "enum": [
+              "futureActive",
+              "organizerVisibility",
+              "duration",
+              "venue",
+              "format",
+              "description",
+              "admissionTerms",
+              "distancePace",
+              "contract"
+            ]
+          }
         }
       }
     }
@@ -191361,6 +197247,17 @@ export const resolveEventInviteLandingCallableResponseSchema = {
         "null"
       ],
       "maxLength": 2048
+    },
+    "paidBookingAvailable": {
+      "type": "boolean"
+    },
+    "registrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
     },
     "sourceLabel": {
       "type": "string",
@@ -223896,9 +229793,16 @@ export const createOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -224828,9 +230732,16 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -225907,9 +231818,16 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -227051,9 +232969,16 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -228290,9 +234215,16 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -229960,9 +235892,16 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -231143,9 +237082,16 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -232243,9 +238189,16 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                       ],
                       "properties": {
                         "connectionId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 180
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "amountPaise": {
                           "type": "integer",
@@ -233055,7 +239008,7 @@ export const prepareOrganizerFormPaymentCallableResponseSchema = {
               "properties": {
                 "publicToken": {
                   "type": "string",
-                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                  "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                 },
                 "orderId": {
                   "type": "string",
@@ -233305,7 +239258,7 @@ export const findOrganizerFormPaymentCallableResponseSchema = {
                   "properties": {
                     "publicToken": {
                       "type": "string",
-                      "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                      "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                     },
                     "orderId": {
                       "type": "string",
@@ -233579,7 +239532,7 @@ export const getOrganizerFormPaymentCallableResponseSchema = {
               "properties": {
                 "publicToken": {
                   "type": "string",
-                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                  "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                 },
                 "orderId": {
                   "type": "string",
@@ -234095,6 +240048,49 @@ export const manageOrganizerFormPaymentConnectionCallableResponseSchema = {
           }
         }
       }
+    },
+    "collection": {
+      "description": "Selected server-owned collection route. Null preserves legacy OAuth account selection.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "ready"
+          ],
+          "properties": {
+            "route": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "test",
+                "live",
+                null
+              ]
+            },
+            "ready": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
     }
   }
 };
@@ -251367,6 +257363,22 @@ export const websiteHostListingProjectionSchema = {
           "publicRegistrationEnabled": {
             "type": "boolean"
           },
+          "registrationMode": {
+            "type": "string",
+            "enum": [
+              "closed",
+              "free",
+              "paid"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "currency": {
+            "const": "INR"
+          },
           "priceLabel": {
             "type": "string",
             "minLength": 1
@@ -252334,6 +258346,22 @@ export const websiteHostListingProjectionSchema = {
         },
         "publicRegistrationEnabled": {
           "type": "boolean"
+        },
+        "registrationMode": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "free",
+            "paid"
+          ]
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {
+          "const": "INR"
         },
         "priceLabel": {
           "type": "string",

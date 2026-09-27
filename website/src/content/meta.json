@@ -93,6 +93,20 @@
       "canonicalPath": "/rsvp/",
       "twitterDescription": "Your invited functions and household RSVP.",
       "robots": "noindex, follow"
+    },
+    "event_offer": {
+      "title": "Your event invitation | Catch",
+      "description": "Verify your phone to open your private event invitation and check your booking.",
+      "canonicalPath": "/offer/",
+      "twitterDescription": "Your private event invitation.",
+      "robots": "noindex, follow"
+    },
+    "event_booking": {
+      "title": "Your event booking | Catch",
+      "description": "Verify your phone to check your booking, payment or refund.",
+      "canonicalPath": "/booking/",
+      "twitterDescription": "Manage your event booking with Catch.",
+      "robots": "noindex, follow"
     }
   },
   "listing": {

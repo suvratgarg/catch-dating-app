@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/payment_routing_policies.schema.json",
+  "title": "PaymentRoutingPolicyDocument",
+  "description": "Operator-owned app defaults and organizer overrides. Null inherits at organizer scope and disables at app scope. An explicit disabled selection never inherits.",
+  "type": "object", "additionalProperties": false,
+  "required": ["scope", "organizerId", "revision", "formFee", "eventAdmission", "updatedAt"],
+  "properties": {
+    "scope": {"enum": ["app", "organizer"]},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "revision": {"type": "integer", "minimum": 1},
+    "formFee": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
+    "eventAdmission": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "lastMutationHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"scope": {"const": "app"}}},
+      "then": {"properties": {"organizerId": {"type": "null"}}},
+      "else": {"properties": {"organizerId": {"type": "string"}}}}
+  ],
+  "x-firestore-collection": "paymentRoutingPolicies",
+  "x-firestore-path": "paymentRoutingPolicies/{policyId}",
+  "x-document-id-field": "policyId",
+  "x-owner": "payment routing server operations"
+}

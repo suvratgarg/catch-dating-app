@@ -1,3 +1,4 @@
+import {publicEventRegistrationProjection} from "./publicEventRegistrationProjection.mjs";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import {execFileSync} from "node:child_process";
@@ -456,3 +457,18 @@ function timestamp(iso) {
     _nanoseconds: 0,
   };
 }
+
+
+test("event projections keep publication and registration modes separate", () => {
+  const base = {status: "active", publicRegistrationEnabled: true, priceInPaise: 0};
+  assert.deepEqual(publicEventRegistrationProjection(base), {registrationMode: "free", amountPaise: 0, currency: "INR"});
+  for (const value of [{publicationState: "private"}, {publicationState: null}, {setupRevision: 1}, {status: "cancelled"}, {currency: "USD"}, {priceInPaise: 100}]) {
+    assert.equal(publicEventRegistrationProjection({...base, ...value}), null);
+  }
+  const paid = {...base, publicationState: "published", publicRegistrationMode: "paid", priceInPaise: 85000};
+  assert.deepEqual(publicEventRegistrationProjection(paid), {registrationMode: "paid", amountPaise: 85000, currency: "INR"});
+  assert.equal(publicEventRegistrationProjection({...paid, publicRegistrationEnabled: false, publicRegistrationMode: "closed"}).registrationMode, "closed");
+  for (const admission of [{format: "membersOnly"}, {format: "open", crossPathsPairInventory: {enabled: true}}, {format: "open", privateAccessPolicy: {mode: "inviteCode"}}]) {
+    assert.equal(publicEventRegistrationProjection({...paid, eventPolicy: {admission, pricing: {basePriceInPaise: 85000}}}), null);
+  }
+});

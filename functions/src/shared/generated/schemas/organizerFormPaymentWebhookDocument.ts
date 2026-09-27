@@ -24,9 +24,16 @@ export const organizerFormPaymentWebhookDocumentSchema: Record<string, unknown> 
   ],
   "properties": {
     "connectionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "accountId": {
       "type": "string",
@@ -150,10 +157,40 @@ export const organizerFormPaymentWebhookDocumentSchema: Record<string, unknown> 
           "maximum": 999999999
         }
       }
+    },
+    "platformConfigurationVersion": {
+      "type": "string",
+      "pattern": "^projects/[a-z][a-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$",
+      "maxLength": 500
     }
   },
   "x-firestore-collection": "organizerFormPaymentWebhooks",
   "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "organizer form payment server operations"
+  "x-owner": "organizer form payment server operations",
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "platformConfigurationVersion"
+        ]
+      },
+      "then": {
+        "properties": {
+          "connectionId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    }
+  ]
 } as const;

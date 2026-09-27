@@ -1628,6 +1628,85 @@
         }
       ],
       "reason": "The response offer workspace opens manager event payment settings as an imperative step-flow page, with the shared private preferences editor using the same layout family."
+    },
+    "HostResponseOfferScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+          "symbol": "_HostResponseOfferScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Single and bulk responses share one pushed event-offer continuation, preserving the originating review context."
+    },
+    "HostFormResponseDetailScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+          "symbol": "_HostFormResponseDetailScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The offer continuation opens the existing response owner to complete review and People linkage, then returns to the retained selection."
+    },
+    "PrivateEventCreateScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_create_screen.dart",
+          "symbol": "_PrivateEventCreateScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_setup_screen.dart",
+          "symbol": "PrivateEventSetupScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
+          "symbol": "PrivateEventDetailsScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart",
+          "symbol": "PrivateEventPreferencesScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/event_publication_screen.dart",
+          "symbol": "EventPublicationScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
+          "symbol": "HostCreateEventRouteLoadingScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "Host visibility management reopens the progressive event workspace; its loading, basics, details, preferences and publication branches share the governed step-flow layout."
     }
   },
   "screens": [
@@ -8368,7 +8447,7 @@
         {
           "id": "DS-MATCHES-CHAT-004",
           "status": "closed",
-          "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+          "nextAction": "Closed. Populated Messaging thread and Messaging \u00b7 New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
         }
       ]
     },
@@ -9197,7 +9276,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
+          "notes": "Public-profile PNG reference is regenerated from the current Profile \u00b7 other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
         }
       ],
       "captures": [
@@ -9348,7 +9427,7 @@
             "test/public_profile/public_profile_screen_test.dart",
             "test/swipes/profile_card_widget_test.dart"
           ],
-          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
+          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile \u00b7 other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ]
@@ -27801,7 +27880,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ProgramListScreen resolves the signed-in host’s operable organizer and composes the program index, empty state and create dialog through CatchRouteScaffold.",
+        "currentLayout": "ProgramListScreen resolves the signed-in host\u2019s operable organizer and composes the program index, empty state and create dialog through CatchRouteScaffold.",
         "targetLayout": "The list continues reusing event-side organizer resolution while program counts and navigation stay data-driven.",
         "sections": [
           {
@@ -29067,7 +29146,7 @@
             "symbol": "ProgramTripActions"
           }
         ],
-        "notes": "The hotel view is a scoped projection — names, party size, plates and ETAs only."
+        "notes": "The hotel view is a scoped projection \u2014 names, party size, plates and ETAs only."
       },
       "designRefs": [
         {
@@ -29238,7 +29317,7 @@
             "symbol": "ProgramTripActions"
           }
         ],
-        "notes": "The ledger is the vendor reconciliation record — voided rows stay visible with reasons."
+        "notes": "The ledger is the vendor reconciliation record \u2014 voided rows stay visible with reasons."
       },
       "designRefs": [
         {
