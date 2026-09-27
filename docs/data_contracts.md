@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.150.0
-updated: 2026-09-24
+version: 1.151.0
+updated: 2026-09-26
 owner: recursive_audit_loop
 status: active
 ---
@@ -3002,6 +3002,18 @@ also updates the `programFunctionGuests` row and recomputes
 operations report per-operation reasons (`alreadyCheckedIn`,
 `notCheckedIn`, `functionCheckInDisabled`, `duplicateJournalId`,
 `invalidTransition`) without blocking the batch's valid writes.
+`getProgramFunctionDoorView` is the scoped read side of the same lane:
+door-duty holders (`functionCheckIn`, `functionLead`) receive the
+function header, live counts, a roster restricted to display names and
+operational attendance fields — never contact details — and the recent
+journal tail. `createProgramWalkIn` is the narrow door-scoped writer for
+unlisted arrivals: it derives the `programGuests` id from the caller's
+`clientOperationId` and atomically records a `walkInCreate` journal fact,
+so offline outbox replays collapse onto one guest. The broader
+`upsertProgramGuest` stays coordinator-only; door staff never gain
+program-guest write authority beyond walk-ins. The program work-access
+response carries scoped `functions` headers for door duties so the
+work shell can render door links without exposing the guest directory.
 
 
 `programStaffDuty` covers `programCoordinator`, `guestRelations`,

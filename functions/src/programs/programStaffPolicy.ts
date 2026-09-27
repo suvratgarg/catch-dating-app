@@ -99,11 +99,12 @@ export function grantDuties(duties: DutyScope[], expiresAtMillis: number):
 }
 
 export function unionScope(duties: ProgramStaffGrantDocument["duties"],
-  field: "pickupPointIds" | "hotelIds"): Set<string> | null {
+  field: "pickupPointIds" | "hotelIds" | "functionIds"): Set<string> | null {
   const scoped = new Set<string>();
   for (const assignment of duties) {
-    if (assignment[field].length === 0) return null;
-    for (const id of assignment[field]) scoped.add(id);
+    const ids = assignment[field] ?? [];
+    if (ids.length === 0) return null;
+    for (const id of ids) scoped.add(id);
   }
   return scoped;
 }

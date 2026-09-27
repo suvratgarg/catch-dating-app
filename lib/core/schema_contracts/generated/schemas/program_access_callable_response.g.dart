@@ -25,6 +25,7 @@ const schemaProgramAccessCallableResponseSchema = <String, Object?>{
     'pickupPoints',
     'hotels',
     'vehicleClasses',
+    'functions',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -229,6 +230,76 @@ const schemaProgramAccessCallableResponseSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
             'maxLength': 140,
+          },
+        },
+      },
+    },
+    'functions': <String, Object?>{
+      'type': 'array',
+      'maxItems': 40,
+      'description': 'Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment\'s functionIds. Empty for other duties.',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'functionId',
+          'name',
+          'venueName',
+          'startsAtMillis',
+          'endsAtMillis',
+          'checkInEnabled',
+          'status',
+          'expectedCount',
+          'checkedInCount',
+        ],
+        'properties': <String, Object?>{
+          'functionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'name': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 140,
+          },
+          'venueName': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 140,
+          },
+          'startsAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
+          'endsAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
+          'checkInEnabled': <String, Object?>{
+            'type': 'boolean',
+          },
+          'status': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'scheduled',
+              'completed',
+              'cancelled',
+            ],
+          },
+          'expectedCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 1000000,
+          },
+          'checkedInCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 1000000,
           },
         },
       },

@@ -41,6 +41,22 @@ abstract interface class ProgramOperationsMutator {
     String? vendorId,
     required List<DispatchLegRevision> expectedLegRevisions,
   });
+
+  Future<ProgramDoorJournalBatch> recordDoorAction({
+    required String programId,
+    required String functionId,
+    required Map<String, Object?> operation,
+  });
+
+  Future<ProgramMutationResult> createWalkIn({
+    required String programId,
+    required String functionId,
+    required String displayName,
+    required DateTime occurredAt,
+    required String clientOperationId,
+    int? partySize,
+    String? note,
+  });
 }
 
 class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
@@ -105,6 +121,36 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
   }
 
   @override
+  Future<ProgramDoorJournalBatch> recordDoorAction({
+    required String programId,
+    required String functionId,
+    required Map<String, Object?> operation,
+  }) => _repository.recordDoorJournal(
+    programId: programId,
+    functionId: functionId,
+    operations: [operation],
+  );
+
+  @override
+  Future<ProgramMutationResult> createWalkIn({
+    required String programId,
+    required String functionId,
+    required String displayName,
+    required DateTime occurredAt,
+    required String clientOperationId,
+    int? partySize,
+    String? note,
+  }) => _repository.createWalkIn(
+    programId: programId,
+    functionId: functionId,
+    displayName: displayName,
+    occurredAt: occurredAt,
+    clientOperationId: clientOperationId,
+    partySize: partySize,
+    note: note,
+  );
+
+  @override
   Future<DispatchResult> dispatchTrip({
     required String programId,
     required String pickupPointId,
@@ -150,13 +196,16 @@ ProgramOperationOutboxStore createProgramOperationJournal({
     encode: (entry) => entry.toJson(),
     decode: ProgramOperationOutboxEntry.fromJson,
     scope: (entry) => entry.programId,
-    resources: (entry) => {
-      if (entry.kind == ProgramOperationKind.legObservation)
-        'leg:${entry.payload['legId']}'
-      else ...[
+    resources: (entry) => switch (entry.kind) {
+      ProgramOperationKind.legObservation => {'leg:${entry.payload['legId']}'},
+      ProgramOperationKind.dispatch => {
         for (final legId in (entry.payload['legIds']! as List)) 'leg:$legId',
         'vehicle:${(entry.payload['plateDisplay']! as String).toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '')}',
-      ],
+      },
+      ProgramOperationKind.doorAction => {'guest:${entry.payload['guestId']}'},
+      ProgramOperationKind.walkIn => {
+        'function:${entry.payload['functionId']}',
+      },
     },
   ),
 );
@@ -257,6 +306,28 @@ class ProgramOperationsOutbox {
           vendorId: entry.payload['vendorId'] as String?,
           expectedLegRevisions: fences,
           departedAt: entry.createdAt,
+        );
+      case ProgramOperationKind.doorAction:
+        await _mutator.recordDoorAction(
+          programId: entry.programId,
+          functionId: entry.payload['functionId']! as String,
+          operation: {
+            'guestId': entry.payload['guestId'],
+            'action': entry.payload['action'],
+            'occurredAtMillis': entry.createdAt.millisecondsSinceEpoch,
+            'partySize': entry.payload['partySize'],
+            'note': entry.payload['note'],
+          },
+        );
+      case ProgramOperationKind.walkIn:
+        await _mutator.createWalkIn(
+          programId: entry.programId,
+          functionId: entry.payload['functionId']! as String,
+          displayName: entry.payload['displayName']! as String,
+          occurredAt: entry.createdAt,
+          clientOperationId: entry.clientOperationId,
+          partySize: entry.payload['partySize'] as int?,
+          note: entry.payload['note'] as String?,
         );
     }
   }

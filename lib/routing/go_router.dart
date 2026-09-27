@@ -63,6 +63,7 @@ import 'package:catch_dating_app/payments/presentation/payment_confirmation_scre
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
@@ -98,16 +99,14 @@ part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
 @visibleForTesting
-HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
-  return HostClubsScreen(
-    initialClubId: uri.queryParameters['clubId'],
-    initialExpandedEditField: uri.queryParameters['editField'],
-    initialTab: HostClubTab.values.firstWhere(
-      (tab) => tab.name == uri.queryParameters['tab'],
-      orElse: () => HostClubTab.edit,
-    ),
-  );
-}
+HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
+  initialClubId: uri.queryParameters['clubId'],
+  initialExpandedEditField: uri.queryParameters['editField'],
+  initialTab: HostClubTab.values.firstWhere(
+    (tab) => tab.name == uri.queryParameters['tab'],
+    orElse: () => HostClubTab.edit,
+  ),
+);
 
 @visibleForTesting
 Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
@@ -127,15 +126,6 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialContactDisplayName: initialContactDisplayName,
     ),
   };
-}
-
-/// Compatibility provider for test harnesses that intentionally exercise both
-/// role graphs in one Dart process. Installable app roots use one of the two
-/// compile-time role providers above.
-// keepalive: compatibility tests need one stable role-selected router graph.
-@Riverpod(keepAlive: true)
-GoRouter goRouter(Ref ref) {
-  return _buildGoRouter(ref, isHostApp: AppConfig.appRole.isHost);
 }
 
 GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
@@ -549,6 +539,15 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       builder: (context, state) => ProgramHotelDeskScreen(
         programId: state.pathParameters['programId']!,
         hotelId: state.pathParameters['hotelId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkDoorScreen.path,
+      name: Routes.hostWorkDoorScreen.name,
+      builder: (context, state) => ProgramFunctionDoorScreen(
+        programId: state.pathParameters['programId']!,
+        functionId: state.pathParameters['functionId']!,
+        functionName: state.uri.queryParameters['function'],
       ),
     ),
     GoRoute(

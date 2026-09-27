@@ -35,6 +35,7 @@ void main() {
         .add(Duration(hours: expired ? -1 : 1))
         .millisecondsSinceEpoch,
     'pickupPoints': [],
+    'functions': [],
     'hotels': [],
     'vehicleClasses': [],
   };

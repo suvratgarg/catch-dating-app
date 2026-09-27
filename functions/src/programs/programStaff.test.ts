@@ -264,3 +264,89 @@ for (const organizerId of ["org-1", "foreign"]) {
       }
     });
 }
+
+const functionDoc = (id: string, patch: Record<string, unknown> = {}) => ({
+  programId: "program-1", organizerId: "org-1", name: id,
+  startsAt: now, endsAt: now,
+  venueName: "Venue", venueNotes: null, venueLocation: null,
+  dressCode: null, instructions: null, invitationMode: "selectedGuests",
+  checkInEnabled: true, expectedCount: 3, checkedInCount: 1,
+  status: "scheduled", createdAt: now, updatedAt: now, revision: 1,
+  ...patch,
+});
+
+const doorGrant = (uid: string, duty: string, functionIds?: string[]) => ({
+  organizerId: "org-1", programId: "program-1", uid, displayName: uid,
+  phoneLastFour: "0000",
+  duties: [{
+    duty, expiresAtMillis: now.toMillis() + 60_000,
+    pickupPointIds: [], hotelIds: [],
+    ...(functionIds === undefined ? {} : {functionIds}),
+  }],
+  status: "active", createdBy: "manager-1", createdAt: now,
+  expiresAt: Timestamp.fromMillis(now.toMillis() + 86_400_000),
+  revokedBy: null, revokedAt: null, updatedAt: now,
+  revision: 1,
+});
+
+test("work access lists functions only for door duties, scoped by grant",
+  async () => {
+    const seed = baseSeed();
+    seed["programFunctions/fn-sangeet"] = functionDoc("fn-sangeet");
+    seed["programFunctions/fn-mehndi"] = functionDoc("fn-mehndi");
+    seed["programFunctions/fn-foreign"] = functionDoc("fn-foreign",
+      {organizerId: "foreign"});
+    seed["programStaffGrants/program-1__door-1"] =
+      doorGrant("door-1", "functionCheckIn", ["fn-sangeet"]);
+    seed["programStaffGrants/program-1__lead-1"] =
+      doorGrant("lead-1", "functionLead");
+    const store = new FakeFirestore(seed);
+
+    const scoped = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "door-1"), deps(store));
+    assert.deepEqual(
+      scoped.functions.map((f) => f.functionId), ["fn-sangeet"]);
+    assert.equal(scoped.functions[0].checkInEnabled, true);
+    assert.equal(scoped.functions[0].expectedCount, 3);
+
+    const lead = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "lead-1"), deps(store));
+    assert.deepEqual(
+      lead.functions.map((f) => f.functionId).sort(),
+      ["fn-mehndi", "fn-sangeet"]);
+
+    const manager = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "manager-1"), deps(store));
+    assert.equal(manager.functions.length, 2);
+
+    const greeter = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "greeter-1"), deps(store));
+    assert.deepEqual(greeter.functions, []);
+  });
+
+test("scoped door staff are not crowded out by unrelated functions",
+  async () => {
+    const seed = baseSeed();
+    const noise = Object.fromEntries(Array.from({length: 80}, (_, i) =>
+      [`programFunctions/fn-noise-${i}`, functionDoc(`fn-noise-${i}`)]));
+    Object.assign(seed, noise);
+    seed["programFunctions/fn-mine"] = functionDoc("fn-mine");
+    seed["programStaffGrants/program-1__door-1"] =
+      doorGrant("door-1", "functionCheckIn", ["fn-mine"]);
+    const store = new FakeFirestore(seed);
+    const access = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "door-1"), deps(store));
+    assert.deepEqual(
+      access.functions.map((f) => f.functionId), ["fn-mine"]);
+  });
+
+test("unrestricted function overflow is explicit", async () => {
+  const seed = baseSeed();
+  for (let i = 0; i < 60; i++) {
+    seed[`programFunctions/fn-${i}`] = functionDoc(`fn-${i}`);
+  }
+  const store = new FakeFirestore(seed);
+  await assert.rejects(getProgramWorkAccessHandler(
+    request({programId: "program-1"}, "manager-1"), deps(store)),
+  code("resource-exhausted"));
+});

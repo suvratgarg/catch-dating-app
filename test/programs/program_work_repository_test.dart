@@ -32,6 +32,7 @@ void main() {
     ],
     'capabilities': ['arrivalsTransport'],
     'pickupPoints': [],
+    'functions': [],
     'hotels': [],
     'vehicleClasses': [],
   };

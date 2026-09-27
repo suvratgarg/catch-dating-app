@@ -20,6 +20,7 @@ void main() {
         capabilities: const {'arrivalsTransport'},
         pickupPoints: const [],
         hotels: const [],
+        functions: const [],
         vehicleClasses: const [],
       );
   ProgramDutyAssignment dispatcher(
@@ -30,6 +31,7 @@ void main() {
     duty: ProgramStaffDuty.transportDispatcher,
     pickupPointIds: {pickup},
     hotelIds: {hotel},
+    functionIds: {},
     expiresAt: expiry,
   );
 
@@ -54,12 +56,14 @@ void main() {
           duty: ProgramStaffDuty.hotelDesk,
           pickupPointIds: {},
           hotelIds: {'one'},
+          functionIds: {},
         ),
         dispatcher('a', 'one', later),
         ProgramDutyAssignment(
           duty: ProgramStaffDuty.transportDispatcher,
           pickupPointIds: {},
           hotelIds: {},
+          functionIds: {},
           expiresAt: soon,
         ),
       ]);
@@ -81,6 +85,7 @@ void main() {
         duty: ProgramStaffDuty.airportGreeter,
         pickupPointIds: {},
         hotelIds: {},
+        functionIds: {},
         expiresAt: later,
       ),
       dispatcher('a', 'one', now),

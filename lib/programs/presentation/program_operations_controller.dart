@@ -105,6 +105,7 @@ class ProgramOperationsController extends _$ProgramOperationsController {
     ref.invalidate(programArrivalsRosterProvider);
     ref.invalidate(programTransportPlanProvider);
     ref.invalidate(programTripListProvider);
+    ref.invalidate(programFunctionDoorViewProvider);
   }
 
   Future<bool> _run(
@@ -252,6 +253,61 @@ class ProgramOperationsController extends _$ProgramOperationsController {
         vendorId: vendorId,
         expectedLegRevisions: fences,
         clientOperationId: 'dispatch_${now.microsecondsSinceEpoch}',
+        createdAt: now,
+      ),
+    );
+  });
+
+  /// Queues one door journal action. The server folds it through the durable
+  /// journal, so a retry of this entry reports `duplicate` harmlessly.
+  Future<bool> doorAction({
+    required String functionId,
+    required String guestId,
+    required String action,
+    int? partySize,
+    String? note,
+  }) => _run((outbox) {
+    final pending = outbox.forDoorGuest(functionId, guestId);
+    if (pending != null &&
+        pending.status == ProgramOperationOutboxStatus.needsReview) {
+      throw const ValidationException(
+        'Review this guest before recording more door activity.',
+        code: 'program-operation-needs-review',
+      );
+    }
+    final now = DateTime.now();
+    return _enqueue(
+      ProgramOperationOutboxEntry.doorAction(
+        programId: programId,
+        functionId: functionId,
+        guestId: guestId,
+        action: action,
+        partySize: partySize,
+        note: note,
+        clientOperationId:
+            'door_${now.microsecondsSinceEpoch}_${action}_$guestId',
+        createdAt: now,
+      ),
+    );
+  });
+
+  /// Queues a walk-in registration; the guest id derives from the operation
+  /// id server-side, so replays return the original guest.
+  Future<bool> walkIn({
+    required String functionId,
+    required String displayName,
+    int? partySize,
+    String? note,
+  }) => _run((outbox) {
+    final now = DateTime.now();
+    return _enqueue(
+      ProgramOperationOutboxEntry.walkIn(
+        programId: programId,
+        functionId: functionId,
+        displayName: displayName,
+        partySize: partySize,
+        note: note,
+        clientOperationId: 'walkin_${now.microsecondsSinceEpoch}',
         createdAt: now,
       ),
     );

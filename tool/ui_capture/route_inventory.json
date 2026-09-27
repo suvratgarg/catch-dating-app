@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "5440c85188ce5c781998e3a4d6a2e43a6140bfc40c39612aa2915f110c1de753",
-    "routeContractSha256": "e1cf504a42c2c1ee549a7699856f3b132660a733a0fe6f0c844d4b102f5304ce",
-    "goRouteCount": 101,
+    "normalizedFileSha256": "0123e9c8bf682d4cd3311c87e44c1cb10ddff76eece2411da9e36c284d21394f",
+    "routeContractSha256": "08f022a4068e52a32f0d441252f46bd158a92bdb021a91e0721632fd33163fc7",
+    "goRouteCount": 102,
     "shellBranchCount": 9,
-    "enumRouteCount": 86,
-    "referencedRouteCount": 86,
-    "runtimeRouteCount": 86,
+    "enumRouteCount": 87,
+    "referencedRouteCount": 87,
+    "runtimeRouteCount": 87,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1070,6 +1070,24 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkDoorScreen",
+      "path": "/host/work/:programId/door/:functionId",
+      "pathParameters": [
+        "programId",
+        "functionId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/door/:functionId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkDoorScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramFunctionDoorScreen(programId:state.pathParameters['programId']!,functionId:state.pathParameters['functionId']!,functionName:state.uri.queryParameters['function'])",
+      "presentationTarget": "ProgramFunctionDoorScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkTripsScreen",
       "path": "/host/work/:programId/trips",
       "pathParameters": [
@@ -1603,6 +1621,7 @@
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
     "hostWorkDispatchScreen",
+    "hostWorkDoorScreen",
     "hostWorkHotelScreen",
     "hostWorkProgramScreen",
     "hostWorkScreen",

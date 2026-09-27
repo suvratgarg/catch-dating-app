@@ -54,7 +54,7 @@ const joinKey = (functionId: string, guestId: string) =>
 // Managers and programCoordinators are unrestricted; otherwise a
 // functionCheckIn or functionLead assignment must cover the function.
 // dutyAssignments already folds coordinator into every duty query.
-function requireDoorAuthority(access: ProgramAccess,
+export function requireDoorAuthority(access: ProgramAccess,
   functionId: string): void {
   if (access.role === "manager") return;
   const covering =

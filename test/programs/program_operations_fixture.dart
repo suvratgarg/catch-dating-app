@@ -70,6 +70,44 @@ class FakeProgramMutator implements ProgramOperationsMutator {
       passengerCount: 3,
     );
   }
+
+  @override
+  Future<ProgramDoorJournalBatch> recordDoorAction({
+    required String programId,
+    required String functionId,
+    required Map<String, Object?> operation,
+  }) async {
+    calls.add('door:${operation['guestId']}:${operation['action']}');
+    if (_maybeError() case final failure?) throw failure;
+    return const ProgramDoorJournalBatch(
+      entityId: 'fn',
+      revision: 2,
+      results: [],
+      appendedCount: 1,
+      duplicateCount: 0,
+      rejectedCount: 0,
+      alreadyApplied: false,
+    );
+  }
+
+  @override
+  Future<ProgramMutationResult> createWalkIn({
+    required String programId,
+    required String functionId,
+    required String displayName,
+    required DateTime occurredAt,
+    required String clientOperationId,
+    int? partySize,
+    String? note,
+  }) async {
+    calls.add('walkin:$displayName:$clientOperationId');
+    if (_maybeError() case final failure?) throw failure;
+    return const ProgramMutationResult(
+      entityId: 'guest',
+      revision: 1,
+      alreadyApplied: false,
+    );
+  }
 }
 
 ArrivalsRosterRow arrivalRow({

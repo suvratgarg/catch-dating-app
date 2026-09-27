@@ -400,6 +400,8 @@ export {validateListProgramTripsCallablePayload} from "./validators/listProgramT
 export {validateListProgramGuestsCallablePayload} from "./validators/listProgramGuestsInput";
 export {validateUpsertProgramHouseholdCallablePayload} from "./validators/upsertProgramHouseholdInput";
 export {validateRecordProgramDoorJournalCallablePayload} from "./validators/recordProgramDoorJournalInput";
+export {validateProgramFunctionScopeCallablePayload} from "./validators/programFunctionScopeInput";
+export {validateCreateProgramWalkInCallablePayload} from "./validators/createProgramWalkInInput";
 export {validateUpsertProgramFunctionCallablePayload} from "./validators/upsertProgramFunctionInput";
 export {validateUpsertProgramPickupPointCallablePayload} from "./validators/upsertProgramPickupPointInput";
 export {validateUpsertProgramHotelCallablePayload} from "./validators/upsertProgramHotelInput";
@@ -431,6 +433,7 @@ export {validateProgramArrivalsRosterCallableResponse} from "./validators/progra
 export {validateProgramTransportPlanCallableResponse} from "./validators/programTransportPlanOutput";
 export {validateProgramHotelInboundCallableResponse} from "./validators/programHotelInboundOutput";
 export {validateRecordProgramDoorJournalCallableResponse} from "./validators/recordProgramDoorJournalOutput";
+export {validateProgramFunctionDoorViewCallableResponse} from "./validators/programFunctionDoorViewOutput";
 export {validateProgramManifestImportCallableResponse} from "./validators/programManifestImportOutput";
 export {validateDispatchProgramTripCallableResponse} from "./validators/dispatchProgramTripOutput";
 export {validateTransportVendorListCallableResponse} from "./validators/transportVendorListOutput";

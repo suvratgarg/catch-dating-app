@@ -402,6 +402,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   listProgramTrips: {maxRequests: 60, windowMs: 60 * 1000},
   refreshProgramTravelLeg: {maxRequests: 30, windowMs: 60 * 1000},
   recordProgramDoorJournal: {maxRequests: 60, windowMs: 60 * 1000},
+  getProgramFunctionDoorView: {maxRequests: 120, windowMs: 60 * 1000},
+  createProgramWalkIn: {maxRequests: 60, windowMs: 60 * 1000},
   importProgramManifest: {maxRequests: 10, windowMs: 60 * 1000},
   setEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   resolveEventInviteLanding: {maxRequests: 120, windowMs: 60 * 1000},

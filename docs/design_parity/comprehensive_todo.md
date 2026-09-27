@@ -103,14 +103,14 @@ or an independent feature contract. Its domain state and route intents remain te
 - Screen priority spread: 27 P1, 10 P2, and 5 P3 contracted screens.
 - Contracted screen states: 712.
 - Contracted screen sections: 249.
-- Screen registry migration gaps: 24 open, 24 blocked, and 110 closed. One of
-  the 24 non-blocked gaps is currently marked in progress. These are
+- Screen registry migration gaps: 25 open, 24 blocked, and 110 closed. One of
+  the 25 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,143.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 13 feature groups, 43 screens, 734 matrix states, and
-  59 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 13 feature groups, 44 screens, 731 matrix states, and
+  60 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 562 captured, 71 implemented, 4 planned, and
   77 tested.
@@ -760,6 +760,7 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | `feature.event_planning` compiles Calendar as the merged joined-and-saved projection with all ten states and seven recovery, date/header, Today, and Event Detail actions. It preserves identity/event-stream versus secondary organizer-name failure cases and exact evidence debt. Widgetbook and captures remain complete; canonical reference export is still blocked. |
 | P1 | `screen.programs.arrivals` | 5 | 1 | 0 | Planned: roster lane captures land with the program golden pass | `DP-PROGRAMS-ARRIVALS-001` | `feature.programs_arrivals_ops` binds the station-scoped greeter roster with attention, ready, and expected lanes; claim/readiness/disruption writes enqueue through the offline outbox with idempotent clientOperationIds. Route captures and pixel proof remain the explicit follow-up. |
 | P1 | `screen.programs.dispatch` | 5 | 1 | 0 | Planned: dispatch desk captures land with the program golden pass | `DP-PROGRAMS-DISPATCH-001` | `feature.programs_arrivals_ops` binds deterministic transport grouping plus the plate/vendor/class dispatch sheet; writes queue offline and replay through the outbox. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.door` | 5 | 1 | 0 | Planned: door roster captures land with the program golden pass | `DP-PROGRAMS-DOOR-001` | `feature.programs_arrivals_ops` binds the function-scoped door roster: guest rows carry RSVP, attendance, party size, and household labels; check-in, undo, no-show, party-size, and walk-in writes enqueue through the offline outbox and replay against the durable server journal. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.hotel_desk` | 5 | 1 | 0 | Planned: hotel inbound captures land with the program golden pass | `DP-PROGRAMS-HOTEL-DESK-001` | `feature.programs_arrivals_ops` binds the hotel-scoped inbound projection: en-route plates, manifest names, ETAs, and expected parties, with mark-arrived scoped to the destination hotel. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.trips` | 4 | 1 | 0 | Planned: ledger captures land with the program golden pass | `DP-PROGRAMS-TRIPS-001` | `feature.programs_arrivals_ops` binds the trip ledger: every dispatched vehicle keeps plate, vendor, class, manifest, and outcome, with reasoned void preserved for reconciliation. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.work` | 4 | 1 | 0 | Planned: workspace captures land with the program golden pass | `DP-PROGRAMS-WORK-001` | `feature.programs_arrivals_ops` binds the scoped staff workspace: the server-returned access payload decides which station, hotel, and ledger links render, and every destination re-checks authority. Route captures remain the explicit follow-up. |

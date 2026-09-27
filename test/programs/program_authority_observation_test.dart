@@ -27,6 +27,7 @@ const _manager = {
   'grantExpiresAtMillis': null,
   'capabilities': ['arrivalsTransport'],
   'pickupPoints': [],
+    'functions': [],
   'hotels': [],
   'vehicleClasses': [],
 };
