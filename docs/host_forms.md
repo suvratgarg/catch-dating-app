@@ -55,6 +55,35 @@ A Host can complete this loop:
 7. Pause, revise, republish, duplicate, archive, or delete eligible drafts
    without corrupting historical responses.
 
+## Response-to-event continuation
+
+Response and application routes share one detail page for answers and review.
+Contact actions and submission metadata are disclosures. A single review
+status control contains In review, Waitlisted and Declined; acceptance remains
+the primary action and explicitly links People. Application review no longer
+exposes a competing Add to People action. Ordinary forms retain CRM linkage
+without being forced into application review.
+
+After acceptance and CRM linkage, Offer an event is the primary continuation;
+Open person is secondary. Single-response and query-selection entry points use
+`HostResponseOfferScreen` and the same offer controller. The chooser always
+provides Create event, including when other events exist. Saving a private draft
+returns it selected; cancellation preserves the originating page and selection.
+The return rechecks manager, selection and event identity. Missing CRM or
+unapproved applications return to the same response review and then continue the
+preserved offer. Imported applications without a native response retain review
+and CRM; this continuation does not synthesize response IDs for them.
+
+Selection, offer review and existing-offer handling are successive states of
+that continuation. A single existing offer opens directly. Payment evidence
+controls apply only to paid external/manual collection; free and Catch checkout
+offers do not expose bank-attestation fields. Offer issuance, personal sharing,
+verified payment and admission remain separate commands. The former Propose
+attendee UI and its direct roster-import picker are removed; old-client backend
+conversion compatibility is not a new-product entry point. Private event and
+offer activation gates remain closed until their existing release requirements
+are met.
+
 ## Product Boundary
 
 ### In scope

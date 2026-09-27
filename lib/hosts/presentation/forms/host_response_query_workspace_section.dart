@@ -101,7 +101,6 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
     this.offerWorkspace,
     this.exportGateway,
     this.exportAccountId,
-    this.onCreateEventForSelection,
   });
 
   final HostResponseQueryController controller;
@@ -112,7 +111,6 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
   final Widget? offerWorkspace;
   final HostResponseExportGateway? exportGateway;
   final String? exportAccountId;
-  final Future<void> Function()? onCreateEventForSelection;
 
   @override
   State<HostResponseQueryWorkspaceSection> createState() =>
@@ -232,9 +230,7 @@ class _HostResponseQueryWorkspaceSectionState
       final loading = view.status == HostResponseQueryStatus.loading;
       final ready = view.status == HostResponseQueryStatus.ready;
       final canSelect =
-          widget.onReviewSelection != null ||
-          widget.onCreateEventForSelection != null ||
-          widget.offerWorkspace != null;
+          widget.onReviewSelection != null || widget.offerWorkspace != null;
       final filterCount = _request.predicate?.conditionCount ?? 0;
       final errorMessage = switch (view.status) {
         HostResponseQueryStatus.stale => copy.stale,
@@ -366,12 +362,6 @@ class _HostResponseQueryWorkspaceSectionState
                               );
                             }
                           },
-                        ),
-                      if (widget.onCreateEventForSelection != null &&
-                          view.canActOnSelection)
-                        CatchButton(
-                          label: context.l10n.hostsHostEventsListLabelNewEvent,
-                          onPressed: widget.onCreateEventForSelection,
                         ),
                       CatchButton.command(
                         label: copy.clearSelection,

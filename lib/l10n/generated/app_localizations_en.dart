@@ -14568,16 +14568,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationReviewNoteHint => 'Add context for your team';
 
   @override
-  String get hostApplicationMarkInReview => 'Mark in review';
-
-  @override
   String get hostApplicationApprove => 'Accept and add to People';
-
-  @override
-  String get hostApplicationWaitlist => 'Waitlist';
-
-  @override
-  String get hostApplicationDecline => 'Decline';
 
   @override
   String get hostApplicationReviewUpdated => 'Application review updated';
@@ -15477,9 +15468,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormConvertCrm => 'Add to People';
 
   @override
-  String get hostFormConvertAttendee => 'Propose attendee';
-
-  @override
   String get hostFormConversionReviewTitle => 'Review this action';
 
   @override
@@ -15582,13 +15570,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormResponseOriginRevoked => 'Access revoked';
-
-  @override
-  String get hostFormSelectEventTitle => 'Choose an event';
-
-  @override
-  String get hostFormSelectEventEmpty =>
-      'No upcoming events are available for an attendee proposal.';
 
   @override
   String get hostFormConversionExisting =>
@@ -22061,8 +22042,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsPrivateEventSaveReturnResponses =>
-      'Save & return to responses';
+  String get hostsPrivateEventSaveReturnResponses => 'Save & continue';
 
   @override
   String get hostsPrivateEventSaveContinue => 'Save & continue';
@@ -22460,10 +22440,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventOfferNeedsContact =>
-      'Convert this response to a CRM contact before offering an event.';
+      'Review these responses and add them to People before offering an event.';
 
   @override
-  String get hostEventOfferConvertContact => 'Create CRM contact';
+  String get hostEventOfferConvertContact => 'Review response';
 
   @override
   String get hostEventOfferSelectionChanged =>
@@ -22592,19 +22572,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostEventOfferCommit => 'Record offers';
+  String get hostEventOfferCommit => 'Create offers';
 
   @override
-  String get hostEventOfferCommitting => 'Recording offers…';
+  String get hostEventOfferCommitting => 'Creating offers…';
 
   @override
-  String get hostEventOfferCommitted => 'Offers recorded';
+  String get hostEventOfferCommitted => 'Offers created';
 
   @override
   String get hostEventOfferFailed => 'Could not complete this offer action.';
 
   @override
-  String get hostEventOfferNoReservation => 'No seat or admission is created.';
+  String get hostEventOfferNoReservation =>
+      'Creating an offer does not reserve a place.';
 
   @override
   String hostEventOfferPersonalPaymentLink({required String name}) {
@@ -22642,7 +22623,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferOpenExisting => 'Review offer';
 
   @override
-  String get hostEventOfferHandoffPrepare => 'Prepare personal handoff';
+  String get hostEventOfferHandoffPrepare => 'Share invitation';
 
   @override
   String get hostEventOfferHandoffBlocked =>
@@ -23255,4 +23236,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventPreferenceExpectedAmount => 'Expected amount';
+
+  @override
+  String get hostResponseOfferEvent => 'Offer an event';
+
+  @override
+  String get hostResponseReviewDecision => 'Review status';
+
+  @override
+  String get hostResponseContactDetails => 'Contact details';
+
+  @override
+  String get hostEventOfferChangeEvent => 'Change event';
+
+  @override
+  String get hostEventOfferUnavailable =>
+      'Event offers are not available yet. Return to the response to continue reviewing.';
+
+  @override
+  String get hostEventOfferRecipient => 'Recipient';
+
+  @override
+  String get hostEventOfferAmount => 'Admission price';
+
+  @override
+  String get hostEventOfferFree => 'Free admission';
+
+  @override
+  String get hostResponseContinueOffer => 'Continue to offer';
+
+  @override
+  String get hostEventOfferExpiry => 'Valid until';
 }

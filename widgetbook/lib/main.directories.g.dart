@@ -10709,6 +10709,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostResponseOfferScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event offer release gate',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostResponseOfferReleaseGate,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostResponseQueryEditorSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

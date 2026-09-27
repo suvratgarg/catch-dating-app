@@ -22629,29 +22629,11 @@ abstract class AppLocalizations {
   /// **'Add context for your team'**
   String get hostApplicationReviewNoteHint;
 
-  /// Application review transition action.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark in review'**
-  String get hostApplicationMarkInReview;
-
   /// Application approval action.
   ///
   /// In en, this message translates to:
   /// **'Accept and add to People'**
   String get hostApplicationApprove;
-
-  /// Application waitlist action.
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlist'**
-  String get hostApplicationWaitlist;
-
-  /// Application decline action.
-  ///
-  /// In en, this message translates to:
-  /// **'Decline'**
-  String get hostApplicationDecline;
 
   /// Successful application review mutation message.
   ///
@@ -24306,12 +24288,6 @@ abstract class AppLocalizations {
   /// **'Add to People'**
   String get hostFormConvertCrm;
 
-  /// Reviews a response to event attendee proposal conversion.
-  ///
-  /// In en, this message translates to:
-  /// **'Propose attendee'**
-  String get hostFormConvertAttendee;
-
   /// Conversion preview confirmation title.
   ///
   /// In en, this message translates to:
@@ -24500,18 +24476,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access revoked'**
   String get hostFormResponseOriginRevoked;
-
-  /// Event attendee proposal picker title.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose an event'**
-  String get hostFormSelectEventTitle;
-
-  /// Empty attendee proposal event picker guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'No upcoming events are available for an attendee proposal.'**
-  String get hostFormSelectEventEmpty;
 
   /// Conversion preview existing-record notice.
   ///
@@ -35416,7 +35380,7 @@ abstract class AppLocalizations {
   /// Saves a private event and returns to the form response selection that opened the event editor.
   ///
   /// In en, this message translates to:
-  /// **'Save & return to responses'**
+  /// **'Save & continue'**
   String get hostsPrivateEventSaveReturnResponses;
 
   /// Copy for the progressive private event setup flow.
@@ -36094,13 +36058,13 @@ abstract class AppLocalizations {
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Convert this response to a CRM contact before offering an event.'**
+  /// **'Review these responses and add them to People before offering an event.'**
   String get hostEventOfferNeedsContact;
 
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Create CRM contact'**
+  /// **'Review response'**
   String get hostEventOfferConvertContact;
 
   /// Host forms to event offer action or state.
@@ -36334,19 +36298,19 @@ abstract class AppLocalizations {
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Record offers'**
+  /// **'Create offers'**
   String get hostEventOfferCommit;
 
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Recording offers…'**
+  /// **'Creating offers…'**
   String get hostEventOfferCommitting;
 
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'Offers recorded'**
+  /// **'Offers created'**
   String get hostEventOfferCommitted;
 
   /// Host forms event offer review copy.
@@ -36358,7 +36322,7 @@ abstract class AppLocalizations {
   /// Host forms event offer review copy.
   ///
   /// In en, this message translates to:
-  /// **'No seat or admission is created.'**
+  /// **'Creating an offer does not reserve a place.'**
   String get hostEventOfferNoReservation;
 
   /// Host forms event offer review copy.
@@ -36430,7 +36394,7 @@ abstract class AppLocalizations {
   /// Host forms existing offer handoff copy.
   ///
   /// In en, this message translates to:
-  /// **'Prepare personal handoff'**
+  /// **'Share invitation'**
   String get hostEventOfferHandoffPrepare;
 
   /// Host forms existing offer handoff copy.
@@ -37455,6 +37419,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expected amount'**
   String get hostsEventPreferenceExpectedAmount;
+
+  /// Response-to-event offer flow: hostResponseOfferEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Offer an event'**
+  String get hostResponseOfferEvent;
+
+  /// Response-to-event offer flow: hostResponseReviewDecision
+  ///
+  /// In en, this message translates to:
+  /// **'Review status'**
+  String get hostResponseReviewDecision;
+
+  /// Response-to-event offer flow: hostResponseContactDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get hostResponseContactDetails;
+
+  /// Response-to-event offer flow: hostEventOfferChangeEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Change event'**
+  String get hostEventOfferChangeEvent;
+
+  /// Response-to-event offer flow: hostEventOfferUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Event offers are not available yet. Return to the response to continue reviewing.'**
+  String get hostEventOfferUnavailable;
+
+  /// Response-to-event offer flow: hostEventOfferRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get hostEventOfferRecipient;
+
+  /// Response-to-event offer flow: hostEventOfferAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Admission price'**
+  String get hostEventOfferAmount;
+
+  /// Response-to-event offer flow: hostEventOfferFree
+  ///
+  /// In en, this message translates to:
+  /// **'Free admission'**
+  String get hostEventOfferFree;
+
+  /// Return to the preserved offer selection after response review.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to offer'**
+  String get hostResponseContinueOffer;
+
+  /// Offer expiry in the review summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until'**
+  String get hostEventOfferExpiry;
 }
 
 class _AppLocalizationsDelegate

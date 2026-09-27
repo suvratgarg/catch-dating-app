@@ -19,8 +19,8 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 13,
-    "imperativePageTargetCount": 9
+    "imperativePageRouteCount": 16,
+    "imperativePageTargetCount": 11
   },
   "routes": [
     {
@@ -1593,12 +1593,39 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_event_actions.dart:1",
-      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_event_actions.dart",
-      "line": 130,
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+      "line": 554,
       "ordinal": 1,
-      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(key:ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
+      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId)",
+      "presentationTarget": "HostResponseOfferScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
+      "line": 290,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,queryController:queryController)",
+      "presentationTarget": "HostResponseOfferScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "line": 142,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:2",
+      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "line": 259,
+      "ordinal": 2,
+      "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
+      "presentationTarget": "HostFormResponseDetailScreen",
       "fullscreenDialogExpression": null
     },
     {

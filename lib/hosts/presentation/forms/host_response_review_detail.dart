@@ -63,6 +63,11 @@ class HostResponseReviewDetail {
       response?.response.status == HostFormResponseStatus.withdrawn;
   bool get canReview => application != null && !withdrawn && !revoked;
   bool get canConvert => response != null && !withdrawn && !revoked;
+  bool get canOfferEvent =>
+      canConvert &&
+      contactId != null &&
+      (application == null ||
+          application!.reviewStatus == HostApplicationReviewStatus.approved);
   String? get displayName =>
       application?.applicantDisplayName ??
       response?.response.identity.primaryLabel;

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -63,6 +64,8 @@ class HostEventOfferReviewSection extends StatelessWidget {
     required this.now,
     required this.commitRequestId,
     required this.copy,
+    this.amountLabel,
+    this.showEvent = true,
   });
 
   final HostEventOfferController controller;
@@ -73,6 +76,8 @@ class HostEventOfferReviewSection extends StatelessWidget {
   final DateTime Function() now;
   final String commitRequestId;
   final HostEventOfferReviewCopy copy;
+  final String? amountLabel;
+  final bool showEvent;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -93,17 +98,40 @@ class HostEventOfferReviewSection extends StatelessWidget {
             gapH16,
             if (view.status == HostOfferFlowStatus.previewing)
               Text(copy.previewing, style: CatchTextStyles.supporting(context)),
-            if (view.status == HostOfferFlowStatus.review && sameDraft) ...[
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                if (showEvent)
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostEventOfferSelectEvent,
+                    valueText: eventTitle,
+                  ),
+                for (final row in draft.rows)
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostEventOfferRecipient,
+                    valueText: contactLabel(row.contactId),
+                  ),
+                for (final expiry
+                    in draft.rows.map((row) => row.expiresAt).toSet())
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostEventOfferExpiry,
+                    valueText:
+                        '${AppTimeFormatters.dateTime(expiry.toLocal())} ${expiry.toLocal().timeZoneName}',
+                    valueMaxLines: 2,
+                  ),
+                if (amountLabel != null)
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostEventOfferAmount,
+                    valueText: amountLabel!,
+                  ),
+              ],
+            ),
+            if (view.status == HostOfferFlowStatus.review && sameDraft)
               Text(copy.review, style: CatchTextStyles.supporting(context)),
-              gapH8,
-              Text(eventTitle, style: CatchTextStyles.supporting(context)),
-              for (final row in draft.rows)
-                Text(
-                  '${contactLabel(row.contactId)} · ${copy.expires(MaterialLocalizations.of(context).formatMediumDate(row.expiresAt.toLocal()))}',
-                  style: CatchTextStyles.supporting(context),
-                ),
-              gapH16,
-            ],
             if (view.status == HostOfferFlowStatus.committing && sameDraft)
               Text(copy.committing, style: CatchTextStyles.supporting(context)),
             if (view.status == HostOfferFlowStatus.committed && sameDraft)
@@ -111,10 +139,13 @@ class HostEventOfferReviewSection extends StatelessWidget {
             if (view.status == HostOfferFlowStatus.failure && sameDraft)
               Text(copy.failed, style: CatchTextStyles.supporting(context)),
             gapH16,
-            if (view.status != HostOfferFlowStatus.committed || !sameDraft)
+            if (!sameDraft ||
+                (view.status != HostOfferFlowStatus.committed &&
+                    !view.canCommit &&
+                    view.pendingRequestId == null))
               CatchButton(
                 label: copy.preview,
-                variant: CatchButtonVariant.secondary,
+                fullWidth: true,
                 onPressed:
                     view.status == HostOfferFlowStatus.previewing ||
                         view.status == HostOfferFlowStatus.committing
@@ -129,6 +160,7 @@ class HostEventOfferReviewSection extends StatelessWidget {
               gapH8,
               CatchButton(
                 label: copy.commit,
+                fullWidth: true,
                 onPressed: () => controller.commit(commitRequestId),
               ),
             ],
@@ -138,6 +170,7 @@ class HostEventOfferReviewSection extends StatelessWidget {
               gapH8,
               CatchButton(
                 label: copy.commit,
+                fullWidth: true,
                 onPressed: () => controller.commit(commitRequestId),
               ),
             ],
@@ -205,7 +238,10 @@ class _HostManualPaymentReviewSectionState
     final generation = ++_recoveryGeneration;
     final organizerId = widget.offer.organizerId;
     final eventId = widget.offer.eventId;
-    setState(() { _checkingPending = true; _error = null; });
+    setState(() {
+      _checkingPending = true;
+      _error = null;
+    });
     try {
       final pending = await widget.controller.recoverPendingMutation(
         organizerId: organizerId,
@@ -227,7 +263,10 @@ class _HostManualPaymentReviewSectionState
 
   Future<void> _retrySavedMutation() async {
     if (_pendingMutation?.contactId != widget.offer.contactId) return;
-    setState(() { _busy = true; _error = null; });
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     try {
       final updated = await widget.controller.retryPendingMutation(
         organizerId: widget.offer.organizerId,
@@ -310,17 +349,27 @@ class _HostManualPaymentReviewSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (_pendingMutation != null) ...[
-          CatchSection.content(child: Text(copy.failed,
-            style: CatchTextStyles.supporting(context))),
+          CatchSection.content(
+            child: Text(
+              copy.failed,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ),
           if (_pendingMutation!.contactId == widget.offer.contactId)
-            CatchSection.content(child: CatchButton(
-              key: const ValueKey('offer-retry-saved-mutation'),
-              label: _pendingMutation!.kind == HostOfferMutationKind.recordEvidence.name
-                  ? copy.recordReference
-                  : _pendingMutation!.decision == HostManualPaymentStatus.rejected.name
-                      ? copy.rejectReference : copy.attestReceived,
-              onPressed: _busy ? null : _retrySavedMutation,
-            )),
+            CatchSection.content(
+              child: CatchButton(
+                key: const ValueKey('offer-retry-saved-mutation'),
+                label:
+                    _pendingMutation!.kind ==
+                        HostOfferMutationKind.recordEvidence.name
+                    ? copy.recordReference
+                    : _pendingMutation!.decision ==
+                          HostManualPaymentStatus.rejected.name
+                    ? copy.rejectReference
+                    : copy.attestReceived,
+                onPressed: _busy ? null : _retrySavedMutation,
+              ),
+            ),
         ],
         CatchSection.content(
           child: Text(
@@ -344,8 +393,9 @@ class _HostManualPaymentReviewSectionState
           CatchSection.content(
             child: CatchButton(
               label: copy.recordReference,
-              onPressed: _busy || _checkingPending ||
-                  _pendingMutation != null ? null : _recordReference,
+              onPressed: _busy || _checkingPending || _pendingMutation != null
+                  ? null
+                  : _recordReference,
             ),
           ),
         ],
@@ -363,10 +413,16 @@ class _HostManualPaymentReviewSectionState
                 title: copy.reviewNote,
                 maxLength: 240,
                 contractExemption: 'Host manual review note only.',
-                states: {if (_pendingDecision != null || _checkingPending ||
-                    _pendingMutation != null) WidgetState.disabled},
-                onChanged: _pendingDecision == null && !_checkingPending &&
-                    _pendingMutation == null
+                states: {
+                  if (_pendingDecision != null ||
+                      _checkingPending ||
+                      _pendingMutation != null)
+                    WidgetState.disabled,
+                },
+                onChanged:
+                    _pendingDecision == null &&
+                        !_checkingPending &&
+                        _pendingMutation == null
                     ? (value) => _note = value
                     : null,
               ),
@@ -376,8 +432,11 @@ class _HostManualPaymentReviewSectionState
                 value: _bankReceiptChecked,
                 contractExemption:
                     'Explicit Host attestation after checking the bank receipt.',
-                onChanged: _busy || _checkingPending ||
-                    _pendingMutation != null || _pendingDecision != null
+                onChanged:
+                    _busy ||
+                        _checkingPending ||
+                        _pendingMutation != null ||
+                        _pendingDecision != null
                     ? null
                     : (value) => setState(() => _bankReceiptChecked = value),
               ),
@@ -389,7 +448,8 @@ class _HostManualPaymentReviewSectionState
                 CatchButton(
                   label: copy.attestReceived,
                   onPressed:
-                      _busy || _checkingPending ||
+                      _busy ||
+                          _checkingPending ||
                           _pendingMutation != null ||
                           !_bankReceiptChecked ||
                           _pendingDecision == HostManualPaymentStatus.rejected
@@ -402,7 +462,8 @@ class _HostManualPaymentReviewSectionState
                   label: copy.rejectReference,
                   variant: CatchButtonVariant.secondary,
                   onPressed:
-                      _busy || _checkingPending ||
+                      _busy ||
+                          _checkingPending ||
                           _pendingMutation != null ||
                           _pendingDecision ==
                               HostManualPaymentStatus.hostAttestedReceived

@@ -161,6 +161,8 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
+      await tester.tap(find.text('Contact details'));
+      await pumpFeatureUi(tester);
       for (final label in ['Call', 'Instagram']) {
         expect(find.text(label).hitTestable(), findsOneWidget);
         expect(
@@ -168,12 +170,12 @@ void main() {
           lessThan(tester.getTopLeft(find.text('ANSWERS')).dy),
         );
       }
-      for (final label in ['Waitlist', 'Decline']) {
-        expect(
-          tester.getTopLeft(find.text(label)).dy,
-          greaterThan(tester.getTopLeft(find.text('ANSWERS')).dy),
-        );
-      }
+      expect(find.text('Waitlist'), findsNothing);
+      expect(find.text('Decline'), findsNothing);
+      expect(
+        tester.getTopLeft(find.text('Review status')).dy,
+        greaterThan(tester.getTopLeft(find.text('ANSWERS')).dy),
+      );
       await tester.tap(find.text('Call'));
       await tester.tap(find.text('Instagram'));
       await pumpFeatureUi(tester);

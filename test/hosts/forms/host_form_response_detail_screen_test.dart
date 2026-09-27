@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
@@ -163,6 +164,40 @@ void main() {
     },
   );
 
+  for (final status in [
+    HostApplicationReviewStatus.submitted,
+    HostApplicationReviewStatus.approved,
+  ]) {
+    testWidgets('response has one primary next action: ${status.name}', (
+      tester,
+    ) async {
+      await _pumpDetail(tester, applicationStatus: status);
+      expect(find.text('Propose attendee'), findsNothing);
+      expect(find.text('Add to People'), findsNothing);
+      expect(
+        find.text(
+          status == HostApplicationReviewStatus.approved
+              ? 'Offer an event'
+              : 'Accept and add to People',
+        ),
+        findsOneWidget,
+      );
+      await _captureDetail(
+        tester,
+        'review-${status.name}',
+        directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+      );
+      await tester.ensureVisible(find.text('Submission details'));
+      await pumpFeatureUi(tester);
+      await _captureDetail(
+        tester,
+        'review-${status.name}-lower',
+        directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('one flat detail keeps answers and opens full contact targets', (
     tester,
   ) async {
@@ -181,6 +216,8 @@ void main() {
     );
     expect(find.text('Review application'), findsNothing);
     expect(find.text('Why do you want to join?'), findsOneWidget);
+    await tester.tap(find.text('Contact details'));
+    await pumpFeatureUi(tester);
     final call = find.widgetWithText(CatchButton, 'Call');
     final email = find.widgetWithText(CatchButton, 'Email');
     expect(tester.getSize(email).width, greaterThanOrEqualTo(44));
@@ -205,6 +242,8 @@ void main() {
         textScale: 2,
         disableAnimations: true,
       );
+      await tester.tap(find.text('Contact details'));
+      await pumpFeatureUi(tester);
       final call = find.widgetWithText(CatchButton, 'Call');
       final email = find.widgetWithText(CatchButton, 'Email');
       expect(
@@ -444,12 +483,20 @@ Future<void> _pumpDetail(
   bool canApply = true,
   bool withdrawn = false,
   String? paymentStatus,
+  HostApplicationReviewStatus? applicationStatus,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final data = _detailMap();
+  if (applicationStatus != null) {
+    data['applicationId'] = 'app-1';
+    data['contactId'] =
+        applicationStatus == HostApplicationReviewStatus.approved
+        ? 'contact-one'
+        : null;
+  }
   if (paymentStatus != null) {
     data['payment'] = {
       'paymentId': 'fp_${'1' * 32}',
@@ -476,6 +523,12 @@ Future<void> _pumpDetail(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        privateEventSetupAvailableProvider.overrideWithValue(true),
+        if (applicationStatus != null)
+          hostApplicationDetailProvider(
+            'org_1',
+            'app-1',
+          ).overrideWith((_) => _application(status: applicationStatus)),
         hostFormResponseCanApplyProvider(
           organizerId: 'org_1',
           responseId: 'response_1',
@@ -569,33 +622,38 @@ Map<String, Object?> _detailMap() => {
   'completionMillis': 82000,
 };
 
-HostApplicationDetail _application({bool revoked = false}) =>
-    HostApplicationDetail(
-      organizerId: 'org_1',
-      applicationId: 'app-1',
-      formId: 'form_1',
-      formVersionId: 'version_1',
-      targetKind: 'organizer',
-      targetId: null,
-      applicantDisplayName: 'Maya Kapoor',
-      reviewStatus: HostApplicationReviewStatus.submitted,
-      answers: const [],
-      outreach: const HostApplicationOutreach(
-        phoneE164: '+919876543210',
-        email: 'maya@example.com',
-        instagramUrl: null,
-        linkedinUrl: null,
-      ),
-      reviewNote: null,
-      assignedReviewerUid: null,
-      submittedAt: DateTime(2026, 8, 20),
-      reviewedAt: null,
-      revision: 1,
-      sourceResponseId: 'response_1',
-      dataAccessState: revoked
-          ? 'revokedParticipantGrant'
-          : 'submittedFormResponse',
-    );
+HostApplicationDetail _application({
+  bool revoked = false,
+  HostApplicationReviewStatus status = HostApplicationReviewStatus.submitted,
+}) => HostApplicationDetail(
+  organizerId: 'org_1',
+  applicationId: 'app-1',
+  formId: 'form_1',
+  formVersionId: 'version_1',
+  targetKind: 'organizer',
+  targetId: null,
+  applicantDisplayName: 'Maya Kapoor',
+  reviewStatus: status,
+  answers: const [],
+  outreach: const HostApplicationOutreach(
+    phoneE164: '+919876543210',
+    email: 'maya@example.com',
+    instagramUrl: null,
+    linkedinUrl: null,
+  ),
+  contactId: status == HostApplicationReviewStatus.approved
+      ? 'contact-one'
+      : null,
+  reviewNote: null,
+  assignedReviewerUid: null,
+  submittedAt: DateTime(2026, 8, 20),
+  reviewedAt: null,
+  revision: 1,
+  sourceResponseId: 'response_1',
+  dataAccessState: revoked
+      ? 'revokedParticipantGrant'
+      : 'submittedFormResponse',
+);
 
 Future<void> _captureDetail(
   WidgetTester tester,
