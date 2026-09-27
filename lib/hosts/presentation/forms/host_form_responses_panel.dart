@@ -39,9 +39,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-export 'host_response_query_capability.dart' show canMountHostResponseQuery, hostResponseQueryCapability;
+export 'host_response_query_capability.dart'
+    show canMountHostResponseQuery, hostResponseQueryCapability;
 
 part 'host_form_responses_filter_sheet.dart';
+part 'host_form_responses_event_actions.dart';
 
 class HostFormResponsesPanel extends ConsumerStatefulWidget {
   const HostFormResponsesPanel({
@@ -70,6 +72,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   final ValueChanged<String?>? onFormChanged;
   final bool showFormContext;
   final HostResponseQueryCapability? queryCapability;
+
   /// Production routes bind this panel to the current manager. A new actor
   /// must fetch legacy responses again before any cached rows can render.
   final String? accountId;
@@ -97,6 +100,7 @@ class _HostFormResponsesPanelState
   String? _inlineReturnError;
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
+  bool _answerWorkspaceOpen = false;
   String? _versionId;
   bool _versionResolved = false;
   HostFormResponseVersionScope? _versionScope;
@@ -110,9 +114,10 @@ class _HostFormResponsesPanelState
     _queryController = accountId == null || widget.queryCapability == null
         ? null
         : HostResponseQueryController(
-            widget.queryCapability!.gateway ?? HostResponseQueryRepository(
-              ref.read(firebaseFunctionsProvider),
-            ),
+            widget.queryCapability!.gateway ??
+                HostResponseQueryRepository(
+                  ref.read(firebaseFunctionsProvider),
+                ),
           );
     _offerController = null;
     _exportGateway = null;
@@ -145,6 +150,7 @@ class _HostFormResponsesPanelState
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId ||
         oldWidget.accountId != widget.accountId) {
+      _answerWorkspaceOpen = false;
       _answerFilters.clear();
       _filterOptions = const [];
       _versionId = null;
@@ -157,124 +163,17 @@ class _HostFormResponsesPanelState
     }
   }
 
-  Future<void> _openEventForSelection(
-    HostResponseQueryController queryController,
-    String accountId,
-  ) async {
-    final intent = queryController.selectionIntent;
-    if (intent == null ||
-        !privateEventSetupAvailable() ||
-        !_currentQueryAccount(queryController, accountId)) {
-      return;
-    }
-    final organizerId = widget.organizerId;
-    final formId = widget.formId;
-    setState(() {
-      _inlineReturnError = null;
-      _returnedEventTarget = null;
-      _returnedSelectionHash = null;
-      _returnedSelectionIds = null;
-    });
-    final eventId = await context.pushNamed<String>(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': organizerId},
-      extra: const HostCreateEventRouteArguments(
-        returnToResponsesOnSave: true,
-      ),
-    );
-    if (eventId == null || !_currentQueryAccount(queryController, accountId)) {
-      return;
-    }
-    if (widget.organizerId != organizerId || widget.formId != formId ||
-        !_sameSelection(queryController.selectionIntent, intent) ||
-        !await queryController.revalidateSelection(
-          ids: intent.ids, resultHash: intent.resultHash)) {
-      if (_currentQueryAccount(queryController, accountId)) {
-        setState(() => _inlineReturnError =
-            context.l10n.hostEventOfferSelectionChanged);
-      }
-      return;
-    }
-    try {
-      final summary = await PrivateEventSetupRepository(
-        ref.read(firebaseFunctionsProvider),
-      ).get(organizerId: organizerId, eventId: eventId);
-      if (!_currentQueryAccount(queryController, accountId) ||
-          widget.organizerId != organizerId || widget.formId != formId) {
-        return;
-      }
-      if (summary.organizerId != organizerId || summary.eventId != eventId ||
-          summary.status != 'active' ||
-          !_sameSelection(queryController.selectionIntent, intent) ||
-          !await queryController.revalidateSelection(
-            ids: intent.ids, resultHash: intent.resultHash)) {
-        if (_currentQueryAccount(queryController, accountId)) {
-          setState(() => _inlineReturnError =
-              context.l10n.hostEventOfferSelectionChanged);
-        }
-        return;
-      }
-      if (!_currentQueryAccount(queryController, accountId) ||
-          widget.organizerId != organizerId || widget.formId != formId ||
-          !_sameSelection(queryController.selectionIntent, intent)) {
-        return;
-      }
-      setState(() {
-        _returnedEventTarget = HostOfferEventTarget(
-          eventId: summary.eventId,
-          name: summary.name,
-          startTime: DateTime.fromMillisecondsSinceEpoch(
-            summary.startTimeMillis),
-          timezone: summary.timezone,
-          publicationState: 'private',
-          setupRevision: summary.setupRevision,
-        );
-        _returnedSelectionHash = intent.resultHash;
-        _returnedSelectionIds = List.unmodifiable(intent.ids);
-        _inlineReturnError = null;
-      });
-    } on Object catch (error) {
-      if (_currentQueryAccount(queryController, accountId)) {
-        setState(() => _inlineReturnError = appErrorMessage(
-          error, l10n: context.l10n, context: AppErrorContext.event));
-      }
-    }
-  }
-
-  bool _currentQueryAccount(
-    HostResponseQueryController queryController,
-    String accountId,
-  ) => mounted &&
-      _queryController == queryController &&
-      _queryAccountId == accountId &&
-      ref.read(uidProvider).asData?.value == accountId &&
-      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
-
   static bool _sameSelection(
     ({List<String> ids, String resultHash})? current,
     ({List<String> ids, String resultHash}) expected,
-  ) => current != null && current.resultHash == expected.resultHash &&
+  ) =>
+      current != null &&
+      current.resultHash == expected.resultHash &&
       current.ids.join('\u0000') == expected.ids.join('\u0000');
-
-  Future<void> _openEventSettings(String eventId, String accountId) async {
-    if (_queryAccountId != accountId ||
-        ref.read(uidProvider).asData?.value != accountId ||
-        ref.read(firebaseAuthProvider).currentUser?.uid != accountId) {
-      return;
-    }
-    await Navigator.of(context).push<void>(MaterialPageRoute(
-      builder: (routeContext) => HostEventOfferPreferencesScreen(
-        key: ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),
-        organizerId: widget.organizerId,
-        eventId: eventId,
-        onBack: () => Navigator.of(routeContext).pop(),
-      ),
-    ));
-  }
 
   @override
   Widget build(BuildContext context) {
-    final capability = widget.queryCapability;
+    final capability = _answerWorkspaceOpen ? widget.queryCapability : null;
     final routeAccountId = widget.accountId;
     if (widget.requireAccount && routeAccountId == null) {
       return const CatchStateViewport.sliverLoading();
@@ -292,9 +191,9 @@ class _HostFormResponsesPanelState
       }
       if (capability == null && _legacyLoadedAccountId != routeAccountId) {
         // Keep the fresh read alive without exposing the cached account rows.
-        ref.watch(hostFormResponsesControllerProvider(
-          _responseRequest(widget.formId),
-        ));
+        ref.watch(
+          hostFormResponsesControllerProvider(_responseRequest(widget.formId)),
+        );
         if (_legacyRefreshError case final error?) {
           return CatchLocalizedSliverErrorState(
             error,
@@ -308,9 +207,11 @@ class _HostFormResponsesPanelState
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!_currentLegacyAccount(routeAccountId, generation)) return;
             try {
-              final refresh = ref.refresh(hostFormResponsesControllerProvider(
-                _responseRequest(widget.formId),
-              ).future);
+              final refresh = ref.refresh(
+                hostFormResponsesControllerProvider(
+                  _responseRequest(widget.formId),
+                ).future,
+              );
               await refresh;
               if (!_currentLegacyAccount(routeAccountId, generation)) return;
               setState(() {
@@ -339,17 +240,23 @@ class _HostFormResponsesPanelState
         _bindQueryAccount(accountId);
       }
       if (uidState.error != null) {
-        return CatchLocalizedSliverErrorState(uidState.error!,
+        return CatchLocalizedSliverErrorState(
+          uidState.error!,
           context: AppErrorContext.auth,
-          onRetry: () => ref.invalidate(uidProvider));
+          onRetry: () => ref.invalidate(uidProvider),
+        );
       }
       if (accountId == null) {
         return !uidState.isSettledData || uid != null
             ? const CatchStateViewport.sliverLoading()
             : CatchSliverErrorState(
-                title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
-                message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-                retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+                title:
+                    context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+                message: context
+                    .l10n
+                    .hostsHostAuthRequiredScreenMessageSignInToManage,
+                retryLabel:
+                    context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
                 onRetry: () => context.go(Routes.authScreen.path),
               );
       }
@@ -360,7 +267,8 @@ class _HostFormResponsesPanelState
         _offerController = HostEventOfferController.forCallables(
           functions: ref.read(firebaseFunctionsProvider),
           storage: ref.read(commandJournalStorageProvider),
-          currentAccountId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+          currentAccountId: () =>
+              ref.read(firebaseAuthProvider).currentUser?.uid,
         );
         _offerAccountId = accountId;
         _returnedEventTarget = null;
@@ -368,7 +276,8 @@ class _HostFormResponsesPanelState
         _returnedSelectionIds = null;
       }
       final currentSelection = queryController.selectionIntent;
-      final returnedTarget = _returnedSelectionHash != null &&
+      final returnedTarget =
+          _returnedSelectionHash != null &&
               _returnedSelectionIds != null &&
               _sameSelection(currentSelection, (
                 ids: _returnedSelectionIds!,
@@ -378,84 +287,141 @@ class _HostFormResponsesPanelState
           : null;
       final functions = ref.read(firebaseFunctionsProvider);
       return SliverToBoxAdapter(
-        child: HostResponseQueryWorkspaceSection(
-          controller: queryController,
-          request: HostResponseQueryRequest(
-            organizerId: widget.organizerId,
-            formId: widget.formId!,
-            versionId: capability.versionId,
-          ),
-          copy: capability.copy,
-          onReviewSelection: capability.onReviewSelection,
-          exportGateway: capability.exportGateway ??
-              (_exportGateway ??= JournalHostResponseExportGateway(
-                repository: HostFormsRepository(functions),
-                storage: ref.read(commandJournalStorageProvider),
-                currentAccountId: () =>
-                    ref.read(firebaseAuthProvider).currentUser?.uid,
-              )),
-          exportAccountId: capability.exportAccountId ?? accountId,
-          onCreateEventForSelection: privateEventSetupAvailable() &&
-                  offerCopy != null
-              ? () => _openEventForSelection(queryController, accountId)
-              : null,
-          offerWorkspace: offerCopy != null && _offerController != null
-              ? Column(children: [
-                  if (_inlineReturnError != null)
-                    CatchBanner.error(message: _inlineReturnError!),
-                  HostEventOfferWorkspaceSection(
-                  key: ValueKey('offer-workspace-$accountId-${widget.formId}'),
-                  organizerId: widget.organizerId,
-                  accountId: accountId,
-                  queryController: queryController,
-                  offerController: _offerController!,
-                  listOffers: ({required organizerId, required eventId,
-                      afterOfferId}) => CallableHostEventOfferGateway(functions)
-                      .listOffers(organizerId: organizerId, eventId: eventId,
-                        afterOfferId: afterOfferId),
-                  getOffer: ({required organizerId, required eventId,
-                      required contactId}) =>
-                      CallableHostEventOfferGateway(functions).getOffer(
-                        organizerId: organizerId, eventId: eventId,
-                        contactId: contactId),
-                  prepareHandoff: ({required offer}) =>
-                      CallableHostEventOfferGateway(functions).prepareHandoff(
-                        offer: offer),
-                  copyMessage: (text) => ref.read(clipboardControllerProvider)
-                      .copyText(text),
-                  openHandoff: (uri) => ref.read(externalLinkControllerProvider)
-                      .openExternal(uri),
-                  targets: CallableHostOfferEventTargetsGateway(functions),
-                  getResponseDetail: (responseId) => ref.read(
-                    hostFormResponseDetailProvider(
-                      organizerId: widget.organizerId,
-                      responseId: responseId,
-                    ).future,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSection.content(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchButton(
+                    label: context.l10n.hostResponseQueryReviewInbox,
+                    variant: CatchButtonVariant.ghost,
+                    onPressed: () => setState(() {
+                      queryController.clearSelection();
+                      _answerWorkspaceOpen = false;
+                    }),
                   ),
-                  openResponseForConversion: (responseId) async {
-                    await context.pushNamed(
-                      Routes.hostFormResponseDetailScreen.name,
-                      pathParameters: {'responseId': responseId},
-                      queryParameters: {'organizerId': widget.organizerId},
-                    );
-                  },
-                  openEventSettings: capability.openEventSettings ??
-                      (eventId) => _openEventSettings(eventId, accountId),
-                  copy: offerCopy,
-                  now: DateTime.now,
-                  initialEventTarget: returnedTarget,
-                  initiallyReviewSelection: returnedTarget != null,
-                  onCreateEvent: privateEventSetupAvailable()
-                      ? () => _openEventForSelection(
-                        queryController, accountId)
-                      : null,
-                )])
-              : null,
-          onOpenResponse: (responseId) => context.pushNamed(
-            Routes.hostFormResponseDetailScreen.name,
-            pathParameters: {'responseId': responseId},
-            queryParameters: {'organizerId': widget.organizerId},
-          ),
+                  Text(
+                    context.l10n.hostResponseQueryVersionScope(
+                      version: _versionNumber(capability.versionId),
+                    ),
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH16,
+                ],
+              ),
+            ),
+            HostResponseQueryWorkspaceSection(
+              controller: queryController,
+              request: HostResponseQueryRequest(
+                organizerId: widget.organizerId,
+                formId: widget.formId!,
+                versionId: capability.versionId,
+              ),
+              copy: capability.copy,
+              onReviewSelection: capability.onReviewSelection,
+              exportGateway:
+                  capability.exportGateway ??
+                  (_exportGateway ??= JournalHostResponseExportGateway(
+                    repository: HostFormsRepository(functions),
+                    storage: ref.read(commandJournalStorageProvider),
+                    currentAccountId: () =>
+                        ref.read(firebaseAuthProvider).currentUser?.uid,
+                  )),
+              exportAccountId: capability.exportAccountId ?? accountId,
+              onCreateEventForSelection:
+                  privateEventSetupAvailable() && offerCopy != null
+                  ? () => _openEventForSelection(queryController, accountId)
+                  : null,
+              offerWorkspace: offerCopy != null && _offerController != null
+                  ? Column(
+                      children: [
+                        if (_inlineReturnError != null)
+                          CatchBanner.error(message: _inlineReturnError!),
+                        HostEventOfferWorkspaceSection(
+                          key: ValueKey(
+                            'offer-workspace-$accountId-${widget.formId}',
+                          ),
+                          organizerId: widget.organizerId,
+                          accountId: accountId,
+                          queryController: queryController,
+                          offerController: _offerController!,
+                          listOffers:
+                              ({
+                                required organizerId,
+                                required eventId,
+                                afterOfferId,
+                              }) => CallableHostEventOfferGateway(functions)
+                                  .listOffers(
+                                    organizerId: organizerId,
+                                    eventId: eventId,
+                                    afterOfferId: afterOfferId,
+                                  ),
+                          getOffer:
+                              ({
+                                required organizerId,
+                                required eventId,
+                                required contactId,
+                              }) => CallableHostEventOfferGateway(functions)
+                                  .getOffer(
+                                    organizerId: organizerId,
+                                    eventId: eventId,
+                                    contactId: contactId,
+                                  ),
+                          prepareHandoff: ({required offer}) =>
+                              CallableHostEventOfferGateway(
+                                functions,
+                              ).prepareHandoff(offer: offer),
+                          copyMessage: (text) => ref
+                              .read(clipboardControllerProvider)
+                              .copyText(text),
+                          openHandoff: (uri) => ref
+                              .read(externalLinkControllerProvider)
+                              .openExternal(uri),
+                          targets: CallableHostOfferEventTargetsGateway(
+                            functions,
+                          ),
+                          getResponseDetail: (responseId) => ref.read(
+                            hostFormResponseDetailProvider(
+                              organizerId: widget.organizerId,
+                              responseId: responseId,
+                            ).future,
+                          ),
+                          openResponseForConversion: (responseId) async {
+                            await context.pushNamed(
+                              Routes.hostFormResponseDetailScreen.name,
+                              pathParameters: {'responseId': responseId},
+                              queryParameters: {
+                                'organizerId': widget.organizerId,
+                              },
+                            );
+                          },
+                          openEventSettings:
+                              capability.openEventSettings ??
+                              (eventId) =>
+                                  _openEventSettings(eventId, accountId),
+                          copy: offerCopy,
+                          now: DateTime.now,
+                          initialEventTarget: returnedTarget,
+                          initiallyReviewSelection: returnedTarget != null,
+                          onCreateEvent: privateEventSetupAvailable()
+                              ? () => _openEventForSelection(
+                                  queryController,
+                                  accountId,
+                                )
+                              : null,
+                        ),
+                      ],
+                    )
+                  : null,
+              onOpenResponse: (responseId) => context.pushNamed(
+                Routes.hostFormResponseDetailScreen.name,
+                pathParameters: {'responseId': responseId},
+                queryParameters: {'organizerId': widget.organizerId},
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -541,6 +507,13 @@ class _HostFormResponsesPanelState
                     style: CatchTextStyles.supporting(context),
                   ),
                 ],
+                if (widget.queryCapability != null && widget.formId != null)
+                  CatchButton(
+                    label: context.l10n.hostResponseQueryOpenAnswers,
+                    variant: CatchButtonVariant.ghost,
+                    onPressed: () =>
+                        setState(() => _answerWorkspaceOpen = true),
+                  ),
                 gapH16,
               ],
             ),

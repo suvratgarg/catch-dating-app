@@ -36588,6 +36588,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 condition} other{{count} conditions}}'**
   String hostResponseQueryFilterCount({required int count});
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Review inbox'**
+  String get hostResponseQueryReviewInbox;
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by answers'**
+  String get hostResponseQueryOpenAnswers;
+
+  /// Switch between review inbox and published-version answer filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Published version {version} · All review statuses'**
+  String hostResponseQueryVersionScope({required int version});
 }
 
 class _AppLocalizationsDelegate

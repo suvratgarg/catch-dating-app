@@ -801,3 +801,10 @@ This endpoint does not initialize seat ledgers, infer payment from a form fee,
 create an approved application, or bypass the event-offer activation boundary.
 Unreconciled capacity, ambiguous identity, stale offer/ledger revisions and
 missing payment proof return a typed precondition error requiring fresh review.
+
+The response inbox remains the default Host view, including review status queues
+and version filters. For a selected published form without external search or
+contact scope, **Filter by answers** opens the typed query workspace for that
+published version across all review statuses. Returning to **Review inbox**
+clears query selection and preserves inbox filters. This read-only query surface
+is available independently of the private-event and offer rollout gates.

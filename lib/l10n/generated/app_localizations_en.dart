@@ -22748,4 +22748,15 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get hostResponseQueryReviewInbox => 'Review inbox';
+
+  @override
+  String get hostResponseQueryOpenAnswers => 'Filter by answers';
+
+  @override
+  String hostResponseQueryVersionScope({required int version}) {
+    return 'Published version $version · All review statuses';
+  }
 }

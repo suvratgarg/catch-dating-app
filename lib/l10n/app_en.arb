@@ -29710,5 +29710,11 @@
   "hostResponseQueryResultCount": "{count, plural, =1{1 response} other{{count} responses}}",
   "@hostResponseQueryResultCount": {"description": "Total responses in the exact filtered result.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"count": {"type": "int"}}},
   "hostResponseQueryFilterCount": "{count, plural, =1{1 condition} other{{count} conditions}}",
-  "@hostResponseQueryFilterCount": {"description": "Number of active advanced response filter conditions.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"count": {"type": "int"}}}
+  "@hostResponseQueryFilterCount": {"description": "Number of active advanced response filter conditions.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"count": {"type": "int"}}},
+  "hostResponseQueryReviewInbox": "Review inbox",
+  "@hostResponseQueryReviewInbox": {"description": "Switch between review inbox and published-version answer filtering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseQueryOpenAnswers": "Filter by answers",
+  "@hostResponseQueryOpenAnswers": {"description": "Switch between review inbox and published-version answer filtering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseQueryVersionScope": "Published version {version} · All review statuses",
+  "@hostResponseQueryVersionScope": {"description": "Switch between review inbox and published-version answer filtering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"version": {"type": "int"}}}
 }
