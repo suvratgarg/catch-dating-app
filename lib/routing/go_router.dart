@@ -531,6 +531,18 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
           ProgramTripsScreen(programId: state.pathParameters['programId']!),
     ),
     GoRoute(
+      path: Routes.hostWorkGuestsScreen.path,
+      name: Routes.hostWorkGuestsScreen.name,
+      builder: (context, state) =>
+          ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkImportScreen.path,
+      name: Routes.hostWorkImportScreen.name,
+      builder: (context, state) =>
+          ProgramImportScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
       path: Routes.hostProgramsScreen.path,
       name: Routes.hostProgramsScreen.name,
       builder: (context, state) =>

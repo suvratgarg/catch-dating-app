@@ -102,7 +102,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
 | `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
 | `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
-| `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
+| `guestRelations` → Guests · RSVP inbox · Imports | **in review** — `/host/work/:programId/guests` + `/host/work/:programId/import` on the shared grid/import surfaces with coordinator-only mutations hidden; `listProgramGuests`, `listProgramHouseholds`, `importProgramManifest` and work-access `functions` widened to the duty |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
 | `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |

@@ -76,6 +76,11 @@ final _functions = [
   ),
 ];
 
+final _guestFunctions = [
+  for (final fn in _functions)
+    ProgramGuestsFunction(functionId: fn.functionId, name: fn.name),
+];
+
 final _detail = OrganizerProgramDetail(
   program: _program,
   functions: _functions,
@@ -473,8 +478,11 @@ Widget programGuestsPageBodyStates(BuildContext context) {
             overrides: _workspaceOverrides(),
             child: ProgramGuestsPageBody(
               programId: _programId,
-              programDetail: _detail,
+              programTitle: _detail.program.title,
+              functions: _guestFunctions,
+              hotels: _detail.hotels,
               guestPage: _guestPage,
+              canManageGuests: true,
             ),
           ),
         ),
@@ -495,8 +503,8 @@ Widget programGuestsFunctionRowStates(BuildContext context) {
     children: [
       ProgramGuestsFunctionRow(
         guest: _guestPage.guests[0],
-        functions: _functions,
-        selectedFunction: _functions[0],
+        functions: _guestFunctions,
+        selectedFunction: _guestFunctions[0],
         joinIndex: {
           'g_rohan:fn_sangeet': _guestPage.functionGuests[0],
           'g_rohan:fn_ceremony': _guestPage.functionGuests[2],
@@ -506,8 +514,8 @@ Widget programGuestsFunctionRowStates(BuildContext context) {
       ),
       ProgramGuestsFunctionRow(
         guest: _guestPage.guests[1],
-        functions: _functions,
-        selectedFunction: _functions[0],
+        functions: _guestFunctions,
+        selectedFunction: _guestFunctions[0],
         joinIndex: const {},
         pending: true,
         onRsvp: (_, _) {},
