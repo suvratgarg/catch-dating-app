@@ -10,7 +10,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {ToggleButtonControl, ToggleGroupControl} from "@catch/web-ui";
+import {SelectControl, ToggleButtonControl, ToggleGroupControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
 import {useAdminOperationPending} from "../../pendingOperation";
 
@@ -216,6 +216,7 @@ export function SegmentedControl<T extends string>({
   ariaLabel,
   className = "",
   mobileLayout = "equal",
+  mobileSelectLabel,
   options,
   value,
   onChange,
@@ -223,11 +224,12 @@ export function SegmentedControl<T extends string>({
   ariaLabel: string;
   className?: string;
   mobileLayout?: "content" | "equal";
-  options: Array<{disabled?: boolean; id: T; label: ReactNode}>;
+  mobileSelectLabel?: string;
+  options: Array<{disabled?: boolean; id: T; label: ReactNode; mobileLabel?: string}>;
   value: T;
   onChange: (value: T) => void;
 }) {
-  return (
+  const group = (
     <ToggleGroupControl
       aria-label={ariaLabel}
       className={classNames(
@@ -248,5 +250,23 @@ export function SegmentedControl<T extends string>({
         </ToggleButtonControl>
       ))}
     </ToggleGroupControl>
+  );
+  if (!mobileSelectLabel) return group;
+  return (
+    <div className="segmented-responsive">
+      <div className="segmented-responsive-desktop">{group}</div>
+      <label className="field-control segmented-responsive-mobile">
+        <span>{mobileSelectLabel}</span>
+        <SelectControl aria-label={ariaLabel} value={value}
+          onChange={(event) => onChange(event.target.value as T)}>
+          {options.map((option) => (
+            <option disabled={option.disabled} key={option.id} value={option.id}>
+              {option.mobileLabel ??
+                (typeof option.label === "string" ? option.label : option.id)}
+            </option>
+          ))}
+        </SelectControl>
+      </label>
+    </div>
   );
 }

@@ -53,4 +53,42 @@ describe("useOrganizerIntakeController", () => {
       expect(onOrganizerDraftCreated)
         .toHaveBeenCalledWith("sampleOrg00000000001");
     });
+
+  it("requires an explicit canonical match before attaching a surface",
+    async () => {
+      const {wrapper} = createQueryHarness();
+      const onError = vi.fn();
+      const {result} = renderHook(() => useOrganizerIntakeController({
+        onError, onNotice: vi.fn(),
+      }), {wrapper});
+      await waitFor(() => expect(result.current?.bridge.searchCandidates
+        .candidates).toHaveLength(2));
+      const sampleCandidate = result.current.bridge.searchCandidates.candidates
+        .find((entry) => entry.existingEntityMatches.length > 0);
+      expect(sampleCandidate).toBeTruthy();
+      if (!sampleCandidate) throw new Error("Expected matched candidate.");
+      const candidate = {...sampleCandidate,
+        suggestedSurface: {...sampleCandidate.suggestedSurface,
+          evidenceRefs: sampleCandidate.suggestedSurface.evidenceRefs ?? [],
+          notes: sampleCandidate.suggestedSurface.notes ?? ""}};
+      await act(async () => {
+        expect(await result.current.handleAttachCandidate(candidate)).toBe(false);
+      });
+      expect(onError).toHaveBeenCalledWith(
+        "Choose a matched organizer before attaching this surface.");
+      expect(result.current.localCuration[candidate.candidateId])
+        .toBeUndefined();
+      const selectedId = candidate.existingEntityMatches[0]?.entityId;
+      if (!selectedId) throw new Error("Expected canonical match.");
+      act(() => result.current.setSelectedMatchByCandidate((current) => ({
+        ...current, [candidate.candidateId]: selectedId,
+      })));
+      await act(async () => {
+        expect(await result.current.handleAttachCandidate(candidate)).toBe(true);
+      });
+      expect(result.current.localCuration[candidate.candidateId])
+        .toBeTruthy();
+      expect(result.current.localSalesLinks[candidate.candidateId])
+        .toBeUndefined();
+    });
 });

@@ -61,11 +61,13 @@ class _HostClubEventDefaultsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final progressiveDefaultsAvailable =
+        ref.watch(progressiveEventDefaultsAvailableProvider);
     return HostClubSpokeResolver._(
       clubId: widget.clubId,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       builder: (context, club, uid, isOwner) {
-        if (_progressiveEventDefaultsAvailable() && isOwner &&
+        if (progressiveDefaultsAvailable && isOwner &&
             widget.managerEventSetupPreferences == null) {
           _bindManager(uid);
         }
@@ -76,7 +78,7 @@ class _HostClubEventDefaultsScreenState
                   CatchSectionList(
                     emptyStateOmitted: true,
                     children: [
-                      if (_progressiveEventDefaultsAvailable())
+                      if (progressiveDefaultsAvailable)
                         CatchSection.fieldRows(
                         first: true,
                         title: context.l10n.hostsEventDefaultsBasics,
@@ -118,7 +120,7 @@ class _HostClubEventDefaultsScreenState
                           ),
                         ),
                       ),
-                      if (_progressiveEventDefaultsAvailable())
+                      if (progressiveDefaultsAvailable)
                         if (widget.managerEventSetupPreferences != null)
                           HostManagerEventSetupPreferencesSection(
                             preferences: widget.managerEventSetupPreferences!,
@@ -201,7 +203,10 @@ class _HostClubEventDefaultsScreenState
                     ],
                   ),
             )
-          : HostClubReadOnlyEventDefaults._(club: club);
+          : HostClubReadOnlyEventDefaults._(
+              club: club,
+              progressiveDefaultsAvailable: progressiveDefaultsAvailable,
+            );
       },
     );
   }

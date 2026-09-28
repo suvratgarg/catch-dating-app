@@ -163,9 +163,14 @@ describe("Intake task-first defaults", () => {
       target: {value: "Indore"},
     });
     fireEvent.click(screen.getByRole("button", {name: "Review AFTER FLY"}));
-    expect(screen.getByRole("button", {
-      name: "Attach to existing organizer",
-    }).hasAttribute("disabled")).toBe(false);
+    const attach = screen.getByRole("button", {name: "Attach selected organizer"});
+    expect(attach.hasAttribute("disabled")).toBe(true);
+    const selector = screen.getByLabelText("Reviewed canonical organizer") as
+      HTMLSelectElement;
+    const match = [...selector.options].find((option) => option.value !== "");
+    expect(match).toBeDefined();
+    fireEvent.change(selector, {target: {value: match!.value}});
+    expect(attach.hasAttribute("disabled")).toBe(false);
   });
 
   it("marks unavailable live publication stages instead of reporting zero", async () => {

@@ -74,6 +74,32 @@ describe("useHostApplicationController", () => {
     });
   });
 
+  it("retries a lost response with the exact submission and keeps edits as a new observation", async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error("Connection lost"));
+    vi.stubGlobal("fetch", fetchMock);
+    const {result} = renderHook(() => useHostApplicationController(), {wrapper: wrapper()});
+    act(() => {
+      result.current.updateDraft("fullName", "Example Host");
+      result.current.updateDraft("email", "host@example.test");
+      result.current.updateDraft("organizationName", "Example Club");
+      result.current.updateDraft("communityLink", "https://example.test");
+      result.current.updateDraft("nextEventName", "Example Dinner");
+      result.current.updateDraft("eventLocation", "Example City");
+      result.current.updateDraft("hostGoals", "Review applications");
+    });
+    const event = {preventDefault: vi.fn()} as never;
+    await act(async () => result.current.handleSubmit(event));
+    expect(result.current.status.tone).toBe("is-error");
+    expect(result.current.draft.organizationName).toBe("Example Club");
+    await act(async () => result.current.handleSubmit(event));
+    expect(fetchMock.mock.calls[1][1].body).toBe(fetchMock.mock.calls[0][1].body);
+    expect(createMarketingEventId).toHaveBeenCalledTimes(1);
+    act(() => result.current.updateDraft("hostGoals", "Review a different workflow"));
+    await act(async () => result.current.handleSubmit(event));
+    expect(createMarketingEventId).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[2][1].body).not.toBe(fetchMock.mock.calls[0][1].body);
+  });
+
   it("freezes the submitted draft and step until the request settles", async () => {
     let resolveFetch!: (value: {
       ok: boolean;

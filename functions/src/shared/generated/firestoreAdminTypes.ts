@@ -2,6 +2,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {OutreachDraftingInput} from "./outreachDraftingInput";
+import type {OutreachDraft} from "./outreachDraft";
+import type {AdminBuildSalesOutreachInputPayload} from "./adminSalesIntelligenceDraftCallablePayload";
+import type {AdminRefreshSalesFitQueueResponse} from "./adminRefreshSalesFitQueueResponse";
 import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
@@ -543,6 +547,1684 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+export interface SalesImportHistoryRowDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  importId: string;
+  organizerId: string;
+  promotionVersion: string;
+  rowId: string;
+  disposition: "promoted" | "skipped" | "review_needed";
+  reason: string;
+  /**
+   * @minItems 0
+   * @maxItems 5
+   */
+  recordIds: string[];
+  reviewHash: string;
+  reviewedAt: string;
+  reviewedBy: string;
+}
+
+export interface SalesImportHistoryRecordDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  importId: string;
+  organizerId: string;
+  promotionVersion: string;
+  recordId: string;
+  kind: "activity" | "observation" | "benchmark";
+  sourceColumn: string;
+  sourceValue: string;
+  occurredAt: string | null;
+  dateSourceColumn: string | null;
+  dateSourceValue: string | null;
+  contentHash: string;
+  recordedAt: string;
+  recordedBy: string;
+  providerConfirmed: false;
+  currentFitAuthority: false;
+  contactAuthority: false;
+  sendAuthority: false;
+  relativeChronology: "first_touch" | "last_touch" | "unspecified";
+  dateCertainty: "source_exact" | "unknown";
+}
+
+/**
+ * Permanent organizer-scoped private Sales reintroduction fence. Existence blocks reads, writes and receipt replay.
+ */
+export interface SalesPrivacyRestriction {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  status: "restricted" | "processing" | "internal_processed_with_unresolved";
+  revision: number;
+  reason: string;
+  requestId: string;
+  materialHash: string;
+  restrictedByUid: string;
+  restrictedAt: string;
+  activePlanId: string | null;
+}
+
+/**
+ * Admin Owner reviewed retention decision; finance and audit remain retained pending their own reviews. No period is invented.
+ */
+export interface SalesPrivacyPolicy {
+  schemaVersion: 1;
+  classification: "sales_private";
+  policyId: "current";
+  revision: number;
+  status: "reviewed";
+  sourceReference: string;
+  sourceHash: string;
+  financeDisposition: "retain_pending_finance_review";
+  financeReason: string;
+  auditDisposition: "retain_pending_audit_review";
+  auditReason: string;
+  externalCopies: "unverified";
+  policyHash: string;
+  requestId: string;
+  reviewedByUid: string;
+  reviewedAt: string;
+}
+
+/**
+ * Server-inventoried, exact-source cleanup plan. Paths are private and never returned in owner previews.
+ */
+export interface SalesPrivacyPlan {
+  schemaVersion: 1;
+  classification: "sales_private";
+  planId: string;
+  requestId: string;
+  organizerId: string;
+  restrictionRevision: number;
+  policyHash: string;
+  inventoryHash: string;
+  /**
+   * @maxItems 240
+   */
+  items: {
+    path: string;
+    contentHash: string;
+    disposition: "delete" | "retain_finance" | "retain_audit";
+  }[];
+  /**
+   * @maxItems 240
+   */
+  blockers: {
+    code: string;
+    fingerprint: string;
+  }[];
+  cursor: number;
+  status: "reviewed" | "processing" | "internal_processed_with_unresolved";
+  reviewedByUid: string;
+  reviewedAt: string;
+  updatedAt: string;
+}
+
+export interface SalesPrivacyBatchReceipt {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  organizerId: string;
+  planId: string;
+  expectedCursor: number;
+  requestId: string;
+  result: {
+    organizerId: string;
+    planId: string;
+    previousCursor: number;
+    nextCursor: number;
+    itemCount: number;
+    deletedCount: number;
+    retainedCount: number;
+    unresolvedCount: number;
+    status: "processing" | "internal_processed_with_unresolved";
+    completeDeletion: false;
+    receiptId: string;
+  };
+  createdAt: string;
+  actorUid: string;
+}
+
+/**
+ * Immutable private join from exact reviewed Supply Intake candidate and canonical identity decision to the Sales companion account.
+ */
+export interface SalesIntakeLinkDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  linkId: string;
+  workItemId: string;
+  candidateId: string;
+  sourceRunId: string;
+  sourceWorkItemRevision: number;
+  sourceCandidateHash: string;
+  organizerId: string;
+  curationPath: string;
+  curationOperationType: "create_entity_draft" | "attach_surface";
+  curationReviewedByUid: string;
+  curationReviewedAt: string;
+  linkedByUid: string;
+  linkedAt: string;
+}
+
+/**
+ * Immutable uniqueness receipt for one external host settlement reference within one recipient ledger scope, independent of evidence and quote IDs.
+ */
+export interface SalesHostSettlementIdentitiesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  settlementIdentityHash: string;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  createdAt: string;
+}
+
+/**
+ * Owner-attested first-party host subscription collection; provider unconfirmed and separate from guest payments.
+ */
+export interface SalesHostSettlementAttestationsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: 1;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string;
+  termVersion: number;
+  termsHash: string;
+  amountMinor: number;
+  currency: string;
+  purpose: "host_subscription";
+  receivedAt: string;
+  settlementMethod: "bank_transfer" | "cash" | "other_external";
+  settlementReference: string;
+  recipientAccountScope: string;
+  settlementIdentityHash: string;
+  servicePeriod: {
+    startsAt: string;
+    endsAt: string;
+  } | null;
+  evidence: {
+    evidenceId: string;
+    sourceRef: string;
+    contentHash: string;
+    observedAt: string;
+  };
+  status: "manual_attested_collected";
+  providerConfirmed: false;
+  actorUid: string;
+  attestedAt: string;
+}
+
+/**
+ * Immutable uniqueness receipt preventing one settlement source from double counting.
+ */
+export interface SalesHostSettlementEvidenceUsesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  evidenceId: string;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  createdAt: string;
+}
+
+/**
+ * Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.
+ */
+export interface SalesOutreachJobsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  jobId: string;
+  actorUid: string;
+  requestId: string;
+  materialHash: string;
+  sourceHash: string;
+  sourceRequest: AdminBuildSalesOutreachInputPayload;
+  frozenBundle: OutreachDraftingInput;
+  status: "running" | "completed" | "failed";
+  attemptCount: number;
+  leaseOwner: string | null;
+  leaseUntil: string | null;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+  result: {
+    draftId: string;
+    contentHash: string;
+  } | null;
+  failure: string | null;
+}
+
+/**
+ * Append-only exact-version approval or reviewed terms acceptance; not a receipt.
+ */
+export interface SalesCommercialDecisionsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  decisionId: string;
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string | null;
+  termVersion: number | null;
+  termsHash: string;
+  kind: "quote_approved" | "terms_acceptance_reviewed";
+  evidence: {
+    evidenceId: string;
+    sourceRef: string;
+    contentHash: string;
+    observedAt: string;
+  };
+  approvedDecisionId: string | null;
+  actorUid: string;
+  decidedAt: string;
+  paymentStatus: "unknown";
+}
+
+/**
+ * Append-only private stage movement with explicit loss/reopen reason.
+ */
+export interface SalesOpportunityStageHistoryDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  historyId: string;
+  organizerId: string;
+  opportunityId: string;
+  fromStage: string | null;
+  toStage: string;
+  reason: string | null;
+  actorUid: string;
+  changedAt: string;
+}
+
+/**
+ * Private revisioned pilot scope; no revenue or product activation authority.
+ */
+export interface SalesPilotPlansDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  opportunityId: string;
+  revision: number;
+  status: "draft" | "reviewed" | "active" | "completed" | "cancelled";
+  workflowId: string;
+  objective: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  successMeasures: string[];
+  startsAt: string | null;
+  endsAt: string | null;
+  reviewEvidence: {
+    evidenceId: string;
+    sourceRef: string;
+    contentHash: string;
+    observedAt: string;
+  } | null;
+  outcomeEvidence: {
+    evidenceId: string;
+    sourceRef: string;
+    contentHash: string;
+    observedAt: string;
+  } | null;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Immutable exact commercial terms with reviewed source fact references.
+ */
+export interface SalesQuoteVersionsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string;
+  termVersion: number;
+  terms: {
+    currency: string;
+    amountMinor: number;
+    billingCadence: "one_time" | "monthly" | "annual" | "usage_based";
+    scope: string;
+    validUntil: string;
+    /**
+     * @minItems 1
+     * @maxItems 20
+     */
+    sourceFactRefs: string[];
+  };
+  termsHash: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+/**
+ * Current quote head; accepted terms do not prove collection.
+ */
+export interface SalesQuotesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string;
+  revision: number;
+  termVersion: number;
+  status: "draft" | "approved" | "accepted_reviewed";
+  approvedDecisionId: string | null;
+  acceptedDecisionId: string | null;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Private binding of a non-admin Firebase Auth client account.
+ */
+export interface AssistantClientsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  clientId: string;
+  authUid: string;
+  active: boolean;
+  revision: number;
+  createdAt: string;
+  updatedAt: string;
+  updatedByUid: string;
+}
+
+/**
+ * Private expiring action and entity grant from an employee to one registered assistant client.
+ */
+export interface AssistantDelegationsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  delegationId: string;
+  actorUid: string;
+  clientId: string;
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  allowedActions: (
+    | "hosts.search"
+    | "hosts.get"
+    | "tasks.list"
+    | "opportunities.list"
+    | "fields.list"
+    | "receipts.get"
+    | "activities.log"
+    | "tasks.upsert"
+    | "opportunities.upsert"
+    | "fields.create"
+    | "fields.setValue"
+    | "evidence.propose"
+  )[];
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  organizerIds: string[];
+  /**
+   * @maxItems 50
+   */
+  fieldIds: string[];
+  expiresAt: string;
+  maxRequestsPerMinute: number;
+  maxRequestsPerDay: number;
+  revoked: boolean;
+  revision: number;
+  issuedByUid: string;
+  issuedAt: string;
+  revokedByUid?: string;
+  revokedAt?: string;
+}
+
+/**
+ * Transactional request counter for one delegated client or owner window.
+ */
+export interface AssistantGatewayBudgetsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  budgetId: string;
+  windowKind: "minute" | "day";
+  count: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable server-side result of one owner management request; keyed by issuer and request id hash.
+ */
+export interface AssistantManagementReceiptsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  issuerUid: string;
+  requestId: string;
+  action:
+    | "assistant.clients.set"
+    | "assistant.delegations.issue"
+    | "assistant.delegations.revoke";
+  targetId: string;
+  materialHash: string;
+  result: {
+    clientId?: string;
+    authUid?: string;
+    active?: boolean;
+    delegationId?: string;
+    actorUid?: string;
+    allowedActions?: string[];
+    organizerIds?: string[];
+    fieldIds?: string[];
+    expiresAt?: string;
+    revoked?: boolean;
+    revokedByUid?: string;
+    revokedAt?: string;
+    revision?: number;
+    updatedAt?: string;
+    issuedAt?: string;
+  };
+  createdAt: string;
+}
+
+/**
+ * Private organizer-linked Sales companion; no canonical ownership, payment, or publication authority.
+ */
+export interface OrganizerSalesAccountDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  revision: number;
+  researchStatus:
+    | "new"
+    | "needs_research"
+    | "ready_for_review"
+    | "qualified"
+    | "benchmark_only"
+    | "no_fit"
+    | "archived";
+  assignedOwnerUid: string | null;
+  summary: string | null;
+  nextAction: string | null;
+  suppressionStatus: "clear" | "held" | "suppressed";
+  suppressionReason: string | null;
+  suppressionAt: string | null;
+  suppressionBy: string | null;
+  duplicateReviewRequired: boolean;
+  qualificationPolicy: {
+    policyId: string;
+    version: string;
+    policyHash: string;
+  } | null;
+  name: string;
+  city: string | null;
+  market: string | null;
+  marketLabel: string | null;
+  /**
+   * @minItems 0
+   * @maxItems 30
+   */
+  eventTypes: string[];
+  /**
+   * @minItems 0
+   * @maxItems 30
+   */
+  cohortIds: string[];
+  /**
+   * @minItems 0
+   * @maxItems 40
+   */
+  searchTokens: string[];
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+  cohortMutationId?: string | "initial" | null;
+}
+
+/**
+ * Shared person identity only; organizer-specific endpoints and contactability live on relationships.
+ */
+export interface SalesContactDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  contactId: string;
+  displayName: string;
+  revision: number;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+/**
+ * Organizer-scoped role, endpoints, and human draft review. Draft review never grants send authority.
+ */
+export interface SalesContactRelationshipDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  relationshipId: string;
+  contactId: string;
+  organizerId: string;
+  revision: number;
+  role: string;
+  decisionInfluence: "unknown" | "decision_maker" | "influencer" | "operator";
+  primary: boolean;
+  contactabilityStatus: "unknown" | "draft_reviewed" | "held" | "suppressed";
+  contactabilityReason: string | null;
+  contactabilityAt: string | null;
+  contactabilityBy: string | null;
+  draftReviewEvidenceId: string | null;
+  sendAuthority: false;
+  /**
+   * @minItems 0
+   * @maxItems 3
+   */
+  endpoints: {
+    kind: "email" | "phone";
+    value: string;
+    verificationStatus: "unverified" | "verified";
+    evidenceId?: string | null;
+  }[];
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Reviewed source lineage for Sales claims; not provider consent or ownership verification.
+ */
+export interface SalesEvidenceDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  evidenceId: string;
+  organizerId: string;
+  contactId: string | null;
+  claimKey: "identity" | "recurrence" | "operation" | "stack" | "other";
+  signalId: string | null;
+  sourceType: "first_party" | "public_web" | "human_note" | "import_artifact";
+  sourceRef: string;
+  observedAt: string;
+  validThrough: string | null;
+  confidence: "high" | "medium" | "low";
+  normalizedValue: string | null;
+  excerpt: string | null;
+  reviewedAt: string;
+  reviewerUid: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+/**
+ * Human-owned follow-up; a task does not authorize contacting or sending.
+ */
+export interface SalesTaskDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  taskId: string;
+  organizerId: string;
+  contactId: string | null;
+  revision: number;
+  kind:
+    | "research"
+    | "reply"
+    | "follow_up"
+    | "demo"
+    | "pilot"
+    | "duplicate_review"
+    | "opt_out"
+    | "service_commitment";
+  title: string;
+  dueAt: string | null;
+  ownerUid: string;
+  status: "open" | "completed" | "cancelled";
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Private sales pipeline stage, independent of public organizer status.
+ */
+export interface SalesOpportunityDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  opportunityId: string;
+  organizerId: string;
+  revision: number;
+  motion: string;
+  stage:
+    | "new_enquiry"
+    | "ready_to_contact"
+    | "contacted"
+    | "in_conversation"
+    | "demo_arranged"
+    | "demo_completed"
+    | "pilot_agreed"
+    | "pilot_running"
+    | "commercial_discussion"
+    | "closed_won"
+    | "closed_lost";
+  ownerUid: string;
+  nextStep: string | null;
+  nextStepAt: string | null;
+  stageEnteredAt: string;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.
+ */
+export interface SalesActivityDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  activityId: string;
+  organizerId: string;
+  opportunityId: string | null;
+  type:
+    | "note"
+    | "reply"
+    | "call"
+    | "demo"
+    | "pilot"
+    | "correction"
+    | "outreach_sent_manual"
+    | "claim_requested"
+    | "claim_approved"
+    | "claim_rejected"
+    | "demo_started"
+    | "demo_completed";
+  channel: ("email" | "whatsapp" | "other") | null;
+  outcome: "actor_attested_sent" | null;
+  providerConfirmed: false;
+  occurredAt: string;
+  recordedAt: string;
+  note: string;
+  actorUid: string;
+  source?:
+    | {
+        kind: "organizer_claim";
+        claimRequestId: string;
+        transitionId: string;
+      }
+    | {
+        kind: "sales_demo";
+        sessionId: string;
+        blueprintId: string;
+        blueprintRevision: number;
+        invitationId: string;
+      };
+}
+
+/**
+ * Typed, namespaced private account field definition; never extends public organizer records.
+ */
+export interface SalesCustomFieldDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  fieldId: string;
+  label: string;
+  normalizedLabel: string;
+  type: "string" | "number" | "boolean" | "date" | "enum";
+  recordType: "account";
+  helpText: string | null;
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  enumOptions: string[];
+  revision: 1;
+  createdAt: string;
+  createdBy: string;
+}
+
+/**
+ * Typed value validated against its private field definition in the transaction.
+ */
+export interface SalesCustomFieldValueDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  fieldId: string;
+  value: string | number | boolean | null;
+  revision: number;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Actor- and scope-bound immutable idempotency receipt; result is bounded and never public.
+ */
+export interface SalesActionReceiptDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  requestId: string;
+  requestHash: string;
+  action:
+    | "hosts.create"
+    | "hosts.update"
+    | "tasks.upsert"
+    | "opportunities.upsert"
+    | "activities.log"
+    | "fields.create"
+    | "fields.setValue"
+    | "intents.link"
+    | "imports.apply"
+    | "contacts.upsert"
+    | "evidence.add"
+    | "accounts.setSuppression"
+    | "contacts.setContactability"
+    | "evidence.propose"
+    | "evidence.reviewProposal"
+    | "commercial.pilots.upsert"
+    | "commercial.quotes.revise"
+    | "commercial.quotes.approve"
+    | "commercial.quotes.accept"
+    | "commercial.finance.attest"
+    | "imports.compensation.apply"
+    | "imports.history.apply";
+  actorUid: string;
+  clientId: string | null;
+  clientAuthUid: string | null;
+  delegationId: string | null;
+  organizerId: string | null;
+  createdAt: string;
+  result: {
+    [k: string]:
+      | (
+          | (
+              | (string | number | boolean | null)
+              | (string | number | boolean | null)[]
+              | {
+                  [k: string]: string | number | boolean | null;
+                }
+            )
+          | (
+              | (string | number | boolean | null)
+              | (string | number | boolean | null)[]
+              | {
+                  [k: string]: string | number | boolean | null;
+                }
+            )[]
+          | {
+              [k: string]:
+                | (string | number | boolean | null)
+                | (string | number | boolean | null)[]
+                | {
+                    [k: string]: string | number | boolean | null;
+                  };
+            }
+        )
+      | (
+          | (
+              | (string | number | boolean | null)
+              | (string | number | boolean | null)[]
+              | {
+                  [k: string]: string | number | boolean | null;
+                }
+            )
+          | (
+              | (string | number | boolean | null)
+              | (string | number | boolean | null)[]
+              | {
+                  [k: string]: string | number | boolean | null;
+                }
+            )[]
+          | {
+              [k: string]:
+                | (string | number | boolean | null)
+                | (string | number | boolean | null)[]
+                | {
+                    [k: string]: string | number | boolean | null;
+                  };
+            }
+        )[]
+      | {
+          [k: string]:
+            | (
+                | (string | number | boolean | null)
+                | (string | number | boolean | null)[]
+                | {
+                    [k: string]: string | number | boolean | null;
+                  }
+              )
+            | (
+                | (string | number | boolean | null)
+                | (string | number | boolean | null)[]
+                | {
+                    [k: string]: string | number | boolean | null;
+                  }
+              )[]
+            | {
+                [k: string]:
+                  | (string | number | boolean | null)
+                  | (string | number | boolean | null)[]
+                  | {
+                      [k: string]: string | number | boolean | null;
+                    };
+              };
+        };
+  };
+}
+
+/**
+ * Reviewed 25-row maximum import receipt; row details live in a private subcollection.
+ */
+export interface SalesImportJobDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  importId: string;
+  sourceId: string;
+  contentHash: string;
+  mappingVersion: string;
+  previewHash: string;
+  rowCount: number;
+  counts: {
+    created: number;
+    matched: number;
+    duplicate: number;
+    unresolved: number;
+    rejected: number;
+  };
+  status: "applied";
+  createdAt: string;
+  createdBy: string;
+  /**
+   * @maxItems 25
+   */
+  accountEffects?: {
+    organizerId: string;
+    /**
+     * @minItems 1
+     * @maxItems 25
+     */
+    sourceRowIds: string[];
+    created: boolean;
+    revisionBefore: number | null;
+    revisionAfter: number;
+    /**
+     * @maxItems 30
+     */
+    cohortIdsBefore: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAfter: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAdded: string[];
+    cohortMutationIdBefore: string | "initial" | null;
+    cohortMutationIdAfter: string | "initial";
+    createdAccountHash: string | null;
+  }[];
+}
+
+/**
+ * Unique source-row lineage for successfully matched or created reviewed rows; rowKey is a source ID and row ID hash.
+ */
+export interface SalesImportRowDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  importId: string;
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  mappingVersion: string;
+  organizerId: string | null;
+  disposition: "created" | "matched" | "duplicate" | "unresolved" | "rejected";
+  reason: string;
+  originalScore: {
+    [k: string]: string | number | boolean | null;
+  } | null;
+  originalCells?:
+    | {
+        column: string;
+        value: string;
+      }[]
+    | null;
+  originalResearchStatus:
+    | "new"
+    | "needs_research"
+    | "ready_for_review"
+    | "qualified"
+    | "benchmark_only"
+    | "no_fit"
+    | "archived";
+  originalSummary: string | null;
+  importedAt: string;
+  importedBy: string;
+  /**
+   * @maxItems 30
+   */
+  cohortIds?: string[];
+}
+
+/**
+ * Immutable per-row review result for every row in a bounded import job.
+ */
+export interface SalesImportJobRowDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  importId: string;
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  mappingVersion: string;
+  organizerId: string | null;
+  disposition: "created" | "matched" | "duplicate" | "unresolved" | "rejected";
+  reason: string;
+  originalScore: {
+    [k: string]: string | number | boolean | null;
+  } | null;
+  originalCells?:
+    | {
+        column: string;
+        value: string;
+      }[]
+    | null;
+  originalResearchStatus:
+    | "new"
+    | "needs_research"
+    | "ready_for_review"
+    | "qualified"
+    | "benchmark_only"
+    | "no_fit"
+    | "archived";
+  originalSummary: string | null;
+  importedAt: string;
+  importedBy: string;
+  /**
+   * @maxItems 30
+   */
+  cohortIds?: string[];
+}
+
+/**
+ * Private runtime configuration; qualification rule values are not embedded in public source.
+ */
+export interface SalesSettingDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  status?: "active";
+  policyId?: string;
+  version?: string;
+  policyHash?: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  rules?: {
+    ruleId: string;
+    claimKey: "identity" | "recurrence" | "operation" | "stack" | "other";
+    /**
+     * @minItems 1
+     * @maxItems 4
+     */
+    sourceTypes: (
+      | "first_party"
+      | "public_web"
+      | "human_note"
+      | "import_artifact"
+    )[];
+    /**
+     * @minItems 1
+     * @maxItems 3
+     */
+    confidence: ("high" | "medium" | "low")[];
+    minimumCount: number;
+    distinctSignalIds: boolean;
+    distinctSourceRoots: boolean;
+    maxAgeDays: number | null;
+  }[];
+  /**
+   * @maxItems 50
+   */
+  normalizedLabels?: string[];
+  updatedAt?: string;
+}
+
+/**
+ * Append-only human decision. Contact draft review never means send permission.
+ */
+export interface SalesSuppressionDecisionDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  decisionId: string;
+  targetType: "account" | "contact_relationship";
+  organizerId: string;
+  contactId: string | null;
+  previousStatus:
+    | "clear"
+    | "unknown"
+    | "draft_reviewed"
+    | "held"
+    | "suppressed";
+  status: "clear" | "unknown" | "draft_reviewed" | "held" | "suppressed";
+  reason: string;
+  actorUid: string;
+  recordedAt: string;
+  accountRevision?: number;
+  relationshipRevision?: number;
+  evidenceId?: string | null;
+  sendAuthority?: false;
+}
+
+/**
+ * Private reviewed plan; only its preview object can reach an anonymous invitation view.
+ */
+export interface SalesDemoBlueprintsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  blueprintId: string;
+  revision: number;
+  state: "draft" | "reviewed" | "withdrawn";
+  organizerId: string | null;
+  candidateId: string | null;
+  opportunityId: string | null;
+  capability: "synthetic_forms_v1";
+  capabilityRevision: string;
+  evidenceRevision: string;
+  seedVersion: 1;
+  formCapabilityReview: {
+    questionTypes: "exact" | "manual" | "retained" | "unsupported";
+    branching: "exact" | "manual" | "retained" | "unsupported";
+    requiredFields: "exact" | "manual" | "retained" | "unsupported";
+    scoringApproval: "exact" | "manual" | "retained" | "unsupported";
+    uploads: "exact" | "manual" | "retained" | "unsupported";
+  };
+  /**
+   * @maxItems 30
+   */
+  fieldMappings: {
+    sourceField: string;
+    catchField: string | null;
+    disposition: "exact" | "manual" | "retained" | "unsupported";
+  }[];
+  preview: {
+    brandName: string;
+    headline: string;
+    scenario: string;
+    /**
+     * @minItems 3
+     * @maxItems 3
+     */
+    steps: string[];
+    /**
+     * @maxItems 8
+     */
+    retainedTools: string[];
+    /**
+     * @minItems 1
+     * @maxItems 8
+     */
+    limitations: string[];
+    cta: string;
+  };
+  reviewedByUid: string | null;
+  reviewedAt: string | null;
+  updatedAt: string;
+  updatedByUid: string;
+  setupPlan?:
+    | {
+        mode: "manual";
+        /**
+         * @minItems 1
+         * @maxItems 12
+         */
+        requirements: string[];
+      }
+    | {
+        mode: "template";
+        /**
+         * @maxItems 12
+         */
+        requirements: string[];
+        templateId: string;
+        title: string;
+        templateVersion: number;
+        templateHash: string;
+        materializerVersion: 1;
+      };
+}
+
+/**
+ * Trusted server-owned current eligibility for the synthetic Forms adapter; absence denies demos.
+ */
+export interface SalesDemoCapabilitiesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  capability: "synthetic_forms_v1";
+  revision: string;
+  evidenceRevision: string;
+  enabled: boolean;
+  reviewedByUid: string;
+  reviewedAt: string;
+}
+
+/**
+ * Private digest-only invitation. Contact endpoint is retained only as a keyed digest.
+ */
+export interface SalesDemoInvitationsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  invitationId: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  tokenDigest: string;
+  contactBinding: null | {
+    kind: "email" | "phone";
+    digest: string;
+  };
+  expiresAt: string;
+  revoked: boolean;
+  revision: number;
+  sessionCap: number;
+  sessionCount: number;
+  startReceiptCount: number;
+  startWindowMinute: number;
+  startWindowCount: number;
+  currentSessionId: null | string;
+  issuedByUid: string;
+  issuedAt: string;
+  revokedByUid?: string;
+  revokedAt?: string;
+}
+
+/**
+ * Immutable issuer-bound command result and material hash; trial receipts expire with their session.
+ */
+export interface SalesDemoReceiptsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  actorUid: string;
+  requestId: string;
+  action:
+    | "salesDemo.blueprint.save"
+    | "salesDemo.blueprint.review"
+    | "salesDemo.blueprint.withdraw"
+    | "salesDemo.invitation.issue"
+    | "salesDemo.invitation.revoke"
+    | "salesDemo.session.start"
+    | "salesDemo.session.reviewApplication"
+    | "salesDemo.session.prepareReply"
+    | "salesDemo.session.admitGuest"
+    | "salesDemo.session.requestAssistance";
+  targetId: string;
+  materialHash: string;
+  result: {
+    schemaVersion?: 1;
+    synthetic?: true;
+    blueprintId?: string;
+    blueprintRevision?: number;
+    invitationId?: string;
+    sessionId?: string;
+    revision?: number;
+    state?: "draft" | "reviewed" | "withdrawn";
+    reviewedAt?: string;
+    previewOnly?: boolean;
+    expiresAt?: string;
+    revoked?: boolean;
+    revokedAt?: string;
+    revokedByUid?: string;
+    createdAt?: string;
+    status?: "active" | "completed";
+    /**
+     * @maxItems 4
+     */
+    allowedActions?: (
+      | "reviewApplication"
+      | "prepareReply"
+      | "admitGuest"
+      | "requestAssistance"
+    )[];
+    actionCount?: number;
+    step?: "application" | "reply" | "admission" | "complete";
+    application?: {
+      applicantName: "Sample Applicant";
+      request: "Sample event application";
+      review: "pending" | "approved" | "needs_info";
+    };
+    reply?: {
+      status: "none" | "prepared";
+      template: "none" | "welcome" | "clarify";
+    };
+    guest?: {
+      status: "not_admitted" | "admitted";
+      displayName: "Sample Applicant";
+    };
+    assistanceRequested?: boolean;
+  };
+  createdAt: string;
+  expiresAt?: string;
+}
+
+/**
+ * Private current-fit projection. Only the source-bound, unexpired row may appear in a queue; this is never send authority.
+ */
+export interface SalesFitQueueEntryDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  policyId: string;
+  policyRevision: number;
+  policyVersion: string;
+  sourceHash: string;
+  accountRevision: number;
+  qualificationPolicyHash: string | null;
+  status: "complete" | "needs_research" | "review_required";
+  score: number | null;
+  priority: "high" | "medium" | "low" | "unranked";
+  eligibleForOutreachReview: boolean;
+  suppressionStatus: "clear" | "held" | "suppressed";
+  duplicateReviewRequired: boolean;
+  researchStatus:
+    | "new"
+    | "needs_research"
+    | "ready_for_review"
+    | "qualified"
+    | "benchmark_only"
+    | "no_fit"
+    | "archived";
+  name: string;
+  city: string | null;
+  assignedOwnerUid: string | null;
+  expiresAt: string | null;
+  evaluatedAt: string;
+  qualificationExpiresAt: string | null;
+}
+
+/**
+ * Private generation fence incremented atomically by every fit refresh and source invalidation.
+ */
+export interface SalesFitQueueMetaDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  metaId: "current";
+  generation: number;
+  updatedAt: string;
+}
+
+/**
+ * Private exact-retry receipt for one host fit projection refresh, not a durable claim of current rank.
+ */
+export interface SalesFitQueueReceiptDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  actorUid: string;
+  requestId: string;
+  materialHash: string;
+  result: AdminRefreshSalesFitQueueResponse;
+  createdAt: string;
+  qualificationPolicyHash: string | null;
+}
+
+/**
+ * Immutable private per-import per-organizer compensating effect; original job and lineage remain intact.
+ */
+export interface SalesImportCompensationDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  effectId: string;
+  importId: string;
+  organizerId: string;
+  mode: "archive_companion" | "remove_cohorts";
+  /**
+   * @minItems 1
+   * @maxItems 25
+   */
+  sourceRowIds: string[];
+  /**
+   * @maxItems 30
+   */
+  cohortIdsRemoved: string[];
+  beforeRevision: number;
+  afterRevision: number;
+  beforeCohortMutationId: string | "initial";
+  afterCohortMutationId: string;
+  reason: string;
+  createdAt: string;
+  createdBy: string;
+  requestId: string;
+}
+
+export interface SalesDemoSetupDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  setupId: string;
+  organizerId: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  setupHash: string;
+  formId: string;
+  createdByUid: string;
+  createdAt: string;
+}
+
+/**
+ * Isolated synthetic Forms practice state; no production guest, message, payment or membership references.
+ */
+export interface SalesDemoSessionsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  sessionId: string;
+  invitationId: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  actorUid: string;
+  createdAt: string;
+  expiresAt: string;
+  status: "active" | "completed";
+  /**
+   * @minItems 1
+   * @maxItems 4
+   */
+  allowedActions: (
+    | "reviewApplication"
+    | "prepareReply"
+    | "admitGuest"
+    | "requestAssistance"
+  )[];
+  revision: number;
+  actionCount: number;
+  step: "application" | "reply" | "admission" | "complete";
+  application: {
+    applicantName: "Sample Applicant";
+    request: "Sample event application";
+    review: "pending" | "approved" | "needs_info";
+  };
+  reply: {
+    status: "none" | "prepared";
+    template: "none" | "welcome" | "clarify";
+  };
+  guest: {
+    status: "not_admitted" | "admitted";
+    displayName: "Sample Applicant";
+  };
+  assistanceRequested: boolean;
+}
+
+/**
+ * Private suggestions, isolated from employee-reviewed evidence and qualification.
+ */
+export interface SalesEvidenceProposalsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  proposalId: string;
+  organizerId: string;
+  revision: number;
+  status: "pending" | "accepted" | "rejected";
+  evidence: {
+    organizerId: string;
+    contactId?: string | null;
+    claimKey: "identity" | "recurrence" | "operation" | "stack" | "other";
+    signalId?: string;
+    sourceType: "first_party" | "public_web" | "human_note" | "import_artifact";
+    sourceRef: string;
+    observedAt: string;
+    validThrough?: string | null;
+    confidence: "high" | "medium" | "low";
+    normalizedValue?: string | null;
+    excerpt?: string | null;
+  };
+  createdAt: string;
+  createdBy: string;
+  clientId: string | null;
+  clientAuthUid: string | null;
+  delegationId: string | null;
+  reviewedAt: string | null;
+  reviewerUid: string | null;
+  reviewReason: string | null;
+  promotedEvidenceId: string | null;
+}
+
+/**
+ * Private self-reported host submission, immutable at capture and linked only after identity review.
+ */
+export interface SalesInboundIntentsDocument {
+  schemaVersion: 1;
+  revision: number;
+  classification: "sales_private";
+  intentId: string;
+  source: "website";
+  submissionId: string;
+  requestHash: string;
+  waitlistId: string;
+  status: "needs_identity_review" | "linked" | "dismissed";
+  organizerId: string | null;
+  evidenceStatus: "self_reported";
+  fullName: string;
+  email: string;
+  city: string;
+  entryRoute: string | null;
+  alreadyJoined: boolean;
+  hostApplication: {
+    organizationName?: string | null;
+    organizationType?: string | null;
+    operatingCity?: string | null;
+    communityLink?: string | null;
+    /**
+     * @maxItems 10
+     */
+    formats?: string[];
+    eventCadence?: string | null;
+    nextEventName?: string | null;
+    nextEventDate?: string | null;
+    eventLocation?: string | null;
+    expectedCapacity?: string | null;
+    bookingPlatform?: string | null;
+    guestListFormat?: string | null;
+    priceRange?: string | null;
+    admissionModel?: string | null;
+    waitlistPlan?: string | null;
+    paymentReadiness?: string | null;
+    /**
+     * @maxItems 16
+     */
+    eventSuccessModules?: string[];
+    hostGoals?: string | null;
+    operatingNotes?: string | null;
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  linkedAt?: FirebaseFirestore.Timestamp;
+  linkedBy?: string;
+  linkRequestId?: string;
+}
+
+/**
+ * Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.
+ */
+export interface SalesIntelligenceAssessmentDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  assessmentId: string;
+  organizerId: string;
+  factorId: string;
+  revision: number;
+  state: "known" | "unknown" | "disputed";
+  value: number | null;
+  /**
+   * @maxItems 8
+   */
+  evidenceIds: string[];
+  reason: string | null;
+  reviewedAt: string;
+  reviewerUid: string;
+}
+
+/**
+ * Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.
+ */
+export interface SalesIntelligenceClauseDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  clauseId: string;
+  organizerId: string;
+  revision: number;
+  kind: "observation" | "capability" | "reference" | "cta";
+  text: string;
+  state: "draft" | "approved" | "withdrawn";
+  /**
+   * @maxItems 8
+   */
+  evidenceIds: string[];
+  validUntil: string;
+  permission: "not_required" | "private_mention" | "withdrawn";
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.
+ */
+export interface SalesIntelligencePolicyDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  policyRecordId: "current";
+  policyId: string;
+  revision: number;
+  version: string;
+  status: "active" | "paused";
+  /**
+   * @minItems 7
+   * @maxItems 7
+   */
+  factors: {
+    id: string;
+    weight: number;
+    /**
+     * @minItems 1
+     * @maxItems 5
+     */
+    claimKeys: ("identity" | "recurrence" | "operation" | "stack" | "other")[];
+    maxAgeDays: number;
+  }[];
+  priorityBands: {
+    high: number;
+    medium: number;
+  };
+  promptVersion: string;
+  playbookVersion: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
+ */
+export interface SalesIntelligenceReceiptDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  actorUid: string;
+  action:
+    | "policy.save"
+    | "assessment.save"
+    | "clause.save"
+    | "clause.review"
+    | "score.snapshot"
+    | "draft.record"
+    | "draft.review"
+    | "draft.copy";
+  requestId: string;
+  materialHash: string;
+  result: {
+    [k: string]: unknown;
+  };
+  createdAt: string;
+}
+
+/**
+ * Immutable reviewed-source fit snapshot. Unknown or disputed factors yield a null score and unranked priority.
+ */
+export interface SalesIntelligenceScoreSnapshotDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  snapshotId: string;
+  organizerId: string;
+  accountRevision: number;
+  policyId: string;
+  policyRevision: number;
+  policyVersion: string;
+  sourceHash: string;
+  status: "complete" | "needs_research" | "review_required";
+  score: number | null;
+  priority: "high" | "medium" | "low" | "unranked";
+  /**
+   * @minItems 7
+   * @maxItems 7
+   */
+  factors: {
+    factorId: string;
+    state: "known" | "unknown" | "disputed";
+    value: number | null;
+    /**
+     * @maxItems 8
+     */
+    evidenceIds: string[];
+    reason: string | null;
+  }[];
+  evaluatedAt: string;
+}
+
+/**
+ * Private Operations-rendered manual-copy-only draft with frozen source request and exact source hash.
+ */
+export interface SalesOutreachDraftsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  draftId: string;
+  organizerId: string;
+  contactId: string;
+  opportunityId: string;
+  sourceRequest: {
+    organizerId: string;
+    contactId: string;
+    opportunityId: string;
+    /**
+     * @maxItems 12
+     */
+    observationIds: string[];
+    /**
+     * @maxItems 12
+     */
+    capabilityIds: string[];
+    /**
+     * @maxItems 12
+     */
+    referenceIds: string[];
+    /**
+     * @maxItems 12
+     */
+    ctaIds: string[];
+    channel: "email" | "message";
+    purpose: "first_message" | "follow_up";
+    priorActivityId?: string;
+  };
+  sourceMaterialHash: string;
+  sourceHash: string;
+  inputHash: string;
+  draft: OutreachDraft;
+  status: "pending_review" | "approved";
+  createdAt: string;
+  createdBy: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
 }
 
 /**
