@@ -1,4 +1,4 @@
-import {createHash} from "crypto";
+import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument, OrganizerEventVenueDocument} from
@@ -17,7 +17,7 @@ import {eventSetupDefaultsDependencies} from
 import {assertPrivateEventBasicsEditable} from "./commitments";
 import {eventListingTermsPatch, preparePrivateListingTerms} from
   "./listingTerms";
-import {assertPrivacyReady, authorizeSetupManager, receiptFor,
+import {assertPrivacyReady, authorizeSetupManager, hashRequest, receiptFor,
   requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
 
@@ -50,11 +50,6 @@ function venueName(value: unknown): string {
   return name;
 }
 
-function requestHash(command: UpdatePrivateEventDetailsCommand): string {
-  return createHash("sha256").update(canonicalJson(["details", command]))
-    .digest("hex");
-}
-
 /** Saves optional private details on the same canonical events/{id} record. */
 export async function updatePrivateEventDetails(params: {
   actorUid: string;
@@ -73,7 +68,7 @@ export async function updatePrivateEventDetails(params: {
   const eventRef = db.collection("events").doc(command.eventId);
   const receiptRef = receiptFor(db, actorUid, command.organizerId,
     command.requestId);
-  const hash = requestHash(command);
+  const hash = hashRequest("details", command);
   return db.runTransaction(async (tx) => {
     const [organizerSnap, deletedSnap, eventSnap, defaultsSnap, receiptSnap] =
       await Promise.all([
@@ -106,6 +101,7 @@ export async function updatePrivateEventDetails(params: {
         setupRevision: receipt.appliedRevision,
         replayed: true};
     }
+    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     if (!validateEventDocument(event) ||
         event.publicationState !== "private" ||
         event.publicRegistrationEnabled !== false ||
