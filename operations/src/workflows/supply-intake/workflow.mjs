@@ -11,6 +11,12 @@ import {
   loadSupplyAcquisitionPolicy,
 } from "./acquisition.mjs";
 import {planDiscoveryQueries} from "./discovery-planner.mjs";
+import {
+  continueDiscoveryAfterReview,
+  readDiscoveryKnowledge,
+  recordDiscoveryCandidates,
+  recordDiscoveryCellReview,
+} from "./discovery-knowledge.mjs";
 import {loadSourceProfiles} from "./sources/index.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -86,18 +92,32 @@ export class SupplyIntakeWorkflow {
       "INVALID_FRESHNESS_STORE",
       "Supply Intake planning requires an Operations store."
     );
-    const [runs, workItems, inputSnapshots] = await Promise.all([
+    const [runs, workItems, inputSnapshots, discoveryKnowledge] = await Promise.all([
       store.listRuns(),
       store.listWorkItems(),
       typeof store.listSupplyInputSnapshots === "function" ?
         store.listSupplyInputSnapshots({market}) :
         [],
+      readDiscoveryKnowledge({store, market}),
     ]);
     return {
       freshnessHistory: {runs, workItems},
       inputSnapshot:
         inputSnapshots[0] ?? emptySupplyInputSnapshot(market),
+      discoveryKnowledge,
     };
+  }
+
+  async recordDiscoveryCandidates(options) {
+    return recordDiscoveryCandidates({store: this.store, ...options});
+  }
+
+  async continueDiscoveryAfterReview(options) {
+    return continueDiscoveryAfterReview({store: this.store, ...options});
+  }
+
+  async recordDiscoveryCellReview(options) {
+    return recordDiscoveryCellReview({store: this.store, ...options});
   }
 
   async createPlan({
@@ -107,6 +127,7 @@ export class SupplyIntakeWorkflow {
     intakeScope = "all",
     freshnessHistory = {runs: [], workItems: []},
     inputSnapshot = null,
+    discoveryKnowledge = null,
   }) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
@@ -138,6 +159,7 @@ export class SupplyIntakeWorkflow {
         market,
         organizerCandidates:
           loadedInput.organizerSearchCandidates,
+        discoveryKnowledge,
       }),
     ]);
     const organizerReviewPolicy = organizerReviewPolicySnapshot(
