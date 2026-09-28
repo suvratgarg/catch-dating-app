@@ -49,6 +49,7 @@ class _OrganizerMomentEditScreenState
   late bool _participantsSignedUp;
   late Set<OrganizerMomentRsvpState> _audienceRsvp;
   late bool _householdDedupe;
+  late bool _travelTimeLead;
   late bool _rsvpPendingOnly;
   late OrganizerMomentActionKind _actionKind;
   late OrganizerMomentAttentionSeverity _severity;
@@ -92,6 +93,7 @@ class _OrganizerMomentEditScreenState
         (moment?.audience.rsvp ?? const [OrganizerMomentRsvpState.attending])
             .toSet();
     _householdDedupe = moment?.audience.householdDedupe ?? true;
+    _travelTimeLead = moment?.audience.travelTimeLead ?? false;
     _rsvpPendingOnly = moment?.audience.rsvpPendingOnly ?? false;
     _audienceDuty = TextEditingController(text: moment?.audience.duty ?? '');
     _audienceScopeIds = TextEditingController(
@@ -397,6 +399,17 @@ class _OrganizerMomentEditScreenState
                             ? null
                             : (v) => setState(() => _householdDedupe = v),
                       ),
+                      CatchField.toggle(
+                        copy: catchFieldCopy(l),
+                        key: const ValueKey('moment-audience-travel-lead'),
+                        title: l.hostMomentTravelTimeLead,
+                        contract: CatchContractConstraints
+                            .upsertOrganizerMomentCallablePayloadAudienceTravelTimeLead,
+                        value: _travelTimeLead,
+                        onChanged: _busy
+                            ? null
+                            : (v) => setState(() => _travelTimeLead = v),
+                      ),
                     ],
                     if (_audienceKind == OrganizerMomentAudienceKind.households)
                       CatchField.toggle(
@@ -633,6 +646,7 @@ class _OrganizerMomentEditScreenState
       functionId: _requiredId(_audienceFunctionId),
       rsvp: _audienceRsvp.toList(growable: false),
       householdDedupe: _householdDedupe,
+      travelTimeLead: _travelTimeLead,
     ),
     OrganizerMomentAudienceKind.households => OrganizerMomentAudience(
       kind: OrganizerMomentAudienceKind.households,

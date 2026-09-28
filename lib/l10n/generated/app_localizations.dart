@@ -26863,6 +26863,12 @@ abstract class AppLocalizations {
   /// **'Title template'**
   String get hostMomentTitleTemplate;
 
+  /// Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift send time by hotel distance'**
+  String get hostMomentTravelTimeLead;
+
   /// Moment editor save action label.
   ///
   /// In en, this message translates to:
@@ -37065,6 +37071,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New group'**
   String get programsGuestsGroupNew;
+
+  /// Opens the existing program group editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get programsGuestsGroupEdit;
+
+  /// Optional program hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel for this group'**
+  String get programsGuestsGroupHotel;
+
+  /// Cleared optional hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotel assigned'**
+  String get programsGuestsGroupNoHotel;
+
+  /// Hotel linked to a program guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Staying at {hotel}'**
+  String programsGuestsGroupHotelSummary({required String hotel});
+
+  /// The previously linked program hotel is missing from the current catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously linked hotel is unavailable'**
+  String get programsGuestsHotelUnavailable;
+
+  /// Explains that a new group can be saved before program hotels exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels are available for this program yet. You can save the group without one.'**
+  String get programsGuestsNoHotelsAvailable;
 
   /// Program workspace copy: programsGuestsGroupLabel.
   ///

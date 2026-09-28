@@ -16985,6 +16985,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMomentTitleTemplate => 'Title template';
 
   @override
+  String get hostMomentTravelTimeLead => 'Shift send time by hotel distance';
+
+  @override
   String get hostMomentSave => 'Save moment';
 
   @override
@@ -23024,6 +23027,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsGuestsGroupNew => 'New group';
+
+  @override
+  String get programsGuestsGroupEdit => 'Edit group';
+
+  @override
+  String get programsGuestsGroupHotel => 'Hotel for this group';
+
+  @override
+  String get programsGuestsGroupNoHotel => 'No hotel assigned';
+
+  @override
+  String programsGuestsGroupHotelSummary({required String hotel}) {
+    return 'Staying at $hotel';
+  }
+
+  @override
+  String get programsGuestsHotelUnavailable =>
+      'Previously linked hotel is unavailable';
+
+  @override
+  String get programsGuestsNoHotelsAvailable =>
+      'No hotels are available for this program yet. You can save the group without one.';
 
   @override
   String get programsGuestsGroupLabel => 'Group label';

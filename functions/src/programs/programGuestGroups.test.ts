@@ -15,7 +15,7 @@ import {validateProgramGuestGroupDocument} from
 
 const group = (patch: Partial<FakeData> = {}): FakeData => ({
   programId: "program-1", organizerId: "org-1", label: "Groom side",
-  dimension: "side", sortOrder: 0, memberCount: 0,
+  dimension: "side", sortOrder: 0, memberCount: 0, hotelId: null,
   createdAt: now, updatedAt: now, revision: 1, ...patch,
 });
 const seed = () => ({...baseSeed(),
@@ -140,6 +140,58 @@ test("guest lists embed the referenced group labels", async () => {
   assert.deepEqual(guest.groupIds, ["side-a", "deleted-group"]);
   assert.deepEqual(response.groups.map((g) => g.groupId), ["side-a"]);
   assert.equal(response.groups[0].label, "Groom side");
+});
+
+test("groups pin a hotel, clear it, and preserve it when omitted",
+  async () => {
+    const db = new FakeFirestore(seed());
+    // Omitted on create defaults to null; set links a program hotel.
+    const created = await upsertProgramGuestGroupHandler(request({
+      programId: "program-1", label: "Family", dimension: "relation"},
+    "manager-1"), deps(db));
+    assert.equal(groupDoc(db, created.entityId).hotelId, null);
+    let current = groupDoc(db, created.entityId).revision as number;
+    await upsertProgramGuestGroupHandler(request({
+      programId: "program-1", groupId: created.entityId, label: "Family",
+      dimension: "relation", expectedRevision: current,
+      hotelId: "hotel-1"}, "manager-1"), deps(db));
+    assert.equal(groupDoc(db, created.entityId).hotelId, "hotel-1");
+    // Omitted on update preserves the link.
+    current = groupDoc(db, created.entityId).revision as number;
+    await upsertProgramGuestGroupHandler(request({
+      programId: "program-1", groupId: created.entityId, label: "Family",
+      dimension: "relation", expectedRevision: current, sortOrder: 2},
+    "manager-1"), deps(db));
+    assert.equal(groupDoc(db, created.entityId).hotelId, "hotel-1");
+    // Explicit null clears it.
+    current = groupDoc(db, created.entityId).revision as number;
+    await upsertProgramGuestGroupHandler(request({
+      programId: "program-1", groupId: created.entityId, label: "Family",
+      dimension: "relation", expectedRevision: current, hotelId: null},
+    "manager-1"), deps(db));
+    assert.equal(groupDoc(db, created.entityId).hotelId, null);
+    assertGroupContracts(db);
+  });
+
+test("group hotel links must live inside the same program", async () => {
+  const db = new FakeFirestore(seed());
+  await assert.rejects(groupEdit(db, {hotelId: "missing"}),
+    /Hotel not found/);
+  db.updateDoc("programHotels/hotel-1",
+    {programId: "program-2", organizerId: "org-2"});
+  await assert.rejects(groupEdit(db, {hotelId: "hotel-1"}),
+    /Hotel not found/);
+});
+
+test("group lists project the hotel link", async () => {
+  const db = new FakeFirestore(seed());
+  db.updateDoc("programGuestGroups/side-a", {hotelId: "hotel-1"});
+  const list = await listProgramGuestGroupsHandler(request({
+    programId: "program-1"}, "manager-1"), deps(db));
+  assert.equal(
+    list.groups.find((g) => g.groupId === "side-a")!.hotelId, "hotel-1");
+  assert.equal(
+    list.groups.find((g) => g.groupId === "company-b")!.hotelId, null);
 });
 
 test("program groups reject staff without the coordinator duty", async () => {

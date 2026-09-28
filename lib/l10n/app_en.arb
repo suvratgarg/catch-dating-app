@@ -23585,6 +23585,13 @@
     "x-surface": "hosts.events.presentation.moments",
     "x-max-chars": 32
   },
+  "hostMomentTravelTimeLead": "Shift send time by hotel distance",
+  "@hostMomentTravelTimeLead": {
+    "description": "Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
   "hostMomentSave": "Save moment",
   "@hostMomentSave": {
     "description": "Moment editor save action label.",
@@ -29889,6 +29896,18 @@
   "@programsGuestsGroupsEmpty": {"description": "Program workspace copy: programsGuestsGroupsEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupNew": "New group",
   "@programsGuestsGroupNew": {"description": "Program workspace copy: programsGuestsGroupNew.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsGuestsGroupEdit": "Edit group",
+  "@programsGuestsGroupEdit": {"description": "Opens the existing program group editor.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsGuestsGroupHotel": "Hotel for this group",
+  "@programsGuestsGroupHotel": {"description": "Optional program hotel association for a guest group.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsGuestsGroupNoHotel": "No hotel assigned",
+  "@programsGuestsGroupNoHotel": {"description": "Cleared optional hotel association for a guest group.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsGuestsGroupHotelSummary": "Staying at {hotel}",
+  "@programsGuestsGroupHotelSummary": {"description": "Hotel linked to a program guest group.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"hotel": {"type": "String"}}},
+  "programsGuestsHotelUnavailable": "Previously linked hotel is unavailable",
+  "@programsGuestsHotelUnavailable": {"description": "The previously linked program hotel is missing from the current catalog.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsGuestsNoHotelsAvailable": "No hotels are available for this program yet. You can save the group without one.",
+  "@programsGuestsNoHotelsAvailable": {"description": "Explains that a new group can be saved before program hotels exist.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupLabel": "Group label",
   "@programsGuestsGroupLabel": {"description": "Program workspace copy: programsGuestsGroupLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGroupDimension": "Dimension",
