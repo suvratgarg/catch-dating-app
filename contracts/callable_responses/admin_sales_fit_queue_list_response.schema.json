@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_fit_queue_list_response.schema.json",
+  "title": "AdminListSalesFitQueueResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rows", "nextCursor", "generation", "policyRevision", "qualificationPolicyHash", "omittedExpiredInPage"],
+  "properties": {
+    "rows": {"type": "array", "maxItems": 25, "items": {"$ref": "../firestore/sales_fit_queue_entries.schema.json"}},
+    "nextCursor": {"type": ["string", "null"], "maxLength": 600},
+    "generation": {"type": "integer", "minimum": 0},
+    "policyRevision": {"type": "integer", "minimum": 1},
+    "qualificationPolicyHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "omittedExpiredInPage": {"type": "integer", "minimum": 0, "maximum": 100}
+  },
+  "x-callable-aliases": ["adminListSalesFitQueue"]
+}
