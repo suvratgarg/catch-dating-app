@@ -6,6 +6,7 @@ import {dataMode} from "../../../shared/api/dataMode";
 import type {SalesWorkspaceController} from "../controllers/useSalesWorkspaceController";
 import type {SalesImportPacket, SalesImportPreview} from "../api/salesTypes";
 import {parseSalesCsv, salesImportPacket, type SalesCsvMapping} from "./salesCsv";
+import {renderSalesImportCompensation} from "./SalesImportCompensationPanel";
 
 const unset: SalesCsvMapping = {organizerId: -1, name: -1, researchStatus: -1,
   summary: -1};
@@ -19,7 +20,9 @@ function guessMapping(headers: string[]): SalesCsvMapping {
     summary: find(["summary", "notes"])};
 }
 
-export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceController}) {
+export function SalesImportWorkspace({controller, isAdminOwner = false}: {
+  controller: SalesWorkspaceController; isAdminOwner?: boolean;
+}) {
   const [rows, setRows] = useState<string[][]>([]);
   const [fileName, setFileName] = useState("");
   const [sourceId, setSourceId] = useState("");
@@ -89,7 +92,7 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
   const mapField = (key: keyof SalesCsvMapping, value: string) => {
     setMapping((current) => ({...current, [key]: Number(value)})); clearPreview();
   };
-  return <Panel title="Reviewed CSV import" icon={<ClipboardList size={18} />}>
+  return <><Panel title="Reviewed CSV import" icon={<ClipboardList size={18} />}>
     <p>Upload a private CSV, map its columns, and review each 25-row batch before
       applying. Unresolved identities stay unresolved; the preview makes no changes.</p>
     {dataMode() === "sample" ? <EmptyState>Imports require a live employee workspace.
@@ -155,5 +158,5 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
         </AdminForm>
       </> : null}
     </>}
-  </Panel>;
+  </Panel>{isAdminOwner ? renderSalesImportCompensation(controller) : null}</>;
 }

@@ -10,6 +10,7 @@ import {
   updateSalesAccount,
   upsertSalesOpportunity, upsertSalesTask,
   addSalesEvidence, applySalesImport, listSalesContacts, listSalesEvidence,
+  applySalesImportCompensation, previewSalesImportCompensation,
   previewSalesImport, setSalesAccountSuppression, setSalesContactability,
   upsertSalesContact, listSalesEvidenceProposals, reviewSalesEvidenceProposal,
 } from "../api/salesRepository";
@@ -22,6 +23,7 @@ import type {
   SalesUpsertOpportunityInput,
   SalesUpsertTaskInput,
   SalesContactInput, SalesEvidenceInput, SalesImportPacket, SalesImportPreview,
+  SalesImportCompensationInput, SalesImportCompensationPreview,
   SalesSetAccountSuppressionInput, SalesSetContactabilityInput,
   SalesReviewEvidenceProposalInput,
 } from "../api/salesTypes";
@@ -206,6 +208,10 @@ export function useSalesWorkspaceController({
   const contactabilityMutation = useMutation({mutationFn: setSalesContactability});
   const importPreviewMutation = useMutation({mutationFn: previewSalesImport});
   const importApplyMutation = useMutation({mutationFn: applySalesImport});
+  const compensationPreviewMutation = useMutation({
+    mutationFn: previewSalesImportCompensation});
+  const compensationApplyMutation = useMutation({
+    mutationFn: applySalesImportCompensation});
 
   const invalidate = useCallback(async () => {
     await Promise.all([
@@ -360,6 +366,23 @@ export function useSalesWorkspaceController({
     execute("import", {packet, previewHash}, (requestId) =>
       importApplyMutation.mutateAsync({...packet, previewHash, requestId}),
     "Reviewed import applied."), [execute, importApplyMutation]);
+  const previewCompensation = useCallback(async (
+    input: SalesImportCompensationInput
+  ): Promise<SalesImportCompensationPreview | null> => {
+    onError(null);
+    try {
+      return await compensationPreviewMutation.mutateAsync(input);
+    } catch (error) {
+      onError(salesErrorMessage(error));
+      return null;
+    }
+  }, [compensationPreviewMutation, onError]);
+  const applyCompensation = useCallback((
+    input: SalesImportCompensationInput & {previewHash: string; reason: string}
+  ) => execute("import-compensation", input, (requestId) =>
+    compensationApplyMutation.mutateAsync({...input, requestId}),
+  "Reviewed import correction recorded. Refresh the account before new work."),
+  [execute, compensationApplyMutation]);
 
   const setAccountFilters = useCallback((next: {
     query?: string; researchStatus?: "all" | SalesResearchStatus; ownerUid?: string;
@@ -464,13 +487,16 @@ export function useSalesWorkspaceController({
     addCustomField, saveCustomValue,
     saveContact, saveEvidence, saveAccountSuppression, saveContactability,
     previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
+    previewCompensation, applyCompensation,
+    compensationPreviewPending: compensationPreviewMutation.isPending,
     isSaving: proposalMutation.isPending || accountMutation.isPending || createAccountMutation.isPending ||
       taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
       inboundLinkMutation.isPending || createCustomFieldMutation.isPending ||
       setCustomValueMutation.isPending || contactMutation.isPending ||
       evidenceMutation.isPending || accountSuppressionMutation.isPending ||
-      contactabilityMutation.isPending || importApplyMutation.isPending,
+      contactabilityMutation.isPending || importApplyMutation.isPending ||
+      compensationApplyMutation.isPending,
   };
 }
 

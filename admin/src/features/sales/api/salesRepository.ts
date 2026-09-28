@@ -17,6 +17,8 @@ import type {
   SalesUpsertOpportunityInput, SalesUpsertTaskInput,
   SalesContact, SalesContactInput, SalesEvidence, SalesEvidenceInput,
   SalesImportPacket, SalesImportPreview, SalesSetAccountSuppressionInput,
+  SalesImportCompensationInput, SalesImportCompensationPreview,
+  SalesImportCompensationResult,
   SalesSetContactabilityInput, SalesEvidenceProposal, SalesReviewEvidenceProposalInput,
 } from "./salesTypes";
 
@@ -459,6 +461,25 @@ export async function applySalesImport(input: SalesImportPacket & {
   counts: Record<string, number>; effectsApplied: true; receipt: MutationReceipt}> {
   if (dataMode() !== "sample") return call("adminApplySalesImport", input);
   throw new Error("Reviewed imports require a live employee workspace.");
+}
+
+export async function previewSalesImportCompensation(
+  input: SalesImportCompensationInput
+): Promise<SalesImportCompensationPreview> {
+  if (dataMode() !== "sample") {
+    return call("adminPreviewSalesImportCompensation", input);
+  }
+  throw new Error("Compensation requires a live Admin Owner workspace.");
+}
+
+export async function applySalesImportCompensation(
+  input: SalesImportCompensationInput & {requestId: string;
+    previewHash: string; reason: string}
+): Promise<SalesImportCompensationResult> {
+  if (dataMode() !== "sample") {
+    return call("adminApplySalesImportCompensation", input);
+  }
+  throw new Error("Compensation requires a live Admin Owner workspace.");
 }
 
 export async function listSalesEvidenceProposals(organizerId: string, cursor?: string):

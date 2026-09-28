@@ -165,6 +165,30 @@ export interface SalesImportPreview {
   effectsApplied: false;
 }
 
+export interface SalesImportCompensationInput {
+  importId: string;
+  organizerId: string;
+}
+
+export interface SalesImportCompensationPreview extends
+  SalesImportCompensationInput {
+  mode: "archive_companion" | "remove_cohorts" | "blocked";
+  blockers: string[];
+  accountRevision: number | null;
+  cohortIdsRemoved: string[];
+  previewHash: string;
+  alreadyCompensated: boolean;
+}
+
+export interface SalesImportCompensationResult extends
+  SalesImportCompensationInput {
+  status: "compensated" | "already_compensated";
+  mode?: "archive_companion" | "remove_cohorts";
+  cohortIdsRemoved?: string[];
+  accountRevision?: number;
+  receipt: {requestId: string; revision: number | null};
+}
+
 export interface SalesCustomFieldDefinition {
   fieldId: string;
   label: string;

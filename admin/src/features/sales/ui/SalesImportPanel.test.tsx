@@ -13,6 +13,7 @@ it("discards a late preview when the operator changes the import", async () => {
   const controller = {isSaving: false, importPreviewPending: false,
     previewImport: vi.fn(() => response), applyImport: vi.fn()};
   render(<SalesImportWorkspace controller={controller as unknown as SalesWorkspaceController} />);
+  expect(screen.queryByLabelText("Applied import ID")).toBeNull();
   const csv = "name,status\nExample Host,Needs research\n";
   const bytes = new TextEncoder().encode(csv);
   const file = new File([csv], "example.csv", {type: "text/csv"});
