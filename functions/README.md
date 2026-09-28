@@ -10,7 +10,7 @@ Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
 Per-function overrides can be added to individual `onCall` / `onDocumentCreated`
 options when specific functions need higher or lower limits.
 
-## Function inventory (August 2026)
+## Function inventory
 
 ### Callable (client-invoked)
 
@@ -30,6 +30,8 @@ options when specific functions need higher or lower limits.
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
+| `configureEventRegistration` / `managePublicEventCheckout` | `src/events/publicRegistration/callables.ts` | Explicit manager registration settings and phone-authorized public paid checkout; frozen terms, seat holds, admission, cancellation and recovery |
+| `setEventPublication` / `reconcilePrivateEventSeats` | `src/events/progressiveSetup/callables.ts` | Manager-only revision-fenced publish/unpublish and bounded reviewed seat reconciliation with exact-command retry/discard |
 | `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
 | `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
 | `createClub` | `src/clubs/` | Create a club and follow it as host |
@@ -104,6 +106,8 @@ options when specific functions need higher or lower limits.
 | `prepareEventOfferInvitation` / `manageEventOfferCheckout` | `src/organizerEventOfferRecipients/recipientCallables.ts` | Guarded manager invitation and OTP recipient claim, owned attempt discovery, checkout and status; same source activation boundary as event offers |
 | `reconcileOrganizerEventOfferPayments` | `src/payments/offerPayments/offerPaymentRecovery.ts` | Release expired offer checkout holds independently of provider health, recover frozen Route/OAuth orders, atomically admit verified captures or refund failed fulfillment |
 | `onCancelledEventOfferPayments` | `src/payments/offerPayments/offerPaymentCancellationTrigger.ts` | Page all paid admissions after host event cancellation, atomically cancel roster attribution and queue full refunds; preserve settlement leases and explicit review failures |
+| `reconcilePublicEventPayments` / `onCancelledPublicEventPayments` | `src/events/publicRegistration/recovery.ts` | Recover public checkout, release expired holds, admit verified capture, settle completed events and queue host-cancellation refunds |
+| `onCancelledNativeEventRefunds` / `onNativeCancellationRefund` / `recoverNativeCancellationRefunds` | `src/payments/legacyRefunds/recovery.ts` | Stage cancelled-event and late-capture native refunds, recover exact provider attempts and preserve explicit historical/authority review states |
 | `getPublicOrganizerForm` / `beginOrganizerFormResponse` / `saveOrganizerFormResponseDraft` / `submitOrganizerFormResponse` / `withdrawOrganizerFormResponse` | `src/organizers/organizerForms.ts` | Resolve bounded public form versions and run app-free, revisioned, idempotent respondent draft, submit, and withdrawal workflows |
 | `getEventChatAccess` / `updateEventChatAccess` | `src/chats/eventChatAccess.ts` | Current admission-based room access, explicit join/leave, mute, Host schedule/mode/close/archive; no roster or profile sharing grant |
 | `manageEventChatMember` | `src/chats/manageEventChatMember.ts` | Manager-only revisioned remove/ban/reinstate; reinstatement requires current admission and never auto-joins |
