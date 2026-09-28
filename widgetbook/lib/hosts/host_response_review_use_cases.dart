@@ -7,6 +7,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
 import 'host_form_workspace_use_cases.dart';
 
 final responseReviewPreview = HostResponseReviewDetail(
@@ -199,3 +200,12 @@ Widget responseReviewMetadataPreview(BuildContext context) =>
         ),
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Private review note disclosure',
+  type: HostResponseReviewNoteField,
+  path: '[P1 product surfaces]/Host operations/Response review',
+)
+Widget responseReviewNotePreview(BuildContext context) => ProviderScope(
+  child: ResponseReviewPreviewFrame(value: responseReviewPreview),
+);

@@ -8,7 +8,10 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
@@ -482,4 +485,87 @@ class _FormTargetPreviewUser implements User {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+@widgetbook.UseCase(
+  name: 'Private listing and admission terms',
+  type: HostPrivateEventListingSection,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget privateEventListingPreview(BuildContext context) =>
+    privateEventDetailsScreenPreview(context);
+
+@widgetbook.UseCase(
+  name: 'Listing requirements before publishing',
+  type: EventPublicationScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget eventPublicationPrivatePreview(BuildContext context) =>
+    const _PublicationPreview(published: false);
+
+@widgetbook.UseCase(
+  name: 'Published listing controls',
+  type: EventPublicationScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget eventPublicationPublishedPreview(BuildContext context) =>
+    const _PublicationPreview(published: true);
+
+class _PublicationPreview extends StatefulWidget {
+  const _PublicationPreview({required this.published});
+  final bool published;
+  @override
+  State<_PublicationPreview> createState() => _PublicationPreviewState();
+}
+
+class _PublicationPreviewState extends State<_PublicationPreview> {
+  late final EventPublicationController controller = EventPublicationController(
+    userId: 'preview-host',
+    organizerId: 'preview-club',
+    eventId: 'preview-event',
+    currentUserId: () => 'preview-host',
+    read: ({required organizerId, required eventId}) async => event,
+    write: (_) async => throw StateError('Preview does not change publication'),
+  )..event = event;
+
+  PrivateEventBasicSummary get event => PrivateEventBasicSummary(
+    eventId: 'preview-event',
+    organizerId: 'preview-club',
+    setupRevision: 1,
+    name: 'Saturday mixer',
+    city: const EventSetupCity(
+      cityId: 'in-mh-mumbai',
+      marketId: 'in-mh-mumbai',
+    ),
+    localDate: '2026-10-03',
+    localStartTime: '19:00',
+    timezone: 'Asia/Kolkata',
+    startTimeMillis: 1791043800000,
+    status: 'active',
+    setupDefaults: const {},
+    detailsConfigured: widget.published,
+    eventPreferences: null,
+    publicationState: widget.published ? 'published' : 'private',
+    publicationReadiness: EventPublicationReadiness(
+      canPublish: widget.published,
+      missing: widget.published
+          ? const []
+          : const ['venue', 'description', 'admissionTerms'],
+    ),
+  );
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => WidgetbookHostDeviceFrame(
+    child: EventPublicationScreen(
+      controller: controller,
+      onBack: () => Navigator.of(context).maybePop(),
+      onEditDetails: widget.published ? null : () {},
+    ),
+  );
 }

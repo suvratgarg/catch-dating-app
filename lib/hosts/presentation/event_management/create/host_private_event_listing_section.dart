@@ -13,16 +13,17 @@ import 'package:flutter/material.dart';
 
 /// Listing fields on the existing private-event editor. Local terms stay a
 /// draft until saved together; setting a price does not open registration.
-class PrivateEventListingFields extends StatefulWidget {
-  const PrivateEventListingFields({super.key, required this.controller});
+class HostPrivateEventListingSection extends StatefulWidget {
+  const HostPrivateEventListingSection({super.key, required this.controller});
   final PrivateEventDetailsController controller;
 
   @override
-  State<PrivateEventListingFields> createState() =>
-      _PrivateEventListingFieldsState();
+  State<HostPrivateEventListingSection> createState() =>
+      _HostPrivateEventListingSectionState();
 }
 
-class _PrivateEventListingFieldsState extends State<PrivateEventListingFields> {
+class _HostPrivateEventListingSectionState
+    extends State<HostPrivateEventListingSection> {
   late String _capacity;
   late String _price;
   late String _currency;
@@ -37,7 +38,7 @@ class _PrivateEventListingFieldsState extends State<PrivateEventListingFields> {
   }
 
   @override
-  void didUpdateWidget(covariant PrivateEventListingFields oldWidget) {
+  void didUpdateWidget(covariant HostPrivateEventListingSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     final incoming = widget.controller.event!.eventDetails.admissionTerms
         ?.toJson()

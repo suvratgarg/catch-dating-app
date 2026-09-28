@@ -276,7 +276,7 @@ class HostResponseDetailSection extends ConsumerWidget {
         ],
         if (value.canReview) ...[
           gapH24,
-          _ResponseReviewNoteEditor(
+          HostResponseReviewNoteField(
             key: ValueKey('review-note-${application!.applicationId}'),
             application: application,
             controller: note,
@@ -561,8 +561,8 @@ class HostResponsePrimaryAction extends StatelessWidget {
 
 /// Uses the shared explicit-save field so actions participate in its reveal,
 /// keyboard focus and cancellation behavior rather than floating below it.
-class _ResponseReviewNoteEditor extends StatefulWidget {
-  const _ResponseReviewNoteEditor({
+class HostResponseReviewNoteField extends StatefulWidget {
+  const HostResponseReviewNoteField({
     super.key,
     required this.application,
     required this.controller,
@@ -576,14 +576,15 @@ class _ResponseReviewNoteEditor extends StatefulWidget {
   final bool saving;
   final Future<void> Function() onSave;
   @override
-  State<_ResponseReviewNoteEditor> createState() =>
-      _ResponseReviewNoteEditorState();
+  State<HostResponseReviewNoteField> createState() =>
+      _HostResponseReviewNoteFieldState();
 }
 
-class _ResponseReviewNoteEditorState extends State<_ResponseReviewNoteEditor> {
+class _HostResponseReviewNoteFieldState
+    extends State<HostResponseReviewNoteField> {
   bool _open = false;
   @override
-  void didUpdateWidget(covariant _ResponseReviewNoteEditor oldWidget) {
+  void didUpdateWidget(covariant HostResponseReviewNoteField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.application.revision != oldWidget.application.revision &&
         widget.controller.text.trim() ==

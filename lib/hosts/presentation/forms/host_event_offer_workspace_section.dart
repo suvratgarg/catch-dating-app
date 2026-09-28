@@ -264,9 +264,13 @@ class _HostEventOfferWorkspaceSectionState
         selected == null &&
         _controller.draft != null) {
       return HostEventOfferReviewSection(
-        layoutBuilder: (body, action) => _OfferWorkspaceFrame(
+        layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
           layoutBuilder: widget.layoutBuilder,
-          body: _OfferWorkspaceBody(_controller, widget, review: body),
+          body: HostEventOfferWorkspaceContentSection(
+            _controller,
+            widget,
+            review: body,
+          ),
           action: action,
         ),
         controller: widget.offerController,
@@ -300,9 +304,13 @@ class _HostEventOfferWorkspaceSectionState
           'personalRequest',
         }.contains(selected.paymentSnapshot!.collectionMode)) {
       return HostManualPaymentReviewSection(
-        layoutBuilder: (body, action) => _OfferWorkspaceFrame(
+        layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
           layoutBuilder: widget.layoutBuilder,
-          body: _OfferWorkspaceBody(_controller, widget, manual: body),
+          body: HostEventOfferWorkspaceContentSection(
+            _controller,
+            widget,
+            manual: body,
+          ),
           action: action,
         ),
         key: ValueKey(
@@ -323,9 +331,9 @@ class _HostEventOfferWorkspaceSectionState
         _controller.personalMode &&
         _controller.missingContacts.isEmpty &&
         _controller.configuration?.suggestedExpiresAt != null;
-    return _OfferWorkspaceFrame(
+    return HostEventOfferWorkspaceLayout(
       layoutBuilder: widget.layoutBuilder,
-      body: _OfferWorkspaceBody(_controller, widget),
+      body: HostEventOfferWorkspaceContentSection(_controller, widget),
       action: personal
           ? CatchDockSurface.pageAction(
               label: copy.review.preview,
@@ -338,8 +346,9 @@ class _HostEventOfferWorkspaceSectionState
   }
 }
 
-class _OfferWorkspaceFrame extends StatelessWidget {
-  const _OfferWorkspaceFrame({
+class HostEventOfferWorkspaceLayout extends StatelessWidget {
+  const HostEventOfferWorkspaceLayout({
+    super.key,
     required this.layoutBuilder,
     required this.body,
     this.action,
@@ -357,10 +366,11 @@ class _OfferWorkspaceFrame extends StatelessWidget {
 }
 
 /// Pure content composition; the parent owns controller lifetime and listeners.
-class _OfferWorkspaceBody extends StatelessWidget {
-  const _OfferWorkspaceBody(
+class HostEventOfferWorkspaceContentSection extends StatelessWidget {
+  const HostEventOfferWorkspaceContentSection(
     this.controller,
     this.workspace, {
+    super.key,
     this.review,
     this.manual,
   });

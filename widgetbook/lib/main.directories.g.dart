@@ -10096,6 +10096,23 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventPublicationScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Listing requirements before publishing',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .eventPublicationPrivatePreview,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Published listing controls',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .eventPublicationPublishedPreview,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Forms',
             children: [
@@ -10496,6 +10513,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostPrivateEventListingSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private listing and admission terms',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventListingPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostPrivateEventSetupInventorySection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10586,6 +10614,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_rsvp_review_use_cases
                             .eventOfferReviewPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventOfferWorkspaceContentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Prepared offer content',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferContentPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventOfferWorkspaceLayout',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Offer body and primary action',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferLayoutPreview,
                   ),
                 ],
               ),
@@ -10831,6 +10881,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_response_review_use_cases
                             .responseReviewPrimaryPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseReviewNoteField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Private review note disclosure',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewNotePreview,
                   ),
                 ],
               ),

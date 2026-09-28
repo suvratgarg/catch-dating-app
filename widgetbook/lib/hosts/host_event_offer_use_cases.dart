@@ -389,3 +389,19 @@ Widget hostResponseOfferReleaseGate(BuildContext context) => ProviderScope(
     responseId: 'response_1',
   ),
 );
+
+@widgetbook.UseCase(
+  name: 'Offer body and primary action',
+  type: HostEventOfferWorkspaceLayout,
+  path: '[P1 product surfaces]/Host operations/RSVP review',
+)
+Widget hostOfferLayoutPreview(BuildContext context) =>
+    const _OfferWorkspaceFixture(mode: _PreviewMode.prepared);
+
+@widgetbook.UseCase(
+  name: 'Prepared offer content',
+  type: HostEventOfferWorkspaceContentSection,
+  path: '[P1 product surfaces]/Host operations/RSVP review',
+)
+Widget hostOfferContentPreview(BuildContext context) =>
+    const _OfferWorkspaceFixture(mode: _PreviewMode.prepared);
