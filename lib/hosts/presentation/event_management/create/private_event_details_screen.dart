@@ -4,8 +4,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
-import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/events/events.dart'
+    show EventMeetingLocation, LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
