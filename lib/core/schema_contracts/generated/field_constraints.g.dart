@@ -55994,7 +55994,6 @@ abstract final class CatchContractConstraints {
 
   static const eventSetupReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
     path: 'eventSetupReceiptDocument.appliedRevision',
-    required: true,
     valueTypes: <String>['integer'],
     minimum: 1,
   );
@@ -56021,6 +56020,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSetupReceiptDocumentExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.expectedSetupRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 999999999,
+  );
+
   static const eventSetupReceiptDocumentOperation = CatchContractFieldConstraints(
     path: 'eventSetupReceiptDocument.operation',
     required: true,
@@ -56033,6 +56039,11 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupReceiptDocumentOutcome = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.outcome',
     valueTypes: <String>['string'],
   );
 
@@ -106054,6 +106065,94 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const privateSeatReconciliationCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateSeatReconciliationCallableResponseKind = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressAppliedRows = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.appliedRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1500,
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressEventId = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressMigrationRevision = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressOutputRows = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.outputRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1500,
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressPhase = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.phase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scan', 'plan', 'apply', 'cleanup', 'discard'],
+  );
+
+  static const privateSeatReconciliationCallableResponseProgressScannedRows = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.progress.scannedRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 750,
+  );
+
+  static const privateSeatReconciliationCallableResponseReceiptEventId = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.receipt.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateSeatReconciliationCallableResponseReceiptReplayed = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.receipt.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateSeatReconciliationCallableResponseReceiptSetupRevision = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.receipt.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const privateSeatReconciliationCallableResponseRequestId = CatchContractFieldConstraints(
+    path: 'privateSeatReconciliationCallableResponse.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
   static const profilePhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'profilePhoto.createdAt._nanoseconds',
     required: true,
@@ -112868,6 +112967,79 @@ abstract final class CatchContractConstraints {
 
   static const reassignEventAssistanceCheckpointReporterCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
     path: 'reassignEventAssistanceCheckpointReporterCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCancellationPolicyId = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.cancellationPolicyId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCapacityLimit = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.capacityLimit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCurrency = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsPriceInPaise = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadDiscard = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.discard',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.expectedSetupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 999999999,
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
+  static const reconcilePrivateEventSeatsCallablePayloadReviewedDefaultsHash = CatchContractFieldConstraints(
+    path: 'reconcilePrivateEventSeatsCallablePayload.reviewedDefaultsHash',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
@@ -137961,8 +138133,10 @@ abstract final class CatchContractConstraints {
     'eventSetupReceiptDocument.createdAt._nanoseconds': eventSetupReceiptDocumentCreatedAtNanoseconds,
     'eventSetupReceiptDocument.createdAt._seconds': eventSetupReceiptDocumentCreatedAtSeconds,
     'eventSetupReceiptDocument.eventId': eventSetupReceiptDocumentEventId,
+    'eventSetupReceiptDocument.expectedSetupRevision': eventSetupReceiptDocumentExpectedSetupRevision,
     'eventSetupReceiptDocument.operation': eventSetupReceiptDocumentOperation,
     'eventSetupReceiptDocument.organizerId': eventSetupReceiptDocumentOrganizerId,
+    'eventSetupReceiptDocument.outcome': eventSetupReceiptDocumentOutcome,
     'eventSetupReceiptDocument.requestHash': eventSetupReceiptDocumentRequestHash,
     'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
     'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
@@ -144837,6 +145011,18 @@ abstract final class CatchContractConstraints {
     'privateEventSetupMutationCallableResponse.eventId': privateEventSetupMutationCallableResponseEventId,
     'privateEventSetupMutationCallableResponse.replayed': privateEventSetupMutationCallableResponseReplayed,
     'privateEventSetupMutationCallableResponse.setupRevision': privateEventSetupMutationCallableResponseSetupRevision,
+    'privateSeatReconciliationCallableResponse.eventId': privateSeatReconciliationCallableResponseEventId,
+    'privateSeatReconciliationCallableResponse.kind': privateSeatReconciliationCallableResponseKind,
+    'privateSeatReconciliationCallableResponse.progress.appliedRows': privateSeatReconciliationCallableResponseProgressAppliedRows,
+    'privateSeatReconciliationCallableResponse.progress.eventId': privateSeatReconciliationCallableResponseProgressEventId,
+    'privateSeatReconciliationCallableResponse.progress.migrationRevision': privateSeatReconciliationCallableResponseProgressMigrationRevision,
+    'privateSeatReconciliationCallableResponse.progress.outputRows': privateSeatReconciliationCallableResponseProgressOutputRows,
+    'privateSeatReconciliationCallableResponse.progress.phase': privateSeatReconciliationCallableResponseProgressPhase,
+    'privateSeatReconciliationCallableResponse.progress.scannedRows': privateSeatReconciliationCallableResponseProgressScannedRows,
+    'privateSeatReconciliationCallableResponse.receipt.eventId': privateSeatReconciliationCallableResponseReceiptEventId,
+    'privateSeatReconciliationCallableResponse.receipt.replayed': privateSeatReconciliationCallableResponseReceiptReplayed,
+    'privateSeatReconciliationCallableResponse.receipt.setupRevision': privateSeatReconciliationCallableResponseReceiptSetupRevision,
+    'privateSeatReconciliationCallableResponse.requestId': privateSeatReconciliationCallableResponseRequestId,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -145771,6 +145957,16 @@ abstract final class CatchContractConstraints {
     'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.reason': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadReason,
     'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.responsibleOperatorId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId,
     'reassignEventAssistanceCheckpointReporterCallablePayload.expectedSourceHash': reassignEventAssistanceCheckpointReporterCallablePayloadExpectedSourceHash,
+    'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.cancellationPolicyId': reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCancellationPolicyId,
+    'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.capacityLimit': reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCapacityLimit,
+    'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.currency': reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsCurrency,
+    'reconcilePrivateEventSeatsCallablePayload.details.admissionTerms.priceInPaise': reconcilePrivateEventSeatsCallablePayloadDetailsAdmissionTermsPriceInPaise,
+    'reconcilePrivateEventSeatsCallablePayload.discard': reconcilePrivateEventSeatsCallablePayloadDiscard,
+    'reconcilePrivateEventSeatsCallablePayload.eventId': reconcilePrivateEventSeatsCallablePayloadEventId,
+    'reconcilePrivateEventSeatsCallablePayload.expectedSetupRevision': reconcilePrivateEventSeatsCallablePayloadExpectedSetupRevision,
+    'reconcilePrivateEventSeatsCallablePayload.organizerId': reconcilePrivateEventSeatsCallablePayloadOrganizerId,
+    'reconcilePrivateEventSeatsCallablePayload.requestId': reconcilePrivateEventSeatsCallablePayloadRequestId,
+    'reconcilePrivateEventSeatsCallablePayload.reviewedDefaultsHash': reconcilePrivateEventSeatsCallablePayloadReviewedDefaultsHash,
     'recordEventAssistanceCheckpointCallablePayload.command.context.clockId': recordEventAssistanceCheckpointCallablePayloadCommandContextClockId,
     'recordEventAssistanceCheckpointCallablePayload.command.context.eventId': recordEventAssistanceCheckpointCallablePayloadCommandContextEventId,
     'recordEventAssistanceCheckpointCallablePayload.command.context.mode': recordEventAssistanceCheckpointCallablePayloadCommandContextMode,

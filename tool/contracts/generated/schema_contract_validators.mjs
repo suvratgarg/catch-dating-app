@@ -35,6 +35,8 @@ import {
   offerEventTargetListCallableResponseSchema,
   getEventOfferConfigurationCallablePayloadSchema,
   eventOfferConfigurationCallableResponseSchema,
+  reconcilePrivateEventSeatsCallablePayloadSchema,
+  privateSeatReconciliationCallableResponseSchema,
   updatePrivateEventDetailsCallablePayloadSchema,
   prepareEventOfferHandoffCallablePayloadSchema,
   eventOfferHandoffCallableResponseSchema,
@@ -1000,6 +1002,8 @@ export const validateListOfferEventTargetsCallablePayload = ajv.compile(listOffe
 export const validateOfferEventTargetListCallableResponse = ajv.compile(offerEventTargetListCallableResponseSchema);
 export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);
 export const validateEventOfferConfigurationCallableResponse = ajv.compile(eventOfferConfigurationCallableResponseSchema);
+export const validateReconcilePrivateEventSeatsCallablePayload = ajv.compile(reconcilePrivateEventSeatsCallablePayloadSchema);
+export const validatePrivateSeatReconciliationCallableResponse = ajv.compile(privateSeatReconciliationCallableResponseSchema);
 export const validateUpdatePrivateEventDetailsCallablePayload = ajv.compile(updatePrivateEventDetailsCallablePayloadSchema);
 export const validatePrepareEventOfferHandoffCallablePayload = ajv.compile(prepareEventOfferHandoffCallablePayloadSchema);
 export const validateEventOfferHandoffCallableResponse = ajv.compile(eventOfferHandoffCallableResponseSchema);

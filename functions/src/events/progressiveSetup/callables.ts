@@ -1,3 +1,10 @@
+import {reconcilePrivateEventSeats as reconcileSeats} from
+  "./seatReconciliation";
+import type {PagedSeatBootstrapDeps} from "../seatMigrationPaged";
+import {validateReconcilePrivateEventSeatsCallablePayload} from
+  "../../shared/generated/validators/reconcilePrivateEventSeatsInput";
+import {validatePrivateSeatReconciliationCallableResponse} from
+  "../../shared/generated/validators/privateSeatReconciliationOutput";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
@@ -48,6 +55,8 @@ import {validateEventPublicationCallableResponse} from
   "../../shared/generated/validators/eventPublicationOutput";
 
 export interface SetupCallableDependencies {
+  seatAuth?: PagedSeatBootstrapDeps["auth"];
+  nowMillis?: () => number;
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
   service: (db: FirebaseFirestore.Firestore) => ProgressiveSetupDependencies;
@@ -218,3 +227,28 @@ export async function setEventPublicationHandler(
 }
 export const setEventPublication = onCall(appCheckCallableOptions,
   (request) => setEventPublicationHandler(request));
+
+
+/** Admission settings remain in the current flow while existing guests are
+ * reconciled in bounded pages. The client retains the exact command on retry.
+ */
+export async function reconcilePrivateEventSeatsHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateReconcilePrivateEventSeatsCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "reconcilePrivateEventSeats");
+  const {discard, ...settings} = command;
+  const result = await reconcileSeats({actorUid, command: settings, discard,
+    deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),
+      nowMillis: deps.nowMillis ?? Date.now}});
+  if (!validatePrivateSeatReconciliationCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid guest reconciliation result.");
+  }
+  return result;
+}
+export const reconcilePrivateEventSeats = onCall(appCheckCallableOptions,
+  (request) => reconcilePrivateEventSeatsHandler(request));

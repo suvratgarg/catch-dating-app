@@ -217,6 +217,7 @@ class PrivateEventDetailsUpdateRequest {
     required this.expectedSetupRevision,
     required this.reviewedDefaultsHash,
     required this.details,
+    this.discard = false,
   });
 
   final String organizerId;
@@ -225,6 +226,17 @@ class PrivateEventDetailsUpdateRequest {
   final int expectedSetupRevision;
   final String reviewedDefaultsHash;
   final PrivateEventDetailsPatch details;
+  final bool discard;
+  PrivateEventDetailsUpdateRequest withDiscard(bool value) =>
+      PrivateEventDetailsUpdateRequest(
+        organizerId: organizerId,
+        eventId: eventId,
+        requestId: requestId,
+        expectedSetupRevision: expectedSetupRevision,
+        reviewedDefaultsHash: reviewedDefaultsHash,
+        details: details,
+        discard: value,
+      );
 
   bool get isValid =>
       _detailIdPattern.hasMatch(organizerId) &&
@@ -233,7 +245,9 @@ class PrivateEventDetailsUpdateRequest {
       expectedSetupRevision >= 1 &&
       expectedSetupRevision <= 999999999 &&
       _detailHashPattern.hasMatch(reviewedDefaultsHash) &&
-      details.isValid;
+      details.isValid &&
+      (!discard ||
+          (details.admissionTerms != null && details.toJson().length == 1));
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -242,6 +256,7 @@ class PrivateEventDetailsUpdateRequest {
     'expectedSetupRevision': expectedSetupRevision,
     'reviewedDefaultsHash': reviewedDefaultsHash,
     'details': details.toJson(),
+    if (discard) 'discard': true,
   };
 
   factory PrivateEventDetailsUpdateRequest.fromJson(Map<String, dynamic> json) {
@@ -252,8 +267,10 @@ class PrivateEventDetailsUpdateRequest {
           'expectedSetupRevision',
           'reviewedDefaultsHash',
           'details',
+          'discard',
         }).isNotEmpty ||
-        json.length != 6 ||
+        (json.length != 6 && json.length != 7) ||
+        (json.containsKey('discard') && json['discard'] != true) ||
         json['details'] is! Map) {
       throw const FormatException('Invalid details command');
     }
@@ -263,6 +280,7 @@ class PrivateEventDetailsUpdateRequest {
       requestId: json['requestId'] as String,
       expectedSetupRevision: json['expectedSetupRevision'] as int,
       reviewedDefaultsHash: json['reviewedDefaultsHash'] as String,
+      discard: json['discard'] == true,
       details: PrivateEventDetailsPatch.fromJson(
         Map<String, Object?>.from(json['details'] as Map),
       ),
@@ -278,6 +296,38 @@ class PrivateEventDetailsRepository {
   const PrivateEventDetailsRepository(this._functions);
 
   final FirebaseFunctions _functions;
+
+  Future<PrivateSeatReconciliationResult> reconcile(
+    PrivateEventDetailsUpdateRequest request,
+  ) {
+    if (!request.isValid ||
+        request.details.admissionTerms == null ||
+        request.details.toJson().length != 1) {
+      throw ArgumentError.value(request, 'request');
+    }
+    return withBackendErrorContext(
+      () async {
+        final response = await _functions
+            .httpsCallable('reconcilePrivateEventSeats')
+            .call<Object?>(request.toJson());
+        final result = PrivateSeatReconciliationResult.fromResponse(
+          response.data,
+        );
+        if ((result.receipt?.eventId ??
+                result.progress?.eventId ??
+                result.discardedEventId) !=
+            request.eventId) {
+          throw const FormatException('Guest reconciliation changed identity');
+        }
+        return result;
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'save admission settings and reconcile guests',
+        resource: 'reconcilePrivateEventSeats',
+      ),
+    );
+  }
 
   Future<PrivateEventCreateReceipt> update(
     PrivateEventDetailsUpdateRequest request,
@@ -302,4 +352,133 @@ class PrivateEventDetailsRepository {
       ),
     );
   }
+}
+
+class PrivateSeatReconciliationProgress {
+  const PrivateSeatReconciliationProgress({
+    required this.eventId,
+    required this.phase,
+    required this.scannedRows,
+  });
+  final String eventId;
+  final String phase;
+  final int scannedRows;
+}
+
+class PrivateSeatReconciliationResult {
+  const PrivateSeatReconciliationResult.complete(
+    PrivateEventCreateReceipt value,
+  ) : receipt = value,
+      progress = null,
+      discardedEventId = null,
+      discardedRequestId = null;
+  const PrivateSeatReconciliationResult.pending(
+    PrivateSeatReconciliationProgress value,
+  ) : progress = value,
+      receipt = null,
+      discardedEventId = null,
+      discardedRequestId = null;
+  const PrivateSeatReconciliationResult.discarded(
+    this.discardedEventId,
+    this.discardedRequestId,
+  ) : receipt = null,
+      progress = null;
+  final String? discardedEventId;
+  final String? discardedRequestId;
+  final PrivateEventCreateReceipt? receipt;
+  final PrivateSeatReconciliationProgress? progress;
+  factory PrivateSeatReconciliationResult.fromResponse(Object? raw) {
+    if (raw is Map &&
+        raw.length == 3 &&
+        raw['kind'] == 'discarded' &&
+        raw['eventId'] is String &&
+        _detailIdPattern.hasMatch(raw['eventId'] as String) &&
+        raw['requestId'] is String &&
+        _detailRequestPattern.hasMatch(raw['requestId'] as String)) {
+      return PrivateSeatReconciliationResult.discarded(
+        raw['eventId'] as String,
+        raw['requestId'] as String,
+      );
+    }
+    if (raw is! Map || raw.length != 2) {
+      throw const FormatException('Invalid guest reconciliation result');
+    }
+    if (raw['kind'] == 'complete' && raw.containsKey('receipt')) {
+      return PrivateSeatReconciliationResult.complete(
+        PrivateEventCreateReceipt.fromResponse(raw['receipt']),
+      );
+    }
+    final progress = raw['progress'];
+    bool count(Object? value, int max) =>
+        value is int && value >= 0 && value <= max;
+    if (raw['kind'] != 'progress' ||
+        progress is! Map ||
+        progress.length != 7 ||
+        progress['eventId'] is! String ||
+        !_detailIdPattern.hasMatch(progress['eventId'] as String) ||
+        !const {
+          'scan',
+          'plan',
+          'apply',
+          'cleanup',
+          'discard',
+        }.contains(progress['phase']) ||
+        !count(progress['migrationRevision'], 1000000000) ||
+        progress['migrationRevision'] == 0 ||
+        !count(progress['scannedRows'], 750) ||
+        !count(progress['appliedRows'], 1500) ||
+        !count(progress['outputRows'], 1500) ||
+        (progress['appliedRows'] as int) > (progress['outputRows'] as int) ||
+        !progress.containsKey('occupied') ||
+        progress['occupied'] != null) {
+      throw const FormatException('Invalid guest reconciliation progress');
+    }
+    return PrivateSeatReconciliationResult.pending(
+      PrivateSeatReconciliationProgress(
+        eventId: progress['eventId'] as String,
+        phase: progress['phase'] as String,
+        scannedRows: progress['scannedRows'] as int,
+      ),
+    );
+  }
+}
+
+/// Only the exact server rejection after receipt/run checks can release an
+/// uncertain command. Connectivity and later permission errors cannot.
+bool isDefinitiveDetailsRejection(
+  Object error,
+  PrivateEventDetailsUpdateRequest request,
+) => _matchesDetailsOutcome(error, request, 'aborted', {
+  'event-details-review-stale',
+  'event-details-discarded',
+});
+
+bool isDiscardUnavailable(
+  Object error,
+  PrivateEventDetailsUpdateRequest request,
+) => _matchesDetailsOutcome(error, request, 'failed-precondition', {
+  'seat-reconciliation-discard-unavailable',
+});
+
+bool _matchesDetailsOutcome(
+  Object error,
+  PrivateEventDetailsUpdateRequest request,
+  String code,
+  Set<String> reasons,
+) {
+  Object? cause = error;
+  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
+    cause = cause.cause;
+  }
+  if (cause is! FirebaseFunctionsException || cause.code != code) {
+    return false;
+  }
+  final details = cause.details;
+  return details is Map &&
+      reasons.contains(details['reason']) &&
+      details['requestId'] == request.requestId &&
+      details['eventId'] == request.eventId &&
+      details['organizerId'] == request.organizerId &&
+      details['expectedSetupRevision'] == request.expectedSetupRevision &&
+      details['reviewedDefaultsHash'] == request.reviewedDefaultsHash;
 }

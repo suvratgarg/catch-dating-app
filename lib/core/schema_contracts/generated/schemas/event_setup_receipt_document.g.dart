@@ -16,7 +16,6 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
     'organizerId',
     'requestHash',
     'eventId',
-    'appliedRevision',
     'createdAt',
   ],
   'properties': <String, Object?>{
@@ -74,9 +73,55 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
         },
       },
     },
+    'outcome': <String, Object?>{
+      'type': 'string',
+      'const': 'discarded',
+    },
+    'expectedSetupRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 999999999,
+    },
   },
   'x-firestore-collection': 'eventSetupReceipts',
   'x-firestore-path': 'eventSetupReceipts/{receiptId}',
   'x-document-id-field': 'receiptId',
   'x-owner': 'private event setup operations',
+  'oneOf': <Object?>[
+    <String, Object?>{
+      'required': <Object?>[
+        'appliedRevision',
+      ],
+      'not': <String, Object?>{
+        'anyOf': <Object?>[
+          <String, Object?>{
+            'required': <Object?>[
+              'outcome',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'expectedSetupRevision',
+            ],
+          },
+        ],
+      },
+    },
+    <String, Object?>{
+      'required': <Object?>[
+        'outcome',
+        'expectedSetupRevision',
+      ],
+      'properties': <String, Object?>{
+        'operation': <String, Object?>{
+          'const': 'details',
+        },
+      },
+      'not': <String, Object?>{
+        'required': <Object?>[
+          'appliedRevision',
+        ],
+      },
+    },
+  ],
 };

@@ -27,7 +27,7 @@ const MAX_OUTPUT_ROWS = 1500;
 const SOURCES = ["eventParticipations", "eventAttendees",
   "organizerContactOrigins"] as const;
 type Source = typeof SOURCES[number];
-type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete";
+type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete" | "discard";
 
 interface MigrationRun {
   eventId: string;
@@ -163,7 +163,7 @@ function exactRun(raw: FirebaseFirestore.DocumentData | undefined,
         (command.reviewedRequestHash ?? null) ||
       !ID.test(raw.fenceToken) ||
       !/^[a-f0-9]{64}$/u.test(raw.policyHash) ||
-      !["scan", "plan", "apply", "cleanup", "complete"]
+      !["scan", "plan", "apply", "cleanup", "complete", "discard"]
         .includes(raw.phase) ||
       !Number.isSafeInteger(raw.sourceIndex) ||
       raw.sourceIndex < 0 || raw.sourceIndex > SOURCES.length ||
@@ -830,4 +830,90 @@ async function readMigrationProgress(command: PagedSeatBootstrapCommand,
       appliedRows: run.outputCursor, outputRows: run.outputCount,
       occupied: run.phase === "complete" ? ledger!.occupied as number : null};
   });
+}
+
+
+/** Explicitly abandons only a pre-apply run. A durable caller-owned tombstone
+ * commits before the writer lock is released, preventing delayed old commands
+ * from starting again after the organizer reviews corrected terms.
+ */
+export async function discardEventSeatLedgerMigration(params: {
+  command: PagedSeatBootstrapCommand;
+  deps: PagedSeatBootstrapDeps;
+  prepareDiscard: (tx: FirebaseFirestore.Transaction) => Promise<() => void>;
+  pageBudget?: number;
+}): Promise<{complete: boolean; progress: SeatMigrationProgress | null}> {
+  const {command, deps, pageBudget = 3} = params;
+  validateBootstrap(command, deps);
+  if (!deps.authorizeTransaction || !Number.isInteger(pageBudget) ||
+      pageBudget < 1 || pageBudget > 5) {
+    unavailable("Invalid guest reconciliation discard request.");
+  }
+  let progress: SeatMigrationProgress | null = null;
+  for (let page = 0; page < pageBudget; page++) {
+    const result = await deps.db.runTransaction(async (tx) => {
+      await deps.authorizeTransaction!(tx, command);
+      const runRef = deps.db.collection("eventSeatMigrationRuns")
+        .doc(command.eventId);
+      const fenceRef = deps.db.collection("eventSeatMigrationFences")
+        .doc(command.eventId);
+      const ledgerRef = deps.db.collection("eventSeatLedgers")
+        .doc(command.eventId);
+      const planRef = deps.db.collection("eventSeatMigrationPlans")
+        .doc(command.eventId);
+      const [runSnap, fenceSnap, ledgerSnap, planSnap] = await Promise.all([
+        tx.get(runRef), tx.get(fenceRef), tx.get(ledgerRef), tx.get(planRef),
+      ]);
+      if (!runSnap.exists || runSnap.data()?.phase === "complete") {
+        // Cancelling an unapplied settings command on an already-ready event
+        // leaves its existing ledger/fence entirely untouched.
+        await readSeatMigrationWriterFence({db: deps.db, tx,
+          eventId: command.eventId});
+        if (planSnap.exists) unavailable("Unowned seat plan needs review.");
+        const finish = await params.prepareDiscard(tx);
+        finish();
+        return {complete: true, progress: null};
+      }
+      const run = exactRun(runSnap.data(), command);
+      assertFence(fenceSnap.data(), run);
+      assertLedger(ledgerSnap.data(), run);
+      if (!["scan", "plan", "discard"].includes(run.phase) ||
+          run.outputCursor !== 0 || run.outputCount !== 0 ||
+          run.planHash !== null || planSnap.exists) {
+        throw new HttpsError("failed-precondition",
+          "Guest changes have begun. Continue the saved change.",
+          {reason: "seat-reconciliation-discard-unavailable"});
+      }
+      const rows = await tx.get(deps.db.collection("eventSeatMigrationStages")
+        .where("eventId", "==", command.eventId)
+        .where("migrationRevision", "==", command.migrationRevision)
+        .limit(PAGE_SIZE));
+      const finish = await params.prepareDiscard(tx);
+      for (const doc of rows.docs) {
+        const value = doc.data();
+        if (value.eventId !== command.eventId ||
+            value.migrationRevision !== command.migrationRevision) {
+          unavailable("Foreign staged guest source cannot be discarded.");
+        }
+      }
+      if (rows.docs.length === 0) {
+        finish();
+        tx.delete(runRef);
+        tx.delete(ledgerRef);
+        tx.delete(fenceRef);
+        return {complete: true, progress: null};
+      }
+      for (const doc of rows.docs) {
+        tx.delete(deps.db.collection("eventSeatMigrationStages").doc(doc.id));
+      }
+      tx.update(runRef, {phase: "discard"});
+      return {complete: false, progress: {eventId: command.eventId,
+        migrationRevision: command.migrationRevision, phase: "discard" as const,
+        scannedRows: run.sourceCounts.reduce((a, b) => a + b, 0),
+        appliedRows: 0, outputRows: 0, occupied: null}};
+    });
+    if (result.complete) return result;
+    progress = result.progress;
+  }
+  return {complete: false, progress};
 }

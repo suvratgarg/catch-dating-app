@@ -11,9 +11,12 @@ import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
 import {canonicalJson} from "../eventSetupPreferences/resolve";
 import {advanceEventSeatLedgerMigration, PagedSeatBootstrapDeps,
-  PagedSeatBootstrapCommand, SeatMigrationProgress} from
+  PagedSeatBootstrapCommand, SeatMigrationProgress,
+  discardEventSeatLedgerMigration} from
   "../seatMigrationPaged";
-import type {UpdatePrivateEventDetailsCommand} from "./details";
+import {UpdatePrivateEventDetailsCommand, updatePrivateEventDetails,
+  privateDetailsReviewStale, isDiscardedDetailsReceipt} from
+  "./details";
 import {eventListingTermsPatch} from "./listingTerms";
 import {assertPrivacyReady, assertReceipt, authorizeSetupManager,
   hashRequest, receiptFor, requireRevision, ProgressiveSetupDependencies,
@@ -27,7 +30,8 @@ export interface SeatReconciliationDependencies extends
 
 export type PrivateSeatReconciliationResult =
   {kind: "progress"; progress: SeatMigrationProgress} |
-  {kind: "complete"; receipt: ProgressiveSetupResult};
+  {kind: "complete"; receipt: ProgressiveSetupResult} |
+  {kind: "discarded"; eventId: string; requestId: string};
 
 /** The journaled admission-settings command owns every resumable page.
  * Reviewed missing terms and the normal details receipt become visible only
@@ -38,6 +42,7 @@ export async function reconcilePrivateEventSeats(params: {
   command: UpdatePrivateEventDetailsCommand;
   deps: SeatReconciliationDependencies;
   pageBudget?: number;
+  discard?: boolean;
 }): Promise<PrivateSeatReconciliationResult> {
   const {actorUid, command, deps} = params;
   if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(actorUid)) {
@@ -101,14 +106,14 @@ export async function reconcilePrivateEventSeats(params: {
           "Only active private events can be reconciled here.");
       }
       if (requireRevision(event) !== command.expectedSetupRevision) {
+        if (!runSnap.exists) throw privateDetailsReviewStale(command);
         throw new HttpsError("aborted", "Event setup changed. Reload it.");
       }
       const defaults = projectManagerEventSetupDefaults(command.organizerId,
         organizer, defaultsSnap.data(), eventSetupDefaultsDependencies(db));
       if (!runSnap.exists &&
           defaults.preferencesHash !== command.reviewedDefaultsHash) {
-        throw new HttpsError("aborted",
-          "Organizer defaults changed. Review them before saving.");
+        throw privateDetailsReviewStale(command);
       }
       const termsPatch = eventListingTermsPatch(
         event as unknown as EventDocument, command.details.admissionTerms!);
@@ -136,35 +141,94 @@ export async function reconcilePrivateEventSeats(params: {
     };
   const initial = await db.runTransaction(async (tx) => {
     await authorize(tx);
-    const [runSnap, receiptSnap] = await Promise.all([
+    const [runSnap, receiptSnap, ledgerSnap] = await Promise.all([
       tx.get(runRef), tx.get(receiptRef),
+      tx.get(db.collection("eventSeatLedgers").doc(command.eventId)),
     ]);
+    const discarded = receiptSnap.exists &&
+      isDiscardedDetailsReceipt(receiptSnap.data()!, actorUid, command);
+    if (discarded) {
+      return {discarded: true, prior: null, migration: null,
+        normalSave: false, discard: false};
+    }
     const prior = receiptSnap.exists ? resultFor(receiptSnap.data()!) : null;
     const run = runSnap.data();
-    if (run && (run.eventId !== command.eventId ||
+    if (prior && (!run || run.phase === "complete")) {
+      return {discarded: false, prior, migration: null, normalSave: false,
+        discard: false};
+    }
+    if (!params.discard && !prior && ledgerSnap.data()?.state === "ready" &&
+        (!run || run.phase === "complete")) {
+      return {discarded: false, prior: null, migration: null, normalSave: true,
+        discard: false};
+    }
+    if (run && run.phase !== "complete" && (run.eventId !== command.eventId ||
         run.organizerId !== command.organizerId ||
         run.reviewedRequestHash !== reviewedRequestHash)) {
       throw new HttpsError("failed-precondition",
         "Resume the original guest reconciliation request.");
     }
-    // A normal details save may already have completed this exact command.
-    if (prior && !run) return {prior, migration: null};
     const migration: PagedSeatBootstrapCommand = {
       eventId: command.eventId, organizerId: command.organizerId,
       migrationRevision: run?.migrationRevision ?? 1,
       asOfMillis: run?.asOfMillis ?? deps.nowMillis(), reviewedRequestHash,
     };
-    return {prior, migration};
+    return {discarded: false, prior, migration, normalSave: false,
+      discard: !prior && (params.discard === true || run?.phase === "discard")};
   });
+  const discardedResult = {kind: "discarded" as const,
+    eventId: command.eventId, requestId: command.requestId};
+  if (initial.discarded) return discardedResult;
+  const migrationDeps: PagedSeatBootstrapDeps = {db, auth: deps.auth,
+    allWritersIntegrated: deps.freshEventSeatWritersReady,
+    authorizeTransaction: async (tx) => {
+      await authorize(tx);
+    },
+    prepareReviewedEvent: prepare};
+  if (initial.discard && initial.migration) {
+    let result;
+    try {
+      result = await discardEventSeatLedgerMigration({
+        command: initial.migration, deps: migrationDeps,
+        pageBudget: params.pageBudget,
+        prepareDiscard: async (tx) => {
+          const saved = (await tx.get(receiptRef)).data();
+          if (saved) {
+            if (isDiscardedDetailsReceipt(saved, actorUid, command)) {
+              return () => undefined;
+            }
+            resultFor(saved);
+            throw new HttpsError("failed-precondition",
+              "The change already saved. Continue to retrieve its receipt.");
+          }
+          return () => tx.create(receiptRef, {operation: "details", actorUid,
+            organizerId: command.organizerId, eventId: command.eventId,
+            requestHash: hash, outcome: "discarded",
+            expectedSetupRevision: command.expectedSetupRevision,
+            createdAt: deps.serverTimestamp()});
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpsError &&
+          (error.details as {reason?: string} | undefined)?.reason ===
+            "seat-reconciliation-discard-unavailable") {
+        throw new HttpsError(error.code, error.message, {
+          ...privateDetailsReviewStale(command).details as object,
+          reason: "seat-reconciliation-discard-unavailable"});
+      }
+      throw error;
+    }
+    return result.complete ? discardedResult :
+      {kind: "progress", progress: result.progress!};
+  }
+  if (initial.normalSave) {
+    return {kind: "complete", receipt: await updatePrivateEventDetails({
+      actorUid, command, deps})};
+  }
   if (!initial.migration) return {kind: "complete", receipt: initial.prior!};
   const progress = await advanceEventSeatLedgerMigration({
     command: initial.migration, pageBudget: params.pageBudget,
-    deps: {db, auth: deps.auth,
-      allWritersIntegrated: deps.freshEventSeatWritersReady,
-      authorizeTransaction: async (tx) => {
-        await authorize(tx);
-      },
-      prepareReviewedEvent: prepare},
+    deps: migrationDeps,
   });
   // Do not skip bounded cleanup merely because the final receipt exists.
   if (progress.phase !== "complete") return {kind: "progress", progress};

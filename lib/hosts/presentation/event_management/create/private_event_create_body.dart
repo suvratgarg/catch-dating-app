@@ -97,6 +97,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         readEvent: eventRepository.get,
         readDefaults: defaultsRepository.get,
         write: detailsRepository.update,
+        reconcile: detailsRepository.reconcile,
         currentUserId: () =>
             mounted ? ref.read(uidProvider).asData?.value : null,
       );

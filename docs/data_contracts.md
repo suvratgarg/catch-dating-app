@@ -1784,6 +1784,24 @@ that transaction, only after counters and bounded queries show no guest, payment
 identity, import or migration history. Demo-owned events are excluded because
 seed tooling has legacy seat writers. Existing reserved places or checkout holds
 block changed terms; historical sources require seat reconciliation.
+`reconcilePrivateEventSeats` accepts the same exact journaled admission-settings
+command with no other detail fields. Each request advances at most three bounded
+pages; current manager, account deletion and event ownership are rechecked in
+all transactions. Explicit missing terms remain staged until the verified roster,
+ready ledger/fence and ordinary details receipt commit together. Configured terms,
+guests and issued offers remain unchanged. Cleanup resumes even after the final
+receipt exists. Setup edits and publication wait while the migration fence is
+locked. An initial stale review can release the client journal only with the exact
+server no-commit marker; interrupted or started runs retain the original command.
+The Host automatically advances a bounded number of requests and then offers
+Continue checking guests. An explicit discard is journaled before sending and
+bounded-cleans only scan/plan sources with no frozen plan or applied output. A
+`details` receipt with `outcome: discarded` and `expectedSetupRevision` (never an
+`appliedRevision`) commits before the lock is released; delayed original saves
+cannot revive it. If output application already began, the exact typed denial
+restores the original save intent. A previously committed change returns its
+saved receipt and finishes cleanup. No existing guest or offer is removed.
+Reopening retains the command. Both privacy and seat-writer production gates stay closed pending rollout and Cross Paths integration.
 The manager read includes `eventDetails` for reopening those actual values;
 event preferences remain separate recommendations. Hosts can add or edit venue
 and duration after creating offers or importing a roster. Changing format still

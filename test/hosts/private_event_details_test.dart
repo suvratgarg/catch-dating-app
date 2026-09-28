@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/data/private_event_details_journal.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -424,5 +425,283 @@ void main() {
       expect(controller.event, isNull);
       expect(controller.canEdit, isFalse);
     },
+  );
+
+  test(
+    'guest reconciliation resumes the exact admission command after restart',
+    () async {
+      var attempt = 0;
+      final bodies = <String>[];
+      Future<PrivateSeatReconciliationResult> reconcile(
+        PrivateEventDetailsUpdateRequest request,
+      ) async {
+        bodies.add(jsonEncode(request.toJson()));
+        attempt++;
+        if (attempt == 2) throw StateError('Response lost during guest scan');
+        if (attempt == 1) return _progress;
+        return const PrivateSeatReconciliationResult.complete(
+          PrivateEventCreateReceipt(
+            eventId: 'event-1',
+            setupRevision: 3,
+            replayed: true,
+          ),
+        );
+      }
+
+      final first = _reconciliationController(reconcile);
+      await first.load();
+      await first.save(_terms);
+      expect(first.pending, isNotNull);
+      expect(first.reconciliationProgress?.scannedRows, 25);
+      first.dispose();
+      final resumed = _reconciliationController(reconcile);
+      addTearDown(resumed.dispose);
+      await resumed.load();
+      await resumed.retryPending();
+      expect(resumed.pending, isNull);
+      expect(resumed.reconciliationProgress, isNull);
+      expect(bodies, everyElement(bodies.first));
+      expect(
+        await const PrivateEventDetailsJournal().load(
+          userId: 'host-1',
+          organizerId: 'club-1',
+          eventId: 'event-1',
+        ),
+        isNull,
+      );
+    },
+  );
+
+  test('bounded automatic guest checks preserve a resumable command', () async {
+    var count = 0;
+    final controller = _reconciliationController((_) async {
+      count++;
+      return _progress;
+    });
+    addTearDown(controller.dispose);
+    await controller.load();
+    await controller.save(_terms);
+    expect(count, 12);
+    expect(controller.pending, isNotNull);
+    expect(controller.error, isNull);
+    expect(controller.saving, isFalse);
+    expect(controller.canEdit, isFalse);
+    await controller.retryPending();
+    expect(count, 24);
+  });
+
+  for (final definitive in [true, false]) {
+    test(
+      'only exact stale review clears admission command: $definitive',
+      () async {
+        final controller = _reconciliationController((request) async {
+          throw FirebaseFunctionsException(
+            code: 'aborted',
+            message: 'Review changed',
+            details: definitive
+                ? {
+                    'reason': 'event-details-review-stale',
+                    'eventId': request.eventId,
+                    'organizerId': request.organizerId,
+                    'requestId': request.requestId,
+                    'expectedSetupRevision': request.expectedSetupRevision,
+                    'reviewedDefaultsHash': request.reviewedDefaultsHash,
+                  }
+                : null,
+          );
+        });
+        addTearDown(controller.dispose);
+        await controller.load();
+        await controller.save(_terms);
+        expect(controller.pending == null, definitive);
+        expect(controller.canEdit, definitive);
+        expect(controller.error, isA<FirebaseFunctionsException>());
+      },
+    );
+  }
+
+  test('switching accounts during progress stops further requests', () async {
+    var uid = 'host-1';
+    var calls = 0;
+    final controller = _reconciliationController((_) async {
+      calls++;
+      uid = 'host-2';
+      return _progress;
+    }, currentUserId: () => uid);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await controller.save(_terms);
+    expect(calls, 1);
+    expect(controller.pending, isNotNull);
+    expect(controller.reconciliationProgress, isNull);
+    expect(controller.canEdit, isFalse);
+  });
+
+  test('discard intent survives a lost response and restart', () async {
+    var discardCalls = 0;
+    Future<PrivateSeatReconciliationResult> write(
+      PrivateEventDetailsUpdateRequest request,
+    ) async {
+      if (!request.discard) throw StateError('Reviewed capacity is too small');
+      discardCalls++;
+      if (discardCalls == 1) throw StateError('Discard response lost');
+      return PrivateSeatReconciliationResult.discarded(
+        request.eventId,
+        request.requestId,
+      );
+    }
+
+    final first = _reconciliationController(write);
+    await first.load();
+    await first.save(_terms);
+    final original = first.pending!;
+    await first.discardPending();
+    expect(first.pending?.discard, isTrue);
+    expect(first.pending?.withDiscard(false).toJson(), original.toJson());
+    first.dispose();
+    final next = _reconciliationController(write);
+    addTearDown(next.dispose);
+    await next.load();
+    expect(next.pending?.discard, isTrue);
+    await next.retryPending();
+    expect(next.pending, isNull);
+    expect(next.canEdit, isTrue);
+    expect(discardCalls, 2);
+  });
+
+  test('a raced apply switches discard retry back to original save', () async {
+    var complete = false;
+    final controller = _reconciliationController((request) async {
+      if (request.discard) {
+        throw FirebaseFunctionsException(
+          code: 'failed-precondition',
+          message: 'Changes have begun',
+          details: {
+            'reason': 'seat-reconciliation-discard-unavailable',
+            'eventId': request.eventId,
+            'organizerId': request.organizerId,
+            'requestId': request.requestId,
+            'expectedSetupRevision': request.expectedSetupRevision,
+            'reviewedDefaultsHash': request.reviewedDefaultsHash,
+          },
+        );
+      }
+      if (!complete) throw StateError('Lost response during application');
+      return const PrivateSeatReconciliationResult.complete(
+        PrivateEventCreateReceipt(
+          eventId: 'event-1',
+          setupRevision: 3,
+          replayed: true,
+        ),
+      );
+    });
+    addTearDown(controller.dispose);
+    await controller.load();
+    await controller.save(_terms);
+    final original = controller.pending!.toJson();
+    await controller.discardPending();
+    expect(controller.pending!.toJson(), original);
+    expect(controller.canDiscardPending, isFalse);
+    expect(controller.error, isA<FirebaseFunctionsException>());
+    complete = true;
+    await controller.retryPending();
+    expect(controller.pending, isNull);
+  });
+
+  test('progress rejects complete phases and fabricated occupied counts', () {
+    final valid = {
+      'kind': 'progress',
+      'progress': {
+        'eventId': 'event-1',
+        'migrationRevision': 1,
+        'phase': 'scan',
+        'scannedRows': 25,
+        'appliedRows': 0,
+        'outputRows': 0,
+        'occupied': null,
+      },
+    };
+    expect(
+      PrivateSeatReconciliationResult.fromResponse(valid).progress?.scannedRows,
+      25,
+    );
+    for (final changed in [
+      {'phase': 'complete'},
+      {'occupied': 1},
+      {'appliedRows': 2},
+    ]) {
+      expect(
+        () => PrivateSeatReconciliationResult.fromResponse({
+          ...valid,
+          'progress': {...valid['progress']! as Map, ...changed},
+        }),
+        throwsFormatException,
+      );
+    }
+  });
+}
+
+const _terms = PrivateEventDetailsPatch(
+  admissionTerms: PrivateEventAdmissionTerms(
+    capacityLimit: 40,
+    priceInPaise: 0,
+    currency: 'INR',
+    cancellationPolicyId: 'notApplicable',
+  ),
+);
+const _progress = PrivateSeatReconciliationResult.pending(
+  PrivateSeatReconciliationProgress(
+    eventId: 'event-1',
+    phase: 'scan',
+    scannedRows: 25,
+  ),
+);
+PrivateEventDetailsController _reconciliationController(
+  Future<PrivateSeatReconciliationResult> Function(
+    PrivateEventDetailsUpdateRequest,
+  )
+  reconcile, {
+  String? Function()? currentUserId,
+}) {
+  final hash = List.filled(64, 'a').join();
+  return PrivateEventDetailsController(
+    userId: 'host-1',
+    organizerId: 'club-1',
+    eventId: 'event-1',
+    currentUserId: currentUserId,
+    reconcile: reconcile,
+    write: (_) async =>
+        throw StateError('Admission terms must use reconciliation'),
+    readEvent: ({required organizerId, required eventId}) async =>
+        const PrivateEventBasicSummary(
+          eventId: 'event-1',
+          organizerId: 'club-1',
+          setupRevision: 2,
+          name: 'Synthetic mixer',
+          city: EventSetupCity(
+            cityId: 'in-mh-mumbai',
+            marketId: 'in-mh-mumbai',
+          ),
+          localDate: '2026-10-03',
+          localStartTime: '19:00',
+          timezone: 'Asia/Kolkata',
+          startTimeMillis: 1791043800000,
+          status: 'active',
+          setupDefaults: {},
+          detailsConfigured: false,
+          eventPreferences: null,
+        ),
+    readDefaults: (_) async => ManagerEventSetupDefaults(
+      organizerId: 'club-1',
+      cityId: null,
+      marketId: null,
+      timezone: null,
+      organizerDefaultsRevision: null,
+      basicsReviewedHash: hash,
+      preferencesRevision: 0,
+      preferences: const ManagerEventSetupPreferences(),
+      preferencesHash: hash,
+      reviewedDefaultsHash: hash,
+    ),
   );
 }

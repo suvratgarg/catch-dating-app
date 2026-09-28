@@ -37,6 +37,8 @@ export {listOfferEventTargetsCallablePayloadSchema} from "./schemas/listOfferEve
 export {offerEventTargetListCallableResponseSchema} from "./schemas/offerEventTargetListOutput";
 export {getEventOfferConfigurationCallablePayloadSchema} from "./schemas/getEventOfferConfigurationInput";
 export {eventOfferConfigurationCallableResponseSchema} from "./schemas/eventOfferConfigurationOutput";
+export {reconcilePrivateEventSeatsCallablePayloadSchema} from "./schemas/reconcilePrivateEventSeatsInput";
+export {privateSeatReconciliationCallableResponseSchema} from "./schemas/privateSeatReconciliationOutput";
 export {updatePrivateEventDetailsCallablePayloadSchema} from "./schemas/updatePrivateEventDetailsInput";
 export {prepareEventOfferHandoffCallablePayloadSchema} from "./schemas/prepareEventOfferHandoffInput";
 export {eventOfferHandoffCallableResponseSchema} from "./schemas/eventOfferHandoffOutput";

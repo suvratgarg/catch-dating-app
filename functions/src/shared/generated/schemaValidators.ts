@@ -37,6 +37,8 @@ export {validateListOfferEventTargetsCallablePayload} from "./validators/listOff
 export {validateOfferEventTargetListCallableResponse} from "./validators/offerEventTargetListOutput";
 export {validateGetEventOfferConfigurationCallablePayload} from "./validators/getEventOfferConfigurationInput";
 export {validateEventOfferConfigurationCallableResponse} from "./validators/eventOfferConfigurationOutput";
+export {validateReconcilePrivateEventSeatsCallablePayload} from "./validators/reconcilePrivateEventSeatsInput";
+export {validatePrivateSeatReconciliationCallableResponse} from "./validators/privateSeatReconciliationOutput";
 export {validateUpdatePrivateEventDetailsCallablePayload} from "./validators/updatePrivateEventDetailsInput";
 export {validatePrepareEventOfferHandoffCallablePayload} from "./validators/prepareEventOfferHandoffInput";
 export {validateEventOfferHandoffCallableResponse} from "./validators/eventOfferHandoffOutput";

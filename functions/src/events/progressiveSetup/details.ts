@@ -88,6 +88,11 @@ export async function updatePrivateEventDetails(params: {
     }
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data();
+      if (isDiscardedDetailsReceipt(receipt!, actorUid, command)) {
+        throw new HttpsError("aborted", "This change was discarded.", {
+          ...privateDetailsReviewStale(command).details as object,
+          reason: "event-details-discarded"});
+      }
       if (receipt?.operation !== "details" ||
           receipt.actorUid !== actorUid ||
           receipt.organizerId !== command.organizerId ||
@@ -111,13 +116,12 @@ export async function updatePrivateEventDetails(params: {
     }
     const revision = requireRevision(event);
     if (revision !== command.expectedSetupRevision) {
-      throw new HttpsError("aborted", "Event setup changed. Reload it.");
+      throw privateDetailsReviewStale(command);
     }
     const defaults = projectManagerEventSetupDefaults(command.organizerId,
       organizer, defaultsSnap.data(), eventSetupDefaultsDependencies(db));
     if (defaults.preferencesHash !== command.reviewedDefaultsHash) {
-      throw new HttpsError("aborted",
-        "Organizer defaults changed. Review them before saving.");
+      throw privateDetailsReviewStale(command);
     }
     const venueDecision = command.details.venue;
     const preferredVenueId = venueDecision?.mode === "inherit" ?
@@ -265,4 +269,33 @@ export async function updatePrivateEventDetails(params: {
     return {eventId: command.eventId, setupRevision: revision + 1,
       replayed: false};
   });
+}
+
+
+/** Only use after the transaction established no receipt and no active run. */
+export function privateDetailsReviewStale(
+  command: UpdatePrivateEventDetailsCommand
+): HttpsError {
+  return new HttpsError("aborted", "Event settings changed. Review them again.",
+    {reason: "event-details-review-stale", requestId: command.requestId,
+      organizerId: command.organizerId, eventId: command.eventId,
+      expectedSetupRevision: command.expectedSetupRevision,
+      reviewedDefaultsHash: command.reviewedDefaultsHash});
+}
+
+
+/** Durable rejection blocks delayed sends of a discarded command. */
+export function isDiscardedDetailsReceipt(raw: Record<string, unknown>,
+  actorUid: string, command: UpdatePrivateEventDetailsCommand): boolean {
+  if (raw.outcome !== "discarded") return false;
+  if (raw.operation !== "details" || raw.actorUid !== actorUid ||
+      raw.organizerId !== command.organizerId ||
+      raw.eventId !== command.eventId ||
+      raw.requestHash !== hashRequest("details", command) ||
+      raw.expectedSetupRevision !== command.expectedSetupRevision ||
+      raw.appliedRevision !== undefined) {
+    throw new HttpsError("already-exists",
+      "Request ID was used for another event change.");
+  }
+  return true;
 }

@@ -17,9 +17,17 @@ import '../test_pump_helpers.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  for (final actionKind in ['duration', 'map', 'terms']) {
+  for (final actionKind in [
+    'duration',
+    'map',
+    'terms',
+    'reconciliation',
+    'discarding',
+  ]) {
     final mapSelection = actionKind == 'map';
     final termsSelection = actionKind == 'terms';
+    final reconciliation =
+        actionKind == 'reconciliation' || actionKind == 'discarding';
     testWidgets('narrow 2x details sends actual $actionKind', (tester) async {
       tester.view.physicalSize = const Size(720, 1280);
       tester.view.devicePixelRatio = 2;
@@ -71,6 +79,32 @@ void main() {
         preferencesHash: hash,
         reviewedDefaultsHash: hash,
       );
+      if (reconciliation) {
+        controller.pending = PrivateEventDetailsUpdateRequest(
+          organizerId: 'club-1',
+          eventId: 'event-1',
+          requestId: 'reconcile-one',
+          expectedSetupRevision: 2,
+          reviewedDefaultsHash: hash,
+          details: const PrivateEventDetailsPatch(
+            admissionTerms: PrivateEventAdmissionTerms(
+              capacityLimit: 20,
+              priceInPaise: 0,
+              currency: 'INR',
+              cancellationPolicyId: 'notApplicable',
+            ),
+          ),
+        );
+        if (actionKind == 'discarding') {
+          controller.pending = controller.pending!.withDiscard(true);
+        }
+        controller.reconciliationProgress =
+            const PrivateSeatReconciliationProgress(
+              eventId: 'event-1',
+              phase: 'scan',
+              scannedRows: 25,
+            );
+      }
       addTearDown(controller.dispose);
       await tester.pumpWidget(
         MaterialApp(
@@ -101,6 +135,19 @@ void main() {
       );
       await pumpFeatureUi(tester);
       expect(tester.takeException(), isNull);
+      if (reconciliation) {
+        final action = find.text(
+          actionKind == 'discarding'
+              ? 'Continue discarding change'
+              : 'Continue checking guests',
+        );
+        await ensureCentered(tester, action);
+        await pumpFeatureUi(tester);
+        expect(action.hitTestable(), findsOneWidget);
+        expect(controller.canEdit, isFalse);
+        expect(tester.takeException(), isNull);
+        return;
+      }
       if (termsSelection) {
         expect(find.text('Save capacity and price'), findsNothing);
         Future<void> enter(String title, String value) async {

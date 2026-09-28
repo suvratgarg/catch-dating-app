@@ -730,6 +730,7 @@ export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
   updatePrivateEventPreferences, listPrivateEventSetups,
   updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
+  reconcilePrivateEventSeats,
 } from "./events/progressiveSetup/callables";
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
