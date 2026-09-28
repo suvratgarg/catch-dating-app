@@ -31,7 +31,8 @@
         "terms",
         "help",
         "not_found",
-        "event_booking"
+        "event_booking",
+        "sales_demo"
       ],
       "additionalProperties": false,
       "properties": {
@@ -81,6 +82,9 @@
           "$ref": "#/$defs/staticMeta"
         },
         "event_booking": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "sales_demo": {
           "$ref": "#/$defs/staticMeta"
         }
       }

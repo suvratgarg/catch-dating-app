@@ -1,6 +1,7 @@
 import type {WebsiteMetaCopy} from "./types";
 
 export const staticMetaKeys = [
+  "sales_demo",
   "home",
   "host",
   "event_runtime",

@@ -1723,6 +1723,8 @@ export interface OrganizerSearchCandidateCommands {
 
 export interface OrganizerSearchCandidate {
   workItemId: string;
+  workItemRevision: number;
+  candidateHash: string;
   candidateId: string;
   batchId: string;
   resultId: string;

@@ -38,6 +38,8 @@ import {
   surfaceForCandidateCuration,
 } from "./organizerIntakeHelpers";
 import {loadOrganizerIntakeBridge} from "./loadOrganizerIntakeBridge";
+import {linkOrganizerIntakeToSales, type IntakeSalesLinkResult} from
+  "../api/organizerSalesBridgeRepository";
 import type {
   AdminDecideOrganizerEventCandidatePayload,
   AdminDecideOrganizerEventCandidateResponse,
@@ -89,6 +91,10 @@ export function useOrganizerIntakeController({
     useState<Record<string, AdminDecideOrganizerIntakeResponse>>({});
   const [localCuration, setLocalCuration] =
     useState<Record<string, AdminRecordOrganizerCurationResponse>>({});
+  const [selectedMatchByCandidate, setSelectedMatchByCandidate] =
+    useState<Record<string, string>>({});
+  const [localSalesLinks, setLocalSalesLinks] =
+    useState<Record<string, IntakeSalesLinkResult>>({});
   const [organizerDraftForms, setOrganizerDraftForms] =
     useState<Record<string, Intake.OrganizerDraftFormState>>({});
   const [localOrganizerDrafts, setLocalOrganizerDrafts] =
@@ -119,6 +125,7 @@ export function useOrganizerIntakeController({
   const curationMutationKey = adminQueryKeys.organizerIntake.curation();
   const organizerDraftMutationKey =
     adminQueryKeys.organizerIntake.createDraft();
+  const salesLinkMutationKey = [...adminQueryKeys.all, "intakeSalesLink"];
   const eventDecisionMutationKey =
     adminQueryKeys.organizerIntake.eventDecision();
   const policyDecisionMutationKey =
@@ -145,6 +152,10 @@ export function useOrganizerIntakeController({
     mutationKey: organizerDraftMutationKey,
     mutationFn: createOrganizerDraftFromCandidate,
   });
+  const salesLinkMutation = useMutation({
+    mutationKey: salesLinkMutationKey,
+    mutationFn: linkOrganizerIntakeToSales,
+  });
   const resolveOrganizerEventLocationMutation = useMutation({
     mutationKey: locationResolutionMutationKey,
     mutationFn: ({taskId: _taskId, ...payload}: LocationResolutionMutationPayload) =>
@@ -170,6 +181,11 @@ export function useOrganizerIntakeController({
   >(organizerDraftMutationKey, (payload) => ({
     key: payload.candidateId,
     value: true,
+  }));
+  const salesLinkInFlight = usePendingMutationRecord<
+    Parameters<typeof linkOrganizerIntakeToSales>[0], boolean
+  >(salesLinkMutationKey, (payload) => ({
+    key: payload.candidateId, value: true,
   }));
   const eventDecisionInFlight = usePendingMutationRecord<
     AdminDecideOrganizerEventCandidatePayload,
@@ -337,11 +353,42 @@ export function useOrganizerIntakeController({
     visibilityForms,
   ]);
 
+  const performSalesLink = useCallback(async (
+    candidate: Intake.OrganizerSearchCandidate,
+    organizerId: string,
+    curationPath: string
+  ) => {
+    try {
+      const result = await salesLinkMutation.mutateAsync({
+        workItemId: candidate.workItemId,
+        candidateId: candidate.candidateId,
+        expectedWorkItemRevision: candidate.workItemRevision,
+        expectedCandidateHash: candidate.candidateHash,
+        organizerId, curationPath, requestId: crypto.randomUUID(),
+      });
+      setLocalSalesLinks((current) => ({
+        ...current, [candidate.candidateId]: result,
+      }));
+      await queryClient.invalidateQueries({queryKey: ["sales"]});
+      onNotice(result.accountCreated ?
+        `Added ${candidate.title} to private Sales research.` :
+        `Linked ${candidate.title} to its existing Sales account.`);
+      return true;
+    } catch (error) {
+      onError(error instanceof Error ?
+        `Intake decision is saved, but Sales linking needs review: ${
+          error.message}` :
+        "Intake decision is saved, but Sales linking needs review.");
+      return false;
+    }
+  }, [onError, onNotice, queryClient, salesLinkMutation]);
+
   const handleAttachCandidate = useCallback(async (
     candidate: Intake.OrganizerSearchCandidate
   ) => {
-    const entityId = candidate.existingEntityMatches[0]?.entityId;
-    if (!entityId) {
+    const entityId = selectedMatchByCandidate[candidate.candidateId];
+    if (!entityId || !candidate.existingEntityMatches.some((match) =>
+      match.entityId === entityId)) {
       onError("Choose a matched organizer before attaching this surface.");
       return false;
     }
@@ -362,7 +409,11 @@ export function useOrganizerIntakeController({
         ...current,
         [candidate.candidateId]: response,
       }));
-      onNotice(`Recorded curation attach for ${candidate.title}.`);
+      if (intake.source === "sample") {
+        onNotice(`Sample curation attach recorded for ${candidate.title}.`);
+        return true;
+      }
+      await performSalesLink(candidate, entityId, response.decisionPath);
       return true;
     } catch (curationError) {
       onError(
@@ -377,9 +428,12 @@ export function useOrganizerIntakeController({
   }, [
     beginOperation,
     endOperation,
+    intake.source,
     onError,
     onNotice,
+    performSalesLink,
     recordOrganizerCurationMutation,
+    selectedMatchByCandidate,
   ]);
 
   const handleCreateOrganizerDraft = useCallback(async (
@@ -411,12 +465,13 @@ export function useOrganizerIntakeController({
           queryKey: [...adminQueryKeys.all, "organizers"],
         }),
       ]);
-      onNotice(
-        response.created ?
-          `Created unclaimed organizer draft ${response.organizerId}.` :
-          `Opened existing organizer draft ${response.organizerId}.`
-      );
-      onOrganizerDraftCreated?.(response.organizerId);
+      if (intake.source === "sample") {
+        onNotice(`Preview draft ${response.organizerId} created.`);
+        onOrganizerDraftCreated?.(response.organizerId);
+      } else if (await performSalesLink(candidate, response.organizerId,
+        response.curationPath)) {
+        onOrganizerDraftCreated?.(response.organizerId);
+      }
     } catch (draftError) {
       onError(
         draftError instanceof Error ?
@@ -430,12 +485,42 @@ export function useOrganizerIntakeController({
     beginOperation,
     createOrganizerDraftMutation,
     endOperation,
+    intake.source,
     onError,
     onNotice,
     onOrganizerDraftCreated,
     organizerDraftForms,
+    performSalesLink,
     queryClient,
   ]);
+
+  const handleRetrySalesLink = useCallback(async (
+    candidate: Intake.OrganizerSearchCandidate
+  ) => {
+    const draft = localOrganizerDrafts[candidate.candidateId] ??
+      candidate.draftLink;
+    const selected = selectedMatchByCandidate[candidate.candidateId];
+    const curation = localCuration[candidate.candidateId];
+    const organizerId = draft?.organizerId ?? selected;
+    const curationPath = draft?.curationPath ?? curation?.decisionPath ??
+      (selected ? attachCurationPath(selected,
+        candidate.suggestedSurface.surfaceId) : null);
+    if (!organizerId || !curationPath ||
+      (!draft && !candidate.existingEntityMatches.some((match) =>
+        match.entityId === organizerId))) {
+      onError("Choose the reviewed organizer identity before linking Sales.");
+      return false;
+    }
+    const operation = beginOperation();
+    if (!operation) return false;
+    onError(null);
+    try {
+      return await performSalesLink(candidate, organizerId, curationPath);
+    } finally {
+      endOperation(operation);
+    }
+  }, [beginOperation, endOperation, localCuration, localOrganizerDrafts,
+    onError, performSalesLink, selectedMatchByCandidate]);
 
   const handleOpenOrganizerDraft = useCallback((organizerId: string) => {
     onOrganizerDraftCreated?.(organizerId);
@@ -761,6 +846,7 @@ export function useOrganizerIntakeController({
     handleItemCuration,
     handleLocationResolution,
     handleOpenOrganizerDraft,
+    handleRetrySalesLink,
     handlePendingInputDecision,
     handlePolicyGapDecision,
     localCuration,
@@ -768,6 +854,7 @@ export function useOrganizerIntakeController({
     localEventDecisions,
     localLocationResolutions,
     localOrganizerDrafts,
+    localSalesLinks,
     localPolicyDecisions,
     locationResolutionForms,
     locationResolutionInFlight,
@@ -775,6 +862,9 @@ export function useOrganizerIntakeController({
     metrics,
     organizerDraftForms,
     organizerDraftInFlight,
+    salesLinkInFlight,
+    selectedMatchByCandidate,
+    setSelectedMatchByCandidate,
     policyDecisionInFlight,
     policyDecisionNotes,
     publicationPacketByEntity,
@@ -790,6 +880,14 @@ export function useOrganizerIntakeController({
     surfaceChecklists,
     visibilityForms,
   };
+}
+
+function attachCurationPath(organizerId: string,
+  surfaceId: string): string {
+  const operationId = ["attach", organizerId, surfaceId].join("-")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "").slice(0, 140);
+  return `organizerIntakeCurationDecisions/${operationId}`;
 }
 
 function metricValue(value: number | null | undefined): number | string {

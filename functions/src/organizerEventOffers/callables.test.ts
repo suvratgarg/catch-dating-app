@@ -98,6 +98,17 @@ test("release gate cannot be bypassed using payload flags", async () => {
   assert.equal(h.actions.length, 0);
 });
 
+test("async release denial remains closed", async () => {
+  const h = fixture();
+  h.deps.integrationReady = async () => false;
+  h.deps.firestore = () => {
+    throw new Error("Unexpected database access");
+  };
+  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
+    code("failed-precondition"));
+  assert.equal(h.actions.length, 0);
+});
+
 test("authorized reads validate complete server outputs", async () => {
   const h = fixture();
   const detail = await getEventOfferHandler(request(scope), h.deps);

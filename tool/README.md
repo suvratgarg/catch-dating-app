@@ -78,6 +78,13 @@ the exact active owner declared by `path` or `impactPaths`, its transitive
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
+The feature-coverage ledger and schema select `design:feature-coverage`; the
+context-pack and gallery manifests select `design:context-pack`, which rebuilds
+the pack in a temporary directory and verifies drift. Their check tests and
+generator have the same owners. These explicit mappings avoid full fanout when
+ordinary screen changes update generated manifests; unknown companion inputs
+still trigger the full fallback. Both owners retain the full source checkout,
+with Node/root npm for coverage and Node/Flutter/pub for context generation.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
 excluded from direct tool ownership instead of broadening a valid Tools
@@ -1125,3 +1132,40 @@ ids, non-empty text, and exact generated output.
 
 Remote write tools should default to dry-run/read-only behavior, require an
 explicit apply flag, and carry a `safety` label that reflects the blast radius.
+
+## PR validation admission
+
+Development branches retain independent, inexpensive `PR feedback` checks
+(whitespace and the affected-check plan). Full validation stays in `CI` and
+requires exactly one open, ready PR into `main` carrying `ci:admitted`.
+The read-only `ci:pr-admission` verifier checks live labels, the tested head and
+current main before validation and again before `Required CI` can succeed.
+Deferred PRs explicitly fail that aggregate with `Awaiting admission`; skipping
+expensive jobs is never evidence that those jobs passed. API failures deny
+admission. Main validation, backend source approval and delivery authority
+remain separate and retain their existing checks.
+
+The integration owner reads existing failed-job logs first, resolves the
+candidate's dependencies, batches local repairs, updates only that candidate
+against current main, then admits it. Leave waiting branches unchanged until
+their turn. Inspect the final combined diff and run focused checks before one
+push. The full PR workflow has one concurrency slot, including its approval
+wait, and retains queued runs rather than replacing another PR's pending run.
+GitHub queue order is not dependency order; the sole label determines admission.
+
+Before changing the admitted source or handing the slot to another PR, remove
+its label and cancel or wait for its obsolete CI run to finish. Push the reviewed
+repair batch once, then apply the label to the next ready candidate. Label events
+and draft transitions re-evaluate admission. Old events with stale heads fail
+before expensive checks. A fresh head needs fresh validation and applicable
+backend approval. Do not cancel main validation or delivery as queue cleanup.
+
+Labels are scheduling authority, not an atomic GitHub merge lock. Removing one
+cannot synchronously revoke an already-green status. Immediately before merging,
+verify the sole label, exact head, current main, successful full CI and required
+source approval, then use an expected-head merge guard. Preserve strict
+up-to-date branch protection. Drafts with missing implementation stay drafts
+until their stated scope is complete; ordering never substitutes for review.
+Measure completed job runner time, reruns and superseded work separately from
+queue/approval waits. Public standard-runner usage and private billed usage must
+not be conflated when reporting savings.

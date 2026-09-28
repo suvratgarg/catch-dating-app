@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_outreach_drafts.schema.json",
+  "title": "SalesOutreachDraftDocument",
+  "description": "Private Operations-rendered manual-copy-only draft with frozen source request and exact source hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesOutreachDrafts",
+  "x-firestore-path": "salesOutreachDrafts/{draftId}",
+  "x-document-id-field": "draftId",
+  "x-owner": "private Sales intelligence Operations bridge",
+  "required": ["schemaVersion", "classification", "draftId", "organizerId", "contactId", "opportunityId", "sourceRequest", "sourceMaterialHash", "sourceHash", "inputHash", "draft", "status", "createdAt", "createdBy", "reviewedAt", "reviewedBy"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "classification": {"const": "sales_private"},
+    "draftId": {"$ref": "#/definitions/id"},
+    "organizerId": {"$ref": "#/definitions/id"},
+    "contactId": {"$ref": "#/definitions/id"},
+    "opportunityId": {"$ref": "#/definitions/id"},
+    "sourceRequest": {"type": "object", "additionalProperties": false, "required": ["organizerId", "contactId", "opportunityId", "observationIds", "capabilityIds", "referenceIds", "ctaIds", "channel", "purpose"], "properties": {
+      "organizerId": {"$ref": "#/definitions/id"},
+      "contactId": {"$ref": "#/definitions/id"},
+      "opportunityId": {"$ref": "#/definitions/id"},
+      "observationIds": {"$ref": "#/definitions/ids"},
+      "capabilityIds": {"$ref": "#/definitions/ids"},
+      "referenceIds": {"$ref": "#/definitions/ids"},
+      "ctaIds": {"$ref": "#/definitions/ids"},
+      "channel": {"enum": ["email", "message"]},
+      "purpose": {"enum": ["first_message", "follow_up"]},
+      "priorActivityId": {"$ref": "#/definitions/id"}
+    }},
+    "sourceMaterialHash": {"$ref": "#/definitions/hash"},
+    "sourceHash": {"$ref": "#/definitions/hash"},
+    "inputHash": {"$ref": "#/definitions/hash"},
+    "draft": {"$ref": "../operations/outreach_drafting_draft.schema.json"},
+    "status": {"enum": ["pending_review", "approved"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "createdBy": {"$ref": "#/definitions/id"},
+    "reviewedAt": {"type": ["string", "null"], "format": "date-time"},
+    "reviewedBy": {"anyOf": [{"$ref": "#/definitions/id"}, {"type": "null"}]}
+  },
+  "definitions": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "ids": {"type": "array", "maxItems": 12, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}}
+  }
+}

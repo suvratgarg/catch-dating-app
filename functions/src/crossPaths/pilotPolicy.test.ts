@@ -61,6 +61,14 @@ test(
       {...enabled, crossPathsDiscoveryEnabled: false}
     ), "pending");
     assert.equal(crossPathsEventWriteInvalidationMode(
+      {...enabled, publicationState: "published"},
+      {...enabled, publicationState: "private"}
+    ), "pending");
+    assert.equal(crossPathsEventWriteInvalidationMode(
+      {...enabled, publicationState: "private"},
+      {...enabled, publicationState: "published"}
+    ), "none");
+    assert.equal(crossPathsEventWriteInvalidationMode(
       enabled,
       {...enabled, status: "cancelled"}
     ), "all");

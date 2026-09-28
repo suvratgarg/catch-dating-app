@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {onRequest} from "firebase-functions/v2/https";
+import {HttpsError, onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
 import type {JoinWaitlistHTTPResponse} from
   "../shared/generated/joinWaitlistHttpResponse";
@@ -11,6 +11,8 @@ import {
 import {
   validateJoinWaitlistHTTPResponse,
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
+
+import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -540,59 +542,91 @@ export const joinWaitlist = onRequest(
       .firestore()
       .collection("marketingConversionEvents")
       .doc(waitlistRef.id);
+    const intent = prepareHostSalesIntent({
+      waitlistId: waitlistRef.id,
+      requestId: marketingAnalytics?.eventId ?? null,
+      fullName, email, city, role, hostApplication,
+      entryRoute: marketingAnalytics?.pagePath?.split(/[?#]/)[0] ?? null,
+    });
+    const intentRef = intent ? admin.firestore()
+      .collection("salesInboundIntents").doc(intent.intentId) : null;
     let alreadyJoined = false;
 
-    await admin.firestore().runTransaction(async (transaction) => {
-      const existing = await transaction.get(waitlistRef);
-      const baseData = {
-        fullName,
-        email,
-        city,
-        role,
-        instagram,
-        source: "catchdates.com",
-        referrer: referrer || null,
-        userAgent: userAgent || null,
-        hostApplication,
-        marketingAnalytics,
-        marketingAttribution,
-      };
+    try {
+      await admin.firestore().runTransaction(async (transaction) => {
+        const existing = await transaction.get(waitlistRef);
+        const priorIntent = intentRef ? await transaction.get(intentRef) : null;
+        if (intent && intentRef) {
+          const replay = hostSalesIntentReplay(priorIntent?.data(), intent);
+          if (replay !== null) {
+            alreadyJoined = replay;
+            return;
+          }
+          transaction.create(intentRef, {
+            ...intent,
+            alreadyJoined: existing.exists,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        }
+        const baseData = {
+          fullName,
+          email,
+          city,
+          role,
+          instagram,
+          source: "catchdates.com",
+          referrer: referrer || null,
+          userAgent: userAgent || null,
+          hostApplication,
+          marketingAnalytics,
+          marketingAttribution,
+        };
 
-      if (existing.exists) {
-        alreadyJoined = true;
-        transaction.update(waitlistRef, {
+        if (existing.exists) {
+          alreadyJoined = true;
+          transaction.update(waitlistRef, {
+            ...baseData,
+            lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+            submissionCount: admin.firestore.FieldValue.increment(1),
+          });
+          return;
+        }
+
+        transaction.create(waitlistRef, {
           ...baseData,
+          status: "pending",
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
           lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
-          submissionCount: admin.firestore.FieldValue.increment(1),
+          submissionCount: 1,
+        });
+
+        transaction.set(conversionRef, {
+          analytics: marketingAnalytics,
+          attribution: marketingAttribution,
+          city,
+          consent: marketingAnalytics?.consent ?? null,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          eventId: conversionEventId,
+          eventName: conversionName,
+          leadId: waitlistRef.id,
+          leadPath: waitlistRef.path,
+          hostApplication,
+          role,
+          source: "catchdates.com",
+          status: "readyForReview",
+          standardEvent: "Lead",
+        });
+      });
+    } catch (error) {
+      if (error instanceof HttpsError && error.code === "already-exists") {
+        sendWaitlistJson(response, 409, {
+          error: "This submission changed. Please review it and submit again.",
         });
         return;
       }
-
-      transaction.create(waitlistRef, {
-        ...baseData,
-        status: "pending",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
-        submissionCount: 1,
-      });
-
-      transaction.set(conversionRef, {
-        analytics: marketingAnalytics,
-        attribution: marketingAttribution,
-        city,
-        consent: marketingAnalytics?.consent ?? null,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        eventId: conversionEventId,
-        eventName: conversionName,
-        leadId: waitlistRef.id,
-        leadPath: waitlistRef.path,
-        hostApplication,
-        role,
-        source: "catchdates.com",
-        status: "readyForReview",
-        standardEvent: "Lead",
-      });
-    });
+      throw error;
+    }
 
     logger.info("Waitlist submission stored", {
       email,

@@ -37,6 +37,7 @@ import {
 } from "../shared/notifications";
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
+import {prepareClaimSalesTransition} from "./claimSalesActivity";
 
 const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -79,6 +80,8 @@ export async function requestOrganizerClaimHandler(
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const requestRef = db.collection("organizerClaimRequests").doc(requestId);
   const deletedUserRef = db.collection("deletedUsers").doc(requesterUid);
+  const transitionId = crypto.randomUUID();
+  const recordedAt = new Date().toISOString();
 
   await db.runTransaction(async (tx) => {
     const [organizerSnap, requestSnap, deletedUserSnap] =
@@ -126,6 +129,10 @@ export async function requestOrganizerClaimHandler(
         "Another organizer claim is already under review."
       );
     }
+    const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
+      organizerId: data.organizerId, claimRequestId: requestId,
+      transitionId, status: "requested", actorUid: requesterUid, recordedAt,
+    });
     const timestamp = deps.serverTimestamp();
     tx.set(requestRef, {
       requestId,
@@ -155,6 +162,7 @@ export async function requestOrganizerClaimHandler(
       claimState: claim.state,
     });
     tx.update(organizerRef, {claim, supplyCapabilities});
+    stageSalesTransition();
   });
   return {requestId, status: "pending"};
 }
@@ -178,6 +186,8 @@ export async function adminDecideOrganizerClaimHandler(
     "adminDecideOrganizerClaim"
   );
   let response: AdminDecideOrganizerClaimResponse | null = null;
+  const transitionId = crypto.randomUUID();
+  const recordedAt = new Date().toISOString();
 
   await db.runTransaction(async (tx) => {
     const requestRef = db.collection("organizerClaimRequests")
@@ -201,6 +211,12 @@ export async function adminDecideOrganizerClaimHandler(
     const organizerSnap = await tx.get(organizerRef);
     const organizer = organizerSnap.exists ?
       requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument") : null;
+    const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
+      organizerId: claimRequest.organizerId, claimRequestId: data.requestId,
+      transitionId,
+      status: data.decision === "approve" ? "approved" : "rejected",
+      actorUid: adminContext.uid, recordedAt,
+    });
 
     if (data.decision === "reject") {
       const timestamp = deps.serverTimestamp();
@@ -260,6 +276,7 @@ export async function adminDecideOrganizerClaimHandler(
         decision: "reject",
         status: "rejected",
       };
+      stageSalesTransition();
       return;
     }
 
@@ -323,7 +340,8 @@ export async function adminDecideOrganizerClaimHandler(
       hostAvatarUrl: avatarUrl,
       hostUserIds: [claimRequest.requesterUid],
       hostProfiles: [ownerProfile],
-      appVisibility: "discoverable",
+      // Ownership approval does not publish the organizer. The publication
+      // action owns appVisibility and publicPage, including route reservation.
       supplyCapabilities: organizerSupplyCapabilitiesFor({
         ownershipState: "claimed",
         claimState: "claimed",
@@ -391,6 +409,7 @@ export async function adminDecideOrganizerClaimHandler(
       decision: "approve",
       status: "approved",
     };
+    stageSalesTransition();
   });
 
   if (!response) {
