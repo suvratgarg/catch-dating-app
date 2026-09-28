@@ -490,6 +490,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // Admin/internal callables. Generous limits — these are role-gated and
   // audit-logged, so the cap is defense-in-depth against a compromised admin
   // token or a runaway client, not a primary control.
+  adminLinkOrganizerIntakeToSales: {maxRequests: 30, windowMs: 60 * 1000},
+  adminGetSalesFunnelReport: {maxRequests: 4, windowMs: 60 * 1000},
   adminGetOverview: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetSafetyTriageDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminDecideSafetyTriageItem: {maxRequests: 30, windowMs: 60 * 1000},

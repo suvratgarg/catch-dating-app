@@ -68,6 +68,8 @@ import {isReciprocallyEligible} from
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireScheduledEvent,
   type ScheduledEventDocument} from "../events/configuredEvent";
+import {isEventPubliclyAccessible} from
+  "../events/eventPublicationAccess";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -1168,6 +1170,7 @@ function validUpcomingEvent(
   const minimumStart = now.toMillis() +
     (requireLead ? minimumInvitationLeadMillis : responseBufferMillis);
   if (
+    !isEventPubliclyAccessible(event) ||
     !crossPathsPilotEventEnabled(event) ||
     event.status !== "active" ||
     event.startTime.toMillis() <= minimumStart

@@ -758,5 +758,95 @@ export {configureEventRegistration, managePublicEventCheckout} from
 export {reconcilePublicEventPayments, onCancelledPublicEventPayments} from
   "./events/publicRegistration/recovery";
 
+export {
+  adminListSalesAccounts,
+  adminGetSalesAccount,
+  adminListSalesTasks,
+  adminListSalesOpportunities,
+  adminListSalesCustomFields,
+  adminGetSalesReceipt,
+  adminListSalesInboundIntents,
+  adminPreviewSalesImport, adminPreviewSalesImportCompensation,
+  adminApplySalesImportCompensation,
+  adminListSalesContacts,
+  adminListSalesEvidence,
+  adminCreateSalesAccount,
+  adminUpdateSalesAccount,
+  adminUpsertSalesTask,
+  adminUpsertSalesOpportunity,
+  adminRecordSalesActivity,
+  adminCreateSalesCustomField,
+  adminSetSalesCustomFieldValue,
+  adminLinkSalesInboundIntent,
+  adminApplySalesImport,
+  adminUpsertSalesContact,
+  adminAddSalesEvidence,
+  adminSetSalesAccountSuppression,
+  adminSetSalesContactability,
+  adminProposeSalesEvidence,
+  adminReviewSalesEvidenceProposal,
+  adminListSalesEvidenceProposals,
+  adminGetSalesCommercialDetail,
+  adminListSalesCommercialReport,
+  adminUpsertSalesPilotPlan,
+  adminReviseSalesQuote,
+  adminApproveSalesQuote,
+  adminAcceptSalesQuote,
+  adminAttestSalesHostSettlement,
+} from "./admin/sales/callables";
+
+export {
+  adminSaveSalesIntelligencePolicy,
+  adminSaveSalesFactorAssessment,
+  adminSaveSalesIntelligenceClause,
+  adminReviewSalesIntelligenceClause,
+  adminSaveSalesScoreSnapshot,
+  adminReviewSalesOutreachDraft,
+  adminCopySalesOutreachDraft,
+  adminGetSalesIntelligenceScore,
+  adminGetSalesIntelligenceCatalog,
+  adminListSalesOutreachDrafts,
+  adminBuildSalesOutreachInput,
+  adminGenerateSalesOutreachDraft,
+  adminGetSalesOutreachDraftJob,
+  adminGetSalesOutreachDraft,
+} from "./admin/salesIntelligence/callables";
+
+export {
+  getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,
+  startSalesDemo,
+  getSalesDemoSession,
+  advanceSalesDemo,
+  adminSaveSalesDemoBlueprint,
+  adminReviewSalesDemoBlueprint,
+  adminWithdrawSalesDemoBlueprint,
+  adminIssueSalesDemoInvitation,
+  adminRevokeSalesDemoInvitation,
+  adminGetSalesDemoBlueprint,
+  adminGetSalesDemoInvitation,
+  adminGetSalesDemoCapability,
+  adminListSalesDemoBlueprints,
+  adminListSalesDemoInvitations,
+  expireSalesDemos,
+} from "./salesDemo/callables";
+
+export {
+  salesAssistant,
+} from "./salesAssistant/http";
+
+export {adminLinkOrganizerIntakeToSales} from
+  "./admin/salesIntakeBridge/callables";
+
+export {adminListSalesFitQueue, adminRefreshSalesFitQueue,
+  adminRefreshSalesFitQueueBatch} from "./admin/salesFitQueue/callables";
 export {onCancelledNativeEventRefunds, onNativeCancellationRefund,
   recoverNativeCancellationRefunds} from "./payments/legacyRefunds/recovery";
+
+export {adminPreviewSalesImportHistory, adminApplySalesImportHistory,
+  adminListSalesImportHistory, adminListSalesImportHistoryRows} from
+  "./admin/sales/callables";
+export {adminGetSalesFunnelReport} from "./admin/salesReporting/callables";
+export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
+  adminPreviewSalesPrivacyPlan, adminReviewSalesPrivacyPlan,
+  adminApplySalesPrivacyBatch, adminGetSalesPrivacyCase} from
+  "./admin/salesPrivacy/callables";

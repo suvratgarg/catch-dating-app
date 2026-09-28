@@ -82,7 +82,7 @@ export function initializeMarketingAnalytics() {
 }
 
 export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_rejection") {
-  if (!getMarketingConsent()?.analytics) return false;
+  if (isPrivateEventUpdate() || !getMarketingConsent()?.analytics) return false;
   trackMarketingEvent("client_error", {
     error_source: errorSource,
     page_path: window.location.pathname,
@@ -212,7 +212,7 @@ function updateConsentMode(consent: MarketingConsent) {
 }
 
 function maybeLoadGtm() {
-  if (gtmLoaded) return;
+  if (isPrivateEventUpdate() || gtmLoaded) return;
   const gtmId = import.meta.env?.VITE_GTM_ID;
   if (!gtmId) return;
 
@@ -315,7 +315,8 @@ function writeJson(key: string, value: unknown) {
 }
 
 function isPrivateEventUpdate(): boolean {
-  return window.location.pathname.startsWith("/event-update/") ||
+  return window.location.pathname.startsWith("/demo/") ||
+    window.location.pathname.startsWith("/event-update/") ||
     window.location.pathname.startsWith("/booking/") ||
     window.location.pathname === "/offer" || window.location.pathname === "/offer/";
 }

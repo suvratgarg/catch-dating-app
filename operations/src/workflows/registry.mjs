@@ -6,6 +6,7 @@ import {
 import {CLI_COMMANDS} from "../platform/cli-contract.mjs";
 import {EVENT_ASSISTANCE_DEFINITION} from "./event-assistance/definition.mjs";
 import {EventAssistanceWorkflow} from "./event-assistance/workflow.mjs";
+import {OUTREACH_DRAFTING_DEFINITION, OutreachDraftingWorkflow} from "./outreach-drafting/workflow.mjs";
 import {SupplyIntakeLearner} from "./supply-intake/learning.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -50,6 +51,13 @@ export const WORKFLOW_REGISTRY = Object.freeze([
     sourceProfileIds: [],
     compatibilityArtifactPatterns: [],
     createWorkflow: (options) => new EventAssistanceWorkflow(options),
+  }),
+  Object.freeze({
+    ...OUTREACH_DRAFTING_DEFINITION,
+    directory: "outreach-drafting",
+    sourceProfileIds: [],
+    compatibilityArtifactPatterns: [],
+    createWorkflow: (options) => new OutreachDraftingWorkflow(options),
   }),
 ]);
 

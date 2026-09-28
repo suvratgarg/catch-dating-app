@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.31.0
-updated: 2026-09-16
+version: 1.33.0
+updated: 2026-09-28
 owner: operations_platform
 status: active
 ---
@@ -954,6 +954,132 @@ approve/hold/reject second, and paused staging only after a current approval.
 The client retains request ids across failed retries, echoes all reviewed hashes
 and revisions, and labels the resulting ceilings as paused. No control on this
 surface activates either ceiling.
+
+## Private sales qualification and outreach drafts
+
+The host-revenue domain provides a read-only normalized-import preflight at
+`npm --prefix operations run revenue:preflight -- --input <private-file> --policy <private-policy>`.
+The caller supplies the versioned policy; repository fixtures contain only
+synthetic examples. Real prospect exports, source documents, score weights,
+commercial playbooks and policy crosswalks remain outside Git. The preflight
+reports source-row identity conflicts, preserved historical scores, evidence
+gaps and complete-factor fit. Missing factors produce a null score with
+coverage, never a zero or a renormalized partial score. It performs no import,
+network request, contact-authority decision or product mutation.
+
+The reviewed migration runner at
+`operations/src/domains/host-revenue/migration-cli.mjs` accepts a private mapped
+source and freezes its full content into bounded packets. `freeze` is offline;
+`review` reads the server preview for every packet; `apply` requires the exact
+review hash and current employee ID/App Check credentials through the existing
+Admin callable client. It uses the Operations store's fenced leases and local
+checkpoints, while Sales business receipts remain authoritative. A restart
+reads each receipt before retrying a missing batch; a changed source, stale
+server preview, lost authority or uncertain receipt read stops progression.
+Every source row must reconcile to created, matched, duplicate, unresolved or
+rejected. An applied batch containing unresolved rows is not a completed
+identity migration. Private artifacts and checkpoints belong outside Git.
+The runner preserves existing account fields while unioning explicitly reviewed
+cohort memberships once per organizer. Existing account revisions bind the
+preview, so concurrent edits require a fresh review. All source rows for one
+organizer stay together in a bounded packet, retaining their separate lineage.
+Offline identity review accounts for unreviewed, unresolved and ambiguous rows
+without inferring a canonical organizer. No public organizer, contact permission,
+listing publication or message is created.
+
+`compensation-preview` and `compensation-apply` support one Owner-reviewed
+import correction. The preview binds the current account, original import
+effect and dependent work. An untouched companion may be archived; a later
+edited account keeps its business fields and only the proven import-owned
+cohort additions may be removed. Later source-history records prevent archival.
+The canonical organizer and original import receipts remain intact. A stale
+preview or revoked Owner stops application, including a retry.
+
+Historical notes use separate immutable `salesImportHistoryRows` and
+`salesImportHistoryRecords`, rather than current activities, qualification or
+contact permission. The sequence is `history-template`, `history-freeze`,
+`history-review`, then `history-apply`, each using private files outside Git.
+Every frozen row is promoted, skipped with a reason, or marked review-needed;
+only rows with reviewed canonical identity and accepted import lineage reach a
+server packet. Exact original cell values and source hashes are checked again
+in the transaction. Unknown occurrence dates stay null; importing a first/last
+touch label does not invent a timestamp. Each reviewed source cell has one
+stable record identity, so retries cannot create another copy or reinterpret
+it silently. The apply action requires fresh Owner authority and a current,
+clear Sales account even on receipt replay. Employees can page the separate
+imported history pane in a host's Activity section. This view grants no current
+score, permission, delivery claim or next step.
+
+The history runner freezes every local row disposition, validates every server
+packet receipt, and checkpoints through a fenced Operations lease. It retries
+the same deterministic action ID through the authoritative domain receipt;
+it does not trust a local checkpoint as proof of current access. An unresolved
+source row keeps the overall run incomplete. All source files, mappings,
+reviews and result artifacts stay private.
+
+`outreach-drafting` is a separate registered shadow workflow. It reuses the
+platform run, lease, checkpoint, cache, budget and receipt owners. Inputs freeze
+reviewed observations, capability statements, permitted references and CTAs.
+Deterministic rendering copies approved sentences exactly; an optional bounded
+model selects clause IDs only. Source text cannot introduce instructions,
+additional tool calls or new factual claims. Initial output is English only.
+This does not change Supply Intake's publication or copy-generation policy.
+
+Execution requires a trusted current-eligibility projection that rechecks the
+organizer, contact, opportunity, suppression, evidence, capability and reference
+revisions. The default factory has no such adapter and fails closed. A model
+also requires explicit activation, a provider and durable per-run and monthly
+budgets. Before provider I/O, the engine persists its leased reservation and
+the monthly adapter atomically reserves a unique attempt against the current
+balance. An uncertain attempt retains its reservation and cannot automatically
+call the provider again. A cache hit still requires current eligibility.
+Clause expiry is checked again before rendering and approval.
+
+Human approval binds the exact text hash and source revisions, records factual,
+tone and manual-channel review, and grants no sending authority. The trusted
+backend must authenticate the reviewer; a supplied actor ID is not authority.
+Copy/export must revalidate current eligibility at its own boundary. An activity
+marked sent elsewhere is an employee attestation, not provider delivery proof.
+
+The private Sales callable runtime now packages and invokes this workflow with
+reviewed source projections and a durable Firestore job/receipt authority. Its
+current production-code path renders approved clauses deterministically with
+zero model calls; temporary filesystem state is scratch and is removed after
+each attempt. Draft reads, approval and copying recheck current sources. This
+source integration does not establish deployment, live model activation, an
+imported prospect cohort or a connected assistant. Those remain explicit
+activation and acceptance gates. Runtime port
+details are maintained in the
+[outreach workflow README](../operations/src/workflows/outreach-drafting/README.md).
+
+## Reviewed host discovery batches
+
+The optional private discovery policy is supplied through the ordinary
+Operations CLI, then frozen into the run plan. It identifies reviewed candidate
+retention decisions with their source hashes. Raw search hits do not count as
+retained prospects. The engine records each decision before creating its work
+item; a paused projection remains incomplete and cannot silently finish.
+Known/rejected identities remain in market coverage without increasing the
+retained count. The normal provider-disabled behavior remains the default.
+
+```sh
+node operations/src/cli/main.mjs run --workflow supply-intake \
+  --market MARKET --discovery-policy /private/path/reviewed-policy.json
+node operations/src/cli/main.mjs discovery preview --run RUN_ID
+node operations/src/cli/main.mjs discovery continue --run RUN_ID \
+  --receipt /private/path/reviewed-continuation.json
+node operations/src/cli/main.mjs resume --run RUN_ID
+```
+
+The reviewer records the exact paused-state binding and required audits in the
+private continuation receipt. A changed state, run, interval or receipt fails
+closed. Continuing the review does not itself project more candidates; the
+ordinary resume command owns that work. If a work-item write is interrupted
+after its retention record, retry repairs the item without double-counting it.
+For a saved plan, `plan --discovery-policy ... --output /private/path/plan.json`
+writes the full frozen material exclusively with mode 0600 and prints only its
+path and hash. The policy, plan and review files belong outside Git. This path
+does not acquire sources, invoke a model, publish listings or send outreach.
 
 ## Adding Another Workflow
 

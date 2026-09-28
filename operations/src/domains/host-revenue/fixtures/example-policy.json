@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "modelId": "synthetic-example",
+  "modelVersion": "example-v1",
+  "status": "shadow",
+  "ratingMinimum": 0,
+  "ratingMaximum": 5,
+  "factors": [
+    {
+      "id": "fragmentation",
+      "weight": 14
+    },
+    {
+      "id": "spend",
+      "weight": 14
+    },
+    {
+      "id": "consolidation",
+      "weight": 14
+    },
+    {
+      "id": "recurrence",
+      "weight": 14
+    },
+    {
+      "id": "complexity",
+      "weight": 14
+    },
+    {
+      "id": "buyerAccess",
+      "weight": 14
+    },
+    {
+      "id": "productFit",
+      "weight": 16
+    }
+  ],
+  "historicalModels": {
+    "example-history": {
+      "documentedVersion": "example-v1"
+    }
+  },
+  "crosswalk": []
+}

@@ -12,6 +12,23 @@ options when specific functions need higher or lower limits.
 
 ## Function inventory
 
+### Sales and related workflow registrations (September 2026)
+
+These are generic software capabilities. Strategy policies, prospect records and source exports remain private configuration.
+
+| Function | File | Purpose |
+|----------|------|---------|
+| `adminListSalesAccounts` / `adminGetSalesAccount` / `adminListSalesTasks` / `adminListSalesOpportunities` / `adminListSalesCustomFields` / `adminGetSalesReceipt` / `adminListSalesInboundIntents` / `adminPreviewSalesImport` / `adminPreviewSalesImportCompensation` / `adminApplySalesImportCompensation` / `adminListSalesContacts` / `adminListSalesEvidence` / `adminCreateSalesAccount` / `adminUpdateSalesAccount` / `adminUpsertSalesTask` / `adminUpsertSalesOpportunity` / `adminRecordSalesActivity` / `adminCreateSalesCustomField` / `adminSetSalesCustomFieldValue` / `adminLinkSalesInboundIntent` / `adminApplySalesImport` / `adminUpsertSalesContact` / `adminAddSalesEvidence` / `adminSetSalesAccountSuppression` / `adminSetSalesContactability` / `adminProposeSalesEvidence` / `adminReviewSalesEvidenceProposal` / `adminListSalesEvidenceProposals` / `adminGetSalesCommercialDetail` / `adminListSalesCommercialReport` / `adminUpsertSalesPilotPlan` / `adminReviseSalesQuote` / `adminApproveSalesQuote` / `adminAcceptSalesQuote` / `adminAttestSalesHostSettlement` | `src/admin/sales/callables.ts` | Private employee Sales records, reviewed imports/corrections, pilot/quote review and Owner settlement attestation; no outreach sending or provider confirmation. |
+| `adminSaveSalesIntelligencePolicy` / `adminSaveSalesFactorAssessment` / `adminSaveSalesIntelligenceClause` / `adminReviewSalesIntelligenceClause` / `adminSaveSalesScoreSnapshot` / `adminReviewSalesOutreachDraft` / `adminCopySalesOutreachDraft` / `adminGetSalesIntelligenceScore` / `adminGetSalesIntelligenceCatalog` / `adminListSalesOutreachDrafts` / `adminBuildSalesOutreachInput` / `adminGenerateSalesOutreachDraft` / `adminGetSalesOutreachDraftJob` / `adminGetSalesOutreachDraft` | `src/admin/salesIntelligence/callables.ts` | Private evidence-backed fit assessments, approved wording and reviewed draft jobs; policy remains Owner-controlled. |
+| `getSalesDemoSetup` / `prepareSalesDemoFormDraft` / `getSalesDemoPreview` / `startSalesDemo` / `getSalesDemoSession` / `advanceSalesDemo` / `adminSaveSalesDemoBlueprint` / `adminReviewSalesDemoBlueprint` / `adminWithdrawSalesDemoBlueprint` / `adminIssueSalesDemoInvitation` / `adminRevokeSalesDemoInvitation` / `adminGetSalesDemoBlueprint` / `adminGetSalesDemoInvitation` / `adminGetSalesDemoCapability` / `adminListSalesDemoBlueprints` / `adminListSalesDemoInvitations` / `expireSalesDemos` | `src/salesDemo/callables.ts` | Reviewed private synthetic demos, contact-bound invitations, sessions, expiry and verified-manager handoff to a private Forms draft; no automatic publication or claim approval. |
+| `salesAssistant` | `src/salesAssistant/http.ts` | Scoped HTTPS actions for registered assistants with expiring delegation and retry receipts; no unrestricted database access. |
+| `adminLinkOrganizerIntakeToSales` | `src/admin/salesIntakeBridge/callables.ts` | Reviewed canonical organizer Intake to private Sales handoff, retryable after curation. |
+| `adminListSalesFitQueue` / `adminRefreshSalesFitQueue` / `adminRefreshSalesFitQueueBatch` | `src/admin/salesFitQueue/callables.ts` | Current evidence-qualified fit projections and bounded company-wide refresh/list operations. |
+| `adminPreviewSalesImportHistory` / `adminApplySalesImportHistory` / `adminListSalesImportHistory` / `adminListSalesImportHistoryRows` | `src/admin/sales/callables.ts` | Owner-reviewed historical source promotion and employee history reads; imported notes do not establish contact permission or delivery. |
+| `adminGetSalesFunnelReport` | `src/admin/salesReporting/callables.ts` | Employee-only bounded snapshot of company hosts, opportunities, stage entries and follow-up obligations; refuses partial totals. |
+| `adminReviewSalesPrivacyPolicy` / `adminRestrictSalesOrganizer` / `adminPreviewSalesPrivacyPlan` / `adminReviewSalesPrivacyPlan` / `adminApplySalesPrivacyBatch` / `adminGetSalesPrivacyCase` | `src/admin/salesPrivacy/callables.ts` | Owner policy review, permanent restriction, exact cleanup inventory/review and bounded deletion batches; retained and external records remain explicit. |
+
+
 ### Callable (client-invoked)
 
 | Function | File | Purpose |
