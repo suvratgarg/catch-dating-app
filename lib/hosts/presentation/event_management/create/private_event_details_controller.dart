@@ -30,6 +30,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
     required this.write,
     this.journal = const PrivateEventDetailsJournal(),
     this.currentUserId,
+    this.reconcile,
   });
 
   final String userId;
@@ -38,6 +39,11 @@ class PrivateEventDetailsController extends ChangeNotifier {
   final ReadPrivateEventForDetails readEvent;
   final ReadDefaultsForPrivateDetails readDefaults;
   final WritePrivateEventDetails write;
+  final Future<PrivateSeatReconciliationResult> Function(
+    PrivateEventDetailsUpdateRequest request,
+  )?
+  reconcile;
+  PrivateSeatReconciliationProgress? reconciliationProgress;
   final PrivateEventDetailsJournal journal;
   final String? Function()? currentUserId;
   bool _actorAvailable = true;
@@ -50,6 +56,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
     _actorAvailable = false;
     event = null;
     defaults = null;
+    reconciliationProgress = null;
   }
 
   PrivateEventBasicSummary? event;
@@ -59,6 +66,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
   bool loading = false;
   bool saving = false;
   bool _disposed = false;
+  bool _discardUnavailable = false;
 
   @override
   void notifyListeners() {
@@ -131,6 +139,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
       );
       return;
     }
+    _discardUnavailable = false;
     final request = PrivateEventDetailsUpdateRequest(
       organizerId: organizerId,
       eventId: eventId,
@@ -179,16 +188,128 @@ class PrivateEventDetailsController extends ChangeNotifier {
     }
   }
 
+  bool get canDiscardPending =>
+      !_discardUnavailable &&
+      reconcile != null &&
+      actorAvailable &&
+      !saving &&
+      !loading &&
+      pending?.details.admissionTerms != null &&
+      pending?.discard != true &&
+      pending!.details.toJson().length == 1 &&
+      !const {'apply', 'cleanup'}.contains(reconciliationProgress?.phase);
+
+  Future<void> discardPending() async {
+    if (!canDiscardPending) return;
+    final request = pending!;
+    saving = true;
+    error = null;
+    notifyListeners();
+    try {
+      await journal.setDiscardIntent(
+        userId: userId,
+        request: request,
+        discard: true,
+      );
+      pending = request.withDiscard(true);
+      if (!actorAvailable) return;
+      await _sendPending(pending!);
+    } catch (cause) {
+      if (actorAvailable) error = cause;
+    } finally {
+      saving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _reloadForReview() async {
+    event = null;
+    defaults = null;
+    if (!actorAvailable) return;
+    final refreshed = await Future.wait<Object>([
+      readEvent(organizerId: organizerId, eventId: eventId),
+      readDefaults(organizerId),
+    ]);
+    if (!actorAvailable) return;
+    final nextEvent = refreshed[0] as PrivateEventBasicSummary;
+    final nextDefaults = refreshed[1] as ManagerEventSetupDefaults;
+    if (nextEvent.eventId != eventId ||
+        nextEvent.organizerId != organizerId ||
+        nextDefaults.organizerId != organizerId) {
+      throw const FormatException('Private details review changed identity');
+    }
+    event = nextEvent;
+    defaults = nextDefaults;
+  }
+
   Future<void> _sendPending(PrivateEventDetailsUpdateRequest request) async {
     if (!actorAvailable) return;
-    final receipt = await write(request);
+    PrivateEventCreateReceipt? receipt;
+    try {
+      if (reconcile != null &&
+          request.details.admissionTerms != null &&
+          request.details.toJson().length == 1) {
+        // Each response is bounded server work. The journal survives interruption;
+        // a very large roster can continue with the same pending command.
+        for (var page = 0; page < 12 && actorAvailable; page++) {
+          final result = await reconcile!(request);
+          if (!actorAvailable) return;
+          if ((result.receipt?.eventId ??
+                  result.progress?.eventId ??
+                  result.discardedEventId) !=
+              eventId) {
+            throw const FormatException(
+              'Guest reconciliation changed identity',
+            );
+          }
+          if (result.discardedEventId != null) {
+            if (result.discardedRequestId != request.requestId) {
+              throw const FormatException('Discard receipt changed request');
+            }
+            await journal.clear(userId: userId, request: request);
+            pending = null;
+            reconciliationProgress = null;
+            await _reloadForReview();
+            return;
+          }
+          receipt = result.receipt;
+          reconciliationProgress = result.progress;
+          notifyListeners();
+          if (receipt != null) break;
+        }
+        if (receipt == null) return;
+      } else {
+        receipt = await write(request);
+      }
+    } catch (cause) {
+      if (actorAvailable && isDefinitiveDetailsRejection(cause, request)) {
+        await journal.clear(userId: userId, request: request);
+        pending = null;
+        reconciliationProgress = null;
+        await _reloadForReview();
+      } else if (actorAvailable &&
+          request.discard &&
+          isDiscardUnavailable(cause, request)) {
+        // The server proved application has started. Preserve the original
+        // settings command and allow completion instead of retrying discard.
+        await journal.setDiscardIntent(
+          userId: userId,
+          request: request,
+          discard: false,
+        );
+        pending = request.withDiscard(false);
+        _discardUnavailable = true;
+      }
+      rethrow;
+    }
     if (!actorAvailable) return;
     if (receipt.eventId != eventId ||
-        receipt.setupRevision <= request.expectedSetupRevision) {
+        receipt.setupRevision != request.expectedSetupRevision + 1) {
       throw const FormatException('Invalid event details receipt');
     }
     await journal.clear(userId: userId, request: request);
     pending = null;
+    reconciliationProgress = null;
     // The acknowledged event revision is unknown until the authorized reread.
     event = null;
     if (!actorAvailable) return;

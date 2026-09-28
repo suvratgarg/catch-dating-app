@@ -30068,5 +30068,21 @@
   "hostsPublicationPublish": "Publish event",
   "@hostsPublicationPublish": {"description": "Host event publication and readiness copy"},
   "hostsPublicationPublishedBody": "This event is published. Visibility and registration are managed separately.",
-  "@hostsPublicationPublishedBody": {"description": "Host event publication and readiness copy"}
+  "@hostsPublicationPublishedBody": {"description": "Host event publication and readiness copy"},
+  "@hostsPrivateEventCheckingGuests": {"description": "Title while reconciling existing guests before admission settings save"},
+  "hostsPrivateEventCheckingGuests": "Checking existing guests",
+  "@hostsPrivateEventCheckingGuestsBody": {"description": "Explains resumable checking without exposing ledger mechanics"},
+  "hostsPrivateEventCheckingGuestsBody": "Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.",
+  "@hostsPrivateEventContinueCheckingGuests": {"description": "Continue the exact pending guest reconciliation command"},
+  "hostsPrivateEventContinueCheckingGuests": "Continue checking guests",
+  "hostsPrivateEventDiscardPending": "Discard change and review settings",
+  "@hostsPrivateEventDiscardPending": {"description": "Explicitly discard unapplied admission settings and unlock review"},
+  "hostsPrivateEventDiscardPendingBody": "Discard changes that have not begun. If the settings have already saved, we will show the saved result.",
+  "@hostsPrivateEventDiscardPendingBody": {"description": "Explains the pre-apply discard boundary"},
+  "hostsPrivateEventDiscarding": "Discarding pending change",
+  "@hostsPrivateEventDiscarding": {"description": "Pending discard progress title"},
+  "hostsPrivateEventDiscardingBody": "Returning to your settings. If the change already saved, we will retrieve its result.",
+  "@hostsPrivateEventDiscardingBody": {"description": "Pending discard explanation"},
+  "hostsPrivateEventContinueDiscarding": "Continue discarding change",
+  "@hostsPrivateEventContinueDiscarding": {"description": "Resume journaled discard request"}
 }

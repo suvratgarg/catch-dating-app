@@ -23383,4 +23383,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPublicationPublishedBody =>
       'This event is published. Visibility and registration are managed separately.';
+
+  @override
+  String get hostsPrivateEventCheckingGuests => 'Checking existing guests';
+
+  @override
+  String get hostsPrivateEventCheckingGuestsBody =>
+      'Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.';
+
+  @override
+  String get hostsPrivateEventContinueCheckingGuests =>
+      'Continue checking guests';
+
+  @override
+  String get hostsPrivateEventDiscardPending =>
+      'Discard change and review settings';
+
+  @override
+  String get hostsPrivateEventDiscardPendingBody =>
+      'Discard changes that have not begun. If the settings have already saved, we will show the saved result.';
+
+  @override
+  String get hostsPrivateEventDiscarding => 'Discarding pending change';
+
+  @override
+  String get hostsPrivateEventDiscardingBody =>
+      'Returning to your settings. If the change already saved, we will retrieve its result.';
+
+  @override
+  String get hostsPrivateEventContinueDiscarding =>
+      'Continue discarding change';
 }

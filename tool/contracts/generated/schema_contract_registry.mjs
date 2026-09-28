@@ -25875,6 +25875,230 @@ export const eventOfferConfigurationCallableResponseSchema = {
   }
 };
 
+export const reconcilePrivateEventSeatsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/reconcile_private_event_seats_payload.schema.json",
+  "title": "ReconcilePrivateEventSeatsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "expectedSetupRevision",
+    "reviewedDefaultsHash",
+    "details"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999999
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admissionTerms"
+      ],
+      "properties": {
+        "admissionTerms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capacityLimit",
+            "priceInPaise",
+            "currency",
+            "cancellationPolicyId"
+          ],
+          "properties": {
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "priceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "cancellationPolicyId": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "discard": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const privateSeatReconciliationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/private_seat_reconciliation_response.schema.json",
+  "title": "PrivateSeatReconciliationCallableResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "progress"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "progress"
+        },
+        "progress": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "migrationRevision",
+            "phase",
+            "scannedRows",
+            "appliedRows",
+            "outputRows",
+            "occupied"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "migrationRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "phase": {
+              "type": "string",
+              "enum": [
+                "scan",
+                "plan",
+                "apply",
+                "cleanup",
+                "discard"
+              ]
+            },
+            "scannedRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 750
+            },
+            "appliedRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1500
+            },
+            "outputRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1500
+            },
+            "occupied": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "receipt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "complete"
+        },
+        "receipt": {
+          "title": "PrivateEventSetupMutationCallableResponse",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "setupRevision",
+            "replayed"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "setupRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "replayed": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "eventId",
+        "requestId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "discarded"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+        }
+      }
+    }
+  ]
+};
+
 export const updatePrivateEventDetailsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/update_private_event_details_payload.schema.json",
@@ -29082,7 +29306,6 @@ export const eventSetupReceiptDocumentSchema = {
     "organizerId",
     "requestHash",
     "eventId",
-    "appliedRevision",
     "createdAt"
   ],
   "properties": {
@@ -29139,12 +29362,58 @@ export const eventSetupReceiptDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "outcome": {
+      "type": "string",
+      "const": "discarded"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999999
     }
   },
   "x-firestore-collection": "eventSetupReceipts",
   "x-firestore-path": "eventSetupReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "private event setup operations"
+  "x-owner": "private event setup operations",
+  "oneOf": [
+    {
+      "required": [
+        "appliedRevision"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "required": [
+        "outcome",
+        "expectedSetupRevision"
+      ],
+      "properties": {
+        "operation": {
+          "const": "details"
+        }
+      },
+      "not": {
+        "required": [
+          "appliedRevision"
+        ]
+      }
+    }
+  ]
 };
 
 export const organizerEventSetupPreferencesSchema = {

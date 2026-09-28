@@ -149,13 +149,28 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                               if (controller.pending != null) ...[
                                 CatchField.read(
                                   copy: copy,
-                                  title: l10n.hostsEventPreferencePending,
-                                  body: l10n.hostsEventPreferencePendingBody,
+                                  title: controller.pending?.discard == true
+                                      ? l10n.hostsPrivateEventDiscarding
+                                      : controller.reconciliationProgress ==
+                                            null
+                                      ? l10n.hostsEventPreferencePending
+                                      : l10n.hostsPrivateEventCheckingGuests,
+                                  body: controller.pending?.discard == true
+                                      ? l10n.hostsPrivateEventDiscardingBody
+                                      : controller.reconciliationProgress ==
+                                            null
+                                      ? l10n.hostsEventPreferencePendingBody
+                                      : l10n.hostsPrivateEventCheckingGuestsBody,
                                   icon: CatchIcons.scheduleOutlined,
                                 ),
                                 CatchField.action(
                                   copy: copy,
-                                  title: l10n.hostsEventPreferenceRetry,
+                                  title: controller.pending?.discard == true
+                                      ? l10n.hostsPrivateEventContinueDiscarding
+                                      : controller.reconciliationProgress ==
+                                            null
+                                      ? l10n.hostsEventPreferenceRetry
+                                      : l10n.hostsPrivateEventContinueCheckingGuests,
                                   onTap: controller.saving
                                       ? null
                                       : () => unawaited(
@@ -163,6 +178,15 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                         ),
                                 ),
                               ],
+                              if (controller.canDiscardPending)
+                                CatchField.action(
+                                  copy: copy,
+                                  title: l10n.hostsPrivateEventDiscardPending,
+                                  body:
+                                      l10n.hostsPrivateEventDiscardPendingBody,
+                                  onTap: () =>
+                                      unawaited(controller.discardPending()),
+                                ),
                               if (controller.error != null) ...[
                                 CatchField.read(
                                   copy: copy,

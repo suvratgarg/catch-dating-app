@@ -1,3 +1,4 @@
+import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
@@ -62,6 +63,7 @@ export async function setEventPublication(params: {
         setupRevision: receipt.appliedRevision as number,
         publicationState: command.publicationState, replayed: true};
     }
+    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     const revision = requireRevision(event);
     if (revision !== command.expectedSetupRevision) {
       throw new HttpsError("aborted", "Event changed. Review it again.", {

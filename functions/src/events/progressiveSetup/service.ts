@@ -1,3 +1,4 @@
+import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerDocument} from
@@ -196,6 +197,7 @@ export async function updatePrivateEventBasics(params: {
       return {eventId: command.eventId,
         setupRevision: receipt.appliedRevision as number, replayed: true};
     }
+    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     if (event.publicationState !== "private" ||
         event.status !== "active") {
       throw new HttpsError("failed-precondition",
@@ -290,7 +292,7 @@ export function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
   return db.collection("eventSetupReceipts").doc(id);
 }
 
-type SetupOperation = "create" | "update" | "preferences" |
+type SetupOperation = "create" | "update" | "preferences" | "details" |
   "publish" | "unpublish";
 
 export function hashRequest(operation: SetupOperation,

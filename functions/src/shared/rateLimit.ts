@@ -90,6 +90,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   listMyHostAssignments: {maxRequests: 30, windowMs: 60 * 1000},
   setEventPublication: {maxRequests: 15, windowMs: 60 * 1000},
   updatePrivateEventDetails: {maxRequests: 30, windowMs: 60 * 1000},
+  reconcilePrivateEventSeats: {maxRequests: 30, windowMs: 60 * 1000},
   getPrivateEventSetup: {maxRequests: 60, windowMs: 60 * 1000},
   getOrganizerEventSetupDefaults: {maxRequests: 60, windowMs: 60 * 1000},
   updateOrganizerEventSetupDefaults: {maxRequests: 10, windowMs: 60 * 1000},

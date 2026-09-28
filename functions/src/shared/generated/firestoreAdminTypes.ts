@@ -2317,8 +2317,10 @@ export interface EventSetupReceiptDocument {
   organizerId: string;
   requestHash: string;
   eventId: string;
-  appliedRevision: number;
+  appliedRevision?: number;
   createdAt: FirebaseFirestore.Timestamp;
+  outcome?: "discarded";
+  expectedSetupRevision?: number;
 }
 
 export interface OrganizerEventSetupDefaultsDocument {

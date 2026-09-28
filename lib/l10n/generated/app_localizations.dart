@@ -37671,6 +37671,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This event is published. Visibility and registration are managed separately.'**
   String get hostsPublicationPublishedBody;
+
+  /// Title while reconciling existing guests before admission settings save
+  ///
+  /// In en, this message translates to:
+  /// **'Checking existing guests'**
+  String get hostsPrivateEventCheckingGuests;
+
+  /// Explains resumable checking without exposing ledger mechanics
+  ///
+  /// In en, this message translates to:
+  /// **'Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.'**
+  String get hostsPrivateEventCheckingGuestsBody;
+
+  /// Continue the exact pending guest reconciliation command
+  ///
+  /// In en, this message translates to:
+  /// **'Continue checking guests'**
+  String get hostsPrivateEventContinueCheckingGuests;
+
+  /// Explicitly discard unapplied admission settings and unlock review
+  ///
+  /// In en, this message translates to:
+  /// **'Discard change and review settings'**
+  String get hostsPrivateEventDiscardPending;
+
+  /// Explains the pre-apply discard boundary
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes that have not begun. If the settings have already saved, we will show the saved result.'**
+  String get hostsPrivateEventDiscardPendingBody;
+
+  /// Pending discard progress title
+  ///
+  /// In en, this message translates to:
+  /// **'Discarding pending change'**
+  String get hostsPrivateEventDiscarding;
+
+  /// Pending discard explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Returning to your settings. If the change already saved, we will retrieve its result.'**
+  String get hostsPrivateEventDiscardingBody;
+
+  /// Resume journaled discard request
+  ///
+  /// In en, this message translates to:
+  /// **'Continue discarding change'**
+  String get hostsPrivateEventContinueDiscarding;
 }
 
 class _AppLocalizationsDelegate

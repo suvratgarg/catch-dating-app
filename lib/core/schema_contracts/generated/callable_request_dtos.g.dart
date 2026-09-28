@@ -284,6 +284,7 @@ export 'callables/publish_organizer_application_form_callable_request.g.dart';
 export 'callables/publish_organizer_form_callable_request.g.dart';
 export 'callables/query_organizer_form_responses_callable_request.g.dart';
 export 'callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
+export 'callables/reconcile_private_event_seats_callable_request.g.dart';
 export 'callables/record_event_assistance_checkpoint_callable_request.g.dart';
 export 'callables/record_event_invite_link_open_callable_request.g.dart';
 export 'callables/record_event_no_show_callable_request.g.dart';
