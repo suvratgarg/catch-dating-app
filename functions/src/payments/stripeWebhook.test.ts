@@ -177,6 +177,49 @@ test("stripeWebhookHandler marks expired checkout sessions as failed",
     });
   });
 
+test("late Stripe failure preserves paid and refund records", async () => {
+  for (const type of ["checkout.session.expired",
+    "checkout.session.async_payment_failed"]) {
+    for (const status of ["completed", "refunded", "refundFailed"]) {
+      const before = {status, checkoutSessionId: "cs_test_123",
+        provider: "stripe", providerPaymentId: "pi_test_123"};
+      const firestore = new FakeFirestore({
+        "payments/payment_1": before,
+      });
+      const payload = checkoutEventPayload(type);
+      await stripeWebhookHandler(payload, stripeSignature(payload),
+        "whsec_test", {firestore: () => firestore as unknown as
+          FirebaseFirestore.Firestore, stripe: () => stripeClient({}),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => undefined});
+      assert.deepEqual(firestore.data["payments/payment_1"], before);
+    }
+  }
+});
+
+test("Stripe failure rechecks current payment authority",
+  async () => {
+    for (const change of [{status: "completed"},
+      {checkoutSessionId: "cs_new"}, {provider: "razorpay"}]) {
+      const before = {status: "pending", checkoutSessionId: "cs_test_123",
+        provider: "stripe"};
+      const firestore = new FakeFirestore({
+        "payments/payment_1": before,
+      });
+      firestore.beforeTransaction = () => {
+        firestore.data["payments/payment_1"] = {...before, ...change};
+      };
+      const payload = checkoutEventPayload("checkout.session.expired");
+      await stripeWebhookHandler(payload, stripeSignature(payload),
+        "whsec_test", {firestore: () => firestore as unknown as
+          FirebaseFirestore.Firestore, stripe: () => stripeClient({}),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => undefined});
+      assert.deepEqual(firestore.data["payments/payment_1"],
+        {...before, ...change});
+    }
+  });
+
 test("stripeWebhookHandler rejects invalid webhook signatures", async () => {
   const payload = checkoutEventPayload("checkout.session.completed");
 
@@ -274,6 +317,18 @@ interface QueryFilter {
 }
 
 class FakeFirestore {
+  beforeTransaction?: () => void;
+
+  async runTransaction<T>(callback: (tx: {
+    get: (ref: FakeDocRef) => Promise<FakeDocSnapshot>;
+    set: (ref: FakeDocRef, data: Record<string, unknown>,
+      options: {merge: boolean}) => Promise<void>;
+  }) => Promise<T>): Promise<T> {
+    this.beforeTransaction?.();
+    return callback({get: (ref) => ref.get(),
+      set: (ref, data, options) => ref.set(data, options)});
+  }
+
   constructor(readonly data: Record<string, unknown>) {}
 
   collection(collectionPath: string) {
