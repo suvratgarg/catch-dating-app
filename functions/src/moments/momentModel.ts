@@ -62,6 +62,10 @@ export type MomentAudience = {
   functionId: string;
   rsvp: ReadonlyArray<"attending" | "maybe">;
   householdDedupe: boolean;
+  /** Distance-aware lead: shift each recipient's due earlier by the
+   *  hotel→function travel estimate (hotel via their hotel-linked guest
+   *  group). Program scopes only — functionGuests is already program-only. */
+  travelTimeLead: boolean;
 } | {
   kind: "households";
   rsvpPendingOnly: boolean;
@@ -116,6 +120,20 @@ export interface MomentDefinition {
   revision: number;
 }
 
+export interface GeoPoint {
+  latitude: number;
+  longitude: number;
+}
+
+/** Hotel/group geography for distance-aware leads. Loaded lazily per
+ *  program scope — only armed moments with `travelTimeLead` need it. */
+export interface TravelFacts {
+  /** groupId -> hotelId for guest groups pinned to a program hotel. */
+  groupHotelIds: Readonly<Record<string, string>>;
+  /** hotelId -> coordinates for program hotels carrying a location. */
+  hotelLocations: Readonly<Record<string, GeoPoint>>;
+}
+
 export interface AnchorFacts {
   scope: {
     startsAtMillis: number;
@@ -134,11 +152,16 @@ export interface AnchorFacts {
     endsAtMillis: number;
     revision: number;
     cancelled: boolean;
+    /** Venue pin; null when the function has no coordinates. Optional so
+     *  event-scope facts (empty map) and older readers still compile. */
+    venueLocation?: GeoPoint | null;
   }>>;
   travelLegs: Readonly<Record<string, {
     atMillis: number;
     revision: number;
   }>>;
+  /** Present only when a sweep loaded hotel/group geography. */
+  travel?: TravelFacts;
 }
 
 export type RunStatus =

@@ -5,6 +5,10 @@ import {
   type MomentInitiation,
   type RunRecord,
 } from "./momentModel";
+import {
+  maxTravelLeadMinutes,
+  type TravelEstimateContext,
+} from "./momentTravel";
 
 export type ResolvedAnchor = {
   kind: "resolved";
@@ -135,7 +139,13 @@ export function planRun(
   moment: MomentDefinition,
   facts: AnchorFacts,
   nowMillis: number,
-  options?: {graceMillis?: number},
+  options?: {
+    graceMillis?: number;
+    /** Distance-lead context; the run wakes early enough for the farthest
+     *  hotel-linked guest. The shift is inside the deterministic run id,
+     *  so a changed hotel set self-heals on the next replan. */
+    travel?: TravelEstimateContext | null;
+  },
 ): PlanResult {
   const graceMillis = options?.graceMillis ?? DEFAULT_GRACE_MILLIS;
   requireMillis(nowMillis);
@@ -160,9 +170,17 @@ export function planRun(
   }
   const offsetMillis = initiation.kind === "anchored" ?
     initiation.offsetMinutes * 60_000 : 0;
-  const dueAtMillis = anchor.atMillis + offsetMillis;
+  const wantsLead = moment.audience.kind === "functionGuests" &&
+    moment.audience.travelTimeLead === true;
+  const travelLeadMillis = wantsLead && options?.travel ?
+    maxTravelLeadMinutes(options.travel) * 60_000 : 0;
+  const nominalDue = anchor.atMillis + offsetMillis;
+  const dueAtMillis = nominalDue - travelLeadMillis;
   requireMillis(dueAtMillis);
-  if (dueAtMillis < nowMillis - graceMillis) {
+  // The send window is nominal-relative: the lead only moves the wake-up,
+  // so staleness is judged on the nominal due. A deferred run mid-flight
+  // keeps planning until every recipient's own due has passed.
+  if (nominalDue < nowMillis - graceMillis) {
     return {kind: "unplannable", reason: "dueInPast"};
   }
   return {
@@ -182,10 +200,11 @@ export function replan(
   facts: AnchorFacts,
   existingRuns: ReadonlyArray<RunRecord>,
   nowMillis: number,
+  options?: {travel?: TravelEstimateContext | null},
 ): ReplanResult {
   const planned = existingRuns.filter(
     (run) => run.momentId === moment.momentId && run.status === "planned");
-  const result = planRun(moment, facts, nowMillis);
+  const result = planRun(moment, facts, nowMillis, {travel: options?.travel});
   if (result.kind !== "planned") {
     return {
       supersede: planned.map((run) => run.runId),
@@ -233,6 +252,29 @@ export function planManualRun(
       status: "planned",
     },
   };
+}
+
+/**
+ * The anchor+offset time a travel-lead run counts down from. Recipients
+ * fire at `nominal − theirLead`; the run's own dueAt is nominal minus the
+ * cohort max. Triggered/manual runs and unresolvable anchors have no
+ * nominal — the run's dueAt stands in so every recipient fires at once.
+ */
+export function nominalDueAtMillis(
+  moment: MomentDefinition,
+  run: RunRecord,
+  facts: AnchorFacts,
+): number {
+  if (moment.initiation.kind === "scheduled") {
+    return moment.initiation.atMillis;
+  }
+  if (moment.initiation.kind === "anchored") {
+    const anchor = resolveAnchor(moment.initiation, facts);
+    if (anchor.kind === "resolved") {
+      return anchor.atMillis + moment.initiation.offsetMinutes * 60_000;
+    }
+  }
+  return run.dueAtMillis;
 }
 
 export function selectDueRuns(

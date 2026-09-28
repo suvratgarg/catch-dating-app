@@ -257,6 +257,7 @@ class ProgramGuestGroupRow {
     required this.memberCount,
     required this.revision,
     this.sortOrder,
+    this.hotelId,
   });
 
   factory ProgramGuestGroupRow.fromMap(Map<Object?, Object?> map) =>
@@ -270,6 +271,7 @@ class ProgramGuestGroupRow {
         sortOrder: map['sortOrder'] is num
             ? (map['sortOrder']! as num).toInt()
             : null,
+        hotelId: map['hotelId'] is String ? map['hotelId']! as String : null,
         revision: requiredInt(map, 'revision'),
       );
 
@@ -278,6 +280,10 @@ class ProgramGuestGroupRow {
   final String dimension;
   final int memberCount;
   final int? sortOrder;
+
+  /// `programHotels` link — where this group stays; feeds distance-aware
+  /// moment lead times.
+  final String? hotelId;
   final int revision;
 }
 

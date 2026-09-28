@@ -142,6 +142,7 @@ void main() {
               'groupId': 'grp-1',
               'label': 'Bride side',
               'dimension': 'side',
+              'hotelId': 'hotel-1',
               'memberCount': 40,
               'sortOrder': 1,
               'revision': 5,
@@ -164,6 +165,7 @@ void main() {
       expect(page.households.single.label, 'Mehta household');
       expect(page.functionGuests.single.partySize, 3);
       expect(page.groups.single.dimension, 'side');
+      expect(page.groups.single.hotelId, 'hotel-1');
       expect(page.groups.single.memberCount, 40);
       expect(page.nextCursor, 'cursor-2');
     });
@@ -314,6 +316,46 @@ void main() {
         });
       },
     );
+
+    test('upsertGuestGroup distinguishes hotel set, clear and preserve', () async {
+      final functions = _Functions()
+        ..response = {
+          'entityId': 'grp-1',
+          'revision': 2,
+          'alreadyApplied': false,
+        };
+      final repository = ProgramSetupRepository(functions);
+
+      await repository.upsertGuestGroup(
+        programId: 'program',
+        label: 'Bride side',
+        dimension: 'side',
+        hotelId: 'hotel-1',
+      );
+      expect((functions.payload! as Map)['hotelId'], 'hotel-1');
+
+      await repository.upsertGuestGroup(
+        programId: 'program',
+        groupId: 'grp-1',
+        label: 'Bride side',
+        dimension: 'side',
+        clearHotel: true,
+      );
+      final cleared = functions.payload! as Map;
+      expect(cleared.containsKey('hotelId'), isTrue);
+      expect(cleared['hotelId'], isNull);
+
+      await repository.upsertGuestGroup(
+        programId: 'program',
+        groupId: 'grp-1',
+        label: 'Bride side',
+        dimension: 'side',
+      );
+      expect(
+        (functions.payload! as Map).containsKey('hotelId'),
+        isFalse,
+      );
+    });
   });
 
   group('importManifest', () {

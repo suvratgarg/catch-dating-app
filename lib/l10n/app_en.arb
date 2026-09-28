@@ -23579,6 +23579,13 @@
     "x-surface": "hosts.events.presentation.moments",
     "x-max-chars": 32
   },
+  "hostMomentTravelTimeLead": "Shift send time by hotel distance",
+  "@hostMomentTravelTimeLead": {
+    "description": "Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
   "hostMomentSave": "Save moment",
   "@hostMomentSave": {
     "description": "Moment editor save action label.",

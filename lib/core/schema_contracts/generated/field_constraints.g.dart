@@ -77105,6 +77105,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId = CatchContractFieldConstraints(
     path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId',
     maxLength: 180,
@@ -95671,6 +95676,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const organizerMomentCallableResponseMomentAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerMomentCallableResponseMomentInitiationAnchorId = CatchContractFieldConstraints(
     path: 'organizerMomentCallableResponse.moment.initiation.anchorId',
     maxLength: 180,
@@ -95926,6 +95936,11 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['signedUp'],
+  );
+
+  static const organizerMomentDocumentAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
   );
 
   static const organizerMomentDocumentCreatedAtMillis = CatchContractFieldConstraints(
@@ -104736,6 +104751,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programGuestGroupDocumentHotelId = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programGuestGroupDocumentLabel = CatchContractFieldConstraints(
     path: 'programGuestGroupDocument.label',
     maxLength: 140,
@@ -104819,6 +104841,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -122435,6 +122464,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const upsertOrganizerMomentCallablePayloadAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const upsertOrganizerMomentCallablePayloadInitiationAnchorId = CatchContractFieldConstraints(
     path: 'upsertOrganizerMomentCallablePayload.initiation.anchorId',
     maxLength: 180,
@@ -122914,6 +122948,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadHotelId = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.hotelId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -136896,6 +136937,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIdsItems,
     'listOrganizerMomentsCallableResponse.moments.items.audience.statuses': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatuses,
     'listOrganizerMomentsCallableResponse.moments.items.audience.statuses.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatusesItems,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.travelTimeLead': listOrganizerMomentsCallableResponseMomentsItemsAudienceTravelTimeLead,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorKind,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis': listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis,
@@ -139464,6 +139506,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentCallableResponse.moment.audience.scopeIds.items': organizerMomentCallableResponseMomentAudienceScopeIdsItems,
     'organizerMomentCallableResponse.moment.audience.statuses': organizerMomentCallableResponseMomentAudienceStatuses,
     'organizerMomentCallableResponse.moment.audience.statuses.items': organizerMomentCallableResponseMomentAudienceStatusesItems,
+    'organizerMomentCallableResponse.moment.audience.travelTimeLead': organizerMomentCallableResponseMomentAudienceTravelTimeLead,
     'organizerMomentCallableResponse.moment.initiation.anchorId': organizerMomentCallableResponseMomentInitiationAnchorId,
     'organizerMomentCallableResponse.moment.initiation.anchorKind': organizerMomentCallableResponseMomentInitiationAnchorKind,
     'organizerMomentCallableResponse.moment.initiation.atMillis': organizerMomentCallableResponseMomentInitiationAtMillis,
@@ -139502,6 +139545,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.audience.scopeIds.items': organizerMomentDocumentAudienceScopeIdsItems,
     'organizerMomentDocument.audience.statuses': organizerMomentDocumentAudienceStatuses,
     'organizerMomentDocument.audience.statuses.items': organizerMomentDocumentAudienceStatusesItems,
+    'organizerMomentDocument.audience.travelTimeLead': organizerMomentDocumentAudienceTravelTimeLead,
     'organizerMomentDocument.createdAtMillis': organizerMomentDocumentCreatedAtMillis,
     'organizerMomentDocument.initiation.anchorId': organizerMomentDocumentInitiationAnchorId,
     'organizerMomentDocument.initiation.anchorKind': organizerMomentDocumentInitiationAnchorKind,
@@ -140715,6 +140759,7 @@ abstract final class CatchContractConstraints {
     'programGuestGroupDocument.createdAt._nanoseconds': programGuestGroupDocumentCreatedAtNanoseconds,
     'programGuestGroupDocument.createdAt._seconds': programGuestGroupDocumentCreatedAtSeconds,
     'programGuestGroupDocument.dimension': programGuestGroupDocumentDimension,
+    'programGuestGroupDocument.hotelId': programGuestGroupDocumentHotelId,
     'programGuestGroupDocument.label': programGuestGroupDocumentLabel,
     'programGuestGroupDocument.memberCount': programGuestGroupDocumentMemberCount,
     'programGuestGroupDocument.organizerId': programGuestGroupDocumentOrganizerId,
@@ -140726,6 +140771,7 @@ abstract final class CatchContractConstraints {
     'programGuestGroupListCallableResponse.groups': programGuestGroupListCallableResponseGroups,
     'programGuestGroupListCallableResponse.groups.items.dimension': programGuestGroupListCallableResponseGroupsItemsDimension,
     'programGuestGroupListCallableResponse.groups.items.groupId': programGuestGroupListCallableResponseGroupsItemsGroupId,
+    'programGuestGroupListCallableResponse.groups.items.hotelId': programGuestGroupListCallableResponseGroupsItemsHotelId,
     'programGuestGroupListCallableResponse.groups.items.label': programGuestGroupListCallableResponseGroupsItemsLabel,
     'programGuestGroupListCallableResponse.groups.items.memberCount': programGuestGroupListCallableResponseGroupsItemsMemberCount,
     'programGuestGroupListCallableResponse.groups.items.revision': programGuestGroupListCallableResponseGroupsItemsRevision,
@@ -143134,6 +143180,7 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerMomentCallablePayload.audience.scopeIds.items': upsertOrganizerMomentCallablePayloadAudienceScopeIdsItems,
     'upsertOrganizerMomentCallablePayload.audience.statuses': upsertOrganizerMomentCallablePayloadAudienceStatuses,
     'upsertOrganizerMomentCallablePayload.audience.statuses.items': upsertOrganizerMomentCallablePayloadAudienceStatusesItems,
+    'upsertOrganizerMomentCallablePayload.audience.travelTimeLead': upsertOrganizerMomentCallablePayloadAudienceTravelTimeLead,
     'upsertOrganizerMomentCallablePayload.initiation.anchorId': upsertOrganizerMomentCallablePayloadInitiationAnchorId,
     'upsertOrganizerMomentCallablePayload.initiation.anchorKind': upsertOrganizerMomentCallablePayloadInitiationAnchorKind,
     'upsertOrganizerMomentCallablePayload.initiation.atMillis': upsertOrganizerMomentCallablePayloadInitiationAtMillis,
@@ -143200,6 +143247,7 @@ abstract final class CatchContractConstraints {
     'upsertProgramGuestGroupCallablePayload.dimension': upsertProgramGuestGroupCallablePayloadDimension,
     'upsertProgramGuestGroupCallablePayload.expectedRevision': upsertProgramGuestGroupCallablePayloadExpectedRevision,
     'upsertProgramGuestGroupCallablePayload.groupId': upsertProgramGuestGroupCallablePayloadGroupId,
+    'upsertProgramGuestGroupCallablePayload.hotelId': upsertProgramGuestGroupCallablePayloadHotelId,
     'upsertProgramGuestGroupCallablePayload.label': upsertProgramGuestGroupCallablePayloadLabel,
     'upsertProgramGuestGroupCallablePayload.programId': upsertProgramGuestGroupCallablePayloadProgramId,
     'upsertProgramGuestGroupCallablePayload.sortOrder': upsertProgramGuestGroupCallablePayloadSortOrder,

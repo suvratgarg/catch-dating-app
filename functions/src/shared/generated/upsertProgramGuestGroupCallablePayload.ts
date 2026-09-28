@@ -15,4 +15,8 @@ export interface UpsertProgramGuestGroupCallablePayload {
    */
   dimension: string;
   sortOrder?: number;
+  /**
+   * Optional programHotels link — where this group's members stay; feeds distance-aware moment lead times. Omitted preserves the existing link; explicit null clears it.
+   */
+  hotelId?: string | null;
 }

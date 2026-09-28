@@ -16990,6 +16990,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMomentTitleTemplate => 'Title template';
 
   @override
+  String get hostMomentTravelTimeLead => 'Shift send time by hotel distance';
+
+  @override
   String get hostMomentSave => 'Save moment';
 
   @override

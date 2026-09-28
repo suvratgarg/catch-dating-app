@@ -134137,6 +134137,7 @@ export const programGuestGroupDocumentSchema = {
     "dimension",
     "sortOrder",
     "memberCount",
+    "hotelId",
     "createdAt",
     "updatedAt",
     "revision"
@@ -134175,6 +134176,15 @@ export const programGuestGroupDocumentSchema = {
       "minimum": 0,
       "maximum": 100000,
       "description": "Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete."
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group."
     },
     "createdAt": {
       "type": "object",
@@ -136156,6 +136166,13 @@ export const organizerMomentDocumentSchema = {
           ],
           "description": "functionGuests: one send per household when true (default)."
         },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+        },
         "rsvpPendingOnly": {
           "type": [
             "boolean",
@@ -136805,6 +136822,13 @@ export const upsertOrganizerMomentCallablePayloadSchema = {
           ],
           "description": "functionGuests: one send per household when true (default)."
         },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+        },
         "rsvpPendingOnly": {
           "type": [
             "boolean",
@@ -137317,6 +137341,13 @@ export const organizerMomentCallableResponseSchema = {
               ],
               "description": "functionGuests: one send per household when true (default)."
             },
+            "travelTimeLead": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+            },
             "rsvpPendingOnly": {
               "type": [
                 "boolean",
@@ -137716,6 +137747,13 @@ export const listOrganizerMomentsCallableResponseSchema = {
                   "null"
                 ],
                 "description": "functionGuests: one send per household when true (default)."
+              },
+              "travelTimeLead": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
               },
               "rsvpPendingOnly": {
                 "type": [
@@ -139636,6 +139674,15 @@ export const upsertProgramGuestGroupCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 10000
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link — where this group's members stay; feeds distance-aware moment lead times. Omitted preserves the existing link; explicit null clears it."
     }
   }
 };
@@ -143358,6 +143405,7 @@ export const programGuestGroupListCallableResponseSchema = {
           "dimension",
           "sortOrder",
           "memberCount",
+          "hotelId",
           "revision"
         ],
         "properties": {
@@ -143384,6 +143432,14 @@ export const programGuestGroupListCallableResponseSchema = {
           "memberCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           },
           "revision": {
             "type": "integer",

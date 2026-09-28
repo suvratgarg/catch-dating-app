@@ -7,6 +7,7 @@ import {
   resolveFireDisposition,
   selectDueRuns,
 } from "./momentPlanning";
+import {buildTravelContext} from "./momentTravel";
 import type {
   AnchorFacts,
   MomentDefinition,
@@ -56,7 +57,7 @@ const baseMoment: MomentDefinition = {
     kind: "functionGuests",
     functionId: "sangeet",
     rsvp: ["attending", "maybe"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   },
   action: {
     kind: "sendTemplate",
@@ -246,6 +247,43 @@ test("resolveFireDisposition checks each guard in order", () => {
     "skip:staleAnchor");
 });
 
+test("travelTimeLead wakes the run early by the farthest hotel's lead",
+  () => {
+    const venue = {latitude: 26.9, longitude: 75.8};
+    const travelFacts: AnchorFacts = {...facts, functions: {
+      ...facts.functions,
+      sangeet: {...facts.functions.sangeet, venueLocation: venue},
+    }, travel: {
+      groupHotelIds: {sideA: "hotelFar"},
+      hotelLocations: {hotelFar: {latitude: 27.5, longitude: 76.4}},
+    }};
+    const leadMoment: MomentDefinition = {...baseMoment, audience: {
+      kind: "functionGuests", functionId: "sangeet",
+      rsvp: ["attending", "maybe"], householdDedupe: true,
+      travelTimeLead: true,
+    }};
+    const travel = buildTravelContext(leadMoment, travelFacts, () => 10);
+    // nominal = 2_000_000 - 900_000 = 1_100_000; due = nominal - 10m.
+    const result = planRun(leadMoment, travelFacts, 0, {travel});
+    assert.deepEqual(result.kind === "planned" && result.run, {
+      runId: "m1_7_500000",
+      momentId: "m1", dueAtMillis: 500_000, anchorRevision: 7,
+      status: "planned",
+    });
+    // A changed estimate produces a new run id -> replan self-heals.
+    const planned = [result.kind === "planned" ? result.run : run({})];
+    const nearer = planRun(leadMoment, travelFacts, 0,
+      {travel: buildTravelContext(leadMoment, travelFacts, () => 5)});
+    const move = replan(leadMoment, travelFacts, planned, 0,
+      {travel: buildTravelContext(leadMoment, travelFacts, () => 5)});
+    assert.equal(nearer.kind === "planned" && nearer.run.dueAtMillis,
+      800_000);
+    assert.deepEqual(move.supersede, ["m1_7_500000"]);
+    // The flag-off twin ignores the same context.
+    const off = planRun(baseMoment, travelFacts, 0, {travel});
+    assert.equal(off.kind === "planned" && off.run.dueAtMillis, 1_100_000);
+  });
+
 test("condition runs ignore the stale-anchor fence", () => {
   const condition: MomentDefinition = {...baseMoment, initiation: {
     kind: "triggered", triggerKind: "lateArrivalAtHotel",
@@ -260,7 +298,7 @@ test("condition runs ignore the stale-anchor fence", () => {
     "dispatch");
   const cancelledAudience: MomentDefinition = {...condition, audience: {
     kind: "functionGuests", functionId: "haldi",
-    rsvp: ["attending"], householdDedupe: true,
+    rsvp: ["attending"], householdDedupe: true, travelTimeLead: false,
   }};
   assert.equal(resolveFireDisposition(eventRun, cancelledAudience, facts),
     "skip:functionCancelled");

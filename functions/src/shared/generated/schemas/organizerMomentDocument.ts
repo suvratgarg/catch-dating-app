@@ -245,6 +245,13 @@ export const organizerMomentDocumentSchema: Record<string, unknown> = {
           ],
           "description": "functionGuests: one send per household when true (default)."
         },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+        },
         "rsvpPendingOnly": {
           "type": [
             "boolean",

@@ -4,11 +4,17 @@ import {
   sameScope,
   scopeId,
   type AnchorFacts,
+  type GeoPoint,
   type MomentDefinition,
   type MomentScope,
   type RunRecord,
+  type TravelFacts,
 } from "./momentModel";
 import type {RecipientEndpoint} from "./momentPolicy";
+import {
+  guestTravelLeadMinutes,
+  type TravelEstimateContext,
+} from "./momentTravel";
 
 /**
  * Document <-> domain boundary for the moments collections. Documents are
@@ -157,6 +163,7 @@ export async function loadAnchorFacts(
         endsAtMillis: readTimestamp(fn.endsAt) ?? 0,
         revision: readInt(fn.revision, 0),
         cancelled: fn.status === "cancelled",
+        venueLocation: readGeoPoint(fn.venueLocation),
       }];
     })),
     travelLegs: Object.fromEntries(legs.docs.map((doc) => {
@@ -172,6 +179,42 @@ export async function loadAnchorFacts(
   };
 }
 
+/**
+ * Geography behind distance-aware leads: which groups are pinned to a
+ * hotel and where those hotels sit. Loaded lazily — only armed program
+ * moments whose audience carries `travelTimeLead` pay the two reads.
+ */
+export async function loadTravelFacts(
+  db: Firestore,
+  programId: string,
+): Promise<TravelFacts> {
+  const [groups, hotels] = await Promise.all([
+    db.collection("programGuestGroups")
+      .where("programId", "==", programId).get(),
+    db.collection("programHotels")
+      .where("programId", "==", programId).get(),
+  ]);
+  const groupHotelIds: Record<string, string> = {};
+  for (const doc of groups.docs) {
+    const hotelId = (doc.data() as Record<string, unknown>).hotelId;
+    if (typeof hotelId === "string" && hotelId.length > 0) {
+      groupHotelIds[doc.id] = hotelId;
+    }
+  }
+  const hotelLocations: Record<string, GeoPoint> = {};
+  for (const doc of hotels.docs) {
+    const data = doc.data() as Record<string, unknown>;
+    if (typeof data.latitude === "number" &&
+        typeof data.longitude === "number") {
+      hotelLocations[doc.id] = {
+        latitude: data.latitude,
+        longitude: data.longitude,
+      };
+    }
+  }
+  return {groupHotelIds, hotelLocations};
+}
+
 // --- Recipients --------------------------------------------------------------
 
 export interface ResolvedRecipient {
@@ -179,6 +222,9 @@ export interface ResolvedRecipient {
   recipientKey: string;
   endpoint: RecipientEndpoint;
   householdId: string | null;
+  /** Minutes this recipient's due shifts early under `travelTimeLead`;
+   *  absent when the moment does not use distance-aware leads. */
+  travelLeadMinutes?: number;
 }
 
 export interface RecipientResolution {
@@ -195,6 +241,7 @@ export async function resolveMomentRecipients(
   db: Firestore,
   moment: MomentDefinition,
   run: RunRecord,
+  travel?: TravelEstimateContext | null,
 ): Promise<RecipientResolution> {
   const {audience, scope} = moment;
   switch (audience.kind) {
@@ -234,7 +281,7 @@ export async function resolveMomentRecipients(
     const eligible = guests.filter((guest) =>
       (audience.rsvp as ReadonlyArray<string>).includes(
         invited.get(guest.guestId) ?? "pending"));
-    return dedupeGuests(eligible, audience.householdDedupe);
+    return dedupeGuests(eligible, audience.householdDedupe, travel);
   }
   case "households": {
     if (scope.kind !== "program") {
@@ -347,6 +394,7 @@ interface GuestRow {
   guestId: string;
   householdId: string | null;
   phoneE164: string | null;
+  groupIds: string[];
 }
 
 async function guestsByIds(
@@ -368,11 +416,25 @@ async function guestsByIds(
           data.householdId : null,
         phoneE164: typeof data.phoneE164 === "string" ?
           data.phoneE164 : null,
+        groupIds: Array.isArray(data.groupIds) ?
+          data.groupIds.filter((id): id is string =>
+            typeof id === "string") : [],
       };
     });
 }
 
-function guestsToRecipients(guests: GuestRow[]): RecipientResolution {
+function travelLeadOf(
+  guest: GuestRow,
+  travel: TravelEstimateContext | null | undefined,
+): {travelLeadMinutes: number} | Record<string, never> {
+  if (!travel) return {};
+  return {travelLeadMinutes: guestTravelLeadMinutes(guest.groupIds, travel)};
+}
+
+function guestsToRecipients(
+  guests: GuestRow[],
+  travel?: TravelEstimateContext | null,
+): RecipientResolution {
   const recipients: ResolvedRecipient[] = [];
   let suppressedNoEndpoint = 0;
   for (const guest of guests) {
@@ -384,6 +446,7 @@ function guestsToRecipients(guests: GuestRow[]): RecipientResolution {
       recipientKey: `guest:${guest.guestId}`,
       endpoint: {kind: "phone", e164: guest.phoneE164},
       householdId: guest.householdId,
+      ...travelLeadOf(guest, travel),
     });
   }
   return {recipients, suppressedNoEndpoint};
@@ -392,8 +455,9 @@ function guestsToRecipients(guests: GuestRow[]): RecipientResolution {
 function dedupeGuests(
   guests: GuestRow[],
   householdDedupe: boolean,
+  travel?: TravelEstimateContext | null,
 ): RecipientResolution {
-  if (!householdDedupe) return guestsToRecipients(guests);
+  if (!householdDedupe) return guestsToRecipients(guests, travel);
   const byKey = new Map<string, GuestRow>();
   let suppressedNoEndpoint = 0;
   for (const guest of guests) {
@@ -415,6 +479,10 @@ function dedupeGuests(
       recipientKey: key,
       endpoint: {kind: "phone", e164: guest.phoneE164},
       householdId: guest.householdId,
+      // The deduped representative's hotel stands in for the household —
+      // members of one household overwhelmingly stay together, and the
+      // max-per-guest rule keeps the estimate conservative either way.
+      ...travelLeadOf(guest, travel),
     });
   }
   recipients.sort((a, b) => a.recipientKey.localeCompare(b.recipientKey));
@@ -513,6 +581,7 @@ export function readAudience(
       functionId: String(data.functionId ?? ""),
       rsvp: Array.isArray(data.rsvp) ? data.rsvp as never : ["attending"],
       householdDedupe: data.householdDedupe !== false,
+      travelTimeLead: data.travelTimeLead === true,
     };
   case "households":
     return {kind: "households", rsvpPendingOnly: data.rsvpPendingOnly === true};
@@ -577,6 +646,17 @@ function readApproval(
 function readString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ?
     value : null;
+}
+
+/** Accepts the contract's `{latitude, longitude}` venue object and
+ *  Firestore GeoPoint instances alike. */
+function readGeoPoint(value: unknown): GeoPoint | null {
+  if (typeof value !== "object" || value === null) return null;
+  const row = value as Record<string, unknown>;
+  if (typeof row.latitude === "number" && typeof row.longitude === "number") {
+    return {latitude: row.latitude, longitude: row.longitude};
+  }
+  return null;
 }
 
 function requireString(value: unknown, field: string): string {

@@ -9455,6 +9455,10 @@ export interface ProgramGuestGroupDocument {
    * Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete.
    */
   memberCount: number;
+  /**
+   * Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group.
+   */
+  hotelId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
@@ -9889,6 +9893,10 @@ export interface OrganizerMomentDocument {
      * functionGuests: one send per household when true (default).
      */
     householdDedupe?: boolean | null;
+    /**
+     * functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes.
+     */
+    travelTimeLead?: boolean | null;
     /**
      * households: restrict to households with a pending member.
      */

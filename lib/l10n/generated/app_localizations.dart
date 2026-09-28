@@ -26875,6 +26875,12 @@ abstract class AppLocalizations {
   /// **'Title template'**
   String get hostMomentTitleTemplate;
 
+  /// Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift send time by hotel distance'**
+  String get hostMomentTravelTimeLead;
+
   /// Moment editor save action label.
   ///
   /// In en, this message translates to:
