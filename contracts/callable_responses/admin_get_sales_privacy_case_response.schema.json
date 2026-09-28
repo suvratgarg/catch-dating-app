@@ -10,7 +10,8 @@
         "organizerId",
         "restricted",
         "plan",
-        "completeDeletion"
+        "completeDeletion",
+        "policy"
       ],
       "properties": {
         "organizerId": {
@@ -25,6 +26,62 @@
         },
         "completeDeletion": {
           "const": false
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "policyHash",
+                "sourceReference",
+                "reviewedAt",
+                "financeDisposition",
+                "auditDisposition",
+                "financeReason",
+                "auditReason"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sourceReference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "financeDisposition": {
+                  "const": "retain_pending_finance_review"
+                },
+                "auditDisposition": {
+                  "const": "retain_pending_audit_review"
+                },
+                "financeReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "auditReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -36,7 +93,8 @@
         "restricted",
         "restriction",
         "plan",
-        "completeDeletion"
+        "completeDeletion",
+        "policy"
       ],
       "properties": {
         "organizerId": {
@@ -88,6 +146,62 @@
         },
         "completeDeletion": {
           "const": false
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "policyHash",
+                "sourceReference",
+                "reviewedAt",
+                "financeDisposition",
+                "auditDisposition",
+                "financeReason",
+                "auditReason"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sourceReference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "financeDisposition": {
+                  "const": "retain_pending_finance_review"
+                },
+                "auditDisposition": {
+                  "const": "retain_pending_audit_review"
+                },
+                "financeReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "auditReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
+          ]
         }
       }
     }

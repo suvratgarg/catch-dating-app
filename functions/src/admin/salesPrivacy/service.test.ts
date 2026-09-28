@@ -6,7 +6,7 @@ import {type SalesPrivacyInventory} from "./inventory";
 import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead,
   privacyHash} from "./model";
 import {applySalesPrivacyBatch, previewSalesPrivacyPlan,
-  restrictSalesOrganizer, reviewSalesPrivacyPlan,
+  getSalesPrivacyCase, restrictSalesOrganizer, reviewSalesPrivacyPlan,
   reviewSalesPrivacyPolicy, type PrivacyDeps} from "./service";
 
 type Data = Record<string, unknown>;
@@ -166,6 +166,10 @@ test("restriction is permanent, idempotent only for exact request, and invalidat
 
 test("reviewed policy and exact plan process bounded batches but retain finance and external blockers", async () => {
   const {h, preview, reviewed} = await preparedCase();
+  const ownerCase = await getSalesPrivacyCase(h.value, principal,
+    {organizerId: "org-a"});
+  assert.equal(ownerCase.policy?.revision, 1);
+  assert.equal(ownerCase.policy?.policyHash, preview.policyHash);
   assert.equal(preview.effectsApplied, false);
   assert.equal(reviewed.plan.itemCount, 3);
   const input = {organizerId: "org-a", planId: reviewed.plan.planId,

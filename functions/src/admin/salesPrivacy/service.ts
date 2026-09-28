@@ -439,10 +439,21 @@ export async function getSalesPrivacyCase(deps: PrivacyDeps,
   const input = object(raw); only(input, ["organizerId"]);
   const organizerId = privacyId(input.organizerId, "organizer ID");
   await authorize(deps, principal);
-  const restriction = (await deps.db.collection(PRIVACY_RESTRICTIONS)
-    .doc(organizerId).get()).data();
+  const [restrictionSnap, policySnap] = await Promise.all([
+    deps.db.collection(PRIVACY_RESTRICTIONS).doc(organizerId).get(),
+    deps.db.collection(PRIVACY_POLICIES).doc("current").get(),
+  ]);
+  const restriction = restrictionSnap.data();
+  const policy = policySnap.exists ? policyFrom(policySnap.data()) : null;
+  const safePolicy = policy ? {revision: policy.revision,
+    policyHash: policy.policyHash, sourceReference: policy.sourceReference,
+    reviewedAt: policy.reviewedAt,
+    financeDisposition: policy.financeDisposition,
+    auditDisposition: policy.auditDisposition,
+    financeReason: policy.financeReason,
+    auditReason: policy.auditReason} : null;
   if (!restriction) {
-    return {organizerId, restricted: false, plan: null,
+    return {organizerId, restricted: false, plan: null, policy: safePolicy,
       completeDeletion: false};
   }
   const current = restrictionFrom(restriction, organizerId);
@@ -453,5 +464,6 @@ export async function getSalesPrivacyCase(deps: PrivacyDeps,
     restriction: {status: current.status, revision: current.revision,
       restrictedAt: current.restrictedAt, reason: current.reason},
     plan: plan ? safePlan(planFrom(plan, organizerId,
-      current.activePlanId!)) : null, completeDeletion: false};
+      current.activePlanId!)) : null, policy: safePolicy,
+    completeDeletion: false};
 }
