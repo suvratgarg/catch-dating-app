@@ -47,6 +47,8 @@ import {validateListOfferEventTargetsCallablePayload} from
   "../../shared/generated/validators/listOfferEventTargetsInput";
 import {validateOfferEventTargetListCallableResponse} from
   "../../shared/generated/validators/offerEventTargetListOutput";
+import {readPrivateEventReleaseReadiness, PrivateEventReleaseReadiness} from
+  "../../shared/privateEventReleaseConfig";
 
 import {setEventPublication as setPublication} from "./publication";
 import {validateSetEventPublicationCallablePayload} from
@@ -59,35 +61,35 @@ export interface SetupCallableDependencies {
   nowMillis?: () => number;
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
-  service: (db: FirebaseFirestore.Firestore) => ProgressiveSetupDependencies;
+  service: (db: FirebaseFirestore.Firestore,
+    readiness?: PrivateEventReleaseReadiness) => ProgressiveSetupDependencies;
 }
 
 const defaultDeps: SetupCallableDependencies = {
   firestore: () => admin.firestore(),
   checkRateLimit,
-  service: (db) => ({
+  service: (db, readiness) => ({
     db,
-    // Must stay closed until canonical schema + rules/public readers migrate.
-    // No request field or environment toggle can bypass this release boundary.
-    privacyMigrationReady: () => false,
-    // Keep seat activation closed until Cross Paths temporary holds use the
-    // canonical ledger. The migration preflight alone cannot fence new holds.
-    freshEventSeatWritersReady: () => false,
+    privacyMigrationReady: () => readiness?.privacy === true,
+    freshEventSeatWritersReady: () => readiness?.seatWriters === true,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
     assertBasicsEditable: assertPrivateEventBasicsEditable,
   }),
 };
 
-// This compatibility release still permits legacy public event lists. Never
-// create or mutate a private event through a production callable until the
-// published-only rules and clients are deployed together. Injectable service
-// dependencies remain available only to isolated tests.
-function assertProductionPrivateSetupClosed(deps: SetupCallableDependencies) {
+// The server fetches rollout authority after auth and payload validation. A
+// missing or failed read closes production before any Firestore access.
+async function requireProductionPrivacyReadiness(
+  deps: SetupCallableDependencies
+): Promise<PrivateEventReleaseReadiness | undefined> {
   if (deps === defaultDeps) {
+    const readiness = await readPrivateEventReleaseReadiness();
+    if (readiness.privacy) return readiness;
     throw new HttpsError("failed-precondition",
       "Private event setup is not yet available.");
   }
+  return undefined;
 }
 
 /** Authenticated entry point; transaction owns final manager authority. */
@@ -97,10 +99,10 @@ export async function createPrivateEventSetupHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateCreatePrivateEventSetupCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "createPrivateEventSetup");
-  return createSetup({actorUid, command, deps: deps.service(db)});
+  return createSetup({actorUid, command, deps: deps.service(db, readiness)});
 }
 
 /** Keeps mutation request identity intact through the service receipt. */
@@ -110,10 +112,10 @@ export async function updatePrivateEventBasicsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventBasicsCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventBasics");
-  return updateBasics({actorUid, command, deps: deps.service(db)});
+  return updateBasics({actorUid, command, deps: deps.service(db, readiness)});
 }
 
 /** Returns only a manager-authorized whitelist of saved setup fields. */
@@ -142,10 +144,11 @@ export async function updatePrivateEventPreferencesHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventPreferencesCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences");
-  return updatePreferences({actorUid, command, deps: deps.service(db)});
+  return updatePreferences({actorUid, command, deps: deps.service(db,
+    readiness)});
 }
 
 export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
@@ -177,11 +180,11 @@ export async function updatePrivateEventDetailsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventDetailsCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails");
   const result = await updateDetails({actorUid, command,
-    deps: deps.service(db)});
+    deps: deps.service(db, readiness)});
   if (!validatePrivateEventSetupMutationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event setup result.");
   }
@@ -215,11 +218,11 @@ export async function setEventPublicationHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateSetEventPublicationCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "setEventPublication");
   const result = await setPublication({actorUid, command,
-    deps: deps.service(db)});
+    deps: deps.service(db, readiness)});
   if (!validateEventPublicationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event publication result.");
   }
@@ -238,12 +241,12 @@ export async function reconcilePrivateEventSeatsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateReconcilePrivateEventSeatsCallablePayload);
-  assertProductionPrivateSetupClosed(deps);
+  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "reconcilePrivateEventSeats");
   const {discard, ...settings} = command;
   const result = await reconcileSeats({actorUid, command: settings, discard,
-    deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),
+    deps: {...deps.service(db, readiness), auth: deps.seatAuth ?? admin.auth(),
       nowMillis: deps.nowMillis ?? Date.now}});
   if (!validatePrivateSeatReconciliationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid guest reconciliation result.");
