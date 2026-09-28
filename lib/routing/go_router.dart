@@ -103,36 +103,6 @@ part 'host_inbox_route.dart';
 part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
-@visibleForTesting
-HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
-  initialClubId: uri.queryParameters['clubId'],
-  initialExpandedEditField: uri.queryParameters['editField'],
-  initialTab: HostClubTab.values.firstWhere(
-    (tab) => tab.name == uri.queryParameters['tab'],
-    orElse: () => HostClubTab.edit,
-  ),
-);
-
-@visibleForTesting
-Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
-  final view = hostAudienceViewFromName(uri.queryParameters['view']);
-  return switch (view) {
-    HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
-      initialOrganizerId: uri.queryParameters['organizerId'],
-      initialResponses: view == HostAudienceView.responses,
-      initialFormId: uri.queryParameters['formId'],
-      initialContactId: uri.queryParameters['contactId'],
-    ),
-    HostAudienceView.people ||
-    HostAudienceView.audiences => HostCustomersScreen(
-      initialOrganizerId: uri.queryParameters['organizerId'],
-      initialView: view,
-      initialContactId: uri.queryParameters['contactId'],
-      initialContactDisplayName: initialContactDisplayName,
-    ),
-  };
-}
-
 GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   final notifier = _RouterRefreshNotifier();
   final analytics = ref.read(appAnalyticsProvider);
@@ -1051,20 +1021,6 @@ StatefulShellRoute _hostShellRoute(
       ),
     ],
   );
-}
-
-class _RouteLoadingScreen extends StatelessWidget {
-  const _RouteLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchScaffold.standalone(
-      backgroundColor: t.bg,
-      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
-    );
-  }
 }
 
 EventDetailScreen _eventDetailScreen(GoRouterState state) {

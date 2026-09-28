@@ -307,3 +307,47 @@ bool _requiresSocialProfile(String matchedLocation) {
   return matchedLocation == Routes.filtersScreen.path ||
       matchedLocation.startsWith('/catches/');
 }
+
+@visibleForTesting
+HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
+  initialClubId: uri.queryParameters['clubId'],
+  initialExpandedEditField: uri.queryParameters['editField'],
+  initialTab: HostClubTab.values.firstWhere(
+    (tab) => tab.name == uri.queryParameters['tab'],
+    orElse: () => HostClubTab.edit,
+  ),
+);
+
+@visibleForTesting
+Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
+  final view = hostAudienceViewFromName(uri.queryParameters['view']);
+  return switch (view) {
+    HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialResponses: view == HostAudienceView.responses,
+      initialFormId: uri.queryParameters['formId'],
+      initialContactId: uri.queryParameters['contactId'],
+    ),
+    HostAudienceView.people ||
+    HostAudienceView.audiences => HostCustomersScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialView: view,
+      initialContactId: uri.queryParameters['contactId'],
+      initialContactDisplayName: initialContactDisplayName,
+    ),
+  };
+}
+
+class _RouteLoadingScreen extends StatelessWidget {
+  const _RouteLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchScaffold.standalone(
+      backgroundColor: t.bg,
+      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
+    );
+  }
+}
