@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_accept_sales_quote_response.schema.json",
+  "title": "admin_accept_sales_quote_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "quote",
+    "decision",
+    "receipt"
+  ],
+  "properties": {
+    "quote": {
+      "$ref": "../firestore/sales_quotes.schema.json"
+    },
+    "decision": {
+      "$ref": "../firestore/sales_commercial_decisions.schema.json"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -53,7 +53,8 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "sales_demo"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PageShell.tsx",
@@ -3718,6 +3719,32 @@
         ]
       },
       "notes": "Authenticated booking management survives public listing removal; cannot create a new booking."
+    },
+    {
+      "id": "route_sales_demo",
+      "kind": "route",
+      "routeIds": [
+        "sales_demo"
+      ],
+      "owner": "features/salesDemo",
+      "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
+      "exportName": "SalesDemoPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/SalesDemo.stories.tsx",
+        "exportName": "SalesDemo",
+        "states": [
+          "preview",
+          "verify-contact",
+          "active",
+          "completed",
+          "unavailable"
+        ]
+      },
+      "notes": "Reuses governed runtime primitives; unit tests exercise synthetic-only transitions."
     }
   ]
 }

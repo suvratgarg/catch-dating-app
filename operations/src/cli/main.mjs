@@ -19,6 +19,11 @@ import {
   finalizeSupplyInputSnapshot,
   supplyInputSummary,
 } from "../workflows/supply-intake/input-snapshot.mjs";
+import {
+  discoveryFingerprint,
+  discoveryReviewBinding,
+  readDiscoveryKnowledge,
+} from "../workflows/supply-intake/discovery-knowledge.mjs";
 
 const cliDirectory = path.dirname(fileURLToPath(import.meta.url));
 const operationsRoot = path.resolve(cliDirectory, "..", "..");
@@ -58,6 +63,17 @@ export async function main(argv, dependencies = {}) {
   });
   if (parsed.command === "plan") {
     const workflow = workflowFor(parsed.flags.workflow ?? "supply-intake");
+    const plan = await createPlan(workflow, parsed.flags, now, store);
+    let data = {plan};
+    if (parsed.flags.discoveryPolicy) {
+      requireFlag(parsed.flags, "output");
+      const outputPath = path.resolve(parsed.flags.output);
+      await fs.writeFile(outputPath, `${JSON.stringify(plan)}\n`, {
+        flag: "wx", mode: 0o600,
+      });
+      data = {planId: plan.planId, planContentHash: plan.planContentHash,
+        artifactPath: outputPath};
+    }
     return {
       pretty: parsed.flags.pretty,
       envelope: {
@@ -65,14 +81,7 @@ export async function main(argv, dependencies = {}) {
         program: "catch-operations",
         command: "plan",
         ok: true,
-        data: {
-          plan: await createPlan(
-            workflow,
-            parsed.flags,
-            now,
-            store
-          ),
-        },
+        data,
         warnings: [],
       },
     };
@@ -121,6 +130,10 @@ export async function main(argv, dependencies = {}) {
   let data;
 
   if (command === "run") {
+    if (parsed.flags.plan && parsed.flags.discoveryPolicy) {
+      throw new OperationsError("INVALID_ARGUMENT",
+        "--discovery-policy cannot be combined with --plan.", {exitCode: 2});
+    }
     const planFromFile = parsed.flags.plan ?
       await readPlan(parsed.flags.plan) : null;
     const workflowId = planFromFile?.workflowId ??
@@ -263,6 +276,14 @@ export async function main(argv, dependencies = {}) {
       clock,
     });
     data = await runLearn(parsed.subcommand, parsed.flags, learner);
+  } else if (command === "discovery") {
+    requireFlag(parsed.flags, "run");
+    const run = await store.requireRun(parsed.flags.run);
+    const workflow = workflowFor(run.workflowId);
+    assertRequestedWorkflow(parsed.flags.workflow, run.workflowId);
+    data = await runDiscovery(parsed.subcommand, parsed.flags, {
+      run, workflow, store, now,
+    });
   } else {
     throw new OperationsError("UNKNOWN_COMMAND", `Unknown command: ${command}.`, {exitCode: 2});
   }
@@ -300,6 +321,12 @@ export function createCliClock(nowOverride, systemClock = () => new Date()) {
 
 async function createPlan(workflow, flags, now, store) {
   const market = flags.market ?? "mumbai";
+  if (flags.discoveryPolicy && workflow.workflowId !== "supply-intake") {
+    throw new OperationsError("WORKFLOW_COMMAND_UNSUPPORTED",
+      "Private discovery policy is only supported by Supply Intake.", {exitCode: 2});
+  }
+  const discoveryGatePolicy = flags.discoveryPolicy ?
+    await readBoundedPrivateJson(flags.discoveryPolicy, 8 * 1024 * 1024) : null;
   const planningContext =
     typeof workflow.planningContext === "function" ?
       await workflow.planningContext({store, market, inputPath: flags.input}) :
@@ -310,7 +337,111 @@ async function createPlan(workflow, flags, now, store) {
     through: flags.through ?? defaultThrough(now),
     now,
     ...planningContext,
+    ...(discoveryGatePolicy ? {discoveryGatePolicy} : {}),
   });
+}
+
+async function runDiscovery(subcommand, flags, {run, workflow, store, now}) {
+  if (!["preview", "continue"].includes(subcommand)) {
+    throw new OperationsError("UNKNOWN_SUBCOMMAND",
+      "Discovery requires preview or continue.", {exitCode: 2});
+  }
+  if (run.workflowId !== "supply-intake" || !run.plan?.discoveryGate ||
+      run.status !== "paused") {
+    throw new OperationsError("DISCOVERY_NOT_PAUSED",
+      "A paused Supply Intake run with a frozen discovery policy is required.",
+      {exitCode: 2});
+  }
+  workflow.assertPlan(run.plan);
+  const checkpoint = await store.getCheckpoint(run.runId, "project-artifacts");
+  if (!checkpoint || checkpoint.completed !== false ||
+      !Number.isSafeInteger(checkpoint.nextIndex)) {
+    throw new OperationsError("DISCOVERY_NOT_PAUSED",
+      "The run has no incomplete discovery projection checkpoint.", {exitCode: 2});
+  }
+  const state = await readDiscoveryKnowledge({store, market: run.plan.market});
+  if (state.reviewEvery !== run.plan.discoveryGate.reviewEvery) {
+    throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
+      "The current discovery pause does not belong to this frozen run policy.",
+      {exitCode: 2});
+  }
+  const matchesFrozenRetainedDecision = (fingerprint) =>
+    Object.values(run.plan.discoveryGate.decisions).some((decision) =>
+      decision.disposition === "retained" &&
+        discoveryFingerprint({market: run.plan.market,
+          segment: decision.segment, identityKey: decision.identityKey}) ===
+          fingerprint);
+  if (subcommand === "preview") {
+    if (!state.pause ||
+        !matchesFrozenRetainedDecision(state.pause.candidateFingerprint)) {
+      throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
+        "The current discovery pause does not belong to this frozen run policy.",
+        {exitCode: 2});
+    }
+    return {
+      runId: run.runId,
+      market: run.plan.market,
+      pause: {
+        reviewRevision: state.pause.reviewRevision,
+        candidateFingerprint: state.pause.candidateFingerprint,
+        retainedCount: state.pause.retainedCount,
+      },
+      binding: discoveryReviewBinding(state),
+      retainedCount: state.retainedCount,
+      batchRetained: state.batchRetained,
+      nextProjectionIndex: checkpoint.nextIndex,
+    };
+  }
+  requireFlag(flags, "receipt");
+  const receipt = await readBoundedPrivateJson(flags.receipt, 512 * 1024);
+  const currentOrReviewedPause = state.pause?.candidateFingerprint ??
+    (state.lastReview?.reviewRevision === receipt.reviewRevision ?
+      receipt.candidateFingerprint : null);
+  if (!matchesFrozenRetainedDecision(currentOrReviewedPause)) {
+    throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
+      "The review receipt does not match this run's frozen discovery policy.",
+      {exitCode: 2});
+  }
+  if (typeof workflow.continueDiscoveryAfterReview !== "function") {
+    throw new OperationsError("WORKFLOW_NOT_EXECUTABLE",
+      "Supply Intake cannot accept a discovery review receipt.");
+  }
+  const result = await workflow.continueDiscoveryAfterReview({
+    market: run.plan.market, receipt, now,
+  });
+  return {
+    runId: run.runId,
+    receiptHash: result.receiptHash,
+    idempotentReplay: result.idempotentReplay,
+    retainedCount: result.state.retainedCount,
+    nextCommand: "resume",
+  };
+}
+
+async function readBoundedPrivateJson(file, maximumBytes) {
+  const filePath = path.resolve(file);
+  const info = await fs.stat(filePath);
+  if (!info.isFile() || info.size > maximumBytes) {
+    throw new OperationsError("INVALID_ARGUMENT",
+      "Private JSON input must be a bounded regular file.", {exitCode: 2});
+  }
+  const content = await fs.readFile(filePath, "utf8");
+  if (Buffer.byteLength(content, "utf8") > maximumBytes) {
+    throw new OperationsError("INVALID_ARGUMENT",
+      "Private JSON input exceeds its size limit.", {exitCode: 2});
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    throw new OperationsError("INVALID_ARGUMENT",
+      "Private JSON input is malformed.", {exitCode: 2});
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new OperationsError("INVALID_ARGUMENT",
+      "Private JSON input must be an object.", {exitCode: 2});
+  }
+  return parsed;
 }
 
 function resolveWorkflow({
@@ -420,7 +551,8 @@ function parseArguments(argv) {
   const first = values.shift() ?? "help";
   if (first === "help" || first === "--help" || first === "-h") return {command: "help", subcommand: null, flags: parseFlags(values)};
   if (!CLI_COMMANDS.includes(first)) throw new OperationsError("UNKNOWN_COMMAND", `Unknown command: ${first}.`, {exitCode: 2});
-  const subcommand = first === "learn" && values[0] && !values[0].startsWith("--") ? values.shift() : null;
+  const subcommand = ["learn", "discovery"].includes(first) &&
+    values[0] && !values[0].startsWith("--") ? values.shift() : null;
   return {command: first, subcommand, flags: parseFlags(values)};
 }
 
@@ -434,9 +566,12 @@ function parseFlags(argv) {
     "--market",
     "--now",
     "--owner",
+    "--output",
     "--plan",
     "--proposal",
     "--correction",
+    "--discovery-policy",
+    "--receipt",
     "--repo-root",
     "--run",
     "--source",
@@ -533,6 +668,7 @@ function helpEnvelope() {
     data: {
       usage: "node operations/src/cli/main.mjs <command> [flags]",
       commands: [...CLI_COMMANDS],
+      discoverySubcommands: ["preview", "continue"],
       learnSubcommands: [
         "record-correction",
         "propose",

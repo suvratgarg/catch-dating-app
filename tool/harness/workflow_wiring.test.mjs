@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
+import vm from "node:vm";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -1008,4 +1009,28 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(feedback, /node tool\/harness\.mjs plan/u);
   assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
   assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);
+});
+
+
+test("CI run names preserve main delivery identity and distinguish PR admission events", () => {
+  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ (.+) \}\}$/mu)?.[1];
+  assert.ok(expression, "missing run-name expression");
+  // GitHub exposes an explicit run-name as REST run.name as well as
+  // display_title. Main delivery consumers require the stable name CI.
+  const runName = (eventName, action = "", label = "") => vm.runInNewContext(expression, {
+    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}},
+    fromJSON: JSON.parse,
+    contains: (values, item) => values.includes(item),
+    format: (template, value) => template.replace("{0}", String(value)),
+  });
+  for (const event of ["push", "merge_group", "schedule", "workflow_dispatch"]) {
+    assert.equal(runName(event), "CI", event);
+  }
+  for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
+    assert.equal(runName("pull_request", action), "CI PR #42", action);
+  }
+  for (const action of ["labeled", "unlabeled"]) {
+    assert.equal(runName("pull_request", action, "ci:admitted"), "CI PR #42");
+    assert.equal(runName("pull_request", action, "documentation"), "CI pull_request");
+  }
 });

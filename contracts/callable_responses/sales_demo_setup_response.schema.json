@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/sales_demo_setup_response.schema.json",
+  "title": "SalesDemoSetupCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "setupHash",
+    "plan",
+    "organizerId",
+    "formId",
+    "editorPath",
+    "publicationAuthority",
+    "status"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "setupHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plan": {
+      "$ref": "../shared/sales_demo_setup_plan.schema.json#/definitions/setupPlan"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "editorPath": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^/host/audience/forms/[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publicationAuthority": {
+      "const": false
+    },
+    "status": {
+      "enum": [
+        "manual_setup",
+        "claim_required",
+        "ready",
+        "prepared"
+      ]
+    }
+  },
+  "x-callables": [
+    "getSalesDemoSetup",
+    "prepareSalesDemoFormDraft"
+  ]
+}

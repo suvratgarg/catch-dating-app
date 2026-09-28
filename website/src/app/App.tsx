@@ -1,3 +1,5 @@
+import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
+import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
 import {lazy, Suspense, useMemo} from "react";
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
@@ -36,6 +38,11 @@ import {PageShell} from "../shared/site";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
+
+const salesDemoApi = salesDemoApiFromCallable(invokeSalesDemoCallable);
+const SalesDemoPage = lazy(async () => ({
+  default: (await import("../features/salesDemo/SalesDemoPage")).SalesDemoPage,
+}));
 
 const ClaimPage = lazy(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
@@ -120,7 +127,7 @@ function MarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
-  const routeKey = page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
+  const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
@@ -140,10 +147,12 @@ function MarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ?
+          hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ?
             "" : location.hash}
         />
         <Routes>
+          <Route path={marketingRoutePaths.sales_demo}
+            element={<SalesDemoPage api={salesDemoApi} />} />
           <Route
             path={marketingRoutePaths.home}
             element={<HomePage captures={captures} />}
@@ -242,7 +251,7 @@ function MarketingRouteShell() {
         </Routes>
       </Suspense>
       {page === "event_runtime" || page === "event_rehearsal" ||
-       page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
+       page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
        page === "household_rsvp" ||
        page === "public_form" ?

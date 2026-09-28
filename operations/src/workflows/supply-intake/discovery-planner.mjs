@@ -13,12 +13,18 @@ export async function loadDiscoveryPolicy({readFile = fs.readFile} = {}) {
     readJson(path.join(configDirectory, "target_categories.json"), readFile),
     readJson(path.join(configDirectory, "query_templates.json"), readFile),
   ]);
-  return {matrix, categories, templates};
+  return {
+    matrix,
+    categories,
+    templates,
+    ...(matrix.marketMap ? {marketMap: matrix.marketMap} : {}),
+  };
 }
 
 export async function planDiscoveryQueries({
   market,
   organizerCandidates = [],
+  discoveryKnowledge = null,
   policyLoader = loadDiscoveryPolicy,
 }) {
   invariant(
@@ -42,6 +48,40 @@ export async function planDiscoveryQueries({
     template,
   ]));
   const planned = [];
+  const frontier = policy.marketMap ? planDiscoveryFrontier({
+    market,
+    policy: policy.marketMap,
+    coverage: discoveryKnowledge?.coverage ?? {},
+  }) : null;
+  if (frontier) {
+    for (const cell of frontier.cells) {
+      for (const lensId of cell.queryLenses) {
+        const lens = policy.marketMap.lenses.find((entry) => entry.id === lensId);
+        for (const queryTemplate of lens.queryTemplates) {
+          planned.push(planEntry({
+            planKind: "market_map_lens",
+            queryTemplateId: lens.id,
+            categoryId: cell.segment,
+            source: lens.source,
+            lens: lens.id,
+            citySlug: market,
+            city: city.name,
+            country: cell.country,
+            locale: lens.locale,
+            language: lens.language,
+            candidateId: null,
+            candidateName: null,
+            queryTemplate,
+            renderedQuery: renderQuery(queryTemplate, {
+              city: city.name,
+              country: cell.country,
+              segment: cell.segment,
+            }),
+          }));
+        }
+      }
+    }
+  }
   for (const generic of policy.matrix.genericSearches ?? []) {
     if (!(generic.citySlugs ?? []).includes(market)) continue;
     const template = templates.get(generic.queryTemplateId);
@@ -118,21 +158,143 @@ export async function planDiscoveryQueries({
     plannerId: "operations-supply-discovery-v1",
     market,
     planned: unique,
+    ...(frontier ? {frontier} : {}),
     inputHash: hashValue({
       market,
       policy,
       organizerCandidates,
+      ...(frontier ? {discoveryKnowledge} : {}),
     }),
   };
+}
+
+export function planDiscoveryFrontier({market, policy, coverage = {}}) {
+  const requiredLenses = [
+    "web_press", "social", "event_calendar", "app_directory",
+  ];
+  invariant(Array.isArray(policy?.lenses) &&
+    requiredLenses.every((id) => policy.lenses.some((lens) =>
+      lens.id === id && typeof lens.source === "string" &&
+      Array.isArray(lens.queryTemplates) && lens.queryTemplates.length > 0)) &&
+    policy.lenses.length === requiredLenses.length &&
+    Array.isArray(policy.cells) &&
+    Number.isSafeInteger(policy.minimumCensusSize) &&
+    policy.minimumCensusSize > 0 &&
+    Number.isSafeInteger(policy.topLeaderGateCount) &&
+    policy.topLeaderGateCount > 0 &&
+    Number.isSafeInteger(policy.minimumSourceDomains) &&
+    policy.minimumSourceDomains > 0,
+  "INVALID_DISCOVERY_POLICY",
+  "Market-map policy needs four configured lenses, cells and coverage thresholds.");
+  const cells = policy.cells.filter((cell) => cell.market === market)
+    .map((cell) => {
+      invariant(typeof cell.country === "string" && cell.country.length > 0 &&
+        /^[a-z][a-z0-9-]{1,49}$/u.test(cell.segment ?? ""),
+      "INVALID_DISCOVERY_POLICY", "Market-map cells need country and segment.");
+      const observed = coverage[cell.segment] ?? null;
+      const reviewed = Number.isSafeInteger(observed?.reviewRevision) &&
+        observed.reviewRevision > 0 &&
+        typeof observed.reviewerId === "string" &&
+        observed.reviewerId.length > 0 &&
+        Array.isArray(observed.inputRefs) &&
+        observed.inputRefs.length > 0;
+      const missingLenses = requiredLenses.filter((id) =>
+        !Number.isSafeInteger(observed?.lenses?.[id]?.usefulQueryCount) ||
+        observed.lenses[id].usefulQueryCount < 1 ||
+        !Array.isArray(observed.lenses[id].queryRefs) ||
+        observed.lenses[id].queryRefs.length <
+          observed.lenses[id].usefulQueryCount);
+      const unknowns = [];
+      if (!reviewed) unknowns.push("coverage_review_missing");
+      if (missingLenses.length) unknowns.push("lens_coverage_incomplete");
+      const domains = new Set(requiredLenses.flatMap((id) =>
+        observed?.lenses?.[id]?.sourceDomains ?? []));
+      if (domains.size < policy.minimumSourceDomains) {
+        unknowns.push("source_diversity_unproven");
+      }
+      const census = observed?.leaderCensus;
+      const censusIds = Array.isArray(census?.candidateFingerprints) ?
+        census.candidateFingerprints : [];
+      const uniqueCensus = new Set(censusIds);
+      if (censusIds.some((id) => typeof id !== "string" || id.length === 0) ||
+        uniqueCensus.size < policy.minimumCensusSize ||
+        uniqueCensus.size !== censusIds.length) {
+        unknowns.push("leader_set_incomplete");
+      }
+      if (!Array.isArray(census?.prominenceEvidenceRefs) ||
+        census.prominenceEvidenceRefs.length === 0) {
+        unknowns.push("leader_prominence_unproven");
+      }
+      if (typeof census?.presumedLeaderFingerprint !== "string" ||
+        census.presumedLeaderFingerprint.length === 0 ||
+        typeof census?.runnerUpFingerprint !== "string" ||
+        census.runnerUpFingerprint.length === 0 ||
+        census.presumedLeaderFingerprint === census.runnerUpFingerprint ||
+        !uniqueCensus.has(census.presumedLeaderFingerprint) ||
+        !uniqueCensus.has(census.runnerUpFingerprint)) {
+        unknowns.push("leader_order_unknown");
+      }
+      if (census?.stabilityConfirmed !== true) {
+        unknowns.push("leader_stability_unproven");
+      }
+      const top = Array.isArray(census?.topCandidateFingerprints) ?
+        census.topCandidateFingerprints : [];
+      const uniqueTop = new Set(top);
+      const outcomes = census?.gateOutcomes ?? {};
+      const terminal = new Set(["pass", "benchmark_pass", "reject"]);
+      if (top.some((id) => typeof id !== "string" || id.length === 0) ||
+        top.length < policy.topLeaderGateCount ||
+        uniqueTop.size !== top.length ||
+        top[0] !== census?.presumedLeaderFingerprint ||
+        (policy.topLeaderGateCount > 1 &&
+          top[1] !== census?.runnerUpFingerprint) ||
+        top.slice(0, policy.topLeaderGateCount).some((id) =>
+          !uniqueCensus.has(id)) ||
+        top.slice(0, policy.topLeaderGateCount).some((id) =>
+          !terminal.has(outcomes[id]?.outcome) ||
+          !Array.isArray(outcomes[id]?.inputRefs) ||
+          outcomes[id].inputRefs.length === 0)) {
+        unknowns.push("top_leader_gate_unresolved");
+      }
+      if (census?.status !== "complete") {
+        unknowns.push("leader_census_not_reviewed_complete");
+      }
+      const complete = unknowns.length === 0;
+      const reopen = observed?.reopenLenses ?? [];
+      const queryLenses = [...new Set([...missingLenses,
+        ...reopen.filter((id) => requiredLenses.includes(id))])];
+      return {
+        market,
+        country: cell.country,
+        segment: cell.segment,
+        status: complete ? "complete" : "incomplete",
+        capEligible: complete,
+        missingLenses,
+        queryLenses,
+        unknowns,
+        priority: unknowns.length * 10 + missingLenses.length,
+        coverageReviewRevision: observed?.reviewRevision ?? null,
+      };
+    });
+  cells.sort((left, right) =>
+    right.priority - left.priority || left.segment.localeCompare(right.segment));
+  return {schemaVersion: 1, market, cells};
 }
 
 function planEntry(value) {
   const runKey = [
     value.source,
-    normalizeQuery(value.renderedQuery),
+    value.planKind === "market_map_lens" ?
+      normalizeMarketMapQuery(value.renderedQuery) :
+      normalizeQuery(value.renderedQuery),
     value.citySlug,
     value.categoryId,
     value.candidateId ?? "generic",
+    ...(value.planKind === "market_map_lens" ? [
+      value.lens,
+      value.locale ?? "default",
+      value.language ?? "default",
+    ] : []),
   ].join("|");
   return {
     ...value,
@@ -152,12 +314,19 @@ function renderQuery(template, values) {
   return template
     .replaceAll("{city}", values.city ?? "")
     .replaceAll("{candidateName}", values.candidateName ?? "")
+    .replaceAll("{country}", values.country ?? "")
+    .replaceAll("{segment}", values.segment ?? "")
     .replace(/\s+/g, " ")
     .trim();
 }
 
 function normalizeQuery(value) {
   return String(value).toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function normalizeMarketMapQuery(value) {
+  return String(value).normalize("NFKC").toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\s+/gu, " ").trim();
 }
 
 async function readJson(file, readFile) {
@@ -174,4 +343,3 @@ async function readJson(file, readFile) {
     throw error;
   }
 }
-

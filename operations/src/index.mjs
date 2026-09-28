@@ -12,6 +12,7 @@ export {
 } from "./platform/read-models.mjs";
 export {SupplyIntakeWorkflow} from "./workflows/supply-intake/workflow.mjs";
 export {SupplyIntakeLearner} from "./workflows/supply-intake/learning.mjs";
+export {OutreachDraftingWorkflow} from "./workflows/outreach-drafting/workflow.mjs";
 export {
   acquisitionBudgetLedgers,
   acquisitionReceipt,
