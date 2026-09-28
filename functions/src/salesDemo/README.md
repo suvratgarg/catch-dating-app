@@ -66,11 +66,18 @@ retained tools, and unsupported logic; the demo does not import a real form.
 
 The scheduled `expireSalesDemos` export deletes expired synthetic sessions and
 their trial receipts in bounded batches. Blueprints and issuance audit remain
-for review. All five `salesDemo*` collections are server-only, with explicit client SDK deny
-rules and ownership catalog registration. Deployment still requires current
+for review. The private `salesDemo*` collections, including setup receipts, are server-only,
+with explicit client SDK deny rules and ownership catalog registration. Deployment still requires current
 capability review, the secret, App Check and verified-contact acceptance.
-Production promotion is not implemented: no trial action publishes, messages,
-charges, grants organizer authority, copies configuration, or writes a product
-record. The server records only confirmed start/action receipts. Sales activity
-projection from those receipts is a separate integration; a preview fetch is
-never a confirmed interaction.
+Trial actions never publish, message, charge, grant organizer authority or copy
+sample answers into production. Confirmed starts and completion receipts project
+private Sales activity through `salesActivity.ts`; a preview fetch does not.
+
+After completion, `getSalesDemoSetup` returns the current reviewed setup plan.
+A supported template can be prepared through `prepareSalesDemoFormDraft` only
+with a current grant, a claimed or verified canonical organizer, current Forms
+manager authority and the exact reviewed setup hash. The Forms owner creates
+one private draft and the Sales setup receipt in the same transaction. Exact
+retries return that draft without overwriting later edits. Unsupported or manual
+plans return explicit review requirements. Publishing and real guest data remain
+separate product actions.
