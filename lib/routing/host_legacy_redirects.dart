@@ -87,3 +87,14 @@ String? hostOrganizerIndexRedirect(Uri uri) {
     queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
   ).toString();
 }
+
+/// The event-scope workspace moved under the unified work shell; the legacy
+/// operator URL keeps resolving as a redirect so shared links and old builds
+/// still land on the event.
+String hostOperatorEventLegacyRedirect(Uri uri, {required String eventId}) {
+  return uri
+      .replace(
+        path: Routes.hostWorkEventScreen.path.replaceFirst(':eventId', eventId),
+      )
+      .toString();
+}

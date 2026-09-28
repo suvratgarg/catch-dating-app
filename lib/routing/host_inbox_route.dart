@@ -3,9 +3,12 @@ part of 'go_router.dart';
 @visibleForTesting
 HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
   final eventId = uri.queryParameters['eventId']?.trim();
+  final programId = uri.queryParameters['programId']?.trim();
   final general = uri.queryParameters['scope'] == 'general';
   final initialScope = eventId != null && eventId.isNotEmpty
       ? HostInboxScope.event(eventId)
+      : programId != null && programId.isNotEmpty
+      ? HostInboxScope.program(programId)
       : general
       ? const HostInboxScope.general()
       : null;

@@ -8695,6 +8695,16 @@
               ]
             },
             {
+              "id": "program_queries",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "HostInboxScope.program filters WhatsApp threads by guest contactId and Catch threads by verified linked uid from the program guest list.",
+              "tests": [
+                "test/hosts/host_inbox_view_model_test.dart",
+                "test/hosts/inbox/host_inbox_people_test.dart"
+              ]
+            },
+            {
               "id": "roster_without_threads",
               "kind": "empty",
               "status": "captured",
@@ -13188,6 +13198,94 @@
               "kind": "empty",
               "status": "implemented",
               "notes": "Before a file is chosen only the picker call to action renders."
+            }
+          ]
+        },
+        {
+          "id": "programs.moments",
+          "routeId": "hostProgramMomentsScreen",
+          "implementationPaths": [
+            "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+            "lib/hosts/events/data/organizer_moments_repository.dart",
+            "lib/hosts/events/domain/organizer_moment.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.error_state",
+            "catch.field",
+            "catch.menu",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "R4 program-scope moments route on the unified organizer moments surface."
+            }
+          ],
+          "states": [
+            {
+              "id": "moments_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The route-owned loading viewport stays inside the Host shell while the moments list resolves."
+            },
+            {
+              "id": "moments_error",
+              "kind": "error",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Backend and authorization failures fail closed through the shared localized error state and scope-scoped retry."
+            },
+            {
+              "id": "moments_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Scopes without moments render the empty state with the create affordance."
+            },
+            {
+              "id": "moments_list",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The list renders lifecycle status plus initiation, audience, and action summaries for every definition the server returns."
+            },
+            {
+              "id": "moment_editor",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The inline editor covers manual, scheduled, anchored, and triggered initiation with audience and action fields bound to generated contract constraints."
+            },
+            {
+              "id": "moment_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Arm, pause, resume, manual run, and save mark the affected moment busy and surface localized failures."
             }
           ]
         }
