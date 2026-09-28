@@ -12,6 +12,7 @@ import {
   discoverFlutterSources,
   fieldFacadePath,
   isHandwrittenSource,
+  lineBudgetExemptPaths,
   sourceSizeBaselinePath,
 } from "./check_flutter_source_size.mjs";
 
@@ -38,6 +39,16 @@ test("source ratchet rejects growth, unrecorded reductions, stale and deleted en
   assert.match(errors, /improved from 900 to 850/u);
   assert.match(errors, /baseline is stale at 900/u);
   assert.match(errors, /deleted.dart: baseline entry points to missing or generated source/u);
+});
+
+test("line-budget-exempt files ignore the ratchet and cannot hold baseline entries", () => {
+  for (const file of lineBudgetExemptPaths) {
+    assert.deepEqual(checkFlutterSourceSizes([row(file, 5000)], emptyBaseline()), []);
+    const baseline = emptyBaseline();
+    baseline.allowedFindings.push({path: file, maxLines: 5000});
+    assert.match(checkFlutterSourceSizes([row(file, 5000)], baseline).join("\n"), /exempt from the source-size budget/u);
+    assert.equal(buildFlutterSourceSizeBaseline([row(file, 5000)]).allowedFindings.length, 0);
+  }
 });
 
 test("the exact Field facade exception remains decrease-only and rejects 1151 lines", () => {

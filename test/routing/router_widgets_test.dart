@@ -12,6 +12,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -221,6 +222,23 @@ void main() {
 
     expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
     expect(screen.initialSavedAudienceId, isNull);
+  });
+
+  test('host inbox route parses program scope and organizer', () {
+    final screen = app_router.hostInboxScreenForUri(
+      Uri.parse('/host/inbox?programId=program-1&organizerId=organizer-2'),
+    );
+
+    expect(screen.initialScope, const HostInboxScope.program('program-1'));
+    expect(screen.initialOrganizerId, 'organizer-2');
+  });
+
+  test('host inbox route prefers event scope over program scope', () {
+    final screen = app_router.hostInboxScreenForUri(
+      Uri.parse('/host/inbox?eventId=event-1&programId=program-1'),
+    );
+
+    expect(screen.initialScope, const HostInboxScope.event('event-1'));
   });
 
   testWidgets(
