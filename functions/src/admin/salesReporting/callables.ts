@@ -11,7 +11,7 @@ export const adminGetSalesFunnelReport = onCall(
     memory: "256MiB", timeoutSeconds: 60}), async (request) => {
     const principal = await currentSalesEmployee(request);
     const db = admin.firestore();
-    await checkRateLimit(db, principal.uid, "sales-funnel-report",
+    await checkRateLimit(db, principal.uid, "adminGetSalesFunnelReport",
       {maxRequests: 4, windowMs: 60000});
     return getSalesFunnel({db, now: () => new Date(), authorize: async () => {
       await currentSalesEmployee(request);
