@@ -423,18 +423,19 @@ test("getOrganizerEntitlement serves an empty projection and fences managers",
     );
   });
 
-test("Finance and Admin Owner can read without organizer membership", async () => {
-  const firestore = new FakeFirestore();
-  const {deps} = depsFor(firestore);
-  for (const role of ["finance", "adminOwner"]) {
-    const result = await getOrganizerEntitlementHandler(
-      callableRequest({organizerId: "organizer-1"}, {[role]: true}), deps);
-    assert.equal(result.organizerId, "organizer-1");
-    assert.deepEqual(result.grants, []);
-  }
-  await assert.rejects(
-    () => getOrganizerEntitlementHandler(
-      callableRequest({organizerId: "organizer-1"}, {support: true}), deps),
-    (error) => assertHttpsCode(error, "not-found")
-  );
-});
+test("Finance and Admin Owner can read without organizer membership",
+  async () => {
+    const firestore = new FakeFirestore();
+    const {deps} = depsFor(firestore);
+    for (const role of ["finance", "adminOwner"]) {
+      const result = await getOrganizerEntitlementHandler(
+        callableRequest({organizerId: "organizer-1"}, {[role]: true}), deps);
+      assert.equal(result.organizerId, "organizer-1");
+      assert.deepEqual(result.grants, []);
+    }
+    await assert.rejects(
+      () => getOrganizerEntitlementHandler(
+        callableRequest({organizerId: "organizer-1"}, {support: true}), deps),
+      (error) => assertHttpsCode(error, "not-found")
+    );
+  });
