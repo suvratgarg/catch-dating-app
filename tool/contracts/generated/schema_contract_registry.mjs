@@ -173358,6 +173358,7 @@ export const organizerProgramCallableResponseSchema = {
       "additionalProperties": false,
       "required": [
         "programId",
+        "organizerId",
         "kind",
         "title",
         "timezone",
@@ -173370,6 +173371,11 @@ export const organizerProgramCallableResponseSchema = {
       ],
       "properties": {
         "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -173970,6 +173976,7 @@ export const programGuestListCallableResponseSchema = {
           "guestId",
           "displayName",
           "householdId",
+          "contactId",
           "phoneE164",
           "email",
           "externalReference",
@@ -173995,6 +174002,15 @@ export const programGuestListCallableResponseSchema = {
               "null"
             ],
             "maxLength": 180
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180,
+            "description": "Optional link to organizerContacts. Lets program-scoped surfaces (the host inbox scope chip) attribute contact-linked threads to this program's guests."
           },
           "phoneE164": {
             "type": [

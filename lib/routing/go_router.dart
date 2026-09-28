@@ -231,10 +231,9 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
         GoRoute(
           path: Routes.paymentConfirmationScreen.path,
           name: Routes.paymentConfirmationScreen.name,
-          builder: (context, state) {
-            final data = state.extra! as PaymentConfirmationData;
-            return PaymentConfirmationScreen(data: data);
-          },
+          builder: (context, state) => PaymentConfirmationScreen(
+            data: state.extra! as PaymentConfirmationData,
+          ),
         ),
       ],
       GoRoute(
@@ -561,6 +560,14 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
           name: Routes.hostProgramImportScreen.name,
           builder: (context, state) => ProgramImportScreen(
             programId: state.pathParameters['programId']!,
+          ),
+        ),
+        GoRoute(
+          path: 'moments',
+          name: Routes.hostProgramMomentsScreen.name,
+          builder: (context, state) => OrganizerMomentsScreen(
+            scope: _programMomentScope(state),
+            scopeTitle: state.uri.queryParameters['title'],
           ),
         ),
       ],
@@ -998,8 +1005,7 @@ StatefulShellRoute _hostShellRoute(
           GoRoute(
             path: Routes.hostOrganizerScreen.path,
             name: Routes.hostOrganizerScreen.name,
-            redirect: (context, state) =>
-                hostOrganizerAudienceRedirect(state.uri),
+            redirect: _organizerAudienceUriRedirect,
             builder: (context, state) => hostOrganizerScreenForUri(state.uri),
           ),
         ],
@@ -1008,38 +1014,30 @@ StatefulShellRoute _hostShellRoute(
   );
 }
 
+EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
+  clubId: state.pathParameters['clubId']!,
+  eventId: state.pathParameters['eventId']!,
+  inviteCode: state.uri.queryParameters['invite'],
+  inviteLinkId:
+      state.uri.queryParameters['il'] ??
+      state.uri.queryParameters['inviteLinkId'],
+  initialEvent: _eventDetailInitialEvent(state),
+  presentationMode: _eventDetailPresentationMode(state),
+  heroTag: _eventDetailHeroTag(state),
+  attribution: _eventDetailAttribution(state),
+);
+
+ClubDetailScreen _clubDetailScreen(GoRouterState state) => ClubDetailScreen(
+  clubId: state.pathParameters['clubId']!,
+  initialClub: _clubDetailInitialClub(state),
+);
+
 class _RouteLoadingScreen extends StatelessWidget {
   const _RouteLoadingScreen();
 
   @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchScaffold.standalone(
-      backgroundColor: t.bg,
-      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
-    );
-  }
-}
-
-EventDetailScreen _eventDetailScreen(GoRouterState state) {
-  return EventDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    eventId: state.pathParameters['eventId']!,
-    inviteCode: state.uri.queryParameters['invite'],
-    inviteLinkId:
-        state.uri.queryParameters['il'] ??
-        state.uri.queryParameters['inviteLinkId'],
-    initialEvent: _eventDetailInitialEvent(state),
-    presentationMode: _eventDetailPresentationMode(state),
-    heroTag: _eventDetailHeroTag(state),
-    attribution: _eventDetailAttribution(state),
-  );
-}
-
-ClubDetailScreen _clubDetailScreen(GoRouterState state) {
-  return ClubDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    initialClub: _clubDetailInitialClub(state),
+  Widget build(BuildContext context) => CatchScaffold.standalone(
+    backgroundColor: CatchTokens.of(context).bg,
+    body: const CatchStateViewport.loading(accountForBottomOverlay: false),
   );
 }

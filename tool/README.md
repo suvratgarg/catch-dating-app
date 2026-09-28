@@ -1135,8 +1135,8 @@ explicit apply flag, and carry a `safety` label that reflects the blast radius.
 
 ## PR validation admission
 
-Development branches retain independent, inexpensive `PR feedback` checks
-(whitespace and the affected-check plan). Full validation stays in `CI` and
+Development branches retain independent, inexpensive `PR feedback` planning
+for affected checks. Full validation stays in `CI` and
 requires exactly one open, ready PR into `main` carrying `ci:admitted`.
 The read-only `ci:pr-admission` verifier checks live labels, the tested head and
 current main before validation and again before `Required CI` can succeed.

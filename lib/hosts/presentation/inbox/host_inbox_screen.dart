@@ -19,6 +19,7 @@ import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_con
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
@@ -26,6 +27,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_scree
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -192,7 +195,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
             compactForPrimaryRail: true,
             actions: [
-              if (isInbox && selectedClub != null)
+              if (isInbox &&
+                  selectedClub != null &&
+                  _requestedScope?.isProgram != true)
                 CatchIconAction.toolbar(
                   tooltip: context.l10n.hostInboxNewMessage,
                   onPressed: () => _newMessage(selectedClub.id),
@@ -284,6 +289,13 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     }
     if (_requestedScope?.eventId case final eventId?) {
       ref.invalidate(watchEventParticipationsForEventProvider(eventId));
+    }
+    if (_requestedScope?.programId case final programId?) {
+      if (organizerId != null) {
+        ref.invalidate(
+          hostInboxProgramAudiencePagesProvider(organizerId, programId),
+        );
+      }
     }
     if (organizerId != null) {
       ref.invalidate(watchEventsForClubProvider(organizerId));
@@ -382,6 +394,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       if (effectiveScope?.isGeneral == true) 'scope': 'general',
       'segment': _segment.name,
       'eventId': ?effectiveScope?.eventId,
+      'programId': ?effectiveScope?.programId,
       if (organizerId != null && organizerId.isNotEmpty)
         'organizerId': organizerId,
       if (threadId != null && threadId.isNotEmpty) 'threadId': threadId,

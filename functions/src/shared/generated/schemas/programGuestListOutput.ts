@@ -33,6 +33,7 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
           "guestId",
           "displayName",
           "householdId",
+          "contactId",
           "phoneE164",
           "email",
           "externalReference",
@@ -58,6 +59,15 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
               "null"
             ],
             "maxLength": 180
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180,
+            "description": "Optional link to organizerContacts. Lets program-scoped surfaces (the host inbox scope chip) attribute contact-linked threads to this program's guests."
           },
           "phoneE164": {
             "type": [

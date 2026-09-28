@@ -225,6 +225,7 @@ export async function listProgramGuestsHandler(
         guestId: doc.id,
         displayName: guest.displayName,
         householdId: guest.householdId,
+        contactId: guest.contactId,
         phoneE164: guest.phoneE164,
         email: guest.email,
         externalReference: guest.externalReference,
