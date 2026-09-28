@@ -8,7 +8,7 @@ const schemaLegacyPaymentRefundIntentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/embedded/legacy_payment_refund.schema.json',
   'title': 'LegacyPaymentRefundIntent',
-  'description': 'Frozen native cancellation refund authority and up to two observed attempts: guest refund then host cancellation remainder. Provider success is distinct from submission.',
+  'description': 'Frozen native cancellation or failed-booking refund authority. Provider success is distinct from submission; guest refund may be upgraded by host cancellation.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -39,6 +39,7 @@ const schemaLegacyPaymentRefundIntentSchema = <String, Object?>{
       'enum': <Object?>[
         'guestCancelled',
         'eventCancelled',
+        'bookingFailed',
       ],
       'type': 'string',
     },

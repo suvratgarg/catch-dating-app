@@ -1,3 +1,5 @@
+import {Timestamp} from "firebase-admin/firestore";
+import {prepareNativePaidBooking} from "./nativeBooking";
 import assert from "node:assert/strict";
 import * as crypto from "node:crypto";
 import test from "node:test";
@@ -13,7 +15,7 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
     const firestore = new FakeFirestore({
       "payments/payment_1": {
         status: "pending",
-        createdAt: "created-at",
+        createdAt: Timestamp.fromMillis(1),
       },
     });
     const signUps: Array<{
@@ -38,7 +40,12 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
           if (paymentId === undefined) {
             throw new Error("paymentId is required.");
           }
-          signUps.push({eventId, userId, paymentId, options: options ?? {}});
+          const {paidBooking, ...visibleOptions} = options!;
+          signUps.push({eventId, userId, paymentId, options: visibleOptions});
+          await _db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db: _db, tx, eventId, userId,
+              paymentId, booking: paidBooking!}))();
+          });
         },
       }
     );
@@ -49,31 +56,20 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
       paymentId: "payment_1",
       options: {hasValidInvite: false},
     }]);
-    assert.deepEqual(firestore.data["payments/payment_1"], {
-      status: "completed",
-      createdAt: "created-at",
-      orderId: "cs_test_123",
-      paymentId: "payment_1",
-      eventId: "event-1",
-      userId: "runner-1",
-      amount: 3500,
-      amountMinor: 3500,
-      currency: "USD",
-      provider: "stripe",
-      providerPaymentId: "pi_test_123",
-      checkoutSessionId: "cs_test_123",
-      signUpFailed: false,
-      completedAt: "server-now",
-      updatedAt: "server-now",
-    });
+    const result = firestore.data["payments/payment_1"] as
+      Record<string, unknown>;
+    assert.equal(result.status, "completed");
+    assert.equal(result.amount, 3500);
+    assert.ok(result.completedAt);
+    assert.deepEqual(result.createdAt, Timestamp.fromMillis(1));
   });
 
-test("stripeWebhookHandler refunds when booking loses the race after payment",
+test("stripeWebhookHandler queues a refund when admission rejects a capture",
   async () => {
     const firestore = new FakeFirestore({
       "payments/payment_1": {
         status: "pending",
-        createdAt: "created-at",
+        createdAt: Timestamp.fromMillis(1),
       },
     });
     const refunds: Array<{paymentIntentId: string; amountMinor: number}> = [];
@@ -96,13 +92,10 @@ test("stripeWebhookHandler refunds when booking loses the race after payment",
       isHttpsError("failed-precondition", "This event is full.")
     );
 
-    assert.deepEqual(refunds, [{
-      paymentIntentId: "pi_test_123",
-      amountMinor: 3500,
-    }]);
+    assert.deepEqual(refunds, []);
     assert.equal(
       (firestore.data["payments/payment_1"] as Record<string, unknown>).status,
-      "refunded"
+      "refundFailed"
     );
     assert.equal(
       (firestore.data["payments/payment_1"] as Record<string, unknown>)
@@ -111,12 +104,12 @@ test("stripeWebhookHandler refunds when booking loses the race after payment",
     );
   });
 
-test("stripeWebhookHandler marks refundFailed when the refund itself fails",
+test("Stripe webhook records refund intent before provider work",
   async () => {
     const firestore = new FakeFirestore({
       "payments/payment_1": {
         status: "pending",
-        createdAt: "created-at",
+        createdAt: Timestamp.fromMillis(1),
       },
     });
     const payload = checkoutEventPayload("checkout.session.completed");
@@ -142,6 +135,8 @@ test("stripeWebhookHandler marks refundFailed when the refund itself fails",
       Record<string, unknown>;
     assert.equal(record.status, "refundFailed");
     assert.equal(record.signUpFailed, true);
+    assert.equal((record.cancellationRefund as {state: string}).state,
+      "pending");
   });
 
 test("stripeWebhookHandler marks expired checkout sessions as failed",
@@ -150,7 +145,7 @@ test("stripeWebhookHandler marks expired checkout sessions as failed",
       "payments/payment_1": {
         status: "pending",
         checkoutSessionId: "cs_test_123",
-        createdAt: "created-at",
+        createdAt: Timestamp.fromMillis(1),
       },
     });
     const payload = checkoutEventPayload("checkout.session.expired");
@@ -172,7 +167,7 @@ test("stripeWebhookHandler marks expired checkout sessions as failed",
     assert.deepEqual(firestore.data["payments/payment_1"], {
       status: "failed",
       checkoutSessionId: "cs_test_123",
-      createdAt: "created-at",
+      createdAt: Timestamp.fromMillis(1),
       updatedAt: "server-now",
     });
   });
@@ -182,7 +177,7 @@ test("late Stripe failure preserves paid and refund records", async () => {
     "checkout.session.async_payment_failed"]) {
     for (const status of ["completed", "refunded", "refundFailed"]) {
       const before = {status, checkoutSessionId: "cs_test_123",
-        provider: "stripe", providerPaymentId: "pi_test_123"};
+        provider: "stripe", providerPaymentId: "pi_test123"};
       const firestore = new FakeFirestore({
         "payments/payment_1": before,
       });
@@ -266,7 +261,7 @@ function checkoutSession(
     paymentStatus: "paid",
     amountTotal: 3500,
     currency: "USD",
-    paymentIntentId: "pi_test_123",
+    paymentIntentId: "pi_test123",
     metadata: {
       paymentId: "payment_1",
       eventId: "event-1",

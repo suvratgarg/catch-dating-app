@@ -33,16 +33,16 @@ export function planLegacyCancellationRefund(input: {
   if (!validatePaymentDocument(payment)) unavailable();
   if (!Number.isSafeInteger(nowMillis) || nowMillis <= 0 ||
       !Number.isSafeInteger(targetAmountMinor) || targetAmountMinor < 0 ||
-      targetAmountMinor > payment.amount || payment.signUpFailed ||
-      !["completed", "refunded"].includes(payment.status) ||
+      targetAmountMinor > payment.amount ||
+      !eligiblePayment(payment, reason) ||
       (payment.amountMinor ?? payment.amount) !== payment.amount ||
-      reason === "eventCancelled" && targetAmountMinor !== payment.amount) {
+      reason !== "guestCancelled" && targetAmountMinor !== payment.amount) {
     unavailable();
   }
   const old = payment.cancellationRefund;
   if (old) {
     assertLegacyRefundAuthority(payment, old);
-    if (reason === "guestCancelled") {
+    if (reason !== "eventCancelled") {
       if (old.reason !== reason ||
           old.targetAmountMinor !== targetAmountMinor) {
         unavailable();
@@ -52,7 +52,8 @@ export function planLegacyCancellationRefund(input: {
     if (old.targetAmountMinor === targetAmountMinor && old.reason === reason) {
       return old;
     }
-    if (targetAmountMinor < old.targetAmountMinor) unavailable();
+    if (old.reason === "bookingFailed" ||
+        targetAmountMinor < old.targetAmountMinor) unavailable();
     return {...old, reason, targetAmountMinor,
       state: old.state === "reviewRequired" ? "reviewRequired" :
         old.confirmedAmountMinor >= targetAmountMinor ? "complete" : "pending",
@@ -87,8 +88,7 @@ export function planLegacyCancellationRefund(input: {
 export function assertLegacyRefundAuthority(payment: PaymentDocument,
   intent: LegacyRefundIntent): void {
   if (!validatePaymentDocument(payment) ||
-      !["completed", "refunded"].includes(payment.status) ||
-      payment.signUpFailed ||
+      !eligiblePayment(payment, intent.reason) ||
       intent.paymentFingerprint !== legacyPaymentFingerprint(payment) ||
       intent.provider !== (payment.provider ?? "razorpay") ||
       intent.providerPaymentId !== (intent.provider === "stripe" ?
@@ -100,7 +100,7 @@ export function assertLegacyRefundAuthority(payment: PaymentDocument,
         ((payment.applicationFeeAmount ?? 0) > 0) ||
       intent.confirmedAmountMinor > intent.targetAmountMinor ||
       intent.targetAmountMinor > payment.amount ||
-      intent.reason === "eventCancelled" &&
+      intent.reason !== "guestCancelled" &&
         intent.targetAmountMinor !== payment.amount ||
       intent.attempts.reduce((total, attempt) => total +
         (attempt.state === "failed" ? 0 : attempt.amountMinor), 0) >
@@ -122,4 +122,11 @@ export function legacyRefundAttemptKey(paymentId: string,
 function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "This payment needs refund reconciliation.");
+}
+
+function eligiblePayment(payment: PaymentDocument,
+  reason: LegacyRefundIntent["reason"]): boolean {
+  return reason === "bookingFailed" ? payment.signUpFailed === true &&
+    ["refundFailed", "refunded"].includes(payment.status) :
+    !payment.signUpFailed && ["completed", "refunded"].includes(payment.status);
 }

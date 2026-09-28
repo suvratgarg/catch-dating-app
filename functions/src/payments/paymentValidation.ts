@@ -47,7 +47,7 @@ export interface PaymentRecordInput extends VerifiedPaymentBooking {
   signUpFailed?: boolean;
 }
 
-const successfulPaymentStatuses = new Set(["authorized", "captured"]);
+const successfulPaymentStatuses = new Set(["captured"]);
 
 /**
  * Builds the trusted Razorpay order payload for a paid event.

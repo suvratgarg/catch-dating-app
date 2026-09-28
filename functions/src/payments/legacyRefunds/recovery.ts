@@ -123,7 +123,8 @@ export const onNativeCancellationRefund = onDocumentWritten({
   secrets: [razorpayKeySecret, stripeSecretKey],
 }, async (event) => {
   const payment = event.data?.after.data();
-  if (!payment || !["completed", "refunded"].includes(payment.status)) return;
+  if (!payment || !["completed", "refunded", "refundFailed"]
+    .includes(payment.status)) return;
   const db = admin.firestore(); const paymentId = event.params.paymentId;
   await stageCancelledEventPayment({db, paymentId, nowMillis: Date.now()});
   await processLegacyCancellationRefund({db, paymentId,
