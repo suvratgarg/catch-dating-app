@@ -31,6 +31,8 @@ const repository = vi.hoisted(() => ({
   setSalesContactability: vi.fn(),
   previewSalesImport: vi.fn(),
   applySalesImport: vi.fn(),
+  previewSalesImportCompensation: vi.fn(),
+  applySalesImportCompensation: vi.fn(),
 }));
 vi.mock("../api/salesRepository", () => repository);
 

@@ -50,8 +50,12 @@ export async function checkAdminActionCatalog({
     "utf8"
   );
   const actionIds = resolvedCatalog.actions.map((action) => action.actionId);
+  const guiCallables = callableNames(apiSource);
+  // Control-plane authority is independent of presentation: an Owner-only
+  // action can have an Admin UI without becoming an assistant capability.
+  const guiSet = new Set(guiCallables);
   const catalogCallables = resolvedCatalog.actions
-    .filter((action) => !action.controlPlane)
+    .filter((action) => !action.controlPlane || guiSet.has(action.callable))
     .map((action) => action.callable);
   const allCatalogCallables = resolvedCatalog.actions.map((action) =>
     action.callable);
@@ -60,7 +64,7 @@ export async function checkAdminActionCatalog({
   compareSets(
     findings,
     "gui-callable-catalog-drift",
-    callableNames(apiSource),
+    guiCallables,
     catalogCallables
   );
   const exported = new Set(indexSource.match(/\badmin[A-Z][A-Za-z0-9]+\b/gu) ?? []);
