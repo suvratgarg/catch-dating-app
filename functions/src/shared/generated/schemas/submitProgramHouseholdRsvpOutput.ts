@@ -16,6 +16,7 @@ export const submitProgramHouseholdRsvpCallableResponseSchema: Record<string, un
     "entityId",
     "revision",
     "appliedCount",
+    "travelLegAppliedCount",
     "messagingConsentGranted",
     "alreadyApplied"
   ],
@@ -35,6 +36,12 @@ export const submitProgramHouseholdRsvpCallableResponseSchema: Record<string, un
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "travelLegAppliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "How many programTravelLegs rows this submit wrote from its travel blocks."
     },
     "messagingConsentGranted": {
       "type": "boolean",

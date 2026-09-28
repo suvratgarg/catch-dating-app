@@ -8,5 +8,17 @@
       "partySize": 2
     }
   ],
-  "messagingConsent": true
+  "messagingConsent": true,
+  "travel": [
+    {
+      "guestId": "guest-1",
+      "kind": "inbound",
+      "flightNumber": "UA123",
+      "originIata": "SFO",
+      "destinationIata": "DEL",
+      "scheduledArrivalAtMillis": 1800500000000,
+      "destinationHotelId": "hotel-1",
+      "passengers": 2
+    }
+  ]
 }

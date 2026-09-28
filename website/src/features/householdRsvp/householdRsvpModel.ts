@@ -7,6 +7,10 @@ export type MemberView = View["members"][number];
 export type MemberFunctionView = MemberView["functions"][number];
 export type RsvpStatus = MemberFunctionView["rsvpStatus"];
 export type ResponseDraft = Submission["responses"][number];
+export type TravelEcho = MemberView["travel"][number];
+export type TravelKind = TravelEcho["kind"];
+export type TravelDraft =
+  NonNullable<Submission["travel"]>[number];
 
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
 
@@ -82,6 +86,87 @@ export function draftChanged(
     (draft.responseNote ?? null) !== (fn.responseNote ?? null);
 }
 
+const travelKey = (guestId: string, kind: TravelKind) =>
+  JSON.stringify([guestId, kind]);
+
+/** One travel draft per member and journey kind (arrival/departure). */
+export function travelDraftFor(
+  drafts: ReadonlyMap<string, TravelDraft>,
+  guestId: string,
+  kind: TravelKind,
+): TravelDraft | undefined {
+  return drafts.get(travelKey(guestId, kind));
+}
+
+export function withTravelDraft(
+  drafts: ReadonlyMap<string, TravelDraft>,
+  guestId: string,
+  kind: TravelKind,
+  patch: Partial<TravelDraft>,
+): Map<string, TravelDraft> {
+  const next = new Map(drafts);
+  const current = next.get(travelKey(guestId, kind)) ?? {guestId, kind};
+  next.set(travelKey(guestId, kind), {...current, ...patch});
+  return next;
+}
+
+/** Seeds drafts from echoed legs so resubmits pre-fill. */
+export function travelDraftsFromView(view: View): Map<string, TravelDraft> {
+  const drafts = new Map<string, TravelDraft>();
+  for (const member of view.members) {
+    for (const echo of member.travel) {
+      drafts.set(travelKey(member.guestId, echo.kind), {
+        guestId: member.guestId,
+        kind: echo.kind,
+        flightNumber: echo.flightNumber,
+        carrierCode: echo.carrierCode,
+        originIata: echo.originIata,
+        destinationIata: echo.destinationIata,
+        scheduledArrivalAtMillis: echo.scheduledArrivalAtMillis,
+        destinationHotelId: echo.destinationHotelId,
+        destinationLabel: echo.destinationLabel,
+        passengers: echo.passengers,
+        luggageUnits: echo.luggageUnits,
+      });
+    }
+  }
+  return drafts;
+}
+
+/** A block with no itinerary content is never submitted. */
+export function travelDraftHasContent(draft: TravelDraft): boolean {
+  return Boolean(
+    draft.flightNumber?.trim() || draft.originIata?.trim() ||
+    draft.destinationIata?.trim() ||
+    draft.scheduledArrivalAtMillis != null ||
+    draft.destinationHotelId || draft.destinationLabel?.trim() ||
+    (draft.passengers ?? 1) !== 1 || (draft.luggageUnits ?? 0) !== 0);
+}
+
+/** A partially-filled block needs a destination and an arrival time. */
+export function travelDraftIncomplete(draft: TravelDraft): boolean {
+  return travelDraftHasContent(draft) && (
+    (!draft.destinationHotelId && !draft.destinationLabel?.trim()) ||
+    draft.scheduledArrivalAtMillis == null);
+}
+
+export function travelDraftChanged(
+  draft: TravelDraft,
+  echo: TravelEcho | undefined,
+): boolean {
+  if (!echo) return travelDraftHasContent(draft);
+  return (draft.flightNumber ?? null) !== echo.flightNumber ||
+    (draft.carrierCode ?? null) !== echo.carrierCode ||
+    (draft.originIata ?? null) !== echo.originIata ||
+    (draft.destinationIata ?? null) !== echo.destinationIata ||
+    (draft.scheduledArrivalAtMillis ?? null) !==
+      echo.scheduledArrivalAtMillis ||
+    (draft.destinationHotelId ?? null) !== echo.destinationHotelId ||
+    (draft.destinationLabel ?? null) !== echo.destinationLabel ||
+    (draft.passengers ?? 1) !== echo.passengers ||
+    (draft.luggageUnits ?? 0) !== echo.luggageUnits;
+}
+
 export type HouseholdRsvpScreen =
   | {kind: "loading"}
   | {kind: "unavailable"; reason: "invalid" | "network"}
@@ -89,6 +174,7 @@ export type HouseholdRsvpScreen =
     kind: "ready";
     view: View;
     drafts: Map<string, ResponseDraft>;
+    travelDrafts: Map<string, TravelDraft>;
     messagingConsent: boolean;
     dirty: boolean;
     pending: boolean;

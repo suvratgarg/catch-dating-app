@@ -15,7 +15,8 @@
     "householdId",
     "householdLabel",
     "messagingConsentGranted",
-    "members"
+    "members",
+    "hotels"
   ],
   "properties": {
     "programId": {
@@ -52,7 +53,8 @@
         "required": [
           "guestId",
           "displayName",
-          "functions"
+          "functions",
+          "travel"
         ],
         "properties": {
           "guestId": {
@@ -139,6 +141,117 @@
                 }
               }
             }
+          },
+          "travel": {
+            "type": "array",
+            "maxItems": 6,
+            "description": "This member's previously captured travel blocks, one per journey kind, echoed so the form can pre-fill. Only household-submitted (formResponse) legs appear.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "flightNumber",
+                "carrierCode",
+                "originIata",
+                "destinationIata",
+                "scheduledArrivalAtMillis",
+                "destinationHotelId",
+                "destinationLabel",
+                "passengers",
+                "luggageUnits"
+              ],
+              "properties": {
+                "kind": {
+                  "$ref": "../shared/program_common.schema.json#/definitions/travelLegKind"
+                },
+                "flightNumber": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 16
+                },
+                "carrierCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "originIata": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "destinationIata": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "scheduledArrivalAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 253402300799999
+                },
+                "destinationHotelId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "destinationLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "passengers": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "luggageUnits": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "The program's configured hotels for the travel destination picker; names only.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 140
           }
         }
       }
