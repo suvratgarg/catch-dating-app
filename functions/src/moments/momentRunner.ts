@@ -1,3 +1,4 @@
+import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
 import {
   evaluateCondition,
@@ -23,6 +24,7 @@ import {
 } from "./momentPolicy";
 import {
   nominalDueAtMillis,
+  planRun,
   planManualRun,
   replan,
   resolveFireDisposition,
@@ -203,12 +205,46 @@ export async function runMomentSweep(
     if (facts === null) continue;
     const existing = await db.collection(MOMENT_RUNS_COLLECTION)
       .where("momentId", "==", moment.momentId)
-      .where("status", "==", "planned")
       .get();
     const runs = existing.docs.map((doc) =>
       runFromDocument(doc.data()));
+    const travel = await travelFor(moment, facts);
+    const nominal = planRun(moment, facts, now);
+    const recipients = travel && nominal.kind === "planned" ?
+      (await resolveMomentRecipients(db, moment, nominal.run,
+        travel)).recipients : null;
+    const travelLeadMinutes = recipients ? recipients.reduce((max,
+      recipient) => Math.max(max, recipient.travelLeadMinutes ?? 0), 0) :
+      undefined;
+    const preview = planRun(moment, facts, now,
+      {travel, travelLeadMinutes});
+    if (preview.kind === "planned" && travel) {
+      // Old travel run IDs encode the mutable wake. Their nominal occurrence
+      // cannot be proven after edits or lead changes, so never silently
+      // adopt them or create a second sender with fresh receipt IDs.
+      const legacy = runs.filter((run) =>
+        run.anchorRevision === preview.run.anchorRevision &&
+        run.runId !== preview.run.runId &&
+        run.travelPlanHash === undefined);
+      if (legacy.length > 0 &&
+          !runs.some((run) => run.runId === preview.run.runId)) {
+        for (const run of legacy.filter((entry) =>
+          entry.status === "planned")) {
+          await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
+            .update({status: "failed",
+              reason: "legacyOccurrenceUnresolved"});
+        }
+        await db.collection(MOMENT_RUNS_COLLECTION)
+          .doc(preview.run.runId).set({...preview.run,
+            status: "failed", reason: "legacyOccurrenceUnresolved"});
+        summary.runsSkipped += 1;
+        continue;
+      }
+    }
+    const travelPlanHash = recipients ?
+      hashTravelPlan(recipients) : undefined;
     const plan = replan(moment, facts, runs, now,
-      {travel: await travelFor(moment, facts)});
+      {travel, travelLeadMinutes, travelPlanHash});
     for (const runId of plan.supersede) {
       await db.collection(MOMENT_RUNS_COLLECTION).doc(runId)
         .update({status: "superseded"});
@@ -225,7 +261,14 @@ export async function runMomentSweep(
         summary.runsCreated += 1;
       }
     }
-    if (plan.supersede.length > 0 || plan.create !== null) {
+    for (const change of plan.reschedule) {
+      await db.collection(MOMENT_RUNS_COLLECTION).doc(change.runId)
+        .update({dueAtMillis: change.dueAtMillis,
+          plannedWakeAtMillis: change.plannedWakeAtMillis,
+          travelPlanHash: change.travelPlanHash});
+    }
+    if (plan.supersede.length > 0 || plan.create !== null ||
+        plan.reschedule.length > 0) {
       summary.momentsReplanned += 1;
     }
   }
@@ -259,6 +302,13 @@ export async function runMomentSweep(
     else summary.runsSkipped += 1;
   }
   return summary;
+}
+
+function hashTravelPlan(recipients: ReadonlyArray<ResolvedRecipient>): string {
+  const schedule = recipients.map((recipient) => [
+    recipient.recipientKey, recipient.travelLeadMinutes ?? 0,
+  ]).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+  return createHash("sha256").update(JSON.stringify(schedule)).digest("hex");
 }
 
 async function loadMoment(

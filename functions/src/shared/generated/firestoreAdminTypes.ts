@@ -9967,12 +9967,14 @@ export interface OrganizerMomentDocument {
 }
 
 /**
- * Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.
+ * Server-owned planned/fired run for a moment. Time-based runId encodes moment + anchor revision + nominal due time; mutable travel wake and deferrals are separate. Triggered/manual identities retain subject/requestKey.
  */
 export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  plannedWakeAtMillis?: number;
+  travelPlanHash?: string;
   anchorRevision: number;
   status:
     | "planned"

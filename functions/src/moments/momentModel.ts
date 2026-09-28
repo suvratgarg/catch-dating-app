@@ -172,6 +172,10 @@ export interface RunRecord {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  /** Initial cohort wake, separate from mutable quiet/recipient deferral. */
+  plannedWakeAtMillis?: number;
+  /** Hash of effective recipient leads for one travel planning generation. */
+  travelPlanHash?: string;
   anchorRevision: number;
   status: RunStatus;
   targetFunctionId?: string;

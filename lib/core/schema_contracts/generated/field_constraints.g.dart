@@ -96109,6 +96109,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentRunDocumentPlannedWakeAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.plannedWakeAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerMomentRunDocumentReason = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.reason',
     maxLength: 120,
@@ -96163,6 +96170,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentRunDocument.targetFunctionId',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentTravelPlanHash = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelPlanHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const organizerMomentSendDocumentActionKind = CatchContractFieldConstraints(
@@ -139569,6 +139582,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
     'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
     'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
+    'organizerMomentRunDocument.plannedWakeAtMillis': organizerMomentRunDocumentPlannedWakeAtMillis,
     'organizerMomentRunDocument.reason': organizerMomentRunDocumentReason,
     'organizerMomentRunDocument.recipients': organizerMomentRunDocumentRecipients,
     'organizerMomentRunDocument.runId': organizerMomentRunDocumentRunId,
@@ -139578,6 +139592,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
     'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
     'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentRunDocument.travelPlanHash': organizerMomentRunDocumentTravelPlanHash,
     'organizerMomentSendDocument.actionKind': organizerMomentSendDocumentActionKind,
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
     'organizerMomentSendDocument.dayKey': organizerMomentSendDocumentDayKey,

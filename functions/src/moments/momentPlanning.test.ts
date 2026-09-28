@@ -164,6 +164,7 @@ test("replan keeps an identical run and supersedes moved anchors", () => {
   const existing = run({runId: "m1_7_1100000"});
   assert.deepEqual(replan(baseMoment, facts, [existing], 0), {
     supersede: [], create: null, keep: ["m1_7_1100000"],
+    reschedule: [],
   });
   const moved: AnchorFacts = {...facts, functions: {...facts.functions,
     sangeet: {...facts.functions.sangeet, startsAtMillis: 2_060_000,
@@ -195,7 +196,7 @@ test("unplannable replan supersedes all planned runs with a reason", () => {
   const paused = {...baseMoment, status: "paused" as const};
   assert.deepEqual(replan(paused, facts, [run({runId: "a"}),
     run({runId: "b"})], 0), {
-    supersede: ["a", "b"], create: null, keep: [],
+    supersede: ["a", "b"], create: null, keep: [], reschedule: [],
     unplannableReason: "notArmed",
   });
 });
@@ -266,19 +267,25 @@ test("travelTimeLead wakes the run early by the farthest hotel's lead",
     // nominal = 2_000_000 - 900_000 = 1_100_000; due = nominal - 10m.
     const result = planRun(leadMoment, travelFacts, 0, {travel});
     assert.deepEqual(result.kind === "planned" && result.run, {
-      runId: "m1_7_500000",
-      momentId: "m1", dueAtMillis: 500_000, anchorRevision: 7,
+      runId: "m1_7_1100000",
+      momentId: "m1", dueAtMillis: 500_000,
+      plannedWakeAtMillis: 500_000, anchorRevision: 7,
       status: "planned",
     });
-    // A changed estimate produces a new run id -> replan self-heals.
+    // The occurrence id is stable while the wake moves with the estimate.
     const planned = [result.kind === "planned" ? result.run : run({})];
     const nearer = planRun(leadMoment, travelFacts, 0,
       {travel: buildTravelContext(leadMoment, travelFacts, () => 5)});
     const move = replan(leadMoment, travelFacts, planned, 0,
-      {travel: buildTravelContext(leadMoment, travelFacts, () => 5)});
+      {travel: buildTravelContext(leadMoment, travelFacts, () => 5),
+        travelPlanHash: "changed"});
     assert.equal(nearer.kind === "planned" && nearer.run.dueAtMillis,
       800_000);
-    assert.deepEqual(move.supersede, ["m1_7_500000"]);
+    assert.deepEqual(move.supersede, []);
+    assert.deepEqual(move.reschedule, [{
+      runId: "m1_7_1100000", dueAtMillis: 800_000,
+      plannedWakeAtMillis: 800_000, travelPlanHash: "changed",
+    }]);
     // The flag-off twin ignores the same context.
     const off = planRun(baseMoment, travelFacts, 0, {travel});
     assert.equal(off.kind === "planned" && off.run.dueAtMillis, 1_100_000);

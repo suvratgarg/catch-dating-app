@@ -35,6 +35,8 @@ export interface ReplanResult {
   supersede: string[];
   create: RunRecord | null;
   keep: string[];
+  reschedule: Array<{runId: string; dueAtMillis: number;
+    plannedWakeAtMillis: number; travelPlanHash: string}>;
   unplannableReason?: UnplannableReason;
 }
 
@@ -142,9 +144,10 @@ export function planRun(
   options?: {
     graceMillis?: number;
     /** Distance-lead context; the run wakes early enough for the farthest
-     *  hotel-linked guest. The shift is inside the deterministic run id,
-     *  so a changed hotel set self-heals on the next replan. */
+     *  hotel-linked guest, without changing its occurrence identity. */
     travel?: TravelEstimateContext | null;
+    /** Runner override from the resolved audience; avoids unrelated groups. */
+    travelLeadMinutes?: number;
   },
 ): PlanResult {
   const graceMillis = options?.graceMillis ?? DEFAULT_GRACE_MILLIS;
@@ -172,9 +175,14 @@ export function planRun(
     initiation.offsetMinutes * 60_000 : 0;
   const wantsLead = moment.audience.kind === "functionGuests" &&
     moment.audience.travelTimeLead === true;
-  const travelLeadMillis = wantsLead && options?.travel ?
-    maxTravelLeadMinutes(options.travel) * 60_000 : 0;
+  const travelLeadMinutes = wantsLead && options?.travel ?
+    options.travelLeadMinutes ?? maxTravelLeadMinutes(options.travel) : 0;
+  if (!Number.isSafeInteger(travelLeadMinutes) || travelLeadMinutes < 0) {
+    throw new RangeError("Travel lead must be non-negative whole minutes.");
+  }
+  const travelLeadMillis = travelLeadMinutes * 60_000;
   const nominalDue = anchor.atMillis + offsetMillis;
+  requireMillis(nominalDue);
   const dueAtMillis = nominalDue - travelLeadMillis;
   requireMillis(dueAtMillis);
   // The send window is nominal-relative: the lead only moves the wake-up,
@@ -186,9 +194,11 @@ export function planRun(
   return {
     kind: "planned",
     run: {
-      runId: `${moment.momentId}_${anchor.anchorRevision}_${dueAtMillis}`,
+      runId: `${moment.momentId}_${anchor.anchorRevision}_${nominalDue}`,
       momentId: moment.momentId,
       dueAtMillis,
+      ...(wantsLead && options?.travel ?
+        {plannedWakeAtMillis: dueAtMillis} : {}),
       anchorRevision: anchor.anchorRevision,
       status: "planned",
     },
@@ -200,16 +210,22 @@ export function replan(
   facts: AnchorFacts,
   existingRuns: ReadonlyArray<RunRecord>,
   nowMillis: number,
-  options?: {travel?: TravelEstimateContext | null},
+  options?: {travel?: TravelEstimateContext | null;
+    travelLeadMinutes?: number;
+    travelPlanHash?: string},
 ): ReplanResult {
   const planned = existingRuns.filter(
     (run) => run.momentId === moment.momentId && run.status === "planned");
-  const result = planRun(moment, facts, nowMillis, {travel: options?.travel});
+  const result = planRun(moment, facts, nowMillis, {
+    travel: options?.travel,
+    travelLeadMinutes: options?.travelLeadMinutes,
+  });
   if (result.kind !== "planned") {
     return {
       supersede: planned.map((run) => run.runId),
       create: null,
       keep: [],
+      reschedule: [],
       unplannableReason: result.reason,
     };
   }
@@ -219,7 +235,21 @@ export function replan(
   const supersede = planned
     .filter((run) => run.runId !== result.run.runId)
     .map((run) => run.runId);
-  return {supersede, create: keep.length > 0 ? null : result.run, keep};
+  const matching = planned.find((run) => run.runId === result.run.runId);
+  const reschedule = matching && result.run.plannedWakeAtMillis !== undefined &&
+      options?.travelPlanHash &&
+      matching.travelPlanHash !== options.travelPlanHash ? [{
+      runId: matching.runId,
+      dueAtMillis: result.run.plannedWakeAtMillis,
+      plannedWakeAtMillis: result.run.plannedWakeAtMillis,
+      travelPlanHash: options.travelPlanHash,
+    }] : [];
+  const create = keep.length > 0 ? null : {
+    ...result.run,
+    ...(options?.travelPlanHash ?
+      {travelPlanHash: options.travelPlanHash} : {}),
+  };
+  return {supersede, create, keep, reschedule};
 }
 
 /**

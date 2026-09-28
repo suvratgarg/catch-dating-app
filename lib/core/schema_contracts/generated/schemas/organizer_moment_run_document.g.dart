@@ -8,7 +8,7 @@ const schemaOrganizerMomentRunDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_moment_runs.schema.json',
   'title': 'OrganizerMomentRunDocument',
-  'description': 'Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.',
+  'description': 'Server-owned planned/fired run for a moment. Time-based runId encodes moment + anchor revision + nominal due time; mutable travel wake and deferrals are separate. Triggered/manual identities retain subject/requestKey.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerMomentRuns',
@@ -37,6 +37,15 @@ const schemaOrganizerMomentRunDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'plannedWakeAtMillis': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+    },
+    'travelPlanHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
     },
     'anchorRevision': <String, Object?>{
       'type': 'integer',
