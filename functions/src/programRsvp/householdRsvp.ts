@@ -21,6 +21,7 @@ import type {
   ProgramFunctionGuestDocument,
   ProgramGuestDocument,
   ProgramHouseholdDocument,
+  ProgramTravelLegDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {IssueProgramHouseholdRsvpLinkCallablePayload} from
   "../shared/generated/issueProgramHouseholdRsvpLinkCallablePayload";
@@ -59,6 +60,15 @@ import {
 } from "./rsvpLinkTokens";
 import {functionCountPatch} from "./rsvpRollup";
 import {buildIcsFeed} from "../programSchedule/icsFeed";
+import {
+  buildRsvpTravelLegDoc,
+  dedupeTravelBlocks,
+  rsvpTravelBlockRejection,
+  rsvpTravelLegId,
+  type RsvpTravelBlockInput,
+} from "./rsvpTravelBlocks";
+import {reconcileTravelLegState} from "../transport/travelLegState";
+import {requireMutableTravelLeg} from "../transport/travelPartyPolicy";
 
 export const householdRsvpSecret =
   defineSecret("PROGRAM_HOUSEHOLD_RSVP_SECRET");
@@ -317,7 +327,9 @@ export async function submitProgramHouseholdRsvpHandler(
     "submitProgramHouseholdRsvp");
   const householdRef = db.collection("programHouseholds")
     .doc(identity.householdId);
-  let result: SubmitProgramHouseholdRsvpCallableResponse | null = null;
+  // Generated response type gains travelLegAppliedCount on regen.
+  let result: (SubmitProgramHouseholdRsvpCallableResponse &
+    {travelLegAppliedCount: number}) | null = null;
   await db.runTransaction(async (tx) => {
     const bundle = await loadHouseholdBundle(
       db, identity.programId, identity.householdId, tx);
@@ -418,8 +430,81 @@ export async function submitProgramHouseholdRsvpHandler(
       ]);
       guestRollups.set(response.guestId, plan.guestRollup.rsvpStatus);
     }
+    // Household-submitted travel: one deterministic leg per (guest, kind),
+    // so resubmits update in place and replays stay idempotent. Every leg
+    // read must happen before the write phase below.
+    const travelBlocks = dedupeTravelBlocks(
+      (data as {travel?: RsvpTravelBlockInput[] | null}).travel);
+    const legWrites: {ref: FirebaseFirestore.DocumentReference;
+      doc: ProgramTravelLegDocument}[] = [];
+    if (travelBlocks.size > 0) {
+      const hotelIds = new Set<string>();
+      const pickupPointIds = new Set<string>();
+      for (const block of travelBlocks.values()) {
+        if (!memberIds.has(block.guestId)) {
+          throw new HttpsError("permission-denied",
+            "Travel blocks are limited to this household's members.");
+        }
+        if (!guests.has(block.guestId)) {
+          throw new HttpsError("not-found",
+            "Guest not found in this household.");
+        }
+        const reason = rsvpTravelBlockRejection(block);
+        if (reason === "missingDestination") {
+          throw new HttpsError("invalid-argument",
+            "A travel block needs a hotel destination or a destination " +
+            "label.");
+        }
+        if (reason === "arrivalRequired") {
+          throw new HttpsError("invalid-argument",
+            "A travel block needs a scheduled arrival time.");
+        }
+        if (block.destinationHotelId) hotelIds.add(block.destinationHotelId);
+        if (block.pickupPointId) pickupPointIds.add(block.pickupPointId);
+      }
+      const refSnaps = await Promise.all([
+        ...[...hotelIds].map((id) =>
+          tx.get(db.collection("programHotels").doc(id))),
+        ...[...pickupPointIds].map((id) =>
+          tx.get(db.collection("programPickupPoints").doc(id))),
+      ]);
+      for (const snap of refSnaps) {
+        const doc = snap.data() as {programId?: string} | undefined;
+        if (!snap.exists || doc?.programId !== identity.programId) {
+          throw new HttpsError("invalid-argument",
+            "A travel block references a place outside this program.");
+        }
+      }
+      const blockList = [...travelBlocks.values()];
+      const legSnaps = await Promise.all(blockList
+        .map((block) => tx.get(db.collection("programTravelLegs")
+          .doc(rsvpTravelLegId(
+            identity.householdId, block.guestId, block.kind)))));
+      legSnaps.forEach((snap, index) => {
+        const block = blockList[index];
+        const existing = snap.data() as ProgramTravelLegDocument | undefined;
+        if (existing &&
+            (existing.programId !== identity.programId ||
+              existing.organizerId !== household.organizerId)) {
+          throw new HttpsError("failed-precondition",
+            "This journey does not belong to this program.");
+        }
+        if (existing) requireMutableTravelLeg(existing);
+        const document = buildRsvpTravelLegDoc(block, {
+          programId: identity.programId,
+          organizerId: household.organizerId,
+          householdId: identity.householdId,
+          now,
+        }, existing);
+        legWrites.push({
+          ref: snap.ref,
+          doc: reconcileTravelLegState(existing, document, now.toDate()),
+        });
+      });
+    }
     // All reads are done; now apply the writes.
     for (const write of rowWrites) tx.set(write.ref, write.doc);
+    for (const write of legWrites) tx.set(write.ref, write.doc);
     for (const [functionId, fnRows] of rowsByFunction) {
       const fn = functions.get(functionId)!;
       const patch = functionCountPatch(
@@ -457,6 +542,7 @@ export async function submitProgramHouseholdRsvpHandler(
       entityId: identity.householdId,
       revision,
       appliedCount: rowWrites.length,
+      travelLegAppliedCount: legWrites.length,
       messagingConsentGranted: data.messagingConsent === true,
       alreadyApplied: false,
     };

@@ -139903,6 +139903,126 @@ export const submitProgramHouseholdRsvpCallablePayloadSchema = {
     "messagingConsent": {
       "type": "boolean",
       "description": "The explicit household messaging-consent checkbox; recorded exactly as ticked."
+    },
+    "travel": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "maxItems": 400,
+      "description": "Optional per-member travel capture. Each block writes one programTravelLegs row keyed deterministically by household, guest, and journey kind, so resubmits update in place. A block is the complete desired state of that leg; absent blocks never delete planner-owned or previously captured journeys.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "kind"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound",
+              "ground"
+            ]
+          },
+          "flightNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "carrierCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 3
+          },
+          "originIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destinationIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scheduledArrivalAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "pickupPointId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "passengers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Defaults to 1 when omitted."
+          },
+          "luggageUnits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Defaults to 0 when omitted."
+          }
+        }
+      }
     }
   }
 };
@@ -141772,6 +141892,7 @@ export const submitProgramHouseholdRsvpCallableResponseSchema = {
     "entityId",
     "revision",
     "appliedCount",
+    "travelLegAppliedCount",
     "messagingConsentGranted",
     "alreadyApplied"
   ],
@@ -141791,6 +141912,12 @@ export const submitProgramHouseholdRsvpCallableResponseSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "travelLegAppliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "How many programTravelLegs rows this submit wrote from its travel blocks."
     },
     "messagingConsentGranted": {
       "type": "boolean",
