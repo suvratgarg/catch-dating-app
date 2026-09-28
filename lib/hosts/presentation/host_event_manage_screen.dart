@@ -654,7 +654,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
   }
 
-  void _logActionError(Object error, StackTrace stackTrace, String reason) {
+  void _logAppError(Object error, StackTrace stackTrace, String reason) {
     ref.read(errorLoggerProvider).logError(error, stackTrace, reason: reason);
   }
 
@@ -678,7 +678,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           );
       _showInviteLinkResult(label);
     } catch (error, stackTrace) {
-      _logActionError(
+      _logAppError(
         error,
         stackTrace,
         l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCreatenamedinvitelinkFailed,
@@ -701,7 +701,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       );
       _showInviteLinkResult(label);
     } catch (error, stackTrace) {
-      _logActionError(
+      _logAppError(
         error,
         stackTrace,
         l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCopynamedinvitelinkFailed,
@@ -744,7 +744,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           );
       _showInviteLinkResult(label, disabled: true);
     } catch (error, stackTrace) {
-      _logActionError(
+      _logAppError(
         error,
         stackTrace,
         l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenDisablenamedinvitelinkFailed,
@@ -779,7 +779,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           .then<void>(
             (_) {},
             onError: (Object error, StackTrace stackTrace) {
-              _logActionError(
+              _logAppError(
                 error,
                 stackTrace,
                 l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed,
