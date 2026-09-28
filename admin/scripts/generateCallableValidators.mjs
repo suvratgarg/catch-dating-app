@@ -164,20 +164,23 @@ function buildModel() {
 function renderSchemaPool(schemas) {
   const counts = new Map();
   const visit = value => {
-    if (!value || typeof value !== "object") return;
+    if (!value || !["object", "string"].includes(typeof value)) return;
     const key = JSON.stringify(value);
-    if (key.length >= 80) counts.set(key, (counts.get(key) ?? 0) + 1);
-    Object.values(value).forEach(visit);
+    const threshold = typeof value === "string" ? 32 : 80;
+    if (key.length >= threshold) counts.set(key, (counts.get(key) ?? 0) + 1);
+    if (typeof value === "object") Object.values(value).forEach(visit);
   };
   schemas.forEach(visit);
   const emitted = new Map();
   const declarations = [];
   const literal = value => {
-    if (!value || typeof value !== "object") return JSON.stringify(value);
+    if (!value || !["object", "string"].includes(typeof value)) {
+      return JSON.stringify(value);
+    }
     const key = JSON.stringify(value);
     const pooled = (counts.get(key) ?? 0) > 1;
     if (pooled && emitted.has(key)) return emitted.get(key);
-    const source = Array.isArray(value) ?
+    const source = typeof value === "string" ? key : Array.isArray(value) ?
       `[${value.map(literal).join(",")}]` :
       `{${Object.entries(value).map(([name, child]) =>
         `${JSON.stringify(name)}:${literal(child)}`).join(",")}}`;

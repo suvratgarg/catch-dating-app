@@ -6,6 +6,8 @@ import {
   PageHeader, Panel, SearchField, SegmentedControl, SelectField, StateRow,
   TableActionButton, TextareaField, TextField,
 } from "../../../shared/ui/AdminPrimitives";
+import {useAdminOperationPending} from "../../../shared/pendingOperation";
+import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {dataMode} from "../../../shared/api/dataMode";
 import {
@@ -14,12 +16,12 @@ import {
   useSalesWorkspaceController,
 } from "../controllers/useSalesWorkspaceController";
 import type {
-  SalesAccountDetail, SalesCustomFieldDefinition, SalesCustomFieldType,
+  SalesAccountDetail, SalesCustomFieldDefinition,
   SalesInboundIntent, SalesOpportunity,
   SalesResearchStatus, SalesTask,
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
-import {SalesImportWorkspace} from "./SalesImportPanel";
+import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
@@ -106,6 +108,9 @@ export function SalesWorkspaceScreen({
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {setError, setNotice} = useAdminFeedback();
+  const operationPending = useAdminOperationPending();
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  useEffect(() => setShowPrivacy(false), [selectedOrganizerId, currentUserUid]);
   const controller = useSalesWorkspaceController({
     area, selectedOrganizerId, onError: setError, onNotice: setNotice,
   });
@@ -130,8 +135,20 @@ export function SalesWorkspaceScreen({
           value={area} onChange={onAreaChange} />
       ) : null}
       {selectedOrganizerId ? (
-        <HostDetail controller={controller} currentUserUid={currentUserUid}
-          isAdminOwner={isAdminOwner} onOpenOrganizer={onOpenOrganizer} />
+        <>
+          {isAdminOwner ? <AdminToolbar>
+            <AdminButton disabled={operationPending}
+              onClick={() => setShowPrivacy((value) => !value)}>
+              {showPrivacy ? "Back to host details" : "Privacy controls"}
+            </AdminButton>
+          </AdminToolbar> : null}
+          {showPrivacy && isAdminOwner ? renderSalesPrivacyWorkspace({
+            actorUid: currentUserUid, isAdminOwner,
+            organizerId: selectedOrganizerId,
+            organizerName: controller.detail.data?.organizerSummary.name,
+          }) : <HostDetail controller={controller} currentUserUid={currentUserUid}
+            isAdminOwner={isAdminOwner} onOpenOrganizer={onOpenOrganizer} />}
+        </>
       ) : area === "today" ? (
         <TodayView controller={controller} currentUserUid={currentUserUid}
           onOpenHost={onOpenHost} />
@@ -148,7 +165,9 @@ export function SalesWorkspaceScreen({
       ) : area === "pilots" ? (
         <PilotsView controller={controller} onOpenHost={onOpenHost} />
       ) : (
-        <SettingsView controller={controller} isAdminOwner={isAdminOwner} />
+        <>{renderSalesSettingsWorkspace(controller, isAdminOwner)}
+          {renderSalesPrivacyWorkspace({actorUid: currentUserUid, isAdminOwner})}
+        </>
       )}
     </AdminDirectoryScreenStack>
   );
@@ -481,80 +500,6 @@ function PilotsView({controller, onOpenHost}: {
       onPrevious={controller.previousOpportunityPage}
       onNext={controller.nextOpportunityPage} />
   </Panel>;
-}
-
-function customFieldId(label: string): string {
-  const slug = label.trim().normalize("NFKD").toLowerCase()
-    .replace(/[^a-z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
-  return slug ? `sales.${slug}` : "";
-}
-
-function SettingsView({controller, isAdminOwner}: {
-  controller: SalesWorkspaceController; isAdminOwner: boolean;
-}) {
-  const [label, setLabel] = useState("");
-  const [type, setType] = useState<SalesCustomFieldType>("string");
-  const [helpText, setHelpText] = useState("");
-  const [enumText, setEnumText] = useState("");
-  const [localError, setLocalError] = useState("");
-  const fields = controller.customFields.data?.rows ?? [];
-  const id = customFieldId(label);
-  const similar = fields.filter((field) => field.fieldId === id ||
-    field.label.toLocaleLowerCase().includes(label.trim().toLocaleLowerCase()))
-    .filter(() => label.trim().length >= 3);
-  const enumOptions = enumText.split(",").map((value) => value.trim())
-    .filter(Boolean);
-  const save = async () => {
-    if (!id) {setLocalError("Enter a field label with letters or numbers."); return;}
-    if (type === "enum" && !enumOptions.length) {
-      setLocalError("Add at least one choice for this field."); return;
-    }
-    if (similar.some((field) => field.fieldId === id)) {
-      setLocalError("A field with this name already exists. Review it below.");
-      return;
-    }
-    setLocalError("");
-    const saved = await controller.addCustomField({field: {
-      fieldId: id, label: label.trim(), type, recordType: "account",
-      helpText: helpText.trim() || undefined,
-      enumOptions: type === "enum" ? enumOptions : undefined,
-    }});
-    if (saved) {setLabel(""); setHelpText(""); setEnumText("");}
-  };
-  return <><Panel title="Sales settings" icon={<ClipboardList size={18} />}>
-    <p>Add a private account field when the team needs the same information for
-      several hosts. Check existing fields first.</p>
-    <QueryState loading={controller.customFields.isPending}
-      error={controller.customFields.error} empty={false}
-      onRetry={() => void controller.customFields.refetch()} />
-    {fields.map((field) => <StateRow key={field.fieldId} label={field.label}
-      value={<>{labelFor(field.type)} · {field.helpText || "No help text"}</>} />)}
-    {similar.length ? <p role="status">Similar fields: {similar.map((field) =>
-      field.label).join(", ")}. Check these before adding another.</p> : null}
-    <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>New host field</h3>
-      <TextField label="Field label" value={label} onChange={setLabel}
-        placeholder="For example, preferred demo language" />
-      <SelectField label="Type" value={type}
-        onChange={(value) => setType(value as SalesCustomFieldType)} options={[
-          {value: "string", label: "Text"},
-          {value: "number", label: "Number"},
-          {value: "boolean", label: "Yes or no"},
-          {value: "date", label: "Date"},
-          {value: "enum", label: "Choice"},
-        ]} />
-      {type === "enum" ? <TextField label="Choices, separated by commas"
-        value={enumText} onChange={setEnumText} /> : null}
-      <TextareaField label="Help text" rows={2} value={helpText}
-        onChange={setHelpText} />
-      <p>Preview: {label.trim() || "Field label"} · {labelFor(type)}
-        {helpText.trim() ? ` · ${helpText.trim()}` : ""}</p>
-      {localError ? <p role="alert">{localError}</p> : null}
-      <AdminButton type="submit" variant="primary" disabled={controller.isSaving}>
-        Add private field
-      </AdminButton>
-    </AdminForm>
-  </Panel><SalesImportWorkspace controller={controller} isAdminOwner={isAdminOwner} /></>;
 }
 
 function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}: {
