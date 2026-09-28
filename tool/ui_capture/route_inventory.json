@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "b58ff5d6a492714aaff2bd9b60e55876000c05e0b56ce6224984f11a36b47976",
-    "routeContractSha256": "43c765b5a1a9188c9e1419fe461835d6a7f883436460d5c49c478dd9d65c04d7",
+    "normalizedFileSha256": "15a2f68ada39c233b3ce3b936c620281d4dfd3ac6b9b254273118d7e036f6852",
+    "routeContractSha256": "29d856167e6a1b9df4fd59e2e855b2f6b8409664c1afd82ac5bab7ccdd99b7f5",
     "goRouteCount": 108,
     "shellBranchCount": 9,
     "enumRouteCount": 93,
@@ -1148,8 +1148,8 @@
       "runtimeParentId": "hostProgramWorkspaceScreen",
       "runtimePathExpression": "'guests'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>_programGuestsScreen(state)",
-      "presentationTarget": "_programGuestsScreen",
+      "presentationExpression": "(context,state)=>ProgramGuestsScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramGuestsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1165,8 +1165,8 @@
       "runtimeParentId": "hostProgramWorkspaceScreen",
       "runtimePathExpression": "'team'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>_programTeamScreen(state)",
-      "presentationTarget": "_programTeamScreen",
+      "presentationExpression": "(context,state)=>ProgramTeamScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramTeamScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1182,8 +1182,8 @@
       "runtimeParentId": "hostProgramWorkspaceScreen",
       "runtimePathExpression": "'import'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>_programImportScreen(state)",
-      "presentationTarget": "_programImportScreen",
+      "presentationExpression": "(context,state)=>ProgramImportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramImportScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1199,8 +1199,8 @@
       "runtimeParentId": "hostProgramWorkspaceScreen",
       "runtimePathExpression": "'moments'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>_programMomentsScreen(state)",
-      "presentationTarget": "_programMomentsScreen",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:OrganizerMomentScope.program(state.pathParameters['programId']!),scopeTitle:state.uri.queryParameters['title'])",
+      "presentationTarget": "OrganizerMomentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1675,7 +1675,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/inbox/host_inbox_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 354,
+      "line": 362,
       "ordinal": 1,
       "presentationExpression": "(_)=>HostNewMessageScreen(organizerId:organizerId)",
       "presentationTarget": "HostNewMessageScreen",
