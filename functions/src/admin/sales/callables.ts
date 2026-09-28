@@ -74,6 +74,11 @@ async function handleRead(
   request: CallableRequest<unknown>,
 ): Promise<Record<string, unknown>> {
   const principal = await currentSalesEmployee(request);
+  if (action === "imports.compensation.preview" &&
+      !principal.roles.includes("adminOwner")) {
+    throw new HttpsError("permission-denied",
+      "Current Admin Owner authority is required for compensation.");
+  }
   const db = admin.firestore();
   await checkRateLimit(db, principal.uid, `sales:${action}`, {
     maxRequests: 60,
@@ -125,6 +130,8 @@ export const adminListSalesCustomFields = read("fields.list");
 export const adminGetSalesReceipt = read("receipts.get");
 export const adminListSalesInboundIntents = read("intents.list");
 export const adminPreviewSalesImport = read("imports.preview");
+export const adminPreviewSalesImportCompensation =
+  read("imports.compensation.preview");
 export const adminListSalesContacts = read("contacts.list");
 export const adminListSalesEvidence = read("evidence.list");
 
@@ -137,6 +144,8 @@ export const adminCreateSalesCustomField = write("fields.create");
 export const adminSetSalesCustomFieldValue = write("fields.setValue");
 export const adminLinkSalesInboundIntent = write("intents.link");
 export const adminApplySalesImport = write("imports.apply");
+export const adminApplySalesImportCompensation =
+  write("imports.compensation.apply");
 export const adminUpsertSalesContact = write("contacts.upsert");
 export const adminAddSalesEvidence = write("evidence.add");
 export const adminSetSalesAccountSuppression = write("accounts.setSuppression");

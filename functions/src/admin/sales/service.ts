@@ -18,6 +18,9 @@ import {
   type ImportApply,
   type ImportPacket,
 } from "./imports";
+import {applyImportCompensation, previewImportCompensation,
+  type ImportCompensationApply, type ImportCompensationInput} from
+  "./importsCompensation";
 import {
   linkSalesInboundIntent,
   listSalesInboundIntents,
@@ -156,6 +159,7 @@ type MutationPayload =
   | CreateFieldPayload
   | SetFieldValuePayload
   | ImportApply
+  | ImportCompensationApply
   | LinkInput
   | ContactInput
   | EvidenceInput
@@ -169,6 +173,7 @@ export function assertSalesFinanceAuthority(
 ): void {
   const data = payload as {fields?: {stage?: string}} | null;
   const finance = action === "commercial.finance.attest" ||
+    action === "imports.compensation.apply" ||
     action === "opportunities.upsert" && data?.fields?.stage === "closed_won";
   if (finance && (!principal.uid || principal.clientId ||
     !principal.roles.includes("adminOwner"))) {
@@ -189,6 +194,11 @@ export async function executeSalesAction(
   const organizerId = "organizerId" in input ? input.organizerId : null;
   authorize(principal, action, organizerId);
   assertSalesFinanceAuthority(principal, action, payload);
+  if (action === "imports.compensation.apply" &&
+      (principal.clientId || !principal.roles.includes("adminOwner"))) {
+    throw new HttpsError("permission-denied",
+      "Current Admin Owner authority is required for compensation.");
+  }
   requireDelegationHooks(principal, deps);
   const fieldId =
     "fieldId" in input ?
@@ -215,6 +225,18 @@ export async function executeSalesAction(
       fieldId,
     );
     const receiptSnapshot = await tx.get(receiptRef);
+    if (organizerId && action !== "imports.compensation.apply") {
+      const account = await tx.get(db.collection(accountCollection)
+        .doc(organizerId));
+      if (account.data()?.researchStatus === "archived" &&
+          (action !== "hosts.update" || principal.clientId ||
+            (input as UpdateHostPayload).patch?.researchStatus === undefined ||
+            (input as UpdateHostPayload).patch?.researchStatus ===
+              "archived")) {
+        throw new HttpsError("failed-precondition",
+          "Archived Sales companion requires explicit employee reopen.");
+      }
+    }
     if (receiptSnapshot.exists) {
       const existing = receiptSnapshot.data() as SalesActionReceipt;
       if (
@@ -321,6 +343,10 @@ export async function executeSalesAction(
           input as ImportApply,
           timestamp,
       );
+      break;
+    case "imports.compensation.apply":
+      result = await applyImportCompensation(tx, db, principal,
+        input as ImportCompensationApply, timestamp);
       break;
     case "contacts.upsert":
       result = await upsertSalesContact(
@@ -476,6 +502,10 @@ export async function executeSalesRead(
       principal,
         input as unknown as ImportPacket,
     );
+    break;
+  case "imports.compensation.preview":
+    response = await previewImportCompensation(db, principal,
+      input as unknown as ImportCompensationInput);
     break;
   case "contacts.list":
     response = await listSalesContacts(db, principal, input);

@@ -169,6 +169,8 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
       },
     },
   ),
+  "imports.compensation.preview": strict(
+    ["importId", "organizerId"], {importId: id, organizerId: id}),
 };
 
 const baseActionSchemas = {
@@ -312,6 +314,11 @@ const baseActionSchemas = {
       ).properties,
     },
   ),
+  "imports.compensation.apply": strict(
+    ["importId", "organizerId", "requestId", "previewHash", "reason"],
+    {importId: id, organizerId: id, requestId,
+      previewHash: {type: "string", pattern: "^[a-f0-9]{64}$"},
+      reason: note}),
   "contacts.upsert": strict(
     ["organizerId", "requestId", "expectedRevision", "contact", "relationship"],
     {

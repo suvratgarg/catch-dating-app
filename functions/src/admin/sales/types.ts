@@ -68,6 +68,8 @@ export interface SalesAccount {
   marketLabel: string | null;
   eventTypes: string[];
   cohortIds: string[];
+  /** Last reviewed import or correction that asserted cohort membership. */
+  cohortMutationId?: string | null;
   searchTokens: string[];
   createdAt: string;
   updatedAt: string;
@@ -124,11 +126,19 @@ export interface SalesActivity {
     | "outreach_sent_manual"
     | "claim_requested"
     | "claim_approved"
-    | "claim_rejected";
+    | "claim_rejected"
+    | "demo_started"
+    | "demo_completed";
   source?: {
     kind: "organizer_claim";
     claimRequestId: string;
     transitionId: string;
+  } | {
+    kind: "sales_demo";
+    sessionId: string;
+    blueprintId: string;
+    blueprintRevision: number;
+    invitationId: string;
   };
   channel: "email" | "whatsapp" | "other" | null;
   outcome: "actor_attested_sent" | null;
@@ -164,6 +174,7 @@ export type SalesReadAction =
   | "receipts.get"
   | "intents.list"
   | "imports.preview"
+  | "imports.compensation.preview"
   | "contacts.list"
   | "evidence.list"
   | "evidenceProposals.list";
@@ -178,6 +189,7 @@ export type SalesMutationAction =
   | "fields.setValue"
   | "intents.link"
   | "imports.apply"
+  | "imports.compensation.apply"
   | "contacts.upsert"
   | "evidence.add"
   | "evidence.propose"

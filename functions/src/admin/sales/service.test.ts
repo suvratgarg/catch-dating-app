@@ -6,7 +6,8 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {executeSalesAction, executeSalesRead} from "./service";
+import {assertSalesFinanceAuthority, executeSalesAction,
+  executeSalesRead} from "./service";
 import {qualificationPolicyHash} from "./qualificationPolicy";
 import type {SalesServiceDeps} from "./service";
 import type {SalesPrincipal} from "./types";
@@ -39,6 +40,9 @@ class FakeCollection {
   }
   where(field: string, _op: string, value: unknown) {
     return new FakeQuery(this.db, this.path, [[field, value]]);
+  }
+  limit(value: number) {
+    return new FakeQuery(this.db, this.path, []).limit(value);
   }
 }
 class FakeQuery {
@@ -126,6 +130,58 @@ function fixture() {
   return {db, deps};
 }
 const create = {organizerId: "org-1", requestId: "req-create-0001"};
+
+test("compensation rechecks current Owner on apply and receipt replay",
+  async () => {
+    const {db, deps} = fixture();
+    const owner: SalesPrincipal = {uid: "owner-1", roles: ["adminOwner"]};
+    const packet = {sourceId: "source-a", contentHash: "a".repeat(64),
+      mappingVersion: "review-v1", rows: [{sourceRowId: "source-a:1",
+        organizerId: "org-1", name: "Example Host", researchStatus: "new",
+        cohortIds: ["cohort-a"]}]};
+    const importPreview = await executeSalesRead(employee, "imports.preview",
+      packet, deps);
+    const imported = await executeSalesAction(employee, "imports.apply",
+      {...packet, requestId: "request-import-0001",
+        previewHash: importPreview.previewHash}, deps);
+    const input = {importId: imported.importId, organizerId: "org-1"};
+    const plan = await executeSalesRead(owner,
+      "imports.compensation.preview", input, deps);
+    let currentOwner = true;
+    const checked: SalesServiceDeps = {...deps,
+      authorizeInTransaction: async (_tx, _db, _principal, action) => {
+        assertSalesFinanceAuthority({uid: owner.uid,
+          roles: currentOwner ? ["adminOwner"] : ["admin"]},
+      action as Parameters<typeof assertSalesFinanceAuthority>[1], input);
+      }};
+    const payload = {...input, requestId: "request-compensate-0001",
+      previewHash: plan.previewHash, reason: "Reviewed source correction"};
+    currentOwner = false;
+    await assert.rejects(executeSalesAction(owner,
+      "imports.compensation.apply", payload, checked),
+    /Admin Owner finance authority/);
+    currentOwner = true;
+    await executeSalesAction(owner, "imports.compensation.apply",
+      payload, checked);
+    currentOwner = false;
+    await assert.rejects(executeSalesAction(owner,
+      "imports.compensation.apply", payload, checked),
+    /Admin Owner finance authority/);
+    assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.researchStatus,
+      "archived");
+    await assert.rejects(executeSalesAction(employee, "tasks.upsert", {
+      organizerId: "org-1", requestId: "request-task-0001",
+      expectedRevision: 2, task: {kind: "research", title: "Research",
+        dueAt: null, ownerUid: employee.uid, status: "open"}}, deps),
+    /Archived Sales companion/);
+    const reopen = {organizerId: "org-1", requestId: "request-reopen-0001",
+      expectedRevision: 2, patch: {researchStatus: "needs_research"}};
+    const reopened = await executeSalesAction(employee, "hosts.update",
+      reopen, deps);
+    assert.equal((reopened.account as Doc).researchStatus, "needs_research");
+    assert.deepEqual(await executeSalesAction(employee, "hosts.update",
+      reopen, deps), reopened);
+  });
 
 test("requires admin and canonical organizer", async () => {
   const {db, deps} = fixture();

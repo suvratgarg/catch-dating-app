@@ -54,6 +54,7 @@ export function newSalesAccount(
     marketLabel: null,
     eventTypes,
     cohortIds: [],
+    cohortMutationId: "initial",
     searchTokens,
     createdAt: now,
     updatedAt: now,

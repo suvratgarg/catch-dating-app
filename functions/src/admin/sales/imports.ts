@@ -31,11 +31,26 @@ interface RowDecision {
   accountRevision: number | null;
 }
 
+/** Immutable proof for a future, bounded compensating Sales action. */
+export interface ImportAccountEffect {
+  organizerId: string;
+  sourceRowIds: string[];
+  created: boolean;
+  revisionBefore: number | null;
+  revisionAfter: number;
+  cohortIdsBefore: string[];
+  cohortIdsAfter: string[];
+  cohortIdsAdded: string[];
+  cohortMutationIdBefore: string | null;
+  cohortMutationIdAfter: string;
+  createdAccountHash: string | null;
+}
+
 function sha(value: string): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
-function canonical(value: unknown): string {
+export function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (value && typeof value === "object") {
     return `{${Object.entries(value)
@@ -44,6 +59,10 @@ function canonical(value: unknown): string {
       .join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+export function importAccountHash(value: unknown): string {
+  return sha(canonical(value));
 }
 
 function assertEmployee(principal: SalesPrincipal): void {
@@ -254,14 +273,37 @@ export async function applySalesImport(
     ref: FirebaseFirestore.DocumentReference;
     cohortIds: string[];
     revision: number;
+    cohortMutationId: string;
   }> = [];
+  const accountEffects: ImportAccountEffect[] = [];
   for (const [organizerId, cohorts] of cohortsById) {
     if (cohorts.size > 30) {
       throw new HttpsError("failed-precondition",
         "Sales account cohort limit exceeded.");
     }
     const accountSnap = accountById.get(organizerId);
-    if (!accountSnap) continue;
+    const sourceRowIds = input.rows.filter((row, index) =>
+      row.organizerId === organizerId &&
+      ["created", "matched"].includes(decisions[index].disposition))
+      .map((row) => row.sourceRowId);
+    const nextToken = sha(`${importId}\u0000${organizerId}`);
+    if (!accountSnap) {
+      const canonicalSnap = canonicalById.get(organizerId);
+      if (!canonicalSnap?.exists) {
+        throw new HttpsError("aborted",
+          "Canonical organizer changed during import review.");
+      }
+      const createdAccount = {...newSalesAccount(organizerId,
+        canonicalSnap.data() ?? {}, principal.uid, now, "needs_research"),
+      cohortIds: [...cohorts], cohortMutationId: nextToken};
+      accountEffects.push({organizerId, sourceRowIds, created: true,
+        revisionBefore: null, revisionAfter: createdAccount.revision,
+        cohortIdsBefore: [], cohortIdsAfter: [...cohorts],
+        cohortIdsAdded: [...cohorts], cohortMutationIdBefore: null,
+        cohortMutationIdAfter: nextToken,
+        createdAccountHash: importAccountHash(createdAccount)});
+      continue;
+    }
     const account = accountSnap.data();
     const matchedDecision = decisions.find((decision) =>
       decision.organizerId === organizerId &&
@@ -281,13 +323,24 @@ export async function applySalesImport(
       throw new HttpsError("failed-precondition",
         "Sales account cohort limit exceeded.");
     }
-    if (merged.length !== existing.length) {
+    const changed = cohorts.size > 0;
+    accountEffects.push({organizerId, sourceRowIds, created: false,
+      revisionBefore: account.revision,
+      revisionAfter: account.revision + (changed ? 1 : 0),
+      cohortIdsBefore: [...existing], cohortIdsAfter: merged,
+      cohortIdsAdded: merged.filter((id) => !existing.includes(id)),
+      cohortMutationIdBefore: account.cohortMutationId ?? null,
+      cohortMutationIdAfter: changed ? nextToken :
+        (account.cohortMutationId ?? "initial"),
+      createdAccountHash: null});
+    if (changed) {
       accountUpdates.push({ref: accountSnap.ref, cohortIds: merged,
-        revision: account.revision + 1});
+        revision: account.revision + 1, cohortMutationId: nextToken});
     }
   }
   for (const update of accountUpdates) {
     tx.update(update.ref, {cohortIds: update.cohortIds,
+      cohortMutationId: update.cohortMutationId,
       revision: update.revision, updatedAt: now, updatedBy: principal.uid});
   }
   for (let index = 0; index < input.rows.length; index += 1) {
@@ -332,6 +385,8 @@ export async function applySalesImport(
           "Canonical organizer changed during import review.",
         );
       }
+      const effect = accountEffects.find((item) =>
+        item.organizerId === row.organizerId);
       tx.create(
         db.collection("organizerSalesAccounts").doc(row.organizerId),
         {...newSalesAccount(
@@ -340,7 +395,8 @@ export async function applySalesImport(
           principal.uid,
           now,
           "needs_research",
-        ), cohortIds: [...(cohortsById.get(row.organizerId) ?? [])]},
+        ), cohortIds: [...(cohortsById.get(row.organizerId) ?? [])],
+        cohortMutationId: effect?.cohortMutationIdAfter},
       );
     }
   }
@@ -355,6 +411,7 @@ export async function applySalesImport(
     previewHash: input.previewHash,
     rowCount: input.rows.length,
     counts,
+    accountEffects,
     status: "applied",
     createdAt: now,
     createdBy: principal.uid,
