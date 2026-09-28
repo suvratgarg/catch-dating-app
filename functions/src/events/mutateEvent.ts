@@ -1,3 +1,4 @@
+import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
 import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
@@ -2276,25 +2277,15 @@ function newClubEventNotificationCopy(
   clubName: string,
   event: EventDocument
 ): {title: string; body: string} {
+  const distance = eventDistanceLabel(event);
   return {
     title: `${clubName} posted an event`,
     body:
-      typeof event.distanceKm === "number" ?
-        `${formatDistance(event.distanceKm)} from ` +
+      distance ?
+        `${distance} from ` +
         `${eventLocationName(event)}.` :
-        `An event at ${eventLocationName(event)}.`,
+        `${eventTitleLabel(event)} at ${eventLocationName(event)}.`,
   };
-}
-
-/**
- * Formats a distance without noisy trailing decimals.
- * @param {number} distanceKm Distance in kilometres.
- * @return {string} Human-readable distance.
- */
-function formatDistance(distanceKm: number): string {
-  return Number.isInteger(distanceKm) ?
-    `${distanceKm} km` :
-    `${distanceKm.toFixed(1)} km`;
 }
 
 export const createEvent = onCall(
