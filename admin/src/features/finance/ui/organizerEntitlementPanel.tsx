@@ -125,6 +125,19 @@ export function renderOrganizerEntitlementPanel(
           action="Idempotent on operation id"
         >
           <AdminWorkbenchStack compact>
+            {controller.pendingGrant ? (
+              <AlertRow
+                icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+                title="Grant outcome needs reconciliation"
+                tone="warning"
+              >
+                Retry the frozen {controller.pendingGrant.sku} grant for
+                {` ${controller.pendingGrant.organizerId}`} with operation
+                {` ${controller.pendingGrant.operationId}`}. Form edits cannot
+                replace this request until its result is confirmed. Load the
+                ledger to check whether it was recorded.
+              </AlertRow>
+            ) : null}
             <AdminToolbar>
               <SelectField
                 label="SKU"
@@ -211,18 +224,34 @@ export function renderOrganizerEntitlementPanel(
               onClick={() => void controller.grant()}
               variant="primary"
             >
-              Record entitlement grant
+              {controller.pendingGrant ?
+                "Retry pending grant" : "Record entitlement grant"}
             </AdminButton>
           </AdminWorkbenchStack>
         </Panel>
 
-        {revokeTarget ? (
+        {revokeTarget || controller.pendingRevoke ? (
           <Panel
             icon={<BadgeCheck size={17} strokeWidth={1.9} />}
-            title={`Revoke ${revokeTarget.skuLabel}`}
-            action={revokeTarget.grantId}
+            title={revokeTarget ? `Revoke ${revokeTarget.skuLabel}` :
+              "Reconcile pending revocation"}
+            action={revokeTarget?.grantId ??
+              controller.pendingRevoke?.grantId}
           >
             <AdminWorkbenchStack compact>
+              {controller.pendingRevoke ? (
+                <AlertRow
+                  icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+                  title="Revocation outcome needs reconciliation"
+                  tone="warning"
+                >
+                  Retry the frozen revocation of
+                  {` ${controller.pendingRevoke.grantId}`} for
+                  {` ${controller.pendingRevoke.organizerId}`} with operation
+                  {` ${controller.pendingRevoke.operationId}`}. Load the ledger
+                  to check whether it was recorded.
+                </AlertRow>
+              ) : null}
               <TextareaField
                 label="Revoke reason"
                 onChange={controller.setRevokeReason}
@@ -246,7 +275,8 @@ export function renderOrganizerEntitlementPanel(
                   onClick={() => void controller.revoke()}
                   variant="primary"
                 >
-                  Revoke grant
+                  {controller.pendingRevoke ?
+                    "Retry pending revocation" : "Revoke grant"}
                 </AdminButton>
                 <AdminButton
                   onClick={() => controller.setRevokeTargetGrantId(null)}

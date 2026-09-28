@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useState} from "react";
 import type {AdminGrantOrganizerEntitlementCallablePayload} from
   "../../../generated/contracts/adminGrantOrganizerEntitlementCallablePayload";
 import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
@@ -39,6 +39,8 @@ export interface OrganizerEntitlementController {
   grantForm: OrganizerEntitlementGrantForm;
   revokeTargetGrantId: string | null;
   revokeReason: string;
+  pendingGrant: AdminGrantOrganizerEntitlementCallablePayload | null;
+  pendingRevoke: AdminRevokeOrganizerEntitlementGrantCallablePayload | null;
   isLoading: boolean;
   isGranting: boolean;
   isRevoking: boolean;
@@ -66,6 +68,9 @@ const defaultGrantForm: OrganizerEntitlementGrantForm = {
   receiptRef: "",
   note: "",
 };
+
+const pendingGrantKey = "catch:finance:entitlement:grant:v1";
+const pendingRevokeKey = "catch:finance:entitlement:revoke:v1";
 
 const organizerEntitlementKeys = {
   load: () =>
@@ -103,21 +108,27 @@ export function useOrganizerEntitlementController({
   const [revokeTargetGrantId, setRevokeTargetGrantId] =
     useState<string | null>(null);
   const [revokeReason, setRevokeReason] = useState("");
-  const grantRetry = useRef<{
-    signature: string;
-    payload: AdminGrantOrganizerEntitlementCallablePayload;
-  } | null>(null);
-  const revokeRetry = useRef<{
-    signature: string;
-    payload: AdminRevokeOrganizerEntitlementGrantCallablePayload;
-  } | null>(null);
+  const [frozenGrant, setFrozenGrant] = useState<
+    AdminGrantOrganizerEntitlementCallablePayload | null>(() =>
+    readPending<AdminGrantOrganizerEntitlementCallablePayload>(pendingGrantKey));
+  const [frozenRevoke, setFrozenRevoke] = useState<
+    AdminRevokeOrganizerEntitlementGrantCallablePayload | null>(() =>
+    readPending<AdminRevokeOrganizerEntitlementGrantCallablePayload>(
+      pendingRevokeKey));
+
+  const clearGrant = useCallback(() => {
+    clearPending(pendingGrantKey);
+    setFrozenGrant(null);
+  }, []);
+  const clearRevoke = useCallback(() => {
+    clearPending(pendingRevokeKey);
+    setFrozenRevoke(null);
+  }, []);
 
   const setOrganizerId = useCallback((value: string) => {
     setOrganizerIdState(value);
     setEntitlement(null);
     setRevokeTargetGrantId(null);
-    grantRetry.current = null;
-    revokeRetry.current = null;
   }, []);
 
   const setGrantField = useCallback(<
@@ -131,7 +142,6 @@ export function useOrganizerEntitlementController({
       }
       return next;
     });
-    grantRetry.current = null;
   }, [entitlement]);
 
   const load = useCallback(async () => {
@@ -147,10 +157,19 @@ export function useOrganizerEntitlementController({
       setOrganizerIdState(trimmedOrganizerId);
       setEntitlement(response);
       setRevokeTargetGrantId(null);
-      grantRetry.current = null;
-      revokeRetry.current = null;
+      if (frozenGrant?.organizerId === trimmedOrganizerId &&
+          response.grants.some((grant) =>
+            grant.grantId === `grant_${frozenGrant.operationId}`)) {
+        clearGrant();
+      }
+      if (frozenRevoke?.organizerId === trimmedOrganizerId &&
+          response.grants.some((grant) =>
+            grant.grantId === frozenRevoke.grantId && grant.revoked)) {
+        clearRevoke();
+      }
       onError(null);
-      onNotice("Current organizer entitlement ledger loaded.");
+      onNotice("Current organizer entitlement ledger loaded. " +
+        "Unconfirmed mutations remain available for exact retry.");
       return true;
     } catch (error) {
       setEntitlement(null);
@@ -160,9 +179,11 @@ export function useOrganizerEntitlementController({
       ));
       return false;
     }
-  }, [loadMutation, onError, onNotice, organizerId]);
+  }, [clearGrant, clearRevoke, loadMutation, onError, onNotice,
+    organizerId, frozenGrant, frozenRevoke]);
 
-  const grantDisabledReason = grantBlocker({grantForm, organizerId});
+  const grantDisabledReason = frozenGrant ? null :
+    grantBlocker({grantForm, organizerId});
   const grant = useCallback(async () => {
     const trimmedOrganizerId = organizerId.trim();
     if (grantDisabledReason) {
@@ -183,32 +204,34 @@ export function useOrganizerEntitlementController({
         {receiptRef: grantForm.receiptRef.trim()} : {}),
       ...(grantForm.note.trim() ? {note: grantForm.note.trim()} : {}),
     };
-    const signature = JSON.stringify(withoutOperationId);
-    const payload = grantRetry.current?.signature === signature ?
-      grantRetry.current.payload : {
+    const payload = frozenGrant ?? {
         operationId: createOperationId("entitlement-grant"),
         ...withoutOperationId,
       };
-    grantRetry.current = {signature, payload};
     const operation = beginOperation();
     if (!operation) return false;
+    if (!frozenGrant && !writePending(pendingGrantKey, payload)) {
+      endOperation(operation);
+      onError("This browser could not retain the grant for a safe retry.");
+      return false;
+    }
+    if (!frozenGrant) setFrozenGrant(payload);
     try {
       const result = await grantMutation.mutateAsync(payload);
-      grantRetry.current = null;
+      clearGrant();
+      setOrganizerIdState(payload.organizerId);
       setRevokeTargetGrantId(null);
       setRevokeReason("");
       onError(null);
       onNotice(result.replayed ?
         "That grant operation was already recorded; the ledger was refreshed." :
         `Entitlement grant recorded at revision ${result.revision}. It grants no dispatch authority.`);
-      if (entitlement) {
-        try {
-          setEntitlement(await loadMutation.mutateAsync({
-            organizerId: trimmedOrganizerId,
-          }));
-        } catch {
-          setEntitlement(null);
-        }
+      try {
+        setEntitlement(await loadMutation.mutateAsync({
+          organizerId: payload.organizerId,
+        }));
+      } catch {
+        setEntitlement(null);
       }
       return true;
     } catch (error) {
@@ -222,8 +245,8 @@ export function useOrganizerEntitlementController({
     }
   }, [
     beginOperation,
+    clearGrant,
     endOperation,
-    entitlement,
     grantDisabledReason,
     grantForm,
     grantMutation,
@@ -231,36 +254,41 @@ export function useOrganizerEntitlementController({
     onError,
     onNotice,
     organizerId,
+    frozenGrant,
   ]);
 
-  const revokeDisabledReason = revokeBlocker({
+  const revokeDisabledReason = frozenRevoke ? null : revokeBlocker({
     entitlement,
     revokeReason,
     revokeTargetGrantId,
   });
   const revoke = useCallback(async () => {
     const trimmedOrganizerId = organizerId.trim();
-    if (!entitlement || !revokeTargetGrantId || revokeDisabledReason) {
+    if (revokeDisabledReason) {
       onError(revokeDisabledReason ?? "Choose a grant to revoke.");
       return false;
     }
     const withoutOperationId = {
       organizerId: trimmedOrganizerId,
-      grantId: revokeTargetGrantId,
+      grantId: revokeTargetGrantId!,
       reason: revokeReason.trim(),
     };
-    const signature = JSON.stringify(withoutOperationId);
-    const payload = revokeRetry.current?.signature === signature ?
-      revokeRetry.current.payload : {
+    const payload = frozenRevoke ?? {
         operationId: createOperationId("entitlement-revoke"),
         ...withoutOperationId,
       };
-    revokeRetry.current = {signature, payload};
     const operation = beginOperation();
     if (!operation) return false;
+    if (!frozenRevoke && !writePending(pendingRevokeKey, payload)) {
+      endOperation(operation);
+      onError("This browser could not retain the revocation for a safe retry.");
+      return false;
+    }
+    if (!frozenRevoke) setFrozenRevoke(payload);
     try {
       const result = await revokeMutation.mutateAsync(payload);
-      revokeRetry.current = null;
+      clearRevoke();
+      setOrganizerIdState(payload.organizerId);
       setRevokeTargetGrantId(null);
       setRevokeReason("");
       onError(null);
@@ -269,7 +297,7 @@ export function useOrganizerEntitlementController({
         `Entitlement grant revoked at revision ${result.revision}.`);
       try {
         setEntitlement(await loadMutation.mutateAsync({
-          organizerId: trimmedOrganizerId,
+          organizerId: payload.organizerId,
         }));
       } catch {
         setEntitlement(null);
@@ -286,12 +314,14 @@ export function useOrganizerEntitlementController({
     }
   }, [
     beginOperation,
+    clearRevoke,
     endOperation,
     entitlement,
     loadMutation,
     onError,
     onNotice,
     organizerId,
+    frozenRevoke,
     revokeDisabledReason,
     revokeMutation,
     revokeReason,
@@ -304,6 +334,8 @@ export function useOrganizerEntitlementController({
     grantForm,
     revokeTargetGrantId,
     revokeReason,
+    pendingGrant: frozenGrant,
+    pendingRevoke: frozenRevoke,
     isLoading: loadMutation.isPending,
     isGranting: grantMutation.isPending,
     isRevoking: revokeMutation.isPending,
@@ -380,6 +412,43 @@ function createOperationId(prefix: string): string {
   const entropy = globalThis.crypto?.randomUUID?.() ??
     `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
   return `${prefix}-${entropy}`.replace(/[^A-Za-z0-9_-]+/gu, "-");
+}
+
+function readPending<T extends {operationId: string; organizerId: string}>(
+  key: string
+): T | null {
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    if (!raw) return null;
+    const value: unknown = JSON.parse(raw);
+    if (value && typeof value === "object" &&
+        "operationId" in value &&
+        typeof value.operationId === "string" &&
+        "organizerId" in value &&
+        typeof value.organizerId === "string") {
+      return value as T;
+    }
+  } catch {
+    // An unavailable browser store cannot provide a safe pending operation.
+  }
+  return null;
+}
+
+function writePending(key: string, payload: unknown): boolean {
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(payload));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearPending(key: string): void {
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {
+    // The completed server response is authoritative even if storage fails.
+  }
 }
 
 function messageFromError(error: unknown, fallback: string): string {

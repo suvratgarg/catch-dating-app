@@ -96,6 +96,7 @@ const baseEntitlement: OrganizerEntitlementCallableResponse = {
 
 describe("useOrganizerEntitlementController", () => {
   beforeEach(() => {
+    window.sessionStorage.clear();
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.loadOrganizerEntitlement.mockResolvedValue(baseEntitlement);
   });
@@ -184,6 +185,98 @@ describe("useOrganizerEntitlementController", () => {
       })
     );
     expect(result.current.revokeTargetGrantId).toBeNull();
+  });
+
+  it("retries the frozen grant after edits and a page reload", async () => {
+    mocks.grantOrganizerEntitlement
+      .mockRejectedValueOnce(new Error("response lost"))
+      .mockResolvedValueOnce({revision: 3, replayed: true});
+    const first = renderHook(() => useOrganizerEntitlementController({
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      first.result.current.setOrganizerId("organizer-1");
+      first.result.current.setGrantField("receiptRef", "INV-ONE");
+    });
+    await act(async () => expect(await first.result.current.grant()).toBe(false));
+    const frozen = mocks.grantOrganizerEntitlement.mock.calls[0][0];
+    expect(first.result.current.pendingGrant).toEqual(frozen);
+    act(() => {
+      first.result.current.setOrganizerId("organizer-2");
+      first.result.current.setGrantField("quantity", "9");
+      first.result.current.setGrantField("receiptRef", "INV-TWO");
+    });
+    expect(first.result.current.pendingGrant).toEqual(frozen);
+    first.unmount();
+
+    const resumed = renderHook(() => useOrganizerEntitlementController({
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(resumed.result.current.pendingGrant).toEqual(frozen);
+    expect(resumed.result.current.grantDisabledReason).toBeNull();
+    await act(async () => expect(await resumed.result.current.grant()).toBe(true));
+    expect(mocks.grantOrganizerEntitlement.mock.calls[1][0]).toEqual(frozen);
+    expect(resumed.result.current.pendingGrant).toBeNull();
+    expect(resumed.result.current.organizerId).toBe("organizer-1");
+    resumed.unmount();
+  });
+
+  it("clears a pending grant only after the ledger confirms its identity",
+    async () => {
+      mocks.grantOrganizerEntitlement.mockRejectedValueOnce(
+        new Error("response lost"));
+      const h = renderHook(() => useOrganizerEntitlementController({
+        onError: vi.fn(), onNotice: vi.fn(),
+      }), {wrapper: createWrapper()});
+      act(() => {
+        h.result.current.setOrganizerId("organizer-1");
+        h.result.current.setGrantField("receiptRef", "INV-ONE");
+      });
+      await act(async () => expect(await h.result.current.grant()).toBe(false));
+      const operationId = h.result.current.pendingGrant!.operationId;
+      await act(async () => expect(await h.result.current.load()).toBe(true));
+      expect(h.result.current.pendingGrant).not.toBeNull();
+      mocks.loadOrganizerEntitlement.mockResolvedValue({
+        ...baseEntitlement,
+        grants: [...baseEntitlement.grants, {
+          ...baseEntitlement.grants[0], grantId: `grant_${operationId}`,
+        }],
+      });
+      await act(async () => expect(await h.result.current.load()).toBe(true));
+      expect(h.result.current.pendingGrant).toBeNull();
+      expect(mocks.grantOrganizerEntitlement).toHaveBeenCalledTimes(1);
+      h.unmount();
+    });
+
+  it("retries the frozen revocation after editing and reload", async () => {
+    mocks.revokeOrganizerEntitlementGrant
+      .mockRejectedValueOnce(new Error("response lost"))
+      .mockResolvedValueOnce({revision: 3, replayed: true});
+    const first = renderHook(() => useOrganizerEntitlementController({
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => first.result.current.setOrganizerId("organizer-1"));
+    await act(async () => expect(await first.result.current.load()).toBe(true));
+    act(() => {
+      first.result.current.setRevokeTargetGrantId("grant_existing-1");
+      first.result.current.setRevokeReason("Invoice reversed");
+    });
+    await act(async () => expect(await first.result.current.revoke()).toBe(false));
+    const frozen = mocks.revokeOrganizerEntitlementGrant.mock.calls[0][0];
+    act(() => {
+      first.result.current.setRevokeReason("Different reason");
+      first.result.current.setRevokeTargetGrantId(null);
+    });
+    first.unmount();
+    const resumed = renderHook(() => useOrganizerEntitlementController({
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(resumed.result.current.pendingRevoke).toEqual(frozen);
+    await act(async () => expect(await resumed.result.current.revoke()).toBe(true));
+    expect(mocks.revokeOrganizerEntitlementGrant.mock.calls[1][0])
+      .toEqual(frozen);
+    expect(resumed.result.current.pendingRevoke).toBeNull();
+    resumed.unmount();
   });
 });
 

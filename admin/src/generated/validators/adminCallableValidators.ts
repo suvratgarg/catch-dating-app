@@ -14151,6 +14151,18 @@ const model = {
             "grantId": {
               "$ref": "event_common.schema.json#/definitions/documentId"
             },
+            "operationContentHash": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "description": "Durable grant operation identity after the short-lived mutation receipt expires; absent only on legacy grants."
+            },
+            "operationResultRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "description": "Original grant result revision for exact replay after receipt expiry; absent only on legacy grants."
+            },
             "sku": {
               "$ref": "#/definitions/entitlementSku"
             },
