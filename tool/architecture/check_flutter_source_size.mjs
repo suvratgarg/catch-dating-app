@@ -11,6 +11,13 @@ export const sourceSizeBaselinePath = "tool/architecture/flutter_source_size_bas
 export const sourceSizeLimit = 800;
 export const fieldFacadePath = "packages/catch_ui/lib/src/components/catch_field.dart";
 export const fieldFacadeLimit = 1150;
+// lib/routing/go_router.dart is the mandated single home of the route table:
+// tool/ui_capture/check_route_inventory.mjs rejects GoRoute constructions in
+// every other file, so its length is a function of route count, not
+// decomposition debt. Route inventory and the new-widget inventory already
+// bound what the file may contain; a line ratchet can only force cosmetic
+// compression, so the file is exempt from the source-size budget entirely.
+export const lineBudgetExemptPaths = new Set(["lib/routing/go_router.dart"]);
 const owner = "app_architecture";
 const targetPhase = "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-5--budgets-splits-and-estate-shrink";
 const sourceRoots = /^(?:lib\/|packages\/|widgetbook\/lib\/)/u;
@@ -67,6 +74,10 @@ export function checkFlutterSourceSizes(rows, baseline) {
     if (row.path === fieldFacadePath && row.lines > fieldFacadeLimit) {
       findings.push(`${row.path}: ${row.lines} lines exceeds its exact ${fieldFacadeLimit}-line facade exception`);
     }
+    if (lineBudgetExemptPaths.has(row.path)) {
+      if (allowed) findings.push(`${row.path}: exempt from the source-size budget; remove its baseline entry`);
+      continue;
+    }
     if (row.lines <= sourceSizeLimit) {
       if (allowed) findings.push(`${row.path}: baseline is stale at ${allowed.maxLines}; current ${row.lines} is within ${sourceSizeLimit}`);
     } else if (!allowed) {
@@ -90,7 +101,7 @@ export function buildFlutterSourceSizeBaseline(rows) {
     targetPhase,
     maxLines: sourceSizeLimit,
     policy: "new_or_split_handwritten_sources_stay_bounded_existing_debt_cannot_grow",
-    allowedFindings: rows.filter(row => row.lines > sourceSizeLimit)
+    allowedFindings: rows.filter(row => row.lines > sourceSizeLimit && !lineBudgetExemptPaths.has(row.path))
       .map(row => ({path: row.path, maxLines: row.lines}))
       .sort((a, b) => a.path.localeCompare(b.path)),
   };
