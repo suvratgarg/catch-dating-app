@@ -102,6 +102,15 @@
               "value": "noindex, nofollow"
             }
           ]
+        },
+        {
+          "source": "/events/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store"
+            }
+          ]
         }
       ],
       "redirects": [
@@ -117,6 +126,10 @@
         }
       ],
       "rewrites": [
+        {
+          "source": "/events/**",
+          "destination": "/events/index.html"
+        },
         {
           "source": "/demo/**",
           "destination": "/demo/index.html"
@@ -198,7 +211,8 @@
           "source": "**",
           "destination": "/index.html"
         }
-      ]
+      ],
+      "headers": []
     },
     {
       "target": "host",

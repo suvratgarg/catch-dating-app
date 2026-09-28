@@ -1,7 +1,9 @@
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
-import {lazy, Suspense} from "react";
+import {lazy, Suspense, useMemo} from "react";
+import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
+import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
 import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router";
 import {
   getPageKey,
@@ -25,6 +27,7 @@ import {assistanceCredential} from "../features/eventAssistance/eventAssistanceM
 import {householdRsvpCredential} from "../features/householdRsvp/householdRsvpModel";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
+  buildPublicEventDetailRecords,
   getEventDetailForPath,
   isEventDetailPath,
 } from "../features/events/eventDetailModel";
@@ -97,7 +100,9 @@ function App() {
     <BrowserRouter>
       <PendingRequestProvider>
         <CustomFormDomainGate>
-          <MarketingRouteShell />
+          <PublicEventListingsProvider>
+            <MarketingRouteShell />
+          </PublicEventListingsProvider>
         </CustomFormDomainGate>
       </PendingRequestProvider>
     </BrowserRouter>
@@ -106,8 +111,10 @@ function App() {
 
 function MarketingRouteShell() {
   const location = useLocation();
-  const event = getEventDetailForPath(location.pathname);
-  const listingRoute = getHostListingRouteForPath(location.pathname);
+  const {listings, phase: eventFeedPhase} = usePublicHostListings();
+  const events = useMemo(() => buildPublicEventDetailRecords(listings), [listings]);
+  const event = getEventDetailForPath(location.pathname, events);
+  const listingRoute = getHostListingRouteForPath(location.pathname, listings);
   const listing = listingRoute?.listing ?? null;
   const fallbackPage = pageKeyForCurrentRoute(
     location.pathname,
@@ -170,6 +177,8 @@ function MarketingRouteShell() {
             path={marketingRoutePaths.event_detail}
             element={event ? (
               <EventDetailPage event={event} />
+            ) : eventFeedPhase === "loading" ? (
+              <RouteLoadingState />
             ) : (
               <NotFoundPage />
             )}

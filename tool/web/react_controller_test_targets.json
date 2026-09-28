@@ -228,6 +228,11 @@
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/organizers/usePublicEventListingsController.ts",
+      "test": "website/src/features/organizers/usePublicEventListingsController.test.tsx",
+      "status": "required"
     }
   ]
 }

@@ -31,7 +31,7 @@ export async function assertNoOutstandingMigrationHolds(params: {
       (collection === "eventSeatReservations" ? 3 : 1);
     const snap = await tx.get(db.collection(collection)
       .where("eventId", "==", eventId)
-      .select("status", "signUpFailed", "checkoutHold",
+      .select("status", "signUpFailed", "checkoutHold", "temporaryHold",
         "requesterBookingStatus")
       .limit(limit + 1));
     if (snap.docs.length > limit) {
@@ -41,7 +41,8 @@ export async function assertNoOutstandingMigrationHolds(params: {
     const outstanding = snap.docs.some((doc) => {
       const row = doc.data();
       if (collection === "eventSeatReservations") {
-        return row.checkoutHold !== undefined;
+        return row.checkoutHold !== undefined ||
+          row.temporaryHold !== undefined;
       }
       if (!terminalStatuses[collection].includes(row.status)) return true;
       if (collection === "payments" && row.status === "completed") {

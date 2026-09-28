@@ -1,3 +1,4 @@
+import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -164,11 +165,11 @@ class FakeTransaction {
     });
   }
 
-  set(ref: FakeDocRef, data: FakeData, _options?: {merge: boolean}) {
-    void _options;
+  set(ref: FakeDocRef, data: FakeData, options?: {merge: boolean}) {
     this.writes.push(() => {
       const current = this.firestore.get(ref.path) ?? {};
-      this.firestore.set(ref.path, {...current, ...data});
+      this.firestore.set(ref.path, options?.merge ?
+        {...current, ...data} : {...data});
     });
   }
 
@@ -286,12 +287,12 @@ function runningPreferences(overrides: FakeData = {}): FakeData {
   };
 }
 
-function pairInventoryPolicy(): FakeData {
+function pairInventoryPolicy(capacityLimit = 20): FakeData {
   return {
     version: 1,
     admission: {
       format: "open",
-      capacityLimit: 20,
+      capacityLimit,
       waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
       inviteRequired: false,
       membershipRequired: false,
@@ -497,11 +498,12 @@ test("signUpUserForEvent updates event discovery availability", async () => {
   ]);
 });
 
-test("signUpUserForEvent converts a pair hold into a booking and plan",
-  async () => {
-    const start = Date.parse("2027-05-02T01:30:00.000Z");
-    const db = firestore({
-      "events/event-1": event({
+for (const mode of ["legacy", "ready-free", "ready-paid",
+  "ready-wrong-owner", "ready-expired", "ready-locked"] as const) {
+  test(`signup converts a ${mode} pair hold into one booking and plan`,
+    async () => {
+      const start = Date.parse("2027-05-02T01:30:00.000Z");
+      const sourceEvent = event({
         startTime: admin.firestore.Timestamp.fromMillis(start),
         endTime: admin.firestore.Timestamp.fromMillis(start + 3600000),
         bookedCount: 1,
@@ -509,64 +511,117 @@ test("signUpUserForEvent converts a pair hold into a booking and plan",
         crossPathsPairHeldCount: 1,
         crossPathsPairConfirmedCount: 0,
         crossPathsPairHeldCohortCounts: {menInterestedInWomen: 1},
-        eventPolicy: pairInventoryPolicy(),
-      }),
-      "users/runner-1": user(),
-      "eventParticipations/event-1_attendee-1": {
-        eventId: "event-1",
-        clubId: "club-1",
-        uid: "attendee-1",
-        status: "signedUp",
-      },
-      "crossPathsInvitations/invitation-1": {
-        eventId: "event-1",
-        senderUid: "runner-1",
-        recipientUid: "attendee-1",
-        participantIds: ["runner-1", "attendee-1"],
-        status: "accepted",
-        pairHoldId: "hold-1",
-      },
-      "crossPathsPairHolds/hold-1": {
-        eventId: "event-1",
-        invitationId: "invitation-1",
-        organizerId: "club-1",
-        requesterUid: "runner-1",
-        attendeeUid: "attendee-1",
-        participantIds: ["runner-1", "attendee-1"],
-        status: "active",
-        requesterBookingStatus: "held",
-        attendeeBookingStatus: "confirmed",
-        requesterCohortId: "menInterestedInWomen",
-        attendeeCohortId: "womenInterestedInMen",
-        requesterPriceInPaise: 0,
-        attendeePriceInPaise: 0,
-        currency: "INR",
-        createdAt: admin.firestore.Timestamp.now(),
-        updatedAt: admin.firestore.Timestamp.now(),
-        expiresAt: admin.firestore.Timestamp.fromMillis(start - 3600000),
-        confirmedAt: null,
-        releasedAt: null,
-        releaseReason: null,
-        paymentId: null,
-        conversationId: null,
-      },
-    });
+        capacityLimit: 2,
+        eventPolicy: pairInventoryPolicy(2),
+      });
+      const heldAt = Date.now() - (mode === "ready-expired" ?
+        16 * 60 * 1000 : 0);
+      const expiresAt = heldAt + 15 * 60 * 1000;
+      const readyRows = mode === "legacy" ? {} :
+        readySeatDocs(sourceEvent, "runner-1", 1);
+      if (mode !== "legacy") {
+        readyRows["eventSeatLedgers/event-1"].temporaryHeld = 1;
+        readyRows[reservationPath("uid_runner-1")] = {eventId: "event-1",
+          canonicalKey: "uid_runner-1", identityRevision: 1, active: false,
+          revision: 1, reservedAtMillis: heldAt, releasedAtMillis: null,
+          temporaryHold: {ownerKind: "crossPathsPair",
+            ownerId: mode === "ready-wrong-owner" ?
+              "other-hold" : "hold-1",
+            expiresAtMillis: expiresAt}};
+      }
+      if (mode === "ready-locked") {
+        readyRows["eventSeatMigrationFences/event-1"].state = "locked";
+      }
+      const db = firestore({
+        ...readyRows,
+        "events/event-1": sourceEvent,
+        "users/runner-1": user(),
+        "eventParticipations/event-1_attendee-1": {
+          eventId: "event-1",
+          clubId: "club-1",
+          uid: "attendee-1",
+          status: "signedUp",
+        },
+        "crossPathsInvitations/invitation-1": {
+          eventId: "event-1",
+          senderUid: "runner-1",
+          recipientUid: "attendee-1",
+          participantIds: ["runner-1", "attendee-1"],
+          status: "accepted",
+          pairHoldId: "hold-1",
+        },
+        "crossPathsPairHolds/hold-1": {
+          eventId: "event-1",
+          invitationId: "invitation-1",
+          organizerId: "club-1",
+          requesterUid: "runner-1",
+          attendeeUid: "attendee-1",
+          participantIds: ["runner-1", "attendee-1"],
+          status: "active",
+          requesterBookingStatus: "held",
+          attendeeBookingStatus: "confirmed",
+          requesterCohortId: "menInterestedInWomen",
+          attendeeCohortId: "womenInterestedInMen",
+          requesterPriceInPaise: mode === "ready-paid" ? 500 : 0,
+          attendeePriceInPaise: 0,
+          currency: "INR",
+          createdAt: admin.firestore.Timestamp.now(),
+          updatedAt: admin.firestore.Timestamp.now(),
+          expiresAt: admin.firestore.Timestamp.fromMillis(expiresAt),
+          confirmedAt: null,
+          releasedAt: null,
+          releaseReason: null,
+          paymentId: null,
+          conversationId: null,
+        },
+      });
 
-    await signUpUserForEvent(db, "event-1", "runner-1", undefined, {
-      crossPathsPairHoldId: "hold-1",
-    });
+      if (["ready-wrong-owner", "ready-expired", "ready-locked"]
+        .includes(mode)) {
+        await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+          undefined, {crossPathsPairHoldId: "hold-1",
+            loadCurrentAuthPhone: async () => null}),
+        /does not own|no longer available|locked/u);
+        const failed = db as unknown as FakeFirestore;
+        assert.equal(failed.get("eventSeatLedgers/event-1")?.occupied, 1);
+        assert.equal(failed.get("eventSeatLedgers/event-1")?.temporaryHeld, 1);
+        assert.equal(failed.get("eventParticipations/event-1_runner-1"),
+          undefined);
+        return;
+      }
+      for (let i = 0; i < 2; i++) {
+        await signUpUserForEvent(db, "event-1", "runner-1",
+          mode === "ready-paid" ? "verified-payment" : undefined, {
+            crossPathsPairHoldId: "hold-1",
+            loadCurrentAuthPhone: async () => null,
+          });
+      }
 
-    const fake = db as unknown as FakeFirestore;
-    assert.equal(fake.get("crossPathsPairHolds/hold-1")?.status, "confirmed");
-    assert.equal(
-      fake.get("eventParticipations/event-1_runner-1")?.status,
-      "signedUp"
-    );
-    assert.equal(
-      fake.collectionDocs("matches")[0]?.data.conversationType,
-      "crossPathsEventPlan"
-    );
-  });
+      const fake = db as unknown as FakeFirestore;
+      if (mode !== "legacy") {
+        assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 2);
+        assert.equal(fake.get("eventSeatLedgers/event-1")?.temporaryHeld, 0);
+        assert.equal(fake.get("eventSeatLedgers/event-1")?.revision, 2);
+        assert.equal(fake.get(reservationPath("uid_runner-1"))?.temporaryHold,
+          undefined);
+      }
+      assert.equal(fake.get("crossPathsPairHolds/hold-1")?.status, "confirmed");
+      assert.equal(
+        fake.get("eventParticipations/event-1_runner-1")?.status,
+        "signedUp"
+      );
+      assert.equal(
+        fake.collectionDocs("matches")[0]?.data.conversationType,
+        "crossPathsEventPlan"
+      );
+      const beforeRelease = fake.get("eventSeatLedgers/event-1");
+      await releaseCrossPathsPairHold({db, holdId: "hold-1",
+        reason: "cancelled"});
+      assert.deepEqual(fake.get("eventSeatLedgers/event-1"), beforeRelease);
+      assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
+        "signedUp");
+    });
+}
 
 test("signUpUserForEvent writes a waitlist promotion notification", async (
 ) => {

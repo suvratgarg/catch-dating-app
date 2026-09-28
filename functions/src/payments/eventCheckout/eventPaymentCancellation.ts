@@ -124,7 +124,8 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     ]);
     assertCurrentReadySeatSnapshot({event, eventId, organizerId, identity,
       ledger, reservation, expectedActive: true});
-    if (!ledger || !reservation || reservation.checkoutHold) unavailable();
+    if (!ledger || !reservation || reservation.checkoutHold ||
+        reservation.temporaryHold) unavailable();
     const participation = participationSnap.data();
     // Preserve an independent Catch booking's attribution to the shared seat.
     // Its cancellation is owned by that booking flow, not this paid admission.

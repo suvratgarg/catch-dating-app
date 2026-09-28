@@ -119,7 +119,7 @@ export async function deleteAccountEventParticipations(params: {
         if (alias?.state === "ready" && alias.canonicalKey) {
           const held = await new FirestoreSeatTransaction(db, tx)
             .reservation(eventId, alias.canonicalKey);
-          if (held?.checkoutHold) {
+          if (held?.checkoutHold || held?.temporaryHold) {
             unavailable("Finish payment reconciliation before deleting " +
               "account.");
           }
@@ -151,7 +151,8 @@ export async function deleteAccountEventParticipations(params: {
             const reservation = await new FirestoreSeatTransaction(db, tx)
               .reservation(eventId, alias.canonicalKey);
             if (alias.state === "ready" &&
-                (reservation?.active || reservation?.checkoutHold)) {
+                (reservation?.active || reservation?.checkoutHold ||
+                  reservation?.temporaryHold)) {
               unavailable("Deleted account still owns an active seat " +
                 "or checkout.");
             }
@@ -260,7 +261,7 @@ export async function deleteAccountEventParticipations(params: {
       const reservation = await ledgerTx.reservation(eventId, identity.key);
       assertCurrentReadySeatSnapshot({event, eventId,
         organizerId: event.clubId, identity, ledger, reservation});
-      if (reservation?.checkoutHold) {
+      if (reservation?.checkoutHold || reservation?.temporaryHold) {
         unavailable("Finish payment reconciliation before deleting account.");
       }
       if (active || retainHostSeat) {

@@ -1,6 +1,6 @@
 import {createHash} from "crypto";
 import {
-  assertReadySeatState, checkoutHeldCount, CanonicalSeatIdentity,
+  assertReadySeatState, heldSeatCount, CanonicalSeatIdentity,
   SeatAuthorityError, SeatLedger, SeatOperation,
   SeatReceipt, SeatReservation, SeatTransaction,
 } from "./seatAuthority";
@@ -98,7 +98,7 @@ export async function prepareSeatBatch<Subject>(params: {
       !/^[a-f0-9]{64}$/u.test(ledger.policyHash)) {
     fail("unavailable", "Seat authority is not reconciled and ready.");
   }
-  checkoutHeldCount(ledger);
+  heldSeatCount(ledger);
   params.validateLedger?.(ledger);
   const rows = await Promise.all(command.operations.map(async (operation,
     index) => ({
@@ -145,7 +145,7 @@ export async function prepareSeatBatch<Subject>(params: {
         reservation && reservation.identityRevision !== identity.revision) {
       fail("conflict", "Seat reservation or identity changed.");
     }
-    if (reservation?.checkoutHold) {
+    if (reservation?.checkoutHold || reservation?.temporaryHold) {
       fail("conflict", "This identity has a checkout in progress.");
     }
     if (operation.operation === "release" && !reservation?.active) {
@@ -180,7 +180,7 @@ export async function prepareSeatBatch<Subject>(params: {
     fail("conflict", "Seat capacity or migration changed; review again.");
   }
   if (replayCount === 0 && (ledger.occupied + delta < 0 ||
-      ledger.occupied + checkoutHeldCount(ledger) + delta > ledger.capacity ||
+      ledger.occupied + heldSeatCount(ledger) + delta > ledger.capacity ||
       releaseCount > ledger.occupied)) {
     fail("conflict", "This event has insufficient seats.");
   }

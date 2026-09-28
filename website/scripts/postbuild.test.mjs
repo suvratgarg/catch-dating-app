@@ -17,6 +17,8 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   const hostListingsPath = path.join(tmpRoot, "hostListings.json");
   fs.mkdirSync(distRoot, {recursive: true});
   fs.writeFileSync(path.join(distRoot, "index.html"), baseHtml());
+  fs.mkdirSync(path.join(distRoot, "events", "stale-private-event"), {recursive: true});
+  fs.writeFileSync(path.join(distRoot, "events", "stale-private-event", "index.html"), "Private event");
   fs.writeFileSync(
     hostListingsPath,
     `${JSON.stringify(hostListings(), null, 2)}\n`
@@ -49,19 +51,11 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(listingHtml, /"@type":"Organization"/);
   assert.match(listingHtml, /"@type":"BreadcrumbList"/);
 
-  const catchEventHtml = fs.readFileSync(
-    path.join(distRoot, "events", "afterfly-catch-event", "index.html"),
-    "utf8"
-  );
-  assert.match(catchEventHtml, /data-static-event-detail="true"/);
-  assert.match(catchEventHtml, /<h1>Afterfly Catch social run<\/h1>/);
-  assert.match(catchEventHtml, /"@type":"Event"/);
-  assert.match(catchEventHtml, /"@type":"Review"/);
-  assert.match(
-    catchEventHtml,
-    /canonical" href="https:\/\/example\.test\/events\/afterfly-catch-event\/"/
-  );
-  assert.doesNotMatch(catchEventHtml, /checkout|sign in|book now/iu);
+  assert.equal(fs.existsSync(path.join(distRoot, "events", "afterfly-catch-event", "index.html")), false);
+  assert.equal(fs.existsSync(path.join(distRoot, "events", "stale-private-event")), false);
+  const eventShell = fs.readFileSync(path.join(distRoot, "events", "index.html"), "utf8");
+  assert.doesNotMatch(eventShell, /Afterfly Catch social run|application\/ld\+json/);
+  assert.match(eventShell, /noindex, follow/);
 
   const externalEventHtml = fs.readFileSync(
     path.join(distRoot, "events", "afterfly-external-event", "index.html"),
@@ -151,7 +145,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(sitemap, /<loc>https:\/\/example\.test\/terms\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/help\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/afterfly-catch-event\/<\/loc>/);
+  assert.doesNotMatch(sitemap, /afterfly-catch-event/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/afterfly-external-event\/<\/loc>/);
   assert.match(
     sitemap,

@@ -34,6 +34,13 @@ const publicEvents = buildPublicEventRecords(publicListings);
 const rootHtmlPath = path.join(distRoot, "index.html");
 const rootHtml = fs.readFileSync(rootHtmlPath, "utf8");
 const sitemapEntries = [];
+// Clear prior generated event pages before rebuilding the external-only export.
+fs.rmSync(path.join(distRoot, "events"), {recursive: true, force: true});
+writeRoute("/events/", {
+  ...staticRouteMeta(websiteMeta, "home", baseUrl),
+  canonical: `${baseUrl}/events/`,
+  robots: "noindex, follow",
+});
 writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
@@ -413,22 +420,6 @@ function buildEventStructuredData(event, labels) {
 
 function buildPublicEventRecords(listings) {
   const candidates = listings.flatMap((listing) => [
-    ...(listing.catchEvents ?? []).map((event) => ({
-      endTime: event.endTime,
-      eventId: event.id,
-      eventReviews: eventReviewsForListing(listing, event.id),
-      isUpcoming: event.timeline === "upcoming",
-      listing,
-      location: event.location,
-      path: eventPath(event.id),
-      priceLabel: event.priceLabel,
-      sourceHref: null,
-      sourceLabel: "Catch",
-      startTime: event.startTime,
-      summary: event.summary || listing.description,
-      supply: "catchNative",
-      title: event.title,
-    })),
     ...(listing.externalEvents ?? []).map((event) => ({
       endTime: event.endTime,
       eventId: event.id,

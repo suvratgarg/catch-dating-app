@@ -93,7 +93,7 @@ export async function projectEventParticipationToAttendee(
         seats.reservation(source.eventId, identity.key),
       ]);
       // The payment owner will project the final admission or cancellation.
-      if (reservation?.checkoutHold) return;
+      if (reservation?.checkoutHold || reservation?.temporaryHold) return;
       const active = source.status === "signedUp" ||
         source.status === "attended";
       try {

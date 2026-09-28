@@ -1,3 +1,4 @@
+import {preparePairSeatTransition} from "./pairSeatAuthority";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onDocumentCreated, onDocumentWritten} from
@@ -116,6 +117,7 @@ type InvalidationReason = NonNullable<
 interface InvitationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
+  loadCurrentAuthPhone?: (uid: string) => Promise<string | null>;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -516,6 +518,11 @@ export async function respondCrossPathsInvitationHandler(
     ) {
       throw unavailable();
     }
+    const deletionGuards = await Promise.all([
+      tx.get(db.collection("deletedUsers").doc(invitation.senderUid)),
+      tx.get(db.collection("deletedUsers").doc(invitation.recipientUid)),
+    ]);
+    if (deletionGuards.some((guard) => guard.exists)) throw unavailable();
     const event = validUpcomingEvent(eventSnap, now, false);
     const senderParticipation = signedUpParticipation(
       senderParticipationSnap,
@@ -567,11 +574,26 @@ export async function respondCrossPathsInvitationHandler(
     recipientName = recipient.name;
     if (!senderParticipation) {
       const policy = eventPolicyFromEvent(event);
+      const pairPolicy = policy.admission.crossPathsPairInventory;
+      if (!pairPolicy?.enabled) throw unavailable();
+      const holdExpiresAt = admin.firestore.Timestamp.fromMillis(Math.min(
+        now.toMillis() + pairPolicy.holdDurationMinutes * 60 * 1000,
+        event.startTime.toMillis() - responseBufferMillis
+      ));
+      const seatHold = await preparePairSeatTransition({db, tx, event,
+        eventId: invitation.eventId,
+        organizerId: event.organizerId ?? event.clubId,
+        requesterUid: invitation.senderUid, holdId,
+        expiresAtMillis: holdExpiresAt.toMillis(), nowMillis: now.toMillis(),
+        operation: "temporaryHold",
+        loadCurrentAuthPhone: deps.loadCurrentAuthPhone});
+      const baseRoster = rosterFromEvent(event);
       const roster = await rosterWithReservedWaitlistOffersInTransaction(
         tx,
         db,
         invitation.eventId,
-        rosterFromEvent(event),
+        {...baseRoster, totalBooked: seatHold?.reservedCount ??
+          baseRoster.totalBooked},
         {excludeUid: invitation.senderUid, nowMillis: now.toMillis()}
       );
       const requesterCohortId = cohortIdForUser(sender);
@@ -582,12 +604,6 @@ export async function respondCrossPathsInvitationHandler(
         roster,
         admissionMode: "crossPathsPair",
       });
-      const pairPolicy = policy.admission.crossPathsPairInventory;
-      if (!pairPolicy?.enabled) throw unavailable();
-      const holdExpiresAt = admin.firestore.Timestamp.fromMillis(Math.min(
-        now.toMillis() + pairPolicy.holdDurationMinutes * 60 * 1000,
-        event.startTime.toMillis() - responseBufferMillis
-      ));
       const hold: CrossPathsPairHoldDocument = {
         eventId: invitation.eventId,
         invitationId: data.invitationId,
@@ -621,6 +637,7 @@ export async function respondCrossPathsInvitationHandler(
         paymentId: null,
         conversationId: null,
       };
+      seatHold?.apply();
       tx.create(holdRef, hold);
       tx.update(refs.event, {
         crossPathsPairHeldCount: admin.firestore.FieldValue.increment(1),

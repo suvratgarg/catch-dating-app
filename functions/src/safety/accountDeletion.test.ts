@@ -1182,3 +1182,41 @@ test("payment-only identity is revoked after hold release", async () => {
     "event1", "runner1")}`].state, "revoked");
   assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 0);
 });
+
+test("full account deletion releases its pair hold before retiring UID proof",
+  async () => {
+    const seed = readySeatSeed();
+    delete seed["eventParticipations/event1_runner1"];
+    seed["users/runner1"] = {name: "Synthetic Guest", profilePhotos: []};
+    seed["events/event1"] = {...seed["events/event1"], bookedCount: 0,
+      crossPathsPairHeldCount: 1,
+      crossPathsPairHeldCohortCounts: {womenInterestedInMen: 1}};
+    seed["eventSeatLedgers/event1"] = {...seed["eventSeatLedgers/event1"],
+      occupied: 0, temporaryHeld: 1};
+    seed[seatReservationPath("canonical_runner1")] = {
+      ...seed[seatReservationPath("canonical_runner1")], active: false,
+      temporaryHold: {ownerKind: "crossPathsPair", ownerId: "hold1",
+        expiresAtMillis: 300100}};
+    const now = admin.firestore.Timestamp.fromMillis(100);
+    seed["crossPathsPairHolds/hold1"] = {eventId: "event1",
+      invitationId: "invitation1", organizerId: "org1", requesterUid: "runner1",
+      attendeeUid: "runner2", participantIds: ["runner1", "runner2"],
+      status: "active", requesterBookingStatus: "held",
+      attendeeBookingStatus: "confirmed",
+      requesterCohortId: "womenInterestedInMen",
+      attendeeCohortId: "menInterestedInWomen", requesterPriceInPaise: 0,
+      attendeePriceInPaise: 0, currency: "INR", createdAt: now, updatedAt: now,
+      expiresAt: admin.firestore.Timestamp.fromMillis(300100),
+      confirmedAt: null, releasedAt: null, releaseReason: null,
+      paymentId: null, conversationId: null};
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}});
+    await requestAccountDeletionHandler({auth: {uid: "runner1"}} as
+      Parameters<typeof requestAccountDeletionHandler>[0], h.deps);
+    assert.equal(h.rows["eventSeatLedgers/event1"].temporaryHeld, 0);
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 0);
+    assert.equal(h.rows[`eventSeatIdentityAliases/${seatIdentityAliasId(
+      "event1", "uid", "runner1")}`].state, "retired");
+    assert.ok(h.deletedPublicDocs.includes("crossPathsPairHolds/hold1"));
+    assert.deepEqual(h.deletedAuthUsers, ["runner1"]);
+  });

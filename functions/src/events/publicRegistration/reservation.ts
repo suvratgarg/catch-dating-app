@@ -17,7 +17,7 @@ import {
 } from "../seatAuthority/firestoreAdapter";
 import {
   CHECKOUT_HOLD_MILLIS,
-  checkoutHeldCount,
+  heldSeatCount,
 } from "../seatAuthority/seatAuthority";
 import {
   prepareCheckoutHold,
@@ -145,7 +145,8 @@ export async function reservePublicPayment(input: {
     if (!ledger) registrationUnavailable();
     const existingStatus = identity.existing?.status;
     if (existingStatus === "registered" || existingStatus === "checkedIn") {
-      if (!reservation?.active || reservation.checkoutHold) {
+      if (!reservation?.active || reservation.checkoutHold ||
+          reservation.temporaryHold) {
         registrationUnavailable();
       }
       identity.apply();
@@ -157,7 +158,8 @@ export async function reservePublicPayment(input: {
         },
       };
     }
-    if (reservation?.active || reservation?.checkoutHold) {
+    if (reservation?.active || reservation?.checkoutHold ||
+        reservation?.temporaryHold) {
       registrationUnavailable(
         "Finish your current checkout before retrying.",
       );
@@ -181,7 +183,7 @@ export async function reservePublicPayment(input: {
       {
         bookedCountsByCohort: {},
         waitlistedCountsByCohort: {},
-        totalBooked: ledger.occupied + checkoutHeldCount(ledger),
+        totalBooked: ledger.occupied + heldSeatCount(ledger),
       },
       {nowMillis},
     );

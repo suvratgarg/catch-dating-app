@@ -7,6 +7,8 @@ export interface SeatLedger {
   occupied: number;
   /** Missing means zero. Never include held seats in bookedCount. */
   checkoutHeld?: number;
+  /** Policy-expiring holds, distinct from payment attempts. */
+  temporaryHeld?: number;
   revision: number;
   capacityRevision: number;
   policyVersion: "legacy" | "v1" | "v2";
@@ -24,6 +26,8 @@ export interface SeatReservation {
   reservedAtMillis: number;
   releasedAtMillis: number | null;
   checkoutHold?: {paymentId: string; expiresAtMillis: number};
+  temporaryHold?: {ownerKind: "crossPathsPair"; ownerId: string;
+    expiresAtMillis: number};
 }
 
 export interface SeatReceipt {
@@ -31,7 +35,8 @@ export interface SeatReceipt {
   requestId: string;
   requestHash: string;
   operation: "reserve" | "release" | "checkoutHold" |
-    "confirmCheckoutHold" | "releaseCheckoutHold";
+    "confirmCheckoutHold" | "releaseCheckoutHold" | "temporaryHold" |
+    "confirmTemporaryHold" | "releaseTemporaryHold";
   canonicalKey: string;
   appliedLedgerRevision: number;
   appliedReservationRevision: number;
@@ -108,14 +113,24 @@ function hash(value: unknown): string {
 export const CHECKOUT_HOLD_MILLIS = 15 * 60 * 1000;
 
 /** Expired holds still consume capacity until atomically released. */
-export function checkoutHeldCount(ledger: SeatLedger): number {
-  const held = ledger.checkoutHeld === undefined ? 0 : ledger.checkoutHeld;
-  if (!nonnegative(held) || !nonnegative(ledger.occupied) ||
+export function heldSeatCount(ledger: SeatLedger): number {
+  const checkout = ledger.checkoutHeld === undefined ? 0 : ledger.checkoutHeld;
+  const temporary = ledger.temporaryHeld === undefined ? 0 :
+    ledger.temporaryHeld;
+  const held = checkout + temporary;
+  if (!nonnegative(checkout) || !nonnegative(temporary) ||
+      !nonnegative(held) || !nonnegative(ledger.occupied) ||
       !Number.isSafeInteger(ledger.occupied + held) ||
       ledger.occupied + held > ledger.capacity) {
-    fail("unavailable", "Checkout seat inventory needs reconciliation.");
+    fail("unavailable", "Held seat inventory needs reconciliation.");
   }
   return held;
+}
+
+/** Payment-specific count, validated against all shared seat inventory. */
+export function checkoutHeldCount(ledger: SeatLedger): number {
+  heldSeatCount(ledger);
+  return ledger.checkoutHeld ?? 0;
 }
 
 /** Validate existing authority without creating a reservation or receipt.
@@ -144,12 +159,25 @@ export function assertReadySeatState(eventId: string,
   }
   const held = checkoutHeldCount(ledger);
   const hold = reservation?.checkoutHold;
+  const temporary = reservation?.temporaryHold;
   if (hold !== undefined && (!hold || typeof hold !== "object" ||
       !validId(hold.paymentId) || !nonnegative(hold.expiresAtMillis) ||
       hold.expiresAtMillis !== reservation!.reservedAtMillis +
         CHECKOUT_HOLD_MILLIS || reservation!.active ||
       reservation!.releasedAtMillis !== null || held < 1)) {
     fail("unavailable", "Checkout seat hold is malformed.");
+  }
+  if (temporary !== undefined && (!temporary ||
+      typeof temporary !== "object" || hold !== undefined ||
+      temporary.ownerKind !== "crossPathsPair" ||
+      !validId(temporary.ownerId) ||
+      !nonnegative(temporary.expiresAtMillis) ||
+      temporary.expiresAtMillis <= reservation!.reservedAtMillis ||
+      temporary.expiresAtMillis - reservation!.reservedAtMillis >
+        30 * 60 * 1000 || reservation!.active ||
+      reservation!.releasedAtMillis !== null ||
+      (ledger.temporaryHeld ?? 0) < 1)) {
+    fail("unavailable", "Temporary seat hold is malformed.");
   }
   if (reservation && (reservation.eventId !== eventId ||
       reservation.canonicalKey !== identity.key ||
@@ -161,7 +189,7 @@ export function assertReadySeatState(eventId: string,
       !(reservation.releasedAtMillis === null ||
         nonnegative(reservation.releasedAtMillis)) ||
       reservation.active && reservation.releasedAtMillis !== null ||
-      !reservation.active && !hold &&
+      !reservation.active && !hold && !temporary &&
         reservation.releasedAtMillis === null ||
       typeof reservation.active !== "boolean")) {
     fail("unavailable", "Seat reservation is malformed.");
@@ -236,7 +264,7 @@ export async function prepareSeatCommand<Subject>(params: {
   if (reservation && reservation.identityRevision !== identity.revision) {
     fail("conflict", "Canonical identity changed; reconcile it first.");
   }
-  if (reservation?.checkoutHold) {
+  if (reservation?.checkoutHold || reservation?.temporaryHold) {
     fail("conflict", "This identity has a checkout in progress.");
   }
   if (command.operation === "reserve" && reservation?.active) {
@@ -246,7 +274,7 @@ export async function prepareSeatCommand<Subject>(params: {
     fail("conflict", "There is no active seat to release.");
   }
   if (command.operation === "reserve" &&
-      ledger.occupied + checkoutHeldCount(ledger) >= ledger.capacity) {
+      ledger.occupied + heldSeatCount(ledger) >= ledger.capacity) {
     fail("conflict", "This event is full.");
   }
   const active = command.operation === "reserve";

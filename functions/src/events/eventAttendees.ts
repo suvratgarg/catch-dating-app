@@ -1,4 +1,4 @@
-import {checkoutHeldCount} from "./seatAuthority/seatAuthority";
+import {heldSeatCount} from "./seatAuthority/seatAuthority";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
@@ -152,7 +152,7 @@ async function prepareAttendanceSeatChange(params: {
     throw new HttpsError("failed-precondition",
       "Guest attendance and seat authority disagree.");
   }
-  if (reservation?.checkoutHold) {
+  if (reservation?.checkoutHold || reservation?.temporaryHold) {
     throw new HttpsError("failed-precondition",
       "Finish checkout before changing this guest attendance.");
   }
@@ -852,7 +852,7 @@ export async function registerPublicEventHandler(
         throw new HttpsError("failed-precondition",
           "Event seat authority needs reconciliation.");
       }
-      readyCount = ledger.occupied + checkoutHeldCount(ledger);
+      readyCount = ledger.occupied + heldSeatCount(ledger);
       if (existing && existing.eventId !== payload.eventId ||
           existing?.linkedUid && existing.linkedUid !== uid ||
           existing?.phoneE164 !== undefined &&
@@ -889,7 +889,7 @@ export async function registerPublicEventHandler(
       }
       const reservation = await seats.reservation(payload.eventId,
         identity.key);
-      if (reservation?.checkoutHold) {
+      if (reservation?.checkoutHold || reservation?.temporaryHold) {
         throw new HttpsError("failed-precondition",
           "Finish or cancel the current checkout before registering.");
       }

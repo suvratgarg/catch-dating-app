@@ -76,7 +76,7 @@ export interface WebsiteHostListingProjection {
     publicRegistrationEnabled?: boolean;
     registrationMode?: "closed" | "free" | "paid";
     amountPaise?: number;
-    currency?: "INR";
+    currency?: string;
     priceLabel: string;
     scorecard?: {
       [k: string]: unknown;

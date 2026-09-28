@@ -3,10 +3,11 @@ import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing, HostListingRoute} from "./types";
 
 export function getHostListingRouteForPath(
-  pathname: string
+  pathname: string,
+  listings: readonly HostListing[] = hostListings
 ): HostListingRoute | null {
   const normalizedPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
-  const canonicalListing = hostListings.find((listing) =>
+  const canonicalListing = listings.find((listing) =>
     listing.path === normalizedPath
   );
   if (canonicalListing && organizerPolicyForListing(canonicalListing).isPubliclyReadable) {
@@ -16,7 +17,7 @@ export function getHostListingRouteForPath(
     };
   }
 
-  const legacyListing = hostListings.find((listing) =>
+  const legacyListing = listings.find((listing) =>
     listing.legacyPaths?.includes(normalizedPath)
   );
   return legacyListing && organizerPolicyForListing(legacyListing).isPubliclyReadable ? {

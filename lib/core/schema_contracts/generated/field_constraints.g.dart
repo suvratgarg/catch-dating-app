@@ -145202,6 +145202,12 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsCurrency = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsDate = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.date',
     minLength: 1,
@@ -166003,6 +166009,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.bookedCount': websiteHostListingProjectionCatchEventsItemsBookedCount,
     'websiteHostListingProjection.catchEvents.items.capacityLimit': websiteHostListingProjectionCatchEventsItemsCapacityLimit,
     'websiteHostListingProjection.catchEvents.items.checkedInCount': websiteHostListingProjectionCatchEventsItemsCheckedInCount,
+    'websiteHostListingProjection.catchEvents.items.currency': websiteHostListingProjectionCatchEventsItemsCurrency,
     'websiteHostListingProjection.catchEvents.items.date': websiteHostListingProjectionCatchEventsItemsDate,
     'websiteHostListingProjection.catchEvents.items.endTime': websiteHostListingProjectionCatchEventsItemsEndTime,
     'websiteHostListingProjection.catchEvents.items.id': websiteHostListingProjectionCatchEventsItemsId,
