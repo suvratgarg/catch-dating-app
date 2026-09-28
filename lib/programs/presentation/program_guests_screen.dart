@@ -342,14 +342,42 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                               '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
+                            if (group.hotelId != null)
+                              Text(
+                                context.l10n.programsGuestsGroupHotelSummary(
+                                  hotel:
+                                      widget.programDetail.hotels
+                                          .where(
+                                            (hotel) =>
+                                                hotel.hotelId == group.hotelId,
+                                          )
+                                          .firstOrNull
+                                          ?.name ??
+                                      context
+                                          .l10n
+                                          .programsGuestsHotelUnavailable,
+                                ),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                           ],
                         ),
-                        trailing: CatchIconAction.icon(
-                          icon: CatchIcons.deleteOutline,
-                          variant: CatchIconActionVariant.plain,
-                          accent: CatchTokens.of(context).danger,
-                          tooltip: context.l10n.programsGuestsGroupDelete,
-                          onPressed: () => _deleteGroup(context, group),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CatchIconAction.icon(
+                              icon: CatchIcons.editOutlined,
+                              variant: CatchIconActionVariant.plain,
+                              tooltip: context.l10n.programsGuestsGroupEdit,
+                              onPressed: () => _editGroup(context, group),
+                            ),
+                            CatchIconAction.icon(
+                              icon: CatchIcons.deleteOutline,
+                              variant: CatchIconActionVariant.plain,
+                              accent: CatchTokens.of(context).danger,
+                              tooltip: context.l10n.programsGuestsGroupDelete,
+                              onPressed: () => _deleteGroup(context, group),
+                            ),
+                          ],
                         ),
                       ),
                 ],
@@ -388,11 +416,20 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     }
   }
 
-  Future<void> _addGroup(BuildContext context) async {
-    final draft = await showDialog<({String label, String dimension})>(
-      context: context,
-      builder: (_) => const ProgramGuestGroupEditDialog(),
-    );
+  Future<void> _addGroup(BuildContext context) => _editGroup(context, null);
+
+  Future<void> _editGroup(
+    BuildContext context,
+    ProgramGuestGroupRow? group,
+  ) async {
+    final draft =
+        await showDialog<({String label, String dimension, String? hotelId})>(
+          context: context,
+          builder: (_) => ProgramGuestGroupEditDialog(
+            hotels: widget.programDetail.hotels,
+            group: group,
+          ),
+        );
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
     try {
@@ -402,6 +439,10 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
             programId: widget.programId,
             label: draft.label,
             dimension: draft.dimension,
+            groupId: group?.groupId,
+            expectedRevision: group?.revision,
+            hotelId: draft.hotelId == group?.hotelId ? null : draft.hotelId,
+            clearHotel: group?.hotelId != null && draft.hotelId == null,
           );
       _refresh();
     } catch (error) {
@@ -700,7 +741,14 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
 }
 
 class ProgramGuestGroupEditDialog extends StatefulWidget {
-  const ProgramGuestGroupEditDialog({super.key});
+  const ProgramGuestGroupEditDialog({
+    super.key,
+    required this.hotels,
+    this.group,
+  });
+
+  final List<ProgramHotel> hotels;
+  final ProgramGuestGroupRow? group;
 
   @override
   State<ProgramGuestGroupEditDialog> createState() =>
@@ -711,6 +759,15 @@ class _ProgramGuestGroupEditDialogState
     extends State<ProgramGuestGroupEditDialog> {
   final _labelController = TextEditingController();
   final _dimensionController = TextEditingController();
+  String? _hotelId;
+
+  @override
+  void initState() {
+    super.initState();
+    _labelController.text = widget.group?.label ?? '';
+    _dimensionController.text = widget.group?.dimension ?? '';
+    _hotelId = widget.group?.hotelId;
+  }
 
   @override
   void dispose() {
@@ -721,7 +778,9 @@ class _ProgramGuestGroupEditDialogState
 
   @override
   Widget build(BuildContext context) => CatchDialog<void>(
-    title: context.l10n.programsGuestsGroupNew,
+    title: widget.group == null
+        ? context.l10n.programsGuestsGroupNew
+        : context.l10n.programsGuestsGroupEdit,
     actions: [
       CatchButton(
         label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
@@ -734,7 +793,9 @@ class _ProgramGuestGroupEditDialogState
           final label = _labelController.text.trim();
           final dimension = _dimensionController.text.trim();
           if (label.isEmpty || dimension.isEmpty) return;
-          Navigator.of(context).pop((label: label, dimension: dimension));
+          Navigator.of(
+            context,
+          ).pop((label: label, dimension: dimension, hotelId: _hotelId));
         },
       ),
     ],
@@ -756,6 +817,36 @@ class _ProgramGuestGroupEditDialogState
               .upsertProgramGuestGroupCallablePayloadDimension,
           inputHint: context.l10n.programsGuestsGroupDimensionHint,
         ),
+        if (widget.hotels.isNotEmpty || widget.group?.hotelId != null)
+          CatchField<String>.choices(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.programsGuestsGroupHotel,
+            contract: CatchContractConstraints
+                .upsertProgramGuestGroupCallablePayloadHotelId,
+            contractValueBuilder: (value) => value,
+            values: [
+              for (final hotel in widget.hotels) hotel.hotelId,
+              if (widget.group?.hotelId case final existingId?)
+                if (!widget.hotels.any((hotel) => hotel.hotelId == existingId))
+                  existingId,
+            ],
+            itemLabelBuilder: (hotelId) =>
+                widget.hotels
+                    .where((hotel) => hotel.hotelId == hotelId)
+                    .firstOrNull
+                    ?.name ??
+                context.l10n.programsGuestsHotelUnavailable,
+            selected: {?_hotelId},
+            allowEmptySelection: true,
+            emptyValueText: context.l10n.programsGuestsGroupNoHotel,
+            onSelectionChanged: (selection) =>
+                setState(() => _hotelId = selection.firstOrNull),
+          )
+        else
+          Text(
+            context.l10n.programsGuestsNoHotelsAvailable,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
       ],
     ),
   );

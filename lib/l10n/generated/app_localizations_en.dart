@@ -22893,6 +22893,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsGuestsGroupNew => 'New group';
 
   @override
+  String get programsGuestsGroupEdit => 'Edit group';
+
+  @override
+  String get programsGuestsGroupHotel => 'Hotel for this group';
+
+  @override
+  String get programsGuestsGroupNoHotel => 'No hotel assigned';
+
+  @override
+  String programsGuestsGroupHotelSummary({required String hotel}) {
+    return 'Staying at $hotel';
+  }
+
+  @override
+  String get programsGuestsHotelUnavailable =>
+      'Previously linked hotel is unavailable';
+
+  @override
+  String get programsGuestsNoHotelsAvailable =>
+      'No hotels are available for this program yet. You can save the group without one.';
+
+  @override
   String get programsGuestsGroupLabel => 'Group label';
 
   @override
