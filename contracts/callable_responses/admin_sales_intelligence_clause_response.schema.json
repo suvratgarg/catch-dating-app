@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+  "title": "AdminSalesIntelligenceClauseMutationResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clause"
+  ],
+  "properties": {
+    "clause": {
+      "$ref": "../firestore/sales_intelligence_clauses.schema.json"
+    }
+  },
+  "x-callable-aliases": [
+    "adminSaveSalesIntelligenceClause",
+    "adminReviewSalesIntelligenceClause"
+  ]
+}

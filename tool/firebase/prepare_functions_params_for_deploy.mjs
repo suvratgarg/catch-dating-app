@@ -16,6 +16,7 @@ export const materializedNonSecretParams = [
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
   "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
+  "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "META_WHATSAPP_APP_ID",
   "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID",
   "META_WHATSAPP_GRAPH_VERSION",
@@ -55,6 +56,12 @@ function normalizedProviderParams(environment = process.env, projectId) {
     /^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/.test(
       formPartnerVersion.slice(secretPrefix.length))),
   "FORM_RAZORPAY_PARTNER_CONFIG_VERSION must pin a secret in this project");
+  const platformVersion = environment.RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION
+    ?.trim() || "";
+  assert(!platformVersion || (platformVersion.startsWith(secretPrefix) &&
+    /^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/.test(
+      platformVersion.slice(secretPrefix.length))),
+  "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION must pin a secret in this project");
   const enabled = normalizedBooleanParam(environment, "META_WHATSAPP_ENABLED");
 
   const appId = environment.META_WHATSAPP_APP_ID?.trim() ?? "";
@@ -103,6 +110,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
     FORM_RAZORPAY_PARTNER_CONFIG_VERSION: formPartnerVersion || " ",
+    RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: platformVersion || " ",
     // Quoted whitespace satisfies legacy Firebase parameter discovery while
     // remaining unconfigured under the source-owned trim checks.
     META_WHATSAPP_APP_ID: appId || " ",

@@ -12,4 +12,5 @@ export interface UpdatePrivateEventPreferencesCallablePayload {
   expectedPreferencesRevision: number;
   reviewedDefaultsHash: string;
   intents: EventPreferenceIntents;
+  expectedActorUid?: string;
 }

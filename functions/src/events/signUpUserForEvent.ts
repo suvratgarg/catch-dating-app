@@ -1,3 +1,7 @@
+import {prepareNativePaidBooking, NativePaidBooking} from
+  "../payments/nativeBooking";
+import {preparePairSeatTransition} from "../crossPaths/pairSeatAuthority";
+import {heldSeatCount} from "./seatAuthority/seatAuthority";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
@@ -80,6 +84,7 @@ export async function signUpUserForEvent(
   userId: string,
   paymentId?: string,
   options: {
+    paidBooking?: NativePaidBooking;
     hasValidInvite?: boolean;
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
@@ -103,6 +108,7 @@ export async function signUpUserForEvent(
       userSnap,
       participationSnap,
       activeParticipations,
+      deletionGuard,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(userRef),
@@ -111,10 +117,18 @@ export async function signUpUserForEvent(
         "signedUp",
         "attended",
       ]),
+      tx.get(db.collection("deletedUsers").doc(userId)),
     ]);
+
+    const applyPayment = options.paidBooking ?
+      await prepareNativePaidBooking({db, tx, booking: options.paidBooking,
+        eventId, userId, paymentId}) : null;
 
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
+    }
+    if (deletionGuard.exists) {
+      throw new HttpsError("failed-precondition", "Account is unavailable.");
     }
     if (!userSnap.exists) {
       throw new HttpsError("not-found", "User profile not found.");
@@ -157,6 +171,7 @@ export async function signUpUserForEvent(
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {
         status?: string;
+        paymentId?: string;
         inviteLinkId?: string | null;
         inviteSource?: string | null;
       } :
@@ -166,13 +181,22 @@ export async function signUpUserForEvent(
       existingParticipation?.status === "signedUp" ||
       existingParticipation?.status === "attended"
     ) {
-      if (!pairHold) return;
+      if (options.paidBooking &&
+          existingParticipation.paymentId !== paymentId) {
+        throw new HttpsError("already-exists",
+          "Another booking already owns this seat.");
+      }
+      if (!pairHold) {
+        applyPayment?.();
+        return;
+      }
       if (
         pairHold.eventId === eventId &&
         pairHold.requesterUid === userId &&
         pairHold.status === "confirmed" &&
         pairHold.requesterBookingStatus === "confirmed"
       ) {
+        applyPayment?.();
         return;
       }
       throw new HttpsError(
@@ -199,6 +223,12 @@ export async function signUpUserForEvent(
           "failed-precondition",
           "This Cross Paths hold is no longer available."
         );
+      }
+      const attendeeDeletion = await tx.get(db.collection("deletedUsers")
+        .doc(pairHold.attendeeUid));
+      if (attendeeDeletion.exists) {
+        throw new HttpsError("failed-precondition",
+          "This Cross Paths hold is no longer available.");
       }
       const invitationSnap = await tx.get(
         db.collection("crossPathsInvitations").doc(pairHold.invitationId)
@@ -312,7 +342,8 @@ export async function signUpUserForEvent(
     const baseRoster = {
       ...rosterFromEvent(event),
       totalBooked: currentBookedCount +
-        Math.max(0, event.crossPathsPairHeldCount ?? 0),
+        (seatLedger ? heldSeatCount(seatLedger) :
+          Math.max(0, event.crossPathsPairHeldCount ?? 0)),
     };
     const reservedRoster = await rosterWithReservedWaitlistOffersInTransaction(
       tx,
@@ -355,7 +386,13 @@ export async function signUpUserForEvent(
 
     let seatPreparation: FirestoreSeatPreparation | null = null;
     let applySeatIdentity: (() => void) | null = null;
-    if (seatMode === "ready" && !guestLink) {
+    const pairSeat = pairHold ? await preparePairSeatTransition({db, tx,
+      event, eventId, organizerId: event.organizerId ?? event.clubId,
+      requesterUid: userId, holdId: options.crossPathsPairHoldId!,
+      expiresAtMillis: pairHold.expiresAt.toMillis(), nowMillis: Date.now(),
+      operation: "confirmTemporaryHold",
+      loadCurrentAuthPhone: async () => currentAuthPhone}) : null;
+    if (seatMode === "ready" && !guestLink && !pairHold) {
       if (!seatLedger || !seatTransaction) {
         throw new HttpsError("failed-precondition",
           "Event seat authority is unavailable.");
@@ -417,7 +454,9 @@ export async function signUpUserForEvent(
       );
     }
 
+    applyPayment?.();
     if (seatPreparation) applyFirestoreSeat(seatPreparation);
+    pairSeat?.apply();
     guestLink?.apply();
     applySeatIdentity?.();
     scheduleClaim.apply();

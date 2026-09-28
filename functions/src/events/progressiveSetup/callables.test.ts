@@ -5,7 +5,8 @@ import {
   createPrivateEventSetupHandler,
   getPrivateEventSetupHandler,
   listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
-  updatePrivateEventDetailsHandler,
+  updatePrivateEventDetailsHandler, setEventPublicationHandler,
+  reconcilePrivateEventSeatsHandler,
   SetupCallableDependencies,
   updatePrivateEventBasicsHandler,
   updatePrivateEventPreferencesHandler,
@@ -46,7 +47,8 @@ test("callable auth and payload validation precede rate or database access",
       updatePrivateEventBasicsHandler,
       updatePrivateEventPreferencesHandler, getPrivateEventSetupHandler,
       listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
-      updatePrivateEventDetailsHandler]) {
+      updatePrivateEventDetailsHandler, setEventPublicationHandler,
+      reconcilePrivateEventSeatsHandler]) {
       await assert.rejects(handler(request({}), deps),
         (e) => e instanceof HttpsError && e.code === "unauthenticated");
       await assert.rejects(handler(request({}, "host1"), deps),
@@ -114,4 +116,24 @@ test("details rejects unsupported activation fields before a database read",
         request({...command, details}, "host1"), deps),
       (e) => e instanceof HttpsError && e.code === "invalid-argument");
     }
+  });
+
+test("publication cannot bypass the production privacy gate", async () => {
+  await assert.rejects(setEventPublicationHandler(request({
+    organizerId: "org1", eventId: "event1", requestId: "publish-one",
+    expectedSetupRevision: 1, publicationState: "published",
+  }, "host1")),
+  (e) => e instanceof HttpsError && e.code === "failed-precondition");
+});
+
+
+test("guest reconciliation cannot bypass the production privacy gate",
+  async () => {
+    await assert.rejects(reconcilePrivateEventSeatsHandler(request({
+      organizerId: "org1", eventId: "event1", requestId: "reconcile-one",
+      expectedSetupRevision: 1, reviewedDefaultsHash: "a".repeat(64),
+      details: {admissionTerms: {capacityLimit: 20, priceInPaise: 0,
+        currency: "INR", cancellationPolicyId: "notApplicable"}},
+    }, "host1")),
+    (e) => e instanceof HttpsError && e.code === "failed-precondition");
   });

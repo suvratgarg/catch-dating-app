@@ -4,7 +4,7 @@ import type {
   PublicProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {notificationCopy} from "./notificationCopy";
-import {eventTitleLabel} from "./eventLabels";
+import {eventDistanceLabel, eventTitleLabel} from "./eventLabels";
 
 export interface FcmParams {
   token: string;
@@ -284,9 +284,8 @@ export function eventActivityNotificationCopy(
   type: ActivityNotificationType,
   event: EventDocument
 ): {title: string; body: string} {
-  const eventLabel = typeof event.distanceKm === "number" &&
-    Number.isFinite(event.distanceKm) ?
-    `${formatDistance(event.distanceKm)} event` : eventTitleLabel(event);
+  const distance = eventDistanceLabel(event);
+  const eventLabel = distance ? `${distance} event` : eventTitleLabel(event);
   const locationName = event.meetingLocation?.name?.trim() ||
     event.meetingPoint?.trim() || "Venue to be confirmed";
   const key = switchEventNotificationKey(type);
@@ -301,9 +300,8 @@ export function eventActivityNotificationCopy(
 export function eventCompanionReadyNotificationCopy(
   event: EventDocument
 ): {title: string; body: string} {
-  const eventLabel = typeof event.distanceKm === "number" &&
-    Number.isFinite(event.distanceKm) ?
-    `${formatDistance(event.distanceKm)} event` : eventTitleLabel(event);
+  const distance = eventDistanceLabel(event);
+  const eventLabel = distance ? `${distance} event` : eventTitleLabel(event);
   const locationName = event.meetingLocation?.name?.trim() ||
     event.meetingPoint?.trim() || "Venue to be confirmed";
   return notificationCopy("eventCompanionReady", {eventLabel, locationName});
@@ -411,15 +409,4 @@ function compactBooleanMap(
       typeof entry[1] === "boolean"
     )
   );
-}
-
-/**
- * Formats a distance without noisy trailing decimals.
- * @param {number} distanceKm Distance in kilometres.
- * @return {string} Human-readable distance.
- */
-function formatDistance(distanceKm: number): string {
-  return Number.isInteger(distanceKm) ?
-    `${distanceKm} km` :
-    `${distanceKm.toFixed(1)} km`;
 }

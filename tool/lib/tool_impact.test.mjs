@@ -171,6 +171,66 @@ test("design authority ledgers select their exact consuming checks", () => {
   ]);
 });
 
+test("feature coverage and context manifests select executable owners without full fanout", () => {
+  const owners = new Map([
+    ["design/features/feature_coverage.json", "design:feature-coverage"],
+    ["design/features/feature_coverage.schema.json", "design:feature-coverage"],
+    ["tool/design/check_feature_coverage.test.mjs", "design:feature-coverage"],
+    ["design_context_pack/MANIFEST.json", "design:context-pack"],
+    ["design_context_pack/gallery/manifest.json", "design:context-pack"],
+    ["tool/design/context_pack_builder_test.dart", "design:context-pack"],
+  ]);
+  const mixedPaths = [...owners.keys(),
+    "design/screens/catch.screens.json",
+    "lib/programs/presentation/program_workspace_screen.dart",
+    "widgetbook/lib/programs/workspace_use_cases.dart",
+  ];
+  for (const mode of ["pr", "main", "merge_group"]) {
+    for (const [changedPath, owner] of owners) {
+      const plan = planAffectedToolChecks({
+        changedPaths: [changedPath], manifest: productionManifest,
+        componentGraph: productionGraph, mode,
+      });
+      assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
+      assert.ok(plan.toolIds.includes(owner), changedPath);
+      assert.equal(plan.repositoryView, "full", changedPath);
+      assert.deepEqual(plan.setupRequirements, owner === "design:context-pack"
+        ? ["node", "flutter", "flutter-pub"] : ["node", "root-npm"]);
+    }
+    const plan = planAffectedToolChecks({
+      changedPaths: mixedPaths, manifest: productionManifest,
+      componentGraph: productionGraph, mode,
+    });
+    assert.equal(plan.mode, "affected");
+    const graphPlan = planAffected({changedPaths: mixedPaths, graph: productionGraph, mode});
+    for (const id of [...owners.values(), ...graphPlan.operations.checkIds,
+      ...productionManifest.ciImpact.mandatoryCheckIds]) {
+      assert.ok(plan.toolIds.includes(id), `${mode} omitted ${id}`);
+    }
+    assert.deepEqual(plan.setupRequirements, ["node", "flutter", "flutter-pub", "root-npm"]);
+    assert.ok(plan.toolIds.length < 40, `selected ${plan.toolIds.length} checks`);
+  }
+  // Reproduce the former full-matrix fallback, rather than treating these
+  // generated files as ignored inputs with no executable validation owner.
+  const previousManifest = structuredClone(productionManifest);
+  for (const tool of previousManifest.tools) {
+    if ([...owners.values()].includes(tool.id)) delete tool.impactPaths;
+  }
+  assert.equal(planAffectedToolChecks({
+    changedPaths: mixedPaths, manifest: previousManifest, componentGraph: productionGraph,
+  }).mode, "full");
+  for (const companion of ["design_context_pack/new-input.json", "tool/harness/component_graph.json"]) {
+    assert.equal(planAffectedToolChecks({
+      changedPaths: [...mixedPaths, companion], manifest: productionManifest,
+      componentGraph: productionGraph,
+    }).mode, "full", companion);
+  }
+  assert.equal(planAffectedToolChecks({
+    changedPaths: mixedPaths, manifest: productionManifest,
+    componentGraph: productionGraph, mode: "nightly", full: true,
+  }).mode, "full");
+});
+
 test("l10n usage changes keep the full source view with Node-only setup", () => {
   for (const changedPath of [
     "tool/copy/check_l10n_key_usage.mjs",

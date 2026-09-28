@@ -84,12 +84,18 @@ function OrganizerTaskWorkbench({
     handleAttachCandidate,
     handleCreateOrganizerDraft,
     handleOpenOrganizerDraft,
+    handleRetrySalesLink,
     localDecisions,
     localCuration,
     localOrganizerDrafts,
+    localSalesLinks,
     manualReportAcknowledgements,
     organizerDraftForms,
     organizerDraftInFlight,
+    salesLinkInFlight,
+    selectedMatchByCandidate,
+    setSelectedMatchByCandidate,
+    source,
     publicationPacketByEntity,
     setDecisionNotes,
     setManualReportAcknowledgements,
@@ -242,6 +248,12 @@ function OrganizerTaskWorkbench({
   const candidateDraft = candidate ?
     localOrganizerDrafts[candidate.candidateId] ?? candidate.draftLink :
     undefined;
+  const candidateSalesLink = candidate ?
+    localSalesLinks[candidate.candidateId] : undefined;
+  const selectedMatch = candidate ?
+    selectedMatchByCandidate[candidate.candidateId] ?? "" : "";
+  const candidateSalesPending = candidate ?
+    salesLinkInFlight[candidate.candidateId] === true : false;
   const candidateDraftForm = candidate ?
     organizerDraftForms[candidate.candidateId] ??
       organizerDraftFormFromCandidate(candidate) :
@@ -478,25 +490,50 @@ function OrganizerTaskWorkbench({
             label: row.label,
             tone: candidateHasDuplicateKey ? "danger" as const : "warning" as const,
           })),
-          actions: candidate.existingEntityMatches.length > 0 ? (
+          actions: candidate.existingEntityMatches.length > 0 ? (<>
+            <SelectField label="Reviewed canonical organizer"
+              value={selectedMatch}
+              disabled={Boolean(candidateCuration)}
+              onChange={(value) => setSelectedMatchByCandidate((current) => ({
+                ...current, [candidate.candidateId]: value,
+              }))}
+              options={[{value: "", label: "Choose a matched organizer"},
+                ...candidate.existingEntityMatches.map((match) => ({
+                  value: match.entityId, label: match.entityId,
+                }))]} />
             <AdminButton
-              disabled={candidateInFlight || Boolean(candidateCuration)}
+              disabled={!selectedMatch || candidateInFlight ||
+                candidateSalesPending || Boolean(candidateCuration)}
               loading={candidateInFlight}
               loadingLabel="Attaching"
               variant="primary"
               onClick={() => void handleAttachCandidate(candidate)}
             >
-              {candidateCuration ? "Attach recorded" : "Attach to existing organizer"}
+              {candidateCuration ? "Attach recorded" : "Attach selected organizer"}
             </AdminButton>
-          ) : candidateDraft ? (
-            <AdminButton
-              variant="primary"
-              onClick={() =>
-                handleOpenOrganizerDraft(candidateDraft.organizerId)}
-            >
+            {source !== "sample" && selectedMatch &&
+              !candidateSalesLink ? <AdminButton
+              disabled={candidateSalesPending || candidateInFlight}
+              loading={candidateSalesPending}
+              loadingLabel="Linking Sales"
+              onClick={() => void handleRetrySalesLink(candidate)}>
+              Resume private Sales link
+            </AdminButton> : null}
+            {candidateSalesLink ? <span>Private Sales linked</span> : null}
+          </>) : candidateDraft ? (<>
+            <AdminButton variant="primary" onClick={() =>
+              handleOpenOrganizerDraft(candidateDraft.organizerId)}>
               Open organizer draft
             </AdminButton>
-          ) : (
+            {source !== "sample" && !candidateSalesLink ? <AdminButton
+              disabled={candidateSalesPending}
+              loading={candidateSalesPending}
+              loadingLabel="Linking Sales"
+              onClick={() => void handleRetrySalesLink(candidate)}>
+              Resume private Sales link
+            </AdminButton> : candidateSalesLink ?
+                <span>Private Sales linked</span> : null}
+          </>) : (
             <AdminButton
               disabled={candidateDraftPending || candidateHasDuplicateKey}
               loading={candidateDraftPending}
@@ -508,7 +545,7 @@ function OrganizerTaskWorkbench({
             </AdminButton>
           ),
           actionGate: candidateDraft ?
-            `Draft ${candidateDraft.organizerId} is unclaimed, hidden, noindex, and crawl-disabled.` :
+            `Draft ${candidateDraft.organizerId} is unclaimed, hidden, noindex, and crawl-disabled. ${source === "sample" ? "Sample mode cannot create a live Sales link." : "Sales linking is a separate private step."}` :
             candidateCuration ?
             `Recorded at ${candidateCuration.decisionPath}.` :
             candidate.existingEntityMatches.length > 0 ?

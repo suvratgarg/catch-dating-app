@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "rows": [
+    {
+      "sourceRowId": "scorecard-us-12",
+      "sourceRef": {"sourceId": "prospect-scorecard", "documentId": "synthetic-export", "location": "Sample C!12"},
+      "organizerId": "org-synthetic-river",
+      "cohortIds": ["sample-c"],
+      "marketId": "us-nyc",
+      "workflowIds": ["applications", "ticketing"],
+      "eventTypeIds": ["recurring-community"],
+      "identityKeys": [{"kind": "domain", "value": "river.example"}],
+      "evidenceRefs": [
+        {"evidenceId": "river-id", "sourceRef": {"sourceId": "synthetic-web", "documentId": "river-home", "location": "about"}, "sourceRootId": "river-web", "kind": "identity"},
+        {"evidenceId": "river-rec", "sourceRef": {"sourceId": "synthetic-web", "documentId": "river-calendar", "location": "events"}, "sourceRootId": "river-calendar", "kind": "recurrence"},
+        {"evidenceId": "river-app", "sourceRef": {"sourceId": "synthetic-web", "documentId": "river-form", "location": "apply"}, "sourceRootId": "river-form", "kind": "operating"},
+        {"evidenceId": "river-ticket", "sourceRef": {"sourceId": "synthetic-web", "documentId": "river-tickets", "location": "tickets"}, "sourceRootId": "river-tickets", "kind": "operating"}
+      ],
+      "qualification": {"firstPartyIdentityEvidenceRef": "river-id", "recurrenceEvidenceRef": "river-rec", "operatingSignals": [
+        {"signalId": "applications", "evidenceRef": "river-app"},
+        {"signalId": "ticketing", "evidenceRef": "river-ticket"}
+      ]},
+      "factors": {
+        "fragmentation": {"state": "known", "value": 4, "evidenceRefs": ["river-app", "river-ticket"]},
+        "spend": {"state": "known", "value": 2, "evidenceRefs": ["river-ticket"]},
+        "consolidation": {"state": "known", "value": 3, "evidenceRefs": ["river-app"]},
+        "recurrence": {"state": "known", "value": 5, "evidenceRefs": ["river-rec"]},
+        "complexity": {"state": "known", "value": 3, "evidenceRefs": ["river-app"]},
+        "buyerAccess": {"state": "known", "value": 1, "evidenceRefs": ["river-id"]},
+        "productFit": {"state": "known", "value": 4, "evidenceRefs": ["river-app"]}
+      },
+      "historicalScores": []
+    },
+    {
+      "sourceRowId": "scorecard-sample-a-7",
+      "sourceRef": {"sourceId": "prospect-scorecard", "documentId": "synthetic-export", "location": "Sample A!7"},
+      "candidateId": "candidate-synthetic-hill",
+      "cohortIds": ["sample-a", "sample-b"],
+      "marketId": "in-bengaluru",
+      "workflowIds": ["ticketing"],
+      "eventTypeIds": ["recurring-community"],
+      "identityKeys": [],
+      "evidenceRefs": [
+        {"evidenceId": "hill-rec", "sourceRef": {"sourceId": "synthetic-web", "documentId": "hill-calendar", "location": "events"}, "sourceRootId": "hill-calendar", "kind": "recurrence"}
+      ],
+      "qualification": {"firstPartyIdentityEvidenceRef": null, "recurrenceEvidenceRef": "hill-rec", "operatingSignals": []},
+      "factors": {
+        "fragmentation": {"state": "unknown", "reason": "No reviewed tool-stack evidence"},
+        "spend": {"state": "unknown", "reason": "No reviewed spend evidence"},
+        "consolidation": {"state": "unknown", "reason": "No reviewed replacement need"},
+        "recurrence": {"state": "known", "value": 3, "evidenceRefs": ["hill-rec"]},
+        "complexity": {"state": "unknown", "reason": "No reviewed workflow evidence"},
+        "buyerAccess": {"state": "unknown", "reason": "No reviewed buyer evidence"},
+        "productFit": {"state": "unknown", "reason": "No reviewed fit evidence"}
+      },
+      "historicalScores": [
+        {"modelId": "unknown-example", "modelVersion": "legacy-sheet-unknown", "original": {"total": 43, "unit": "source_sheet_points"}}
+      ]
+    }
+  ]
+}

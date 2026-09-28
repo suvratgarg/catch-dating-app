@@ -10,6 +10,8 @@ export function snapshotOfferPaymentTerms(input: {
   terms: EventPaymentTerms;
   nowMillis: number;
   eventStartsAtMillis: number;
+  /** Server integration opt-in, never a caller-supplied preference. */
+  allowCatchCheckout?: boolean;
 }): OfferPaymentSnapshot {
   const {terms, nowMillis, eventStartsAtMillis} = input;
   if (!Number.isSafeInteger(nowMillis) ||
@@ -56,8 +58,13 @@ export function snapshotOfferPaymentTerms(input: {
     throw new EventPreferenceError("incomplete",
       "Create a recipient-bound request for this person first.");
   case "catchCheckout":
-    throw new EventPreferenceError("incomplete",
-      "Catch checkout needs separate verified activation.");
+    if (!input.allowCatchCheckout || terms.currency !== "INR" ||
+        !Number.isSafeInteger(terms.expectedAmountMinor) ||
+        terms.expectedAmountMinor === null || terms.expectedAmountMinor < 100) {
+      throw new EventPreferenceError("incomplete",
+        "Catch checkout needs a supported amount and verified integration.");
+    }
+    break;
   }
   return {
     eventPaymentRevision: terms.revision,

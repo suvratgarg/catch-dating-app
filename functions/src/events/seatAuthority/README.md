@@ -51,3 +51,39 @@ ambiguous authority fails closed. `applyFirestoreSeat` stages deterministic
 ledger/reservation/receipt writes only after the caller completes its other
 reads. The core does not authorize actor, payment, offer, event timing or
 cohort policy; those remain the integrating callable's responsibility.
+
+
+Checkout holds use `checkoutHeld` separately from confirmed `occupied` seats.
+Missing `checkoutHeld` on older ledgers means zero. `prepareCheckoutHold`
+creates one 15-minute hold for a canonical identity and immutable payment
+attempt. Issuing an offer does not call this operation. Retrying the original
+request never renews the deadline. Ordinary reserve/release, batch imports,
+contact merges and capacity edits cannot overwrite an outstanding hold.
+
+Confirmation converts the owning, unexpired hold into one confirmed seat;
+release only returns its held capacity. Even an expired hold consumes capacity
+until its release transaction completes. The payment integration must reconcile
+expiry and late capture, and atomically apply confirmation with the admission,
+roster and payment receipt. Neither this core nor a browser success callback
+proves payment. The payment worker must keep capture, admission, refund and
+Route settlement as separate states; admission does not release a Route hold.
+The checkout primitive alone does not enable a public checkout endpoint.
+
+Cross Paths uses the same hold engine with a distinct `temporaryHold` owner
+(`crossPathsPair`, immutable hold ID) and a server-computed policy expiry of at
+most 30 minutes. `temporaryHeld` is separate from `checkoutHeld`; missing counts
+mean zero, and `heldSeatCount` validates their combined inventory. General
+capacity checks include both. Hold-owner operations preserve the existing
+checkout receipt hash, and neither kind can replace or consume the other.
+
+Invitation acceptance prepares canonical UID identity and a temporary hold
+under the migration fence, applying both with its invitation/counter writes.
+Free and verified-paid signup convert that exact unexpired hold to occupied;
+ready-mode totals do not add the pair projection a second time. Legacy events
+retain their counter path until reconciliation. Active release returns held
+capacity; cancelling a confirmed pair only changes the pair projection and
+leaves the participant's seat to the normal cancellation owner. Expiry and its
+invitation invalidation commit together. Account deletion releases pair holds
+before retiring identity proof, and transactional deletion guards prevent new
+holds or bookings during cleanup. These source changes do not activate a
+production migration or release gate.

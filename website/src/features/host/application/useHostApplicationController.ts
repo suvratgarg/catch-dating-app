@@ -41,6 +41,9 @@ export function useHostApplicationController() {
   });
   const submissionInFlight =
     useRef<Promise<JoinWaitlistHTTPSuccessResponse> | null>(null);
+  const retrySubmission = useRef<{
+    signature: string; body: JoinWaitlistHTTPRequest;
+  } | null>(null);
   usePendingRequestRegistration(submitMutation.isPending);
 
   const currentStepIndex = hostApplicationSteps.findIndex((item) => item.id === step);
@@ -113,9 +116,7 @@ export function useHostApplicationController() {
       return;
     }
 
-    const eventId = createMarketingEventId("host_lead");
-    const conversionPayload = waitlistAnalyticsPayload(eventId, "host");
-    const body = {
+    const operatingPacket = {
       fullName: draft.fullName.trim(),
       email: draft.email.trim(),
       city: resolvedCity,
@@ -139,8 +140,17 @@ export function useHostApplicationController() {
         hostGoals: draft.hostGoals.trim(),
         operatingNotes: draft.operatingNotes.trim(),
       },
-      ...conversionPayload,
     };
+    const signature = JSON.stringify(operatingPacket);
+    if (retrySubmission.current?.signature !== signature) {
+      const eventId = createMarketingEventId("host_lead");
+      retrySubmission.current = {
+        signature,
+        body: {...operatingPacket, ...waitlistAnalyticsPayload(eventId, "host")},
+      };
+    }
+    const body = retrySubmission.current.body;
+    const eventId = body.analytics?.eventId;
 
     setStatus({message: "", tone: ""});
     trackMarketingEvent("host_application_submit_attempt", {
@@ -154,6 +164,7 @@ export function useHostApplicationController() {
     submissionInFlight.current = request;
     try {
       const data = await request;
+      retrySubmission.current = null;
       setSubmitted(true);
       setStatus({
         message: data.alreadyJoined

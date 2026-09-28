@@ -1,125 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {bootstrapEventSeatLedger} from "./seatMigrationStore";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {advanceEventSeatLedgerMigration, PagedSeatBootstrapDeps,
+  readSeatMigrationWriterFence}
+  from "./seatMigrationPaged";
 
-type Row = Record<string, unknown>;
-class Ref {
-  constructor(readonly path: string,
-    private readonly rows: Map<string, Row>) {}
-  async get() {
-    const value = this.rows.get(this.path);
-    return {exists: value !== undefined, data: () => value};
-  }
-}
-class Query {
-  constructor(readonly collectionPath: string,
-    private readonly rows: Map<string, Row>,
-    readonly filters: Array<[string, unknown]> = [],
-    readonly after: string | null = null,
-    readonly max = Infinity) {}
-  doc(id: string) {
-    return new Ref(`${this.collectionPath}/${id}`,
-      this.rows);
-  }
-  where(field: string, op: string, value: unknown) {
-    assert.equal(op, "==");
-    return new Query(this.collectionPath, this.rows, [...this.filters,
-      [field, value]], this.after, this.max);
-  }
-  orderBy(_field: unknown) {
-    void _field;
-    return this;
-  }
-  startAfter(id: string) {
-    return new Query(this.collectionPath,
-      this.rows, this.filters, id, this.max);
-  }
-  limit(max: number) {
-    return new Query(this.collectionPath,
-      this.rows, this.filters, this.after, max);
-  }
-}
-class Store {
-  rows = new Map<string, Row>();
-  writes: Array<{kind: string; path: string}> = [];
-  transactionCount = 0;
-  failTransactionNumber: number | null = null;
-  beforeTransaction: (() => void) | null = null;
-  collection(name: string) {
-    return new Query(name, this.rows);
-  }
-  async runTransaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
-    this.transactionCount++;
-    this.beforeTransaction?.();
-    if (this.transactionCount === this.failTransactionNumber) {
-      throw new Error("interrupted transaction");
-    }
-    const pending: Array<() => void> = [];
-    const tx = {
-      get: async (source: Ref | Query) => {
-        assert.equal(pending.length, 0, "reads must precede writes");
-        if (source instanceof Ref) {
-          const value = this.rows.get(source.path);
-          return {exists: value !== undefined, data: () => value};
-        }
-        const docs = [...this.rows.entries()]
-          .filter(([path, row]) => path.startsWith(
-            `${source.collectionPath}/`) &&
-            source.filters.every(([field, expected]) =>
-              row[field] === expected))
-          .sort(([left], [right]) => left.localeCompare(right))
-          .filter(([path]) => source.after === null ||
-            path.split("/").at(-1)! > source.after!)
-          .slice(0, source.max)
-          .map(([path, row]) => ({id: path.split("/").at(-1)!,
-            data: () => row}));
-        return {size: docs.length, docs};
-      },
-      create: (ref: Ref, value: Row) => pending.push(() => {
-        if (this.rows.has(ref.path)) throw new Error("already exists");
-        this.rows.set(ref.path, value);
-        this.writes.push({kind: "create", path: ref.path});
-      }),
-      update: (ref: Ref, value: Row) => pending.push(() => {
-        assert.equal(this.rows.has(ref.path), true);
-        this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
-        this.writes.push({kind: "update", path: ref.path});
-      }),
-      delete: (ref: Ref) => pending.push(() => {
-        this.rows.delete(ref.path);
-        this.writes.push({kind: "delete", path: ref.path});
-      }),
-    };
-    const result = await fn(tx);
-    pending.forEach((write) => write());
-    return result;
-  }
-  db() {
-    return this as unknown as FirebaseFirestore.Firestore;
-  }
-}
-function event(): Row {
-  return {clubId: "org1", organizerId: "org1", name: "Event",
-    startTime: Timestamp.fromMillis(100000), status: "active",
-    publicationState: "private", setupRevision: 1,
-    publicRegistrationEnabled: false, eventCityId: "city1",
-    eventMarketId: "market1", eventLocalDate: "2026-10-21",
-    eventLocalStartTime: "18:00", eventTimezone: "Asia/Kolkata",
-    setupDefaults: {city: {value: {cityId: "city1", marketId: "market1"},
-      source: "event"}, timezone: {value: "Asia/Kolkata", source: "event"},
-    organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)},
-    capacityLimit: 200, bookedCount: 0, checkedInCount: 0,
-    waitlistedCount: 0, cancelledAt: null, cancellationReason: null,
-    genderCounts: {}, cohortCounts: {}, waitlistedCohortCounts: {}};
-}
-function attendee(index: number, phone: string | null = null): Row {
-  return {eventId: "event1", organizerId: "org1", source: "hostImport",
-    status: "registered", linkedUid: null, phoneE164: phone,
-    externalReference: `external-${index}`, sourceRowId: `row-${index}`};
-}
+import {Store, Row, migrationTestEvent as event,
+  migrationTestAttendee as attendee} from
+  "./seatAuthority/migrationTestFixture";
+
 function rosterOrigin(originContactId: string | undefined): Row {
   return {eventId: "event1", organizerId: "org1",
     sourceKind: "hostImport", sourceEntityKind: "eventAttendee",
@@ -410,3 +300,199 @@ test("integrated source writer is blocked while a scan is in progress",
     assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
       "unreconciled");
   });
+
+
+test("outstanding holds block before locking writers", async () => {
+  for (const [collection, value] of [
+    ["eventWaitlistOffers", {status: "active"}],
+    ["eventWaitlistOffers", {status: "accepted"}],
+    ["crossPathsPairHolds", {status: "active"}],
+    ["razorpayPendingOrders", {status: "pending"}],
+    ["payments", {status: "pending"}],
+    ["payments", {status: "completed", signUpFailed: true}],
+    ["publicEventPayments", {status: "checkoutReady"}],
+    ["organizerEventOfferPayments", {status: "captured"}],
+    ["eventSeatReservations", {checkoutHold: {paymentId: "payment1"}}],
+    ["eventWaitlistOffers", {status: "unknown"}],
+  ] as const) {
+    const h = setup();
+    h.store.rows.set(`${collection}/hold1`, {eventId: "event1", ...value});
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(h.store.writes.length, 0);
+  }
+});
+
+test("settled financial history permits roster migration", async () => {
+  const h = setup();
+  for (const [collection, value] of [
+    ["eventWaitlistOffers", {status: "expired"}],
+    ["crossPathsPairHolds", {status: "confirmed",
+      requesterBookingStatus: "confirmed"}],
+    ["razorpayPendingOrders", {status: "failed"}],
+    ["payments", {status: "completed", signUpFailed: false}],
+    ["publicEventPayments", {status: "refunded"}],
+    ["organizerEventOfferPayments", {status: "cancelled"}],
+  ] as const) {
+    h.store.rows.set(`${collection}/old1`, {eventId: "event1", ...value});
+  }
+  assert.equal((await h.bootstrap()).occupied, 1);
+});
+
+test("a new hold during migration prevents activation", async () => {
+  const h = setup();
+  h.store.beforeTransaction = () => {
+    const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+    if (run?.phase === "apply" && run.outputCursor === run.outputCount) {
+      h.store.rows.set("publicEventPayments/late1", {
+        eventId: "event1", status: "checkoutReady"});
+    }
+  };
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+    "locked");
+});
+
+
+test("combined roster reservations may exceed one source bound", async () => {
+  const h = setup(150);
+  h.store.rows.set("events/event1", {...event(), bookedCount: 150,
+    capacityLimit: 400});
+  for (let index = 0; index < 150; index++) {
+    h.store.rows.set(`eventParticipations/edge${index}`, {
+      eventId: "event1", organizerId: "org1", uid: `uid${index}`,
+      status: "signedUp"});
+  }
+  assert.equal((await h.bootstrap()).occupied, 300);
+});
+
+
+test("bounded Host advances never report readiness before all pages finish",
+  async () => {
+    const h = setup(80);
+    let checks = 0;
+    const deps = {...h.deps, authorizeTransaction: async () => {
+      checks++;
+    }};
+    let progress = await advanceEventSeatLedgerMigration({
+      command: h.command, deps, pageBudget: 1});
+    assert.equal(progress.phase, "scan");
+    assert.equal(progress.scannedRows, 0);
+    assert.equal(progress.occupied, null);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+    for (let call = 0; call < 100 && progress.phase !== "complete"; call++) {
+      progress = await advanceEventSeatLedgerMigration({
+        command: h.command, deps, pageBudget: 2});
+    }
+    assert.equal(progress.phase, "complete");
+    assert.equal(progress.occupied, 80);
+    assert.equal(progress.appliedRows, progress.outputRows);
+    assert.equal(checks, h.store.transactionCount);
+  });
+
+test("manager authority is rechecked after interruption and on completion",
+  async () => {
+    const h = setup(40);
+    let authorized = true;
+    const deps = {...h.deps, authorizeTransaction: async () => {
+      if (!authorized) throw new HttpsError("permission-denied", "Revoked");
+    }};
+    await advanceEventSeatLedgerMigration({command: h.command, deps});
+    const writes = h.store.writes.length;
+    authorized = false;
+    await assert.rejects(advanceEventSeatLedgerMigration({
+      command: h.command, deps}), (e) => e instanceof HttpsError &&
+      e.code === "permission-denied");
+    assert.equal(h.store.writes.length, writes);
+    authorized = true;
+    await bootstrapEventSeatLedger({command: h.command, deps});
+    authorized = false;
+    await assert.rejects(advanceEventSeatLedgerMigration({
+      command: h.command, deps}), (e) => e instanceof HttpsError &&
+      e.code === "permission-denied");
+  });
+
+test("invalid Host page budgets fail before migration writes", async () => {
+  const h = setup();
+  for (const pageBudget of [0, 6, 1.5]) {
+    await assert.rejects(advanceEventSeatLedgerMigration({
+      command: h.command, deps: h.deps, pageBudget}), denied);
+  }
+  assert.equal(h.store.writes.length, 0);
+});
+
+
+test("reviewed missing terms commit only with reconciled capacity and receipt",
+  async () => {
+    const h = setup(3);
+    const original = event();
+    delete original.capacityLimit;
+    h.store.rows.set("events/event1", original);
+    const command = {...h.command, reviewedRequestHash: "a".repeat(64)};
+    const deps: PagedSeatBootstrapDeps = {...h.deps,
+      authorizeTransaction: async () => undefined,
+      prepareReviewedEvent: async ({tx, event: source}) => {
+        if (source.setupRevision !== 1) {
+          throw new HttpsError("aborted", "Review changed");
+        }
+        return {patch: {capacityLimit: 10, setupRevision: 2},
+          finish: () => tx.create(h.deps.db.collection("testReceipts")
+            .doc("review1"), {eventId: "event1", appliedRevision: 2})};
+      }};
+    let progress = await advanceEventSeatLedgerMigration({command, deps,
+      pageBudget: 1});
+    assert.equal(h.store.rows.get("events/event1")?.capacityLimit, undefined);
+    assert.equal(h.store.rows.has("testReceipts/review1"), false);
+    for (let i = 0; i < 30 && progress.phase !== "complete"; i++) {
+      progress = await advanceEventSeatLedgerMigration({command, deps});
+    }
+    assert.equal(progress.phase, "complete");
+    assert.equal(progress.occupied, 3);
+    assert.equal(h.store.rows.get("events/event1")?.capacityLimit, 10);
+    assert.equal(h.store.rows.get("events/event1")?.setupRevision, 2);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.capacity, 10);
+    assert.equal(h.store.rows.get("testReceipts/review1")?.appliedRevision, 2);
+    const writes = h.store.writes.length;
+    await advanceEventSeatLedgerMigration({command, deps});
+    assert.equal(h.store.writes.length, writes);
+    await assert.rejects(advanceEventSeatLedgerMigration({deps,
+      command: {...command, reviewedRequestHash: "b".repeat(64)}}), denied);
+  });
+
+test("changed review cannot activate a staged ledger", async () => {
+  const h = setup(3);
+  const command = {...h.command, reviewedRequestHash: "a".repeat(64)};
+  const deps: PagedSeatBootstrapDeps = {...h.deps,
+    authorizeTransaction: async () => undefined,
+    prepareReviewedEvent: async ({event: source}) => {
+      if (source.setupRevision !== 1) {
+        throw new HttpsError("aborted", "Review changed");
+      }
+      return {patch: {capacityLimit: 200, setupRevision: 2}};
+    }};
+  await advanceEventSeatLedgerMigration({command, deps, pageBudget: 1});
+  h.store.rows.set("events/event1", {...event(), setupRevision: 3});
+  await assert.rejects(advanceEventSeatLedgerMigration({command, deps}),
+    (e) => e instanceof HttpsError && e.code === "aborted");
+  assert.equal(h.store.rows.get("events/event1")?.setupRevision, 3);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+});
+
+
+test("progress verifies the final ready fence", async () => {
+  const h = setup();
+  await h.bootstrap();
+  const changeAt = h.store.transactionCount + 2;
+  h.store.beforeTransaction = () => {
+    if (h.store.transactionCount === changeAt) {
+      const fence = h.store.rows.get("eventSeatMigrationFences/event1")!;
+      h.store.rows.set("eventSeatMigrationFences/event1", {
+        ...fence, token: "changed_token"});
+    }
+  };
+  await assert.rejects(advanceEventSeatLedgerMigration({
+    command: h.command, deps: h.deps}), denied);
+});

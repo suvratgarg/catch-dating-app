@@ -1,15 +1,17 @@
+import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
+import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {randomBytes} from "crypto";
+import {isDeepStrictEqual} from "node:util";
+import {publishedEventEditPatch} from "./progressiveSetup/publishedEdit";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
   appCheckCallableOptions,
-  appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import type {
-  PaymentDocument,
   OrganizerDocument,
   EventDocument,
   EventPlanChangeDocument,
@@ -69,7 +71,6 @@ import {
 } from "./eventPayloadNormalization";
 import {
   EventPolicyBundleDocument,
-  eventPolicyFromEvent,
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
@@ -102,15 +103,12 @@ import {
   assertOrganizerEventVenueSource,
   organizerEventVenueDocumentId,
 } from "./organizerEventVenues";
-import {
-  createRazorpayClient,
-  razorpayKeySecret,
-} from "../payments/razorpay";
+import {stageCancelledEventRefunds} from
+  "../payments/legacyRefunds/recovery";
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
-import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
-import {SeatLedger} from "./seatAuthority/seatAuthority";
+import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
 
@@ -132,16 +130,18 @@ interface EventMutationDeps {
       nowTimestamp: () => FirebaseFirestore.Timestamp;
     }
   ) => Promise<void>;
-  refundPayment?: (paymentId: string, amount: number) => Promise<void>;
+  prepareCancellationRefunds?: typeof stageCancelledEventRefunds;
   runtimePublicId?: () => string;
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
 /** Rich legacy edits cannot promote or fill a progressive private event. */
-function assertLegacyMutationTarget(data: unknown): void {
+function assertLegacyMutationTarget(data: unknown,
+  allowPublishedProgressive = false): void {
   if (!data || typeof data !== "object") return;
   const event = data as Record<string, unknown>;
-  if (Object.prototype.hasOwnProperty.call(event, "setupRevision") ||
+  if ((!allowPublishedProgressive &&
+      Object.prototype.hasOwnProperty.call(event, "setupRevision")) ||
       (Object.prototype.hasOwnProperty.call(event, "publicationState") &&
         event.publicationState !== "published")) {
     throw new HttpsError("failed-precondition",
@@ -211,9 +211,7 @@ const defaultDeps: EventMutationDeps = {
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
   refreshOrganizerNextEvent: defaultRefreshOrganizerNextEvent,
-  refundPayment: async (paymentId, amount) => {
-    await createRazorpayClient().payments.refund(paymentId, {amount});
-  },
+  prepareCancellationRefunds: stageCancelledEventRefunds,
   runtimePublicId: () => randomBytes(24).toString("base64url"),
   deleteStoragePaths: deleteMediaStoragePaths,
 };
@@ -465,7 +463,7 @@ export async function updateEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    assertLegacyMutationTarget(eventSnap.data());
+    assertLegacyMutationTarget(eventSnap.data(), true);
 
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     if (event.status === "cancelled") {
@@ -505,22 +503,27 @@ export async function updateEventHandler(
     );
     assertValidMergedRunUpdate(event, data.fields);
     assertValidEventConstraints(data.fields.constraints);
+    let patch = buildUpdateEventPatch(event, data.fields, deps);
+    patch = {...patch, ...publishedEventEditPatch(event,
+      data.expectedSetupRevision, fieldsStartTimeMillis(event, data.fields))};
+    const scheduleChanged = hasScheduleTimeChange(event, data.fields);
+    const policyChanged = hasPolicyChange(event, patch, data.fields,
+      privateAccessSnap.data());
     const hasGuestHistory = activeParticipations.length > 0 ||
       !attendeeSnap.empty || !offerSnap.empty;
-    if (hasScheduleTimeChange(data.fields) && hasGuestHistory) {
+    if (scheduleChanged && hasGuestHistory) {
       throw new HttpsError(
         "failed-precondition",
         "Events with participants or waitlisted users cannot be rescheduled."
       );
     }
-    if (hasPolicyChange(data.fields) && hasGuestHistory) {
+    if (policyChanged && hasGuestHistory) {
       throw new HttpsError(
         "failed-precondition",
         "Events with participants or waitlisted users cannot change policy."
       );
     }
 
-    let patch = buildUpdateEventPatch(event, data.fields, deps);
     patch = {
       ...patch,
       ...eventDiscoveryProjection({
@@ -533,8 +536,8 @@ export async function updateEventHandler(
     const seatState = seatMode === "ready" ?
       await prepareEventMutationLedger(db, tx, data.eventId, event,
         nextEvent) : null;
-    if (seatState && seatState.occupied > 0 &&
-        (hasScheduleTimeChange(data.fields) || hasPolicyChange(data.fields))) {
+    if (seatState && seatState.reserved > 0 &&
+        (scheduleChanged || policyChanged)) {
       throw new HttpsError("failed-precondition",
         "Events with reserved seats cannot change schedule or policy.");
     }
@@ -576,7 +579,7 @@ export async function updateEventHandler(
       planChange = source;
     }
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
-    if (hasScheduleTimeChange(data.fields)) {
+    if (scheduleChanged) {
       await replaceClubScheduleInTransaction(tx, db, {
         clubId: organizerId,
         eventId: data.eventId,
@@ -600,7 +603,7 @@ export async function updateEventHandler(
       after: {...event, ...patch},
       owner: {kind: "event", id: data.eventId},
     });
-    if (hasPolicyChange(data.fields) && nextPolicy) {
+    if (policyChanged && nextPolicy) {
       syncPrivateAccessForPolicyUpdate({
         tx,
         privateAccessRef,
@@ -614,7 +617,7 @@ export async function updateEventHandler(
     }
     updatedEvent = {...event, ...patch};
     affectedClubId = organizerId;
-    shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
+    shouldNotifyParticipants = changedFields.length > 0;
   });
 
   await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
@@ -641,9 +644,8 @@ export async function updateEventHandler(
 /**
  * Cancels an event and notifies signed-up/waitlisted participants.
  *
- * This callable intentionally does not implement refund policy or expose a
- * host UI contract yet. It creates the backend state and notification path so
- * the product policy can be backfilled without client-owned multi-doc writes.
+ * Published progressive events use the same cancellation, roster and refund
+ * path. Minimal private drafts remain on their manager-only lifecycle.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {EventMutationDeps} deps Injectable dependencies for tests.
  * @return {Promise<{cancelled: boolean}>} Whether the event is cancelled.
@@ -663,11 +665,7 @@ export async function cancelEventHandler(
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
-  let cancelledEvent: EventDocument | null = null;
-  let affectedClubId: string | null = null;
-  let shouldNotifyParticipants = false;
-
-  await db.runTransaction(async (tx) => {
+  const committed = await db.runTransaction(async (tx) => {
     const [eventSnap, deletedUserSnap] = await Promise.all([
       tx.get(eventRef),
       tx.get(deletedUserRef),
@@ -676,7 +674,7 @@ export async function cancelEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    assertLegacyMutationTarget(eventSnap.data());
+    assertLegacyMutationTarget(eventSnap.data(), true);
 
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerId = requireOrganizerId(event);
@@ -698,14 +696,14 @@ export async function cancelEventHandler(
     await readSeatMigrationWriterFence({db, tx, eventId: data.eventId});
 
     if (event.status === "cancelled") {
-      cancelledEvent = event;
-      affectedClubId = organizerId;
-      return;
+      return {event, organizerId, notifyParticipants: false};
     }
 
     const cancelledAt = deps.serverTimestamp?.() ??
       admin.firestore.FieldValue.serverTimestamp();
     const cancelledPatch = {
+      ...publishedEventEditPatch(event, event.setupRevision,
+        event.startTime.toMillis()),
       status: "cancelled",
       cancelledAt,
       cancellationReason: data.reason ?? null,
@@ -731,73 +729,31 @@ export async function cancelEventHandler(
         endTimeMillis: requiredEventEndTime(event).toMillis(),
       });
     }
-    cancelledEvent = {
+    return {organizerId, notifyParticipants: true, event: {
       ...event,
-      status: "cancelled",
+      status: "cancelled" as const,
       cancelledAt: event.cancelledAt,
       cancellationReason: data.reason ?? null,
-    };
-    affectedClubId = organizerId;
-    shouldNotifyParticipants = true;
+    }};
   });
 
-  if (cancelledEvent && shouldNotifyParticipants) {
-    await refundCompletedPaymentsForCancelledEvent(db, deps, data.eventId);
-    await notifyEventParticipants({
-      db,
-      deps,
-      eventId: data.eventId,
-      event: cancelledEvent,
-      type: "eventCancelled",
-    });
+  // Replays resume staging even if the first call committed cancellation and
+  // then stopped. The event trigger independently retries the same authority.
+  try {
+    await deps.prepareCancellationRefunds?.({db, eventId: data.eventId});
+  } catch {
+    logger.error("Cancelled event refund staging needs recovery", {
+      eventId: data.eventId});
   }
-  if (affectedClubId) {
-    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
-      firestore: deps.firestore,
-      nowTimestamp: () => admin.firestore.Timestamp.now(),
-    });
+  if (committed.notifyParticipants) {
+    await notifyEventParticipants({db, deps, eventId: data.eventId,
+      event: committed.event, type: "eventCancelled"});
   }
-
+  await deps.refreshOrganizerNextEvent?.(committed.organizerId, {
+    firestore: deps.firestore,
+    nowTimestamp: () => admin.firestore.Timestamp.now(),
+  });
   return {cancelled: true};
-}
-
-/**
- * Refunds completed attendee payments after a host/platform cancellation.
- *
- * Host payout is not modeled as a remitted transfer in this codebase yet; the
- * important invariant here is that attendee money is returned before any future
- * host-settlement process can consider the event payable.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {EventMutationDeps} deps Injectable dependencies.
- * @param {string} eventId Cancelled event id.
- */
-async function refundCompletedPaymentsForCancelledEvent(
-  db: FirebaseFirestore.Firestore,
-  deps: EventMutationDeps,
-  eventId: string
-) {
-  const payments = await db
-    .collection("payments")
-    .where("eventId", "==", eventId)
-    .where("status", "==", "completed")
-    .get();
-
-  await Promise.all(payments.docs.map(async (paymentDoc) => {
-    const payment = requireDoc<PaymentDocument>(
-      paymentDoc,
-      "PaymentDocument"
-    );
-    try {
-      await deps.refundPayment?.(payment.paymentId, payment.amount);
-      await paymentDoc.ref.update({status: "refunded"});
-    } catch (error) {
-      logger.error("Host cancellation refund failed", {
-        eventId,
-        paymentId: payment.paymentId,
-        error,
-      });
-    }
-  }));
 }
 
 /**
@@ -912,53 +868,6 @@ export async function deleteEventHandler(
   return {deleted: true};
 }
 
-/** Keep permitted event policy edits atomic with their capacity authority. */
-async function prepareEventMutationLedger(
-  db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction,
-  eventId: string,
-  before: EventDocument,
-  after: EventDocument
-): Promise<{update: SeatLedger | null; occupied: number}> {
-  const snap = await tx.get(db.collection("eventSeatLedgers").doc(eventId));
-  const ledger = snap.data() as SeatLedger | undefined;
-  let previous;
-  let next;
-  try {
-    previous = deriveEventSeatPolicy(before);
-    next = deriveEventSeatPolicy(after);
-  } catch {
-    throw new HttpsError("failed-precondition",
-      "Invalid seat capacity policy.");
-  }
-  if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
-      ledger.capacity !== previous.capacity ||
-      ledger.policyHash !== previous.policyHash ||
-      ledger.policyVersion !== previous.policyVersion ||
-      !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
-      ledger.occupied > ledger.capacity ||
-      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
-      ledger.revision >= Number.MAX_SAFE_INTEGER ||
-      !Number.isSafeInteger(ledger.capacityRevision) ||
-      ledger.capacityRevision < 1 ||
-      ledger.capacityRevision >= Number.MAX_SAFE_INTEGER ||
-      !Number.isSafeInteger(ledger.migrationRevision) ||
-      ledger.migrationRevision < 1 || next.capacity < ledger.occupied) {
-    throw new HttpsError("failed-precondition",
-      "Seat capacity needs reconciliation before this edit.");
-  }
-  if (previous.policyHash === next.policyHash) {
-    return {update: null, occupied: ledger.occupied};
-  }
-  if (ledger.occupied > 0) {
-    throw new HttpsError("failed-precondition",
-      "Events with reserved seats cannot change admission policy.");
-  }
-  return {occupied: ledger.occupied, update: {...ledger,
-    capacity: next.capacity, policyHash: next.policyHash,
-    policyVersion: next.policyVersion, revision: ledger.revision + 1,
-    capacityRevision: ledger.capacityRevision + 1}};
-}
 
 async function cleanupRemovedEventMedia(
   deps: EventMutationDeps,
@@ -1748,7 +1657,24 @@ function buildUpdateEventPatch(
     patch.eventFormat = normalizeEventFormat(fields.eventFormat);
   }
   if (fields.publicRegistrationEnabled !== undefined) {
+    if (event.publicRegistrationMode === "paid" &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      throw new HttpsError("failed-precondition",
+        "Use event registration settings to change paid registration.");
+    }
     patch.publicRegistrationEnabled = fields.publicRegistrationEnabled;
+    if (event.publicRegistrationMode !== undefined &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      const revision = event.publicRegistrationRevision ?? 0;
+      if (!Number.isSafeInteger(revision) ||
+          revision >= Number.MAX_SAFE_INTEGER) {
+        throw new HttpsError("failed-precondition",
+          "Invalid registration revision.");
+      }
+      patch.publicRegistrationMode = fields.publicRegistrationEnabled ?
+        "free" : "closed";
+      patch.publicRegistrationRevision = revision + 1;
+    }
   }
   if (fields.constraints !== undefined) {
     patch.constraints = normalizeConstraints(fields.constraints);
@@ -1790,26 +1716,6 @@ function primaryPhotoUrl(
 }
 
 /**
- * Returns true when an update changes when/where participants show up.
- * @param {object} fields Host update fields.
- * @return {boolean} Whether participants should be notified.
- */
-function hasScheduleOrLocationChange(
-  fields: EventHostUpdateFields
-): boolean {
-  return fields.startTimeMillis !== undefined ||
-    fields.endTimeMillis !== undefined ||
-    fields.name !== undefined ||
-    fields.itinerary !== undefined ||
-    fields.eventFormat !== undefined ||
-    fields.meetingLocation !== undefined ||
-    fields.meetingPoint !== undefined ||
-    fields.startingPointLat !== undefined ||
-    fields.startingPointLng !== undefined ||
-    fields.locationDetails !== undefined;
-}
-
-/**
  * Returns true when an update touches legacy where fields.
  * @param {object} fields Host update fields.
  * @return {boolean} Whether legacy location fields are present.
@@ -1823,27 +1729,37 @@ function hasLegacyLocationChange(fields: EventHostUpdateFields): boolean {
 
 /**
  * Returns true when the event's time window changes, not merely its location.
+ * @param {EventDocument} event Current event.
  * @param {object} fields Host update fields.
  * @return {boolean} Whether time locks must be replaced.
  */
-function hasScheduleTimeChange(
+function hasScheduleTimeChange(event: EventDocument,
   fields: EventHostUpdateFields
 ): boolean {
-  return fields.startTimeMillis !== undefined ||
-    fields.endTimeMillis !== undefined;
+  return (fields.startTimeMillis !== undefined &&
+      fields.startTimeMillis !== event.startTime.toMillis()) ||
+    (fields.endTimeMillis !== undefined &&
+      fields.endTimeMillis !== requiredEventEndTime(event).toMillis());
 }
 
 /**
- * Returns true when an update touches booking policy or private invite state.
+ * Returns true when an update changes booking policy or private invite state.
+ * @param {EventDocument} event Current event.
+ * @param {object} patch Normalized update.
  * @param {object} fields Host update fields.
+ * @param {object | undefined} privateAccess Current invite settings.
  * @return {boolean} Whether participant-free policy guards should run.
  */
-function hasPolicyChange(fields: EventHostUpdateFields): boolean {
-  return fields.capacityLimit !== undefined ||
-    fields.priceInPaise !== undefined ||
-    fields.constraints !== undefined ||
-    fields.eventPolicy !== undefined ||
-    fields.privateAccess !== undefined;
+function hasPolicyChange(event: EventDocument, patch: Partial<EventDocument>,
+  fields: EventHostUpdateFields, privateAccess: FirebaseFirestore.DocumentData |
+  undefined): boolean {
+  const keys = ["capacityLimit", "priceInPaise", "constraints",
+    "eventPolicy"] as const;
+  return keys.some((key) => patch[key] !== undefined &&
+    !isDeepStrictEqual(patch[key], event[key])) ||
+    (fields.privateAccess !== undefined &&
+      normalizeInviteCode(fields.privateAccess.inviteCode) !==
+        normalizeInviteCode(privateAccess?.inviteCode));
 }
 
 /**
@@ -2119,22 +2035,8 @@ function assertStandalonePublicRegistrationPolicy(
       event.constraints,
     eventPolicy: fields.eventPolicy ?? event.eventPolicy,
   };
-  const policy = eventPolicyFromEvent(mergedEvent);
-  if (policy.pricing.basePriceInPaise > 0) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Disable website OTP registration before making this a paid event."
-    );
-  }
-  if (policy.admission.format !== "open" ||
-      policy.admission.inviteRequired === true ||
-      policy.admission.membershipRequired === true ||
-      policy.admission.manualApprovalRequired === true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website OTP registration currently supports open-admission events."
-    );
-  }
+  assertPublicRegistrationTerms(mergedEvent,
+    event.publicRegistrationMode === "paid" ? "paid" : "free");
 }
 
 /**
@@ -2321,25 +2223,15 @@ function newClubEventNotificationCopy(
   clubName: string,
   event: EventDocument
 ): {title: string; body: string} {
+  const distance = eventDistanceLabel(event);
   return {
     title: `${clubName} posted an event`,
     body:
-      typeof event.distanceKm === "number" ?
-        `${formatDistance(event.distanceKm)} from ` +
+      distance ?
+        `${distance} from ` +
         `${eventLocationName(event)}.` :
-        `An event at ${eventLocationName(event)}.`,
+        `${eventTitleLabel(event)} at ${eventLocationName(event)}.`,
   };
-}
-
-/**
- * Formats a distance without noisy trailing decimals.
- * @param {number} distanceKm Distance in kilometres.
- * @return {string} Human-readable distance.
- */
-function formatDistance(distanceKm: number): string {
-  return Number.isInteger(distanceKm) ?
-    `${distanceKm} km` :
-    `${distanceKm.toFixed(1)} km`;
 }
 
 export const createEvent = onCall(
@@ -2351,7 +2243,7 @@ export const updateEvent = onCall(
   (request) => updateEventHandler(request)
 );
 export const cancelEvent = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
+  appCheckCallableOptions,
   (request) => cancelEventHandler(request)
 );
 export const deleteEvent = onCall(

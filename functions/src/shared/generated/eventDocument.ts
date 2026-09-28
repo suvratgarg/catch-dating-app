@@ -434,4 +434,16 @@ export type EventDocument = {
   eventLocalStartTime?: string;
   eventTimezone?: string;
   setupDefaults?: EventSetupDefaults;
+  /**
+   * Explicit registration capability. Older enabled events without this field support free OTP registration only.
+   */
+  publicRegistrationMode?: "closed" | "free" | "paid";
+  publicRegistrationRevision?: number;
+  /**
+   * First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.
+   */
+  firstPublishedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 };

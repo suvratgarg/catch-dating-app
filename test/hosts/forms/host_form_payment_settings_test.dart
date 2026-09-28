@@ -64,6 +64,71 @@ void main() {
     );
   }
 
+  for (final ready in [false, true]) {
+    testWidgets(
+      'Catch collection works independently of OAuth readiness $ready',
+      (tester) async {
+        HostFormPayment? saved;
+        await _pump(
+          tester,
+          textScale: 2,
+          child: HostFormPaymentSetupSection(
+            state: HostFormPaymentSetupState(
+              setup: HostFormPaymentSetup(
+                available: false,
+                connections: const [],
+                collection: HostFormPaymentCollection(
+                  route: HostFormCollectionRoute.razorpayRoute,
+                  mode: HostFormPaymentMode.test,
+                  ready: ready,
+                ),
+              ),
+            ),
+            definition:
+                HostFormDefinition.fromMap(const {
+                  'identityPolicy': 'phoneVerified',
+                }).withPayment(
+                  const HostFormPayment(
+                    connectionId: null,
+                    amountPaise: 12550,
+                    description: 'Application fee',
+                    refundPolicy: 'Refunded if declined.',
+                  ),
+                ),
+            onChanged: (value) => saved = value,
+            onConnect: () => fail('Route must not require OAuth'),
+            onRefresh: () {},
+            onDisconnect: (_) {},
+          ),
+        );
+        expect(find.text('Catch collects payments'), findsOneWidget);
+        expect(
+          find.textContaining('Catch must finish its Razorpay'),
+          findsNothing,
+        );
+        final action = find.byWidgetPredicate(
+          (w) => w is CatchField && w.title == 'Edit submission fee',
+        );
+        final field = tester.widget<CatchField>(action);
+        expect(field.onTap, ready ? isNotNull : isNull);
+        _readable(tester);
+        await _capture(tester, 'catch-collection-$ready-large-light');
+        if (ready) {
+          field.onTap!();
+          await pumpFeatureUi(tester);
+          _readable(tester);
+          await _capture(tester, 'catch-fee-large-light');
+          await tester.ensureVisible(find.text('Save fee'));
+          await pumpFeatureUi(tester);
+          await tester.tap(find.text('Save fee'));
+          await pumpFeatureUi(tester);
+          expect(saved?.connectionId, isNull);
+          expect(saved?.amountPaise, 12550);
+        }
+      },
+    );
+  }
+
   testWidgets(
     'unverified identity cannot configure even with a ready merchant',
     (tester) async {

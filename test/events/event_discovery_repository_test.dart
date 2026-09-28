@@ -84,8 +84,7 @@ void main() {
           eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.yoga),
           bookedCount: 20,
         );
-        // A legacy public event has no publication marker until backfill.
-        await _seedDiscoverableEvent(firestore, matchingEvent, legacy: true);
+        await _seedDiscoverableEvent(firestore, matchingEvent);
         await _seedDiscoverableEvent(firestore, farEvent);
         await _seedDiscoverableEvent(
           firestore,
@@ -115,6 +114,37 @@ void main() {
         expect(events.map((event) => event.id), ['event-matching']);
       },
     );
+
+    test('publication filter precedes decoding and pagination', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = EventDiscoveryRepository(firestore);
+      final now = DateTime(2030);
+      final published = buildEvent(
+        id: 'published',
+        startTime: now.add(const Duration(days: 2)),
+      );
+      final legacy = buildEvent(
+        id: 'legacy',
+        startTime: now.add(const Duration(days: 1)),
+      );
+      await _seedDiscoverableEvent(firestore, published);
+      await _seedDiscoverableEvent(firestore, legacy, legacy: true);
+      final privateData =
+          (await firestore.collection('events').doc(legacy.id).get()).data()!;
+      privateData['publicationState'] = 'private';
+      privateData.remove('endTime');
+      privateData.remove('meetingLocation');
+      await firestore.collection('events').doc('private').set(privateData);
+      final page = await repository.fetchDiscoverableEventsPage(
+        EventDiscoveryQuery.forCity(
+          marketId: 'in-mh-mumbai',
+          startAt: now,
+          limit: 1,
+        ),
+      );
+      expect(page.items.map((event) => event.id), ['published']);
+      expect(page.hasMore, isFalse);
+    });
 
     test('excludes synthetic events from public discovery', () async {
       final firestore = FakeFirebaseFirestore();
@@ -264,35 +294,30 @@ void main() {
       expect(second.hasMore, isFalse);
     });
 
-    test(
-      'legacy event retains the first discovery cursor slot before backfill',
-      () async {
-        final firestore = FakeFirebaseFirestore();
-        final repository = EventDiscoveryRepository(firestore);
-        final now = DateTime(2026, 5, 26, 10);
-        final legacy = buildEvent(
-          id: 'legacy-first',
-          startTime: now.add(const Duration(hours: 1)),
-        );
-        final public = buildEvent(
-          id: 'published-second',
-          startTime: now.add(const Duration(hours: 2)),
-        );
-        await _seedDiscoverableEvent(firestore, legacy, legacy: true);
-        await _seedDiscoverableEvent(firestore, public);
-        final query = EventDiscoveryQuery.forCity(
-          marketId: 'in-mh-mumbai', startAt: now, limit: 1,
-        );
-        final first = await repository.fetchDiscoverableEventsPage(query);
-        final second = await repository.fetchDiscoverableEventsPage(
-          query, startAfter: first.nextCursor,
-        );
-        expect(first.items.map((event) => event.id), ['legacy-first']);
-        expect(first.hasMore, isTrue);
-        expect(second.items.map((event) => event.id), ['published-second']);
-        expect(second.hasMore, isFalse);
-      },
-    );
+    test('unlabelled events do not consume discovery cursor slots', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = EventDiscoveryRepository(firestore);
+      final now = DateTime(2026, 5, 26, 10);
+      final legacy = buildEvent(
+        id: 'legacy-first',
+        startTime: now.add(const Duration(hours: 1)),
+      );
+      final public = buildEvent(
+        id: 'published-second',
+        startTime: now.add(const Duration(hours: 2)),
+      );
+      await _seedDiscoverableEvent(firestore, legacy, legacy: true);
+      await _seedDiscoverableEvent(firestore, public);
+      final query = EventDiscoveryQuery.forCity(
+        marketId: 'in-mh-mumbai',
+        startAt: now,
+        limit: 1,
+      );
+      final first = await repository.fetchDiscoverableEventsPage(query);
+      expect(first.items.map((event) => event.id), ['published-second']);
+      expect(first.hasMore, isFalse);
+      expect(first.nextCursor, isNull);
+    });
   });
 }
 

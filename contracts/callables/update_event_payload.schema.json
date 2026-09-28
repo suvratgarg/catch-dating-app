@@ -8,6 +8,10 @@
   "required": ["eventId", "fields"],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedSetupRevision": {
+      "type": "integer", "minimum": 1, "maximum": 2147483647,
+      "description": "Required for published progressive events; rejects stale Host edits."
+    },
     "fields": {
       "type": "object",
       "additionalProperties": false,

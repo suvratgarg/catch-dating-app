@@ -29,6 +29,64 @@ Widget _wrapPhoneSized(Widget child) {
 
 void main() {
   group('PaymentHistoryScreen', () {
+    for (final item in [
+      (PaymentCancellationRefundState.pending, 25000, 0, 'Refund pending'),
+      (
+        PaymentCancellationRefundState.complete,
+        12500,
+        12500,
+        'Partially refunded',
+      ),
+      (PaymentCancellationRefundState.complete, 0, 0, 'Booking cancelled'),
+      (
+        PaymentCancellationRefundState.reviewRequired,
+        25000,
+        0,
+        'Refund needs review',
+      ),
+    ]) {
+      testWidgets('renders cancellation state ${item.$4}', (tester) async {
+        if (item.$1 == PaymentCancellationRefundState.reviewRequired) {
+          tester.view.physicalSize = const Size(390, 844);
+          tester.view.devicePixelRatio = 1;
+          tester.platformDispatcher.textScaleFactorTestValue = 2;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        }
+
+        final payment =
+            _payment(
+              id: 'pay-cancelled',
+              orderId: 'order-1',
+              eventId: 'event-1',
+              status: PaymentStatus.completed,
+              createdAt: DateTime(2026, 5),
+            ).copyWith(
+              cancellationRefund: PaymentCancellationRefund(
+                state: item.$1,
+                targetAmountMinor: item.$2,
+                confirmedAmountMinor: item.$3,
+              ),
+            );
+        await _pumpPaymentHistory(
+          tester,
+          payments: [payment],
+          events: {'event-1': buildEvent()},
+        );
+        expect(find.text(item.$4), findsOneWidget);
+        expect(find.text('Paid'), findsNothing);
+        expect(tester.takeException(), isNull);
+        if (item.$1 == PaymentCancellationRefundState.reviewRequired) {
+          await tester.tap(
+            find.byKey(PaymentHistoryKeys.paymentTile('pay-cancelled')),
+          );
+          await _pumpPaymentSheet(tester);
+          expect(tester.takeException(), isNull);
+        }
+      });
+    }
+
     testWidgets('shows booking failure details for sign-up failures', (
       tester,
     ) async {

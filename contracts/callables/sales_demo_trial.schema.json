@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sales_demo_trial.schema.json",
+  "title": "SalesDemoTrialCallablePayloads",
+  "description": "Union of explicit start, exact session read, and bounded synthetic action requests. Auth and App Check are required for every variant.",
+  "anyOf": [{"$ref": "#/definitions/start"}, {"$ref": "#/definitions/get"}, {"$ref": "#/definitions/advance"}],
+  "definitions": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"},
+    "grantToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "start": {"type": "object", "additionalProperties": false, "required": ["invitationId", "grantToken", "requestId"], "properties": {
+      "invitationId": {"$ref": "#/definitions/id"},
+      "grantToken": {"$ref": "#/definitions/grantToken"},
+      "requestId": {"$ref": "#/definitions/requestId"}
+    }},
+    "get": {"type": "object", "additionalProperties": false, "required": ["sessionId", "grantToken"], "properties": {
+      "sessionId": {"$ref": "#/definitions/id"},
+      "grantToken": {"$ref": "#/definitions/grantToken"}
+    }},
+    "advance": {"type": "object", "additionalProperties": false, "required": ["sessionId", "grantToken", "requestId", "expectedRevision", "action"], "properties": {
+      "sessionId": {"$ref": "#/definitions/id"},
+      "grantToken": {"$ref": "#/definitions/grantToken"},
+      "requestId": {"$ref": "#/definitions/requestId"},
+      "expectedRevision": {"type": "integer", "minimum": 1, "maximum": 1000000},
+      "action": {"enum": ["reviewApplication", "prepareReply", "admitGuest", "requestAssistance"]},
+      "choice": {"enum": ["approve", "needs_info", "welcome", "clarify"]}
+    }}
+  },
+  "x-callables": ["startSalesDemo", "getSalesDemoSession", "advanceSalesDemo"]
+}

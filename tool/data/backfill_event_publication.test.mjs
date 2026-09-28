@@ -7,6 +7,11 @@ import {applyEventPublication, classifyEventPublication, parsePublicationArgs,
 const fixture = JSON.parse(readFileSync(new URL(
   "../../contracts/fixtures/valid/event_doc.json", import.meta.url), "utf8"));
 const event = (patch = {}) => ({...structuredClone(fixture), ...patch});
+const historicalLocationEvent = (patch = {}) => {
+  const source = event(patch);
+  delete source.meetingLocation;
+  return source;
+};
 
 function database(values) {
   const rows = new Map(values.map(([id, data]) => [id, {data, version: 1}]));
@@ -46,6 +51,48 @@ test("legacy migration validates the complete canonical document and tenant", ()
     {startTime: null}, {capacityLimit: undefined}, {unknownField: true}]) {
     assert.equal(classifyEventPublication(event(patch)).action, "blocked");
   }
+});
+
+test("only the exact historical missing-location signature is publishable", () => {
+  const missing = classifyEventPublication(historicalLocationEvent());
+  assert.equal(missing.action, "publish");
+  assert.equal(missing.reason, "legacy_public_event_location_drift");
+  assert.ok(missing.validationIssues.includes("/meetingLocation:required"));
+
+  const nullLocation = classifyEventPublication(historicalLocationEvent({
+    startingPointLat: null, startingPointLng: null, discoveryGeoCell: null,
+  }));
+  assert.equal(nullLocation.action, "publish");
+  assert.equal(nullLocation.reason, "legacy_public_event_location_drift");
+  for (const patch of [
+    {startingPointLat: "north"}, {startingPointLat: 999},
+    {startingPointLng: "east"}, {discoveryGeoCell: 42},
+    {unknownField: true}, {capacityLimit: undefined},
+    {organizerId: "foreign"}, {setupRevision: 1},
+    {publicRegistrationEnabled: false},
+  ]) {
+    assert.equal(classifyEventPublication(historicalLocationEvent(patch)).action,
+      "blocked", JSON.stringify(patch));
+  }
+});
+
+test("historical location apply writes only publication and rejects stale source", async () => {
+  const source = historicalLocationEvent({startingPointLat: null,
+    startingPointLng: null, discoveryGeoCell: null});
+  const db = database([["legacy", source]]);
+  const plan = await planEventPublication(db, {projectId: "demo"});
+  assert.equal(plan.records[0].reason, "legacy_public_event_location_drift");
+  db.rows.get("legacy").version++;
+  await assert.rejects(applyEventPublication(db, plan,
+    {projectId: "demo", expectedDigest: plan.digest}), /changed/);
+  assert.deepEqual(db.writes, []);
+
+  const fresh = await planEventPublication(db, {projectId: "demo"});
+  await applyEventPublication(db, fresh, {projectId: "demo",
+    expectedDigest: fresh.digest});
+  assert.deepEqual(db.writes, [["legacy", {publicationState: "published"}]]);
+  assert.deepEqual(db.rows.get("legacy").data,
+    {...source, publicationState: "published"});
 });
 
 test("private and published records are untouched; malformed setup never becomes public", () => {
@@ -158,4 +205,23 @@ test("CLI is explicit-target and dry-run by default, rejects incomplete apply", 
     ["--project", "demo", "--max-events", "2.5"]]) {
     assert.throws(() => parsePublicationArgs(args));
   }
+});
+
+
+test("blocked legacy diagnostics expose invalid paths without source values", () => {
+  const result = classifyEventPublication(event({startTime: null,
+    meetingPoint: "private source text"}));
+  assert.equal(result.action, "blocked");
+  assert.ok(result.validationIssues.some((issue) => issue.startsWith("/startTime:")));
+  assert.ok(!JSON.stringify(result).includes("private source text"));
+});
+
+
+test("missing-field diagnostics name the schema field without values", () => {
+  const source = event({meetingPoint: "private source text"});
+  delete source.capacityLimit;
+  const result = classifyEventPublication(source);
+  assert.equal(result.action, "blocked");
+  assert.ok(result.validationIssues.includes("/capacityLimit:required"));
+  assert.ok(!JSON.stringify(result).includes("private source text"));
 });

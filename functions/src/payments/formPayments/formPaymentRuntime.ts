@@ -12,15 +12,16 @@ export function formPaymentsConfigured(): boolean {
   return formRazorpayPartnerConfigVersion.value().trim().length > 0;
 }
 
-export async function formPaymentRuntime() {
+export async function formPaymentRuntime(configurationVersion =
+formRazorpayPartnerConfigVersion.value().trim()) {
   const projectId = admin.app().options.projectId ??
     process.env.GCLOUD_PROJECT ?? process.env.GOOGLE_CLOUD_PROJECT ?? "";
   config ??= new FormPaymentRuntimeConfig(projectId);
-  const runtime = await config.load(
-    formRazorpayPartnerConfigVersion.value().trim());
+  const runtime = await config.load(configurationVersion);
   const db = admin.firestore();
   const credentials = new FormPaymentCredentials({...runtime, db});
   const processor = new FormPaymentProcessor({...runtime, db, credentials});
   const connections = new OrganizerRazorpayConnectionService({...runtime, db});
-  return {...runtime, db, credentials, processor, connections};
+  return {...runtime, configurationVersion,
+    db, credentials, processor, connections};
 }

@@ -38,9 +38,26 @@ abstract class Payment with _$Payment {
     @JsonKey(unknownEnumValue: PaymentStatus.failed)
     required PaymentStatus status,
     @Default(false) bool signUpFailed,
+    PaymentCancellationRefund? cancellationRefund,
     @TimestampConverter() required DateTime createdAt,
   }) = _Payment;
 
   factory Payment.fromJson(Map<String, dynamic> json) =>
       _$PaymentFromJson(json);
+}
+
+enum PaymentCancellationRefundState { pending, complete, reviewRequired }
+
+/// Customer-visible projection of the server-owned cancellation intent.
+@freezed
+abstract class PaymentCancellationRefund with _$PaymentCancellationRefund {
+  const factory PaymentCancellationRefund({
+    @JsonKey(unknownEnumValue: PaymentCancellationRefundState.reviewRequired)
+    required PaymentCancellationRefundState state,
+    required int targetAmountMinor,
+    required int confirmedAmountMinor,
+  }) = _PaymentCancellationRefund;
+
+  factory PaymentCancellationRefund.fromJson(Map<String, dynamic> json) =>
+      _$PaymentCancellationRefundFromJson(json);
 }

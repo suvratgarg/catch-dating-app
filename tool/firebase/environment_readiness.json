@@ -500,6 +500,39 @@
       "sourcePaths": [
         "functions/src/programRsvp/householdRsvp.ts"
       ]
+    },
+    {
+      "id": "functions.secret.sales-demo-grant-key",
+      "kind": "secret-version",
+      "name": "SALES_DEMO_GRANT_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:startSalesDemo",
+          "functions:getSalesDemoSession",
+          "functions:advanceSalesDemo",
+          "functions:getSalesDemoSetup",
+          "functions:prepareSalesDemoFormDraft",
+          "functions:adminSaveSalesDemoBlueprint",
+          "functions:adminReviewSalesDemoBlueprint",
+          "functions:adminWithdrawSalesDemoBlueprint",
+          "functions:adminIssueSalesDemoInvitation",
+          "functions:adminRevokeSalesDemoInvitation",
+          "functions:adminGetSalesDemoBlueprint",
+          "functions:adminGetSalesDemoInvitation"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "sales-demo",
+      "sourcePaths": [
+        "functions/src/salesDemo/callables.ts"
+      ]
     }
   ]
 }

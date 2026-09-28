@@ -312,6 +312,8 @@ function organizerCandidateFromWorkItem(
       "workItemId" | "draftLink"
     >),
     workItemId: item.workItemId,
+    workItemRevision: item.revision,
+    candidateHash: item.candidateHash,
     fieldProvenance: item.fieldProvenance,
     ...(draftLink ? {draftLink} : {}),
   }];

@@ -340,7 +340,7 @@ function paymentSnapshotFor(input: {paymentTerms: EventPaymentTerms;
     }
     try {
       snapshot = snapshotOfferPaymentTerms({terms, nowMillis,
-        eventStartsAtMillis});
+        eventStartsAtMillis, allowCatchCheckout: true});
     } catch {
       return fail("conflict", "Event payment terms are not ready for offers.");
     }
@@ -458,6 +458,10 @@ export async function prepareEventOfferHandoff(params: {
   contactId: string;
   expectedOfferRevision: number;
   expectedGeneration: number;
+  issueInvitation?: (input: {organizerId: string; eventId: string;
+    offerId: string; responseId: string; actorUid: string;
+    expectedOfferGeneration: number; expectedOfferRevision: number}) =>
+    Promise<string>;
 }): Promise<PreparedOfferHandoff> {
   const {organizerId, eventId, contactId, actor,
     expectedOfferRevision, expectedGeneration} = params;
@@ -468,7 +472,7 @@ export async function prepareEventOfferHandoff(params: {
       expectedGeneration < 1) {
     fail("invalid", "Invalid offer handoff request.");
   }
-  return params.repository.transaction(async (tx) => {
+  const prepared = await params.repository.transaction(async (tx) => {
     if (!await tx.managerAuthorized(organizerId, actor.uid)) {
       fail("denied", "Current organizer manager authority is required.");
     }
@@ -491,7 +495,7 @@ export async function prepareEventOfferHandoff(params: {
         snapshot.personalPaymentLink !== offer.organizerPaymentLink) {
       fail("conflict", "Stored offer payment snapshot changed.");
     }
-    return prepareOfferHandoff({offer: {offerId, eventId, contactId,
+    const reviewed: ReviewedOfferHandoff = {offer: {offerId, eventId, contactId,
       status: offer.status, expiresAtMillis: offer.expiresAtMillis,
       organizerPaymentLink: snapshot.collectionMode === "reusablePage" ?
         snapshot.reusablePaymentPageUrl : snapshot.personalPaymentLink,
@@ -513,8 +517,23 @@ export async function prepareEventOfferHandoff(params: {
       paymentInstructions: snapshot.paymentInstructions,
       eventPaymentHash: snapshot.eventPaymentHash},
     messageTemplate: snapshot.messageTemplate,
-    nowMillis: tx.nowMillis()});
+    nowMillis: tx.nowMillis()};
+    return {reviewed, sourceResponseId: context.sourceResponseId};
   });
+  const {reviewed, sourceResponseId} = prepared;
+  if (reviewed.payment.collectionMode !== "catchCheckout" ||
+      !params.issueInvitation) return prepareOfferHandoff(reviewed);
+  // Validate communication/template eligibility before creating a grant. This
+  // syntactic placeholder is never returned or stored. Issuance then rereads
+  // current manager, offer revision, source and phone in its own transaction.
+  const candidate = prepareOfferHandoff({...reviewed,
+    recipientCheckoutUrl: `https://catchdates.com/offer#${"A".repeat(43)}`});
+  if (candidate.kind === "blocked") return candidate;
+  const recipientCheckoutUrl = await params.issueInvitation({organizerId,
+    eventId, offerId: reviewed.offer.offerId, responseId: sourceResponseId,
+    actorUid: actor.uid, expectedOfferGeneration: expectedGeneration,
+    expectedOfferRevision});
+  return prepareOfferHandoff({...reviewed, recipientCheckoutUrl});
 }
 
 function audit(tx: OfferTransaction, actor: OfferActor,

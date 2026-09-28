@@ -6,6 +6,7 @@ import {
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
   getEventOfferConfigurationHandler, configureEventOfferPreferencesHandler,
+  previewEventOfferPreferencesHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
 import type {OfferTransaction} from "./eventOfferService";
@@ -77,7 +78,8 @@ test("all offer endpoints require auth and exact input before database access",
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
       mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
       prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler,
-      configureEventOfferPreferencesHandler]) {
+      configureEventOfferPreferencesHandler,
+      previewEventOfferPreferencesHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
         code("unauthenticated"));
       await assert.rejects(handler(request({actorAuthorized: true}), h.deps),
@@ -93,6 +95,17 @@ test("release gate cannot be bypassed using payload flags", async () => {
     code("failed-precondition"));
   await assert.rejects(getEventOfferHandler(request({...scope,
     integrationReady: true}), h.deps), code("invalid-argument"));
+  assert.equal(h.actions.length, 0);
+});
+
+test("async release denial remains closed", async () => {
+  const h = fixture();
+  h.deps.integrationReady = async () => false;
+  h.deps.firestore = () => {
+    throw new Error("Unexpected database access");
+  };
+  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
+    code("failed-precondition"));
   assert.equal(h.actions.length, 0);
 });
 

@@ -5,6 +5,7 @@ import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
 
 export type PageKey =
+  | "sales_demo"
   | "home"
   | "host"
   | "organizers"
@@ -12,6 +13,8 @@ export type PageKey =
   | "event_detail"
   | "event_runtime"
   | "event_assistance"
+  | "event_offer"
+  | "event_booking"
   | "event_rehearsal"
   | "event_invite"
   | "household_rsvp"
@@ -76,11 +79,14 @@ export function pageMetaForEvent(event: EventDetailRecord): PageMeta {
 export function getPageKey(
   pathname: string = window.location.pathname
 ): Exclude<PageKey, "listing" | "event_detail"> {
+  if (pathname.startsWith("/demo/")) return "sales_demo";
   if (pathname.startsWith("/claim")) return "claim";
   if (pathname.startsWith("/privacy")) return "privacy";
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/help")) return "help";
+  if (pathname.startsWith("/booking/")) return "event_booking";
   if (pathname.startsWith("/join/")) return "event_runtime";
+  if (pathname === "/offer" || pathname === "/offer/") return "event_offer";
   if (pathname.startsWith("/event-update/")) return "event_assistance";
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";
@@ -96,8 +102,8 @@ export function pageClassFor(page: PageKey) {
   if (page === "host") return "host-page";
   if (page === "listing") return "listing-page";
   if (page === "event_detail") return "event-detail-page";
-  if (page === "event_runtime" || page === "event_rehearsal" ||
-      page === "event_assistance" ||
+  if (page === "sales_demo" || page === "event_runtime" || page === "event_rehearsal" ||
+      page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "event_invite" ||
       page === "household_rsvp" ||
       page === "public_form") {

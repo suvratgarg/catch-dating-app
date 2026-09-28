@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_sales_privacy_case_payload.schema.json",
+  "title": "adminGetSalesPrivacyCasePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesPrivacyCase"
+  ]
+}

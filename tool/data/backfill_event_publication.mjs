@@ -8,6 +8,30 @@ import {validateEventDocument} from "../contracts/generated/schema_contract_vali
 const requireFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
 const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const pageSize = 100;
+const historicalNullLocationTypes = new Map([
+  ["/startingPointLat", ["#/properties/startingPointLat/type", "number"]],
+  ["/startingPointLng", ["#/properties/startingPointLng/type", "number"]],
+  ["/discoveryGeoCell", ["#/properties/discoveryGeoCell/type", "string"]],
+]);
+
+function isHistoricalLocationDrift(data, errors) {
+  if (owns(data, "meetingLocation")) return false;
+  const missingMeeting = (error) => error.instancePath === "" &&
+    error.schemaPath === "#/allOf/0/else/required" &&
+    error.keyword === "required" && error.params?.missingProperty === "meetingLocation";
+  const matchingBranch = (error) => error.instancePath === "" &&
+    error.schemaPath === "#/allOf/0/if" && error.keyword === "if" &&
+    error.params?.failingKeyword === "else";
+  const historicalNull = (error) => {
+    const expected = historicalNullLocationTypes.get(error.instancePath);
+    return expected != null && error.keyword === "type" &&
+      error.schemaPath === expected[0] && error.params?.type === expected[1] &&
+      data[error.instancePath.slice(1)] === null;
+  };
+  return errors.some(missingMeeting) && errors.some(matchingBranch) &&
+    errors.every((error) => missingMeeting(error) || matchingBranch(error) ||
+      historicalNull(error));
+}
 
 // This annotates already-public legacy records. It never enables registration,
 // changes provenance, initializes counters, or publishes a progressive draft.
@@ -28,7 +52,21 @@ export function classifyEventPublication(data) {
     return {action: "blocked", reason: "organizer_mismatch"};
   }
   if (!validateEventDocument(data)) {
-    return {action: "blocked", reason: "invalid_legacy_event"};
+    const errors = validateEventDocument.errors ?? [];
+    // Include paths and validation keywords, never source field values or PII.
+    const validationIssues = [...new Set(errors
+      .map((error) => {
+        const missing = error.keyword === "required" ? error.params?.missingProperty : null;
+        const path = typeof missing === "string" ?
+          `${error.instancePath}/${missing.replaceAll("~", "~0").replaceAll("/", "~1")}` :
+          error.instancePath || "/";
+        return `${path}:${error.keyword}`;
+      }))].sort();
+    if (isHistoricalLocationDrift(data, errors)) {
+      return {action: "publish", reason: "legacy_public_event_location_drift",
+        validationIssues};
+    }
+    return {action: "blocked", reason: "invalid_legacy_event", validationIssues};
   }
   return {action: "publish", reason: "legacy_public_event"};
 }

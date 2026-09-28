@@ -30,6 +30,8 @@ export interface EventDetailRecord {
   path: string;
   priceLabel: string;
   registrationState: EventRegistrationState;
+  registrationMode: "closed" | "free" | "paid";
+  paidBookingAvailable: boolean;
   remainingCapacity: number | null;
   requirements: string;
   sourceHref: string | null;
@@ -101,9 +103,10 @@ function catchEventRecord(
     !Number.isFinite(end) || end >= now
   );
   const remainingCapacity = Math.max(0, event.capacityLimit - event.bookedCount);
-  const registrationState: EventRegistrationState = !isUpcoming
+  const registrationMode = event.registrationMode ?? (event.publicRegistrationEnabled ? "free" : "closed");
+  const registrationState: EventRegistrationState = !isUpcoming || event.registrationMode === "closed" || Date.parse(event.startTime) <= now
     ? "closed"
-    : event.publicRegistrationEnabled
+    : event.publicRegistrationEnabled && registrationMode !== "closed"
       ? "webOtp"
       : remainingCapacity === 0
         ? "full"
@@ -123,6 +126,8 @@ function catchEventRecord(
     path: eventDetailPath(event.id),
     priceLabel: event.priceLabel,
     registrationState,
+    registrationMode,
+    paidBookingAvailable: registrationMode === "paid" || (event.amountPaise ?? 0) >= 100,
     remainingCapacity,
     requirements: event.requirements ?? "",
     sourceHref: null,
@@ -157,6 +162,8 @@ function externalEventRecord(
     path: eventDetailPath(event.id),
     priceLabel: event.priceLabel,
     registrationState: isUpcoming ? "external" : "closed",
+    registrationMode: "closed",
+    paidBookingAvailable: false,
     remainingCapacity: null,
     requirements: event.requirements ?? "",
     sourceHref: event.sourceHref,

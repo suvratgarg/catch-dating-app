@@ -111,18 +111,71 @@ const schemaUpdatePrivateEventDetailsCallablePayloadSchema = <String, Object?>{
                   'type': 'string',
                 },
                 'value': <String, Object?>{
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'required': <Object?>[
-                    'name',
-                  ],
-                  'properties': <String, Object?>{
-                    'name': <String, Object?>{
-                      'type': 'string',
-                      'minLength': 1,
-                      'maxLength': 240,
+                  'oneOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'name',
+                      ],
+                      'properties': <String, Object?>{
+                        'name': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                      },
                     },
-                  },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                      'required': <Object?>[
+                        'name',
+                        'latitude',
+                        'longitude',
+                      ],
+                      'properties': <String, Object?>{
+                        'name': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'address': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 500,
+                        },
+                        'placeId': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'minLength': 1,
+                          'maxLength': 256,
+                        },
+                        'latitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -90,
+                          'maximum': 90,
+                        },
+                        'longitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -180,
+                          'maximum': 180,
+                        },
+                        'notes': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 1000,
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -523,6 +576,59 @@ const schemaUpdatePrivateEventDetailsCallablePayloadSchema = <String, Object?>{
                 },
               },
             },
+          ],
+        },
+        'description': <String, Object?>{
+          'type': 'string',
+          'maxLength': 2000,
+        },
+        'admissionTerms': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'capacityLimit',
+            'priceInPaise',
+            'currency',
+            'cancellationPolicyId',
+          ],
+          'properties': <String, Object?>{
+            'capacityLimit': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'priceInPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 100000000,
+            },
+            'currency': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Z]{3}\$',
+            },
+            'cancellationPolicyId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'notApplicable',
+                'flexible',
+                'standard',
+                'strict',
+              ],
+            },
+          },
+        },
+        'distanceKm': <String, Object?>{
+          'type': 'number',
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'pace': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'easy',
+            'moderate',
+            'fast',
+            'competitive',
           ],
         },
       },

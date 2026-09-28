@@ -6,6 +6,7 @@ import type {EventParticipationDocument} from
 import {readSeatMigrationWriterFence} from
   "../events/seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
+  seatIdentityValueHash,
   seatVerifiedPhoneProofId} from
   "../events/seatIdentityAuthority";
 import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
@@ -74,6 +75,18 @@ export async function deleteAccountEventParticipations(params: {
     byEvent.set(eventId, found);
   }
   const eventIds = new Set(byEvent.keys());
+  // A checkout can establish a UID identity before admission creates a roster
+  // row. Discover those events too; the outer deletion tombstone prevents
+  // checkout authority from adding new holds while cleanup is running.
+  const uidAliases = await db.collection("eventSeatIdentityAliases")
+    .where("valueHash", "==", seatIdentityValueHash("uid", uid)).get();
+  for (const alias of uidAliases.docs) {
+    const value = alias.data();
+    if (value.kind !== "uid" || !ID.test(value.eventId)) {
+      unavailable("Account checkout identity needs reconciliation.");
+    }
+    eventIds.add(value.eventId);
+  }
   for (const attendee of linkedAttendees.docs) {
     const eventId = attendee.data().eventId;
     if (!ID.test(eventId)) {
@@ -100,24 +113,59 @@ export async function deleteAccountEventParticipations(params: {
       if (linked.docs.length > 2) {
         unavailable("Linked attendee sources need reconciliation.");
       }
+      if (seatMode === "ready") {
+        const alias = (await tx.get(db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(eventId, "uid", uid)))).data();
+        if (alias?.state === "ready" && alias.canonicalKey) {
+          const held = await new FirestoreSeatTransaction(db, tx)
+            .reservation(eventId, alias.canonicalKey);
+          if (held?.checkoutHold || held?.temporaryHold) {
+            unavailable("Finish payment reconciliation before deleting " +
+              "account.");
+          }
+        }
+      }
       const status = current?.status;
-      if (!current && linked.docs.length === 0) return;
       if (status !== undefined && !["signedUp", "attended", "waitlisted",
         "cancelled", "deleted"]
         .includes(status)) {
         unavailable("Participation status is malformed.");
       }
-      if (status === "deleted" && linked.docs.length === 0) {
+      if ((!current || status === "deleted") && linked.docs.length === 0) {
         if (seatMode === "ready") {
-          const uidAlias = (await tx.get(db.collection(
-            "eventSeatIdentityAliases").doc(seatIdentityAliasId(eventId,
-            "uid", uid)))).data();
-          if (uidAlias?.state === "ready") {
-            const reservation = await new FirestoreSeatTransaction(db, tx)
-              .reservation(eventId, uidAlias.canonicalKey);
-            if (reservation?.active) {
-              unavailable("Deleted participation still owns an active seat.");
+          const aliasRef = db.collection("eventSeatIdentityAliases")
+            .doc(seatIdentityAliasId(eventId, "uid", uid));
+          const proofRef = db.collection("eventSeatVerifiedPhones")
+            .doc(seatVerifiedPhoneProofId(eventId, uid));
+          const [aliasSnap, proofSnap] = await Promise.all([
+            tx.get(aliasRef), tx.get(proofRef),
+          ]);
+          const alias = aliasSnap.data();
+          const proof = proofSnap.data();
+          if (alias) {
+            if (alias.eventId !== eventId || alias.kind !== "uid" ||
+                alias.valueHash !== seatIdentityValueHash("uid", uid) ||
+                !ID.test(alias.canonicalKey)) {
+              unavailable("Deleted account seat identity is malformed.");
             }
+            const reservation = await new FirestoreSeatTransaction(db, tx)
+              .reservation(eventId, alias.canonicalKey);
+            if (alias.state === "ready" &&
+                (reservation?.active || reservation?.checkoutHold ||
+                  reservation?.temporaryHold)) {
+              unavailable("Deleted account still owns an active seat " +
+                "or checkout.");
+            }
+          }
+          if (proof && (proof.eventId !== eventId || proof.uid !== uid)) {
+            unavailable("Deleted account phone proof is malformed.");
+          }
+          if (alias && alias.state !== "retired") {
+            tx.update(aliasRef, {state: "retired"});
+          }
+          if (proof && (proof.state !== "revoked" ||
+              proof.phoneE164 !== null)) {
+            tx.update(proofRef, {state: "revoked", phoneE164: null});
           }
         }
         return;
@@ -213,6 +261,9 @@ export async function deleteAccountEventParticipations(params: {
       const reservation = await ledgerTx.reservation(eventId, identity.key);
       assertCurrentReadySeatSnapshot({event, eventId,
         organizerId: event.clubId, identity, ledger, reservation});
+      if (reservation?.checkoutHold || reservation?.temporaryHold) {
+        unavailable("Finish payment reconciliation before deleting account.");
+      }
       if (active || retainHostSeat) {
         if (!reservation?.active ||
             reservation.identityRevision !== identity.revision) {
