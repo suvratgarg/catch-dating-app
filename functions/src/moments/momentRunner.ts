@@ -1,5 +1,6 @@
 import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
 import {
   evaluateCondition,
   type TravelLegEvent,
@@ -218,26 +219,45 @@ export async function runMomentSweep(
       undefined;
     const preview = planRun(moment, facts, now,
       {travel, travelLeadMinutes});
-    if (preview.kind === "planned" && travel) {
-      // Old travel run IDs encode the mutable wake. Their nominal occurrence
-      // cannot be proven after edits or lead changes, so never silently
-      // adopt them or create a second sender with fresh receipt IDs.
+    if (preview.kind === "planned") {
+      // Earlier run IDs may encode a mutable travel wake. They cannot be
+      // mapped to a nominal occurrence after lead or setting changes; this
+      // remains true when travelTimeLead has since been switched off.
       const legacy = runs.filter((run) =>
         run.anchorRevision === preview.run.anchorRevision &&
         run.runId !== preview.run.runId &&
         run.travelPlanHash === undefined);
-      if (legacy.length > 0 &&
-          !runs.some((run) => run.runId === preview.run.runId)) {
+      if (legacy.length > 0) {
+        let held = false;
         for (const run of legacy.filter((entry) =>
           entry.status === "planned")) {
           await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
             .update({status: "failed",
               reason: "legacyOccurrenceUnresolved"});
+          held = true;
         }
-        await db.collection(MOMENT_RUNS_COLLECTION)
-          .doc(preview.run.runId).set({...preview.run,
-            status: "failed", reason: "legacyOccurrenceUnresolved"});
-        summary.runsSkipped += 1;
+        const nominalRun = runs.find((run) =>
+          run.runId === preview.run.runId);
+        if (nominalRun?.status === "planned") {
+          await db.collection(MOMENT_RUNS_COLLECTION)
+            .doc(nominalRun.runId).update({status: "failed",
+              reason: "legacyOccurrenceUnresolved"});
+          held = true;
+        } else if (!nominalRun) {
+          await db.collection(MOMENT_RUNS_COLLECTION)
+            .doc(preview.run.runId).set({...preview.run,
+              status: "failed", reason: "legacyOccurrenceUnresolved"});
+          held = true;
+        }
+        if (held) {
+          logger.warn("Moment occurrence requires legacy reconciliation", {
+            reason: "legacyOccurrenceUnresolved",
+            momentId: moment.momentId,
+            nominalRunId: preview.run.runId,
+            legacyRunIds: legacy.map((run) => run.runId),
+          });
+          summary.runsSkipped += 1;
+        }
         continue;
       }
     }

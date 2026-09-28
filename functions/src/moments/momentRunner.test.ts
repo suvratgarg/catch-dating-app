@@ -448,6 +448,99 @@ test("settled legacy receipts do not become a second travel run", async () => {
   assert.equal(original.status, "dispatched");
 });
 
+for (const travelTimeLead of [true, false]) {
+  test(`mixed legacy IDs hold nominal run with lead ${travelTimeLead}`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedTravelProgram(db);
+      writeMoment(db, {...travelReminder, audience: {
+        kind: "functionGuests", functionId: "sangeet",
+        rsvp: ["attending"], householdDedupe: true, travelTimeLead,
+      }});
+      db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_8200000`, {
+        runId: "m_travel_7_8200000", momentId: "m_travel",
+        dueAtMillis: 9_700_000, anchorRevision: 7,
+        status: "superseded",
+      });
+      db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`, {
+        runId: "m_travel_7_10000000", momentId: "m_travel",
+        dueAtMillis: 8_800_000, anchorRevision: 7,
+        status: "planned",
+      });
+      db.setDoc(`${MOMENT_SENDS_COLLECTION}/m_travel_7_8200000_guest:gFar`, {
+        momentId: "m_travel", recipientKey: "guest:gFar",
+        decision: "sent", dayKey: "day-1", createdAtMillis: 8_200_000,
+      });
+      const {deps, sent} = makeDeps(db, 8_800_000);
+      await runMomentSweep({...deps,
+        estimateTravelMinutes: (origin) =>
+          origin.latitude === 10 ? 20 : 5});
+      assert.equal(sent.length, 0);
+      const nominal = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(nominal.status, "failed");
+      assert.equal(nominal.reason, "legacyOccurrenceUnresolved");
+      const sends = await (deps.firestore() as never as FakeFirestore)
+        .collection(MOMENT_SENDS_COLLECTION).get();
+      assert.equal(sends.docs.length, 1);
+    });
+}
+
+test("scheduled legacy receipts with revision zero hold nominal sender",
+  async () => {
+    const db = new FakeFirestore({});
+    seedTravelProgram(db);
+    writeMoment(db, {...travelReminder,
+      initiation: {kind: "scheduled", atMillis: 10_000_000}});
+    db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_8200000`, {
+      runId: "m_travel_0_8200000", momentId: "m_travel",
+      dueAtMillis: 10_000_000, anchorRevision: 0,
+      status: "superseded",
+    });
+    db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`, {
+      runId: "m_travel_0_10000000", momentId: "m_travel",
+      dueAtMillis: 10_000_000, anchorRevision: 0,
+      status: "planned",
+    });
+    db.setDoc(`${MOMENT_SENDS_COLLECTION}/m_travel_0_8200000_guest:gFar`, {
+      momentId: "m_travel", recipientKey: "guest:gFar",
+      decision: "sent", dayKey: "day-1", createdAtMillis: 8_200_000,
+    });
+    const {deps, sent} = makeDeps(db, 10_000_000);
+    await runMomentSweep({...deps, estimateTravelMinutes: () => 0});
+    assert.equal(sent.length, 0);
+    const nominal = (await (deps.firestore() as never as FakeFirestore)
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`).get())
+      .data() as Record<string, unknown>;
+    assert.equal(nominal.status, "failed");
+    assert.equal(nominal.reason, "legacyOccurrenceUnresolved");
+  });
+
+test("legacy guard preserves an already terminal nominal run", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, {...travelReminder,
+    initiation: {kind: "scheduled", atMillis: 10_000_000}});
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_8200000`, {
+    runId: "m_travel_0_8200000", momentId: "m_travel",
+    dueAtMillis: 8_200_000, anchorRevision: 0,
+    status: "dispatched",
+  });
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`, {
+    runId: "m_travel_0_10000000", momentId: "m_travel",
+    dueAtMillis: 10_000_000, anchorRevision: 0,
+    status: "dispatched",
+  });
+  const {deps, sent} = makeDeps(db, 10_000_000);
+  await runMomentSweep({...deps, estimateTravelMinutes: () => 0});
+  assert.equal(sent.length, 0);
+  const nominal = (await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`).get())
+    .data() as Record<string, unknown>;
+  assert.equal(nominal.status, "dispatched");
+});
+
 test("flag-off moments keep the single wake time", async () => {
   const db = new FakeFirestore({});
   seedTravelProgram(db);
