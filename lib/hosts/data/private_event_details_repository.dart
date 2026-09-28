@@ -466,15 +466,8 @@ bool _matchesDetailsOutcome(
   String code,
   Set<String> reasons,
 ) {
-  Object? cause = error;
-  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
-    cause = cause.cause;
-  }
-  if (cause is! FirebaseFunctionsException || cause.code != code) {
-    return false;
-  }
-  final details = cause.details;
-  return details is Map &&
+  final details = backendCallableErrorDetails(error, code: code);
+  return details != null &&
       reasons.contains(details['reason']) &&
       details['requestId'] == request.requestId &&
       details['eventId'] == request.eventId &&
