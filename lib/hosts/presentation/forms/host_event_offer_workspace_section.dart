@@ -245,36 +245,6 @@ class _HostEventOfferWorkspaceSectionState
     super.dispose();
   }
 
-  String _offerLabel(Map<String, Object?> offer) =>
-      _controller.details
-          .where((detail) => detail.contactId == offer['contactId'])
-          .firstOrNull
-          ?.response
-          .identity
-          .primaryLabel ??
-      widget.copy.existing;
-
-  String _offerStatus(Object? status) => switch (status) {
-    'draft' => widget.copy.statusDraft,
-    'offered' => widget.copy.statusOffered,
-    'withdrawn' => widget.copy.statusWithdrawn,
-    'expired' => widget.copy.statusExpired,
-    _ => widget.copy.loadFailed,
-  };
-
-  String _eventTimeLabel(HostOfferEventTarget event) {
-    final local = event.startTime.toLocal();
-    final displayed =
-        '${AppTimeFormatters.dateTime(local)} '
-        '${local.timeZoneName}';
-    final eventZone = event.timezone?.trim();
-    return eventZone == null ||
-            eventZone.isEmpty ||
-            eventZone == local.timeZoneName
-        ? displayed
-        : '$displayed · $eventZone';
-  }
-
   String? _amountLabel(BuildContext context) {
     final terms = _controller.configuration?.paymentTerms;
     final amount = terms?['expectedAmountMinor'];
@@ -283,13 +253,6 @@ class _HostEventOfferWorkspaceSectionState
     if (amount is! int || currency is! String) return null;
     return formatMinorCurrency(amount, currencyCode: currency);
   }
-
-  Widget _frame(Widget body, Widget? action) =>
-      widget.layoutBuilder?.call(body, action) ??
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [body, ?action],
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -301,8 +264,11 @@ class _HostEventOfferWorkspaceSectionState
         selected == null &&
         _controller.draft != null) {
       return HostEventOfferReviewSection(
-        layoutBuilder: (body, action) =>
-            _frame(_body(context, review: body), action),
+        layoutBuilder: (body, action) => _OfferWorkspaceFrame(
+          layoutBuilder: widget.layoutBuilder,
+          body: _OfferWorkspaceBody(_controller, widget, review: body),
+          action: action,
+        ),
         controller: widget.offerController,
         draft: _controller.draft!,
         amountLabel: _amountLabel(context),
@@ -334,8 +300,11 @@ class _HostEventOfferWorkspaceSectionState
           'personalRequest',
         }.contains(selected.paymentSnapshot!.collectionMode)) {
       return HostManualPaymentReviewSection(
-        layoutBuilder: (body, action) =>
-            _frame(_body(context, manual: body), action),
+        layoutBuilder: (body, action) => _OfferWorkspaceFrame(
+          layoutBuilder: widget.layoutBuilder,
+          body: _OfferWorkspaceBody(_controller, widget, manual: body),
+          action: action,
+        ),
         key: ValueKey(
           'offer-manual-${selected.offerId}-'
           '${selected.generation}-${selected.revision}',
@@ -354,9 +323,10 @@ class _HostEventOfferWorkspaceSectionState
         _controller.personalMode &&
         _controller.missingContacts.isEmpty &&
         _controller.configuration?.suggestedExpiresAt != null;
-    return _frame(
-      _body(context),
-      personal
+    return _OfferWorkspaceFrame(
+      layoutBuilder: widget.layoutBuilder,
+      body: _OfferWorkspaceBody(_controller, widget),
+      action: personal
           ? CatchDockSurface.pageAction(
               label: copy.review.preview,
               onPressed: _controller.loading
@@ -366,53 +336,118 @@ class _HostEventOfferWorkspaceSectionState
           : null,
     );
   }
+}
 
-  Widget _body(BuildContext context, {Widget? review, Widget? manual}) {
-    final copy = widget.copy;
-    final intent = widget.queryController?.selectionIntent;
+class _OfferWorkspaceFrame extends StatelessWidget {
+  const _OfferWorkspaceFrame({
+    required this.layoutBuilder,
+    required this.body,
+    this.action,
+  });
+  final Widget Function(Widget body, Widget? action)? layoutBuilder;
+  final Widget body;
+  final Widget? action;
+  @override
+  Widget build(BuildContext context) =>
+      layoutBuilder?.call(body, action) ??
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [body, ?action],
+      );
+}
+
+/// Pure content composition; the parent owns controller lifetime and listeners.
+class _OfferWorkspaceBody extends StatelessWidget {
+  const _OfferWorkspaceBody(
+    this.controller,
+    this.workspace, {
+    this.review,
+    this.manual,
+  });
+  final HostEventOfferWorkspaceController controller;
+  final HostEventOfferWorkspaceSection workspace;
+  final Widget? review;
+  final Widget? manual;
+
+  String _offerLabel(Map<String, Object?> offer) =>
+      controller.details
+          .where((detail) => detail.contactId == offer['contactId'])
+          .firstOrNull
+          ?.response
+          .identity
+          .primaryLabel ??
+      workspace.copy.existing;
+
+  String _offerStatus(Object? status) => switch (status) {
+    'draft' => workspace.copy.statusDraft,
+    'offered' => workspace.copy.statusOffered,
+    'withdrawn' => workspace.copy.statusWithdrawn,
+    'expired' => workspace.copy.statusExpired,
+    _ => workspace.copy.loadFailed,
+  };
+
+  String _eventTimeLabel(HostOfferEventTarget event) {
+    final local = event.startTime.toLocal();
+    final displayed =
+        '${AppTimeFormatters.dateTime(local)} '
+        '${local.timeZoneName}';
+    final eventZone = event.timezone?.trim();
+    return eventZone == null ||
+            eventZone.isEmpty ||
+            eventZone == local.timeZoneName
+        ? displayed
+        : '$displayed · $eventZone';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = workspace.copy;
+    final intent = workspace.queryController?.selectionIntent;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (!widget.initiallyReviewSelection &&
-            _controller.ids.isEmpty &&
-            (intent != null || widget.responseId != null) &&
-            widget.accountId != null)
+        if (!workspace.initiallyReviewSelection &&
+            controller.ids.isEmpty &&
+            (intent != null || workspace.responseId != null) &&
+            workspace.accountId != null)
           CatchSection.plain(
             child: CatchButton(
               label: copy.create,
-              onPressed: _controller.loading ? null : _controller.start,
+              onPressed: controller.loading ? null : controller.start,
             ),
           ),
-        if (_controller.ids.isNotEmpty) ...[
-          if (_controller.event == null) ...[
+        if (controller.ids.isNotEmpty) ...[
+          if (controller.event == null) ...[
             CatchSection.plain(
               child: Text(
                 copy.selectEvent,
                 style: CatchTextStyles.sectionTitle(context),
               ),
             ),
-            if (widget.onCreateEvent != null) gapH12,
-            if (widget.onCreateEvent != null)
+            if (workspace.onCreateEvent != null) gapH12,
+            if (workspace.onCreateEvent != null)
               CatchSection.plain(
                 child: CatchButton(
                   key: const ValueKey('offer-create-event'),
                   label: context.l10n.hostsHostEventsListLabelNewEvent,
                   fullWidth: true,
                   variant: CatchButtonVariant.secondary,
-                  onPressed: _controller.loading ? null : widget.onCreateEvent,
+                  onPressed: controller.loading
+                      ? null
+                      : workspace.onCreateEvent,
                 ),
               ),
-            if (_controller.events.isEmpty && !_controller.loading)
+            if (controller.events.isEmpty && !controller.loading)
               CatchSection.plain(
                 child: Text(
                   copy.emptyEvents,
                   style: CatchTextStyles.supporting(context),
                 ),
               ),
-            if (_controller.events.isNotEmpty)
+            if (controller.events.isNotEmpty)
               CatchSection.fieldRows(
                 children: [
-                  for (final event in _controller.events)
+                  for (final event in controller.events)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey('offer-target-${event.eventId}'),
@@ -421,41 +456,40 @@ class _HostEventOfferWorkspaceSectionState
                           ? event.name!
                           : copy.untitledEvent,
                       body: _eventTimeLabel(event),
-                      onTap: _controller.loading
+                      onTap: controller.loading
                           ? null
-                          : () => _controller.choose(event),
+                          : () => controller.choose(event),
                     ),
                 ],
               ),
-            if (_controller.nextEventCursor != null)
+            if (controller.nextEventCursor != null)
               CatchSection.plain(
                 child: CatchButton(
                   label: copy.loadMoreEvents,
                   variant: CatchButtonVariant.secondary,
-                  onPressed: _controller.loading
-                      ? null
-                      : _controller.loadEvents,
+                  onPressed: controller.loading ? null : controller.loadEvents,
                 ),
               ),
           ],
-          if (_controller.event != null) ...[
+          if (controller.event != null) ...[
             CatchSection.fieldRows(
               children: [
                 CatchField.nav(
                   emphasis: CatchFieldEmphasis.title,
                   copy: catchFieldCopy(context.l10n),
-                  title: _controller.event!.name ?? copy.untitledEvent,
+                  title: controller.event!.name ?? copy.untitledEvent,
                   body:
-                      '${_eventTimeLabel(_controller.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
+                      '${_eventTimeLabel(controller.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
                   onTap:
-                      _controller.loading ||
-                          widget.offerController.view.pendingRequestId != null
+                      controller.loading ||
+                          workspace.offerController.view.pendingRequestId !=
+                              null
                       ? null
-                      : _controller.changeEvent,
+                      : controller.changeEvent,
                 ),
               ],
             ),
-            if (_controller.missingContacts.isNotEmpty) ...[
+            if (controller.missingContacts.isNotEmpty) ...[
               CatchSection.plain(
                 child: Text(
                   copy.needsContact,
@@ -464,7 +498,7 @@ class _HostEventOfferWorkspaceSectionState
               ),
               CatchSection.fieldRows(
                 children: [
-                  for (final detail in _controller.missingContacts)
+                  for (final detail in controller.missingContacts)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey(
@@ -475,15 +509,15 @@ class _HostEventOfferWorkspaceSectionState
                           detail.response.identity.primaryLabel ??
                           context.l10n.hostFormResponsesAnonymous,
                       body: copy.convertContact,
-                      onTap: _controller.loading
+                      onTap: controller.loading
                           ? null
-                          : () => _controller.returnForConversion(
+                          : () => controller.returnForConversion(
                               detail.response.responseId,
                             ),
                     ),
                 ],
               ),
-            ] else if (_controller.configuration?.suggestedExpiresAt == null)
+            ] else if (controller.configuration?.suggestedExpiresAt == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -494,25 +528,25 @@ class _HostEventOfferWorkspaceSectionState
                     ),
                     CatchButton(
                       label: copy.openSettings,
-                      onPressed: _controller.loading
+                      onPressed: controller.loading
                           ? null
-                          : _controller.openSettings,
+                          : controller.openSettings,
                     ),
                   ],
                 ),
               )
-            else if (_controller.selectedOffer == null &&
-                _controller.draft != null)
+            else if (controller.selectedOffer == null &&
+                controller.draft != null)
               review!,
 
-            if (_controller.selectedOffer == null &&
-                _controller.draft == null &&
-                _controller.personalMode &&
-                _controller.missingContacts.isEmpty &&
-                _controller.configuration?.suggestedExpiresAt != null) ...[
+            if (controller.selectedOffer == null &&
+                controller.draft == null &&
+                controller.personalMode &&
+                controller.missingContacts.isEmpty &&
+                controller.configuration?.suggestedExpiresAt != null) ...[
               CatchSection.fieldRows(
                 children: [
-                  for (final detail in _controller.details)
+                  for (final detail in controller.details)
                     CatchField.input(
                       key: ValueKey('offer-link-${detail.response.responseId}'),
                       copy: catchFieldCopy(context.l10n),
@@ -524,18 +558,18 @@ class _HostEventOfferWorkspaceSectionState
                           'Explicit organizer-owned HTTPS link '
                           'for this recipient; no provider charge is initiated.',
                       onChanged: (value) =>
-                          _controller.setPersonalLink(detail.contactId!, value),
+                          controller.setPersonalLink(detail.contactId!, value),
                     ),
                 ],
               ),
             ],
-            if (_controller.offers.isNotEmpty &&
-                _controller.selectedOffer == null)
+            if (controller.offers.isNotEmpty &&
+                controller.selectedOffer == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (widget.offerController.view.status ==
+                    if (workspace.offerController.view.status ==
                         HostOfferFlowStatus.committed)
                       Text(
                         copy.issued,
@@ -545,7 +579,7 @@ class _HostEventOfferWorkspaceSectionState
                       copy.existing,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
-                    if (_controller.offers.isEmpty)
+                    if (controller.offers.isEmpty)
                       Text(
                         copy.noOffers,
                         style: CatchTextStyles.supporting(context),
@@ -553,26 +587,26 @@ class _HostEventOfferWorkspaceSectionState
                     CatchButton(
                       label: copy.refresh,
                       variant: CatchButtonVariant.secondary,
-                      onPressed: _controller.loading
+                      onPressed: controller.loading
                           ? null
-                          : _controller.refreshOffers,
+                          : controller.refreshOffers,
                     ),
-                    if (_controller.nextOfferCursor != null)
+                    if (controller.nextOfferCursor != null)
                       CatchButton(
                         label: context.l10n.hostFormResponsesLoadMore,
                         variant: CatchButtonVariant.secondary,
-                        onPressed: _controller.loading
+                        onPressed: controller.loading
                             ? null
-                            : () => _controller.fetchMoreOffers(),
+                            : () => controller.fetchMoreOffers(),
                       ),
                   ],
                 ),
               ),
-            if (_controller.offers.isNotEmpty &&
-                _controller.selectedOffer == null)
+            if (controller.offers.isNotEmpty &&
+                controller.selectedOffer == null)
               CatchSection.fieldRows(
                 children: [
-                  for (final offer in _controller.offers)
+                  for (final offer in controller.offers)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey('offer-existing-${offer['offerId']}'),
@@ -581,20 +615,20 @@ class _HostEventOfferWorkspaceSectionState
                       body:
                           '${_offerStatus(offer['effectiveStatus'])} · '
                           '${copy.openExisting}',
-                      onTap: _controller.loading
+                      onTap: controller.loading
                           ? null
-                          : () => _controller.selectExisting(offer),
+                          : () => controller.selectExisting(offer),
                     ),
                 ],
               ),
-            if (_controller.selectedOffer case final selected?) ...[
+            if (controller.selectedOffer case final selected?) ...[
               CatchSection.fieldRows(
                 children: [
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostEventOfferRecipient,
                     valueText:
-                        _controller.details
+                        controller.details
                             .where((d) => d.contactId == selected.contactId)
                             .firstOrNull
                             ?.response
@@ -606,14 +640,14 @@ class _HostEventOfferWorkspaceSectionState
                   ),
                 ],
               ),
-              if (_controller.ids.length > 1)
+              if (controller.ids.length > 1)
                 CatchSection.plain(
                   child: CatchButton(
                     label: copy.existing,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: _controller.loading
+                    onPressed: controller.loading
                         ? null
-                        : _controller.closeExisting,
+                        : controller.closeExisting,
                   ),
                 ),
               if (selected.effectiveStatus == HostOfferStatus.offered)
@@ -622,19 +656,19 @@ class _HostEventOfferWorkspaceSectionState
                     label: copy.handoffPrepare,
                     fullWidth: true,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: _controller.loading
+                    onPressed: controller.loading
                         ? null
-                        : _controller.prepareSelectedHandoff,
+                        : controller.prepareSelectedHandoff,
                   ),
                 ),
-              if (_controller.handoff?.kind == 'blocked')
+              if (controller.handoff?.kind == 'blocked')
                 CatchSection.plain(
                   child: Text(
                     copy.handoffBlocked,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ),
-              if (_controller.handoff?.kind == 'prepared')
+              if (controller.handoff?.kind == 'prepared')
                 CatchSection.plain(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -644,7 +678,7 @@ class _HostEventOfferWorkspaceSectionState
                         style: CatchTextStyles.supporting(context),
                       ),
                       Text(
-                        _controller.handoff!.editableText!,
+                        controller.handoff!.editableText!,
                         style: CatchTextStyles.supporting(context),
                       ),
                       Wrap(
@@ -652,26 +686,26 @@ class _HostEventOfferWorkspaceSectionState
                           CatchButton(
                             label: copy.openWhatsapp,
                             onPressed:
-                                _controller.loading ||
-                                    _controller.handoff!.whatsappUrl == null
+                                controller.loading ||
+                                    controller.handoff!.whatsappUrl == null
                                 ? null
-                                : _controller.openPreparedWhatsapp,
+                                : controller.openPreparedWhatsapp,
                           ),
                           CatchButton(
                             label: copy.copyMessage,
                             variant: CatchButtonVariant.secondary,
-                            onPressed: _controller.loading
+                            onPressed: controller.loading
                                 ? null
-                                : _controller.copyPreparedHandoff,
+                                : controller.copyPreparedHandoff,
                           ),
                         ],
                       ),
-                      if (_controller.messageCopied)
+                      if (controller.messageCopied)
                         Text(
                           copy.messageCopied,
                           style: CatchTextStyles.supporting(context),
                         ),
-                      if (_controller.handoffOpenFailed)
+                      if (controller.handoffOpenFailed)
                         Text(
                           copy.handoffOpenFailed,
                           style: CatchTextStyles.supporting(context),
@@ -679,19 +713,19 @@ class _HostEventOfferWorkspaceSectionState
                     ],
                   ),
                 ),
-              if (widget.createAdmissionController != null &&
-                  _controller.selectedResponseId != null &&
+              if (workspace.createAdmissionController != null &&
+                  controller.selectedResponseId != null &&
                   selected.effectiveStatus == HostOfferStatus.offered)
                 HostFormAdmissionSection(
                   key: ValueKey(
-                    'admission-${widget.accountId}-${selected.offerId}-'
+                    'admission-${workspace.accountId}-${selected.offerId}-'
                     '${selected.revision}-${selected.generation}',
                   ),
-                  createController: () => widget.createAdmissionController!(
+                  createController: () => workspace.createAdmissionController!(
                     selected,
-                    _controller.selectedResponseId!,
+                    controller.selectedResponseId!,
                   ),
-                  onAdmitted: _controller.refreshOffers,
+                  onAdmitted: controller.refreshOffers,
                 ),
               if (selected.effectiveStatus == HostOfferStatus.offered &&
                   selected.paymentSnapshot != null &&
@@ -705,17 +739,17 @@ class _HostEventOfferWorkspaceSectionState
             ],
           ],
         ],
-        if (_controller.loading)
+        if (controller.loading)
           CatchSection.plain(
             child: Text(
               copy.review.previewing,
               style: CatchTextStyles.supporting(context),
             ),
           ),
-        if (_controller.hasError || _controller.selectionStale) ...[
+        if (controller.hasError || controller.selectionStale) ...[
           CatchSection.plain(
             child: Text(
-              _controller.selectionStale
+              controller.selectionStale
                   ? copy.selectionChanged
                   : copy.loadFailed,
               style: CatchTextStyles.supporting(context),
@@ -724,7 +758,7 @@ class _HostEventOfferWorkspaceSectionState
           CatchSection.plain(
             child: CatchButton(
               label: context.l10n.sharedActionTryAgain,
-              onPressed: _controller.loading ? null : _controller.start,
+              onPressed: controller.loading ? null : controller.start,
             ),
           ),
         ],

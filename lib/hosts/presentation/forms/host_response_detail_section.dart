@@ -276,15 +276,13 @@ class HostResponseDetailSection extends ConsumerWidget {
         ],
         if (value.canReview) ...[
           gapH24,
-          CatchFieldLanes.single(
-            child: _ResponseReviewNoteEditor(
-              key: ValueKey('review-note-${application!.applicationId}'),
-              application: application,
-              controller: note,
-              busy: busy,
-              saving: saving,
-              onSave: () => onReview(application, application.reviewStatus),
-            ),
+          _ResponseReviewNoteEditor(
+            key: ValueKey('review-note-${application!.applicationId}'),
+            application: application,
+            controller: note,
+            busy: busy,
+            saving: saving,
+            onSave: () => onReview(application, application.reviewStatus),
           ),
         ] else if (application?.reviewNote case final String note
             when !value.revoked) ...[
@@ -595,32 +593,34 @@ class _ResponseReviewNoteEditorState extends State<_ResponseReviewNoteEditor> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchField.inputActions(
-    copy: catchFieldCopy(
-      context.l10n,
-    ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
-    title: context.l10n.hostApplicationReviewNote,
-    controller: widget.controller,
-    inputHint: context.l10n.hostApplicationReviewNoteHint,
-    contract: CatchContractConstraints
-        .reviewOrganizerApplicationCallablePayloadReviewNote,
-    maxLines: 3,
-    open: _open,
-    status: widget.saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
-    states: {if (widget.busy && !widget.saving) WidgetState.disabled},
-    onOpenChanged: (open) => setState(() => _open = open),
-    onCancel: () {
-      widget.controller.text = widget.application.reviewNote ?? '';
-      setState(() => _open = false);
-    },
-    onSubmit: () {
-      if (widget.busy) return;
-      if (widget.controller.text.trim() ==
-          (widget.application.reviewNote ?? '').trim()) {
+  Widget build(BuildContext context) => CatchFieldLanes.single(
+    child: CatchField.inputActions(
+      copy: catchFieldCopy(
+        context.l10n,
+      ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
+      title: context.l10n.hostApplicationReviewNote,
+      controller: widget.controller,
+      inputHint: context.l10n.hostApplicationReviewNoteHint,
+      contract: CatchContractConstraints
+          .reviewOrganizerApplicationCallablePayloadReviewNote,
+      maxLines: 3,
+      open: _open,
+      status: widget.saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
+      states: {if (widget.busy && !widget.saving) WidgetState.disabled},
+      onOpenChanged: (open) => setState(() => _open = open),
+      onCancel: () {
+        widget.controller.text = widget.application.reviewNote ?? '';
         setState(() => _open = false);
-      } else {
-        widget.onSave();
-      }
-    },
+      },
+      onSubmit: () {
+        if (widget.busy) return;
+        if (widget.controller.text.trim() ==
+            (widget.application.reviewNote ?? '').trim()) {
+          setState(() => _open = false);
+        } else {
+          widget.onSave();
+        }
+      },
+    ),
   );
 }

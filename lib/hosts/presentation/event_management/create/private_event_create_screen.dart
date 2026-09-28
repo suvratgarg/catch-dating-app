@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -480,10 +481,9 @@ class _PrivateEventCreateScreenState
       );
     }
     if (_editingPreferences && _preferencesController != null) {
-      final currentUid = ref.watch(uidProvider);
-      if (currentUid.isLoading ||
-          currentUid.hasError ||
-          currentUid.asData?.value != _preferencesController!.userId ||
+      final currentUid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+      if (!currentUid.isSettledData ||
+          currentUid.value != _preferencesController!.userId ||
           !_preferencesController!.actorAvailable) {
         _preferencesController!.invalidateActor();
         return CatchScaffold.stepFlow(
@@ -504,10 +504,9 @@ class _PrivateEventCreateScreenState
       );
     }
     if (_editingPublication && _publicationController != null) {
-      final currentUid = ref.watch(uidProvider);
-      if (currentUid.isLoading ||
-          currentUid.hasError ||
-          currentUid.asData?.value != _publicationController!.userId ||
+      final currentUid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+      if (!currentUid.isSettledData ||
+          currentUid.value != _publicationController!.userId ||
           !_publicationController!.actorAvailable) {
         _publicationController!.invalidateActor();
         return CatchScaffold.stepFlow(
@@ -532,10 +531,9 @@ class _PrivateEventCreateScreenState
       );
     }
     if (_editingDetails && _detailsController != null) {
-      final currentUid = ref.watch(uidProvider);
-      if (currentUid.isLoading ||
-          currentUid.hasError ||
-          currentUid.asData?.value != _detailsController!.userId ||
+      final currentUid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+      if (!currentUid.isSettledData ||
+          currentUid.value != _detailsController!.userId ||
           !_detailsController!.actorAvailable) {
         _detailsController!.invalidateActor();
         return CatchScaffold.stepFlow(

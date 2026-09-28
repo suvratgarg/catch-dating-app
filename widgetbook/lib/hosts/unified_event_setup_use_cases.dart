@@ -45,13 +45,14 @@ Widget privateEventCreateScreenPreview(BuildContext context) =>
               child: PrivateEventCreateScreen(
                 club: widgetbookClub,
                 promptForDraftsOnStart: false,
-                create: ({
-                  required organizerId,
-                  required requestId,
-                  required basics,
-                }) => Future<PrivateEventCreateReceipt>.error(
-                  StateError('Preview does not submit events'),
-                ),
+                create:
+                    ({
+                      required organizerId,
+                      required requestId,
+                      required basics,
+                    }) => Future<PrivateEventCreateReceipt>.error(
+                      StateError('Preview does not submit events'),
+                    ),
               ),
             ),
           ),
@@ -131,7 +132,8 @@ Widget hostManagerEventSetupPreferencesSectionPreview(BuildContext context) =>
 Widget privateEventPreferencesScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
   final controller = PrivateEventPreferencesController(
-    userId: 'preview-host', organizerId: 'preview-club',
+    userId: 'preview-host',
+    organizerId: 'preview-club',
     eventId: 'preview-private-event',
     readEvent: ({required organizerId, required eventId}) async =>
         throw StateError('Preview does not read events'),
@@ -140,26 +142,40 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
     write: (_) async => throw StateError('Preview does not submit settings'),
   );
   controller.event = PrivateEventBasicSummary(
-    eventId: 'preview-private-event', organizerId: 'preview-club',
-    setupRevision: 1, name: 'Saturday mixer',
-    city: const EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
-    localDate: '2026-10-03', localStartTime: '19:00',
-    timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
-    status: 'active', setupDefaults: const {}, detailsConfigured: false,
+    eventId: 'preview-private-event',
+    organizerId: 'preview-club',
+    setupRevision: 1,
+    name: 'Saturday mixer',
+    city: const EventSetupCity(
+      cityId: 'in-mh-mumbai',
+      marketId: 'in-mh-mumbai',
+    ),
+    localDate: '2026-10-03',
+    localStartTime: '19:00',
+    timezone: 'Asia/Kolkata',
+    startTimeMillis: 1791043800000,
+    status: 'active',
+    setupDefaults: const {},
+    detailsConfigured: false,
     eventPreferences: null,
   );
   controller.defaults = ManagerEventSetupDefaults(
-    organizerId: 'preview-club', cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai', timezone: 'Asia/Kolkata',
-    organizerDefaultsRevision: 1, basicsReviewedHash: hash,
+    organizerId: 'preview-club',
+    cityId: 'in-mh-mumbai',
+    marketId: 'in-mh-mumbai',
+    timezone: 'Asia/Kolkata',
+    organizerDefaultsRevision: 1,
+    basicsReviewedHash: hash,
     preferencesRevision: 1,
     preferences: const ManagerEventSetupPreferences(
-      timezone: 'Asia/Kolkata', offerValidityMinutes: 1440,
+      timezone: 'Asia/Kolkata',
+      offerValidityMinutes: 1440,
       collectionPreference: EventCollectionPreference.manualInstructions,
       currency: 'INR',
       paymentInstructions: 'Pay after your place is offered.',
     ),
-    preferencesHash: hash, reviewedDefaultsHash: hash,
+    preferencesHash: hash,
+    reviewedDefaultsHash: hash,
   );
   return WidgetbookPageCatalogFrame(
     title: 'PrivateEventPreferencesScreen',
@@ -186,7 +202,8 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
 Widget privateEventDetailsScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
   final controller = PrivateEventDetailsController(
-    userId: 'preview-host', organizerId: 'preview-club',
+    userId: 'preview-host',
+    organizerId: 'preview-club',
     eventId: 'preview-private-event',
     readEvent: ({required organizerId, required eventId}) async =>
         throw StateError('Preview does not read events'),
@@ -195,23 +212,31 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
     write: (_) async => throw StateError('Preview does not submit details'),
   );
   controller.event = const PrivateEventBasicSummary(
-    eventId: 'preview-private-event', organizerId: 'preview-club',
-    setupRevision: 1, name: 'Saturday mixer',
+    eventId: 'preview-private-event',
+    organizerId: 'preview-club',
+    setupRevision: 1,
+    name: 'Saturday mixer',
     city: EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
-    localDate: '2026-10-03', localStartTime: '19:00',
-    timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
-    status: 'active', setupDefaults: {}, detailsConfigured: false,
+    localDate: '2026-10-03',
+    localStartTime: '19:00',
+    timezone: 'Asia/Kolkata',
+    startTimeMillis: 1791043800000,
+    status: 'active',
+    setupDefaults: {},
+    detailsConfigured: false,
     eventPreferences: null,
   );
   controller.defaults = ManagerEventSetupDefaults(
-    organizerId: 'preview-club', cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai', timezone: 'Asia/Kolkata',
-    organizerDefaultsRevision: 1, basicsReviewedHash: hash,
+    organizerId: 'preview-club',
+    cityId: 'in-mh-mumbai',
+    marketId: 'in-mh-mumbai',
+    timezone: 'Asia/Kolkata',
+    organizerDefaultsRevision: 1,
+    basicsReviewedHash: hash,
     preferencesRevision: 1,
-    preferences: const ManagerEventSetupPreferences(
-      usualDurationMinutes: 90,
-    ),
-    preferencesHash: hash, reviewedDefaultsHash: hash,
+    preferences: const ManagerEventSetupPreferences(usualDurationMinutes: 90),
+    preferencesHash: hash,
+    reviewedDefaultsHash: hash,
   );
   return WidgetbookPageCatalogFrame(
     title: 'PrivateEventDetailsScreen',
@@ -238,8 +263,10 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
 Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
   final controller = EventOfferPreferencesController(
-    userId: 'preview-host', organizerId: 'preview-club',
-    eventId: 'preview-published-event', displayName: 'Saturday mixer',
+    userId: 'preview-host',
+    organizerId: 'preview-club',
+    eventId: 'preview-published-event',
+    displayName: 'Saturday mixer',
     readConfiguration: ({required organizerId, required eventId}) async =>
         throw StateError('Preview does not read offer settings'),
     readDefaults: (_) async =>
@@ -247,22 +274,31 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
     write: (_) async => throw StateError('Preview does not submit settings'),
   );
   controller.configuration = const EventOfferConfiguration(
-    organizerId: 'preview-club', eventId: 'preview-published-event',
-    eventSourceRevision: 8, startsAtMillis: 1791043800000,
-    nowMillis: 1790000000000, suggestedExpiresAtMillis: null,
-    preferencesRevision: 0, preferences: null,
+    organizerId: 'preview-club',
+    eventId: 'preview-published-event',
+    eventSourceRevision: 8,
+    startsAtMillis: 1791043800000,
+    nowMillis: 1790000000000,
+    suggestedExpiresAtMillis: null,
+    preferencesRevision: 0,
+    preferences: null,
   );
   controller.defaults = ManagerEventSetupDefaults(
-    organizerId: 'preview-club', cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai', timezone: 'Asia/Kolkata',
-    organizerDefaultsRevision: 1, basicsReviewedHash: hash,
+    organizerId: 'preview-club',
+    cityId: 'in-mh-mumbai',
+    marketId: 'in-mh-mumbai',
+    timezone: 'Asia/Kolkata',
+    organizerDefaultsRevision: 1,
+    basicsReviewedHash: hash,
     preferencesRevision: 1,
     preferences: const ManagerEventSetupPreferences(
-      timezone: 'Asia/Kolkata', currency: 'INR',
+      timezone: 'Asia/Kolkata',
+      currency: 'INR',
       offerValidityMinutes: 1440,
       collectionPreference: EventCollectionPreference.manualInstructions,
     ),
-    preferencesHash: hash, reviewedDefaultsHash: hash,
+    preferencesHash: hash,
+    reviewedDefaultsHash: hash,
   );
   return WidgetbookPageCatalogFrame(
     title: 'HostEventOfferPreferencesScreen',
@@ -302,23 +338,38 @@ Widget hostPrivateEventSetupInventorySectionPreview(BuildContext context) =>
               body: SingleChildScrollView(
                 child: HostPrivateEventSetupInventorySection(
                   organizerId: 'preview-club',
-                  read: ({required organizerId, required limit, cursor}) async =>
-                      const PrivateEventSetupInventoryPage(
-                    events: [
-                      PrivateEventSetupInventoryItem(
-                        eventId: 'preview-private-event',
-                        name: 'Saturday mixer',
-                        city: EventSetupCity(
-                          cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
-                        ),
-                        localDate: '2026-10-03', localStartTime: '19:00',
-                        timezone: 'Asia/Kolkata',
-                        startTimeMillis: 1791043800000,
-                        setupRevision: 2, detailsConfigured: false,
-                      ),
-                    ],
-                    nextCursor: null,
-                  ),
+                  read:
+                      ({
+                        required organizerId,
+                        required limit,
+                        cursor,
+                        scope,
+                      }) async =>
+                          scope != null &&
+                              scope != PrivateEventSetupScope.upcoming
+                          ? const PrivateEventSetupInventoryPage(
+                              events: [],
+                              nextCursor: null,
+                            )
+                          : const PrivateEventSetupInventoryPage(
+                              events: [
+                                PrivateEventSetupInventoryItem(
+                                  eventId: 'preview-private-event',
+                                  name: 'Saturday mixer',
+                                  city: EventSetupCity(
+                                    cityId: 'in-mh-mumbai',
+                                    marketId: 'in-mh-mumbai',
+                                  ),
+                                  localDate: '2026-10-03',
+                                  localStartTime: '19:00',
+                                  timezone: 'Asia/Kolkata',
+                                  startTimeMillis: 1791043800000,
+                                  setupRevision: 2,
+                                  detailsConfigured: false,
+                                ),
+                              ],
+                              nextCursor: null,
+                            ),
                   openSaved: (_) async {},
                 ),
               ),
@@ -340,7 +391,9 @@ Widget hostFormTargetSectionPreview(BuildContext context) =>
       children: [
         for (final unavailable in [false, true])
           WidgetbookPageStateCard(
-            label: unavailable ? 'unavailable event retained' : 'reusable intake',
+            label: unavailable
+                ? 'unavailable event retained'
+                : 'reusable intake',
             child: WidgetbookHostDeviceFrame(
               child: _FormTargetFixture(unavailable: unavailable),
             ),
@@ -362,8 +415,9 @@ class _FormTargetFixtureState extends State<_FormTargetFixture> {
     'defaultTargetId': widget.unavailable ? 'previous-event' : null,
   });
   late final _editor = _FormTargetPreviewEditor((kind, eventId) {
-    setState(() => _definition = _definition.withTarget(
-      kind: kind, eventId: eventId));
+    setState(
+      () => _definition = _definition.withTarget(kind: kind, eventId: eventId),
+    );
   });
   final _auth = _FormTargetPreviewAuth();
 
@@ -397,15 +451,21 @@ class _FormTargetPreviewEditor extends HostFormEditorController {
   Future<HostOfferEventTargetPage> listTargetEvents({String? cursor}) async =>
       HostOfferEventTargetPage([
         HostOfferEventTarget(
-          eventId: 'saturday-mixer', name: 'Saturday mixer · Mumbai',
+          eventId: 'saturday-mixer',
+          name: 'Saturday mixer · Mumbai',
           startTime: DateTime.utc(2026, 10, 3, 13, 30),
-          timezone: 'Asia/Kolkata', publicationState: 'private', setupRevision: 1,
+          timezone: 'Asia/Kolkata',
+          publicationState: 'private',
+          setupRevision: 1,
         ),
       ], null);
 
   @override
-  void updateTarget({required HostFormTargetKind kind,
-      required String accountId, String? eventId}) => _changed(kind, eventId);
+  void updateTarget({
+    required HostFormTargetKind kind,
+    required String accountId,
+    String? eventId,
+  }) => _changed(kind, eventId);
 }
 
 class _FormTargetPreviewAuth implements FirebaseAuth {
