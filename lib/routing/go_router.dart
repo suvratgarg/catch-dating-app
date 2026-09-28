@@ -469,13 +469,21 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostOperatorEventScreen.path,
       name: Routes.hostOperatorEventScreen.name,
-      builder: (context, state) =>
-          HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+      redirect: (context, state) => hostOperatorEventLegacyRedirect(
+        state.uri,
+        eventId: state.pathParameters['eventId']!,
+      ),
     ),
     GoRoute(
       path: Routes.hostWorkScreen.path,
       name: Routes.hostWorkScreen.name,
       builder: (context, state) => const HostWorkScreen(),
+    ),
+    GoRoute(
+      path: Routes.hostWorkEventScreen.path,
+      name: Routes.hostWorkEventScreen.name,
+      builder: (context, state) =>
+          HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
     ),
     GoRoute(
       path: Routes.hostWorkProgramScreen.path,

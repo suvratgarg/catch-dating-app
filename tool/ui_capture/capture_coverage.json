@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-09-28",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -838,6 +838,13 @@
     },
     {
       "routeId": "hostOperatorEventScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostWorkEventScreen",
+      "reason": "Legacy operator links redirect to the canonical event work route while preserving event scope and deep-link state."
+    },
+    {
+      "routeId": "hostWorkEventScreen",
       "status": "alias",
       "priority": "P1",
       "canonicalRouteId": "hostAppEventManageScreen",

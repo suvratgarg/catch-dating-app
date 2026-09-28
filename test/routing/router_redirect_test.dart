@@ -340,6 +340,17 @@ void main() {
       expect(hostHomeLegacyRedirect(), Routes.hostTodayScreen.path);
     });
 
+    test('legacy event operator links redirect onto the work shell', () {
+      expect(Routes.hostWorkEventScreen.path, '/host/work/event/:eventId');
+      expect(
+        hostOperatorEventLegacyRedirect(
+          Uri.parse('/host/operator/event-9?invite=abc'),
+          eventId: 'event-9',
+        ),
+        '/host/work/event/event-9?invite=abc',
+      );
+    });
+
     test('legacy application links redirect into Audience ownership', () {
       expect(
         hostApplicationsLegacyRedirect(
