@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-09-28",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -696,6 +696,14 @@
       "reason": "Organizer moments workspace for event and program send rules; contracts compile after route captures and golden coverage land.",
       "targetFeature": "feature.host_event_manage",
       "debtId": "MOMENTS-FEATURE-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.moments",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Program-scoped route to the same organizer Moments list and editor, with program context rather than a separate Moments feature.",
+      "primaryAuthorityId": "screen.host.event.moments"
     },
     {
       "authority": "flutter_screens",
