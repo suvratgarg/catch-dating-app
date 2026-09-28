@@ -1,14 +1,14 @@
 import {CanonicalSeatIdentity, SeatTransaction} from "./seatAuthority";
 import {prepareSeatHold} from "./seatHold";
-import type {CheckoutHoldCommand, PreparedSeatHold} from "./seatHold";
-export {applySeatHold as applyCheckoutHold} from "./seatHold";
-export type {CheckoutHoldCommand, CheckoutHoldOperation,
-  PreparedSeatHold as PreparedCheckoutHold} from "./seatHold";
+import type {TemporaryHoldCommand, PreparedSeatHold} from "./seatHold";
+export {applySeatHold as applyTemporaryHold} from "./seatHold";
+export type {TemporaryHoldCommand, TemporaryHoldOperation,
+  PreparedSeatHold as PreparedTemporaryHold} from "./seatHold";
 
 /** Prepare an owner-bound hold; apply after every caller authority read. */
-export function prepareCheckoutHold<Subject>(params: {
+export function prepareTemporaryHold<Subject>(params: {
   tx: SeatTransaction;
-  command: CheckoutHoldCommand<Subject>;
+  command: TemporaryHoldCommand<Subject>;
   resolveIdentity: (subject: Subject) => Promise<CanonicalSeatIdentity>;
 }): Promise<PreparedSeatHold> {
   return prepareSeatHold(params);

@@ -107,7 +107,7 @@ export async function prepareProviderSeatChanges(params: {
         if (alias?.canonicalKey) {
           const reservation = await seatTx.reservation(eventId,
             alias.canonicalKey);
-          if (reservation?.checkoutHold) {
+          if (reservation?.checkoutHold || reservation?.temporaryHold) {
             fail("Finish checkout before replacing this provider guest.");
           }
         }

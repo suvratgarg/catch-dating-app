@@ -3,7 +3,7 @@ import {normalizeRosterPhone} from "../eventAttendees";
 import {seatIdentityAliasId, SeatIdentityAlias,
   seatIdentityValueHash} from "../seatIdentityAuthority";
 import {deriveEventSeatPolicy} from "./firestoreAdapter";
-import {assertReadySeatState, checkoutHeldCount,
+import {assertReadySeatState, heldSeatCount,
   SeatAuthorityError, SeatLedger, SeatReceipt,
   SeatReservation} from "./seatAuthority";
 
@@ -208,7 +208,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
       ledger.migrationRevision < 1) {
     fail("Event seat ledger needs reconciliation.");
   }
-  checkoutHeldCount(ledger);
+  heldSeatCount(ledger);
   const seenAlias = new Map<string, string>();
   const seenRows = new Set<string>();
   const seenAttendees = new Set<string>();
@@ -284,7 +284,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
     if (existing && existing.identityRevision !== 1) {
       fail("Imported identity needs reconciliation.");
     }
-    if (existing?.checkoutHold) {
+    if (existing?.checkoutHold || existing?.temporaryHold) {
       fail("Import cannot change a seat held for checkout.");
     }
     if (prior && (!active || !existing?.active)) {
@@ -316,7 +316,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
             (existing?.revision ?? 0) + 1}});
     }
   }
-  if (ledger.occupied + checkoutHeldCount(ledger) + newSeats >
+  if (ledger.occupied + heldSeatCount(ledger) + newSeats >
       ledger.capacity) {
     fail("Import exceeds the event seat capacity.");
   }

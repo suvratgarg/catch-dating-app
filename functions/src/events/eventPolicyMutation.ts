@@ -1,7 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
-import {checkoutHeldCount, SeatLedger} from "./seatAuthority/seatAuthority";
+import {heldSeatCount, SeatLedger} from "./seatAuthority/seatAuthority";
 
 /** Keep permitted event policy edits atomic with their capacity authority. */
 export async function prepareEventMutationLedger(
@@ -38,7 +38,7 @@ export async function prepareEventMutationLedger(
     throw new HttpsError("failed-precondition",
       "Seat capacity needs reconciliation before this edit.");
   }
-  const reserved = ledger.occupied + checkoutHeldCount(ledger);
+  const reserved = ledger.occupied + heldSeatCount(ledger);
   if (next.capacity < reserved) {
     throw new HttpsError("failed-precondition",
       "Capacity cannot be smaller than confirmed seats and checkout holds.");
