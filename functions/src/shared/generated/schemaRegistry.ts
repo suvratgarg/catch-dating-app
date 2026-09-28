@@ -388,6 +388,8 @@ export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocume
 export {programStaffInviteDocumentSchema} from "./schemas/programStaffInviteDocument";
 export {programPickupPointDocumentSchema} from "./schemas/programPickupPointDocument";
 export {programHotelDocumentSchema} from "./schemas/programHotelDocument";
+export {programStayDocumentSchema} from "./schemas/programStayDocument";
+export {programRoomBlockDocumentSchema} from "./schemas/programRoomBlockDocument";
 export {programTravelLegDocumentSchema} from "./schemas/programTravelLegDocument";
 export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocument";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";
