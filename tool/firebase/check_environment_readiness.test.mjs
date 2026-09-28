@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 15);
-  assert.equal(execution.report.requirementCount, 19);
+  assert.equal(execution.report.secretCount, 16);
+  assert.equal(execution.report.requirementCount, 20);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,14 +151,31 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    15,
+    16,
   );
-  assert.equal(selected("dev", ["functions"]).length, 19);
+  assert.equal(selected("dev", ["functions"]).length, 20);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", []],
       ["flightAlertWebhook", []],
       ["refreshProgramFlightStatuses", []],
+      ["startSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
+      ["getSalesDemoSession", ["SALES_DEMO_GRANT_KEY"]],
+      ["advanceSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
+      ["getSalesDemoSetup", ["SALES_DEMO_GRANT_KEY"]],
+      ["prepareSalesDemoFormDraft", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminSaveSalesDemoBlueprint", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminReviewSalesDemoBlueprint", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminWithdrawSalesDemoBlueprint", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminIssueSalesDemoInvitation", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminRevokeSalesDemoInvitation", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminGetSalesDemoBlueprint", ["SALES_DEMO_GRANT_KEY"]],
+      ["adminGetSalesDemoInvitation", ["SALES_DEMO_GRANT_KEY"]],
+      ["getSalesDemoPreview", []],
+      ["adminGetSalesDemoCapability", []],
+      ["adminListSalesDemoBlueprints", []],
+      ["adminListSalesDemoInvitations", []],
+      ["expireSalesDemos", []],
     ]) {
       assert.deepEqual(
         selected(environment, [`functions:${target}`]).map((entry) => entry.name).sort(),

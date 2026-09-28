@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
@@ -16,10 +15,12 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -66,17 +67,20 @@ class HostFormResponseDetailScreen extends ConsumerStatefulWidget {
     required this.organizerId,
     required String this.responseId,
     this.queue,
+    this.returnToOffer = false,
   }) : applicationId = null;
   const HostFormResponseDetailScreen.application({
     super.key,
     required this.organizerId,
     required String this.applicationId,
     this.queue,
+    this.returnToOffer = false,
   }) : responseId = null;
   final String organizerId;
   final String? responseId;
   final String? applicationId;
   final HostResponseReviewQueue? queue;
+  final bool returnToOffer;
   @override
   ConsumerState<HostFormResponseDetailScreen> createState() =>
       _HostFormResponseDetailScreenState();
@@ -178,6 +182,12 @@ class _HostFormResponseDetailScreenState
               onReview: _review,
               onOpenPerson: _openPerson,
               onConvert: _reviewConversion,
+              offerActionLabel: widget.returnToOffer
+                  ? context.l10n.hostResponseContinueOffer
+                  : null,
+              onOfferEvent: ref.watch(privateEventSetupAvailableProvider)
+                  ? () => _offerEvent(loaded)
+                  : null,
             ),
       body: CatchRouteBody.standard(
         child: CatchAsyncBoundary<HostResponseReviewDetail>(
@@ -260,6 +270,11 @@ class _HostFormResponseDetailScreenState
                   onOpenAsset: _openAsset,
                   onContact: _openContact,
                   onOpenPayment: _openPayment,
+                  onChooseEvent:
+                      !widget.returnToOffer &&
+                          ref.watch(privateEventSetupAvailableProvider)
+                      ? () => _offerEvent(value)
+                      : null,
                 ),
               ],
             );
@@ -419,14 +434,9 @@ class _HostFormResponseDetailScreenState
     HostFormResponseDetail detail,
     HostFormConversionKind kind,
   ) async {
-    Event? selectedEvent;
-    String? eventId;
-    if (kind == HostFormConversionKind.eventAttendeeProposal) {
-      final event = await _selectEvent();
-      if (event == null || !mounted) return;
-      eventId = event.id;
-      selectedEvent = event;
-    }
+    // Legacy attendee conversion is retained server-side for old clients only.
+    // Every event action in this UI uses the reviewed offer/admission flow.
+    if (kind == HostFormConversionKind.eventAttendeeProposal) return;
     setState(() => _converting = kind);
     try {
       final controller = ref.read(hostFormsControllerProvider);
@@ -434,19 +444,14 @@ class _HostFormResponseDetailScreenState
         organizerId: widget.organizerId,
         responseId: detail.response.responseId,
         kind: kind,
-        eventId: eventId,
       );
       if (!mounted) return;
-      final confirmed = await _showConversionPreview(
-        preview,
-        event: selectedEvent,
-      );
+      final confirmed = await _showConversionPreview(preview);
       if (confirmed != true || !mounted) return;
       await controller.convertResponse(
         organizerId: widget.organizerId,
         responseId: detail.response.responseId,
         kind: kind,
-        eventId: eventId,
         requestId: 'conversion_${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!mounted) return;
@@ -459,136 +464,105 @@ class _HostFormResponseDetailScreenState
     }
   }
 
-  Future<bool?> _showConversionPreview(
-    HostFormConversionPreview preview, {
-    Event? event,
-  }) => showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => CatchDialog(
-      title: context.l10n.hostFormConversionReviewTitle,
-      actions: [
-        CatchButton(
-          label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-          variant: CatchButtonVariant.ghost,
-          onPressed: () => Navigator.of(dialogContext).pop(false),
-        ),
-        CatchButton(
-          label: preview.allowed
-              ? context.l10n.hostFormConversionConfirm
-              : context.l10n.hostFormConversionUnavailable,
-          onPressed: preview.allowed
-              ? () => Navigator.of(dialogContext).pop(true)
-              : null,
-        ),
-      ],
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 420),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.hostFormConversionReviewBody,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
-              ),
-              if (preview.existingResultId != null) ...[
-                gapH12,
-                Text(
-                  context.l10n.hostFormConversionExisting,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
+  Future<bool?> _showConversionPreview(HostFormConversionPreview preview) =>
+      showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => CatchDialog(
+          title: context.l10n.hostFormConversionReviewTitle,
+          actions: [
+            CatchButton(
+              label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+              variant: CatchButtonVariant.ghost,
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+            ),
+            CatchButton(
+              label: preview.allowed
+                  ? context.l10n.hostFormConversionConfirm
+                  : context.l10n.hostFormConversionUnavailable,
+              onPressed: preview.allowed
+                  ? () => Navigator.of(dialogContext).pop(true)
+                  : null,
+            ),
+          ],
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    context.l10n.hostFormConversionReviewBody,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).ink2,
+                    ),
                   ),
-                ),
-              ],
-              if (preview.warnings.isNotEmpty) ...[
-                gapH12,
-                for (final warning in preview.warnings)
-                  Padding(
-                    padding: CatchInsets.detailInlineRowBottomGap,
-                    child: Text(
-                      warning,
+                  if (preview.existingResultId != null) ...[
+                    gapH12,
+                    Text(
+                      context.l10n.hostFormConversionExisting,
                       style: CatchTextStyles.supporting(
                         context,
                         color: CatchTokens.of(context).warning,
                       ),
                     ),
+                  ],
+                  if (preview.warnings.isNotEmpty) ...[
+                    gapH12,
+                    for (final warning in preview.warnings)
+                      Padding(
+                        padding: CatchInsets.detailInlineRowBottomGap,
+                        child: Text(
+                          warning,
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: CatchTokens.of(context).warning,
+                          ),
+                        ),
+                      ),
+                  ],
+                  gapH16,
+                  CatchSection.containedFieldRows(
+                    children: [
+                      for (final field in preview.fields)
+                        CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
+                          title: field.label,
+                          titleMaxLines: 2,
+                          valueMaxLines: 4,
+                          valueText:
+                              field.value?.toString() ??
+                              context.l10n.hostFormResponseNotProvided,
+                          body: field.conflict,
+                          bodyMaxLines: 4,
+                        ),
+                    ],
                   ),
-              ],
-              gapH16,
-              CatchSection.containedFieldRows(
-                children: [
-                  for (final field in preview.fields)
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: field.label,
-                      titleMaxLines: 2,
-                      valueMaxLines: 4,
-                      valueText:
-                          field.destinationField == 'eventId' &&
-                              event != null &&
-                              field.value == event.id
-                          ? event.name
-                          : field.value?.toString() ??
-                                context.l10n.hostFormResponseNotProvided,
-                      body: field.conflict,
-                      bodyMaxLines: 4,
-                    ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-
-  Future<Event?> _selectEvent() async {
-    try {
-      final events = await ref
-          .read(hostFormsControllerProvider)
-          .activeEvents(organizerId: widget.organizerId);
-      if (!mounted) return null;
-      return showDialog<Event>(
-        context: context,
-        builder: (dialogContext) => CatchDialog(
-          title: context.l10n.hostFormSelectEventTitle,
-          actions: [
-            CatchButton(
-              label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-              variant: CatchButtonVariant.ghost,
-              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
-          ],
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 420),
-            child: events.isEmpty
-                ? Text(
-                    context.l10n.hostFormSelectEventEmpty,
-                    style: CatchTextStyles.supporting(context),
-                  )
-                : SingleChildScrollView(
-                    child: CatchSection.containedFieldRows(
-                      children: [
-                        for (final event in events)
-                          CatchField.nav(
-                            copy: catchFieldCopy(context.l10n),
-                            title: event.title,
-                            body: AppTimeFormatters.dateTime(event.startTime),
-                            onTap: () => Navigator.of(dialogContext).pop(event),
-                          ),
-                      ],
-                    ),
-                  ),
           ),
         ),
       );
-    } on Object catch (error) {
-      if (mounted) showCatchNoticeError(context, error);
-      return null;
+
+  Future<void> _offerEvent(HostResponseReviewDetail detail) async {
+    if (_busy ||
+        !ref.read(privateEventSetupAvailableProvider) ||
+        !detail.canChooseEvent) {
+      return;
     }
+    if (widget.returnToOffer) {
+      Navigator.of(context).pop();
+      return;
+    }
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => HostResponseOfferScreen(
+          organizerId: widget.organizerId,
+          responseId: detail.response!.response.responseId,
+        ),
+      ),
+    );
+    if (mounted) _reload();
   }
 }

@@ -1,3 +1,6 @@
+import {readPaymentRoute} from "../payments/paymentRouting";
+import {readReadyRouteAccount} from
+  "../payments/formPayments/razorpayRouteFormAuthority";
 import {createHash, randomBytes} from "crypto";
 import {authorizeFormMutation, requireOrganizerFormEventTarget} from
   "./organizerFormTarget";
@@ -165,6 +168,111 @@ interface FormsCursor {
   formId: string;
 }
 
+/** Template content and materializer revision are reviewed together. */
+export function organizerFormTemplateReview(templateId: string): {
+  templateId: string; templateVersion: number; templateHash: string;
+  materializerVersion: 1; title: string;
+} {
+  const template = formTemplates.find((item) => item.id === templateId);
+  if (!template) {
+    throw new HttpsError("invalid-argument", "Form template not found.");
+  }
+  return {templateId, templateVersion: template.version,
+    templateHash: createHash("sha256").update(JSON.stringify({template,
+      definition: materializeTemplate({template, formId: "review-template",
+        title: template.title, defaultTargetKind: "organizer",
+        defaultTargetId: null})})).digest("hex"),
+    materializerVersion: 1, title: template.title};
+}
+
+/** Shared atomic draft owner; callers complete all other reads before this. */
+export async function createOrganizerFormInTransaction(params: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  actorUid: string; organizerId: string; formId: string; templateId: string;
+  title: string | null; defaultTargetKind: FormDefinition["defaultTargetKind"];
+  defaultTargetId: string | null; publicFormId: string;
+  timestamp: () => FirebaseFirestore.Timestamp;
+}): Promise<{form: OrganizerFormDocument; draft: OrganizerFormDraftDocument}> {
+  const {db, tx, actorUid, organizerId, formId, title, defaultTargetKind,
+    defaultTargetId, publicFormId, timestamp} = params;
+  assertTarget(defaultTargetKind, defaultTargetId);
+  const template = formTemplates.find((item) => item.id === params.templateId);
+  if (!template) {
+    throw new HttpsError("invalid-argument", "Form template not found.");
+  }
+  const formRef = db.collection("organizerForms").doc(formId);
+  const draftRef = db.collection("organizerFormDrafts").doc(formId);
+  await authorizeFormMutation({db, tx, actorUid,
+    organizerId});
+  const [formSnap, draftSnap] = await Promise.all([
+    tx.get(formRef),
+    tx.get(draftRef),
+  ]);
+  if (formSnap.exists) {
+    return requireOwnedFormAndDraft({
+      formSnap,
+      draftSnap,
+      organizerId,
+    });
+  }
+  if (draftSnap.exists) {
+    throw new HttpsError(
+      "internal",
+      "A form draft exists without its metadata record."
+    );
+  }
+  await requireOrganizerFormEventTarget({db, tx,
+    organizerId,
+    kind: defaultTargetKind,
+    targetId: defaultTargetId,
+    nowMillis: timestamp().toMillis()});
+  const now = timestamp();
+  const definition = materializeTemplate({
+    template,
+    formId,
+    title: title ?? template.title,
+    defaultTargetKind,
+    defaultTargetId,
+  });
+  const form: OrganizerFormDocument = {
+    organizerId,
+    createdByUid: actorUid,
+    title: definition.title,
+    description: definition.description,
+    purpose: definition.purpose,
+    status: "draft",
+    templateId: template.id,
+    publicFormId,
+    defaultTargetKind: definition.defaultTargetKind,
+    defaultTargetId: definition.defaultTargetId,
+    activeVersionId: null,
+    draftRevision: 1,
+    publishedVersion: 0,
+    submittedResponseCount: 0,
+    consequenceProjection: exactConsequenceProjection(
+      definition.identityPolicy
+    ),
+    createdAt: now,
+    updatedAt: now,
+    publishedAt: null,
+    pausedAt: null,
+    archivedAt: null,
+    lastResponseAt: null,
+  };
+  const draft: OrganizerFormDraftDocument = {
+    organizerId,
+    formId,
+    revision: 1,
+    definition,
+    updatedByUid: actorUid,
+    createdAt: now,
+    updatedAt: now,
+  };
+  tx.create(formRef, form);
+  tx.create(draftRef, draft);
+  return {form, draft};
+}
+
 /** Creates an idempotent generic form draft from a source-owned template. */
 export async function createOrganizerFormHandler(
   request: CallableRequest<unknown>,
@@ -199,80 +307,13 @@ export async function createOrganizerFormHandler(
     actorUid,
     data.requestId
   );
-  const formRef = db.collection("organizerForms").doc(formId);
-  const draftRef = db.collection("organizerFormDrafts").doc(formId);
   const publicFormId = deps.publicFormId();
-  const result = await db.runTransaction(async (tx) => {
-    await authorizeFormMutation({db, tx, actorUid,
-      organizerId: data.organizerId});
-    const [formSnap, draftSnap] = await Promise.all([
-      tx.get(formRef),
-      tx.get(draftRef),
-    ]);
-    if (formSnap.exists) {
-      return requireOwnedFormAndDraft({
-        formSnap,
-        draftSnap,
-        organizerId: data.organizerId,
-      });
-    }
-    if (draftSnap.exists) {
-      throw new HttpsError(
-        "internal",
-        "A form draft exists without its metadata record."
-      );
-    }
-    await requireOrganizerFormEventTarget({db, tx,
-      organizerId: data.organizerId,
-      kind: data.defaultTargetKind,
-      targetId: data.defaultTargetId,
-      nowMillis: deps.timestamp().toMillis()});
-    const now = deps.timestamp();
-    const definition = materializeTemplate({
-      template,
-      formId,
-      title: data.title ?? template.title,
-      defaultTargetKind: data.defaultTargetKind,
-      defaultTargetId: data.defaultTargetId,
-    });
-    const form: OrganizerFormDocument = {
-      organizerId: data.organizerId,
-      createdByUid: actorUid,
-      title: definition.title,
-      description: definition.description,
-      purpose: definition.purpose,
-      status: "draft",
-      templateId: template.id,
-      publicFormId,
-      defaultTargetKind: definition.defaultTargetKind,
-      defaultTargetId: definition.defaultTargetId,
-      activeVersionId: null,
-      draftRevision: 1,
-      publishedVersion: 0,
-      submittedResponseCount: 0,
-      consequenceProjection: exactConsequenceProjection(
-        definition.identityPolicy
-      ),
-      createdAt: now,
-      updatedAt: now,
-      publishedAt: null,
-      pausedAt: null,
-      archivedAt: null,
-      lastResponseAt: null,
-    };
-    const draft: OrganizerFormDraftDocument = {
-      organizerId: data.organizerId,
-      formId,
-      revision: 1,
-      definition,
-      updatedByUid: actorUid,
-      createdAt: now,
-      updatedAt: now,
-    };
-    tx.create(formRef, form);
-    tx.create(draftRef, draft);
-    return {form, draft};
-  });
+  const result = await db.runTransaction((tx) =>
+    createOrganizerFormInTransaction({db, tx, actorUid,
+      organizerId: data.organizerId, formId, templateId: template.id,
+      title: data.title ?? null, defaultTargetKind: data.defaultTargetKind,
+      defaultTargetId: data.defaultTargetId, publicFormId,
+      timestamp: deps.timestamp}));
   return projectEditor(formId, result.form, result.draft);
 }
 
@@ -545,13 +586,33 @@ export async function publishOrganizerFormHandler(
       nowMillis: deps.timestamp().toMillis()});
     const payment = current.draft.definition.payment;
     if (payment) {
-      const connectionSnap = await tx.get(
+      const connectionSnap = payment.connectionId ? await tx.get(
         db.collection("organizerPaymentConnections").doc(payment.connectionId)
-      );
-      requireReadyFormPaymentConnection(connectionSnap.exists ?
+      ) : null;
+      const connection = connectionSnap?.exists ?
         requireDoc<OrganizerPaymentConnectionDocument>(connectionSnap,
-          "OrganizerPaymentConnectionDocument") : null,
-      data.organizerId, deps.timestamp().toMillis());
+          "OrganizerPaymentConnectionDocument") : null;
+      const {selection} = await readPaymentRoute({db, tx,
+        organizerId: data.organizerId, purpose: "formFee",
+        legacySelection: connection ? {route: "razorpayOAuth",
+          mode: connection.mode, currency: "INR", merchantCountry: "IN"} :
+          undefined});
+      if (selection.currency !== "INR" || selection.merchantCountry !== "IN") {
+        throw new HttpsError("failed-precondition",
+          "Unsupported fee currency.");
+      }
+      if (selection.route === "razorpayRoute") {
+        await readReadyRouteAccount({db, tx, organizerId: data.organizerId});
+      } else if (selection.route === "razorpayOAuth") {
+        const ready = requireReadyFormPaymentConnection(connection,
+          data.organizerId, deps.timestamp().toMillis());
+        if (ready.mode !== selection.mode) {
+          throw new HttpsError("failed-precondition", "Payment mode mismatch.");
+        }
+      } else {
+        throw new HttpsError("failed-precondition",
+          "Payment route unavailable.");
+      }
     }
     if (current.form.activeVersionId) {
       const activeSnap = await tx.get(

@@ -381,6 +381,24 @@
     },
     {
       "authority": "marketing_routes",
+      "authorityId": "event_offer",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Phone-verified offer acceptance, checkout, admission and cancellation are implemented with controller tests and deterministic Storybook renders. The shared Forms orchestration contract still needs explicit recipient state/action and cross-surface evidence bindings.",
+      "targetFeature": "feature.host_forms",
+      "debtId": "FEATURE-EVENT-OFFER-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "event_booking",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Phone-authorized public booking history, payment recovery and cash cancellation are implemented independently of listing availability, with controller tests and deterministic Storybook renders. The Payments orchestration contract still needs this web surface and its state/action evidence bindings.",
+      "targetFeature": "feature.payments",
+      "debtId": "FEATURE-PUBLIC-BOOKING-001"
+    },
+    {
+      "authority": "marketing_routes",
       "authorityId": "event_invite",
       "status": "grouped",
       "priority": "P1",
@@ -713,6 +731,24 @@
       "reason": "Unified staff work shell assignment picker for event and program scopes; contracts compile after route captures and golden coverage land.",
       "targetFeature": "feature.programs_arrivals_ops",
       "debtId": "PROGRAMS-FEATURE-006"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "sales_demo",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private synthetic Sales invitation reuses runtime primitives and bounded verified-contact access. Shared host acquisition orchestration classification remains planned.",
+      "targetFeature": "feature.host_acquisition",
+      "debtId": "FEATURE-SALES-DEMO-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_workspace",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private Sales operations are governed by callable contracts, role boundaries and focused workspace tests. The shared intake-to-demo feature orchestration contract remains planned.",
+      "targetFeature": "feature.host_acquisition",
+      "debtId": "FEATURE-SALES-WORKSPACE-001"
     }
   ]
 }

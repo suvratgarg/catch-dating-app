@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
+import vm from "node:vm";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -385,7 +386,7 @@ test("retired React graph snapshots stay absent while the live CI gate remains",
 
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");
-  assert.match(ci, /name: Required CI/);
+  assert.match(ci, /name: .*\|\| 'Required CI'/);
   assert.match(ci, /node tool\/harness\.mjs plan/);
   assert.doesNotMatch(ci, new RegExp(`${retiredPlanner}|harness\\.mjs shadow`));
   for (const target of graph.targets) {
@@ -987,4 +988,49 @@ test("every selective main consumer reads the exact committed validation window"
   }
   assert.match(namedStep(workflow("flutter-ci.yml"), "Select tests from committed dependency closures"),
     /--commit-window "\$COMMIT_WINDOW"/u);
+});
+
+test("PR admission serializes full validation without green deferred checks", () => {
+  const ci = workflow("ci.yml");
+  assert.match(ci, /types: \[opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft\]/u);
+  assert.match(ci, /github\.event_name == 'pull_request' && 'admitted'/u);
+  assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
+  assert.match(ci, /queue: max\n  cancel-in-progress: false/u);
+  assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
+  assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
+  assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ always\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
+  assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
+  assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
+  assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
+  assert.match(ci, /name: Backend source review/u);
+  const feedback = workflow("pr-feedback.yml");
+  assert.match(feedback, /git diff --check/u);
+  assert.match(feedback, /node tool\/harness\.mjs plan/u);
+  assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
+  assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);
+});
+
+
+test("CI run names preserve main delivery identity and distinguish PR admission events", () => {
+  const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ (.+) \}\}$/mu)?.[1];
+  assert.ok(expression, "missing run-name expression");
+  // GitHub exposes an explicit run-name as REST run.name as well as
+  // display_title. Main delivery consumers require the stable name CI.
+  const runName = (eventName, action = "", label = "") => vm.runInNewContext(expression, {
+    github: {event_name: eventName, event: {action, label: {name: label}, pull_request: {number: 42}}},
+    fromJSON: JSON.parse,
+    contains: (values, item) => values.includes(item),
+    format: (template, value) => template.replace("{0}", String(value)),
+  });
+  for (const event of ["push", "merge_group", "schedule", "workflow_dispatch"]) {
+    assert.equal(runName(event), "CI", event);
+  }
+  for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
+    assert.equal(runName("pull_request", action), "CI PR #42", action);
+  }
+  for (const action of ["labeled", "unlabeled"]) {
+    assert.equal(runName("pull_request", action, "ci:admitted"), "CI PR #42");
+    assert.equal(runName("pull_request", action, "documentation"), "CI pull_request");
+  }
 });

@@ -1,12 +1,18 @@
+import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import {onRequest, type Request} from "firebase-functions/v2/https";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import type {Response} from "express";
-import {formPaymentRuntime, formPaymentsConfigured} from "./formPaymentRuntime";
-import {InvalidFormPaymentWebhook, processFormPaymentWebhook,
+import {formPaymentRuntime} from "./formPaymentRuntime";
+import {InvalidFormPaymentWebhook,
   recordFormPaymentWebhook} from "./formPaymentWebhook";
+import {routedFormPaymentProcessor} from "./formPaymentRoutingRuntime";
+import type {FormPaymentProcessor} from "./formPaymentProcessor";
+import {formRouteWebhookRuntime, formRouteWebhookConfigurationVersion,
+  recordFormRoutePaymentWebhook, processRecordedFormPaymentWebhook} from
+  "./formRoutePaymentWebhook";
 import {expireFormPaymentReservation} from "./formPaymentSubmission";
 
 export async function organizerFormPaymentOauthCallbackHandler(
@@ -39,23 +45,32 @@ export async function organizerFormPaymentOauthCallbackHandler(
 
 export async function organizerFormPaymentWebhookHandler(
   request: Request, response: Response,
-  runtime: typeof formPaymentRuntime = formPaymentRuntime): Promise<void> {
+  runtime: typeof formPaymentRuntime = formPaymentRuntime,
+  routeRuntime = formRouteWebhookRuntime): Promise<void> {
   response.set("Cache-Control", "no-store");
   if (request.method !== "POST") {
     response.status(405).send("Method not allowed."); return;
   }
-  if (typeof request.query.connectionId !== "string" ||
+  const oauth = typeof request.query.connectionId === "string";
+  const route = typeof request.query.platformVersion === "string";
+  if (oauth === route ||
       !Buffer.isBuffer(request.rawBody) ||
       request.rawBody.length > 64 * 1024) {
     response.status(400).send("Invalid webhook."); return;
   }
   try {
-    const deps = await runtime();
-    await recordFormPaymentWebhook({
-      connectionId: request.query.connectionId, rawBody: request.rawBody,
+    const input = {rawBody: request.rawBody,
       signature: request.get("x-razorpay-signature"),
-      providerEventId: request.get("x-razorpay-event-id"),
-    }, deps);
+      providerEventId: request.get("x-razorpay-event-id")};
+    if (route) {
+      const configurationVersion = formRouteWebhookConfigurationVersion(
+        request.query.platformVersion as string);
+      await recordFormRoutePaymentWebhook(input,
+        await routeRuntime(configurationVersion));
+    } else {
+      await recordFormPaymentWebhook({...input,
+        connectionId: request.query.connectionId as string}, await runtime());
+    }
     // Acknowledgment means durably recorded. The trigger and sweep retry
     // provider verification and fulfillment even when this request ends.
     response.status(200).send("Recorded.");
@@ -69,9 +84,10 @@ export async function organizerFormPaymentWebhookHandler(
 }
 
 export async function reconcileOrganizerFormPaymentsHandler(
-  deps: Awaited<ReturnType<typeof formPaymentRuntime>>, now = Date.now(),
+  deps: {db: FirebaseFirestore.Firestore;
+    processor: Pick<FormPaymentProcessor, "reconcile">}, now = Date.now(),
   operations = {
-    receipt: processFormPaymentWebhook,
+    receipt: processRecordedFormPaymentWebhook,
     expire: expireFormPaymentReservation,
     clock: Date.now,
   }) {
@@ -181,10 +197,10 @@ export const onOrganizerFormPaymentWebhook = onDocumentCreated({
   document: "organizerFormPaymentWebhooks/{receiptId}",
   timeoutSeconds: 120, maxInstances: 20, retry: true,
 }, async (event) => {
-  if (!formPaymentsConfigured()) return;
   try {
-    await processFormPaymentWebhook(event.params.receiptId,
-      await formPaymentRuntime());
+    const db = admin.firestore();
+    await processRecordedFormPaymentWebhook(event.params.receiptId, {db,
+      processor: routedFormPaymentProcessor(db)});
   } catch {
     // Throw a sanitized error so infrastructure retries cannot log secrets.
     throw new Error("Form payment webhook reconciliation is pending.");
@@ -195,10 +211,10 @@ export const reconcileOrganizerFormPayments = onSchedule({
   schedule: "every 5 minutes", timeZone: "Asia/Kolkata",
   timeoutSeconds: 540, maxInstances: 1,
 }, async () => {
-  if (!formPaymentsConfigured()) return;
   try {
-    const summary = await reconcileOrganizerFormPaymentsHandler(
-      await formPaymentRuntime());
+    const db = admin.firestore();
+    const summary = await reconcileOrganizerFormPaymentsHandler({db,
+      processor: routedFormPaymentProcessor(db)});
     if (summary.processed || summary.failed || summary.deferred) {
       logger.info("Form payment reconciliation", summary);
     }

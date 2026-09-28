@@ -1049,6 +1049,21 @@ service cloud.firestore {
     // atomic during the released-client migration window.
     // Private configuration is exposed only through current-manager callables.
     // Immutable admission/payment evidence has no direct client access.
+    match /publicEventPayments/{documentId} {
+      allow read, write: if false;
+    }
+    match /publicEventAdmissionReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /eventRegistrationReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferPayments/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferRecipients/{documentId} {
+      allow read, write: if false;
+    }
     match /organizerFormAdmissions/{documentId} {
       allow read, write: if false;
     }
@@ -1318,6 +1333,9 @@ service cloud.firestore {
 
     // Only server payment operations can access merchant bindings, OAuth
     // state, financial ledgers and signed webhook receipts.
+    match /paymentRoutingPolicies/{policyId} {
+      allow read, write: if false;
+    }
     match /organizerPaymentConnections/{connectionId} {
       allow read, write: if false;
     }
@@ -1905,12 +1923,10 @@ service cloud.firestore {
     match /events/{eventId} {
       allow get: if isPublicEventData(resource.data)
         || canReadPrivateEvent(eventId, resource.data);
-      // Compatibility stage only: installed clients still issue unrestricted
-      // event lists. Private event persistence and its Host route stay disabled
-      // until the publication backfill and client cutover are complete. This
-      // rule MUST become publication-constrained before any private event is
-      // stored in this collection.
-      allow list: if true;
+      // Deploy only after the reviewed legacy backfill and compatible client
+      // release. Manager draft inventory uses its authorized callable.
+      // Client filtering and Remote Config cannot enforce draft privacy.
+      allow list: if resource.data.publicationState == 'published';
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.
@@ -2639,6 +2655,162 @@ service cloud.firestore {
       allow create: if isAuthed()
         && hasValidChatMessageCreate(matchId);
       allow update, delete: if false;
+    }
+
+    // Private Sales authority is available only through scoped server APIs.
+    match /organizerSalesAccounts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesContacts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesContactRelationships/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesEvidence/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesEvidenceProposals/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesTasks/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesOpportunities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesActivities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesCustomFields/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesSettings/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesActionReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportJobs/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportRows/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesSuppressionDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesInboundIntents/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /assistantClients/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /assistantDelegations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /assistantGatewayBudgets/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /assistantManagementReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoBlueprints/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoCapabilities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoInvitations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesFitQueueEntries/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesFitQueueMeta/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesFitQueueReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportHistoryRows/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportHistoryRecords/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyRestrictions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyPolicies/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyPlans/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyBatchReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportCompensations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoSetups/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoSessions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPilotPlans/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesQuotes/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesQuoteVersions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesCommercialDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesOpportunityStageHistory/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntelligencePolicies/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntelligenceAssessments/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntelligenceClauses/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntelligenceReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntelligenceScoreSnapshots/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesOutreachDrafts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+
+    match /salesHostSettlementAttestations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesHostSettlementEvidenceUses/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesHostSettlementIdentities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntakeLinks/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesOutreachJobs/{privateDocument=**} {
+      allow read, write: if false;
     }
 
   }

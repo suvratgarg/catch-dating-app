@@ -1,3 +1,7 @@
+import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
+import type {ManagePublicEventCheckoutCallableResponse} from "../../functions/src/shared/generated/managePublicEventCheckoutCallableResponse";
+import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
+import type {ManageEventOfferCheckoutCallableResponse} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallableResponse";
 import type {ListEventSmsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventSmsPreferencesInput";
 import type {ListEventSmsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventSmsPreferencesOutput";
 import type {GetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload";
@@ -315,6 +319,15 @@ export async function promoteFormCommunicationIntent(
     publicFormsFirebaseConfigured,
     "Public form messaging preferences"
   );
+}
+
+export type EventOfferCheckoutResponse = ManageEventOfferCheckoutCallableResponse;
+
+export async function manageEventOfferCheckout(
+  payload: ManageEventOfferCheckoutCallablePayload
+): Promise<ManageEventOfferCheckoutCallableResponse> {
+  return invokeWebsiteCallable("manageEventOfferCheckout", payload,
+    publicFormsFirebaseConfigured, "Event invitation checkout");
 }
 
 export type PublicOrganizerFormPayment = GetOrganizerFormPaymentCallableResponse;
@@ -1184,4 +1197,36 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
   if (!projectId) return null;
   return `https://asia-south1-${projectId}.cloudfunctions.net/` +
     `programHouseholdItineraryIcs?token=${encodeURIComponent(token)}`;
+}
+
+export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {
+  return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
+}
+
+export async function invokeSalesDemoCallable<Request, Response>(
+  name: "getSalesDemoPreview" | "startSalesDemo" |
+    "getSalesDemoSession" | "advanceSalesDemo" |
+    "getSalesDemoSetup" | "prepareSalesDemoFormDraft",
+  payload: Request
+): Promise<Response> {
+  return invokeWebsiteCallable<Request, Response>(name, payload,
+    claimFirebaseConfigured, "Private demo");
+}
+
+/** Published-only live feed. Never deliver Firestore's local cache as authority. */
+export async function subscribePublicCatchEvents(
+  onSnapshotReceived: (snapshot: {
+    metadata: {fromCache: boolean; hasPendingWrites: boolean};
+    size: number; docs: readonly {id: string; data(): unknown}[];
+  }) => void,
+  onUnavailable: () => void
+): Promise<() => void> {
+  const runtime = await getPublicFirebaseRuntime();
+  if (!runtime) throw new Error("Public event service is unavailable.");
+  const {getFirestore, collection, query, where, limit, onSnapshot} =
+    await import("firebase/firestore");
+  const source = query(collection(getFirestore(runtime.app), "events"),
+    where("publicationState", "==", "published"), limit(401));
+  return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
+
 }

@@ -434,6 +434,11 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     while (true) {
       final parent = current.parent;
       if (parent == null) break;
+      // Only the two result branches can become the rendered copy. Literals
+      // in the predicate identify state/wire values rather than visible text.
+      if (parent is ConditionalExpression && parent.condition == current) {
+        return null;
+      }
       if (parent is NamedExpression) {
         final name = parent.name.label.name;
         if (_technicalArgumentNames.contains(name)) return null;
@@ -663,6 +668,26 @@ const route = '/events';
       texts.contains('/events') ||
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
+  }
+  const conditionalSource = '''
+Widget build() => Column(children: [
+  CatchField.read(title: state == 'published' ? l10n.published : l10n.private),
+  CatchField.read(title: key == 'expectedAmountMinor' ? 'Amount' : 'Fallback'),
+  Text(state == 'private' ? 'Private event' : 'Published event'),
+]);
+''';
+  final conditionalTexts = scanDartSource(
+    'lib/example_conditional.dart',
+    conditionalSource,
+  ).map((finding) => finding.text).toSet();
+  if (conditionalTexts.length != 4 ||
+      !conditionalTexts.containsAll({
+        'Amount',
+        'Fallback',
+        'Private event',
+        'Published event',
+      })) {
+    throw StateError('Conditional copy confused predicates with results.');
   }
   const noticeSource = '''
 void report(BuildContext context) {

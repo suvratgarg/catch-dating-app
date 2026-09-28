@@ -4677,3 +4677,19 @@ th {
     width: 100%;
   }
 }
+
+.segmented-responsive-mobile {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .segmented-responsive-desktop {
+    display: none;
+  }
+
+  .segmented-responsive-mobile,
+  .segmented-responsive-mobile select {
+    display: block;
+    width: 100%;
+  }
+}

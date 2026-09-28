@@ -1,0 +1,241 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_event_payments.schema.json",
+  "title": "PublicEventPaymentDocument",
+  "description": "Server-owned public OTP checkout. Holds and financial recovery share the event payment engine; no application approval or form-offer identity is implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "recipientUid",
+    "requestId",
+    "canonicalSeatKey",
+    "identityRevision",
+    "migrationRevision",
+    "routing",
+    "amountPaise",
+    "currency",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "admissionReceiptId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "admittedAt",
+    "lastErrorCode",
+    "registrationRevision",
+    "attendeeId",
+    "phoneE164",
+    "displayName",
+    "eventName",
+    "requestHash",
+    "inviteLinkId",
+    "cancellationPolicy"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "recipientUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "canonicalSeatKey": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "routing": {
+      "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^pp_[a-f0-9]{32}$"
+    },
+    "status": {
+      "$ref": "../shared/event_checkout_payment_common.schema.json#/definitions/status"
+    },
+    "providerOrderId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^order_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerPaymentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^pay_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerRefundId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rfnd_[A-Za-z0-9]+$",
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "admissionReceiptId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "checkoutExpiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "capturedAt": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admittedAt": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settlement": {
+      "$ref": "../shared/event_checkout_payment_common.schema.json#/definitions/settlement"
+    },
+    "cancellation": {
+      "$ref": "../shared/event_checkout_payment_common.schema.json#/definitions/cancellation"
+    },
+    "cancellationPolicy": {
+      "$ref": "../shared/event_checkout_payment_common.schema.json#/definitions/cancellationPolicy"
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "eventName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inviteLinkId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "publicEventPayments",
+  "x-firestore-path": "publicEventPayments/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "public event checkout service"
+}

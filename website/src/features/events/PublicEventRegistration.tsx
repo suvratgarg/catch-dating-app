@@ -1,3 +1,4 @@
+import {PublicPaidEventRegistration} from "./PublicPaidEventRegistration";
 import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {type FormEvent, useEffect, useId, useRef, useState} from "react";
@@ -20,7 +21,12 @@ import {
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
-export function PublicEventRegistration({
+export function PublicEventRegistration({eventId, inviteToken, mode = "free", allowNewBookings = true}: {eventId: string; inviteToken?: string | null; mode?: "free" | "paid"; allowNewBookings?: boolean}) {
+  return mode === "paid" ? <PublicPaidEventRegistration key={eventId} eventId={eventId} allowNewBookings={allowNewBookings} inviteToken={inviteToken ?? eventInviteTokenFromLocation()} /> :
+    <FreeEventRegistration key={eventId} eventId={eventId} inviteToken={inviteToken} />;
+}
+
+function FreeEventRegistration({
   eventId,
   inviteToken: inviteTokenOverride,
 }: {

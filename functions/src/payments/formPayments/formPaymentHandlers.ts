@@ -35,16 +35,26 @@ import {requireDoc, validateCallableWithAjv} from "../../shared/validation";
 import {reserveFormPayment} from "./formPaymentSubmission";
 import {formPaymentRuntime, formPaymentsConfigured} from "./formPaymentRuntime";
 import {projectFormPayment} from "./formPaymentProjection";
+import {formPaymentId} from "./formPaymentIdentity";
+import {prepareFormPaymentRouting, formPaymentExecutionFor,
+  formPaymentCollectionSetup} from
+  "./formPaymentRoutingRuntime";
 
 interface HandlerDeps {
   db: () => FirebaseFirestore.Firestore;
   runtime: typeof formPaymentRuntime;
+  collectionSetup: typeof formPaymentCollectionSetup;
+  prepareRouting: typeof prepareFormPaymentRouting;
+  executionFor: typeof formPaymentExecutionFor;
   configured: typeof formPaymentsConfigured;
   rateLimit: typeof checkRateLimit;
   requireManager: typeof requireOrganizerManager;
 }
 const defaults: HandlerDeps = {db: () => admin.firestore(),
   runtime: formPaymentRuntime, configured: formPaymentsConfigured,
+  collectionSetup: formPaymentCollectionSetup,
+  prepareRouting: prepareFormPaymentRouting,
+  executionFor: formPaymentExecutionFor,
   rateLimit: checkRateLimit, requireManager: requireOrganizerManager};
 
 export async function prepareOrganizerFormPaymentHandler(
@@ -59,23 +69,38 @@ export async function prepareOrganizerFormPaymentHandler(
     .collection("organizerFormResponseDrafts").doc(data.draftId).get(),
   "OrganizerFormResponseDraftDocument");
   if (draft.respondentUid !== uid) unavailable();
-  const version = requireDoc<Version>(await db
-    .collection("organizerFormVersions").doc(draft.versionId).get(),
-  "OrganizerFormVersionDocument");
-  const fee = version.definition.payment;
-  if (!fee || version.organizerId !== draft.organizerId ||
-      version.formId !== draft.formId) unavailable();
-  const runtime = await deps.runtime();
-  const connection = requireDoc<Connection>(await db
-    .collection("organizerPaymentConnections").doc(fee.connectionId).get(),
-  "OrganizerPaymentConnectionDocument");
-  if (connection.organizerId !== draft.organizerId ||
-      !connection.accountId) unavailable();
-  await runtime.credentials.access({organizerId: draft.organizerId,
-    connectionId: fee.connectionId, accountId: connection.accountId,
-    mode: connection.mode});
-  const {paymentId} = await reserveFormPayment({db, request, data,
-    now: admin.firestore.Timestamp.now()});
+  const paymentId = formPaymentId(data.draftId);
+  const existing = await db.collection("organizerFormPayments")
+    .doc(paymentId).get();
+  let current: Payment;
+  if (existing.exists) {
+    current = requireDoc<Payment>(existing, "OrganizerFormPaymentDocument");
+    if (current.respondentUid !== uid || current.draftId !== data.draftId) {
+      unavailable();
+    }
+  } else {
+    const version = requireDoc<Version>(await db
+      .collection("organizerFormVersions").doc(draft.versionId).get(),
+    "OrganizerFormVersionDocument");
+    const fee = version.definition.payment;
+    if (!fee || version.organizerId !== draft.organizerId ||
+        version.formId !== draft.formId) unavailable();
+    const prepared = await deps.prepareRouting({db, paymentId,
+      organizerId: draft.organizerId, connectionId: fee.connectionId,
+      amountPaise: fee.amountPaise});
+    const reserved = await reserveFormPayment({db, request, data,
+      now: admin.firestore.Timestamp.now(), routing: prepared.snapshot,
+      authority: prepared.runtime.authority});
+    current = reserved.payment;
+  }
+  // A concurrent reservation may have won with a different policy. Resolve
+  // the saved ledger, never the losing request's proposed provider binding.
+  if (current.responseId ||
+      ["expired", "refunded", "reviewRequired"].includes(current.status)) {
+    return projectFormPayment({db, paymentId, payment: current,
+      respondentUid: uid});
+  }
+  const runtime = await deps.executionFor({db, paymentId, payment: current});
   const payment = await runtime.processor.ensureOrder(paymentId);
   return projectFormPayment({db, paymentId, payment, respondentUid: uid});
 }
@@ -99,7 +124,8 @@ export async function getOrganizerFormPaymentHandler(
     return projectFormPayment({db,
       paymentId: data.paymentId, payment: current, respondentUid: uid});
   }
-  const {processor} = await deps.runtime();
+  const {processor} = await deps.executionFor({db,
+    paymentId: data.paymentId, payment: current});
   const payment = data.callback ?
     await processor.verifyClientCallback({paymentId: data.paymentId,
       respondentUid: uid, providerPaymentId: data.callback.paymentId,
@@ -192,6 +218,8 @@ export async function manageOrganizerFormPaymentConnectionHandler(
       accountId: value.accountId, webhookVerified: !!value.webhookVerifiedAt,
       lastErrorCode: value.lastErrorCode};
   });
+  result.collection = await deps.collectionSetup({db,
+    organizerId: data.organizerId});
   return result;
 }
 

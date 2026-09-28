@@ -6,4 +6,5 @@ export interface ListPrivateEventSetupsCallablePayload {
   organizerId: string;
   limit?: number;
   cursor?: string;
+  scope?: "upcoming" | "past" | "cancelled";
 }

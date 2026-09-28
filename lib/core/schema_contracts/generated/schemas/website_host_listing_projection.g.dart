@@ -344,6 +344,23 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'publicRegistrationEnabled': <String, Object?>{
             'type': 'boolean',
           },
+          'registrationMode': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'closed',
+              'free',
+              'paid',
+            ],
+          },
+          'amountPaise': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100000000,
+          },
+          'currency': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Z]{3}\$',
+          },
           'priceLabel': <String, Object?>{
             'type': 'string',
             'minLength': 1,
@@ -1311,6 +1328,23 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
         'publicRegistrationEnabled': <String, Object?>{
           'type': 'boolean',
+        },
+        'registrationMode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'closed',
+            'free',
+            'paid',
+          ],
+        },
+        'amountPaise': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100000000,
+        },
+        'currency': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Z]{3}\$',
         },
         'priceLabel': <String, Object?>{
           'type': 'string',

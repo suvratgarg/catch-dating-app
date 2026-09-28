@@ -59,6 +59,17 @@ const schemaResolveEventInviteLandingCallableResponseSchema = <String, Object?>{
       ],
       'maxLength': 2048,
     },
+    'paidBookingAvailable': <String, Object?>{
+      'type': 'boolean',
+    },
+    'registrationMode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'closed',
+        'free',
+        'paid',
+      ],
+    },
     'sourceLabel': <String, Object?>{
       'type': 'string',
       'minLength': 1,

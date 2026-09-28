@@ -239,39 +239,20 @@ class PaymentHistoryTile extends StatelessWidget {
           onTap: () => _showDetailSheet(context, eventTitle),
           child: Padding(
             padding: CatchInsets.paymentHistoryTileContent,
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        eventTitle,
-                        style: CatchTextStyles.sectionTitle(context),
-                      ),
-                      gapH4,
-                      Text(
-                        AppTimeFormatters.dateTime(payment.createdAt),
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                      if (statusPresentation.detail case final detail?) ...[
-                        gapH4,
-                        Text(
-                          detail,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                Text(eventTitle, style: CatchTextStyles.sectionTitle(context)),
+                gapH4,
+                Text(
+                  AppTimeFormatters.dateTime(payment.createdAt),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                gapH8,
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(
                       EventFormatters.priceInPaise(
@@ -280,13 +261,19 @@ class PaymentHistoryTile extends StatelessWidget {
                       ),
                       style: CatchTextStyles.statCompact(context),
                     ),
-                    gapH4,
-                    CatchBadge(
+                    CatchBadge.status(
                       label: statusPresentation.label,
                       tone: statusPresentation.tone,
                     ),
                   ],
                 ),
+                if (statusPresentation.detail case final detail?) ...[
+                  gapH4,
+                  Text(
+                    detail,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
               ],
             ),
           ),
@@ -354,14 +341,15 @@ class PaymentReceiptSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    CatchBadge(
+                    CatchBadge.status(
                       label: statusPresentation.label,
                       tone: statusPresentation.tone,
-                      size: CatchBadgeSize.md,
                     ),
-                    const Spacer(),
                     Text(
                       EventFormatters.priceInPaise(
                         payment.amount,
@@ -406,7 +394,9 @@ class PaymentReceiptSheet extends StatelessWidget {
                     body: detail,
                   ),
                 ],
-                if (payment.signUpFailed) ...[
+                if (payment.signUpFailed ||
+                    payment.cancellationRefund?.state ==
+                        PaymentCancellationRefundState.reviewRequired) ...[
                   gapH20,
                   const CatchDivider.section(),
                   gapH16,
@@ -441,6 +431,44 @@ class PaymentReceiptSheet extends StatelessWidget {
   Payment payment,
   AppLocalizations l10n,
 ) {
+  final refund = payment.cancellationRefund;
+  if (refund != null) {
+    final returned = EventFormatters.priceInPaise(
+      refund.confirmedAmountMinor,
+      currencyCode: payment.currency,
+    );
+    return switch (refund.state) {
+      PaymentCancellationRefundState.reviewRequired => (
+        label: l10n.paymentsCancellationRefundReview,
+        tone: CatchBadgeTone.danger,
+        detail: l10n.paymentsPaymentHistoryScreenDetailYourRefundNeedsAttention,
+      ),
+      PaymentCancellationRefundState.pending => (
+        label: l10n.paymentsPaymentHistoryScreenLabelRefundPending,
+        tone: CatchBadgeTone.warning,
+        detail: l10n.paymentsCancellationRefundPending(
+          amount: EventFormatters.priceInPaise(
+            refund.targetAmountMinor - refund.confirmedAmountMinor,
+            currencyCode: payment.currency,
+          ),
+        ),
+      ),
+      PaymentCancellationRefundState.complete
+          when refund.targetAmountMinor == 0 =>
+        (
+          label: l10n.paymentsCancellationLabel,
+          tone: CatchBadgeTone.brand,
+          detail: l10n.paymentsCancellationNoRefund,
+        ),
+      PaymentCancellationRefundState.complete => (
+        label: refund.confirmedAmountMinor == payment.amount
+            ? l10n.paymentsPaymentHistoryScreenLabelRefunded
+            : l10n.paymentsCancellationPartialRefund,
+        tone: CatchBadgeTone.brand,
+        detail: l10n.paymentsCancellationRefundReturned(amount: returned),
+      ),
+    };
+  }
   if (payment.signUpFailed) {
     return switch (payment.status) {
       PaymentStatus.refunded => (

@@ -464,3 +464,17 @@ test("legacy provider sync refuses a foreign-owned matched attendee",
         "foreignOrg");
     }
   });
+
+test("inactive provider updates cannot replace a guest during checkout",
+  async () => {
+    const h = fixture({active: true});
+    h.old!.status = "cancelled";
+    h.docs[`eventSeatLedgers/${eventId}`].occupied = 0;
+    h.docs[`eventSeatLedgers/${eventId}`].checkoutHeld = 1;
+    h.docs[reservationPath] = {...h.docs[reservationPath], active: false,
+      checkoutHold: {paymentId: "payment-one", expiresAtMillis: 900100}};
+    await assert.rejects(prepareProviderSeatChanges({db: h.db, tx: h.tx,
+      event: h.event as never, eventId, organizerId, runId: "held-update",
+      nowMillis: 1000, writes: [write(h.old, "declined")]}), /checkout/u);
+    assert.equal(h.pendingCount, 0);
+  });

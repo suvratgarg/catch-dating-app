@@ -68,3 +68,29 @@ test("incomplete private event notification copy uses authored facts", () => {
   const companion = eventCompanionReadyNotificationCopy(event);
   assert.match(companion.body, /Evening walk/);
 });
+
+test("non-distance notifications ignore legacy distance", () => {
+  for (const distanceKm of [0, 5]) {
+    const event = {name: "Friday quiz", distanceKm,
+      eventFormat: {activityKind: "pubQuiz"},
+      meetingLocation: {name: "Clubhouse"}} as EventDocument;
+    for (const copy of [eventActivityNotificationCopy("eventCancelled", event),
+      eventActivityNotificationCopy("eventUpdated", event),
+      eventCompanionReadyNotificationCopy(event)]) {
+      assert.match(copy.body, /Friday quiz/);
+      assert.doesNotMatch(copy.body, /km/);
+    }
+  }
+});
+test("distance copy rejects zero or invalid values", () => {
+  for (const activityKind of ["socialRun", "running", "walking", "cycling"]) {
+    const event = {distanceKm: 5.5,
+      eventFormat: {activityKind}} as EventDocument;
+    assert.match(eventActivityNotificationCopy("eventReminder", event).body,
+      /5\.5 km/);
+  }
+  for (const distanceKm of [0, -1, Number.NaN]) {
+    assert.doesNotMatch(eventActivityNotificationCopy("eventReminder",
+      {name: "Morning run", distanceKm} as EventDocument).body, /km/);
+  }
+});

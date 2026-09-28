@@ -14,6 +14,7 @@ final class UpdatePrivateEventPreferencesCallableRequest {
     required this.expectedPreferencesRevision,
     required this.reviewedDefaultsHash,
     required this.intents,
+    this.expectedActorUid,
   });
 
   final String organizerId;
@@ -23,6 +24,7 @@ final class UpdatePrivateEventPreferencesCallableRequest {
   final int expectedPreferencesRevision;
   final String reviewedDefaultsHash;
   final Map<String, Object?> intents;
+  final String? expectedActorUid;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -32,5 +34,6 @@ final class UpdatePrivateEventPreferencesCallableRequest {
     'expectedPreferencesRevision': expectedPreferencesRevision,
     'reviewedDefaultsHash': reviewedDefaultsHash,
     'intents': intents,
+    'expectedActorUid': ?expectedActorUid,
   };
 }

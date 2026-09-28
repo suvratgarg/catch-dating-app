@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
+
 /**
  * Canonical payment record stored at payments/{paymentId}.
  */
@@ -15,7 +17,7 @@ export interface PaymentDocument {
   currency: string;
   provider?: "razorpay" | "stripe";
   /**
-   * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+   * refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.
    */
   status: "pending" | "completed" | "failed" | "refunded" | "refundFailed";
   providerPaymentId?: string | null;
@@ -74,4 +76,12 @@ export interface PaymentDocument {
    * Internal demo-operations command name used for cleanup and diagnostics.
    */
   demoOpsCommand?: string;
+  cancellationRefund?: LegacyPaymentRefundIntent;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  updatedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }

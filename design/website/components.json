@@ -53,7 +53,8 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "sales_demo"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PageShell.tsx",
@@ -3583,6 +3584,167 @@
         "exportName": "SharedPreference"
       },
       "notes": "Shared sender preference presentation with channel-owned copy and availability. Controllers retain channel-specific authority and grant evidence."
+    },
+    {
+      "id": "route_event_offer",
+      "kind": "route",
+      "routeIds": [
+        "event_offer"
+      ],
+      "owner": "features/eventOffers",
+      "source": "website/src/features/eventOffers/EventOfferPage.tsx",
+      "exportName": "EventOfferPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventOffer.stories.tsx",
+        "exportName": "EventOffer",
+        "states": [
+          "phone",
+          "otp",
+          "ready",
+          "pending",
+          "admitted",
+          "refund",
+          "unavailable"
+        ]
+      },
+      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+    },
+    {
+      "id": "event_offer_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_offer"
+      ],
+      "owner": "features/eventOffers",
+      "source": "website/src/features/eventOffers/EventOfferPage.tsx",
+      "exportName": "EventOfferView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventOffer.stories.tsx",
+        "exportName": "Invitation",
+        "states": [
+          "phone",
+          "otp",
+          "ready",
+          "pending",
+          "admitted",
+          "refund",
+          "unavailable"
+        ]
+      },
+      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+    },
+    {
+      "id": "public_paid_registration",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicPaidEventRegistration.tsx",
+      "exportName": "PublicPaidEventRegistration",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "PublicCheckout",
+        "states": [
+          "phone",
+          "otp",
+          "review",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Public phone-verified fixed-price checkout; shared financial engine, current attendee proof, and explicit cash cancellation review."
+    },
+    {
+      "id": "public_paid_registration_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicPaidEventRegistration.tsx",
+      "exportName": "PublicPaidRegistrationView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "Review",
+        "states": [
+          "phone",
+          "otp",
+          "review",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Public phone-verified fixed-price checkout; shared financial engine, current attendee proof, and explicit cash cancellation review."
+    },
+    {
+      "id": "route_event_booking",
+      "kind": "route",
+      "routeIds": [
+        "event_booking"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicBookingPage.tsx",
+      "exportName": "PublicBookingPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicEventRegistration.stories.tsx",
+        "exportName": "BookingManagement",
+        "states": [
+          "phone",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ]
+      },
+      "notes": "Authenticated booking management survives public listing removal; cannot create a new booking."
+    },
+    {
+      "id": "route_sales_demo",
+      "kind": "route",
+      "routeIds": [
+        "sales_demo"
+      ],
+      "owner": "features/salesDemo",
+      "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
+      "exportName": "SalesDemoPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/SalesDemo.stories.tsx",
+        "exportName": "SalesDemo",
+        "states": [
+          "preview",
+          "verify-contact",
+          "active",
+          "completed",
+          "unavailable"
+        ]
+      },
+      "notes": "Reuses governed runtime primitives; unit tests exercise synthetic-only transitions."
     }
   ]
 }

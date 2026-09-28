@@ -1,3 +1,7 @@
+import {validatePreviewEventOfferPreferencesCallableResponse} from
+  "../shared/generated/validators/previewEventOfferPreferencesOutput";
+import {issueOfferRecipientInvitation} from
+  "../organizerEventOfferRecipients/recipientGrant";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -51,18 +55,30 @@ import {validateConfigureEventOfferPreferencesCallablePayload} from
 import {validateConfigureEventOfferPreferencesCallableResponse} from
   "../shared/generated/validators/configureEventOfferPreferencesOutput";
 
+import {eventOfferIntegrationReady} from "./offerIntegration";
+
 export interface OfferCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   repository: (db: FirebaseFirestore.Firestore) => OfferRepository;
   checkRateLimit: typeof checkRateLimit;
   /** Release boundary; no request or environment flag may bypass it. */
   integrationReady: () => boolean;
+  issueInvitation?: Parameters<typeof prepareHandoff>[0]["issueInvitation"];
 }
 const defaultDeps: OfferCallableDependencies = {
   firestore: () => admin.firestore(),
   repository: (db) => new FirestoreEventOfferRepository(db),
   checkRateLimit,
-  integrationReady: () => false,
+  integrationReady: eventOfferIntegrationReady,
+  issueInvitation: async (input) => {
+    const invitation = await issueOfferRecipientInvitation({
+      db: admin.firestore(), actorUid: input.actorUid,
+      scope: {organizerId: input.organizerId, eventId: input.eventId,
+        offerId: input.offerId, responseId: input.responseId},
+      expectedOfferGeneration: input.expectedOfferGeneration,
+      expectedOfferRevision: input.expectedOfferRevision});
+    return `https://catchdates.com/offer#${invitation.token}`;
+  },
 };
 
 async function execute<T>(params: {
@@ -171,7 +187,8 @@ export async function prepareEventOfferHandoffHandler(
   const input = validateCallableWithAjv(request,
     validatePrepareEventOfferHandoffCallablePayload);
   return execute({uid, action: "prepareEventOfferHandoff", deps,
-    run: (repository) => prepareHandoff({repository, actor: {uid}, ...input}),
+    run: (repository) => prepareHandoff({repository, actor: {uid}, ...input,
+      issueInvitation: deps.issueInvitation}),
     validate: validateEventOfferHandoffCallableResponse});
 }
 export const prepareEventOfferHandoff = onCall(appCheckCallableOptions,
@@ -215,3 +232,27 @@ export async function configureEventOfferPreferencesHandler(
 }
 export const configureEventOfferPreferences = onCall(appCheckCallableOptions,
   (request) => configureEventOfferPreferencesHandler(request));
+
+/** Read-only review uses exactly the same resolver and fences as saving. */
+export async function previewEventOfferPreferencesHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateConfigureEventOfferPreferencesCallablePayload);
+  if (!deps.integrationReady()) {
+    throw new HttpsError("failed-precondition",
+      "Event offer integration is not ready.");
+  }
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "previewEventOfferPreferences");
+  const result = await configurePreferences({actorUid, command,
+    previewOnly: true, deps: {db, configurationReady: deps.integrationReady,
+      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp()}});
+  if (!validatePreviewEventOfferPreferencesCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event preference preview.");
+  }
+  return result;
+}
+export const previewEventOfferPreferences = onCall(appCheckCallableOptions,
+  (request) => previewEventOfferPreferencesHandler(request));
