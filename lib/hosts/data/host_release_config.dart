@@ -20,6 +20,15 @@ const hostReleaseConfigDefaults = <String, dynamic>{
   hostProgressiveEventDefaultsFlagKey: false,
 };
 
+/// Re-read both cached values after an explicit fetch, including when the
+/// realtime stream missed an update while the app was backgrounded.
+void invalidateHostReleaseFlags(
+  void Function(HostReleaseFlagProvider provider) invalidate,
+) {
+  invalidate(hostReleaseFlagProvider(hostPrivateEventSetupFlagKey));
+  invalidate(hostReleaseFlagProvider(hostProgressiveEventDefaultsFlagKey));
+}
+
 // keepalive: Release values are shared across Host routes and updated in real
 // time, independent of the regular Remote Config fetch interval.
 @Riverpod(keepAlive: true)

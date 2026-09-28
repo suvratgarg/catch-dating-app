@@ -13,6 +13,7 @@ import 'package:catch_dating_app/force_update/data/app_version_config_provider.d
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
@@ -216,6 +217,7 @@ Future<void> _refreshForceUpdateGate(
   if (shouldInvalidate?.call() == false) return;
 
   ref.invalidate(appVersionConfigProvider);
+  invalidateHostReleaseFlags(ref.invalidate);
   ref.invalidate(privateEventSetupAvailableProvider);
   ref.invalidate(progressiveEventDefaultsAvailableProvider);
   if (invalidatePackageInfo) {

@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/hosts/data/host_release_config.dart'
+    show hostReleaseFlagProvider, invalidateHostReleaseFlags;
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,4 +87,34 @@ void main() {
       expect(refreshes, 1);
     },
   );
+
+  test('resume invalidation refreshes both cached release capabilities', () {
+    final sourceValues = <String, bool>{
+      hostPrivateEventSetupFlagKey: false,
+      hostProgressiveEventDefaultsFlagKey: false,
+    };
+    final container = ProviderContainer(
+      overrides: [
+        hostReleaseFlagProvider(
+          hostPrivateEventSetupFlagKey,
+        ).overrideWith((ref) => sourceValues[hostPrivateEventSetupFlagKey]!),
+        hostReleaseFlagProvider(
+          hostProgressiveEventDefaultsFlagKey,
+        ).overrideWith(
+          (ref) => sourceValues[hostProgressiveEventDefaultsFlagKey]!,
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(privateEventSetupAvailableProvider), false);
+    expect(container.read(progressiveEventDefaultsAvailableProvider), false);
+    sourceValues.updateAll((key, value) => true);
+    // A fetch activated new values, but the keepalive data providers still
+    // serve their cached reads until the foreground refresh invalidates them.
+    expect(container.read(privateEventSetupAvailableProvider), false);
+    invalidateHostReleaseFlags(container.invalidate);
+    expect(container.read(privateEventSetupAvailableProvider), true);
+    expect(container.read(progressiveEventDefaultsAvailableProvider), true);
+  });
 }
