@@ -802,6 +802,7 @@ class _ProgramGuestGroupEditDialogState
     child: CatchSection.containedFieldRows(
       children: [
         CatchField.input(
+          key: const ValueKey('program-guest-group-label'),
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.programsGuestsGroupLabel,
           controller: _labelController,
@@ -810,6 +811,7 @@ class _ProgramGuestGroupEditDialogState
           textCapitalization: TextCapitalization.words,
         ),
         CatchField.input(
+          key: const ValueKey('program-guest-group-dimension'),
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.programsGuestsGroupDimension,
           controller: _dimensionController,
@@ -819,6 +821,7 @@ class _ProgramGuestGroupEditDialogState
         ),
         if (widget.hotels.isNotEmpty || widget.group?.hotelId != null)
           CatchField<String>.choices(
+            key: const ValueKey('program-guest-group-hotel'),
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.programsGuestsGroupHotel,
             contract: CatchContractConstraints

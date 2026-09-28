@@ -550,7 +550,11 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'new group',
-        child: _DialogFrame(child: ProgramGuestGroupEditDialog()),
+        child: _DialogFrame(
+          child: ProgramGuestGroupEditDialog(
+            hotels: [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+          ),
+        ),
       ),
     ],
   );

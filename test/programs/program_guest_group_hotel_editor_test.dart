@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,7 @@ OrganizerProgramDetail _detail({List<ProgramHotel> hotels = const []}) =>
     OrganizerProgramDetail(
       program: OrganizerProgramSettings(
         programId: 'program',
+        organizerId: 'organizer-1',
         kind: ProgramKind.wedding,
         title: 'Wedding',
         timezone: 'Asia/Kolkata',
@@ -69,6 +71,7 @@ Widget _app(
   _Repository repository, {
   List<ProgramGuestGroupRow> groups = const [],
 }) => ProviderScope(
+  // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
   overrides: [programSetupRepositoryProvider.overrideWithValue(repository)],
   child: MaterialApp(
     theme: AppTheme.light,
@@ -91,8 +94,20 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.tap(find.text('New group'));
     await pumpFeatureUi(tester);
-    await tester.enterText(find.byType(TextField).at(0), 'Bride side');
-    await tester.enterText(find.byType(TextField).at(1), 'side');
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('program-guest-group-label')),
+        matching: find.byType(TextField),
+      ),
+      'Bride side',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('program-guest-group-dimension')),
+        matching: find.byType(TextField),
+      ),
+      'side',
+    );
     await tester.tap(find.text('Hotel for this group'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Lakeview'));
@@ -129,7 +144,7 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Hotel for this group'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Lakeview').last);
+    await tester.tap(find.widgetWithText(CatchChip, 'Lakeview'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Save'));
     await pumpFeatureUi(tester);
