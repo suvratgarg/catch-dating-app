@@ -550,6 +550,8 @@ export {validateProgramStaffGrantDocument} from "./validators/programStaffGrantD
 export {validateProgramStaffInviteDocument} from "./validators/programStaffInviteDocument";
 export {validateProgramPickupPointDocument} from "./validators/programPickupPointDocument";
 export {validateProgramHotelDocument} from "./validators/programHotelDocument";
+export {validateProgramStayDocument} from "./validators/programStayDocument";
+export {validateProgramRoomBlockDocument} from "./validators/programRoomBlockDocument";
 export {validateProgramTravelLegDocument} from "./validators/programTravelLegDocument";
 export {validateProgramTravelPartyDocument} from "./validators/programTravelPartyDocument";
 export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";

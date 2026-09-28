@@ -196,7 +196,7 @@ void _openAssignment(
 }) {
   final route = assignment.isProgram
       ? Routes.hostWorkProgramScreen
-      : Routes.hostOperatorEventScreen;
+      : Routes.hostWorkEventScreen;
   final pathParameters = {
     assignment.isProgram ? 'programId' : 'eventId': assignment.scopeId,
   };
