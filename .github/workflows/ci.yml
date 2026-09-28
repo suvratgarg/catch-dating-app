@@ -1,7 +1,10 @@
 name: CI
+run-name: >-
+  ${{ github.event_name == 'pull_request' && (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) || github.event.label.name == 'ci:admitted') && format('CI PR #{0}', github.event.pull_request.number) || format('CI {0}', github.event_name) }}
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft]
   push:
     branches: [main]
   merge_group:
@@ -18,17 +21,43 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
+  issues: read
 
 concurrency:
-  # Every main push gets a unique key. GitHub concurrency keeps only one
-  # pending run per key, so sharing a main key can silently replace the middle
-  # run and lose its before..head impact window. PR and merge-queue runs retain
-  # supersession/cancellation semantics.
-  group: ci-${{ github.event_name }}-${{ github.event_name == 'push' && github.run_id || github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'push' }}
+  # Full PR validation holds one slot through source review. Admission chooses
+  # the dependency-ready PR; queue ordering alone is not dependency ordering.
+  # Every main push retains its own key and immutable delivery evidence.
+  group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && 'admitted' || github.event_name == 'push' && github.run_id || github.event.merge_group.head_sha || github.ref }}
+  queue: max
+  cancel-in-progress: false
 
 jobs:
+  admission:
+    name: Check PR admission
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      admitted: ${{ github.event_name != 'pull_request' || steps.check.outputs.admitted == 'true' }}
+    steps:
+      - name: Preserve non-PR validation
+        if: ${{ github.event_name != 'pull_request' }}
+        run: echo 'Non-PR validation retains its existing authority.'
+      - uses: actions/checkout@v6
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /tool/ci/pr_ci_admission.mjs
+      - id: check
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/pr_ci_admission.mjs
+
   plan:
+    needs: admission
+    if: ${{ always() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
     name: Plan affected targets
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -649,9 +678,11 @@ jobs:
           retention-days: 90
 
   required:
-    name: Required CI
-    if: ${{ always() }}
+    # Metadata notifications never publish a replacement Required CI context.
+    name: ${{ github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted' && 'Ignored PR metadata' || 'Required CI' }}
+    if: ${{ always() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
     needs:
+      - admission
       - plan
       - finalize-plan
       - tools
@@ -670,6 +701,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Refuse deferred PR validation
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          ADMITTED: ${{ needs.admission.outputs.admitted }}
+        run: |
+          if [[ "$ADMITTED" != "true" ]]; then
+            echo "Awaiting admission: full validation did not run."
+            exit 1
+          fi
+      - name: Checkout admission verifier
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /tool/ci/pr_ci_admission.mjs
+      - name: Recheck live PR admission and tested source
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/pr_ci_admission.mjs --require
       - id: artifact_guard
         name: Require every selected lane
         env:
