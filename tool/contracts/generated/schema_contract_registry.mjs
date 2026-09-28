@@ -173739,7 +173739,7 @@ export const programAccessCallableResponseSchema = {
     "functions": {
       "type": "array",
       "maxItems": 40,
-      "description": "Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.",
+      "description": "Function-scoped door, check-in, and guest-desk surfaces for functionCheckIn, functionLead, and guestRelations holders, intersected with each assignment's functionIds. Empty for other duties.",
       "items": {
         "type": "object",
         "additionalProperties": false,
