@@ -59,8 +59,11 @@ export function freezeHistoryPromotion(source, decisions) {
       "A skipped accepted row needs its source import identity.");
     }
     if (disposition === "review_needed") {
-      invariant(!decision?.importId && !decision?.organizerId,
-        "INVALID_HISTORY", "Pending rows cannot claim imported identity.");
+      invariant((!decision?.importId && !decision?.organizerId) ||
+        (id.test(row.organizerId) &&
+          decision.organizerId === row.organizerId &&
+          id.test(decision.importId)),
+      "INVALID_HISTORY", "Pending rows need valid reviewed identity or none.");
     }
     const cells = new Map((row.originalCells ?? [])
       .map(cell => [cell.column, cell.value]));
@@ -79,7 +82,7 @@ export function freezeHistoryPromotion(source, decisions) {
     }
     return {sourceRowId: row.sourceRowId,
       organizerId: row.organizerId ?? null,
-      importId: disposition === "review_needed" ? null : decision.importId,
+      importId: decision?.importId ?? null,
       disposition, reason, entries};
   });
   const packets = [];
@@ -87,7 +90,7 @@ export function freezeHistoryPromotion(source, decisions) {
     contentHash: source.contentHash,
     mappingVersion: source.mappingVersion,
     promotionVersion: decisions.promotionVersion, rows: []};
-  for (const row of rows.filter(item => item.disposition !== "review_needed")) {
+  for (const row of rows.filter(item => item.importId !== null)) {
     const next = {...packet, rows: [...packet.rows, row]};
     if (next.rows.length > 10 ||
         Buffer.byteLength(JSON.stringify(next)) > 120_000) {
@@ -113,8 +116,7 @@ export function freezeHistoryPromotion(source, decisions) {
 
 export function assertHistoryPlan(plan) {
   const {planHash, ...material} = plan ?? {};
-  const accepted = plan?.rows?.filter(row =>
-    row.disposition !== "review_needed") ?? [];
+  const accepted = plan?.rows?.filter(row => row.importId !== null) ?? [];
   const counts = Object.fromEntries(statuses.map(status =>
     [status, plan?.rows?.filter(row =>
       row.disposition === status).length ?? -1]));

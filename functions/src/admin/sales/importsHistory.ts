@@ -1,6 +1,8 @@
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {canonical} from "./imports";
+import {assertSalesPrivacyOpen,
+  assertSalesPrivacyOpenRead} from "../salesPrivacy/model";
 import type {SalesPrincipal} from "./types";
 
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$/u;
@@ -121,7 +123,8 @@ interface Evaluated {
 }
 
 async function evaluate(db: FirebaseFirestore.Firestore, packet: HistoryPacket,
-  read: Read, now: string): Promise<Evaluated> {
+  read: Read, checkPrivacy: (organizerId: string) => Promise<void>,
+  now: string): Promise<Evaluated> {
   assertPacket(packet);
   const dispositions: Evaluated["dispositions"] = [];
   const writes: Evaluated["writes"] = [];
@@ -139,6 +142,7 @@ async function evaluate(db: FirebaseFirestore.Firestore, packet: HistoryPacket,
       account = await read(db.collection("organizerSalesAccounts")
         .doc(row.organizerId));
       accounts.set(row.organizerId, account);
+      await checkPrivacy(row.organizerId);
     }
     const current = account.data();
     if (!lineage.exists || source?.importId !== row.importId ||
@@ -252,7 +256,8 @@ export async function previewSalesImportHistory(
   db: FirebaseFirestore.Firestore, principal: SalesPrincipal,
   packet: HistoryPacket): Promise<Record<string, unknown>> {
   assertOwner(principal);
-  const evaluated = await evaluate(db, packet, (ref) => ref.get(), "");
+  const evaluated = await evaluate(db, packet, (ref) => ref.get(),
+    (organizerId) => assertSalesPrivacyOpenRead(db, organizerId), "");
   return {previewHash: evaluated.previewHash,
     rows: evaluated.dispositions, packetRowCount: packet.rows.length,
     effectsApplied: false};
@@ -266,7 +271,8 @@ export async function applySalesImportHistory(
   const packet: HistoryPacket = {sourceId: input.sourceId,
     contentHash: input.contentHash, mappingVersion: input.mappingVersion,
     promotionVersion: input.promotionVersion, rows: input.rows};
-  const evaluated = await evaluate(db, packet, (ref) => tx.get(ref), now);
+  const evaluated = await evaluate(db, packet, (ref) => tx.get(ref),
+    (organizerId) => assertSalesPrivacyOpen(tx, db, organizerId), now);
   if (evaluated.previewHash !== input.previewHash) {
     throw new HttpsError("aborted",
       "Imported history changed since the reviewed preview.");
@@ -295,6 +301,7 @@ export async function listSalesImportHistory(
       (input.cursor !== undefined && !identifier.test(input.cursor))) {
     invalid("History list needs one organizer and a bounded page.");
   }
+  await assertSalesPrivacyOpenRead(db, input.organizerId);
   const account = await db.collection("organizerSalesAccounts")
     .doc(input.organizerId).get();
   if (!account.exists || account.data()?.classification !== "sales_private" ||
@@ -309,6 +316,37 @@ export async function listSalesImportHistory(
   const page = await query.limit((input.limit ?? 25) + 1).get();
   const rows = page.docs.slice(0, input.limit ?? 25);
   return {records: rows.map((doc) => doc.data()),
+    nextCursor: page.docs.length > rows.length ?
+      rows.at(-1)?.id ?? null : null};
+}
+
+/** Row dispositions are separate from promoted records and paged by host. */
+export async function listSalesImportHistoryRows(
+  db: FirebaseFirestore.Firestore, principal: SalesPrincipal,
+  input: {organizerId: string; limit?: number; cursor?: string},
+): Promise<Record<string, unknown>> {
+  assertEmployee(principal);
+  if (!identifier.test(input.organizerId) ||
+      (input.limit !== undefined && (!Number.isInteger(input.limit) ||
+        input.limit < 1 || input.limit > 25)) ||
+      (input.cursor !== undefined && !identifier.test(input.cursor))) {
+    invalid("History row list needs one organizer and a bounded page.");
+  }
+  await assertSalesPrivacyOpenRead(db, input.organizerId);
+  const account = await db.collection("organizerSalesAccounts")
+    .doc(input.organizerId).get();
+  if (!account.exists || account.data()?.classification !== "sales_private" ||
+      account.data()?.researchStatus === "archived" ||
+      account.data()?.suppressionStatus !== "clear") {
+    throw new HttpsError("not-found", "Imported history unavailable.");
+  }
+  let query = db.collection("salesImportHistoryRows")
+    .where("organizerId", "==", input.organizerId)
+    .orderBy("__name__");
+  if (input.cursor) query = query.startAfter(input.cursor);
+  const page = await query.limit((input.limit ?? 25) + 1).get();
+  const rows = page.docs.slice(0, input.limit ?? 25);
+  return {rows: rows.map((doc) => doc.data()),
     nextCursor: page.docs.length > rows.length ?
       rows.at(-1)?.id ?? null : null};
 }

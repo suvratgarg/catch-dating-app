@@ -63,6 +63,18 @@ test("all private source rows have promoted, skipped or pending disposition", ()
     /exact source cell/);
 });
 
+test("reviewed identity with pending mapping has a durable row disposition", () => {
+  const pending = decisions();
+  pending.rows[1] = {sourceRowId: "row-2", organizerId: "org-2",
+    importId: "import-2", disposition: "review_needed",
+    reason: "Source chronology needs review", entries: []};
+  const plan = freezeHistoryPromotion(source, pending);
+  assert.equal(plan.counts.review_needed, 2);
+  assert.deepEqual(plan.packets[0].rows.map(row => row.sourceRowId),
+    ["row-1", "row-2"]);
+  assert.equal(plan.rows[2].importId, null);
+});
+
 test("exact server review, stable retries and lease checkpoints", async () => {
   const plan = freezeHistoryPromotion(source, decisions());
   const {client, calls} = fixture();

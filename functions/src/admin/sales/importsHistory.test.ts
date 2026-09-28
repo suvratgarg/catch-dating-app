@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "node:crypto";
 import {applySalesImportHistory, listSalesImportHistory,
+  listSalesImportHistoryRows,
   previewSalesImportHistory, type HistoryPacket} from "./importsHistory";
 import type {SalesPrincipal} from "./types";
 
@@ -176,6 +177,11 @@ test("reviewed history is private, immutable and never current send or fit",
       {organizerId: "org-a", limit: 2});
     assert.equal((listed.records as unknown[]).length, 2);
     assert.ok(listed.nextCursor);
+    const dispositions = await listSalesImportHistoryRows(firestore(db),
+      employee, {organizerId: "org-a"});
+    assert.equal((dispositions.rows as unknown[]).length, 1);
+    assert.equal((dispositions.rows as Array<{disposition: string}>)[0]
+      .disposition, "promoted");
   });
 
 test("identical review duplicates; conflicting reinterpretation closes",
@@ -254,3 +260,20 @@ test("non-owner, concurrent workers and invalid source identity cannot write",
     a.commit();
     assert.throws(() => b.commit(), /stale transaction read/);
   });
+
+test("permanent privacy tombstone blocks preview, apply and list", async () => {
+  const db = fixture();
+  const input = packet();
+  const review = await previewSalesImportHistory(firestore(db), owner, input);
+  db.docs.set("salesPrivacyRestrictions/org-a", {organizerId: "org-a"});
+  await assert.rejects(previewSalesImportHistory(firestore(db), owner, input),
+    /processing is restricted/);
+  await assert.rejects(apply(db, input, review.previewHash as string),
+    /processing is restricted/);
+  await assert.rejects(listSalesImportHistory(firestore(db), employee,
+    {organizerId: "org-a"}), /processing is restricted/);
+  await assert.rejects(listSalesImportHistoryRows(firestore(db), employee,
+    {organizerId: "org-a"}), /processing is restricted/);
+  assert.equal([...db.docs.keys()].some((path) =>
+    path.startsWith("salesImportHistoryRecords/")), false);
+});
