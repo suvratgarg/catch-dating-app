@@ -985,9 +985,37 @@ preview, so concurrent edits require a fresh review. All source rows for one
 organizer stay together in a bounded packet, retaining their separate lineage.
 Offline identity review accounts for unreviewed, unresolved and ambiguous rows
 without inferring a canonical organizer. No public organizer, contact permission,
-listing publication or message is created. Compensation planning is inspection
-only and requires current account and related-record reads; executable rollback
-and historical activity promotion remain separate domain work.
+listing publication or message is created.
+
+`compensation-preview` and `compensation-apply` support one Owner-reviewed
+import correction. The preview binds the current account, original import
+effect and dependent work. An untouched companion may be archived; a later
+edited account keeps its business fields and only the proven import-owned
+cohort additions may be removed. Later source-history records prevent archival.
+The canonical organizer and original import receipts remain intact. A stale
+preview or revoked Owner stops application, including a retry.
+
+Historical notes use separate immutable `salesImportHistoryRows` and
+`salesImportHistoryRecords`, rather than current activities, qualification or
+contact permission. The sequence is `history-template`, `history-freeze`,
+`history-review`, then `history-apply`, each using private files outside Git.
+Every frozen row is promoted, skipped with a reason, or marked review-needed;
+only rows with reviewed canonical identity and accepted import lineage reach a
+server packet. Exact original cell values and source hashes are checked again
+in the transaction. Unknown occurrence dates stay null; importing a first/last
+touch label does not invent a timestamp. Each reviewed source cell has one
+stable record identity, so retries cannot create another copy or reinterpret
+it silently. The apply action requires fresh Owner authority and a current,
+clear Sales account even on receipt replay. Employees can page the separate
+imported history pane in a host's Activity section. This view grants no current
+score, permission, delivery claim or next step.
+
+The history runner freezes every local row disposition, validates every server
+packet receipt, and checkpoints through a fenced Operations lease. It retries
+the same deterministic action ID through the authoritative domain receipt;
+it does not trust a local checkpoint as proof of current access. An unresolved
+source row keeps the overall run incomplete. All source files, mappings,
+reviews and result artifacts stay private.
 
 `outreach-drafting` is a separate registered shadow workflow. It reuses the
 platform run, lease, checkpoint, cache, budget and receipt owners. Inputs freeze

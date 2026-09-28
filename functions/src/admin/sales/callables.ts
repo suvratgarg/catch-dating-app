@@ -181,4 +181,5 @@ export const adminAttestSalesHostSettlement =
 export const adminPreviewSalesImportHistory = read("imports.history.preview");
 export const adminApplySalesImportHistory = write("imports.history.apply");
 export const adminListSalesImportHistory = read("imports.history.list");
-export const adminListSalesImportHistoryRows = read("imports.history.rows.list");
+export const adminListSalesImportHistoryRows =
+  read("imports.history.rows.list");

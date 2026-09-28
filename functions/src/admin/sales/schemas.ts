@@ -104,14 +104,16 @@ const historyPacket = {
       "reason", "entries"], {importId: id, sourceRowId: id, organizerId: id,
       disposition: {enum: ["promoted", "skipped", "review_needed"]},
       reason: {type: "string", minLength: 1, maxLength: 300},
-      entries: {type: "array", minItems: 0, maxItems: 5, items: historyEntry}})},
+      entries: {type: "array", minItems: 0, maxItems: 5,
+        items: historyEntry}})},
 };
 const historyList = strict(["organizerId"], {organizerId: id,
   limit: {type: "integer", minimum: 1, maximum: 25}, cursor: id});
 
 export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
   ...COMMERCIAL_READ_SCHEMAS,
-  "imports.history.preview": strict(Object.keys(historyPacket), historyPacket),
+  "imports.history.preview": strict(
+    Object.keys(historyPacket), historyPacket),
   "imports.history.list": historyList,
   "imports.history.rows.list": historyList,
   "hosts.search": page({
