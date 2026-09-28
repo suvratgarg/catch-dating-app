@@ -265,6 +265,8 @@ test("private demo uses real atomic start limits and only synthetic records", as
   await assert.rejects(demo.getSession(runtime, viewer, {sessionId: session.sessionId,
     grantToken: issued.grantToken}), {code: "permission-denied"});
   const ajv = new Ajv({allErrors: true, strict: false}); addFormats(ajv);
+  ajv.addSchema(JSON.parse(fs.readFileSync(path.resolve(__dirname,
+    "../../contracts/shared/sales_demo_setup_plan.schema.json"), "utf8")));
   const collections = {salesDemoBlueprints: "sales_demo_blueprints",
     salesDemoCapabilities: "sales_demo_capabilities",
     salesDemoInvitations: "sales_demo_invitations",
