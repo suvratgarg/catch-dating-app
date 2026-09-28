@@ -6,9 +6,9 @@ import {fileURLToPath} from "node:url";
 import {affectedFunctionTargets, productionPromotionEnvironment} from "../firebase/affected_function_targets.mjs";
 import {planFirebaseDeployGroups} from "../firebase/plan_firebase_deploy_targets.mjs";
 import {
-  dormantFirebaseFunctionTargets,
   listFirebaseFunctionExports,
   listFirebaseFunctionTargets,
+  readDormantFirebaseFunctionTargets,
 } from "../firebase/list_firebase_function_targets.mjs";
 
 export const FIREBASE_DELIVERY_PLAN_SCHEMA = "catch.firebase-delivery-plan/v2";
@@ -387,9 +387,9 @@ function currentFunctionTargets(sourceRoot) {
   return listFirebaseFunctionTargets(sourceRoot);
 }
 
-function effectiveFunctionTargets(functionTargets) {
-  const dormantTargets = new Set(dormantFirebaseFunctionTargets);
-  return functionTargets.filter((target) => !dormantTargets.has(target));
+function effectiveFunctionTargets(functionTargets, dormantTargets) {
+  const dormant = new Set(dormantTargets);
+  return functionTargets.filter((target) => !dormant.has(target));
 }
 
 export function prepareFirebaseDelivery({
@@ -553,9 +553,15 @@ export function verifyFirebaseDelivery({
     functionTargets: resolvedSourceFunctionTargets,
     binding,
   });
+  // The dormant list must come from the delivery's own source checkout, not
+  // from this control plane: a dormant-list change between packaging and
+  // verification must not make the packaged delivery unverifiable.
   const effectiveSelection = deliverySelection({
     impactPlan,
-    functionTargets: effectiveFunctionTargets(resolvedSourceFunctionTargets),
+    functionTargets: effectiveFunctionTargets(
+      resolvedSourceFunctionTargets,
+      readDormantFirebaseFunctionTargets(sourceRoot),
+    ),
     binding,
   });
   assert(jsonEqual(sourceSelection.deployGroups, deliveryPlan.deployGroups),
