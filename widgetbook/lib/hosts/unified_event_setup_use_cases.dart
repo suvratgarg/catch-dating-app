@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/even
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_basics_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
@@ -569,3 +570,11 @@ class _PublicationPreviewState extends State<_PublicationPreview> {
     ),
   );
 }
+
+@widgetbook.UseCase(
+  name: 'First-save basics fields',
+  type: HostPrivateEventBasicsSection,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget privateEventBasicsSectionPreview(BuildContext context) =>
+    privateEventCreateScreenPreview(context);

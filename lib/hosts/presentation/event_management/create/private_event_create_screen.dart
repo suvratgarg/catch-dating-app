@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -29,6 +28,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_basics_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
@@ -140,8 +140,8 @@ class _PrivateEventCreateScreenState
   @override
   void initState() {
     super.initState();
-    _requestId = _newRequestId();
-    _localDraftId = widget.initialDraft?.id ?? _newRequestId();
+    _requestId = newPrivateEventRequestId();
+    _localDraftId = widget.initialDraft?.id ?? newPrivateEventRequestId();
     _activeDraft = widget.initialDraft;
     final startingValues = widget.initialDraft ?? widget.initialPrefill?.values;
     if (startingValues != null) {
@@ -578,14 +578,6 @@ class _PrivateEventCreateScreenState
         onClose: _PrivateEventCreateBody(this)._close,
       );
     }
-    final fieldCopy = catchFieldCopy(context.l10n);
-    final city = _city;
-    final date = _date;
-    final start = _start;
-    final cityOptions = defaultCityOptions
-        .where((option) => option.eventCreatable)
-        .toList();
-
     return PopScope(
       canPop:
           _allowPop ||
@@ -657,225 +649,48 @@ class _PrivateEventCreateScreenState
                           ),
                           gapH4,
                         ],
-                        CatchSectionList(
-                          emptyStateOmitted: true,
-                          children: [
-                            CatchSection.fieldRows(
-                              first: true,
-                              title:
-                                  context.l10n.hostsPrivateEventBasicsHeading,
-                              children: [
-                                CatchField.input(
-                                  copy: fieldCopy,
-                                  key: const ValueKey('private-event-name'),
-                                  title: context
-                                      .l10n
-                                      .hostsEventDetailsStepTitleEventName,
-                                  contractExemption:
-                                      'Private event first-save schema is owned by the event setup command.',
-                                  controller: _nameController,
-                                  inputHint: context
-                                      .l10n
-                                      .hostsEventDetailsStepPlaceholderEventName,
-                                  textCapitalization: TextCapitalization.words,
-                                  error:
-                                      _showErrors &&
-                                          _nameController.text.trim().isEmpty
-                                      ? context
-                                            .l10n
-                                            .hostsEventDetailsStepVisiblecopyRequired
-                                      : null,
-                                ),
-                                if (receipt != null &&
-                                    !_canChangeSavedCity &&
-                                    _pendingUpdate == null)
-                                  CatchField.read(
-                                    copy: fieldCopy,
-                                    key: const ValueKey('private-event-city'),
-                                    title: context.l10n.hostsPrivateEventCity,
-                                    body:
-                                        city?.label ??
-                                        _savedCityLabel ??
-                                        widget.club.location,
-                                    icon: CatchIcons.locationOnOutlined,
-                                  )
-                                else
-                                  CatchField<CityOption>.control(
-                                    copy: fieldCopy,
-                                    key: const ValueKey('private-event-city'),
-                                    title: context.l10n.hostsPrivateEventCity,
-                                    contractExemption:
-                                        'Private event city is validated by the event setup command.',
-                                    body: _cityInherited
-                                        ? '${city?.label ?? widget.club.location} · ${context.l10n.hostsPrivateEventFromOrganizer}'
-                                        : city?.label ??
-                                              _savedCityLabel ??
-                                              context
-                                                  .l10n
-                                                  .hostsPrivateEventChooseCity,
-                                    disclosureMode:
-                                        _cityAccordion.isExpanded('city')
-                                        ? CatchFieldMode.controlledExpanded
-                                        : CatchFieldMode.controlledCollapsed,
-                                    onOpenChanged: (open) {
-                                      if (open) {
-                                        _cityAccordion.toggle('city');
-                                      } else {
-                                        _cityAccordion.collapse();
-                                      }
-                                    },
-                                    icon: CatchIcons.locationOnOutlined,
-                                    error:
-                                        _showErrors &&
-                                            city == null &&
-                                            _savedCity == null &&
-                                            !_cityInherited
-                                        ? context
-                                              .l10n
-                                              .hostsPrivateEventChooseCity
-                                        : null,
-                                    child: CatchChoiceInput<CityOption>(
-                                      values: cityOptions,
-                                      itemLabelBuilder: (option) =>
-                                          option.label,
-                                      selected: city == null
-                                          ? const <CityOption>{}
-                                          : {city},
-                                      mode: CatchChipMode.single,
-                                      autoClose: true,
-                                      onChanged: (selection) {
-                                        if (selection.isEmpty) return;
-                                        final picked = selection.single;
-                                        setState(() {
-                                          _city = picked;
-                                          _cityInherited = false;
-                                          _timezoneController.text =
-                                              picked.timeZone;
-                                          _timezoneInherited = false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                if ((receipt == null || _canChangeSavedCity) &&
-                                    !_cityInherited &&
-                                    _managerDefaults?.cityId != null)
-                                  CatchField.action(
-                                    copy: fieldCopy,
-                                    title: context
-                                        .l10n
-                                        .hostsPrivateEventUseOrganizerCity,
-                                    body: _city?.label ?? widget.club.location,
-                                    onTap: _restoreOrganizerCity,
-                                  ),
-                                CatchField.nav(
-                                  copy: fieldCopy,
-                                  key: const ValueKey('private-event-date'),
-                                  title: context.l10n.hostsWhenStepLabelDate,
-                                  body: date == null
-                                      ? context
-                                            .l10n
-                                            .hostsWhenStepPlaceholderSelectADate
-                                      : MaterialLocalizations.of(
-                                          context,
-                                        ).formatMediumDate(date),
-                                  icon: CatchIcons.calendarTodayOutlined,
-                                  error: _showErrors && date == null
-                                      ? context
-                                            .l10n
-                                            .hostsWhenStepVisiblecopyPleaseSelectADate
-                                      : null,
-                                  onTap: _saving ? null : _pickDate,
-                                ),
-                                CatchField.nav(
-                                  copy: fieldCopy,
-                                  key: const ValueKey('private-event-start'),
-                                  title:
-                                      context.l10n.hostsWhenStepLabelStartTime,
-                                  body: start == null
-                                      ? context
-                                            .l10n
-                                            .hostsWhenStepPlaceholderSelectStartTime
-                                      : start.format(context),
-                                  icon: CatchIcons.scheduleOutlined,
-                                  error: _showErrors && start == null
-                                      ? context
-                                            .l10n
-                                            .hostsWhenStepVisiblecopyRequired
-                                      : null,
-                                  onTap: _saving ? null : _pickStart,
-                                ),
-                                CatchField.input(
-                                  copy: fieldCopy,
-                                  key: const ValueKey('private-event-timezone'),
-                                  title: context.l10n.hostsPrivateEventTimezone,
-                                  contractExemption:
-                                      'Private event IANA timezone schema is pending generated constraints.',
-                                  controller: _timezoneController,
-                                  inputHint: context
-                                      .l10n
-                                      .hostsPrivateEventTimezoneHint,
-                                  helperText: context
-                                      .l10n
-                                      .hostsPrivateEventTimezoneSuggestion,
-                                  onChanged: (_) {
-                                    if (_timezoneInherited) {
-                                      setState(
-                                        () => _timezoneInherited = false,
-                                      );
-                                    }
-                                  },
-                                  error:
-                                      _showErrors &&
-                                          _timezoneController.text
-                                              .trim()
-                                              .isEmpty &&
-                                          !_timezoneInherited
-                                      ? context
-                                            .l10n
-                                            .hostsWhenStepVisiblecopyRequired
-                                      : null,
-                                ),
-                                if (_timezoneInherited)
-                                  CatchField.read(
-                                    copy: fieldCopy,
-                                    title: context
-                                        .l10n
-                                        .hostsPrivateEventFromOrganizer,
-                                    body: _managerDefaults?.timezone,
-                                  )
-                                else if (_managerDefaults?.timezone != null)
-                                  CatchField.action(
-                                    copy: fieldCopy,
-                                    title: context
-                                        .l10n
-                                        .hostsPrivateEventUseOrganizerTimezone,
-                                    body: _managerDefaults?.timezone,
-                                    onTap: _restoreOrganizerTimezone,
-                                  ),
-                                CatchField.nav(
-                                  copy: fieldCopy,
-                                  title:
-                                      context.l10n.hostsPrivateEventMoreBasics,
-                                  body: context
-                                      .l10n
-                                      .hostsPrivateEventMoreBasicsBody,
-                                  icon: CatchIcons.tuneRounded,
-                                  onTap: () => setState(
-                                    () => _moreBasicsOpen = !_moreBasicsOpen,
-                                  ),
-                                ),
-                                if (_moreBasicsOpen)
-                                  CatchField.read(
-                                    copy: fieldCopy,
-                                    title:
-                                        context.l10n.hostsPrivateEventAfterSave,
-                                    body: context
-                                        .l10n
-                                        .hostsPrivateEventAfterSaveBody,
-                                  ),
-                              ],
-                            ),
-                          ],
+                        HostPrivateEventBasicsSection(
+                          nameController: _nameController,
+                          timezoneController: _timezoneController,
+                          city: _city,
+                          date: _date,
+                          start: _start,
+                          organizerLocation: widget.club.location,
+                          savedCityLabel: _savedCityLabel,
+                          suggestedTimezone: _managerDefaults?.timezone,
+                          cityAccordion: _cityAccordion,
+                          cityLocked:
+                              receipt != null &&
+                              !_canChangeSavedCity &&
+                              _pendingUpdate == null,
+                          canRestoreCity:
+                              (receipt == null || _canChangeSavedCity) &&
+                              !_cityInherited &&
+                              _managerDefaults?.cityId != null,
+                          hasSavedCity: _savedCity != null,
+                          cityInherited: _cityInherited,
+                          timezoneInherited: _timezoneInherited,
+                          showErrors: _showErrors,
+                          saving: _saving,
+                          moreBasicsOpen: _moreBasicsOpen,
+                          onChooseCity: (picked) => setState(() {
+                            _city = picked;
+                            _cityInherited = false;
+                            _timezoneController.text = picked.timeZone;
+                            _timezoneInherited = false;
+                          }),
+                          onRestoreCity: _restoreOrganizerCity,
+                          onRestoreTimezone: _restoreOrganizerTimezone,
+                          onTimezoneEdited: () {
+                            if (_timezoneInherited) {
+                              setState(() => _timezoneInherited = false);
+                            }
+                          },
+                          onPickDate: _pickDate,
+                          onPickStart: _pickStart,
+                          onToggleMoreBasics: () => setState(
+                            () => _moreBasicsOpen = !_moreBasicsOpen,
+                          ),
                         ),
                         gapH4,
                         Text(

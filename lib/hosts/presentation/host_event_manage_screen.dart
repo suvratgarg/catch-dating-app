@@ -641,11 +641,29 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
   }
 
+  void _showInviteLinkResult(String label, {bool disabled = false}) {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    showCatchNotice(
+      context,
+      disabled
+          ? l10n.hostsHostEventManageScreenVisiblecopyLabelDisabled(
+              label: label,
+            )
+          : l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(label: label),
+    );
+  }
+
+  void _logActionError(Object error, StackTrace stackTrace, String reason) {
+    ref.read(errorLoggerProvider).logError(error, stackTrace, reason: reason);
+  }
+
   Future<void> _createNamedInviteLink({
     required Event event,
     required String inviteCode,
     required HostInviteLinkDraft draft,
   }) async {
+    final l10n = context.l10n;
     try {
       final label = await HostEventManageController.createInviteLinkMutation
           .run(
@@ -658,23 +676,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   draft: draft,
                 ),
           );
-      if (!mounted) return;
-      showCatchNotice(
-        context,
-        context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
-          label: label,
-        ),
-      );
+      _showInviteLinkResult(label);
     } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: context
-                .l10n
-                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCreatenamedinvitelinkFailed,
-          );
+      _logActionError(
+        error,
+        stackTrace,
+        l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCreatenamedinvitelinkFailed,
+      );
     }
   }
 
@@ -683,6 +691,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     required String inviteCode,
     required EventInviteLink link,
   }) async {
+    final l10n = context.l10n;
     try {
       final label = await HostEventManageController.copyInviteLinkMutation.run(
         ref,
@@ -690,23 +699,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .copyInviteLink(event: event, inviteCode: inviteCode, link: link),
       );
-      if (!mounted) return;
-      showCatchNotice(
-        context,
-        context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
-          label: label,
-        ),
-      );
+      _showInviteLinkResult(label);
     } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: context
-                .l10n
-                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCopynamedinvitelinkFailed,
-          );
+      _logActionError(
+        error,
+        stackTrace,
+        l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCopynamedinvitelinkFailed,
+      );
     }
   }
 
@@ -714,20 +713,20 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     required Event event,
     required EventInviteLink link,
   }) async {
+    final l10n = context.l10n;
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: context.l10n.hostsHostEventManageScreenTitleDisableInviteLink,
-      message: context.l10n
-          .hostsHostEventManageScreenMessageThisStopsNewAttribution(
-            label: link.label,
-          ),
+      title: l10n.hostsHostEventManageScreenTitleDisableInviteLink,
+      message: l10n.hostsHostEventManageScreenMessageThisStopsNewAttribution(
+        label: link.label,
+      ),
       actions: [
         CatchDialogAction(
-          label: context.l10n.hostsHostEventManageScreenLabelKeepActive,
+          label: l10n.hostsHostEventManageScreenLabelKeepActive,
           value: false,
         ),
         CatchDialogAction(
-          label: context.l10n.hostsHostEventManageScreenLabelDisable,
+          label: l10n.hostsHostEventManageScreenLabelDisable,
           value: true,
           isDestructive: true,
         ),
@@ -743,23 +742,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 .get(hostEventManageActionsProvider)
                 .disableInviteLink(event: event, link: link),
           );
-      if (!mounted) return;
-      showCatchNotice(
-        context,
-        context.l10n.hostsHostEventManageScreenVisiblecopyLabelDisabled(
-          label: label,
-        ),
-      );
+      _showInviteLinkResult(label, disabled: true);
     } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: context
-                .l10n
-                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenDisablenamedinvitelinkFailed,
-          );
+      _logActionError(
+        error,
+        stackTrace,
+        l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenDisablenamedinvitelinkFailed,
+      );
     }
   }
 
@@ -790,23 +779,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           .then<void>(
             (_) {},
             onError: (Object error, StackTrace stackTrace) {
-              ref
-                  .read(errorLoggerProvider)
-                  .logError(
-                    error,
-                    stackTrace,
-                    reason: l10n
-                        .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed,
-                  );
+              _logActionError(
+                error,
+                stackTrace,
+                l10n.hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed,
+              );
             },
           ),
     );
   }
 }
 
-Object? _firstMutationError(Iterable<Object> mutations) {
-  for (final mutation in mutations) {
-    if (mutation is MutationError) return mutation.error;
-  }
-  return null;
-}
+Object? _firstMutationError(Iterable<Object> mutations) =>
+    mutations.whereType<MutationError>().firstOrNull?.error;

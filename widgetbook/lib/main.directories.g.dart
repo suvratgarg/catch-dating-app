@@ -10513,6 +10513,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostPrivateEventBasicsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'First-save basics fields',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventBasicsSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostPrivateEventListingSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
