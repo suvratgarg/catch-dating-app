@@ -23,6 +23,7 @@ import {SalesImportWorkspace} from "./SalesImportPanel";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
+import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "people" | "workflow" | "activity" |
@@ -229,6 +230,7 @@ function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
   const [selectedCanonicalId, setSelectedCanonicalId] = useState("");
   const rows = controller.accounts.data?.rows ?? [];
   return <>
+  {renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
   {showAddHost ? <Panel title="Add a host" icon={<Search size={18} />}>
     <p>First find the existing organizer identity. Adding it to Sales creates a
       private record and does not publish a listing or approve a claim.</p>
