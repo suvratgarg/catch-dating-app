@@ -346,6 +346,10 @@ export function useOrganizerEntitlementController({
       }
       return true;
     } catch (error) {
+      if (isRequestValidationRejection(error,
+        "adminRevokeOrganizerEntitlementGrant")) {
+        clearRevoke(payload.operationId);
+      }
       onError(messageFromError(
         error,
         "Unable to revoke the entitlement grant."
@@ -426,6 +430,10 @@ function grantBlocker({
   if (validFrom !== null && validUntil !== null && validUntil <= validFrom) {
     return "Valid-until must be after valid-from.";
   }
+  if (validFrom === null && validUntil !== null &&
+      validUntil <= Date.now()) {
+    return "Valid-until must be in the future when valid-from is blank.";
+  }
   if (grantForm.source === "manualInvoice" && !grantForm.receiptRef.trim()) {
     return "Manual invoice grants need the invoice receipt reference.";
   }
@@ -490,8 +498,24 @@ function writePending(key: string, actorUid: string, payload: unknown): boolean 
 }
 
 function isPrewriteGrantRejection(error: unknown): boolean {
-  return Boolean(error && typeof error === "object" && "code" in error &&
-    error.code === "functions/invalid-argument");
+  if (isRequestValidationRejection(error,
+    "adminGrantOrganizerEntitlement")) return true;
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return false;
+  }
+  if (error.code === "functions/invalid-argument") return true;
+  return error.code === "functions/failed-precondition" &&
+    "message" in error && typeof error.message === "string" &&
+    error.message.includes("validUntil must be after validFrom.");
+}
+
+function isRequestValidationRejection(
+  error: unknown, callable: string
+): boolean {
+  return Boolean(error && typeof error === "object" &&
+    "name" in error && error.name === "AdminCallableValidationError" &&
+    "direction" in error && error.direction === "request" &&
+    "callable" in error && error.callable === callable);
 }
 
 function clearPending(key: string): void {

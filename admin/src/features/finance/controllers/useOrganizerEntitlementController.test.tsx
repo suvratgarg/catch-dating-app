@@ -278,6 +278,83 @@ describe("useOrganizerEntitlementController", () => {
     h.unmount();
   });
 
+  it("releases only the matching local request validation failure", async () => {
+    const invalidRequest = (callable: string, direction = "request") =>
+      Object.assign(new Error("Invalid request"), {
+        name: "AdminCallableValidationError", callable, direction,
+      });
+    mocks.grantOrganizerEntitlement
+      .mockRejectedValueOnce(invalidRequest("adminGrantOrganizerEntitlement"))
+      .mockRejectedValueOnce(invalidRequest(
+        "adminGrantOrganizerEntitlement", "response"));
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      h.result.current.setOrganizerId("organizer-1");
+      h.result.current.setGrantField("receiptRef", "INV-ONE");
+      h.result.current.setGrantField("note", "n".repeat(501));
+    });
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    expect(h.result.current.pendingGrant).toBeNull();
+    act(() => h.result.current.setGrantField("note", "Corrected"));
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    expect(h.result.current.pendingGrant).not.toBeNull();
+    h.unmount();
+  });
+
+  it("releases a rejected revoke request for correction", async () => {
+    mocks.revokeOrganizerEntitlementGrant.mockRejectedValueOnce(
+      Object.assign(new Error("Invalid request"), {
+        name: "AdminCallableValidationError",
+        callable: "adminRevokeOrganizerEntitlementGrant",
+        direction: "request",
+      }));
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => h.result.current.setOrganizerId("organizer-1"));
+    await act(async () => expect(await h.result.current.load()).toBe(true));
+    act(() => {
+      h.result.current.setRevokeTargetGrantId("grant_existing-1");
+      h.result.current.setRevokeReason("r".repeat(501));
+    });
+    await act(async () => expect(await h.result.current.revoke()).toBe(false));
+    expect(h.result.current.pendingRevoke).toBeNull();
+    h.unmount();
+  });
+
+  it("blocks an expired valid-until when valid-from is blank", () => {
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      h.result.current.setOrganizerId("organizer-1");
+      h.result.current.setGrantField("receiptRef", "INV-ONE");
+      h.result.current.setGrantField("validUntil", "2020-01-01T00:00");
+    });
+    expect(h.result.current.grantDisabledReason).toBe(
+      "Valid-until must be in the future when valid-from is blank.");
+    h.unmount();
+  });
+
+  it("can correct the server's specific pre-write date-window rejection", async () => {
+    mocks.grantOrganizerEntitlement.mockRejectedValueOnce(Object.assign(
+      new Error("validUntil must be after validFrom."), {
+        code: "functions/failed-precondition",
+      }));
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      h.result.current.setOrganizerId("organizer-1");
+      h.result.current.setGrantField("receiptRef", "INV-ONE");
+    });
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    expect(h.result.current.pendingGrant).toBeNull();
+    h.unmount();
+  });
+
   it("keeps uncertain operations isolated across admin actors", async () => {
     mocks.grantOrganizerEntitlement.mockRejectedValue(new Error("response lost"));
     const actorA = renderHook(() => useOrganizerEntitlementController({
