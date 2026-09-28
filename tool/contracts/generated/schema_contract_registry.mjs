@@ -113005,6 +113005,18 @@ export const organizerEntitlementsDocumentSchema = {
             "minLength": 1,
             "maxLength": 180
           },
+          "operationContentHash": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128,
+            "description": "Durable grant operation identity after the short-lived mutation receipt expires; absent only on legacy grants."
+          },
+          "operationResultRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Original grant result revision for exact replay after receipt expiry; absent only on legacy grants."
+          },
           "sku": {
             "type": "string",
             "enum": [

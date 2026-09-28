@@ -33,6 +33,8 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {organizerEntitlementSkuCatalog} from
+  "../shared/generated/catalogs/organizerEntitlementSkuCatalog";
 
 const entitlementCollection = "organizerEntitlements";
 const receiptCollection = "organizerEntitlementReceipts";
@@ -82,6 +84,15 @@ export async function adminGrantOrganizerEntitlementHandler(
     validateAdminGrantOrganizerEntitlementCallablePayload,
     normalizeGrantPayload
   );
+  const sku = organizerEntitlementSkuCatalog.skus[data.sku];
+  if (!sku || data.unit !== sku.unit) {
+    throw new HttpsError("invalid-argument",
+      "The entitlement unit must match the selected SKU.");
+  }
+  if (data.source === "manualInvoice" && !data.receiptRef?.trim()) {
+    throw new HttpsError("invalid-argument",
+      "Manual invoice grants need an invoice receipt reference.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -102,6 +113,18 @@ export async function adminGrantOrganizerEntitlementHandler(
 
     const before = docSnap.exists ?
       parseEntitlements(docSnap.data()) : null;
+    const priorGrant = before?.grants.find((grant) =>
+      grant.grantId === grantId);
+    if (priorGrant) {
+      if (priorGrant.operationContentHash !== contentHash ||
+          priorGrant.operationResultRevision === undefined) {
+        throw new HttpsError("failed-precondition",
+          "This grant operation id was already used with a different or " +
+          "unverifiable payload.");
+      }
+      return mutationResponse(data.organizerId,
+        priorGrant.operationResultRevision, grantId, true);
+    }
     const now = deps.now();
     assertClock(now);
     if ((before?.grants.length ?? 0) >= maxGrantsPerOrganizer) {
@@ -126,6 +149,8 @@ export async function adminGrantOrganizerEntitlementHandler(
     const timestamp = deps.serverTimestamp();
     const grant: EntitlementGrant = {
       grantId,
+      operationContentHash: contentHash,
+      operationResultRevision: (before?.revision ?? 0) + 1,
       sku: data.sku,
       unit: data.unit,
       quantityTotal: data.quantityTotal,

@@ -88526,6 +88526,21 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerEntitlementsDocumentGrantsItemsOperationContentHash = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.operationContentHash',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsOperationResultRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.operationResultRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerEntitlementsDocumentGrantsItemsQuantityConsumed = CatchContractFieldConstraints(
     path: 'organizerEntitlementsDocument.grants.items.quantityConsumed',
     required: true,
@@ -139074,6 +139089,8 @@ abstract final class CatchContractConstraints {
     'organizerEntitlementsDocument.grants.items.grantedBy': organizerEntitlementsDocumentGrantsItemsGrantedBy,
     'organizerEntitlementsDocument.grants.items.grantId': organizerEntitlementsDocumentGrantsItemsGrantId,
     'organizerEntitlementsDocument.grants.items.note': organizerEntitlementsDocumentGrantsItemsNote,
+    'organizerEntitlementsDocument.grants.items.operationContentHash': organizerEntitlementsDocumentGrantsItemsOperationContentHash,
+    'organizerEntitlementsDocument.grants.items.operationResultRevision': organizerEntitlementsDocumentGrantsItemsOperationResultRevision,
     'organizerEntitlementsDocument.grants.items.quantityConsumed': organizerEntitlementsDocumentGrantsItemsQuantityConsumed,
     'organizerEntitlementsDocument.grants.items.quantityTotal': organizerEntitlementsDocumentGrantsItemsQuantityTotal,
     'organizerEntitlementsDocument.grants.items.receiptRef': organizerEntitlementsDocumentGrantsItemsReceiptRef,

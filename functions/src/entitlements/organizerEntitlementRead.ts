@@ -23,6 +23,7 @@ import {
 import {validateOrganizerEntitlementsDocument} from
   "../shared/generated/validators/organizerEntitlementsDocument";
 import {grantIsActive, grantRemaining} from "./entitlementPolicy";
+import {adminRolesFromToken} from "../admin/adminAuth";
 
 const entitlementCollection = "organizerEntitlements";
 
@@ -66,11 +67,15 @@ export async function getOrganizerEntitlementHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "getOrganizerEntitlement");
-  await requireOrganizerManager({
-    db,
-    organizerId: data.organizerId,
-    actorUid: uid,
-  });
+  const adminRoles = adminRolesFromToken(
+    request.auth?.token as Record<string, unknown> | undefined);
+  if (!adminRoles.includes("finance") && !adminRoles.includes("adminOwner")) {
+    await requireOrganizerManager({
+      db,
+      organizerId: data.organizerId,
+      actorUid: uid,
+    });
+  }
   const snap = await db.collection(entitlementCollection)
     .doc(data.organizerId).get();
   const doc = snap.exists ? parseEntitlements(snap.data()) : null;

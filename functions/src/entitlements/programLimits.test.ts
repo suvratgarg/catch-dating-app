@@ -82,25 +82,26 @@ test("disallowed capabilities are sorted and deduped", () => {
     disallowedCapabilities(["forms"], ["forms"]), []);
 });
 
-test("snapshot wins over catalog; missing dims fall back", () => {
+test("explicit null and empty capabilities preserve frozen terms", () => {
   const ceiling = resolveProgramCeiling(catalog, {
     sku: "wedding_essentials",
     limits: {
       guests: 175, functions: null,
       staffAssignments: null, momentsPerFunction: null,
     },
-    capabilitiesAllowed: ["forms"],
+    capabilitiesAllowed: [],
   });
   assert.equal(ceiling?.limits.guests, 175);
-  assert.equal(ceiling?.limits.functions, 5);
-  assert.equal(ceiling?.limits.momentsPerFunction, 3);
-  assert.deepEqual(ceiling?.capabilitiesAllowed, ["forms"]);
+  assert.equal(ceiling?.limits.functions, null);
+  assert.equal(ceiling?.limits.momentsPerFunction, null);
+  assert.deepEqual(ceiling?.capabilitiesAllowed, []);
 });
 
-test("empty snapshot capabilities fall back to catalog ceiling", () => {
+test("only absent snapshot terms fall back to the catalog", () => {
   const ceiling = resolveProgramCeiling(catalog, {
-    sku: "wedding_essentials", limits, capabilitiesAllowed: [],
+    sku: "wedding_essentials", limits: {guests: 175},
   });
+  assert.deepEqual(ceiling?.limits, {...limits, guests: 175});
   assert.deepEqual(ceiling?.capabilitiesAllowed, ["forms", "messaging"]);
 });
 

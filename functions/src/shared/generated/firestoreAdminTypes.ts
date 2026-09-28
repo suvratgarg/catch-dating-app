@@ -5943,6 +5943,14 @@ export interface OrganizerEntitlementsDocument {
    */
   grants: {
     grantId: string;
+    /**
+     * Durable grant operation identity after the short-lived mutation receipt expires; absent only on legacy grants.
+     */
+    operationContentHash?: string;
+    /**
+     * Original grant result revision for exact replay after receipt expiry; absent only on legacy grants.
+     */
+    operationResultRevision?: number;
     sku:
       | "wedding_essentials"
       | "wedding_pro"

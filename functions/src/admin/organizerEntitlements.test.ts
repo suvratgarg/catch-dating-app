@@ -216,6 +216,55 @@ test("grant replays on the same operation and conflicts on changed input",
     );
   });
 
+test("grant identity survives receipt expiry, including revoked grants",
+  async () => {
+    const firestore = new FakeFirestore();
+    const {deps} = depsFor(firestore);
+    const first = await adminGrantOrganizerEntitlementHandler(
+      callableRequest(grantPayload), deps);
+    delete firestore.docs[
+      "organizerEntitlementReceipts/organizer-1_op-aaaaaaaaaaaaaaaaaaaa"];
+    const replay = await adminGrantOrganizerEntitlementHandler(
+      callableRequest(grantPayload), deps);
+    assert.deepEqual(replay, {...first, replayed: true});
+    await assert.rejects(
+      () => adminGrantOrganizerEntitlementHandler(callableRequest({
+        ...grantPayload, quantityTotal: 2,
+      }), deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+    await adminRevokeOrganizerEntitlementGrantHandler(callableRequest({
+      organizerId: "organizer-1", operationId: "op-bbbbbbbbbbbbbbbbbbbb",
+      grantId: first.grantId, reason: "Cancelled",
+    }), deps);
+    assert.deepEqual(await adminGrantOrganizerEntitlementHandler(
+      callableRequest(grantPayload), deps), {...first, replayed: true});
+    const grants = firestore.get("organizerEntitlements/organizer-1")?.grants as
+      FakeData[];
+    assert.equal(grants.length, 1);
+    assert.notEqual(grants[0].revokedAt, null);
+  });
+
+test("grant rejects SKU units and missing manual invoice references",
+  async () => {
+    const firestore = new FakeFirestore();
+    const {deps} = depsFor(firestore);
+    await assert.rejects(
+      () => adminGrantOrganizerEntitlementHandler(callableRequest({
+        ...grantPayload, sku: "planner_annual", unit: "program",
+      }), deps),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+    await assert.rejects(
+      () => adminGrantOrganizerEntitlementHandler(callableRequest({
+        ...grantPayload, receiptRef: "  ",
+      }), deps),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+    assert.equal(firestore.get("organizerEntitlements/organizer-1"),
+      undefined);
+  });
+
 test("revoke marks the grant and refuses unknown or repeated revokes",
   async () => {
     const firestore = new FakeFirestore();
@@ -373,3 +422,19 @@ test("getOrganizerEntitlement serves an empty projection and fences managers",
       (error) => assertHttpsCode(error, "not-found")
     );
   });
+
+test("Finance and Admin Owner can read without organizer membership", async () => {
+  const firestore = new FakeFirestore();
+  const {deps} = depsFor(firestore);
+  for (const role of ["finance", "adminOwner"]) {
+    const result = await getOrganizerEntitlementHandler(
+      callableRequest({organizerId: "organizer-1"}, {[role]: true}), deps);
+    assert.equal(result.organizerId, "organizer-1");
+    assert.deepEqual(result.grants, []);
+  }
+  await assert.rejects(
+    () => getOrganizerEntitlementHandler(
+      callableRequest({organizerId: "organizer-1"}, {support: true}), deps),
+    (error) => assertHttpsCode(error, "not-found")
+  );
+});

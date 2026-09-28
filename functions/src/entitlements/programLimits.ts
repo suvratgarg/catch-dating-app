@@ -84,8 +84,8 @@ export function resolveProgramCeiling(
   catalog: EntitlementSkuCatalog,
   snapshot: {
     sku: string;
-    limits: SkuLimits;
-    capabilitiesAllowed: ReadonlyArray<string>;
+    limits: Partial<SkuLimits>;
+    capabilitiesAllowed?: ReadonlyArray<string>;
   } | null,
 ): {limits: SkuLimits; capabilitiesAllowed: ReadonlyArray<string>} | null {
   if (snapshot === null) return null;
@@ -93,15 +93,18 @@ export function resolveProgramCeiling(
   const catalogLimits = catalogEntry?.limits;
   return {
     limits: {
-      guests: snapshot.limits.guests ?? catalogLimits?.guests ?? null,
-      functions: snapshot.limits.functions ?? catalogLimits?.functions ??
-        null,
-      staffAssignments: snapshot.limits.staffAssignments ??
-        catalogLimits?.staffAssignments ?? null,
-      momentsPerFunction: snapshot.limits.momentsPerFunction ??
-        catalogLimits?.momentsPerFunction ?? null,
+      guests: snapshot.limits.guests === undefined ?
+        catalogLimits?.guests ?? null : snapshot.limits.guests,
+      functions: snapshot.limits.functions === undefined ?
+        catalogLimits?.functions ?? null : snapshot.limits.functions,
+      staffAssignments: snapshot.limits.staffAssignments === undefined ?
+        catalogLimits?.staffAssignments ?? null :
+        snapshot.limits.staffAssignments,
+      momentsPerFunction: snapshot.limits.momentsPerFunction === undefined ?
+        catalogLimits?.momentsPerFunction ?? null :
+        snapshot.limits.momentsPerFunction,
     },
-    capabilitiesAllowed: snapshot.capabilitiesAllowed.length > 0 ?
+    capabilitiesAllowed: snapshot.capabilitiesAllowed !== undefined ?
       snapshot.capabilitiesAllowed :
       catalogEntry?.capabilitiesAllowed ?? [],
   };
