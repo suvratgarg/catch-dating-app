@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {useCallback, useState} from "react";
+import {useCallback, useRef, useState} from "react";
 import type {AdminGrantOrganizerEntitlementCallablePayload} from
   "../../../generated/contracts/adminGrantOrganizerEntitlementCallablePayload";
 import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
@@ -82,9 +82,11 @@ const organizerEntitlementKeys = {
 };
 
 export function useOrganizerEntitlementController({
+  actorUid,
   onError,
   onNotice,
 }: {
+  actorUid: string;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }): OrganizerEntitlementController {
@@ -108,24 +110,39 @@ export function useOrganizerEntitlementController({
   const [revokeTargetGrantId, setRevokeTargetGrantId] =
     useState<string | null>(null);
   const [revokeReason, setRevokeReason] = useState("");
+  const grantKey = `${pendingGrantKey}:${actorUid}`;
+  const revokeKey = `${pendingRevokeKey}:${actorUid}`;
   const [frozenGrant, setFrozenGrant] = useState<
     AdminGrantOrganizerEntitlementCallablePayload | null>(() =>
-    readPending<AdminGrantOrganizerEntitlementCallablePayload>(pendingGrantKey));
+    readPending<AdminGrantOrganizerEntitlementCallablePayload>(
+      grantKey, actorUid));
   const [frozenRevoke, setFrozenRevoke] = useState<
     AdminRevokeOrganizerEntitlementGrantCallablePayload | null>(() =>
     readPending<AdminRevokeOrganizerEntitlementGrantCallablePayload>(
-      pendingRevokeKey));
+      revokeKey, actorUid));
+  const frozenGrantRef = useRef(frozenGrant);
+  const frozenRevokeRef = useRef(frozenRevoke);
+  const ledgerRequestGeneration = useRef(0);
 
-  const clearGrant = useCallback(() => {
-    clearPending(pendingGrantKey);
+  const clearGrant = useCallback((expectedOperationId: string) => {
+    if (frozenGrantRef.current?.operationId !== expectedOperationId) return;
+    if (readPending<AdminGrantOrganizerEntitlementCallablePayload>(
+      grantKey, actorUid)?.operationId !== expectedOperationId) return;
+    clearPending(grantKey);
+    frozenGrantRef.current = null;
     setFrozenGrant(null);
-  }, []);
-  const clearRevoke = useCallback(() => {
-    clearPending(pendingRevokeKey);
+  }, [actorUid, grantKey]);
+  const clearRevoke = useCallback((expectedOperationId: string) => {
+    if (frozenRevokeRef.current?.operationId !== expectedOperationId) return;
+    if (readPending<AdminRevokeOrganizerEntitlementGrantCallablePayload>(
+      revokeKey, actorUid)?.operationId !== expectedOperationId) return;
+    clearPending(revokeKey);
+    frozenRevokeRef.current = null;
     setFrozenRevoke(null);
-  }, []);
+  }, [actorUid, revokeKey]);
 
   const setOrganizerId = useCallback((value: string) => {
+    ++ledgerRequestGeneration.current;
     setOrganizerIdState(value);
     setEntitlement(null);
     setRevokeTargetGrantId(null);
@@ -150,28 +167,31 @@ export function useOrganizerEntitlementController({
       onError("Enter the organizer identifier.");
       return false;
     }
+    const generation = ++ledgerRequestGeneration.current;
     try {
       const response = await loadMutation.mutateAsync({
         organizerId: trimmedOrganizerId,
       });
+      if (generation !== ledgerRequestGeneration.current) return true;
       setOrganizerIdState(trimmedOrganizerId);
       setEntitlement(response);
       setRevokeTargetGrantId(null);
       if (frozenGrant?.organizerId === trimmedOrganizerId &&
           response.grants.some((grant) =>
             grant.grantId === `grant_${frozenGrant.operationId}`)) {
-        clearGrant();
+        clearGrant(frozenGrant.operationId);
       }
       if (frozenRevoke?.organizerId === trimmedOrganizerId &&
           response.grants.some((grant) =>
             grant.grantId === frozenRevoke.grantId && grant.revoked)) {
-        clearRevoke();
+        clearRevoke(frozenRevoke.operationId);
       }
       onError(null);
       onNotice("Current organizer entitlement ledger loaded. " +
         "Unconfirmed mutations remain available for exact retry.");
       return true;
     } catch (error) {
+      if (generation !== ledgerRequestGeneration.current) return false;
       setEntitlement(null);
       onError(messageFromError(
         error,
@@ -210,15 +230,18 @@ export function useOrganizerEntitlementController({
       };
     const operation = beginOperation();
     if (!operation) return false;
-    if (!frozenGrant && !writePending(pendingGrantKey, payload)) {
+    if (!frozenGrant && !writePending(grantKey, actorUid, payload)) {
       endOperation(operation);
       onError("This browser could not retain the grant for a safe retry.");
       return false;
     }
-    if (!frozenGrant) setFrozenGrant(payload);
+    if (!frozenGrant) {
+      frozenGrantRef.current = payload;
+      setFrozenGrant(payload);
+    }
     try {
       const result = await grantMutation.mutateAsync(payload);
-      clearGrant();
+      clearGrant(payload.operationId);
       setOrganizerIdState(payload.organizerId);
       setRevokeTargetGrantId(null);
       setRevokeReason("");
@@ -226,15 +249,24 @@ export function useOrganizerEntitlementController({
       onNotice(result.replayed ?
         "That grant operation was already recorded; the ledger was refreshed." :
         `Entitlement grant recorded at revision ${result.revision}. It grants no dispatch authority.`);
+      const generation = ++ledgerRequestGeneration.current;
       try {
-        setEntitlement(await loadMutation.mutateAsync({
+        const response = await loadMutation.mutateAsync({
           organizerId: payload.organizerId,
-        }));
+        });
+        if (generation === ledgerRequestGeneration.current) {
+          setEntitlement(response);
+        }
       } catch {
-        setEntitlement(null);
+        if (generation === ledgerRequestGeneration.current) {
+          setEntitlement(null);
+        }
       }
       return true;
     } catch (error) {
+      // This callable rejects invalid arguments before opening a transaction.
+      // Only that definitive response can release a request for correction.
+      if (isPrewriteGrantRejection(error)) clearGrant(payload.operationId);
       onError(messageFromError(
         error,
         "Unable to record the entitlement grant."
@@ -245,6 +277,7 @@ export function useOrganizerEntitlementController({
     }
   }, [
     beginOperation,
+    actorUid,
     clearGrant,
     endOperation,
     grantDisabledReason,
@@ -279,15 +312,18 @@ export function useOrganizerEntitlementController({
       };
     const operation = beginOperation();
     if (!operation) return false;
-    if (!frozenRevoke && !writePending(pendingRevokeKey, payload)) {
+    if (!frozenRevoke && !writePending(revokeKey, actorUid, payload)) {
       endOperation(operation);
       onError("This browser could not retain the revocation for a safe retry.");
       return false;
     }
-    if (!frozenRevoke) setFrozenRevoke(payload);
+    if (!frozenRevoke) {
+      frozenRevokeRef.current = payload;
+      setFrozenRevoke(payload);
+    }
     try {
       const result = await revokeMutation.mutateAsync(payload);
-      clearRevoke();
+      clearRevoke(payload.operationId);
       setOrganizerIdState(payload.organizerId);
       setRevokeTargetGrantId(null);
       setRevokeReason("");
@@ -295,12 +331,18 @@ export function useOrganizerEntitlementController({
       onNotice(result.replayed ?
         "That revoke operation was already recorded; the ledger was refreshed." :
         `Entitlement grant revoked at revision ${result.revision}.`);
+      const generation = ++ledgerRequestGeneration.current;
       try {
-        setEntitlement(await loadMutation.mutateAsync({
+        const response = await loadMutation.mutateAsync({
           organizerId: payload.organizerId,
-        }));
+        });
+        if (generation === ledgerRequestGeneration.current) {
+          setEntitlement(response);
+        }
       } catch {
-        setEntitlement(null);
+        if (generation === ledgerRequestGeneration.current) {
+          setEntitlement(null);
+        }
       }
       return true;
     } catch (error) {
@@ -314,6 +356,7 @@ export function useOrganizerEntitlementController({
     }
   }, [
     beginOperation,
+    actorUid,
     clearRevoke,
     endOperation,
     entitlement,
@@ -415,18 +458,21 @@ function createOperationId(prefix: string): string {
 }
 
 function readPending<T extends {operationId: string; organizerId: string}>(
-  key: string
+  key: string, actorUid: string
 ): T | null {
   try {
     const raw = window.sessionStorage.getItem(key);
     if (!raw) return null;
-    const value: unknown = JSON.parse(raw);
-    if (value && typeof value === "object" &&
-        "operationId" in value &&
-        typeof value.operationId === "string" &&
-        "organizerId" in value &&
-        typeof value.organizerId === "string") {
-      return value as T;
+    const envelope: unknown = JSON.parse(raw);
+    if (envelope && typeof envelope === "object" &&
+        "actorUid" in envelope && envelope.actorUid === actorUid &&
+        "payload" in envelope && envelope.payload &&
+        typeof envelope.payload === "object" &&
+        "operationId" in envelope.payload &&
+        typeof envelope.payload.operationId === "string" &&
+        "organizerId" in envelope.payload &&
+        typeof envelope.payload.organizerId === "string") {
+      return envelope.payload as T;
     }
   } catch {
     // An unavailable browser store cannot provide a safe pending operation.
@@ -434,13 +480,18 @@ function readPending<T extends {operationId: string; organizerId: string}>(
   return null;
 }
 
-function writePending(key: string, payload: unknown): boolean {
+function writePending(key: string, actorUid: string, payload: unknown): boolean {
   try {
-    window.sessionStorage.setItem(key, JSON.stringify(payload));
+    window.sessionStorage.setItem(key, JSON.stringify({actorUid, payload}));
     return true;
   } catch {
     return false;
   }
+}
+
+function isPrewriteGrantRejection(error: unknown): boolean {
+  return Boolean(error && typeof error === "object" && "code" in error &&
+    error.code === "functions/invalid-argument");
 }
 
 function clearPending(key: string): void {

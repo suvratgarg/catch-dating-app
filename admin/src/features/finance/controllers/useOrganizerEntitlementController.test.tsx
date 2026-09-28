@@ -115,6 +115,7 @@ describe("useOrganizerEntitlementController", () => {
       .mockResolvedValueOnce(baseEntitlement)
       .mockResolvedValue({...baseEntitlement, revision: 3});
     const {result} = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(),
       onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
@@ -162,6 +163,7 @@ describe("useOrganizerEntitlementController", () => {
       replayed: false,
     });
     const {result} = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(),
       onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
@@ -192,6 +194,7 @@ describe("useOrganizerEntitlementController", () => {
       .mockRejectedValueOnce(new Error("response lost"))
       .mockResolvedValueOnce({revision: 3, replayed: true});
     const first = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
     act(() => {
@@ -210,6 +213,7 @@ describe("useOrganizerEntitlementController", () => {
     first.unmount();
 
     const resumed = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
     expect(resumed.result.current.pendingGrant).toEqual(frozen);
@@ -226,6 +230,7 @@ describe("useOrganizerEntitlementController", () => {
       mocks.grantOrganizerEntitlement.mockRejectedValueOnce(
         new Error("response lost"));
       const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
         onError: vi.fn(), onNotice: vi.fn(),
       }), {wrapper: createWrapper()});
       act(() => {
@@ -248,11 +253,102 @@ describe("useOrganizerEntitlementController", () => {
       h.unmount();
     });
 
+  it("allows a new operation after a definitive pre-write grant rejection", async () => {
+    mocks.grantOrganizerEntitlement
+      .mockRejectedValueOnce(Object.assign(new Error("Unit mismatch"), {
+        code: "functions/invalid-argument",
+      }))
+      .mockResolvedValueOnce({revision: 3, replayed: false});
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      h.result.current.setOrganizerId("organizer-1");
+      h.result.current.setGrantField("receiptRef", "INV-ONE");
+      h.result.current.setGrantField("unit", "organizerYear");
+    });
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    const rejected = mocks.grantOrganizerEntitlement.mock.calls[0][0];
+    expect(h.result.current.pendingGrant).toBeNull();
+    act(() => h.result.current.setGrantField("unit", "program"));
+    await act(async () => expect(await h.result.current.grant()).toBe(true));
+    const corrected = mocks.grantOrganizerEntitlement.mock.calls[1][0];
+    expect(corrected.unit).toBe("program");
+    expect(corrected.operationId).not.toBe(rejected.operationId);
+    h.unmount();
+  });
+
+  it("keeps uncertain operations isolated across admin actors", async () => {
+    mocks.grantOrganizerEntitlement.mockRejectedValue(new Error("response lost"));
+    const actorA = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      actorA.result.current.setOrganizerId("organizer-1");
+      actorA.result.current.setGrantField("receiptRef", "INV-ONE");
+    });
+    await act(async () => expect(await actorA.result.current.grant()).toBe(false));
+    const actorATicket = actorA.result.current.pendingGrant;
+    actorA.unmount();
+
+    const actorB = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-b", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(actorB.result.current.pendingGrant).toBeNull();
+    actorB.unmount();
+
+    const actorAReturns = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(actorAReturns.result.current.pendingGrant).toEqual(actorATicket);
+    actorAReturns.unmount();
+  });
+
+  it("does not let an old ledger load clear a newer pending operation", async () => {
+    let finishOldLoad!: (value: OrganizerEntitlementCallableResponse) => void;
+    mocks.loadOrganizerEntitlement.mockImplementationOnce(() =>
+      new Promise((resolve) => { finishOldLoad = resolve; }));
+    mocks.grantOrganizerEntitlement
+      .mockRejectedValueOnce(new Error("response lost"))
+      .mockResolvedValueOnce({revision: 3, replayed: false})
+      .mockRejectedValueOnce(new Error("response lost"));
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => {
+      h.result.current.setOrganizerId("organizer-1");
+      h.result.current.setGrantField("receiptRef", "INV-ONE");
+    });
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    const oldOperationId = h.result.current.pendingGrant!.operationId;
+    const oldLoad = h.result.current.load();
+    // A confirmed old operation clears its ticket, allowing a new request.
+    await act(async () => expect(await h.result.current.grant()).toBe(true));
+    act(() => h.result.current.setGrantField("receiptRef", "INV-TWO"));
+    await act(async () => expect(await h.result.current.grant()).toBe(false));
+    const newOperationId = h.result.current.pendingGrant!.operationId;
+    expect(newOperationId).not.toBe(oldOperationId);
+    finishOldLoad({...baseEntitlement, grants: [
+      ...baseEntitlement.grants,
+      {...baseEntitlement.grants[0], grantId: `grant_${oldOperationId}`},
+    ]});
+    await act(async () => expect(await oldLoad).toBe(true));
+    expect(h.result.current.pendingGrant?.operationId).toBe(newOperationId);
+    h.unmount();
+    const resumed = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(resumed.result.current.pendingGrant?.operationId)
+      .toBe(newOperationId);
+    resumed.unmount();
+  });
+
   it("retries the frozen revocation after editing and reload", async () => {
     mocks.revokeOrganizerEntitlementGrant
       .mockRejectedValueOnce(new Error("response lost"))
       .mockResolvedValueOnce({revision: 3, replayed: true});
     const first = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
     act(() => first.result.current.setOrganizerId("organizer-1"));
@@ -269,6 +365,7 @@ describe("useOrganizerEntitlementController", () => {
     });
     first.unmount();
     const resumed = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a",
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper: createWrapper()});
     expect(resumed.result.current.pendingRevoke).toEqual(frozen);
@@ -276,6 +373,46 @@ describe("useOrganizerEntitlementController", () => {
     expect(mocks.revokeOrganizerEntitlementGrant.mock.calls[1][0])
       .toEqual(frozen);
     expect(resumed.result.current.pendingRevoke).toBeNull();
+    resumed.unmount();
+  });
+
+  it("keeps a newer revocation ticket when an older ledger load finishes", async () => {
+    let finishOldLoad!: (value: OrganizerEntitlementCallableResponse) => void;
+    mocks.loadOrganizerEntitlement
+      .mockResolvedValueOnce(baseEntitlement)
+      .mockImplementationOnce(() =>
+        new Promise((resolve) => { finishOldLoad = resolve; }));
+    mocks.revokeOrganizerEntitlementGrant
+      .mockRejectedValueOnce(new Error("response lost"))
+      .mockResolvedValueOnce({revision: 3, replayed: false})
+      .mockRejectedValueOnce(new Error("response lost"));
+    const h = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    act(() => h.result.current.setOrganizerId("organizer-1"));
+    await act(async () => expect(await h.result.current.load()).toBe(true));
+    act(() => {
+      h.result.current.setRevokeTargetGrantId("grant_existing-1");
+      h.result.current.setRevokeReason("First reason");
+    });
+    await act(async () => expect(await h.result.current.revoke()).toBe(false));
+    const oldLoad = h.result.current.load();
+    await act(async () => expect(await h.result.current.revoke()).toBe(true));
+    act(() => {
+      h.result.current.setRevokeTargetGrantId("grant_existing-1");
+      h.result.current.setRevokeReason("Second reason");
+    });
+    await act(async () => expect(await h.result.current.revoke()).toBe(false));
+    const newer = h.result.current.pendingRevoke!.operationId;
+    finishOldLoad({...baseEntitlement, grants: [
+      {...baseEntitlement.grants[0], revoked: true},
+    ]});
+    await act(async () => expect(await oldLoad).toBe(true));
+    h.unmount();
+    const resumed = renderHook(() => useOrganizerEntitlementController({
+      actorUid: "actor-a", onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: createWrapper()});
+    expect(resumed.result.current.pendingRevoke?.operationId).toBe(newer);
     resumed.unmount();
   });
 });

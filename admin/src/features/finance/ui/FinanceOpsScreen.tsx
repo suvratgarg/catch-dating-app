@@ -61,6 +61,7 @@ const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
 ];
 
 export function FinanceOpsScreen({
+  actorUid,
   adminRoles,
   onBackToList,
   onError,
@@ -68,6 +69,7 @@ export function FinanceOpsScreen({
   onSelectIssueId,
   selectedIssueId = null,
 }: {
+  actorUid: string;
   adminRoles: string[];
   onBackToList?: () => void;
   onError: (message: string | null) => void;
@@ -86,6 +88,7 @@ export function FinanceOpsScreen({
     onNotice,
   });
   const organizerEntitlementController = useOrganizerEntitlementController({
+    actorUid,
     onError,
     onNotice,
   });
