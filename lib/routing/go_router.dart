@@ -151,15 +151,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
       GoRoute(
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
-        builder: (context, state) {
-          final t = CatchTokens.of(context);
-          return CatchScaffold.standalone(
-            backgroundColor: t.bg,
-            body: const CatchStateViewport.loading(
-              accountForBottomOverlay: false,
-            ),
-          );
-        },
+        builder: (context, state) => const _RouteLoadingScreen(),
       ),
       GoRoute(
         path: Routes.startScreen.path,
@@ -1039,3 +1031,13 @@ ClubDetailScreen _clubDetailScreen(GoRouterState state) => ClubDetailScreen(
   clubId: state.pathParameters['clubId']!,
   initialClub: _clubDetailInitialClub(state),
 );
+
+class _RouteLoadingScreen extends StatelessWidget {
+  const _RouteLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) => CatchScaffold.standalone(
+    backgroundColor: CatchTokens.of(context).bg,
+    body: const CatchStateViewport.loading(accountForBottomOverlay: false),
+  );
+}

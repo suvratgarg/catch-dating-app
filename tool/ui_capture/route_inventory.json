@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "453a4befd49d8af9a24adc80cccdbb3fd71f82c0152aa687602b79ebb971633a",
-    "routeContractSha256": "7d0047a52ee47d297c33d94522156c409e511a5d90fa87c068ed4887119ecf3e",
+    "normalizedFileSha256": "09f09977fa7a638985694a9766ce41ee411f10a43dfd2f9063a4f4521f94e62d",
+    "routeContractSha256": "7c05ad78beb49f82fc299af60b58ffe42240699ee9e53a619322d2faf8497051",
     "goRouteCount": 109,
     "shellBranchCount": 9,
     "enumRouteCount": 94,
@@ -33,8 +33,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.loadingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final t=CatchTokens.of(context);return CatchScaffold.standalone(backgroundColor:t.bg,body:const CatchStateViewport.loading(accountForBottomOverlay:false));}",
-      "presentationTarget": "CatchScaffold.standalone",
+      "presentationExpression": "(context,state)=>const _RouteLoadingScreen()",
+      "presentationTarget": "_RouteLoadingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
