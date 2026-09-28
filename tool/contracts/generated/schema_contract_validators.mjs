@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  legacyPaymentRefundIntentSchema,
   setEventPublicationCallablePayloadSchema,
   eventPublicationCallableResponseSchema,
   publicEventPaymentDocumentSchema,
@@ -970,6 +971,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateLegacyPaymentRefundIntent = ajv.compile(legacyPaymentRefundIntentSchema);
 export const validateSetEventPublicationCallablePayload = ajv.compile(setEventPublicationCallablePayloadSchema);
 export const validateEventPublicationCallableResponse = ajv.compile(eventPublicationCallableResponseSchema);
 export const validatePublicEventPaymentDocument = ajv.compile(publicEventPaymentDocumentSchema);

@@ -72707,6 +72707,165 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const legacyPaymentRefundIntentAttempts = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsIdempotencyKey = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.idempotencyKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,100}\$',
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsProviderRefundId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.providerRefundId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsStartedAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.startedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'failed'],
+  );
+
+  static const legacyPaymentRefundIntentConfirmedAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.confirmedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentCurrency = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const legacyPaymentRefundIntentLastErrorCode = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.lastErrorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentLeaseUntilMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.leaseUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentNextAttemptAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.nextAttemptAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentOrderId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.orderId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentPaymentFingerprint = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.paymentFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const legacyPaymentRefundIntentProvider = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['razorpay', 'stripe'],
+  );
+
+  static const legacyPaymentRefundIntentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.providerPaymentId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentReason = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guestCancelled', 'eventCancelled'],
+  );
+
+  static const legacyPaymentRefundIntentRefundApplicationFee = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.refundApplicationFee',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const legacyPaymentRefundIntentRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.requestedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentState = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'complete', 'reviewRequired'],
+  );
+
+  static const legacyPaymentRefundIntentStripeAccountId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.stripeAccountId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentTargetAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.targetAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentVersion = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const listEventAssignmentFeatureChoicesCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'listEventAssignmentFeatureChoicesCallablePayload.eventId',
     maxLength: 180,
@@ -102383,6 +102542,165 @@ abstract final class CatchContractConstraints {
     maximum: 100000000,
   );
 
+  static const paymentDocumentCancellationRefundAttempts = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsIdempotencyKey = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.idempotencyKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,100}\$',
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsProviderRefundId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.providerRefundId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsStartedAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.startedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'failed'],
+  );
+
+  static const paymentDocumentCancellationRefundConfirmedAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.confirmedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundCurrency = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const paymentDocumentCancellationRefundLastErrorCode = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.lastErrorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundLeaseUntilMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.leaseUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundNextAttemptAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.nextAttemptAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundOrderId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.orderId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundPaymentFingerprint = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.paymentFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const paymentDocumentCancellationRefundProvider = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['razorpay', 'stripe'],
+  );
+
+  static const paymentDocumentCancellationRefundProviderPaymentId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.providerPaymentId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundReason = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guestCancelled', 'eventCancelled'],
+  );
+
+  static const paymentDocumentCancellationRefundRefundApplicationFee = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.refundApplicationFee',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const paymentDocumentCancellationRefundRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.requestedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundState = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'complete', 'reviewRequired'],
+  );
+
+  static const paymentDocumentCancellationRefundStripeAccountId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.stripeAccountId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundTargetAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.targetAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundVersion = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const paymentDocumentCheckoutSessionId = CatchContractFieldConstraints(
     path: 'paymentDocument.checkoutSessionId',
     maxLength: 240,
@@ -102549,6 +102867,20 @@ abstract final class CatchContractConstraints {
   static const paymentDocumentSynthetic = CatchContractFieldConstraints(
     path: 'paymentDocument.synthetic',
     valueTypes: <String>['boolean'],
+  );
+
+  static const paymentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const paymentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const paymentDocumentUserId = CatchContractFieldConstraints(
@@ -140408,6 +140740,28 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
+    'legacyPaymentRefundIntent.attempts': legacyPaymentRefundIntentAttempts,
+    'legacyPaymentRefundIntent.attempts.items.amountMinor': legacyPaymentRefundIntentAttemptsItemsAmountMinor,
+    'legacyPaymentRefundIntent.attempts.items.idempotencyKey': legacyPaymentRefundIntentAttemptsItemsIdempotencyKey,
+    'legacyPaymentRefundIntent.attempts.items.providerRefundId': legacyPaymentRefundIntentAttemptsItemsProviderRefundId,
+    'legacyPaymentRefundIntent.attempts.items.startedAtMillis': legacyPaymentRefundIntentAttemptsItemsStartedAtMillis,
+    'legacyPaymentRefundIntent.attempts.items.state': legacyPaymentRefundIntentAttemptsItemsState,
+    'legacyPaymentRefundIntent.confirmedAmountMinor': legacyPaymentRefundIntentConfirmedAmountMinor,
+    'legacyPaymentRefundIntent.currency': legacyPaymentRefundIntentCurrency,
+    'legacyPaymentRefundIntent.lastErrorCode': legacyPaymentRefundIntentLastErrorCode,
+    'legacyPaymentRefundIntent.leaseUntilMillis': legacyPaymentRefundIntentLeaseUntilMillis,
+    'legacyPaymentRefundIntent.nextAttemptAtMillis': legacyPaymentRefundIntentNextAttemptAtMillis,
+    'legacyPaymentRefundIntent.orderId': legacyPaymentRefundIntentOrderId,
+    'legacyPaymentRefundIntent.paymentFingerprint': legacyPaymentRefundIntentPaymentFingerprint,
+    'legacyPaymentRefundIntent.provider': legacyPaymentRefundIntentProvider,
+    'legacyPaymentRefundIntent.providerPaymentId': legacyPaymentRefundIntentProviderPaymentId,
+    'legacyPaymentRefundIntent.reason': legacyPaymentRefundIntentReason,
+    'legacyPaymentRefundIntent.refundApplicationFee': legacyPaymentRefundIntentRefundApplicationFee,
+    'legacyPaymentRefundIntent.requestedAtMillis': legacyPaymentRefundIntentRequestedAtMillis,
+    'legacyPaymentRefundIntent.state': legacyPaymentRefundIntentState,
+    'legacyPaymentRefundIntent.stripeAccountId': legacyPaymentRefundIntentStripeAccountId,
+    'legacyPaymentRefundIntent.targetAmountMinor': legacyPaymentRefundIntentTargetAmountMinor,
+    'legacyPaymentRefundIntent.version': legacyPaymentRefundIntentVersion,
     'listEventAssignmentFeatureChoicesCallablePayload.eventId': listEventAssignmentFeatureChoicesCallablePayloadEventId,
     'listEventAssignmentFeatureChoicesCallableResponse.choices': listEventAssignmentFeatureChoicesCallableResponseChoices,
     'listEventAssignmentFeatureChoicesCallableResponse.choices.items.answerLabel': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsAnswerLabel,
@@ -144512,6 +144866,28 @@ abstract final class CatchContractConstraints {
     'paymentDocument.amount': paymentDocumentAmount,
     'paymentDocument.amountMinor': paymentDocumentAmountMinor,
     'paymentDocument.applicationFeeAmount': paymentDocumentApplicationFeeAmount,
+    'paymentDocument.cancellationRefund.attempts': paymentDocumentCancellationRefundAttempts,
+    'paymentDocument.cancellationRefund.attempts.items.amountMinor': paymentDocumentCancellationRefundAttemptsItemsAmountMinor,
+    'paymentDocument.cancellationRefund.attempts.items.idempotencyKey': paymentDocumentCancellationRefundAttemptsItemsIdempotencyKey,
+    'paymentDocument.cancellationRefund.attempts.items.providerRefundId': paymentDocumentCancellationRefundAttemptsItemsProviderRefundId,
+    'paymentDocument.cancellationRefund.attempts.items.startedAtMillis': paymentDocumentCancellationRefundAttemptsItemsStartedAtMillis,
+    'paymentDocument.cancellationRefund.attempts.items.state': paymentDocumentCancellationRefundAttemptsItemsState,
+    'paymentDocument.cancellationRefund.confirmedAmountMinor': paymentDocumentCancellationRefundConfirmedAmountMinor,
+    'paymentDocument.cancellationRefund.currency': paymentDocumentCancellationRefundCurrency,
+    'paymentDocument.cancellationRefund.lastErrorCode': paymentDocumentCancellationRefundLastErrorCode,
+    'paymentDocument.cancellationRefund.leaseUntilMillis': paymentDocumentCancellationRefundLeaseUntilMillis,
+    'paymentDocument.cancellationRefund.nextAttemptAtMillis': paymentDocumentCancellationRefundNextAttemptAtMillis,
+    'paymentDocument.cancellationRefund.orderId': paymentDocumentCancellationRefundOrderId,
+    'paymentDocument.cancellationRefund.paymentFingerprint': paymentDocumentCancellationRefundPaymentFingerprint,
+    'paymentDocument.cancellationRefund.provider': paymentDocumentCancellationRefundProvider,
+    'paymentDocument.cancellationRefund.providerPaymentId': paymentDocumentCancellationRefundProviderPaymentId,
+    'paymentDocument.cancellationRefund.reason': paymentDocumentCancellationRefundReason,
+    'paymentDocument.cancellationRefund.refundApplicationFee': paymentDocumentCancellationRefundRefundApplicationFee,
+    'paymentDocument.cancellationRefund.requestedAtMillis': paymentDocumentCancellationRefundRequestedAtMillis,
+    'paymentDocument.cancellationRefund.state': paymentDocumentCancellationRefundState,
+    'paymentDocument.cancellationRefund.stripeAccountId': paymentDocumentCancellationRefundStripeAccountId,
+    'paymentDocument.cancellationRefund.targetAmountMinor': paymentDocumentCancellationRefundTargetAmountMinor,
+    'paymentDocument.cancellationRefund.version': paymentDocumentCancellationRefundVersion,
     'paymentDocument.checkoutSessionId': paymentDocumentCheckoutSessionId,
     'paymentDocument.completedAt._nanoseconds': paymentDocumentCompletedAtNanoseconds,
     'paymentDocument.completedAt._seconds': paymentDocumentCompletedAtSeconds,
@@ -144536,6 +144912,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.status': paymentDocumentStatus,
     'paymentDocument.stripeAccountId': paymentDocumentStripeAccountId,
     'paymentDocument.synthetic': paymentDocumentSynthetic,
+    'paymentDocument.updatedAt._nanoseconds': paymentDocumentUpdatedAtNanoseconds,
+    'paymentDocument.updatedAt._seconds': paymentDocumentUpdatedAtSeconds,
     'paymentDocument.userId': paymentDocumentUserId,
     'paymentRoutingPolicyDocument.lastMutationHash': paymentRoutingPolicyDocumentLastMutationHash,
     'paymentRoutingPolicyDocument.organizerId': paymentRoutingPolicyDocumentOrganizerId,

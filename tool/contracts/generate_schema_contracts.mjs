@@ -15,6 +15,7 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "LegacyPaymentRefundIntent", source: "embedded/legacy_payment_refund.schema.json", typeOutput: "functions/src/shared/generated/legacyPaymentRefundIntent.ts"},
   {name: "SetEventPublicationCallablePayload", source: "callables/set_event_publication_payload.schema.json", typeOutput: "functions/src/shared/generated/setEventPublicationCallablePayload.ts"},
   {name: "EventPublicationCallableResponse", source: "callable_responses/event_publication_response.schema.json", typeOutput: "functions/src/shared/generated/eventPublicationCallableResponse.ts"},
   {"name": "PublicEventPaymentDocument", "source": "firestore/public_event_payments.schema.json", "typeOutput": "functions/src/shared/generated/publicEventPaymentDocument.ts"},

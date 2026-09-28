@@ -467,6 +467,7 @@ export 'invite_program_staff_callable_payload.g.dart';
 export 'issue_program_household_rsvp_link_callable_payload.g.dart';
 export 'join_waitlist_http_request.g.dart';
 export 'join_waitlist_http_response.g.dart';
+export 'legacy_payment_refund_intent.g.dart';
 export 'list_event_assignment_feature_choices_callable_payload.g.dart';
 export 'list_event_assignment_feature_choices_callable_response.g.dart';
 export 'list_event_assistance_cases_callable_payload.g.dart';

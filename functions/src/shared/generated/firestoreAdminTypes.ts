@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
@@ -13381,6 +13382,8 @@ export interface PaymentDocument {
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
   completedAt?: FirebaseFirestore.Timestamp;
+  cancellationRefund?: LegacyPaymentRefundIntent;
+  updatedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

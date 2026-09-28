@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
+
 /**
  * Canonical payment record stored at payments/{paymentId}.
  */
@@ -74,4 +76,12 @@ export interface PaymentDocument {
    * Internal demo-operations command name used for cleanup and diagnostics.
    */
   demoOpsCommand?: string;
+  cancellationRefund?: LegacyPaymentRefundIntent;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  updatedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }

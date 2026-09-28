@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `functions/src/shared/generated/legacyPaymentRefundIntent.ts` |
 | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
 | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
 | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
@@ -960,6 +961,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaLegacyPaymentRefundIntentSchema` | LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `lib/core/schema_contracts/generated/schemas/legacy_payment_refund_intent.g.dart` |
 | `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
 | `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
 | `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |

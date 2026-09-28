@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'LegacyPaymentRefundIntent',
+    source: 'embedded/legacy_payment_refund.schema.json',
+    schema: schemaLegacyPaymentRefundIntentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SetEventPublicationCallablePayload',
     source: 'callables/set_event_publication_payload.schema.json',
     schema: schemaSetEventPublicationCallablePayloadSchema,
@@ -4734,6 +4739,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'LegacyPaymentRefundIntent': schemaLegacyPaymentRefundIntentSchema,
   'SetEventPublicationCallablePayload': schemaSetEventPublicationCallablePayloadSchema,
   'EventPublicationCallableResponse': schemaEventPublicationCallableResponseSchema,
   'PublicEventPaymentDocument': schemaPublicEventPaymentDocumentSchema,
@@ -5680,6 +5686,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'embedded/legacy_payment_refund.schema.json': schemaLegacyPaymentRefundIntentSchema,
   'callables/set_event_publication_payload.schema.json': schemaSetEventPublicationCallablePayloadSchema,
   'callable_responses/event_publication_response.schema.json': schemaEventPublicationCallableResponseSchema,
   'firestore/public_event_payments.schema.json': schemaPublicEventPaymentDocumentSchema,

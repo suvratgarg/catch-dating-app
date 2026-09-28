@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {legacyPaymentRefundIntentSchema} from "./schemas/legacyPaymentRefundIntent";
 export {setEventPublicationCallablePayloadSchema} from "./schemas/setEventPublicationInput";
 export {eventPublicationCallableResponseSchema} from "./schemas/eventPublicationOutput";
 export {publicEventPaymentDocumentSchema} from "./schemas/publicEventPaymentDocument";
