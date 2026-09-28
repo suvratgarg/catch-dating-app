@@ -71,6 +71,7 @@ void main() {
             'rsvp': ['attending', 'maybe'],
             'householdDedupe': true,
             'rsvpPendingOnly': false,
+            'travelTimeLead': true,
           },
           action: {
             'kind': 'sendTemplate',
@@ -110,6 +111,8 @@ void main() {
       ]);
       expect(moment.audience.householdDedupe, isTrue);
       expect(moment.audience.rsvpPendingOnly, isFalse);
+      expect(moment.audience.travelTimeLead, isTrue);
+      expect(moment.audience.toJson()['travelTimeLead'], isTrue);
 
       expect(moment.action.kind, OrganizerMomentActionKind.sendTemplate);
       expect(moment.action.templateId, 'tpl_1');

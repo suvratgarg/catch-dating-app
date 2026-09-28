@@ -24,6 +24,7 @@ const schemaOrganizerProgramCallableResponseSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'programId',
+        'organizerId',
         'kind',
         'title',
         'timezone',
@@ -36,6 +37,11 @@ const schemaOrganizerProgramCallableResponseSchema = <String, Object?>{
       ],
       'properties': <String, Object?>{
         'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'organizerId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,

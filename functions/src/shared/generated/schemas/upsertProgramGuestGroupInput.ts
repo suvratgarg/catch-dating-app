@@ -45,6 +45,15 @@ export const upsertProgramGuestGroupCallablePayloadSchema: Record<string, unknow
       "type": "integer",
       "minimum": 0,
       "maximum": 10000
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link — where this group's members stay; feeds distance-aware moment lead times. Omitted preserves the existing link; explicit null clears it."
     }
   }
 } as const;

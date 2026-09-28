@@ -6035,6 +6035,12 @@ abstract class AppLocalizations {
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
 
+  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'No guest conversations for this program yet'**
+  String get hostsHostInboxScreenTitleNoProgramConversations;
+
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -14895,6 +14901,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event inquiry'**
   String get hostsHostInboxScreenVisiblecopyEventInquiry;
+
+  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
+  ///
+  /// In en, this message translates to:
+  /// **'Program guests'**
+  String get hostsHostInboxScreenVisiblecopyProgramGuests;
 
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
   ///
@@ -26851,6 +26863,12 @@ abstract class AppLocalizations {
   /// **'Title template'**
   String get hostMomentTitleTemplate;
 
+  /// Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift send time by hotel distance'**
+  String get hostMomentTravelTimeLead;
+
   /// Moment editor save action label.
   ///
   /// In en, this message translates to:
@@ -31142,6 +31160,18 @@ abstract class AppLocalizations {
   /// **'Load more conversations'**
   String get hostInboxMoreConversations;
 
+  /// Loads the next verified guest page for a program-scoped Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more program guests'**
+  String get hostInboxMoreProgramGuests;
+
+  /// Explains why unlinked program guests cannot be shown or messaged from the Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.'**
+  String get hostInboxProgramContactsUnlinked;
+
   /// Person-based Host messaging interface copy.
   ///
   /// In en, this message translates to:
@@ -33698,6 +33728,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open trip ledger'**
   String get programsWorkLedgerOpen;
+
+  /// Program operations copy: programsWorkCommsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Communications'**
+  String get programsWorkCommsTitle;
+
+  /// Program operations copy: programsWorkCommsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program announcements and guest conversations.'**
+  String get programsWorkCommsSubtitle;
+
+  /// Program operations copy: programsWorkCommsMomentsRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get programsWorkCommsMomentsRow;
+
+  /// Program operations copy: programsWorkCommsInboxRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest inbox'**
+  String get programsWorkCommsInboxRow;
 
   /// Program operations copy: programsWorkShellEmptyTitle.
   ///
@@ -36940,6 +36994,24 @@ abstract class AppLocalizations {
   /// **'Manifest import'**
   String get programsWorkspaceImportTitle;
 
+  /// Program workspace copy: programsWorkspaceCommunicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Communications'**
+  String get programsWorkspaceCommunicationsTitle;
+
+  /// Program workspace copy: programsWorkspaceMomentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get programsWorkspaceMomentsTitle;
+
+  /// Program workspace copy: programsWorkspaceInboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest inbox'**
+  String get programsWorkspaceInboxTitle;
+
   /// Program workspace copy: programsGuestsTitle.
   ///
   /// In en, this message translates to:
@@ -36999,6 +37071,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New group'**
   String get programsGuestsGroupNew;
+
+  /// Opens the existing program group editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get programsGuestsGroupEdit;
+
+  /// Optional program hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel for this group'**
+  String get programsGuestsGroupHotel;
+
+  /// Cleared optional hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotel assigned'**
+  String get programsGuestsGroupNoHotel;
+
+  /// Hotel linked to a program guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Staying at {hotel}'**
+  String programsGuestsGroupHotelSummary({required String hotel});
+
+  /// The previously linked program hotel is missing from the current catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously linked hotel is unavailable'**
+  String get programsGuestsHotelUnavailable;
+
+  /// Explains that a new group can be saved before program hotels exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels are available for this program yet. You can save the group without one.'**
+  String get programsGuestsNoHotelsAvailable;
 
   /// Program workspace copy: programsGuestsGroupLabel.
   ///

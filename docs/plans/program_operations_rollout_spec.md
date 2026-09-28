@@ -1,6 +1,6 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.1.0
+version: 1.1.1
 updated: 2026-09-28
 owner: product
 status: active
@@ -11,7 +11,7 @@ status: active
 Status: living tracking spec for allocating the remaining wedding/conference
 program-platform work. Companion: `wedding_planner_platform_plan.md` owns the
 product/architecture rationale; this document owns *what exists, what does
-not, and what needs a decision*. Measured against `main` at `b1b20b3c5a`
+not, and what needs a decision*. Measured against `main` at `440b88301`
 (2026-09-28). "In review" marks an open PR — code exists on a branch, not
 yet on main.
 
@@ -61,7 +61,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | Organizer tab is all-or-nothing | `owner`/`manager` both get the full 5-tab shell. No org-level role gives Organizer settings/config without Audience (CRM) or Inbox. If we want "settings-only" or "no-CRM" manager seats, that's a new layer on `organizerTeamMemberships`. |
 | `stakeholderViewer` has no backend surface | Duty exists; nothing returns counts-only program data. Needs a read callable + a thin read surface. |
 | Duty→destination surfaces incomplete | Only transport duties have client surfaces today (see §3.2). |
-| `eventStaffGrants` still separate | Legacy event staff roles remain in their own store/shell; `listMyHostAssignments` projects both but `/host/operator/:eventId` is not yet migrated onto the unified work shell. |
+| `eventStaffGrants` still separate | Legacy event staff roles remain in their own store; `listMyHostAssignments` projects both scopes and `/host/operator/:eventId` redirects onto the unified shell's `/host/work/event/:eventId`. |
 
 ---
 
@@ -100,14 +100,14 @@ never CRM, saved audiences, sender connections, or payouts.
 | `airportGreeter` → Arrivals | **built** — `/host/work/:programId/arrivals/:pickupPointId` |
 | `transportDispatcher` → Arrivals · Dispatch | **built** — dispatch screen on same prefix |
 | `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
-| `functionCheckIn` → Door · Walk-ins | **missing UI** — `recordProgramDoorJournal` durable journal is deployed; no door screen |
-| `functionLead` → Now/Next · Door · Attention | **missing UI** — staff-attention projection into `organizerAttentionItems` is deployed |
+| `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
+| `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
 | `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
-| `stakeholderViewer` → counts-only overview | **missing** — no API or screen |
+| `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
-| Unified `HostWorkShell` + assignment picker | **partial** — unified shell + assignment picker built (#447); `/host/operator/:eventId` redirect still pending |
+| Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
 
 ### 3.3 Logistics
 
@@ -130,6 +130,20 @@ never CRM, saved audiences, sender connections, or payouts.
 | Campaign `recipientSource: programSelection` | **built** — upsert validates/normalizes it (programId required, savedAudienceId null) and the dispatcher materializes program recipients via `programRsvp/programSelection.ts` |
 | `organizerFormAutomations` → `triggered` moments migration | **missing** — decision 9 approved; form automations still own pipeline |
 | WhatsApp program templates | **runbook, not code** — `program_function_starting`, `program_get_ready`, `program_transport_ready`, `program_rsvp_deadline_reminder` each need an approved Meta template per sender connection |
+
+For #456 legacy reminder reconciliation, the server-owned
+`organizerMomentRuns` document records `status: failed` with
+`reason: legacyOccurrenceUnresolved` when an old wake-based run ID might
+share recipients with a nominal-time run ID. The sweep also emits a structured
+warning with the moment ID and conflicting run IDs. There is no Host UI reader
+or automatic resume for this hold. Before activating the new runner, the
+operator should inspect all runs for each affected moment and anchor revision,
+then compare `organizerMomentSends/{runId}_{recipientKey}` receipts across
+those IDs. Keep every receipt and the failed status intact. If the original
+occurrence or recipient delivery cannot be proven, leave it held; resolving
+or replaying remaining recipients needs a separately reviewed migration or
+targeted-send procedure. Do not reset a failed run to `planned` or delete
+receipts, since either can resend an already contacted guest.
 
 ### 3.5 Organizer-facing program management
 
@@ -196,7 +210,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 |---|---|---|---|
 | R1 | Program workspace UI (schedule, guests grid, team & duties, import mapping) | **merged #452** | — |
 | R2 | Guest groups schema decision + contract correction | **merged #450** | — |
-| R3 | `HostWorkShell` + assignment picker + door check-in screen on the durable journal | **partial** — shell/picker #447, journal runtime #448 | door check-in screen, `/host/operator` redirect |
+| R3 | `HostWorkShell` + assignment picker + door check-in screen on the durable journal | **merged** — shell/picker #447, door screen + journal runtime #448 | `/host/operator` → `/host/work/event/:eventId` redirect **in review #465** |
 | R4 | Program-scope Moments route + program Inbox scope chip | **in review #454** | merge |
 | R5 | Stays/room blocks + group-informed allocation | **blocked** — decision 5.5; no A7 code exists to pull | schema + allocation |
 | R6 | Travel capture on household RSVP | **blocked** — decision 5.2 (write-surface widening) | RSVP-side capture |

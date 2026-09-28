@@ -55,7 +55,7 @@ class _HostPersonConversationPageBodyState
   DateTime? _nextExpiry;
 
   String get _draftContext =>
-      '${widget.person.key}/${widget.scope.eventId ?? 'general'}';
+      '${widget.person.key}/${widget.scope.eventId ?? widget.scope.programId ?? 'general'}';
   String _draftKey(String route) => '$_draftContext/$route';
   @override
   void initState() {
@@ -315,7 +315,7 @@ class _HostPersonConversationPageBodyState
             controller: _scroll,
             reverse: true,
             key: PageStorageKey(
-              'person-history-${person.key}-${widget.scope.eventId}',
+              'person-history-${person.key}-${widget.scope.eventId ?? widget.scope.programId ?? 'general'}',
             ),
             padding: CatchInsets.listBodyDense,
             itemCount: entries.length + 1,

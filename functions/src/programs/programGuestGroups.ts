@@ -15,8 +15,11 @@ import {
   requireProgramAccess,
   requireProgramDuty,
 } from "../shared/programAuthority";
-import type {ProgramGuestDocument, ProgramGuestGroupDocument} from
-  "../shared/generated/firestoreAdminTypes";
+import type {
+  ProgramGuestDocument,
+  ProgramGuestGroupDocument,
+  ProgramHotelDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import type {UpsertProgramGuestGroupCallablePayload} from
   "../shared/generated/upsertProgramGuestGroupCallablePayload";
 import type {DeleteProgramGuestGroupCallablePayload} from
@@ -158,6 +161,18 @@ export async function upsertProgramGuestGroupHandler(
     }
     assertRevision(existing?.revision ?? 0, snap.exists ?
       data.expectedRevision : undefined);
+    // A dangling hotel link would silently disable distance-aware leads, so
+    // the target must live in this program while the write is committed.
+    if (typeof data.hotelId === "string") {
+      const hotelSnap = await tx.get(
+        db.collection("programHotels").doc(data.hotelId));
+      const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
+      if (!hotel || hotel.programId !== data.programId ||
+          hotel.organizerId !== access.program.organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Hotel not found in this program.");
+      }
+    }
     const now = deps.now();
     const document: ProgramGuestGroupDocument = {
       programId: data.programId,
@@ -167,6 +182,8 @@ export async function upsertProgramGuestGroupHandler(
       sortOrder: data.sortOrder === undefined ?
         existing?.sortOrder ?? 0 : data.sortOrder,
       memberCount: existing?.memberCount ?? 0,
+      hotelId: data.hotelId === undefined ?
+        existing?.hotelId ?? null : data.hotelId,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
@@ -213,6 +230,7 @@ export async function listProgramGuestGroupsHandler(
         dimension: group.dimension,
         sortOrder: group.sortOrder,
         memberCount: group.memberCount,
+        hotelId: group.hotelId ?? null,
         revision: group.revision,
       };
     }).sort((a, b) =>
@@ -283,7 +301,7 @@ function normalizePayload(value: unknown): unknown {
   }
   const input = value as Record<string, unknown>;
   const trimmed = {...input};
-  for (const key of ["programId", "groupId", "label", "dimension"]) {
+  for (const key of ["programId", "groupId", "label", "dimension", "hotelId"]) {
     if (typeof trimmed[key] === "string") {
       trimmed[key] = (trimmed[key] as string).trim();
     }

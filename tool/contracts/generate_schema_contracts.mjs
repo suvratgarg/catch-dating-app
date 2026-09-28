@@ -2032,6 +2032,17 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programHotelDocument.ts",
   },
   {
+    name: "ProgramStayDocument",
+    source: "firestore/program_stays.schema.json",
+    typeOutput: "functions/src/shared/generated/programStayDocument.ts",
+  },
+  {
+    name: "ProgramRoomBlockDocument",
+    source: "firestore/program_room_blocks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programRoomBlockDocument.ts",
+  },
+  {
     name: "ProgramTravelLegDocument",
     source: "firestore/program_travel_legs.schema.json",
     typeOutput: "functions/src/shared/generated/programTravelLegDocument.ts",

@@ -906,13 +906,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCampaignReport</code> | <code>lib/hosts/presentation/inbox/host_campaign_composer.dart:589</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventAnnouncementField</code> | <code>lib/hosts/presentation/inbox/host_event_announcement_field.dart:26</code> | — | — | No class documentation or registry summary. |
 | <code>HostFollowerUpdateComposerSheet</code> | <code>lib/hosts/presentation/inbox/host_follower_update_composer.dart:44</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxPersonPageBody</code> | <code>lib/hosts/presentation/inbox/host_inbox_person_page_body.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxScopeMenu</code> | <code>lib/hosts/presentation/inbox/host_inbox_scope_menu.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxAudienceInput</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:256</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:401</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxPeopleSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:310</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxPersonPageBody</code> | <code>lib/hosts/presentation/inbox/host_inbox_person_page_body.dart:18</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxScopeMenu</code> | <code>lib/hosts/presentation/inbox/host_inbox_scope_menu.dart:12</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxAudienceInput</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:333</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:484</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxPeopleSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:387</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxWorkspaceSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:224</code> | — | — | No class documentation or registry summary. |
+| <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:301</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendQueue</code> | <code>lib/hosts/presentation/inbox/host_manual_send_queue.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostNewMessageRouteSection</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:255</code> | — | — | No class documentation or registry summary. |
 | <code>HostPersonConversationMenu</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_menu.dart:15</code> | — | — | Keeps the existing Catch conversation actions available in the shared pane. The parent supplies only a currently authorized source and its messages. |
@@ -1041,10 +1041,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramDoorGuestRow</code> | <code>lib/programs/presentation/program_door_screen.dart:465</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPageBody</code> | <code>lib/programs/presentation/program_door_screen.dart:193</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPartySizeSheet</code> | <code>lib/programs/presentation/program_door_screen.dart:598</code> | — | — | Numeric sheet for `partySizeAdjust`; the controller only enqueues when the sheet returns a new value. |
-| <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guests_screen.dart:566</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guests_screen.dart:702</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:445</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
-| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:112</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart:8</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guests_screen.dart:608</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:487</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
+| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:113</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:243</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramImportResultSection</code> | <code>lib/programs/presentation/program_import_screen.dart:311</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramCreateDialog</code> | <code>lib/programs/presentation/program_list_screen.dart:313</code> | — | — | No class documentation or registry summary. |
@@ -1058,8 +1058,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:154</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:302</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:148</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:482</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:368</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:519</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:405</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:71</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:226</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:330</code> | — | — | No class documentation or registry summary. |
@@ -1253,7 +1253,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubTeamScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubsScreen</code> | <code>lib/hosts/presentation/host_operations/host_clubs_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:40</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:43</code> | — | — | No class documentation or registry summary. |
 | <code>HostMessagingSetupScreen</code> | <code>lib/hosts/presentation/inbox/host_messaging_setup_screen.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>HostNewMessageScreen</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayFocusScreen</code> | <code>lib/hosts/today/personalization/presentation/host_today_focus_screen.dart:22</code> | — | — | No class documentation or registry summary. |
@@ -1277,7 +1277,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramArrivalsScreen</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:28</code> | — | — | The greeter's live arrivals roster for one pickup station. |
 | <code>ProgramDispatchScreen</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:26</code> | — | — | The dispatcher's desk for one pickup station: the deterministic batch suggestions plus the dispatch sheet that captures plate, vendor and class at the moment the vehicle departs — the act that generates the reconciliation record. |
 | <code>ProgramFunctionDoorScreen</code> | <code>lib/programs/presentation/program_door_screen.dart:25</code> | — | — | Door workspace for one program function. `functionCheckIn` and `functionLead` staff land here from the work shell; the durable journal owns every attendance transition and queued work replays through the program operations outbox when the venue network drops. |
-| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:19</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
+| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:20</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
 | <code>ProgramHotelDeskScreen</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:16</code> | — | — | The hotel welcome team's inbound view: vehicles on the way with their manifest names and plates, plus parties still expected at the airport. Deliberately narrow — no contact fields, no other hotels. |
 | <code>ProgramImportScreen</code> | <code>lib/programs/presentation/program_import_screen.dart:19</code> | — | — | Manifest import flow: pick a CSV/XLSX, map its columns to manifest fields, preview server-side counts, then commit. The commit retries are idempotent through `clientOperationId`; preview and commit use separate operation ids because the receipt hash includes the mode. |
 | <code>ProgramListScreen</code> | <code>lib/programs/presentation/program_list_screen.dart:28</code> | — | — | Organizer's program index — the multi-day programs they coordinate. Entry point for the W1 workspace (schedule, RSVP grid, team, import). |

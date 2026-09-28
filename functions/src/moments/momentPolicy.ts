@@ -57,7 +57,7 @@ export type PolicyDecision = {
   kind: "send";
 } | {
   kind: "defer";
-  reason: "quietHours";
+  reason: "quietHours" | "travelLead";
 } | {
   kind: "suppress";
   reason: SuppressionReason;

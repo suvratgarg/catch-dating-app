@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -31,6 +34,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +54,75 @@ void main() {
 
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  testWidgets(
+    'older program remains scoped with unlinked guests and no composer',
+    (tester) async {
+      final repository = _PendingProgramRepository()
+        ..detail.complete(_programDetail())
+        ..guestPage.complete(
+          const ProgramGuestListPage(
+            programId: 'older-program',
+            guests: [
+              ProgramGuestRow(
+                guestId: 'guest-1',
+                displayName: 'Guest 1',
+                groupIds: [],
+                invitationStatus: 'draft',
+                rsvpStatus: 'unknown',
+                revision: 1,
+              ),
+            ],
+            households: [],
+            functionGuests: [],
+            groups: [],
+          ),
+        );
+      await tester.pumpWidget(
+        _app(
+          event: null,
+          previews: const [],
+          participations: const [],
+          now: now,
+          initialScope: const HostInboxScope.program('older-program'),
+          programRepository: repository,
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(find.text('OLDER PROGRAM'), findsOneWidget);
+      expect(
+        find.textContaining('no verified messaging contact link'),
+        findsOneWidget,
+      );
+      expect(find.byTooltip('New message'), findsNothing);
+      expect(find.text('General inquiry'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'requested program waits for direct lookup and keeps error scoped',
+    (tester) async {
+      final repository = _PendingProgramRepository();
+      await tester.pumpWidget(
+        _app(
+          event: null,
+          previews: const [],
+          participations: const [],
+          now: now,
+          initialScope: const HostInboxScope.program('older-program'),
+          programRepository: repository,
+        ),
+      );
+      await tester.pump();
+      expect(find.text('GENERAL'), findsNothing);
+      expect(find.byTooltip('New message'), findsNothing);
+      repository.detail.completeError(StateError('Program unavailable'));
+      await pumpFeatureUi(tester);
+      expect(find.text('GENERAL'), findsNothing);
+      expect(find.byTooltip('New message'), findsNothing);
+      expect(find.byType(CatchLocalizedSliverErrorState), findsOneWidget);
+    },
+  );
 
   testWidgets('resolved signed-out state is not shown as loading', (
     tester,
@@ -839,6 +913,7 @@ Widget _app({
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
   List<HostManualSendTask> manualSendTasks = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
+  ProgramSetupRepository? programRepository,
   int remainingFollowerQuota = 3,
   double routeWidth = 390,
   double floatingBottomOverlayInset = 0,
@@ -867,6 +942,11 @@ Widget _app({
         event_test.FakeEventRepository(),
       ),
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
+      organizerProgramListProvider(
+        club.id,
+      ).overrideWithValue(const AsyncData([])),
+      if (programRepository != null)
+        programSetupRepositoryProvider.overrideWithValue(programRepository),
       watchEventsForClubProvider(
         club.id,
       ).overrideWith((ref) => Stream.value(events ?? [?event])),
@@ -936,6 +1016,40 @@ Widget _app({
     ),
   );
 }
+
+class _PendingProgramRepository extends Fake implements ProgramSetupRepository {
+  final detail = Completer<OrganizerProgramDetail>();
+  final guestPage = Completer<ProgramGuestListPage>();
+
+  @override
+  Future<OrganizerProgramDetail> getProgram(String programId) => detail.future;
+
+  @override
+  Future<ProgramGuestListPage> listGuests(
+    String programId, {
+    int? limit,
+    String? cursor,
+  }) => guestPage.future;
+}
+
+OrganizerProgramDetail _programDetail() => OrganizerProgramDetail(
+  program: OrganizerProgramSettings(
+    programId: 'older-program',
+    organizerId: 'club-1',
+    kind: ProgramKind.wedding,
+    title: 'Older program',
+    timezone: 'Asia/Kolkata',
+    status: ProgramStatus.active,
+    startsAt: DateTime(2026),
+    endsAt: DateTime(2026, 2),
+    capabilities: const [],
+    revision: 1,
+  ),
+  functions: const [],
+  pickupPoints: const [],
+  hotels: const [],
+  counts: const {},
+);
 
 HostSavedAudience _savedAudience(String organizerId) => HostSavedAudience(
   organizerId: organizerId,
