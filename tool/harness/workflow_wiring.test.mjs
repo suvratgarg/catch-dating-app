@@ -385,7 +385,7 @@ test("retired React graph snapshots stay absent while the live CI gate remains",
 
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");
-  assert.match(ci, /name: Required CI/);
+  assert.match(ci, /name: .*\|\| 'Required CI'/);
   assert.match(ci, /node tool\/harness\.mjs plan/);
   assert.doesNotMatch(ci, new RegExp(`${retiredPlanner}|harness\\.mjs shadow`));
   for (const target of graph.targets) {
@@ -987,4 +987,25 @@ test("every selective main consumer reads the exact committed validation window"
   }
   assert.match(namedStep(workflow("flutter-ci.yml"), "Select tests from committed dependency closures"),
     /--commit-window "\$COMMIT_WINDOW"/u);
+});
+
+test("PR admission serializes full validation without green deferred checks", () => {
+  const ci = workflow("ci.yml");
+  assert.match(ci, /types: \[opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft\]/u);
+  assert.match(ci, /github\.event_name == 'pull_request' && 'admitted'/u);
+  assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
+  assert.match(ci, /queue: max\n  cancel-in-progress: false/u);
+  assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
+  assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
+  assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ always\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
+  assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
+  assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
+  assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
+  assert.match(ci, /name: Backend source review/u);
+  const feedback = workflow("pr-feedback.yml");
+  assert.match(feedback, /git diff --check/u);
+  assert.match(feedback, /node tool\/harness\.mjs plan/u);
+  assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
+  assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);
 });

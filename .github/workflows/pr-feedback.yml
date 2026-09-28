@@ -1,0 +1,42 @@
+name: PR feedback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-feedback-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  feedback:
+    name: Inexpensive source feedback
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tool/harness.mjs
+            /tool/ci/main_ci_baseline.mjs
+            /tool/harness/component_graph.json
+            /tool/harness/lib/component_graph.mjs
+            /tool/harness/lib/git_changes.mjs
+            /tool/lib/path_glob.mjs
+            /tool/lib/repo_paths.mjs
+            /tool/lib/tool_impact.mjs
+            /tool/tools_manifest.json
+            /tool/design/build_host_feature_responsibilities.mjs
+            /design/features/host_feature_responsibilities.json
+      - name: Check changed whitespace and plan affected checks
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --check "$BASE_SHA" HEAD
+          node tool/harness.mjs plan --base "$BASE_SHA" --head HEAD --mode pr --json > /tmp/pr-feedback-plan.json
+          echo 'This is inexpensive feedback, not merge approval. Full validation requires the sole ci:admitted label.' >> "$GITHUB_STEP_SUMMARY"
