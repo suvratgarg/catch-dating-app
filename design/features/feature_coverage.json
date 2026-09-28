@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-09-28",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -732,6 +732,15 @@
       "reason": "Private synthetic Sales invitation reuses runtime primitives and bounded verified-contact access. Shared host acquisition orchestration classification remains planned.",
       "targetFeature": "feature.host_acquisition",
       "debtId": "FEATURE-SALES-DEMO-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_workspace",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private Sales operations are governed by callable contracts, role boundaries and focused workspace tests. The shared intake-to-demo feature orchestration contract remains planned.",
+      "targetFeature": "feature.host_acquisition",
+      "debtId": "FEATURE-SALES-WORKSPACE-001"
     }
   ]
 }
