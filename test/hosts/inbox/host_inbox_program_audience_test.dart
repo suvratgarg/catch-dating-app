@@ -89,7 +89,7 @@ void main() {
       final result = container.read(provider.future);
       expect(repository.requestedCursors, isEmpty);
       repository.detail.complete(_detail());
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
       expect(repository.requestedCursors, [null]);
       repository.guestPages.single.complete(_page([_guest(1)]));
       expect((await result).program.title, 'Older program');
@@ -130,7 +130,7 @@ void main() {
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
       final initial = container.read(provider.future);
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
       repository.guestPages.single.complete(
         _page([
           for (var i = 0; i < 200; i++)
@@ -170,7 +170,7 @@ void main() {
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
       final initial = container.read(provider.future);
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
       repository.guestPages.single.complete(
         _page([_guest(1, contactId: 'contact-1')], nextCursor: 'guest-1'),
       );
