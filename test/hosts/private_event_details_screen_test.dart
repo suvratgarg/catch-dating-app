@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
@@ -20,11 +21,12 @@ void main() {
   for (final actionKind in [
     'duration',
     'map',
+    'map-failure',
     'terms',
     'reconciliation',
     'discarding',
   ]) {
-    final mapSelection = actionKind == 'map';
+    final mapSelection = actionKind.startsWith('map');
     final termsSelection = actionKind == 'terms';
     final reconciliation =
         actionKind == 'reconciliation' || actionKind == 'discarding';
@@ -124,11 +126,16 @@ void main() {
                 : PrivateEventDetailsScreen(
                     controller: controller,
                     onBack: () {},
-                    pickLocation: (_) async => const EventMeetingLocation(
-                      name: 'Test Town Hall',
-                      latitude: 19.2,
-                      longitude: 72.9,
-                    ),
+                    pickLocation: (_) async {
+                      if (actionKind == 'map-failure') {
+                        throw StateError('Picker diagnostic must stay private');
+                      }
+                      return const EventMeetingLocation(
+                        name: 'Test Town Hall',
+                        latitude: 19.2,
+                        longitude: 72.9,
+                      );
+                    },
                   ),
           ),
         ),
@@ -189,6 +196,14 @@ void main() {
       expect(action.hitTestable(), findsOneWidget);
       await tester.tap(action.hitTestable());
       await pumpFeatureUi(tester);
+      if (actionKind == 'map-failure') {
+        expect(controller.error, isA<AppException>());
+        expect(sent, isNull);
+        expect(controller.pending, isNull);
+        expect(find.text('Picker diagnostic must stay private'), findsNothing);
+        expect(tester.takeException(), isNull);
+        return;
+      }
       if (mapSelection) {
         expect(sent?.details.meetingLocation?.latitude, 19.2);
         expect(sent?.details.meetingLocation?.longitude, 72.9);

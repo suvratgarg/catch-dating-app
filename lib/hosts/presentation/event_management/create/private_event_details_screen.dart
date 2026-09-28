@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/app_error_context.dart' as operation;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -82,8 +83,18 @@ class PrivateEventDetailsScreen extends StatelessWidget {
           PrivateEventDetailsPatch(meetingLocation: location),
         );
       }
-    } catch (error) {
-      controller.reportValidationError(error);
+    } catch (error, stackTrace) {
+      controller.reportValidationError(
+        operation.normalizeAppError(
+          error,
+          stackTrace: stackTrace,
+          context: const operation.AppErrorContext(
+            operation: operation.AppOperation.plugin,
+            action: 'choose meeting place',
+            resource: 'event_location_picker',
+          ),
+        ),
+      );
     }
   }
 
