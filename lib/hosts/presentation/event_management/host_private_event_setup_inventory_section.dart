@@ -9,9 +9,13 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-typedef ReadPrivateEventSetupInventory = Future<PrivateEventSetupInventoryPage>
-    Function({required String organizerId, required int limit, String? cursor,
-      PrivateEventSetupScope? scope});
+typedef ReadPrivateEventSetupInventory =
+    Future<PrivateEventSetupInventoryPage> Function({
+      required String organizerId,
+      required int limit,
+      String? cursor,
+      PrivateEventSetupScope? scope,
+    });
 
 /// Private events are read from the manager API, never from the
 /// public rich Event feed or this device's local draft store.
@@ -25,6 +29,7 @@ class HostPrivateEventSetupInventorySection extends StatefulWidget {
 
   final String organizerId;
   final ReadPrivateEventSetupInventory read;
+
   /// Open the existing create route with initialSavedEventId, then return.
   final Future<void> Function(String eventId) openSaved;
 
@@ -53,7 +58,9 @@ class _HostPrivateEventSetupInventorySectionState
   }
 
   @override
-  void didUpdateWidget(covariant HostPrivateEventSetupInventorySection oldWidget) {
+  void didUpdateWidget(
+    covariant HostPrivateEventSetupInventorySection oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.organizerId != widget.organizerId) {
       _generation++;
@@ -137,86 +144,109 @@ class _HostPrivateEventSetupInventorySectionState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    final rows = <Widget>[
-        if (_loading && !_loaded)
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostsPrivateEventInventoryLoading,
-            icon: CatchIcons.scheduleOutlined,
-          ),
-        if (_loaded && _events.isEmpty)
-          CatchField.read(
-            copy: copy,
-            title: _scope == PrivateEventSetupScope.upcoming
-                ? l10n.hostsPrivateEventInventoryEmpty
-                : l10n.hostsPrivateEventInventoryHistoryEmpty,
-            icon: CatchIcons.eventAvailableOutlined,
-          ),
-        for (final event in _events)
-          CatchField.action(
-            copy: copy,
-            title: event.name,
-            emphasis: CatchFieldEmphasis.title,
-            body: _summary(context, event),
-            icon: CatchIcons.eventAvailableOutlined,
-            onTap: _opening ? null : () => unawaited(_open(event.eventId)),
-          ),
-        if (_nextCursor != null)
-          CatchField.action(
-            copy: copy,
-            title: l10n.hostsPrivateEventInventoryLoadMore,
-            onTap: _loading ? null : () => unawaited(_load(reset: false)),
-          ),
-        if (_error != null) ...[
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostsPrivateEventInventoryError,
-            body: appErrorMessage(_error!, l10n: l10n,
-                context: AppErrorContext.event),
-            icon: CatchIcons.errorOutlineRounded,
-          ),
-          CatchField.action(
-            copy: copy,
-            title: l10n.hostsPrivateEventRetryDefaultsRead,
-            onTap: _loading ? null : () => unawaited(_load(reset: true)),
-          ),
-        ],
-    ];
-    return CatchSection.content(
-      title: l10n.hostsPrivateEventInventoryTitle,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchChoiceInput<PrivateEventSetupScope>.segmented(
-            contract: CatchContractConstraints.listPrivateEventSetupsCallablePayloadScope,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSection.content(
+          title: l10n.hostsPrivateEventInventoryTitle,
+          child: CatchChoiceInput<PrivateEventSetupScope>.segmented(
+            contract: CatchContractConstraints
+                .listPrivateEventSetupsCallablePayloadScope,
             contractValueBuilder: (scope) => scope.name,
             selected: _scope,
             onChanged: _selectScope,
             variant: CatchChoiceInputVariant.summary,
             scrollable: true,
             options: [
-              CatchOption(value: PrivateEventSetupScope.upcoming,
-                label: l10n.hostsPrivateEventInventoryUpcoming),
-              CatchOption(value: PrivateEventSetupScope.past,
-                label: l10n.hostsPrivateEventInventoryPast),
-              CatchOption(value: PrivateEventSetupScope.cancelled,
-                label: l10n.hostsPrivateEventInventoryCancelled),
+              CatchOption(
+                value: PrivateEventSetupScope.upcoming,
+                label: l10n.hostsPrivateEventInventoryUpcoming,
+              ),
+              CatchOption(
+                value: PrivateEventSetupScope.past,
+                label: l10n.hostsPrivateEventInventoryPast,
+              ),
+              CatchOption(
+                value: PrivateEventSetupScope.cancelled,
+                label: l10n.hostsPrivateEventInventoryCancelled,
+              ),
             ],
           ),
-          if (rows.isNotEmpty) CatchFieldLanes.divided(children: rows),
-        ],
-      ),
+        ),
+        if ((_loading && !_loaded) ||
+            _loaded ||
+            _events.isNotEmpty ||
+            _nextCursor != null ||
+            _error != null)
+          CatchSection.rows(
+            children: [
+              if (_loading && !_loaded)
+                CatchField.read(
+                  copy: copy,
+                  title: l10n.hostsPrivateEventInventoryLoading,
+                  icon: CatchIcons.scheduleOutlined,
+                ),
+              if (_loaded && _events.isEmpty)
+                CatchField.read(
+                  copy: copy,
+                  title: _scope == PrivateEventSetupScope.upcoming
+                      ? l10n.hostsPrivateEventInventoryEmpty
+                      : l10n.hostsPrivateEventInventoryHistoryEmpty,
+                  icon: CatchIcons.eventAvailableOutlined,
+                ),
+              for (final event in _events)
+                CatchField.action(
+                  copy: copy,
+                  title: event.name,
+                  emphasis: CatchFieldEmphasis.title,
+                  body: _summary(context, event),
+                  icon: CatchIcons.eventAvailableOutlined,
+                  onTap: _opening
+                      ? null
+                      : () => unawaited(_open(event.eventId)),
+                ),
+              if (_nextCursor != null)
+                CatchField.action(
+                  copy: copy,
+                  title: l10n.hostsPrivateEventInventoryLoadMore,
+                  onTap: _loading ? null : () => unawaited(_load(reset: false)),
+                ),
+              if (_error != null) ...[
+                CatchField.read(
+                  copy: copy,
+                  title: l10n.hostsPrivateEventInventoryError,
+                  body: appErrorMessage(
+                    _error!,
+                    l10n: l10n,
+                    context: AppErrorContext.event,
+                  ),
+                  icon: CatchIcons.errorOutlineRounded,
+                ),
+                CatchField.action(
+                  copy: copy,
+                  title: l10n.hostsPrivateEventRetryDefaultsRead,
+                  onTap: _loading ? null : () => unawaited(_load(reset: true)),
+                ),
+              ],
+            ],
+          ),
+      ],
     );
   }
 
   String _summary(BuildContext context, PrivateEventSetupInventoryItem event) {
-    final city = defaultCityOptions.where((option) =>
-        option.effectiveCityId == event.city.cityId &&
-        option.effectiveMarketId == event.city.marketId).firstOrNull;
+    final city = defaultCityOptions
+        .where(
+          (option) =>
+              option.effectiveCityId == event.city.cityId &&
+              option.effectiveMarketId == event.city.marketId,
+        )
+        .firstOrNull;
     final date = DateTime.tryParse(event.localDate);
-    final dateText = date == null ? event.localDate :
-        MaterialLocalizations.of(context).formatMediumDate(date);
+    final dateText = date == null
+        ? event.localDate
+        : MaterialLocalizations.of(context).formatMediumDate(date);
     return '$dateText · ${event.localStartTime} · '
         '${city?.label ?? event.city.cityId}';
   }

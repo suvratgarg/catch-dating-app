@@ -82561,7 +82561,7 @@ abstract final class CatchContractConstraints {
     path: 'legacyPaymentRefundIntent.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['guestCancelled', 'eventCancelled'],
+    enumValues: <String>['guestCancelled', 'eventCancelled', 'bookingFailed'],
   );
 
   static const legacyPaymentRefundIntentRefundApplicationFee = CatchContractFieldConstraints(
@@ -113312,7 +113312,7 @@ abstract final class CatchContractConstraints {
     path: 'paymentDocument.cancellationRefund.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['guestCancelled', 'eventCancelled'],
+    enumValues: <String>['guestCancelled', 'eventCancelled', 'bookingFailed'],
   );
 
   static const paymentDocumentCancellationRefundRefundApplicationFee = CatchContractFieldConstraints(

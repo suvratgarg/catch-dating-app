@@ -325,56 +325,27 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   void _restorePickedDraft(EventDraft draft) {
     _activeDraft = draft;
     _localDraftId = draft.id;
-    _requestId = draft.eventCreateRequestId ?? _newRequestId();
+    _requestId = draft.eventCreateRequestId ?? newPrivateEventRequestId();
     _submittedSignature = draft.eventCreatePayloadSignature;
     _submittedPayloadJson = draft.eventCreatePayloadJson;
-    _receipt =
-        draft.eventCreateReceiptEventId != null &&
-            draft.eventCreateReceiptRevision != null
-        ? PrivateEventCreateReceipt(
-            eventId: draft.eventCreateReceiptEventId!,
-            setupRevision: draft.eventCreateReceiptRevision!,
-            replayed: true,
-          )
-        : null;
+    final restored = PrivateEventDraftRestore(
+      draft,
+      organizerCityId: widget.club.locationCityId,
+      organizerMarketId: widget.club.locationMarketId,
+      organizerTimezone: _managerDefaults?.timezone,
+      trustedDefaults: _trustedOrganizerDefaultsReadAvailable(),
+      organizerDefaultsHash: _organizerDefaultsHash,
+    );
+    _receipt = restored.receipt;
     _nameController.text = draft.name ?? '';
-    _city = null;
-    for (final option in defaultCityOptions) {
-      if (option.effectiveCityId == draft.eventCityId &&
-          option.effectiveMarketId == draft.eventMarketId) {
-        _city = option;
-        break;
-      }
-    }
-    _city ??= defaultCityOptions
-        .where(
-          (option) =>
-              option.effectiveCityId == widget.club.locationCityId &&
-              option.effectiveMarketId == widget.club.locationMarketId,
-        )
-        .firstOrNull;
-    _timezoneController.text =
-        draft.eventTimezone ??
-        _managerDefaults?.timezone ??
-        _city?.timeZone ??
-        '';
-    _date = restoredPrivateEventDate(draft, rejectPast: false);
-    _start = restoredPrivateEventStart(draft);
-    _cityInherited =
-        _trustedOrganizerDefaultsReadAvailable() &&
-        draft.eventCityMode == 'inherit';
-    _timezoneInherited =
-        _trustedOrganizerDefaultsReadAvailable() &&
-        draft.eventTimezoneMode == 'inherit';
-    _defaultsChanged =
-        (_cityInherited || _timezoneInherited) &&
-        draft.eventReviewedDefaultsHash != _organizerDefaultsHash;
-    _savedCity = _city == null
-        ? null
-        : EventSetupCity(
-            cityId: _city!.effectiveCityId,
-            marketId: _city!.effectiveMarketId,
-          );
+    _city = restored.city;
+    _timezoneController.text = restored.timezone;
+    _date = restored.date;
+    _start = restored.start;
+    _cityInherited = restored.cityInherited;
+    _timezoneInherited = restored.timezoneInherited;
+    _defaultsChanged = restored.defaultsChanged;
+    _savedCity = restored.savedCity;
     _savedBasics = _receipt == null ? null : _currentExplicitBasics;
     _pendingUpdate = null;
     _editingSavedBasics = false;
@@ -663,7 +634,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         PrivateEventBasicsUpdateRequest(
           organizerId: widget.club.id,
           eventId: receipt.eventId,
-          requestId: _newRequestId(),
+          requestId: newPrivateEventRequestId(),
           expectedSetupRevision: receipt.setupRevision,
           basics: basics,
         );
@@ -800,50 +771,30 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   }
 
   Future<void> _persistDraft({PrivateEventCreateReceipt? receipt}) async {
-    final old = _activeDraft;
-    final draft =
-        (old ??
-                EventDraft(
-                  id: _localDraftId,
-                  clubId: widget.club.id,
-                  savedAt: DateTime.now(),
-                ))
-            .copyWith(
-              savedAt: DateTime.now(),
-              name: _nameController.text.trim(),
-              eventCityId: _city?.effectiveCityId ?? _savedCity?.cityId,
-              eventMarketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
-              eventLocalDate: _date == null ? null : _localDate,
-              eventLocalStartTime: _start == null ? null : _localStartTime,
-              eventTimezone: _timezoneController.text.trim(),
-              eventCityMode: _cityInherited ? 'inherit' : 'set',
-              eventTimezoneMode: _timezoneInherited ? 'inherit' : 'set',
-              eventReviewedDefaultsHash: _cityInherited || _timezoneInherited
-                  ? _organizerDefaultsHash
-                  : null,
-              eventCreateRequestId: _requestId,
-              eventCreatePayloadSignature: _submittedSignature,
-              eventCreatePayloadJson: _submittedPayloadJson,
-              eventCreateReceiptEventId:
-                  receipt?.eventId ?? old?.eventCreateReceiptEventId,
-              eventCreateReceiptRevision:
-                  receipt?.setupRevision ?? old?.eventCreateReceiptRevision,
-              selectedDateMillis: _date?.millisecondsSinceEpoch,
-              selectedStartHour: _start?.hour,
-              selectedStartMinute: _start?.minute,
-            );
+    final draft = privateEventDraftSnapshot(
+      old: _activeDraft,
+      draftId: _localDraftId,
+      clubId: widget.club.id,
+      name: _nameController.text.trim(),
+      cityId: _city?.effectiveCityId ?? _savedCity?.cityId,
+      marketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
+      localDate: _date == null ? null : _localDate,
+      localStartTime: _start == null ? null : _localStartTime,
+      timezone: _timezoneController.text.trim(),
+      cityInherited: _cityInherited,
+      timezoneInherited: _timezoneInherited,
+      organizerDefaultsHash: _organizerDefaultsHash,
+      requestId: _requestId,
+      submittedSignature: _submittedSignature,
+      submittedPayloadJson: _submittedPayloadJson,
+      date: _date,
+      start: _start,
+      receipt: receipt,
+    );
     await ref
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
     _activeDraft = draft;
     ref.invalidate(clubEventDraftsProvider(clubId: widget.club.id));
   }
-}
-
-String _newRequestId() {
-  final random = Random.secure();
-  return List<int>.generate(
-    24,
-    (_) => random.nextInt(256),
-  ).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

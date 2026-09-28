@@ -12,7 +12,6 @@ import {
 import {
   fulfillRazorpayPayment,
   markRazorpayPendingOrder,
-  razorpayRefundFromClient,
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
@@ -21,7 +20,7 @@ import {
 
 const RECONCILE_GRACE_MS = 15 * 60 * 1000;
 const RECONCILE_BATCH_LIMIT = 25;
-const capturedStatuses = new Set(["authorized", "captured"]);
+const capturedStatuses = new Set(["captured"]);
 
 interface ReconcileDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -51,7 +50,7 @@ const defaultDeps: ReconcileDeps = {
  * Closes the gap when BOTH the client verification callback AND the webhook are
  * missed: queries `razorpayPendingOrders` that are still "pending" and older
  * than the grace window, fetches each order's payments from Razorpay, and
- * either fulfills (if a captured/authorized payment exists) or marks the
+ * either fulfills a captured payment, waits for capture, or marks the
  * tracking doc expired. Bounded by a batch limit so a backlog can't blow up a
  * single run. Fulfillment is the shared idempotent helper, so racing the
  * callback/webhook is safe.
@@ -136,6 +135,9 @@ async function reconcileOrder({
     capturedStatuses.has(payment.status)
   );
 
+  if (!captured && payments.some((payment) =>
+    payment.status === "authorized")) return "skipped";
+
   if (!captured) {
     // No captured payment after the grace window — the user abandoned checkout
     // or the payment failed/was never made. Mark expired so we stop sweeping.
@@ -166,18 +168,17 @@ async function reconcileOrder({
     expectedUserId,
   });
 
-  await fulfillRazorpayPayment({
+  const result = await fulfillRazorpayPayment({
     db,
     orderId,
     paymentId: captured.id,
     booking,
     deps: {
       signUpForEvent: deps.signUpForEvent,
-      refund: razorpayRefundFromClient(razorpay),
       serverTimestamp: deps.serverTimestamp,
     },
   });
-  return "fulfilled";
+  return result.fulfilled ? "fulfilled" : "skipped";
 }
 
 /**

@@ -153,7 +153,7 @@ export function EventDetailHeroSection({
               : eventDetailCopy.hero.webActionHeading
             : eventDetailCopy.hero.catchActionHeading}
       >
-        {event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : <p>{eventDetailCopy.details.registrationClosed}</p> : hasWebRegistration ? (
+        {event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : null : hasWebRegistration ? (
           <PublicEventRegistration eventId={event.eventId} mode={event.registrationMode === "paid" ? "paid" : "free"} />
         ) : isExternal && event.sourceHref ? (
           <ActionGroup variant="flow">

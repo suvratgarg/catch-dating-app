@@ -17,7 +17,7 @@ export interface PaymentDocument {
   currency: string;
   provider?: "razorpay" | "stripe";
   /**
-   * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+   * refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.
    */
   status: "pending" | "completed" | "failed" | "refunded" | "refundFailed";
   providerPaymentId?: string | null;

@@ -276,15 +276,13 @@ class HostResponseDetailSection extends ConsumerWidget {
         ],
         if (value.canReview) ...[
           gapH24,
-          CatchFieldLanes.single(
-            child: _ResponseReviewNoteEditor(
-              key: ValueKey('review-note-${application!.applicationId}'),
-              application: application,
-              controller: note,
-              busy: busy,
-              saving: saving,
-              onSave: () => onReview(application, application.reviewStatus),
-            ),
+          HostResponseReviewNoteField(
+            key: ValueKey('review-note-${application!.applicationId}'),
+            application: application,
+            controller: note,
+            busy: busy,
+            saving: saving,
+            onSave: () => onReview(application, application.reviewStatus),
           ),
         ] else if (application?.reviewNote case final String note
             when !value.revoked) ...[
@@ -563,8 +561,8 @@ class HostResponsePrimaryAction extends StatelessWidget {
 
 /// Uses the shared explicit-save field so actions participate in its reveal,
 /// keyboard focus and cancellation behavior rather than floating below it.
-class _ResponseReviewNoteEditor extends StatefulWidget {
-  const _ResponseReviewNoteEditor({
+class HostResponseReviewNoteField extends StatefulWidget {
+  const HostResponseReviewNoteField({
     super.key,
     required this.application,
     required this.controller,
@@ -578,14 +576,15 @@ class _ResponseReviewNoteEditor extends StatefulWidget {
   final bool saving;
   final Future<void> Function() onSave;
   @override
-  State<_ResponseReviewNoteEditor> createState() =>
-      _ResponseReviewNoteEditorState();
+  State<HostResponseReviewNoteField> createState() =>
+      _HostResponseReviewNoteFieldState();
 }
 
-class _ResponseReviewNoteEditorState extends State<_ResponseReviewNoteEditor> {
+class _HostResponseReviewNoteFieldState
+    extends State<HostResponseReviewNoteField> {
   bool _open = false;
   @override
-  void didUpdateWidget(covariant _ResponseReviewNoteEditor oldWidget) {
+  void didUpdateWidget(covariant HostResponseReviewNoteField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.application.revision != oldWidget.application.revision &&
         widget.controller.text.trim() ==
@@ -595,32 +594,34 @@ class _ResponseReviewNoteEditorState extends State<_ResponseReviewNoteEditor> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchField.inputActions(
-    copy: catchFieldCopy(
-      context.l10n,
-    ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
-    title: context.l10n.hostApplicationReviewNote,
-    controller: widget.controller,
-    inputHint: context.l10n.hostApplicationReviewNoteHint,
-    contract: CatchContractConstraints
-        .reviewOrganizerApplicationCallablePayloadReviewNote,
-    maxLines: 3,
-    open: _open,
-    status: widget.saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
-    states: {if (widget.busy && !widget.saving) WidgetState.disabled},
-    onOpenChanged: (open) => setState(() => _open = open),
-    onCancel: () {
-      widget.controller.text = widget.application.reviewNote ?? '';
-      setState(() => _open = false);
-    },
-    onSubmit: () {
-      if (widget.busy) return;
-      if (widget.controller.text.trim() ==
-          (widget.application.reviewNote ?? '').trim()) {
+  Widget build(BuildContext context) => CatchFieldLanes.single(
+    child: CatchField.inputActions(
+      copy: catchFieldCopy(
+        context.l10n,
+      ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
+      title: context.l10n.hostApplicationReviewNote,
+      controller: widget.controller,
+      inputHint: context.l10n.hostApplicationReviewNoteHint,
+      contract: CatchContractConstraints
+          .reviewOrganizerApplicationCallablePayloadReviewNote,
+      maxLines: 3,
+      open: _open,
+      status: widget.saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
+      states: {if (widget.busy && !widget.saving) WidgetState.disabled},
+      onOpenChanged: (open) => setState(() => _open = open),
+      onCancel: () {
+        widget.controller.text = widget.application.reviewNote ?? '';
         setState(() => _open = false);
-      } else {
-        widget.onSave();
-      }
-    },
+      },
+      onSubmit: () {
+        if (widget.busy) return;
+        if (widget.controller.text.trim() ==
+            (widget.application.reviewNote ?? '').trim()) {
+          setState(() => _open = false);
+        } else {
+          widget.onSave();
+        }
+      },
+    ),
   );
 }

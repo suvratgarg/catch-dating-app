@@ -23413,4 +23413,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventContinueDiscarding =>
       'Continue discarding change';
+
+  @override
+  String get paymentsCancellationLabel => 'Booking cancelled';
+
+  @override
+  String get paymentsCancellationRefundReview => 'Refund needs review';
+
+  @override
+  String get paymentsCancellationPartialRefund => 'Partially refunded';
+
+  @override
+  String get paymentsCancellationNoRefund =>
+      'Your booking is cancelled. No refund applies under its cancellation policy.';
+
+  @override
+  String get paymentsCancellationCheckoutMessage =>
+      'Your booking is cancelled. View payment history for the refund status.';
+
+  @override
+  String paymentsCancellationRefundPending({required String amount}) {
+    return 'Your booking is cancelled. A refund of $amount is being processed.';
+  }
+
+  @override
+  String paymentsCancellationRefundReturned({required String amount}) {
+    return '$amount returned. Your booking is cancelled.';
+  }
 }

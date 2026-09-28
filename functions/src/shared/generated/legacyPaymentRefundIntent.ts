@@ -3,11 +3,11 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Frozen native cancellation refund authority and up to two observed attempts: guest refund then host cancellation remainder. Provider success is distinct from submission.
+ * Frozen native cancellation or failed-booking refund authority. Provider success is distinct from submission; guest refund may be upgraded by host cancellation.
  */
 export interface LegacyPaymentRefundIntent {
   version: 1;
-  reason: "guestCancelled" | "eventCancelled";
+  reason: "guestCancelled" | "eventCancelled" | "bookingFailed";
   state: "pending" | "complete" | "reviewRequired";
   targetAmountMinor: number;
   confirmedAmountMinor: number;

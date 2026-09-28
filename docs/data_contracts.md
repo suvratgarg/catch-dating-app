@@ -1739,7 +1739,17 @@ other countries recommend Stripe, while both setup paths remain available.
 Checkout routing and eventual settlement remain server-authoritative and must
 not infer readiness from the recommendation badge alone.
 
-### Native Cancellation Refund Authority
+### Native Payment and Refund Authority
+
+Native captured checkout commits its payment and admission in the same
+transaction. A second payment cannot claim an existing seat; a retried completed
+payment cannot re-admit a cancelled participation. Rejected bookings persist a
+full `bookingFailed` refund intent under the same payment/participation fence
+before provider I/O. Their legacy status remains `refundFailed` while the intent
+is pending or needs review, and only observed full return sets `refunded`.
+The payment trigger and existing due queue recover these intents. Historical
+failed-booking records without an intent require reconciliation because an old
+provider request may have succeeded without a saved acknowledgement.
 
 Native checkout payments retain a server-owned `cancellationRefund` intent on
 `payments/{paymentId}`. Guest cancellation saves the quoted cash amount in the

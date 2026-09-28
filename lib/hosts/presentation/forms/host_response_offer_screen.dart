@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
@@ -177,7 +178,10 @@ class _HostResponseOfferScreenState
   @override
   Widget build(BuildContext context) {
     final enabled = ref.watch(privateEventSetupAvailableProvider);
-    final uid = enabled ? ref.watch(uidProvider).asData?.value : null;
+    final account = enabled
+        ? catchAsyncStateFromAsyncValue(ref.watch(uidProvider))
+        : null;
+    final uid = account?.isSettledData == true ? account!.value : null;
     final liveUid = enabled
         ? ref.watch(firebaseAuthProvider).currentUser?.uid
         : null;
@@ -277,7 +281,10 @@ class _HostResponseOfferScreenState
                     createAdmissionController: _admission,
                     copy: hostEventOfferWorkspaceCopy(context.l10n),
                     now: DateTime.now,
-                    layoutBuilder: _offerLayout,
+                    layoutBuilder: (body, action) {
+                      _publishAction(action);
+                      return body;
+                    },
                   ),
           ),
         ],
@@ -288,7 +295,7 @@ class _HostResponseOfferScreenState
   // Publish only the footer after the content build. Its listenable rebuilds
   // the footer alone, so changing an action never remounts the workspace or
   // feeds a parent-build loop. Coalesce updates before the next frame.
-  Widget _offerLayout(Widget body, Widget? action) {
+  void _publishAction(Widget? action) {
     _pendingAction = action;
     if (!_actionUpdateScheduled) {
       _actionUpdateScheduled = true;
@@ -297,6 +304,5 @@ class _HostResponseOfferScreenState
         if (mounted && !_accountLost) _primaryAction.value = _pendingAction;
       });
     }
-    return body;
   }
 }

@@ -144,7 +144,14 @@ void main() {
         await tester.scrollUntilVisible(
           apply,
           250,
-          scrollable: find.byType(Scrollable).first,
+          scrollable: find.descendant(
+            of: find.byType(ListView),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Scrollable &&
+                  widget.axisDirection == AxisDirection.down,
+            ),
+          ),
         );
         await Scrollable.ensureVisible(tester.element(apply), alignment: 0.5);
         await pumpFeatureUi(tester);

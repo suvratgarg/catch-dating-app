@@ -1,3 +1,4 @@
+import {prepareNativePaidBooking} from "./nativeBooking";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {fulfillRazorpayPayment} from "./razorpayFulfillment";
@@ -29,11 +30,12 @@ test(
       paymentId: "pay-1",
       booking,
       deps: {
-        signUpForEvent: async () => {
+        signUpForEvent: async (db, eventId, userId, paymentId, options) => {
           signUpCalls += 1;
-        },
-        refund: async () => {
-          throw new Error("Refund must not run on success.");
+          await db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db, tx, eventId, userId,
+              paymentId, booking: options!.paidBooking!}))();
+          });
         },
         serverTimestamp: () => "server-now",
       },
@@ -44,7 +46,7 @@ test(
     // Exactly one completed write and exactly one paidCount increment.
     assert.equal(fake.paymentSetCalls.length, 1);
     assert.equal(fake.paymentSetCalls[0].status, "completed");
-    assert.equal(fake.paymentSetCalls[0].completedAt, "server-now");
+    assert.ok(fake.paymentSetCalls[0].completedAt);
     assert.equal(fake.inviteLinkSetCalls.length, 1);
     assert.equal(fake.inviteLinkSetCalls[0].docId, "link-1");
     assert.ok("paidCount" in fake.inviteLinkSetCalls[0].data);
@@ -76,11 +78,12 @@ test(
       paymentId: "pay-1",
       booking,
       deps: {
-        signUpForEvent: async () => {
+        signUpForEvent: async (db, eventId, userId, paymentId, options) => {
           signUpCalls += 1;
-        },
-        refund: async () => {
-          throw new Error("Refund must not run on success.");
+          await db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db, tx, eventId, userId,
+              paymentId, booking: options!.paidBooking!}))();
+          });
         },
         serverTimestamp: () => "server-now",
       },
@@ -91,7 +94,7 @@ test(
     assert.equal(signUpCalls, 1);
     assert.equal(fake.paymentSetCalls.length, 0);
     assert.equal(fake.inviteLinkSetCalls.length, 0);
-    assert.deepEqual(result, {fulfilled: true, alreadyFinalized: false});
+    assert.deepEqual(result, {fulfilled: true, alreadyFinalized: true});
   }
 );
 
@@ -111,11 +114,12 @@ test(
       paymentId: "pay-1",
       booking,
       deps: {
-        signUpForEvent: async () => {
+        signUpForEvent: async (db, eventId, userId, paymentId, options) => {
           signUpCalls += 1;
-        },
-        refund: async () => {
-          throw new Error("Refund must not run when idempotent.");
+          await db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db, tx, eventId, userId,
+              paymentId, booking: options!.paidBooking!}))();
+          });
         },
         serverTimestamp: () => "server-now",
       },

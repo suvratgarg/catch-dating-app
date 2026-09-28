@@ -342,15 +342,8 @@ bool isDefinitiveEventPreferenceRejection(
   required String eventId,
   required String organizerId,
 }) {
-  Object? cause = error;
-  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
-    cause = cause.cause;
-  }
-  if (cause is! FirebaseFunctionsException || cause.code != 'aborted') {
-    return false;
-  }
-  final details = cause.details;
-  return details is Map &&
+  final details = backendCallableErrorDetails(error, code: 'aborted');
+  return details != null &&
       details['reason'] == 'event-preferences-review-stale' &&
       details['requestId'] == requestId &&
       details['eventId'] == eventId &&

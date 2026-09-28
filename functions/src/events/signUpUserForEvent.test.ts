@@ -824,3 +824,32 @@ test("Catch signup respects another checkout hold with zero confirmed bookings",
     assert.equal(fake.get("eventSeatLedgers/event-1")?.checkoutHeld, 1);
     assert.equal(fake.get("eventParticipations/event-1_runner-1"), undefined);
   });
+
+const paidBooking = {userId: "runner-1", eventId: "event-1",
+  orderId: "order_one", paymentId: "pay_one", amount: 1000,
+  amountMinor: 1000, currency: "INR", provider: "razorpay" as const};
+
+test("native paid signup commits atomically and rejects re-entry",
+  async () => {
+    const db = firestore({"events/event-1": event(),
+      "users/runner-1": user()});
+    await signUpUserForEvent(db, "event-1", "runner-1", "pay_one",
+      {paidBooking});
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(fake.get("payments/pay_one")?.status, "completed");
+    assert.equal(fake.get("eventParticipations/event-1_runner-1")?.paymentId,
+      "pay_one");
+    await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+      "pay_one", {paidBooking}), /already finalized/);
+  });
+
+test("another paid booking cannot claim an existing seat", async () => {
+  const db = firestore({"events/event-1": event(),
+    "users/runner-1": user(),
+    "eventParticipations/event-1_runner-1": {eventId: "event-1",
+      uid: "runner-1", status: "signedUp", paymentId: "pay_other"}});
+  await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+    "pay_one", {paidBooking}), /Another booking/);
+  assert.equal((db as unknown as FakeFirestore).get("payments/pay_one"),
+    undefined);
+});

@@ -1,3 +1,5 @@
+import {prepareNativePaidBooking, NativePaidBooking} from
+  "../payments/nativeBooking";
 import {preparePairSeatTransition} from "../crossPaths/pairSeatAuthority";
 import {heldSeatCount} from "./seatAuthority/seatAuthority";
 import * as admin from "firebase-admin";
@@ -82,6 +84,7 @@ export async function signUpUserForEvent(
   userId: string,
   paymentId?: string,
   options: {
+    paidBooking?: NativePaidBooking;
     hasValidInvite?: boolean;
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
@@ -116,6 +119,10 @@ export async function signUpUserForEvent(
       ]),
       tx.get(db.collection("deletedUsers").doc(userId)),
     ]);
+
+    const applyPayment = options.paidBooking ?
+      await prepareNativePaidBooking({db, tx, booking: options.paidBooking,
+        eventId, userId, paymentId}) : null;
 
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
@@ -164,6 +171,7 @@ export async function signUpUserForEvent(
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {
         status?: string;
+        paymentId?: string;
         inviteLinkId?: string | null;
         inviteSource?: string | null;
       } :
@@ -173,13 +181,22 @@ export async function signUpUserForEvent(
       existingParticipation?.status === "signedUp" ||
       existingParticipation?.status === "attended"
     ) {
-      if (!pairHold) return;
+      if (options.paidBooking &&
+          existingParticipation.paymentId !== paymentId) {
+        throw new HttpsError("already-exists",
+          "Another booking already owns this seat.");
+      }
+      if (!pairHold) {
+        applyPayment?.();
+        return;
+      }
       if (
         pairHold.eventId === eventId &&
         pairHold.requesterUid === userId &&
         pairHold.status === "confirmed" &&
         pairHold.requesterBookingStatus === "confirmed"
       ) {
+        applyPayment?.();
         return;
       }
       throw new HttpsError(
@@ -437,6 +454,7 @@ export async function signUpUserForEvent(
       );
     }
 
+    applyPayment?.();
     if (seatPreparation) applyFirestoreSeat(seatPreparation);
     pairSeat?.apply();
     guestLink?.apply();

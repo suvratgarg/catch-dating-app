@@ -1586,7 +1586,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
-      "line": 49,
+      "line": 50,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName)",
       "presentationTarget": "LocationPickerScreen",
@@ -1622,7 +1622,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "line": 146,
+      "line": 147,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",
@@ -1631,7 +1631,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "line": 267,
+      "line": 271,
       "ordinal": 2,
       "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
       "presentationTarget": "HostFormResponseDetailScreen",

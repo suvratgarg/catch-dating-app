@@ -92,7 +92,7 @@ export const paymentDocumentSchema: Record<string, unknown> = {
         "refunded",
         "refundFailed"
       ],
-      "description": "refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.",
+      "description": "refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.",
       "x-catch-ownership": "callable-owned"
     },
     "providerPaymentId": {
@@ -241,7 +241,7 @@ export const paymentDocumentSchema: Record<string, unknown> = {
     },
     "cancellationRefund": {
       "title": "LegacyPaymentRefundIntent",
-      "description": "Frozen native cancellation refund authority and up to two observed attempts: guest refund then host cancellation remainder. Provider success is distinct from submission.",
+      "description": "Frozen native cancellation or failed-booking refund authority. Provider success is distinct from submission; guest refund may be upgraded by host cancellation.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -271,7 +271,8 @@ export const paymentDocumentSchema: Record<string, unknown> = {
         "reason": {
           "enum": [
             "guestCancelled",
-            "eventCancelled"
+            "eventCancelled",
+            "bookingFailed"
           ],
           "type": "string"
         },
