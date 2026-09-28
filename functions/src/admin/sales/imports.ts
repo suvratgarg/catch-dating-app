@@ -109,11 +109,11 @@ async function evaluateRows(
     }
     const prior = organizerDecisions.get(row.organizerId);
     if (prior) {
+      const previouslyAccepted = prior.disposition === "created" ||
+        prior.disposition === "matched";
       decisions.push({...base,
-        disposition: prior.disposition === "created" || prior.disposition === "matched" ?
-          "matched" : prior.disposition,
-        reason: prior.disposition === "created" || prior.disposition === "matched" ?
-          "same_batch_organizer" : prior.reason,
+        disposition: previouslyAccepted ? "matched" : prior.disposition,
+        reason: previouslyAccepted ? "same_batch_organizer" : prior.reason,
         accountRevision: prior.accountRevision});
       continue;
     }
@@ -239,36 +239,56 @@ export async function applySalesImport(
   );
   const canonicalById = new Map(canonicalSnapshots);
   const accountSnapshots = await Promise.all(matchedIds.map(async (id) =>
-    [id, await tx.get(db.collection("organizerSalesAccounts").doc(id))] as const));
+    [id, await tx.get(db.collection("organizerSalesAccounts")
+      .doc(id))] as const));
   const accountById = new Map(accountSnapshots);
   const cohortsById = new Map<string, Set<string>>();
   input.rows.forEach((row, index) => {
-    if (!row.organizerId || !["created", "matched"].includes(decisions[index].disposition)) return;
+    if (!row.organizerId ||
+      !["created", "matched"].includes(decisions[index].disposition)) return;
     const cohorts = cohortsById.get(row.organizerId) ?? new Set<string>();
     for (const cohortId of row.cohortIds ?? []) cohorts.add(cohortId);
     cohortsById.set(row.organizerId, cohorts);
   });
+  const accountUpdates: Array<{
+    ref: FirebaseFirestore.DocumentReference;
+    cohortIds: string[];
+    revision: number;
+  }> = [];
   for (const [organizerId, cohorts] of cohortsById) {
+    if (cohorts.size > 30) {
+      throw new HttpsError("failed-precondition",
+        "Sales account cohort limit exceeded.");
+    }
     const accountSnap = accountById.get(organizerId);
     if (!accountSnap) continue;
     const account = accountSnap.data();
+    const matchedDecision = decisions.find((decision) =>
+      decision.organizerId === organizerId &&
+      decision.disposition === "matched");
     if (!accountSnap.exists || account?.classification !== "sales_private" ||
-      account.revision !== decisions.find((decision) =>
-        decision.organizerId === organizerId && decision.disposition === "matched")?.accountRevision) {
-      throw new HttpsError("aborted", "Sales account changed during import review.");
+      account.revision !== matchedDecision?.accountRevision) {
+      throw new HttpsError("aborted",
+        "Sales account changed during import review.");
     }
     const existing = account.cohortIds;
-    if (!Array.isArray(existing) || existing.some((value) => typeof value !== "string")) {
+    if (!Array.isArray(existing) ||
+      existing.some((value) => typeof value !== "string")) {
       throw new HttpsError("aborted", "Sales account cohorts are invalid.");
     }
     const merged = [...new Set([...existing, ...cohorts])];
     if (merged.length > 30) {
-      throw new HttpsError("failed-precondition", "Sales account cohort limit exceeded.");
+      throw new HttpsError("failed-precondition",
+        "Sales account cohort limit exceeded.");
     }
     if (merged.length !== existing.length) {
-      tx.update(accountSnap.ref, {cohortIds: merged, revision: account.revision + 1,
-        updatedAt: now, updatedBy: principal.uid});
+      accountUpdates.push({ref: accountSnap.ref, cohortIds: merged,
+        revision: account.revision + 1});
     }
+  }
+  for (const update of accountUpdates) {
+    tx.update(update.ref, {cohortIds: update.cohortIds,
+      revision: update.revision, updatedAt: now, updatedBy: principal.uid});
   }
   for (let index = 0; index < input.rows.length; index += 1) {
     const row = input.rows[index];

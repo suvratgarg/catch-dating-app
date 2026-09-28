@@ -1,9 +1,10 @@
 # Private sales demo server boundary
 
-The exports in `callables.ts` are not registered in `functions/src/index.ts` yet.
-The integration owner must add that wiring after reviewing Firestore rules,
-collection ownership, callable deployment settings, and the website route.
-No live demo has been issued or activated by this source change.
+The exports in `callables.ts` are registered in `functions/src/index.ts`, with
+server-only Firestore rules, collection ownership, generated contracts and a
+private `/demo/:invitationId` website route. The Admin host workspace provides
+blueprint review and invitation management. This is source integration; no live
+demo has been issued or activated by this source change.
 
 `getSalesDemoPreview({invitationId})` returns only a reviewed preview,
 `interactiveAvailable`, expiry, and a server-owned simulation notice. It is an
@@ -65,8 +66,9 @@ retained tools, and unsupported logic; the demo does not import a real form.
 
 The scheduled `expireSalesDemos` export deletes expired synthetic sessions and
 their trial receipts in bounded batches. Blueprints and issuance audit remain
-for review. All five `salesDemo*` collections are server-only and need explicit
-client SDK deny rules and ownership catalog registration before deployment.
+for review. All five `salesDemo*` collections are server-only, with explicit client SDK deny
+rules and ownership catalog registration. Deployment still requires current
+capability review, the secret, App Check and verified-contact acceptance.
 Production promotion is not implemented: no trial action publishes, messages,
 charges, grants organizer authority, copies configuration, or writes a product
 record. The server records only confirmed start/action receipts. Sales activity

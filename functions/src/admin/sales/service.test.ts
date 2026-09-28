@@ -25,7 +25,8 @@ class FakeRef {
   }
   async get() {
     const data = this.db.docs.get(this.path);
-    return {ref: this, exists: data !== undefined, data: () => structuredClone(data)};
+    return {ref: this, exists: data !== undefined,
+      data: () => structuredClone(data)};
   }
 }
 class FakeCollection {
@@ -1042,7 +1043,7 @@ test("commercial authority, receipts and stage gates", async () => {
     .filter((k) => k.startsWith("salesOpportunityStageHistory/")).length, 3);
 });
 
-test("finance closing binds owner authority, accepted terms and replay", async () => {
+test("finance close binds authority, terms and replay", async () => {
   const {db, deps} = fixture();
   const owner = {...employee, roles: ["adminOwner"]};
   await executeSalesAction(owner, "hosts.create", create, deps);
@@ -1051,7 +1052,8 @@ test("finance closing binds owner authority, accepted terms and replay", async (
     nextStepAt: "2026-09-29T00:00:00Z"};
   const created = await executeSalesAction(owner, "opportunities.upsert", {
     organizerId: "org-1", opportunityId: "finance-opp",
-    requestId: "finance-opportunity-create", expectedRevision: 0, fields}, deps);
+    requestId: "finance-opportunity-create",
+    expectedRevision: 0, fields}, deps);
   const opportunityId = (created.opportunity as Doc).opportunityId as string;
   const quoteId = commercialQuoteId(opportunityId);
   const scope = {classification: "sales_private", organizerId: "org-1",

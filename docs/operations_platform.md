@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.32.0
+version: 1.33.0
 updated: 2026-09-28
 owner: operations_platform
 status: active
@@ -979,10 +979,15 @@ server preview, lost authority or uncertain receipt read stops progression.
 Every source row must reconcile to created, matched, duplicate, unresolved or
 rejected. An applied batch containing unresolved rows is not a completed
 identity migration. Private artifacts and checkpoints belong outside Git.
-The runner currently preserves existing accounts and only creates reviewed
-private companions; it does not create public organizers, grant contact
-permission, publish listings or send messages. Compensation and historical
-activity/cohort promotion require separately reviewed domain actions.
+The runner preserves existing account fields while unioning explicitly reviewed
+cohort memberships once per organizer. Existing account revisions bind the
+preview, so concurrent edits require a fresh review. All source rows for one
+organizer stay together in a bounded packet, retaining their separate lineage.
+Offline identity review accounts for unreviewed, unresolved and ambiguous rows
+without inferring a canonical organizer. No public organizer, contact permission,
+listing publication or message is created. Compensation planning is inspection
+only and requires current account and related-record reads; executable rollback
+and historical activity promotion remain separate domain work.
 
 `outreach-drafting` is a separate registered shadow workflow. It reuses the
 platform run, lease, checkpoint, cache, budget and receipt owners. Inputs freeze
@@ -1008,9 +1013,14 @@ backend must authenticate the reviewer; a supplied actor ID is not authority.
 Copy/export must revalidate current eligibility at its own boundary. An activity
 marked sent elsewhere is an employee attestation, not provider delivery proof.
 
-The source workflow and its tests do not establish a deployed Sales-to-Operations
-adapter, live model activation, an imported prospect cohort or a connected
-assistant. Those remain explicit integration and acceptance gates. Runtime port
+The private Sales callable runtime now packages and invokes this workflow with
+reviewed source projections and a durable Firestore job/receipt authority. Its
+current production-code path renders approved clauses deterministically with
+zero model calls; temporary filesystem state is scratch and is removed after
+each attempt. Draft reads, approval and copying recheck current sources. This
+source integration does not establish deployment, live model activation, an
+imported prospect cohort or a connected assistant. Those remain explicit
+activation and acceptance gates. Runtime port
 details are maintained in the
 [outreach workflow README](../operations/src/workflows/outreach-drafting/README.md).
 

@@ -3,7 +3,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 const Ajv = require("ajv");
 const addFormats = require("ajv-formats");
-const {after, before, test} = require("node:test");
+const {after, before, test: nodeTest} = require("node:test");
+const emulatorEnabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+const test = (name, fn) => nodeTest(name, {skip: !emulatorEnabled}, fn);
 const admin = require("firebase-admin");
 const {executeSalesAction: write, executeSalesRead: read} =
   require("../lib/admin/sales/service");
@@ -14,8 +16,7 @@ let deps;
 const actor = {uid: "sales-emulator-employee", roles: ["admin"]};
 
 before(() => {
-  assert.ok(process.env.FIRESTORE_EMULATOR_HOST,
-    "This integration test requires the local Firestore emulator.");
+  if (!emulatorEnabled) return;
   app = admin.initializeApp({projectId: "demo-catch-sales-service"},
     "sales-service-integration");
   db = app.firestore();

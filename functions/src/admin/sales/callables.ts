@@ -154,4 +154,5 @@ export const adminReviseSalesQuote = write("commercial.quotes.revise");
 export const adminApproveSalesQuote = write("commercial.quotes.approve");
 export const adminAcceptSalesQuote = write("commercial.quotes.accept");
 
-export const adminAttestSalesHostSettlement = write("commercial.finance.attest");
+export const adminAttestSalesHostSettlement =
+  write("commercial.finance.attest");

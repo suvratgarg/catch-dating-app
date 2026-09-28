@@ -1,6 +1,7 @@
 import {executeCommercialActionInTransaction, executeCommercialRead,
   appendOpportunityStageHistory} from "../salesCommercial/service";
-import {validateHostFinanceCloseInTransaction} from "../salesCommercial/finance";
+import {validateHostFinanceCloseInTransaction} from
+  "../salesCommercial/finance";
 import type {CommercialPayload} from "../salesCommercial/types";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";

@@ -1,9 +1,9 @@
 # Sales assistant HTTPS boundary
 
 `http.ts` exports the versioned HTTP adapter wired directly to
-`functions/src/admin/sales/service.ts`. Add this export to the Functions index
-only after the server-owned Firestore rules and deployment review:
-`export {salesAssistant} from "./salesAssistant/http";`.
+`functions/src/admin/sales/service.ts` and registered in the Functions index.
+Private collection rules and schema ownership are integrated in source.
+Deployment and a real vendor connection require separate runtime acceptance.
 
 The deployed function serves `GET /v1/openapi.json`. Business requests use
 `POST /v1/actions/{action}` with the registered non-admin client Firebase ID
@@ -38,8 +38,8 @@ connection is activated.
 Gateway collections `assistantClients`, `assistantDelegations`,
 `assistantGatewayBudgets`, and `assistantManagementReceipts` are server-owned.
 Their source schemas live under `contracts/firestore/assistant_*.schema.json`.
-Current Firestore rules deny client SDK access by default; explicit collection
-denials and ownership metadata remain part of integration before deployment.
+Current Firestore rules explicitly deny client SDK access to these collections,
+and the contract registry records their server ownership.
 Budget documents include `expiresAt` for the same TTL maintenance process used
 by rate-limit counters.
 No assistant route can send, publish, approve claims, change payment state,
