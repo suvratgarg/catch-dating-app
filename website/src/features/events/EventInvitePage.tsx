@@ -77,12 +77,15 @@ export function EventInvitePage({
       >
         <p><strong>{landing.title}</strong></p>
         <p>{formatSchedule(landing.startTimeMillis)} · {landing.locationName}</p>
-        {landing.destinationKind === "catchEvent" ? (
+        {landing.destinationKind === "catchEvent" && (landing.registrationMode !== "closed" || landing.paidBookingAvailable) ? (
           <PublicEventRegistration
+            key={landing.eventId}
+            mode={landing.registrationMode === "paid" || landing.paidBookingAvailable ? "paid" : "free"}
+            allowNewBookings={landing.registrationMode !== "closed"}
             eventId={landing.eventId}
             inviteToken={inviteToken}
           />
-        ) : landing.destinationUrl ? (
+        ) : landing.destinationKind === "catchEvent" ? <p>{copy.registrationClosed}</p> : landing.destinationUrl ? (
           <ButtonLink href={landing.destinationUrl} variant="primary">
             {landingAction(landing)}
           </ButtonLink>

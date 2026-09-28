@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
@@ -77,9 +75,7 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
 
   Future<void> loadMore() async {
     final current = state.asData?.value;
-    if (current == null ||
-        !current.canLoadMore ||
-        !_matchesAccount(request)) {
+    if (current == null || !current.canLoadMore || !_matchesAccount(request)) {
       return;
     }
     final generation = _readGeneration;
@@ -191,7 +187,8 @@ class HostFormEditorController extends _$HostFormEditorController
     final editor = await ref
         .read(hostFormsRepositoryProvider)
         .getEditor(organizerId: organizerId, formId: formId);
-    if (!ref.mounted || buildSerial != _reloadSerial ||
+    if (!ref.mounted ||
+        buildSerial != _reloadSerial ||
         _settledAccountId() != accountId) {
       throw StateError('The Host account changed while loading the form.');
     }
@@ -199,18 +196,21 @@ class HostFormEditorController extends _$HostFormEditorController
     return HostFormEditorState(editor: editor);
   }
 
-  void updateMessagingConsent({bool? organizerWhatsapp, bool? catchWhatsapp,
-    bool? organizerOperationsWhatsapp, bool? organizerMarketingWhatsapp,
-    bool? catchMarketingWhatsapp}) =>
-      _mutate(
-        (definition) => definition.withMessagingConsent(
-          organizerWhatsapp: organizerWhatsapp,
-          catchWhatsapp: catchWhatsapp,
-          organizerOperationsWhatsapp: organizerOperationsWhatsapp,
-          organizerMarketingWhatsapp: organizerMarketingWhatsapp,
-          catchMarketingWhatsapp: catchMarketingWhatsapp,
-        ),
-      );
+  void updateMessagingConsent({
+    bool? organizerWhatsapp,
+    bool? catchWhatsapp,
+    bool? organizerOperationsWhatsapp,
+    bool? organizerMarketingWhatsapp,
+    bool? catchMarketingWhatsapp,
+  }) => _mutate(
+    (definition) => definition.withMessagingConsent(
+      organizerWhatsapp: organizerWhatsapp,
+      catchWhatsapp: catchWhatsapp,
+      organizerOperationsWhatsapp: organizerOperationsWhatsapp,
+      organizerMarketingWhatsapp: organizerMarketingWhatsapp,
+      catchMarketingWhatsapp: catchMarketingWhatsapp,
+    ),
+  );
 
   void updatePayment(HostFormPayment? payment) =>
       _mutate((definition) => definition.withPayment(payment));
@@ -676,16 +676,13 @@ Future<HostFormShareAssets> hostFormShareAssetsController(
     .getShareAssets(organizerId: organizerId, formId: formId);
 
 @riverpod
-HostFormsController hostFormsController(Ref ref) => HostFormsController(
-  ref.watch(hostFormsRepositoryProvider),
-  ref.watch(eventRepositoryProvider),
-);
+HostFormsController hostFormsController(Ref ref) =>
+    HostFormsController(ref.watch(hostFormsRepositoryProvider));
 
 class HostFormsController {
-  const HostFormsController(this._repository, this._eventRepository);
+  const HostFormsController(this._repository);
 
   final HostFormsRepository _repository;
-  final EventRepository _eventRepository;
 
   Future<HostFormEditor> create({
     required String organizerId,
@@ -779,12 +776,4 @@ class HostFormsController {
     eventId: eventId,
     requestId: requestId,
   );
-
-  Future<List<Event>> activeEvents({required String organizerId}) async {
-    final page = await _eventRepository.fetchActiveEventsPage(
-      organizerId: organizerId,
-      sessionBoundary: DateTime.now(),
-    );
-    return page.items;
-  }
 }

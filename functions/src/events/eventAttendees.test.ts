@@ -359,6 +359,16 @@ test("ready OTP links an imported external-ID guest at full capacity",
     const freshDeps = {firestore: () => fresh as never,
       checkRateLimit: async () => undefined,
       timestamp: () => admin.firestore.Timestamp.fromMillis(2000)};
+    const held = new FakeFirestore({...docs,
+      "events/event-1": expandedEvent,
+      "eventSeatLedgers/event-1": {...docs["eventSeatLedgers/event-1"],
+        capacity: 2, checkoutHeld: 1, capacityRevision: 2,
+        policyHash: expandedPolicy.policyHash}});
+    const heldResult = await registerPublicEventHandler(secondRequest,
+      {...freshDeps, firestore: () => held as never});
+    assert.equal(heldResult.status, "waitlisted");
+    assert.equal(held.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(held.get("eventSeatLedgers/event-1")?.checkoutHeld, 1);
     const newResult = await registerPublicEventHandler(secondRequest,
       freshDeps);
     assert.equal(newResult.status, "registered");

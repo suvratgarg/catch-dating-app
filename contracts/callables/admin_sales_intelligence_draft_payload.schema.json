@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_draft_payload.schema.json",
+  "title": "AdminBuildSalesOutreachInputPayload",
+  "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+  "type": "object", "additionalProperties": false,
+  "required": ["organizerId", "contactId", "opportunityId", "observationIds", "capabilityIds", "referenceIds", "ctaIds", "channel", "purpose"],
+  "properties": {
+    "organizerId": {"$ref": "#/definitions/id"},
+    "contactId": {"$ref": "#/definitions/id"},
+    "opportunityId": {"$ref": "#/definitions/id"},
+    "observationIds": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}},
+    "capabilityIds": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}},
+    "referenceIds": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}},
+    "ctaIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}},
+    "channel": {"enum": ["email", "message"]},
+    "purpose": {"enum": ["first_message", "follow_up"]},
+    "priorActivityId": {"$ref": "#/definitions/id"}
+  },
+  "definitions": {"id": {"type": "string", "minLength": 1, "maxLength": 96, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}}
+}

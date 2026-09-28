@@ -1,17 +1,24 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 
-typedef ReadEventOfferConfiguration = Future<EventOfferConfiguration>
-    Function({required String organizerId, required String eventId});
-typedef ReadDefaultsForPublishedEvent = Future<ManagerEventSetupDefaults>
-    Function(String organizerId);
-typedef WriteEventOfferPreferences = Future<EventOfferPreferencesReceipt>
-    Function(EventOfferPreferencesUpdateRequest request);
+typedef ReadEventOfferConfiguration =
+    Future<EventOfferConfiguration> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadDefaultsForPublishedEvent =
+    Future<ManagerEventSetupDefaults> Function(String organizerId);
+typedef WriteEventOfferPreferences =
+    Future<EventOfferPreferencesReceipt> Function(
+      EventOfferPreferencesUpdateRequest request,
+    );
 
 /// Published and legacy events reuse the editor controls, but keep their
 /// source-revision fence and offer-specific receipt separate from private setup.
@@ -23,16 +30,23 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
     required this.readConfiguration,
     required this.readDefaults,
     required this.write,
+    this.readPreview,
+    this.currentUserId,
     this.displayName,
     this.journal = const EventOfferPreferencesJournal(),
   });
 
+  @override
   final String userId;
+  @override
+  final String? Function()? currentUserId;
   final String organizerId;
   final String eventId;
   final ReadEventOfferConfiguration readConfiguration;
   final ReadDefaultsForPublishedEvent readDefaults;
   final WriteEventOfferPreferences write;
+  @override
+  final PreviewEventOfferPreferences? readPreview;
   final String? displayName;
   final EventOfferPreferencesJournal journal;
 
@@ -72,15 +86,23 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
   @override
   Map<String, Object?> get resolvedValues =>
       configuration?.preferences?.resolvedValues ??
-      defaults?.preferences.toSparseJson() ?? const <String, Object?>{};
+      defaults?.preferences.toSparseJson() ??
+      const <String, Object?>{};
   @override
   bool get hasPending => pending != null;
   @override
-  bool get canEdit => configuration != null && defaults != null &&
-      pending == null && !loading && !saving;
+  bool get canEdit =>
+      configuration != null &&
+      defaults != null &&
+      actorAvailable &&
+      pending == null &&
+      !loading &&
+      !saving &&
+      !previewing;
 
   @override
   Future<void> load() async {
+    resetDraft();
     loading = true;
     error = null;
     configuration = null;
@@ -88,7 +110,9 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
     notifyListeners();
     try {
       pending = await journal.load(
-        userId: userId, organizerId: organizerId, eventId: eventId,
+        userId: userId,
+        organizerId: organizerId,
+        eventId: eventId,
       );
       final results = await Future.wait<Object>([
         readConfiguration(organizerId: organizerId, eventId: eventId),
@@ -112,9 +136,24 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
   }
 
   @override
+  EventOfferPreferencesUpdateRequest buildPreviewRequest(
+    PrivateEventPreferenceIntents intents,
+  ) => EventOfferPreferencesUpdateRequest(
+    expectedActorUid: userId,
+    organizerId: organizerId,
+    eventId: eventId,
+    requestId: _newOfferSettingsRequestId(),
+    expectedEventSourceRevision: configuration!.eventSourceRevision,
+    expectedPreferencesRevision: configuration!.preferencesRevision,
+    reviewedDefaultsHash: defaults!.preferencesHash,
+    intents: intents,
+  );
+
+  @override
   Future<void> save(PrivateEventPreferenceIntents intents) async {
     if (!canEdit) return;
     final request = EventOfferPreferencesUpdateRequest(
+      expectedActorUid: userId,
       organizerId: organizerId,
       eventId: eventId,
       requestId: _newOfferSettingsRequestId(),
@@ -164,7 +203,27 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
   }
 
   Future<void> _sendPending(EventOfferPreferencesUpdateRequest request) async {
-    final receipt = await write(request);
+    if (!actorAvailable) {
+      throw const SignInRequiredException('apply event settings');
+    }
+    late final EventOfferPreferencesReceipt receipt;
+    try {
+      receipt = await write(request);
+    } catch (cause) {
+      if (isDefinitiveEventPreferenceRejection(
+        cause,
+        requestId: request.requestId,
+        eventId: eventId,
+        organizerId: organizerId,
+      )) {
+        await journal.clear(userId: userId, request: request);
+        pending = null;
+        configuration = null;
+        defaults = null;
+        resetDraft();
+      }
+      rethrow;
+    }
     if (receipt.eventId != eventId ||
         receipt.preferencesRevision <= request.expectedPreferencesRevision) {
       throw const FormatException('Invalid offer settings receipt');
@@ -173,7 +232,9 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
     pending = null;
     configuration = null;
     configuration = await readConfiguration(
-      organizerId: organizerId, eventId: eventId);
+      organizerId: organizerId,
+      eventId: eventId,
+    );
     if (configuration!.eventId != eventId ||
         configuration!.organizerId != organizerId ||
         configuration!.preferencesRevision < receipt.preferencesRevision) {
@@ -186,7 +247,8 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
 
 String _newOfferSettingsRequestId() {
   final random = Random.secure();
-  return List<int>.generate(24, (_) => random.nextInt(256))
-      .map((value) => value.toRadixString(16).padLeft(2, '0'))
-      .join();
+  return List<int>.generate(
+    24,
+    (_) => random.nextInt(256),
+  ).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

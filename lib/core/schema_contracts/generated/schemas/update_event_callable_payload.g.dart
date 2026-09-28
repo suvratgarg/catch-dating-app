@@ -21,6 +21,12 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'expectedSetupRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 2147483647,
+      'description': 'Required for published progressive events; rejects stale Host edits.',
+    },
     'fields': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

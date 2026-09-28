@@ -90,7 +90,30 @@ export async function prepareProviderSeatChanges(params: {
       document.checkedInBy = old.checkedInBy;
     }
     const nextActive = ACTIVE.has(document.status);
-    if (!oldActive && !nextActive) continue;
+    if (!oldActive && !nextActive) {
+      // Inactive rows can still own a paid checkout. Never replace their
+      // phone/reference/status while its payment is being reconciled.
+      const keys: Array<["attendee" | "phone" | "external", string]> =
+        [["attendee", id]];
+      for (const row of [old, document]) {
+        if (row?.phoneE164) keys.push(["phone", row.phoneE164]);
+        if (row?.externalReference) {
+          keys.push(["external", row.externalReference.trim().toLowerCase()]);
+        }
+      }
+      for (const [kind, value] of keys) {
+        const alias = (await tx.get(db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(eventId, kind, value)))).data();
+        if (alias?.canonicalKey) {
+          const reservation = await seatTx.reservation(eventId,
+            alias.canonicalKey);
+          if (reservation?.checkoutHold || reservation?.temporaryHold) {
+            fail("Finish checkout before replacing this provider guest.");
+          }
+        }
+      }
+      continue;
+    }
     const aliases: Array<{kind: "attendee" | "phone" | "external";
       value: string}> = [{kind: "attendee", value: id}];
     if (document.phoneE164) {

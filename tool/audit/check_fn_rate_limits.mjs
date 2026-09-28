@@ -108,14 +108,47 @@ export function extractCheckRateLimitActions(source) {
     const closeParen = findMatchingParen(source, openParen);
     if (closeParen == null) continue;
     const callBody = source.slice(openParen + 1, closeParen);
-    const literal = /["']([^"']+)["']/u.exec(callBody);
+    const argument = thirdArgument(callBody);
+    if (!argument) continue;
+    const literal = /^\s*(["'])([^"']+)\1\s*$/u.exec(argument.text);
     if (!literal) continue;
     actions.push({
-      value: literal[1],
-      offset: openParen + 1 + (literal.index ?? 0),
+      value: literal[2],
+      offset: openParen + 1 + argument.offset + argument.text.indexOf(literal[1]),
     });
   }
   return actions;
+}
+
+// Only the action argument declares the counter key. Quoted values inside
+// uid builders or explicit limit expressions must never become fake actions.
+function thirdArgument(body) {
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+  let argumentIndex = 0;
+  let start = 0;
+  for (let index = 0; index <= body.length; index += 1) {
+    const char = body[index];
+    if (quote != null) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === quote) quote = null;
+      continue;
+    }
+    if (char === '\"' || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+    if ("([{".includes(char)) depth += 1;
+    if (")]}".includes(char)) depth -= 1;
+    if ((char === "," && depth === 0) || index === body.length) {
+      if (argumentIndex === 2) return {text: body.slice(start, index), offset: start};
+      argumentIndex += 1;
+      start = index + 1;
+    }
+  }
+  return null;
 }
 
 function collectTypeScriptFiles(root) {

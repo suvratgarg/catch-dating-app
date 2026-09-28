@@ -216,3 +216,28 @@ test("malformed saved snapshots cannot authorize changes", async () => {
     command: {organizerId: "org1", eventId: "event1"}}),
   isCode("failed-precondition"));
 });
+
+
+test("settings requests cannot move to a different authenticated account",
+  async () => {
+    const h = await setup();
+    await assert.rejects(h.save({expectedActorUid: "host2"}),
+      isCode("permission-denied"));
+    assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+  });
+
+test("stale rejection identifies only the exact uncommitted settings request",
+  async () => {
+    const h = await setup();
+    h.rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 2, eventSetup: {currency: "USD"}});
+    await assert.rejects(h.save(), (error: unknown) => {
+      assert.ok(error instanceof HttpsError);
+      assert.equal(error.code, "aborted");
+      assert.deepEqual(error.details, {reason: "event-preferences-review-stale",
+        requestId: h.command.requestId, eventId: h.command.eventId,
+        organizerId: h.command.organizerId});
+      return true;
+    });
+    assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+  });

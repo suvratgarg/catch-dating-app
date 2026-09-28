@@ -264,7 +264,7 @@
       "additionalProperties": false,
       "required": ["connectionId", "amountPaise", "currency", "description", "refundPolicy"],
       "properties": {
-        "connectionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "connectionId": {"anyOf": [{"$ref": "event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
         "amountPaise": {"type": "integer", "minimum": 100, "maximum": 10000000},
         "currency": {"const": "INR"},
         "description": {"type": "string", "minLength": 1, "maxLength": 160},

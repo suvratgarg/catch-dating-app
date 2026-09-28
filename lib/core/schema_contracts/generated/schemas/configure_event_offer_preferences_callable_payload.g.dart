@@ -564,5 +564,10 @@ const schemaConfigureEventOfferPreferencesCallablePayloadSchema = <String, Objec
       'minimum': 1,
       'maximum': 9007199254740991,
     },
+    'expectedActorUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

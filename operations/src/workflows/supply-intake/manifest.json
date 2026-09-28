@@ -19,6 +19,7 @@
     "promote",
     "reconcile",
     "learn",
+    "discovery",
     "export-admin"
   ],
   "primaryStages": ["incoming", "verify", "resolve", "ready"],

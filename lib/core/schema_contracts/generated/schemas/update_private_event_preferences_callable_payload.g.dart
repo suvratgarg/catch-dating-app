@@ -564,5 +564,10 @@ const schemaUpdatePrivateEventPreferencesCallablePayloadSchema = <String, Object
         },
       },
     },
+    'expectedActorUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

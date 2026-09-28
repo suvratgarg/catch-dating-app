@@ -19,7 +19,6 @@ import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
 import {
-  createRazorpayClient,
   razorpayKeySecret,
 } from "../payments/razorpay";
 import {
@@ -62,6 +61,12 @@ import {
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {requireEventTimeRange} from "./configuredEvent";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
+import {stripeSecretKey} from "../payments/stripe";
+import {planLegacyCancellationRefund} from "../payments/legacyRefunds/intent";
+import {processLegacyCancellationRefund} from
+  "../payments/legacyRefunds/processor";
+import {NativeCancellationRefundProvider} from
+  "../payments/legacyRefunds/provider";
 
 interface PromotionPush {
   token: string;
@@ -81,14 +86,9 @@ interface CancelEventSignUpDeps {
   ) => Promise<void>;
   nowMillis: () => number;
   loadCurrentAuthPhone: (uid: string) => Promise<string | null>;
-  refundPayment: (paymentId: string, amountInPaise: number) => Promise<void>;
+  processRefund: (db: FirebaseFirestore.Firestore, paymentId: string) =>
+    Promise<void>;
   sendNotification: (push: PromotionPush) => Promise<void>;
-}
-
-interface RefundPlan {
-  paymentId: string;
-  amountInPaise: number;
-  paymentRef: FirebaseFirestore.DocumentReference;
 }
 
 const defaultDeps: CancelEventSignUpDeps = {
@@ -97,10 +97,9 @@ const defaultDeps: CancelEventSignUpDeps = {
   nowMillis: () => Date.now(),
   loadCurrentAuthPhone: async (uid) =>
     (await admin.auth().getUser(uid)).phoneNumber ?? null,
-  refundPayment: async (paymentId, amountInPaise) => {
-    const razorpay = createRazorpayClient();
-    await razorpay.payments.refund(paymentId, {amount: amountInPaise});
-  },
+  processRefund: async (db, paymentId) =>
+    processLegacyCancellationRefund({db, paymentId,
+      provider: new NativeCancellationRefundProvider()}),
   sendNotification: async (push) => {
     await sendFcmNotification({
       token: push.token,
@@ -145,25 +144,16 @@ export async function cancelEventSignUpHandler(
     .collection("eventParticipations")
     .doc(eventParticipationId(eventId, userId));
 
-  // Look up a completed payment for this user + event before entering the
-  // transaction so we can issue a refund afterwards.
-  const paymentQuery = await db
-    .collection("payments")
-    .where("userId", "==", userId)
-    .where("eventId", "==", eventId)
-    .where("status", "==", "completed")
-    .limit(1)
-    .get();
-  const paymentDoc = paymentQuery.empty ? null : paymentQuery.docs[0];
   const committed = await db.runTransaction(async (tx) => {
     const promotionPushes: PromotionPush[] = [];
-    let refundPlan: RefundPlan | null = null;
+    let refundPaymentId: string | null = null;
     const [
       eventSnap,
       userSnap,
       participationSnap,
       activeParticipations,
       waitlistedParticipations,
+      payments,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(userRef),
@@ -173,6 +163,9 @@ export async function cancelEventSignUpHandler(
         "attended",
       ]),
       waitlistedEventParticipationsInTransaction(tx, db, eventId),
+      tx.get(db.collection("payments").where("userId", "==", userId)
+        .where("eventId", "==", eventId).where("status", "==", "completed")
+        .limit(2)),
     ]);
 
     if (!eventSnap.exists) {
@@ -198,9 +191,19 @@ export async function cancelEventSignUpHandler(
         participationSnap.data() as {status?: string; cohortAtSignup?: string} :
       null;
 
-    // Idempotent — already not signed up.
+    if (payments.docs.length > 1) {
+      throw new HttpsError("failed-precondition",
+        "Multiple payments need reconciliation before cancellation.");
+    }
+    const paymentDoc = payments.docs[0];
+    const payment = paymentDoc ? requireDoc<PaymentDocument>(paymentDoc,
+      "PaymentDocument") : null;
+    // A replay resumes the saved refund without re-pricing the cancellation.
     if (participation?.status !== "signedUp") {
-      return {cancelled: false, promotionPushes, refundPlan};
+      refundPaymentId = participation?.status === "cancelled" &&
+        payment?.cancellationRefund?.state === "pending" ?
+        paymentDoc.id : null;
+      return {cancelled: false, promotionPushes, refundPaymentId};
     }
     const scheduledEvent = requireEventTimeRange(event);
 
@@ -208,23 +211,15 @@ export async function cancelEventSignUpHandler(
     const cancellerCohort =
         participation?.cohortAtSignup ?? cohortIdForUser(user);
     const policy = eventPolicyFromEvent(event);
-    if (paymentDoc) {
-      const payment = requireDoc<PaymentDocument>(
-        paymentDoc,
-        "PaymentDocument"
-      );
-      const cancellationQuote = quoteAttendeeCancellation({
-        policy,
-        paidAmountInPaise: payment.amount,
-        startTimeMillis: event.startTime.toMillis(),
-        nowMillis: deps.nowMillis(),
-      });
-      refundPlan = cancellationQuote.refundAmountInPaise > 0 ? {
-        paymentId: payment.paymentId,
-        amountInPaise: cancellationQuote.refundAmountInPaise,
-        paymentRef: paymentDoc.ref,
-      } : null;
-    }
+    const refundIntent = payment ? planLegacyCancellationRefund({payment,
+      reason: event.status === "cancelled" ?
+        "eventCancelled" : "guestCancelled",
+      targetAmountMinor: event.status === "cancelled" ? payment.amount :
+        quoteAttendeeCancellation({policy, paidAmountInPaise: payment.amount,
+          startTimeMillis: event.startTime.toMillis(),
+          nowMillis: deps.nowMillis()}).refundAmountInPaise,
+      nowMillis: deps.nowMillis()}) : null;
+    if (refundIntent?.state === "pending") refundPaymentId = paymentDoc.id;
 
     const seatTransaction = seatMode === "ready" ?
       new FirestoreSeatTransaction(db, tx) : null;
@@ -472,6 +467,12 @@ export async function cancelEventSignUpHandler(
           }))}});
     }
 
+    // Financial intent and released admission commit together, including a
+    // zero-refund policy which can later be upgraded by host cancellation.
+    if (refundIntent) {
+      tx.update(paymentDoc.ref,
+        {cancellationRefund: refundIntent});
+    }
     if (seatPreparation) applyFirestoreSeatBatch(seatPreparation);
     for (const applyIdentity of applySeatIdentities) applyIdentity();
     promotedScheduleClaim?.apply();
@@ -538,7 +539,7 @@ export async function cancelEventSignUpHandler(
         });
       }
     }
-    return {cancelled: true, promotionPushes, refundPlan};
+    return {cancelled: true, promotionPushes, refundPaymentId};
   });
 
   for (const promotionPush of committed.promotionPushes) {
@@ -559,28 +560,20 @@ export async function cancelEventSignUpHandler(
     }
   }
 
-  // Issue a refund outside the transaction when the selected policy allows it.
-  if (committed.refundPlan) {
+  if (committed.refundPaymentId) {
     try {
-      await deps.refundPayment(
-        committed.refundPlan.paymentId,
-        committed.refundPlan.amountInPaise
-      );
-      await committed.refundPlan.paymentRef.update({status: "refunded"});
-    } catch (refundError) {
-      // Log and continue — cancellation itself succeeded; refund can be
-      // retried manually via the Razorpay dashboard.
-      logger.error(
-        "Refund failed for payment",
-        committed.refundPlan.paymentId,
-        refundError
-      );
+      await deps.processRefund(db, committed.refundPaymentId);
+    } catch {
+      // The durable intent stays pending/reviewRequired for recovery. Never
+      // equate a sent provider request with a completed cash refund.
+      logger.error("Native cancellation refund requires recovery", {
+        eventId, paymentId: committed.refundPaymentId});
     }
   }
   return {cancelled: committed.cancelled};
 }
 
 export const cancelEventSignUp = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret, stripeSecretKey]),
   async (request) => cancelEventSignUpHandler(request)
 );

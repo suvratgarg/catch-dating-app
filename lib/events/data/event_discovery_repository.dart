@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -115,13 +115,8 @@ class EventDiscoveryRepository {
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Event> get _eventsRef => _db
-      .collection(_collectionPath)
-      .withDocumentIdConverter<Event>(
-        idField: 'id',
-        fromJson: Event.fromJson,
-        toJson: (event) => event.toJson(),
-      );
+  CollectionReference<Map<String, dynamic>> get _eventsRef =>
+      _db.collection(_collectionPath);
 
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
     return (await fetchDiscoverableEventsPage(query)).items;
@@ -132,25 +127,26 @@ class EventDiscoveryRepository {
     EventDiscoveryQuery query, {
     DocumentSnapshot<Event>? startAfter,
   }) {
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.marketId.isEmpty) {
           return CursorPage.empty<Event, DocumentSnapshot<Event>>();
         }
 
-        Query<Event> firestoreQuery = _eventsRef
+        Query<Map<String, dynamic>> firestoreQuery = _eventsRef
+            .where('publicationState', isEqualTo: 'published')
             .where('discoveryMarketId', isEqualTo: query.marketId)
             .where('status', isEqualTo: EventLifecycleStatus.active.name)
             .where(
@@ -170,15 +166,18 @@ class EventDiscoveryRepository {
         firestoreQuery = _applyGeoCellFilter(firestoreQuery, query);
         firestoreQuery = firestoreQuery.orderBy('startTime');
 
-        final page = await firestoreQuery.fetchDocumentCursorPage(
-          limit: query.limit,
-          startAfter: startAfter,
-          errorContext: const BackendErrorContext(
-            service: BackendService.firestore,
-            action: 'fetch event discovery',
-            resource: _collectionPath,
-          ),
-        );
+        final windowed = startAfter == null
+            ? firestoreQuery
+            : firestoreQuery.startAfterDocument(startAfter);
+        final page = await decodePublishedEventQuery(windowed)
+            .fetchDocumentCursorPage(
+              limit: query.limit,
+              errorContext: const BackendErrorContext(
+                service: BackendService.firestore,
+                action: 'fetch event discovery',
+                resource: _collectionPath,
+              ),
+            );
         final events =
             page.items
                 .map((doc) => doc.data())
@@ -199,8 +198,8 @@ class EventDiscoveryRepository {
     );
   }
 
-  Query<Event> _applyActivityFilter(
-    Query<Event> firestoreQuery,
+  Query<Map<String, dynamic>> _applyActivityFilter(
+    Query<Map<String, dynamic>> firestoreQuery,
     EventDiscoveryQuery query,
   ) {
     final activityKinds = query.activityKinds;
@@ -220,8 +219,8 @@ class EventDiscoveryRepository {
     return firestoreQuery;
   }
 
-  Query<Event> _applyAvailabilityFilter(
-    Query<Event> firestoreQuery,
+  Query<Map<String, dynamic>> _applyAvailabilityFilter(
+    Query<Map<String, dynamic>> firestoreQuery,
     EventDiscoveryQuery query,
   ) {
     return switch (query.availabilityFilter) {
@@ -243,8 +242,8 @@ class EventDiscoveryRepository {
     };
   }
 
-  Query<Event> _applyGeoCellFilter(
-    Query<Event> firestoreQuery,
+  Query<Map<String, dynamic>> _applyGeoCellFilter(
+    Query<Map<String, dynamic>> firestoreQuery,
     EventDiscoveryQuery query,
   ) {
     final cells = eventDiscoveryGeoCellsForRadius(

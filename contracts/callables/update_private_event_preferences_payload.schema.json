@@ -40,6 +40,9 @@
     },
     "intents": {
       "$ref": "../embedded/event_preference_intents.schema.json"
+    },
+    "expectedActorUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

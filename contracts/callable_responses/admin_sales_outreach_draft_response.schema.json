@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_draft_response.schema.json",
+  "title": "AdminGetSalesOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draft",
+    "status",
+    "reviewedAt",
+    "reviewedBy",
+    "sendAuthority"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "draft": {
+      "$ref": "../operations/outreach_drafting_draft.schema.json"
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "reviewedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reviewedBy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesOutreachDraft"
+  ]
+}

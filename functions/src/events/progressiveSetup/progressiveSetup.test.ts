@@ -314,7 +314,8 @@ test("manager reopens basics without rich fields or secrets", async () => {
   assert.equal(result.name, "Sunday Mixer");
   assert.equal(result.detailsConfigured, false);
   assert.deepEqual(result.eventDetails, {endTimeMillis: null, venueName: null,
-    sourceVenueId: null, eventFormat: null});
+    description: null, admissionTerms: null, distanceKm: null, pace: null,
+    sourceVenueId: null, eventFormat: null, meetingLocation: null});
   assert.equal(result.startTimeMillis, Date.UTC(2026, 9, 18, 13));
   assert.equal(Object.hasOwn(result, "privatePaymentSecret"), false);
   await assert.rejects(getPrivateEventSetup({...params, actorUid: "stranger"}),

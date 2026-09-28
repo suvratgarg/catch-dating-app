@@ -6,8 +6,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
@@ -183,7 +181,7 @@ Future<void> main() async {
         ),
         hostFormsRepositoryProvider.overrideWithValue(DemoFormsRepository()),
         hostFormsControllerProvider.overrideWith(
-          (ref) => DemoFormsController(),
+          (ref) => HostFormsController(DemoFormsRepository()),
         ),
         hostApplicationRepositoryProvider.overrideWithValue(
           DemoApplicationsRepository(),
@@ -407,32 +405,6 @@ class DemoApplicationsRepository implements HostApplicationRepository {
   dynamic noSuchMethod(Invocation invocation) => throw UnsupportedError(
     'Not connected in local visual QA: ${invocation.memberName}',
   );
-}
-
-class DemoEventRepository implements EventRepository {
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnsupportedError('Local fixture only');
-}
-
-class DemoFormsController extends HostFormsController {
-  DemoFormsController() : super(DemoFormsRepository(), DemoEventRepository());
-  @override
-  Future<List<Event>> activeEvents({required String organizerId}) async => [
-    Event(
-      id: fixture['eventId'] as String,
-      clubId: organizerId,
-      name: 'RSVP Escape — Mumbai demo',
-      startTime: DateTime(2026, 9, 22, 19),
-      endTime: DateTime(2026, 9, 22, 22),
-      meetingPoint: 'Demo venue',
-      distanceKm: 0,
-      pace: PaceLevel.easy,
-      capacityLimit: 24,
-      description: 'Synthetic local demonstration',
-      priceInPaise: 0,
-    ),
-  ];
 }
 
 // Snapshot of the isolated account rehearsal, containing synthetic actors only.

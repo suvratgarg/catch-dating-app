@@ -2033,6 +2033,43 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'publicRegistrationMode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'closed',
+        'free',
+        'paid',
+      ],
+      'description': 'Explicit registration capability. Older enabled events without this field support free OTP registration only.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publicRegistrationRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 9007199254740991,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'firstPublishedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -2125,6 +2162,60 @@ const schemaEventDocumentSchema = <String, Object?>{
           'eventTimezone',
           'setupDefaults',
         ],
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'publicRegistrationMode',
+        ],
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'publicRegistrationRevision',
+          'publicRegistrationEnabled',
+        ],
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'publicRegistrationMode',
+        ],
+        'properties': <String, Object?>{
+          'publicRegistrationMode': <String, Object?>{
+            'const': 'closed',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'publicRegistrationEnabled': <String, Object?>{
+            'const': false,
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'publicRegistrationMode',
+        ],
+        'properties': <String, Object?>{
+          'publicRegistrationMode': <String, Object?>{
+            'enum': <Object?>[
+              'free',
+              'paid',
+            ],
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'publicRegistrationEnabled': <String, Object?>{
+            'const': true,
+          },
+        },
       },
     },
   ],

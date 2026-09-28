@@ -65,7 +65,8 @@ void main() {
 
     await tester.tap(find.text('Preview offers'));
     await pumpFeatureUi(tester);
-    expect(find.text('Review one offer'), findsOneWidget);
+    expect(find.text('Commit offers'), findsOneWidget);
+    expect(find.text('Preview offers'), findsNothing);
     expect(find.text('Sunday run'), findsOneWidget);
     expect(find.textContaining('Maya'), findsOneWidget);
     expect(find.text('No seat or admission is created.'), findsOneWidget);

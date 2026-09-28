@@ -20,6 +20,11 @@ _Payment _$PaymentFromJson(Map<String, dynamic> json) => _Payment(
     unknownValue: PaymentStatus.failed,
   ),
   signUpFailed: json['signUpFailed'] as bool? ?? false,
+  cancellationRefund: json['cancellationRefund'] == null
+      ? null
+      : PaymentCancellationRefund.fromJson(
+          json['cancellationRefund'] as Map<String, dynamic>,
+        ),
   createdAt: const TimestampConverter().fromJson(json['createdAt']),
 );
 
@@ -32,6 +37,7 @@ Map<String, dynamic> _$PaymentToJson(_Payment instance) => <String, dynamic>{
   'currency': instance.currency,
   'status': _$PaymentStatusEnumMap[instance.status]!,
   'signUpFailed': instance.signUpFailed,
+  'cancellationRefund': instance.cancellationRefund?.toJson(),
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
 };
 
@@ -41,4 +47,30 @@ const _$PaymentStatusEnumMap = {
   PaymentStatus.failed: 'failed',
   PaymentStatus.refunded: 'refunded',
   PaymentStatus.refundFailed: 'refundFailed',
+};
+
+_PaymentCancellationRefund _$PaymentCancellationRefundFromJson(
+  Map<String, dynamic> json,
+) => _PaymentCancellationRefund(
+  state: $enumDecode(
+    _$PaymentCancellationRefundStateEnumMap,
+    json['state'],
+    unknownValue: PaymentCancellationRefundState.reviewRequired,
+  ),
+  targetAmountMinor: (json['targetAmountMinor'] as num).toInt(),
+  confirmedAmountMinor: (json['confirmedAmountMinor'] as num).toInt(),
+);
+
+Map<String, dynamic> _$PaymentCancellationRefundToJson(
+  _PaymentCancellationRefund instance,
+) => <String, dynamic>{
+  'state': _$PaymentCancellationRefundStateEnumMap[instance.state]!,
+  'targetAmountMinor': instance.targetAmountMinor,
+  'confirmedAmountMinor': instance.confirmedAmountMinor,
+};
+
+const _$PaymentCancellationRefundStateEnumMap = {
+  PaymentCancellationRefundState.pending: 'pending',
+  PaymentCancellationRefundState.complete: 'complete',
+  PaymentCancellationRefundState.reviewRequired: 'reviewRequired',
 };

@@ -84,7 +84,10 @@ export const privateEventSetupListCallableResponseSchema: Record<string, unknown
           },
           "status": {
             "type": "string",
-            "const": "active"
+            "enum": [
+              "active",
+              "cancelled"
+            ]
           },
           "detailsConfigured": {
             "type": "boolean"

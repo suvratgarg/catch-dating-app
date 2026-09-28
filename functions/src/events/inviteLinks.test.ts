@@ -261,6 +261,19 @@ test("invite landing verifies its token and bounds projection", async () => {
   });
   assert.equal(firestore.paths("eventInviteTouches/").length, 1);
 
+  firestore.set("eventInviteLinks/invite-1", {
+    destinationKind: "catchEvent",
+  }, {merge: true});
+  for (const mode of ["free", "paid", "closed"] as const) {
+    firestore.set("events/event-1", {
+      publicRegistrationEnabled: mode !== "closed",
+      publicRegistrationMode: mode,
+    }, {merge: true});
+    const landing = await resolveEventInviteLandingHandler(
+      request(token), deps);
+    assert.equal(landing.registrationMode, mode);
+  }
+
   firestore.beforeTransaction = () => firestore.set("events/event-1", {
     publicationState: "private", setupRevision: 2,
   }, {merge: true});

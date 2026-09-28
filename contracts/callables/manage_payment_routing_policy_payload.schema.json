@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_payment_routing_policy_payload.schema.json",
+  "title": "ManagePaymentRoutingPolicyCallablePayload",
+  "type": "object", "additionalProperties": false,
+  "required": ["action", "organizerId", "expectedRevision", "formFee", "eventAdmission"],
+  "properties": {
+    "action": {"enum": ["read", "replace"]},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 0},
+    "formFee": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
+    "eventAdmission": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]}
+  }
+}

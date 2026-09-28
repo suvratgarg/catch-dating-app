@@ -3,17 +3,203 @@
 
 import {createRequire} from "node:module";
 import {
+  salesImportHistoryRowDocumentSchema,
+  salesImportHistoryRecordDocumentSchema,
+  salesPrivacyRestrictionSchema,
+  salesPrivacyPolicySchema,
+  salesPrivacyPlanSchema,
+  salesPrivacyBatchReceiptSchema,
+  adminPreviewSalesImportHistoryPayloadSchema,
+  adminPreviewSalesImportHistoryResponseSchema,
+  adminApplySalesImportHistoryPayloadSchema,
+  adminApplySalesImportHistoryResponseSchema,
+  adminListSalesImportHistoryPayloadSchema,
+  adminListSalesImportHistoryResponseSchema,
+  adminListSalesImportHistoryRowsPayloadSchema,
+  adminListSalesImportHistoryRowsResponseSchema,
+  adminGetSalesFunnelReportPayloadSchema,
+  adminGetSalesFunnelReportResponseSchema,
+  adminReviewSalesPrivacyPolicyPayloadSchema,
+  adminReviewSalesPrivacyPolicyResponseSchema,
+  adminRestrictSalesOrganizerPayloadSchema,
+  adminRestrictSalesOrganizerResponseSchema,
+  adminPreviewSalesPrivacyPlanPayloadSchema,
+  adminPreviewSalesPrivacyPlanResponseSchema,
+  adminReviewSalesPrivacyPlanPayloadSchema,
+  adminReviewSalesPrivacyPlanResponseSchema,
+  adminApplySalesPrivacyBatchPayloadSchema,
+  adminApplySalesPrivacyBatchResponseSchema,
+  adminGetSalesPrivacyCasePayloadSchema,
+  adminGetSalesPrivacyCaseResponseSchema,
+  salesIntakeLinkDocumentSchema,
+  adminLinkOrganizerIntakeToSalesResponseSchema,
+  adminLinkOrganizerIntakeToSalesPayloadSchema,
+  adminBuildSalesOutreachInputResponseSchema,
+  adminSalesIntelligenceClauseMutationResponseSchema,
+  adminReviewSalesOutreachDraftResponseSchema,
+  adminGetSalesOutreachDraftResponseSchema,
+  adminGetSalesIntelligenceCatalogRequestSchema,
+  adminListSalesOutreachDraftsRequestSchema,
+  adminSaveSalesFactorAssessmentResponseSchema,
+  adminGetSalesOutreachDraftJobRequestSchema,
+  adminReviewSalesIntelligenceClauseRequestSchema,
+  adminSaveSalesIntelligencePolicyResponseSchema,
+  adminCopySalesOutreachDraftResponseSchema,
+  adminGetSalesOutreachDraftJobResponseSchema,
+  adminGenerateSalesOutreachDraftResponseSchema,
+  adminGetSalesIntelligenceScoreRequestSchema,
+  adminReviewSalesOutreachDraftRequestSchema,
+  adminCopySalesOutreachDraftRequestSchema,
+  adminAttestSalesHostSettlementPayloadSchema,
+  adminListSalesOutreachDraftsResponseSchema,
+  adminGetSalesIntelligenceCatalogResponseSchema,
+  adminGetSalesIntelligenceScoreResponseSchema,
+  adminGetSalesOutreachDraftRequestSchema,
+  adminReviseSalesQuoteResponseSchema,
+  adminAttestSalesHostSettlementResponseSchema,
+  adminAcceptSalesQuoteResponseSchema,
+  adminGetSalesCommercialDetailResponseSchema,
+  adminListSalesCommercialReportResponseSchema,
+  adminApproveSalesQuoteResponseSchema,
+  adminUpsertSalesPilotPlanResponseSchema,
+  salesHostSettlementIdentitiesDocumentSchema,
+  salesHostSettlementAttestationsDocumentSchema,
+  salesHostSettlementEvidenceUsesDocumentSchema,
+  outreachDraftingInputSchema,
+  outreachDraftingSelectionSchema,
+  adminSalesIntelligenceGenerateCallablePayloadSchema,
+  salesOutreachJobsDocumentSchema,
+  outreachDraftSchema,
+  adminAcceptSalesQuoteCallablePayloadSchema,
+  adminApproveSalesQuoteCallablePayloadSchema,
+  adminGetSalesCommercialDetailCallablePayloadSchema,
+  adminListSalesCommercialReportCallablePayloadSchema,
+  adminReviseSalesQuoteCallablePayloadSchema,
+  adminUpsertSalesPilotPlanCallablePayloadSchema,
+  salesCommercialDecisionsDocumentSchema,
+  salesOpportunityStageHistoryDocumentSchema,
+  salesPilotPlansDocumentSchema,
+  salesQuoteVersionsDocumentSchema,
+  salesQuotesDocumentSchema,
+  assistantClientsDocumentSchema,
+  assistantDelegationsDocumentSchema,
+  assistantGatewayBudgetsDocumentSchema,
+  assistantManagementReceiptsDocumentSchema,
+  adminListSalesAccountsCallablePayloadSchema,
+  adminGetSalesAccountCallablePayloadSchema,
+  adminListSalesTasksCallablePayloadSchema,
+  adminListSalesOpportunitiesCallablePayloadSchema,
+  adminListSalesCustomFieldsCallablePayloadSchema,
+  adminGetSalesReceiptCallablePayloadSchema,
+  adminListSalesInboundIntentsCallablePayloadSchema,
+  adminPreviewSalesImportCallablePayloadSchema,
+  adminListSalesContactsCallablePayloadSchema,
+  adminListSalesEvidenceCallablePayloadSchema,
+  adminCreateSalesAccountCallablePayloadSchema,
+  adminUpdateSalesAccountCallablePayloadSchema,
+  adminUpsertSalesTaskCallablePayloadSchema,
+  adminUpsertSalesOpportunityCallablePayloadSchema,
+  adminRecordSalesActivityCallablePayloadSchema,
+  adminCreateSalesCustomFieldCallablePayloadSchema,
+  adminSetSalesCustomFieldValueCallablePayloadSchema,
+  adminLinkSalesInboundIntentCallablePayloadSchema,
+  adminApplySalesImportCallablePayloadSchema,
+  adminUpsertSalesContactCallablePayloadSchema,
+  adminAddSalesEvidenceCallablePayloadSchema,
+  adminSetSalesAccountSuppressionCallablePayloadSchema,
+  adminSetSalesContactabilityCallablePayloadSchema,
+  organizerSalesAccountDocumentSchema,
+  salesContactDocumentSchema,
+  salesContactRelationshipDocumentSchema,
+  salesEvidenceDocumentSchema,
+  salesTaskDocumentSchema,
+  salesOpportunityDocumentSchema,
+  salesActivityDocumentSchema,
+  salesCustomFieldDocumentSchema,
+  salesCustomFieldValueDocumentSchema,
+  salesActionReceiptDocumentSchema,
+  salesImportJobDocumentSchema,
+  salesImportRowDocumentSchema,
+  salesImportJobRowDocumentSchema,
+  salesSettingDocumentSchema,
+  salesSuppressionDecisionDocumentSchema,
+  adminSalesEvidenceProposalsListCallablePayloadSchema,
+  adminSalesEvidenceProposeCallablePayloadSchema,
+  adminSalesEvidenceReviewProposalCallablePayloadSchema,
+  adminSalesIntelligenceAssessmentCallablePayloadSchema,
+  adminSalesIntelligenceClauseCallablePayloadSchema,
+  adminBuildSalesOutreachInputPayloadSchema,
+  adminSalesIntelligencePolicyCallablePayloadSchema,
+  adminSalesIntelligenceReviewCallablePayloadSchema,
+  adminSalesIntelligenceScoreCallablePayloadSchema,
+  salesDemoManagementCallablePayloadSchema,
+  salesDemoPreviewCallablePayloadSchema,
+  salesDemoTrialCallablePayloadSchema,
+  salesDemoBlueprintsDocumentSchema,
+  salesDemoCapabilitiesDocumentSchema,
+  salesDemoInvitationsDocumentSchema,
+  salesDemoReceiptsDocumentSchema,
+  adminListSalesFitQueuePayloadSchema,
+  adminRefreshSalesFitQueueBatchPayloadSchema,
+  adminRefreshSalesFitQueuePayloadSchema,
+  adminListSalesFitQueueResponseSchema,
+  adminRefreshSalesFitQueueBatchResponseSchema,
+  adminRefreshSalesFitQueueResponseSchema,
+  salesFitQueueEntryDocumentSchema,
+  salesFitQueueMetaDocumentSchema,
+  salesFitQueueReceiptDocumentSchema,
+  adminApplySalesImportCompensationResponseSchema,
+  adminPreviewSalesImportCompensationResponseSchema,
+  adminSalesImportCompensationApplyPayloadSchema,
+  adminSalesImportCompensationPreviewPayloadSchema,
+  salesImportCompensationDocumentSchema,
+  salesDemoSetupDocumentSchema,
+  salesDemoSetupCallablePayloadSchema,
+  salesDemoSetupCallableResponseSchema,
+  salesDemoSessionsDocumentSchema,
+  salesEvidenceProposalsDocumentSchema,
+  salesInboundIntentsDocumentSchema,
+  salesIntelligenceAssessmentDocumentSchema,
+  salesIntelligenceClauseDocumentSchema,
+  salesIntelligencePolicyDocumentSchema,
+  salesIntelligenceReceiptDocumentSchema,
+  salesIntelligenceScoreSnapshotDocumentSchema,
+  salesOutreachDraftsDocumentSchema,
+  legacyPaymentRefundIntentSchema,
+  setEventPublicationCallablePayloadSchema,
+  eventPublicationCallableResponseSchema,
+  publicEventPaymentDocumentSchema,
+  publicEventAdmissionReceiptDocumentSchema,
+  eventRegistrationReceiptDocumentSchema,
+  managePublicEventCheckoutCallablePayloadSchema,
+  managePublicEventCheckoutCallableResponseSchema,
+  configureEventRegistrationCallablePayloadSchema,
+  configureEventRegistrationCallableResponseSchema,
+  organizerEventOfferPaymentDocumentSchema,
+  organizerEventOfferRecipientDocumentSchema,
+  paymentRoutingSnapshotSchema,
+  managePaymentRoutingPolicyCallablePayloadSchema,
+  managePaymentRoutingPolicyCallableResponseSchema,
+  manageEventOfferCheckoutCallablePayloadSchema,
+  prepareEventOfferInvitationCallablePayloadSchema,
+  prepareEventOfferInvitationCallableResponseSchema,
+  manageEventOfferCheckoutCallableResponseSchema,
+  previewOrganizerFormAdmissionCallablePayloadSchema,
+  previewOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionDocumentSchema,
   commitOrganizerFormAdmissionCallablePayloadSchema,
   commitOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionReceiptDocumentSchema,
   configureEventOfferPreferencesCallablePayloadSchema,
   configureEventOfferPreferencesCallableResponseSchema,
+  previewEventOfferPreferencesCallableResponseSchema,
   eventOfferConfigurationReceiptDocumentSchema,
   listOfferEventTargetsCallablePayloadSchema,
   offerEventTargetListCallableResponseSchema,
   getEventOfferConfigurationCallablePayloadSchema,
   eventOfferConfigurationCallableResponseSchema,
+  reconcilePrivateEventSeatsCallablePayloadSchema,
+  privateSeatReconciliationCallableResponseSchema,
   updatePrivateEventDetailsCallablePayloadSchema,
   prepareEventOfferHandoffCallablePayloadSchema,
   eventOfferHandoffCallableResponseSchema,
@@ -301,6 +487,7 @@ import {
   organizerFormDomainDocumentSchema,
   organizerPaymentConnectionDocumentSchema,
   organizerPaymentOauthStateDocumentSchema,
+  paymentRoutingPolicyDocumentSchema,
   organizerFormPaymentDocumentSchema,
   organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
@@ -953,17 +1140,203 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
+export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
+export const validateSalesPrivacyRestriction = ajv.compile(salesPrivacyRestrictionSchema);
+export const validateSalesPrivacyPolicy = ajv.compile(salesPrivacyPolicySchema);
+export const validateSalesPrivacyPlan = ajv.compile(salesPrivacyPlanSchema);
+export const validateSalesPrivacyBatchReceipt = ajv.compile(salesPrivacyBatchReceiptSchema);
+export const validateAdminPreviewSalesImportHistoryPayload = ajv.compile(adminPreviewSalesImportHistoryPayloadSchema);
+export const validateAdminPreviewSalesImportHistoryResponse = ajv.compile(adminPreviewSalesImportHistoryResponseSchema);
+export const validateAdminApplySalesImportHistoryPayload = ajv.compile(adminApplySalesImportHistoryPayloadSchema);
+export const validateAdminApplySalesImportHistoryResponse = ajv.compile(adminApplySalesImportHistoryResponseSchema);
+export const validateAdminListSalesImportHistoryPayload = ajv.compile(adminListSalesImportHistoryPayloadSchema);
+export const validateAdminListSalesImportHistoryResponse = ajv.compile(adminListSalesImportHistoryResponseSchema);
+export const validateAdminListSalesImportHistoryRowsPayload = ajv.compile(adminListSalesImportHistoryRowsPayloadSchema);
+export const validateAdminListSalesImportHistoryRowsResponse = ajv.compile(adminListSalesImportHistoryRowsResponseSchema);
+export const validateAdminGetSalesFunnelReportPayload = ajv.compile(adminGetSalesFunnelReportPayloadSchema);
+export const validateAdminGetSalesFunnelReportResponse = ajv.compile(adminGetSalesFunnelReportResponseSchema);
+export const validateAdminReviewSalesPrivacyPolicyPayload = ajv.compile(adminReviewSalesPrivacyPolicyPayloadSchema);
+export const validateAdminReviewSalesPrivacyPolicyResponse = ajv.compile(adminReviewSalesPrivacyPolicyResponseSchema);
+export const validateAdminRestrictSalesOrganizerPayload = ajv.compile(adminRestrictSalesOrganizerPayloadSchema);
+export const validateAdminRestrictSalesOrganizerResponse = ajv.compile(adminRestrictSalesOrganizerResponseSchema);
+export const validateAdminPreviewSalesPrivacyPlanPayload = ajv.compile(adminPreviewSalesPrivacyPlanPayloadSchema);
+export const validateAdminPreviewSalesPrivacyPlanResponse = ajv.compile(adminPreviewSalesPrivacyPlanResponseSchema);
+export const validateAdminReviewSalesPrivacyPlanPayload = ajv.compile(adminReviewSalesPrivacyPlanPayloadSchema);
+export const validateAdminReviewSalesPrivacyPlanResponse = ajv.compile(adminReviewSalesPrivacyPlanResponseSchema);
+export const validateAdminApplySalesPrivacyBatchPayload = ajv.compile(adminApplySalesPrivacyBatchPayloadSchema);
+export const validateAdminApplySalesPrivacyBatchResponse = ajv.compile(adminApplySalesPrivacyBatchResponseSchema);
+export const validateAdminGetSalesPrivacyCasePayload = ajv.compile(adminGetSalesPrivacyCasePayloadSchema);
+export const validateAdminGetSalesPrivacyCaseResponse = ajv.compile(adminGetSalesPrivacyCaseResponseSchema);
+export const validateSalesIntakeLinkDocument = ajv.compile(salesIntakeLinkDocumentSchema);
+export const validateAdminLinkOrganizerIntakeToSalesResponse = ajv.compile(adminLinkOrganizerIntakeToSalesResponseSchema);
+export const validateAdminLinkOrganizerIntakeToSalesPayload = ajv.compile(adminLinkOrganizerIntakeToSalesPayloadSchema);
+export const validateAdminBuildSalesOutreachInputResponse = ajv.compile(adminBuildSalesOutreachInputResponseSchema);
+export const validateAdminSalesIntelligenceClauseMutationResponse = ajv.compile(adminSalesIntelligenceClauseMutationResponseSchema);
+export const validateAdminReviewSalesOutreachDraftResponse = ajv.compile(adminReviewSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesOutreachDraftResponse = ajv.compile(adminGetSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesIntelligenceCatalogRequest = ajv.compile(adminGetSalesIntelligenceCatalogRequestSchema);
+export const validateAdminListSalesOutreachDraftsRequest = ajv.compile(adminListSalesOutreachDraftsRequestSchema);
+export const validateAdminSaveSalesFactorAssessmentResponse = ajv.compile(adminSaveSalesFactorAssessmentResponseSchema);
+export const validateAdminGetSalesOutreachDraftJobRequest = ajv.compile(adminGetSalesOutreachDraftJobRequestSchema);
+export const validateAdminReviewSalesIntelligenceClauseRequest = ajv.compile(adminReviewSalesIntelligenceClauseRequestSchema);
+export const validateAdminSaveSalesIntelligencePolicyResponse = ajv.compile(adminSaveSalesIntelligencePolicyResponseSchema);
+export const validateAdminCopySalesOutreachDraftResponse = ajv.compile(adminCopySalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesOutreachDraftJobResponse = ajv.compile(adminGetSalesOutreachDraftJobResponseSchema);
+export const validateAdminGenerateSalesOutreachDraftResponse = ajv.compile(adminGenerateSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesIntelligenceScoreRequest = ajv.compile(adminGetSalesIntelligenceScoreRequestSchema);
+export const validateAdminReviewSalesOutreachDraftRequest = ajv.compile(adminReviewSalesOutreachDraftRequestSchema);
+export const validateAdminCopySalesOutreachDraftRequest = ajv.compile(adminCopySalesOutreachDraftRequestSchema);
+export const validateAdminAttestSalesHostSettlementPayload = ajv.compile(adminAttestSalesHostSettlementPayloadSchema);
+export const validateAdminListSalesOutreachDraftsResponse = ajv.compile(adminListSalesOutreachDraftsResponseSchema);
+export const validateAdminGetSalesIntelligenceCatalogResponse = ajv.compile(adminGetSalesIntelligenceCatalogResponseSchema);
+export const validateAdminGetSalesIntelligenceScoreResponse = ajv.compile(adminGetSalesIntelligenceScoreResponseSchema);
+export const validateAdminGetSalesOutreachDraftRequest = ajv.compile(adminGetSalesOutreachDraftRequestSchema);
+export const validateAdminReviseSalesQuoteResponse = ajv.compile(adminReviseSalesQuoteResponseSchema);
+export const validateAdminAttestSalesHostSettlementResponse = ajv.compile(adminAttestSalesHostSettlementResponseSchema);
+export const validateAdminAcceptSalesQuoteResponse = ajv.compile(adminAcceptSalesQuoteResponseSchema);
+export const validateAdminGetSalesCommercialDetailResponse = ajv.compile(adminGetSalesCommercialDetailResponseSchema);
+export const validateAdminListSalesCommercialReportResponse = ajv.compile(adminListSalesCommercialReportResponseSchema);
+export const validateAdminApproveSalesQuoteResponse = ajv.compile(adminApproveSalesQuoteResponseSchema);
+export const validateAdminUpsertSalesPilotPlanResponse = ajv.compile(adminUpsertSalesPilotPlanResponseSchema);
+export const validateSalesHostSettlementIdentitiesDocument = ajv.compile(salesHostSettlementIdentitiesDocumentSchema);
+export const validateSalesHostSettlementAttestationsDocument = ajv.compile(salesHostSettlementAttestationsDocumentSchema);
+export const validateSalesHostSettlementEvidenceUsesDocument = ajv.compile(salesHostSettlementEvidenceUsesDocumentSchema);
+export const validateOutreachDraftingInput = ajv.compile(outreachDraftingInputSchema);
+export const validateOutreachDraftingSelection = ajv.compile(outreachDraftingSelectionSchema);
+export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
+export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
+export const validateOutreachDraft = ajv.compile(outreachDraftSchema);
+export const validateAdminAcceptSalesQuoteCallablePayload = ajv.compile(adminAcceptSalesQuoteCallablePayloadSchema);
+export const validateAdminApproveSalesQuoteCallablePayload = ajv.compile(adminApproveSalesQuoteCallablePayloadSchema);
+export const validateAdminGetSalesCommercialDetailCallablePayload = ajv.compile(adminGetSalesCommercialDetailCallablePayloadSchema);
+export const validateAdminListSalesCommercialReportCallablePayload = ajv.compile(adminListSalesCommercialReportCallablePayloadSchema);
+export const validateAdminReviseSalesQuoteCallablePayload = ajv.compile(adminReviseSalesQuoteCallablePayloadSchema);
+export const validateAdminUpsertSalesPilotPlanCallablePayload = ajv.compile(adminUpsertSalesPilotPlanCallablePayloadSchema);
+export const validateSalesCommercialDecisionsDocument = ajv.compile(salesCommercialDecisionsDocumentSchema);
+export const validateSalesOpportunityStageHistoryDocument = ajv.compile(salesOpportunityStageHistoryDocumentSchema);
+export const validateSalesPilotPlansDocument = ajv.compile(salesPilotPlansDocumentSchema);
+export const validateSalesQuoteVersionsDocument = ajv.compile(salesQuoteVersionsDocumentSchema);
+export const validateSalesQuotesDocument = ajv.compile(salesQuotesDocumentSchema);
+export const validateAssistantClientsDocument = ajv.compile(assistantClientsDocumentSchema);
+export const validateAssistantDelegationsDocument = ajv.compile(assistantDelegationsDocumentSchema);
+export const validateAssistantGatewayBudgetsDocument = ajv.compile(assistantGatewayBudgetsDocumentSchema);
+export const validateAssistantManagementReceiptsDocument = ajv.compile(assistantManagementReceiptsDocumentSchema);
+export const validateAdminListSalesAccountsCallablePayload = ajv.compile(adminListSalesAccountsCallablePayloadSchema);
+export const validateAdminGetSalesAccountCallablePayload = ajv.compile(adminGetSalesAccountCallablePayloadSchema);
+export const validateAdminListSalesTasksCallablePayload = ajv.compile(adminListSalesTasksCallablePayloadSchema);
+export const validateAdminListSalesOpportunitiesCallablePayload = ajv.compile(adminListSalesOpportunitiesCallablePayloadSchema);
+export const validateAdminListSalesCustomFieldsCallablePayload = ajv.compile(adminListSalesCustomFieldsCallablePayloadSchema);
+export const validateAdminGetSalesReceiptCallablePayload = ajv.compile(adminGetSalesReceiptCallablePayloadSchema);
+export const validateAdminListSalesInboundIntentsCallablePayload = ajv.compile(adminListSalesInboundIntentsCallablePayloadSchema);
+export const validateAdminPreviewSalesImportCallablePayload = ajv.compile(adminPreviewSalesImportCallablePayloadSchema);
+export const validateAdminListSalesContactsCallablePayload = ajv.compile(adminListSalesContactsCallablePayloadSchema);
+export const validateAdminListSalesEvidenceCallablePayload = ajv.compile(adminListSalesEvidenceCallablePayloadSchema);
+export const validateAdminCreateSalesAccountCallablePayload = ajv.compile(adminCreateSalesAccountCallablePayloadSchema);
+export const validateAdminUpdateSalesAccountCallablePayload = ajv.compile(adminUpdateSalesAccountCallablePayloadSchema);
+export const validateAdminUpsertSalesTaskCallablePayload = ajv.compile(adminUpsertSalesTaskCallablePayloadSchema);
+export const validateAdminUpsertSalesOpportunityCallablePayload = ajv.compile(adminUpsertSalesOpportunityCallablePayloadSchema);
+export const validateAdminRecordSalesActivityCallablePayload = ajv.compile(adminRecordSalesActivityCallablePayloadSchema);
+export const validateAdminCreateSalesCustomFieldCallablePayload = ajv.compile(adminCreateSalesCustomFieldCallablePayloadSchema);
+export const validateAdminSetSalesCustomFieldValueCallablePayload = ajv.compile(adminSetSalesCustomFieldValueCallablePayloadSchema);
+export const validateAdminLinkSalesInboundIntentCallablePayload = ajv.compile(adminLinkSalesInboundIntentCallablePayloadSchema);
+export const validateAdminApplySalesImportCallablePayload = ajv.compile(adminApplySalesImportCallablePayloadSchema);
+export const validateAdminUpsertSalesContactCallablePayload = ajv.compile(adminUpsertSalesContactCallablePayloadSchema);
+export const validateAdminAddSalesEvidenceCallablePayload = ajv.compile(adminAddSalesEvidenceCallablePayloadSchema);
+export const validateAdminSetSalesAccountSuppressionCallablePayload = ajv.compile(adminSetSalesAccountSuppressionCallablePayloadSchema);
+export const validateAdminSetSalesContactabilityCallablePayload = ajv.compile(adminSetSalesContactabilityCallablePayloadSchema);
+export const validateOrganizerSalesAccountDocument = ajv.compile(organizerSalesAccountDocumentSchema);
+export const validateSalesContactDocument = ajv.compile(salesContactDocumentSchema);
+export const validateSalesContactRelationshipDocument = ajv.compile(salesContactRelationshipDocumentSchema);
+export const validateSalesEvidenceDocument = ajv.compile(salesEvidenceDocumentSchema);
+export const validateSalesTaskDocument = ajv.compile(salesTaskDocumentSchema);
+export const validateSalesOpportunityDocument = ajv.compile(salesOpportunityDocumentSchema);
+export const validateSalesActivityDocument = ajv.compile(salesActivityDocumentSchema);
+export const validateSalesCustomFieldDocument = ajv.compile(salesCustomFieldDocumentSchema);
+export const validateSalesCustomFieldValueDocument = ajv.compile(salesCustomFieldValueDocumentSchema);
+export const validateSalesActionReceiptDocument = ajv.compile(salesActionReceiptDocumentSchema);
+export const validateSalesImportJobDocument = ajv.compile(salesImportJobDocumentSchema);
+export const validateSalesImportRowDocument = ajv.compile(salesImportRowDocumentSchema);
+export const validateSalesImportJobRowDocument = ajv.compile(salesImportJobRowDocumentSchema);
+export const validateSalesSettingDocument = ajv.compile(salesSettingDocumentSchema);
+export const validateSalesSuppressionDecisionDocument = ajv.compile(salesSuppressionDecisionDocumentSchema);
+export const validateAdminSalesEvidenceProposalsListCallablePayload = ajv.compile(adminSalesEvidenceProposalsListCallablePayloadSchema);
+export const validateAdminSalesEvidenceProposeCallablePayload = ajv.compile(adminSalesEvidenceProposeCallablePayloadSchema);
+export const validateAdminSalesEvidenceReviewProposalCallablePayload = ajv.compile(adminSalesEvidenceReviewProposalCallablePayloadSchema);
+export const validateAdminSalesIntelligenceAssessmentCallablePayload = ajv.compile(adminSalesIntelligenceAssessmentCallablePayloadSchema);
+export const validateAdminSalesIntelligenceClauseCallablePayload = ajv.compile(adminSalesIntelligenceClauseCallablePayloadSchema);
+export const validateAdminBuildSalesOutreachInputPayload = ajv.compile(adminBuildSalesOutreachInputPayloadSchema);
+export const validateAdminSalesIntelligencePolicyCallablePayload = ajv.compile(adminSalesIntelligencePolicyCallablePayloadSchema);
+export const validateAdminSalesIntelligenceReviewCallablePayload = ajv.compile(adminSalesIntelligenceReviewCallablePayloadSchema);
+export const validateAdminSalesIntelligenceScoreCallablePayload = ajv.compile(adminSalesIntelligenceScoreCallablePayloadSchema);
+export const validateSalesDemoManagementCallablePayload = ajv.compile(salesDemoManagementCallablePayloadSchema);
+export const validateSalesDemoPreviewCallablePayload = ajv.compile(salesDemoPreviewCallablePayloadSchema);
+export const validateSalesDemoTrialCallablePayload = ajv.compile(salesDemoTrialCallablePayloadSchema);
+export const validateSalesDemoBlueprintsDocument = ajv.compile(salesDemoBlueprintsDocumentSchema);
+export const validateSalesDemoCapabilitiesDocument = ajv.compile(salesDemoCapabilitiesDocumentSchema);
+export const validateSalesDemoInvitationsDocument = ajv.compile(salesDemoInvitationsDocumentSchema);
+export const validateSalesDemoReceiptsDocument = ajv.compile(salesDemoReceiptsDocumentSchema);
+export const validateAdminListSalesFitQueuePayload = ajv.compile(adminListSalesFitQueuePayloadSchema);
+export const validateAdminRefreshSalesFitQueueBatchPayload = ajv.compile(adminRefreshSalesFitQueueBatchPayloadSchema);
+export const validateAdminRefreshSalesFitQueuePayload = ajv.compile(adminRefreshSalesFitQueuePayloadSchema);
+export const validateAdminListSalesFitQueueResponse = ajv.compile(adminListSalesFitQueueResponseSchema);
+export const validateAdminRefreshSalesFitQueueBatchResponse = ajv.compile(adminRefreshSalesFitQueueBatchResponseSchema);
+export const validateAdminRefreshSalesFitQueueResponse = ajv.compile(adminRefreshSalesFitQueueResponseSchema);
+export const validateSalesFitQueueEntryDocument = ajv.compile(salesFitQueueEntryDocumentSchema);
+export const validateSalesFitQueueMetaDocument = ajv.compile(salesFitQueueMetaDocumentSchema);
+export const validateSalesFitQueueReceiptDocument = ajv.compile(salesFitQueueReceiptDocumentSchema);
+export const validateAdminApplySalesImportCompensationResponse = ajv.compile(adminApplySalesImportCompensationResponseSchema);
+export const validateAdminPreviewSalesImportCompensationResponse = ajv.compile(adminPreviewSalesImportCompensationResponseSchema);
+export const validateAdminSalesImportCompensationApplyPayload = ajv.compile(adminSalesImportCompensationApplyPayloadSchema);
+export const validateAdminSalesImportCompensationPreviewPayload = ajv.compile(adminSalesImportCompensationPreviewPayloadSchema);
+export const validateSalesImportCompensationDocument = ajv.compile(salesImportCompensationDocumentSchema);
+export const validateSalesDemoSetupDocument = ajv.compile(salesDemoSetupDocumentSchema);
+export const validateSalesDemoSetupCallablePayload = ajv.compile(salesDemoSetupCallablePayloadSchema);
+export const validateSalesDemoSetupCallableResponse = ajv.compile(salesDemoSetupCallableResponseSchema);
+export const validateSalesDemoSessionsDocument = ajv.compile(salesDemoSessionsDocumentSchema);
+export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceProposalsDocumentSchema);
+export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);
+export const validateSalesIntelligenceAssessmentDocument = ajv.compile(salesIntelligenceAssessmentDocumentSchema);
+export const validateSalesIntelligenceClauseDocument = ajv.compile(salesIntelligenceClauseDocumentSchema);
+export const validateSalesIntelligencePolicyDocument = ajv.compile(salesIntelligencePolicyDocumentSchema);
+export const validateSalesIntelligenceReceiptDocument = ajv.compile(salesIntelligenceReceiptDocumentSchema);
+export const validateSalesIntelligenceScoreSnapshotDocument = ajv.compile(salesIntelligenceScoreSnapshotDocumentSchema);
+export const validateSalesOutreachDraftsDocument = ajv.compile(salesOutreachDraftsDocumentSchema);
+export const validateLegacyPaymentRefundIntent = ajv.compile(legacyPaymentRefundIntentSchema);
+export const validateSetEventPublicationCallablePayload = ajv.compile(setEventPublicationCallablePayloadSchema);
+export const validateEventPublicationCallableResponse = ajv.compile(eventPublicationCallableResponseSchema);
+export const validatePublicEventPaymentDocument = ajv.compile(publicEventPaymentDocumentSchema);
+export const validatePublicEventAdmissionReceiptDocument = ajv.compile(publicEventAdmissionReceiptDocumentSchema);
+export const validateEventRegistrationReceiptDocument = ajv.compile(eventRegistrationReceiptDocumentSchema);
+export const validateManagePublicEventCheckoutCallablePayload = ajv.compile(managePublicEventCheckoutCallablePayloadSchema);
+export const validateManagePublicEventCheckoutCallableResponse = ajv.compile(managePublicEventCheckoutCallableResponseSchema);
+export const validateConfigureEventRegistrationCallablePayload = ajv.compile(configureEventRegistrationCallablePayloadSchema);
+export const validateConfigureEventRegistrationCallableResponse = ajv.compile(configureEventRegistrationCallableResponseSchema);
+export const validateOrganizerEventOfferPaymentDocument = ajv.compile(organizerEventOfferPaymentDocumentSchema);
+export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organizerEventOfferRecipientDocumentSchema);
+export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
+export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
+export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallablePayload = ajv.compile(prepareEventOfferInvitationCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallableResponse = ajv.compile(prepareEventOfferInvitationCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallableResponse = ajv.compile(manageEventOfferCheckoutCallableResponseSchema);
+export const validatePreviewOrganizerFormAdmissionCallablePayload = ajv.compile(previewOrganizerFormAdmissionCallablePayloadSchema);
+export const validatePreviewOrganizerFormAdmissionCallableResponse = ajv.compile(previewOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionDocument = ajv.compile(organizerFormAdmissionDocumentSchema);
 export const validateCommitOrganizerFormAdmissionCallablePayload = ajv.compile(commitOrganizerFormAdmissionCallablePayloadSchema);
 export const validateCommitOrganizerFormAdmissionCallableResponse = ajv.compile(commitOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionReceiptDocument = ajv.compile(organizerFormAdmissionReceiptDocumentSchema);
 export const validateConfigureEventOfferPreferencesCallablePayload = ajv.compile(configureEventOfferPreferencesCallablePayloadSchema);
 export const validateConfigureEventOfferPreferencesCallableResponse = ajv.compile(configureEventOfferPreferencesCallableResponseSchema);
+export const validatePreviewEventOfferPreferencesCallableResponse = ajv.compile(previewEventOfferPreferencesCallableResponseSchema);
 export const validateEventOfferConfigurationReceiptDocument = ajv.compile(eventOfferConfigurationReceiptDocumentSchema);
 export const validateListOfferEventTargetsCallablePayload = ajv.compile(listOfferEventTargetsCallablePayloadSchema);
 export const validateOfferEventTargetListCallableResponse = ajv.compile(offerEventTargetListCallableResponseSchema);
 export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);
 export const validateEventOfferConfigurationCallableResponse = ajv.compile(eventOfferConfigurationCallableResponseSchema);
+export const validateReconcilePrivateEventSeatsCallablePayload = ajv.compile(reconcilePrivateEventSeatsCallablePayloadSchema);
+export const validatePrivateSeatReconciliationCallableResponse = ajv.compile(privateSeatReconciliationCallableResponseSchema);
 export const validateUpdatePrivateEventDetailsCallablePayload = ajv.compile(updatePrivateEventDetailsCallablePayloadSchema);
 export const validatePrepareEventOfferHandoffCallablePayload = ajv.compile(prepareEventOfferHandoffCallablePayloadSchema);
 export const validateEventOfferHandoffCallableResponse = ajv.compile(eventOfferHandoffCallableResponseSchema);
@@ -1251,6 +1624,7 @@ export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSc
 export const validateOrganizerFormDomainDocument = ajv.compile(organizerFormDomainDocumentSchema);
 export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
 export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
+export const validatePaymentRoutingPolicyDocument = ajv.compile(paymentRoutingPolicyDocumentSchema);
 export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
 export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);

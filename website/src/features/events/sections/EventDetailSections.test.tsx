@@ -47,6 +47,13 @@ describe("Event Detail sections", () => {
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
   });
 
+  it("shows one closed-registration explanation without a booking action", () => {
+    render(<EventDetailHeroSection appDownloadCtas={appDownloadCtas}
+      event={{...catchEvent(), registrationState: "closed"}} />);
+    expect(screen.getAllByText("Registration is closed for this event.")).toHaveLength(1);
+    expect(screen.queryByRole("link", {name: /app store|book|checkout/iu})).toBeNull();
+  });
+
   it("shows claim and unavailable-review states only when their capabilities allow it", () => {
     const event = claimableExternalEvent();
     render(
@@ -132,6 +139,8 @@ function catchEvent(): EventDetailRecord {
     locationDetails: "",
     path: "/events/catch-event/",
     priceLabel: "₹1,500",
+    registrationMode: "free",
+    paidBookingAvailable: false,
     registrationState: "catchApp",
     remainingCapacity: 8,
     requirements: "",
@@ -155,6 +164,8 @@ function externalEvent(): EventDetailRecord {
     location: "Indore",
     path: "/events/external-event/",
     priceLabel: "Free RSVP",
+    registrationMode: "free",
+    paidBookingAvailable: false,
     registrationState: "external",
     remainingCapacity: null,
     requirements: "Bring running shoes and water.",

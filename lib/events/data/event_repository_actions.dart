@@ -51,21 +51,36 @@ mixin EventRepositoryActions {
     ),
   );
 
-  Future<void> setPublicRegistration({
-    required String eventId,
-    required bool enabled,
+  Future<void> configurePublicRegistration({
+    required Event event,
+    required EventPublicRegistrationMode mode,
+    required String requestId,
   }) => withBackendErrorContext(
-    () => _functions
-        .httpsCallable('updateEvent')
-        .call(
-          UpdateEventCallableRequest(
-            eventId: eventId,
-            fields: {'publicRegistrationEnabled': enabled},
-          ).toJson(),
-        ),
+    () async {
+      final result = await _functions
+          .httpsCallable('configureEventRegistration')
+          .call({
+            'organizerId': event.organizerId,
+            'eventId': event.id,
+            'requestId': requestId,
+            'expectedRegistrationRevision': event.publicRegistrationRevision,
+            'mode': mode.name,
+          });
+      final data = result.data;
+      if (data is! Map ||
+          data['eventId'] != event.id ||
+          data['mode'] != mode.name ||
+          data['registrationRevision'] !=
+              event.publicRegistrationRevision + 1 ||
+          data['replayed'] is! bool) {
+        throw const FormatException(
+          'Invalid registration configuration response',
+        );
+      }
+    },
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'update public event registration',
+      action: 'configure public event registration',
       resource: _collectionPath,
     ),
   );

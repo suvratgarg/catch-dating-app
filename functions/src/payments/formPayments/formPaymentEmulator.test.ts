@@ -115,6 +115,13 @@ test("Firestore serializes payment reservations, finalization and late capture",
       await db.doc("organizerForms/form").update({status: "paused",
         activeVersionId: "new-version"});
       const discoveryDeps = {db: () => db, configured: () => false,
+        collectionSetup: async () => null,
+        prepareRouting: async (): Promise<never> => {
+          throw new Error("Unexpected routing");
+        },
+        executionFor: async (): Promise<never> => {
+          throw new Error("Unexpected execution");
+        },
         rateLimit: async () => undefined, requireManager: async () => undefined,
         runtime: async (): Promise<never> => {
           throw new Error("Discovery must not call the provider");

@@ -136,8 +136,16 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
       EventLifecycleStatus.active,
   cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   cancellationReason: json['cancellationReason'] as String?,
+  setupRevision: (json['setupRevision'] as num?)?.toInt(),
   publicRegistrationEnabled:
       json['publicRegistrationEnabled'] as bool? ?? false,
+  publicRegistrationMode: $enumDecodeNullable(
+    _$EventPublicRegistrationModeEnumMap,
+    json['publicRegistrationMode'],
+    unknownValue: EventPublicRegistrationMode.closed,
+  ),
+  publicRegistrationRevision:
+      (json['publicRegistrationRevision'] as num?)?.toInt() ?? 0,
   constraints: json['constraints'] == null
       ? const EventConstraints()
       : EventConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -202,7 +210,11 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
     instance.cancelledAt,
   ),
   'cancellationReason': instance.cancellationReason,
+  'setupRevision': ?instance.setupRevision,
   'publicRegistrationEnabled': instance.publicRegistrationEnabled,
+  'publicRegistrationMode':
+      ?_$EventPublicRegistrationModeEnumMap[instance.publicRegistrationMode],
+  'publicRegistrationRevision': instance.publicRegistrationRevision,
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'eventOrigin': ?instance.eventOrigin?.toJson(),
@@ -222,4 +234,10 @@ const _$PaceLevelEnumMap = {
 const _$EventLifecycleStatusEnumMap = {
   EventLifecycleStatus.active: 'active',
   EventLifecycleStatus.cancelled: 'cancelled',
+};
+
+const _$EventPublicRegistrationModeEnumMap = {
+  EventPublicRegistrationMode.closed: 'closed',
+  EventPublicRegistrationMode.free: 'free',
+  EventPublicRegistrationMode.paid: 'paid',
 };

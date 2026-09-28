@@ -1,3 +1,4 @@
+import {retainedNativePaymentAmount} from "../payments/paymentAmounts";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -162,8 +163,9 @@ export function catchSpendProjection(
     }
     const currency = payment.currency.trim().toUpperCase();
     if (!/^[A-Z]{3}$/.test(currency)) continue;
-    const amountMinor = payment.amountMinor ?? payment.amount;
-    if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0) continue;
+    const amountMinor = retainedNativePaymentAmount(payment);
+    if (amountMinor === null || !Number.isSafeInteger(amountMinor) ||
+        amountMinor <= 0) continue;
     const byCurrency = totals.get(payment.userId) ?? new Map();
     const prior = byCurrency.get(currency);
     byCurrency.set(currency, {

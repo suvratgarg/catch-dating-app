@@ -1,3 +1,4 @@
+import {retainedNativePaymentAmount} from "../payments/paymentAmounts";
 import {
   contactFilterSelection, contactFilterKey, contactMatchesFilters,
   selectedContactFilterGroups,
@@ -1565,9 +1566,10 @@ function contactPaymentRevenueFacts(
   for (const payment of payments) {
     if (!eventIds.has(payment.eventId) ||
         payment.status !== "completed" || payment.signUpFailed) continue;
-    const amountMinor = payment.amountMinor ?? payment.amount;
+    const amountMinor = retainedNativePaymentAmount(payment);
     const currency = payment.currency.trim().toUpperCase();
-    if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0 ||
+    if (amountMinor === null || !Number.isSafeInteger(amountMinor) ||
+        amountMinor <= 0 ||
         !/^[A-Z]{3}$/.test(currency)) continue;
     facts.push({
       eventId: payment.eventId,

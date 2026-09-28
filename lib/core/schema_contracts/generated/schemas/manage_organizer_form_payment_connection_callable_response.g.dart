@@ -123,5 +123,48 @@ const schemaManageOrganizerFormPaymentConnectionCallableResponseSchema = <String
         },
       },
     },
+    'collection': <String, Object?>{
+      'description': 'Selected server-owned collection route. Null preserves legacy OAuth account selection.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'route',
+            'mode',
+            'ready',
+          ],
+          'properties': <String, Object?>{
+            'route': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'disabled',
+                'razorpayRoute',
+                'razorpayOAuth',
+                'stripeConnectDirect',
+                'stripeConnectDestination',
+              ],
+            },
+            'mode': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'enum': <Object?>[
+                'test',
+                'live',
+                null,
+              ],
+            },
+            'ready': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
+        },
+      ],
+    },
   },
 };

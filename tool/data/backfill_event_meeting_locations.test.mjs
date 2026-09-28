@@ -176,8 +176,12 @@ function location(overrides = {}) {
 
 function fakeFirestore(initialData) {
   const data = structuredClone(initialData);
+  const versions = new Map(Object.entries(data).flatMap(([collection, rows]) =>
+    Object.keys(rows).map((id) => [`${collection}/${id}`,
+      {seconds: 1800000000, nanoseconds: 123456789}])));
   const firestore = {
     data,
+    versions,
     commitCount: 0,
     collection: (collectionName) => ({
       get: async () => ({
@@ -185,6 +189,7 @@ function fakeFirestore(initialData) {
         docs: Object.entries(data[collectionName] ?? {}).map(([id, value]) => ({
           id,
           ref: {path: `${collectionName}/${id}`},
+          updateTime: versions.get(`${collectionName}/${id}`),
           data: () => structuredClone(value),
         })),
       }),
@@ -193,11 +198,21 @@ function fakeFirestore(initialData) {
     batch: () => {
       const writes = [];
       return {
-        update: (ref, patch) => writes.push({path: ref.path, patch}),
+        update: (ref, patch, precondition) =>
+          writes.push({path: ref.path, patch, precondition}),
         commit: async () => {
+          for (const write of writes) {
+            const current = versions.get(write.path);
+            const expected = write.precondition?.lastUpdateTime;
+            if (!current || !expected || current.seconds !== expected.seconds ||
+                current.nanoseconds !== expected.nanoseconds) {
+              throw new Error("Source version changed");
+            }
+          }
           firestore.commitCount += 1;
           for (const write of writes) {
             const [collectionName, documentId] = write.path.split("/");
+            versions.set(write.path, {seconds: 1800000001, nanoseconds: 0});
             data[collectionName][documentId] = {
               ...data[collectionName][documentId],
               ...structuredClone(write.patch),
@@ -208,4 +223,50 @@ function fakeFirestore(initialData) {
     },
   };
   return firestore;
+}
+
+
+test("reviewed repair rejects a source edit within the same millisecond", async () => {
+  const firestore = repairable();
+  const plan = await buildEventMeetingLocationBackfillPlan(firestore);
+  assert.equal(plan.repairs[0].sourceVersion.nanoseconds, 123456789);
+  firestore.versions.set("events/event-1",
+    {seconds: 1800000000, nanoseconds: 123456790});
+  firestore.data.events["event-1"].meetingPoint = "Organizer changed venue";
+  await assert.rejects(applyEventMeetingLocationBackfillPlan(firestore, plan),
+    /Source version changed/);
+  assert.equal(firestore.commitCount, 0);
+  assert.equal(firestore.data.events["event-1"].meetingPoint,
+    "Organizer changed venue");
+  assert.equal(firestore.data.events["event-1"].meetingLocation, undefined);
+});
+
+test("a deleted source cannot be recreated by a reviewed repair", async () => {
+  const firestore = repairable();
+  const plan = await buildEventMeetingLocationBackfillPlan(firestore);
+  firestore.versions.delete("events/event-1");
+  delete firestore.data.events["event-1"];
+  await assert.rejects(applyEventMeetingLocationBackfillPlan(firestore, plan),
+    /Source version changed/);
+  assert.equal(firestore.commitCount, 0);
+  assert.equal(firestore.data.events["event-1"], undefined);
+});
+
+test("all missing or malformed plan versions fail before any batch", async () => {
+  for (const sourceVersion of [null, {seconds: 1, nanoseconds: -1},
+    {seconds: 1, nanoseconds: 1.5}, {seconds: Infinity, nanoseconds: 0}]) {
+    const firestore = repairable();
+    const plan = await buildEventMeetingLocationBackfillPlan(firestore);
+    // Even a malformed entry beyond the first batch must prevent all writes.
+    plan.repairs = [...Array(450).fill(plan.repairs[0]),
+      {...plan.repairs[0], sourceVersion}];
+    await assert.rejects(applyEventMeetingLocationBackfillPlan(firestore, plan),
+      /Missing or invalid source version/);
+    assert.equal(firestore.commitCount, 0);
+  }
+});
+
+function repairable() {
+  return fakeFirestore({events: {"event-1": {meetingPoint: "Venue",
+    startingPointLat: 19.1, startingPointLng: 72.9, locationDetails: null}}});
 }

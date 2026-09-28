@@ -188,6 +188,8 @@ async function queueRelationshipCleanup(params: {
   writer: BatchQueue;
 }) {
   const {db, uid, now, writer} = params;
+  // Release pair holds while their persisted UID identity proof is current.
+  await queueCrossPathsPairHoldCleanup(db, uid, writer);
   // The migration fence, participation and linked attendee identity update
   // share one transaction, including attendee-only imported seats.
   await deleteAccountEventParticipations({db, uid, now,
@@ -198,7 +200,6 @@ async function queueRelationshipCleanup(params: {
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueCrossPathsInvitationCleanup(db, uid, writer),
-    queueCrossPathsPairHoldCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),

@@ -227,3 +227,24 @@ test("time rendering distinguishes repeated DST wall times", () => {
   assert.match(second ?? "", /2026-11-01 01:30/);
   assert.notEqual(first, second);
 });
+
+test("automatic checkout uses only a server-issued Catch fragment link", () => {
+  const input = reviewed();
+  input.payment.collectionMode = "catchCheckout";
+  input.payment.reusablePaymentPageUrl = null;
+  input.offer.organizerPaymentLink = null;
+  input.recipientCheckoutUrl = `https://catchdates.com/offer#${"a".repeat(43)}`;
+  const result = prepareOfferHandoff(input);
+  assert.equal(result.kind, "prepared");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
+  if (result.kind !== "prepared") return;
+  assert.ok(result.copyText.includes(input.recipientCheckoutUrl));
+  assert.match(result.copyText, /held for 15 minutes when checkout starts/u);
+  assert.equal(new URL(result.whatsappUrl).searchParams.get("text"),
+    result.copyText);
+  for (const url of ["https://evil.test/offer#token",
+    `https://catchdates.com/offer?token=${"a".repeat(43)}`]) {
+    assert.ok(blockers({...input, recipientCheckoutUrl: url})
+      .includes("paymentLinkInvalid"));
+  }
+});

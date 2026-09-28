@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/outreach_drafting_approval.schema.json",
+  "title": "OutreachDraftApprovalRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId",
+    "workItemId",
+    "actorId",
+    "expectedContentHash",
+    "factualValidity",
+    "tone",
+    "channelReadiness"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "workItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "factualValidity": {
+      "const": "verified"
+    },
+    "tone": {
+      "const": "approved"
+    },
+    "channelReadiness": {
+      "const": "manual_copy_only"
+    }
+  }
+}

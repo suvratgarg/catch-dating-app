@@ -14,6 +14,7 @@ final class ConfigureEventOfferPreferencesCallableRequest {
     required this.reviewedDefaultsHash,
     required this.intents,
     required this.expectedEventSourceRevision,
+    this.expectedActorUid,
   });
 
   final String organizerId;
@@ -23,6 +24,7 @@ final class ConfigureEventOfferPreferencesCallableRequest {
   final String reviewedDefaultsHash;
   final Map<String, Object?> intents;
   final int expectedEventSourceRevision;
+  final String? expectedActorUid;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -32,5 +34,6 @@ final class ConfigureEventOfferPreferencesCallableRequest {
     'reviewedDefaultsHash': reviewedDefaultsHash,
     'intents': intents,
     'expectedEventSourceRevision': expectedEventSourceRevision,
+    'expectedActorUid': ?expectedActorUid,
   };
 }

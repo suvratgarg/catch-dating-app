@@ -14,38 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'events_test_helpers.dart';
 
-class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
-  final callables = <String, TestHttpsCallable>{};
-
-  @override
-  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) {
-    return callables.putIfAbsent(name, () => TestHttpsCallable(name));
-  }
-}
-
-class TestHttpsCallable extends Fake implements HttpsCallable {
-  TestHttpsCallable(this.name);
-
-  final String name;
-  final calls = <Object?>[];
-  Object? resultData;
-
-  @override
-  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
-    calls.add(parameters);
-    return TestHttpsCallableResult<T>(resultData as T);
-  }
-}
-
-class TestHttpsCallableResult<T> extends Fake
-    implements HttpsCallableResult<T> {
-  TestHttpsCallableResult(this.dataValue);
-
-  final T dataValue;
-
-  @override
-  T get data => dataValue;
-}
+part 'event_repository_fixtures.dart';
 
 void main() {
   group('EventRepository', () {
@@ -210,35 +179,47 @@ void main() {
       );
     });
 
-    test('public organizer streams include legacy events before backfill', () async {
-      final published = buildEvent(id: 'public', clubId: 'club-2');
-      final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
-      await _seedEvent(firestore, published);
-      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
+    test(
+      'public organizer queries exclude unlabelled and private events',
+      () async {
+        final published = buildEvent(id: 'public', clubId: 'club-2');
+        final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
+        await _seedEvent(firestore, published);
+        await firestore
+            .collection('events')
+            .doc(legacy.id)
+            .set(legacy.toJson());
+        await firestore.collection('events').doc('private-basics').set({
+          'organizerId': 'club-2',
+          'publicationState': 'private',
+          'startTime': Timestamp.fromDate(published.startTime),
+        });
 
-      await expectLater(
-        repository.watchEventsForClub(clubId: 'club-2'),
-        emits(containsAll([published, legacy])),
-      );
-      await expectLater(
-        repository.watchEventsForClubs(clubIds: const ['club-2']),
-        emits(containsAll([published, legacy])),
-      );
-      expect(
-        await repository.fetchUpcomingEventsForClubs(const ['club-2']),
-        containsAll([published, legacy]),
-      );
-    });
+        await expectLater(
+          repository.watchEventsForClub(clubId: 'club-2'),
+          emits([published]),
+        );
+        await expectLater(
+          repository.watchEventsForClubs(clubIds: const ['club-2']),
+          emits([published]),
+        );
+        expect(await repository.fetchUpcomingEventsForClubs(const ['club-2']), [
+          published,
+        ]);
+      },
+    );
 
-    test('legacy rows retain organizer page position before backfill', () async {
+    test('unlabelled rows do not consume published page positions', () async {
       final boundary = DateTime(2026, 8, 18, 12);
       final legacy = buildEvent(
-        id: 'legacy-first', clubId: 'club-2',
+        id: 'legacy-first',
+        clubId: 'club-2',
         startTime: boundary.add(const Duration(hours: 1)),
         endTime: boundary.add(const Duration(hours: 2)),
       );
       final published = buildEvent(
-        id: 'published-second', clubId: 'club-2',
+        id: 'published-second',
+        clubId: 'club-2',
         startTime: boundary.add(const Duration(hours: 3)),
         endTime: boundary.add(const Duration(hours: 4)),
       );
@@ -246,10 +227,12 @@ void main() {
       await _seedEvent(firestore, published);
 
       final page = await repository.fetchActiveEventsPage(
-        organizerId: 'club-2', sessionBoundary: boundary, limit: 1,
+        organizerId: 'club-2',
+        sessionBoundary: boundary,
+        limit: 1,
       );
-      expect(page.items, [legacy]);
-      expect(page.hasMore, isTrue);
+      expect(page.items, [published]);
+      expect(page.hasMore, isFalse);
     });
 
     test(
@@ -1136,53 +1119,3 @@ void main() {
     });
   });
 }
-
-Future<void> _seedEvent(FakeFirebaseFirestore firestore, Event event) {
-  return firestore.collection('events').doc(event.id).set({
-    ...event.toJson(),
-    'publicationState': 'published',
-  });
-}
-
-Future<void> _seedParticipation(
-  FakeFirebaseFirestore firestore, {
-  required Event event,
-  required String uid,
-  required EventParticipationStatus status,
-}) {
-  final now = DateTime(2026);
-  final participation = EventParticipation(
-    id: eventParticipationId(eventId: event.id, uid: uid),
-    eventId: event.id,
-    clubId: event.clubId,
-    uid: uid,
-    status: status,
-    createdAt: now,
-    updatedAt: now,
-  );
-  return firestore
-      .collection('eventParticipations')
-      .doc(participation.id)
-      .set(participation.toJson());
-}
-
-class _IdleEventRepository extends Fake implements EventRepository {
-  _IdleEventRepository({required this.signedUpEventsStream});
-
-  final Stream<List<Event>> signedUpEventsStream;
-
-  @override
-  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
-      signedUpEventsStream;
-}
-
-class _LifecycleEventRepository extends Fake implements EventRepository {
-  _LifecycleEventRepository({required this.eventStream});
-
-  final Stream<Event?> eventStream;
-
-  @override
-  Stream<Event?> watchEvent(String id) => eventStream;
-}
-
-const _pastLegacyStreamTimeout = Duration(seconds: 11);

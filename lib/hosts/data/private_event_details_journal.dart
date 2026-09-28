@@ -22,7 +22,9 @@ class PrivateEventDetailsJournal {
       final raw = prefs.getString(_key(userId, organizerId, eventId));
       if (raw == null) return null;
       final decoded = jsonDecode(raw);
-      if (decoded is! Map) throw const FormatException('Invalid pending details');
+      if (decoded is! Map) {
+        throw const FormatException('Invalid pending details');
+      }
       final request = PrivateEventDetailsUpdateRequest.fromJson(
         Map<String, dynamic>.from(decoded),
       );
@@ -56,6 +58,30 @@ class PrivateEventDetailsJournal {
     context: const AppErrorContext(
       operation: AppOperation.localPersistence,
       action: 'save pending private event details',
+      resource: 'shared_preferences',
+    ),
+  );
+
+  /// Preserve the exact settings body; only the explicit discard intent changes.
+  Future<void> setDiscardIntent({
+    required String userId,
+    required PrivateEventDetailsUpdateRequest request,
+    required bool discard,
+  }) => withAppErrorContext<void>(
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final key = _key(userId, request.organizerId, request.eventId);
+      if (prefs.getString(key) != jsonEncode(request.toJson())) {
+        throw StateError('Pending admission command changed');
+      }
+      await prefs.setString(
+        key,
+        jsonEncode(request.withDiscard(discard).toJson()),
+      );
+    },
+    context: const AppErrorContext(
+      operation: AppOperation.localPersistence,
+      action: 'persist pending admission discard intent',
       resource: 'shared_preferences',
     ),
   );

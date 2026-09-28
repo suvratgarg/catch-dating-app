@@ -9,7 +9,6 @@ import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {verifyPaidEventBooking} from "./paymentValidation";
 import {
   fulfillRazorpayPayment,
-  razorpayRefundFromClient,
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
@@ -92,18 +91,21 @@ export async function verifyRazorpayPaymentHandler(
   // Fulfillment (sign up -> completed payments doc, or refund-on-failure) is
   // shared with the Razorpay webhook and the reconciliation sweep so all three
   // paths stay idempotent and never double-fulfill or double-charge.
-  await fulfillRazorpayPayment({
+  const outcome = await fulfillRazorpayPayment({
     db,
     orderId,
     paymentId,
     booking,
     deps: {
       signUpForEvent: deps.signUpForEvent,
-      refund: razorpayRefundFromClient(razorpay),
       serverTimestamp: deps.serverTimestamp,
     },
   });
 
+  if (!outcome.fulfilled) {
+    throw new HttpsError("failed-precondition",
+      "This booking was not admitted. Check its refund status in Payments.");
+  }
   return {verified: true, eventId: booking.eventId};
 }
 

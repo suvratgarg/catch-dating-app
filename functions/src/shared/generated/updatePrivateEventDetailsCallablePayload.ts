@@ -23,9 +23,18 @@ export interface UpdatePrivateEventDetailsCallablePayload {
     venue?:
       | {
           mode: "set";
-          value: {
-            name: string;
-          };
+          value:
+            | {
+                name: string;
+              }
+            | {
+                name: string;
+                address?: string | null;
+                placeId?: string | null;
+                latitude: number;
+                longitude: number;
+                notes?: string | null;
+              };
         }
       | {
           mode: "clear";
@@ -171,5 +180,18 @@ export interface UpdatePrivateEventDetailsCallablePayload {
       | {
           mode: "clear";
         };
+    description?: string;
+    admissionTerms?: {
+      capacityLimit: number;
+      priceInPaise: number;
+      currency: string;
+      cancellationPolicyId:
+        | "notApplicable"
+        | "flexible"
+        | "standard"
+        | "strict";
+    };
+    distanceKm?: number;
+    pace?: "easy" | "moderate" | "fast" | "competitive";
   };
 }

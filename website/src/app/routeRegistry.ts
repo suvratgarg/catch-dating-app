@@ -1,4 +1,5 @@
 export type MarketingRouteId =
+  | "sales_demo"
   | "home"
   | "host"
   | "organizer_search"
@@ -6,6 +7,8 @@ export type MarketingRouteId =
   | "event_detail"
   | "event_runtime"
   | "event_assistance"
+  | "event_offer"
+  | "event_booking"
   | "event_rehearsal"
   | "event_invite"
   | "household_rsvp"
@@ -23,12 +26,15 @@ export interface MarketingRouteDefinition {
 }
 
 export const marketingRouteDefinitions = [
+  {id: "sales_demo", path: "/demo/:invitationId"},
   {id: "home", path: "/"},
   {id: "host", path: "/host/*"},
   {id: "organizer_search", path: "/organizers"},
   {id: "organizer_listing", path: "/organizers/*"},
   {id: "event_detail", path: "/events/:eventId"},
   {id: "event_runtime", path: "/join/:publicRuntimeId"},
+  {id: "event_offer", path: "/offer"},
+  {id: "event_booking", path: "/booking/:eventId"},
   {id: "event_assistance", path: "/event-update/:linkId"},
   {id: "event_rehearsal", path: "/rehearse/:publicRehearsalId"},
   {id: "event_invite", path: "/invite/:inviteToken"},

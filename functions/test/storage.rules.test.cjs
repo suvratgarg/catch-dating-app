@@ -86,13 +86,13 @@ describe("storage.rules", () => {
       projectId,
       firestore: {
         rules: firestoreRules,
-        host: "127.0.0.1",
-        port: 8080,
+        host: process.env.FIRESTORE_EMULATOR_HOST?.split(":")[0] ?? "127.0.0.1",
+        port: Number(process.env.FIRESTORE_EMULATOR_HOST?.split(":")[1] ?? 8080),
       },
       storage: {
         rules: storageRules,
-        host: "127.0.0.1",
-        port: 9199,
+        host: process.env.FIREBASE_STORAGE_EMULATOR_HOST?.split(":")[0] ?? "127.0.0.1",
+        port: Number(process.env.FIREBASE_STORAGE_EMULATOR_HOST?.split(":")[1] ?? 9199),
       },
     });
   });

@@ -13,6 +13,9 @@ export const eventDetailCopy = {
     catchActionHeading: "Booking stays in the Catch app",
     catchActionBody:
       "This website is read-only. Open Catch on iOS or Android to check live availability, join a waitlist, or book.",
+    webPaidHeading: "Your event registration",
+    webPaidBody: "Verify your phone to book or manage your place. No app download is needed.",
+    closedHeading: "Registration closed",
     webActionHeading: "Register here with your phone",
     webActionBody:
       "No app or Consumer profile is required. Verify your number, add your name, and the organizer will see you on the event roster.",
@@ -102,7 +105,7 @@ export const eventDetailCopy = {
     catchRegistrationFull: "Shown as full; check the Catch app for waitlist updates.",
     webRegistrationOpen: "{count} spots shown; phone OTP registration is available here.",
     webRegistrationWaitlist: "The confirmed roster is full; phone OTP waitlist registration is available here.",
-    registrationClosed: "Registration is closed because this event has ended.",
+    registrationClosed: "Registration is closed for this event.",
     externalRegistration: "Check current availability on the official source.",
   },
   provenance: {
@@ -132,4 +135,29 @@ export const eventDetailCopy = {
   },
   footerBody:
     "Read event details on the web, then use Catch or the official source for registration.",
+} as const;
+
+export const publicCheckoutCopy = {
+  registrationClosed: "Registration closed",
+  previousBookingLink: "Check the previous payment",
+  bookingLink: "Open your booking page",
+  bookingTitle: "Your event booking",
+  bookingBody: "Check your place, payment or refund using your verified phone number.",
+  bookingBrand: "Catch",
+  closedRecovery: "New registration is closed. Verify your phone to manage an existing paid booking.",
+  noBookingTitle: "No paid booking found",
+  startAgain: "Review a new booking",
+  previousCheckout: (amount: string) => `You’re starting a new booking. The previous ${amount} checkout remains in your payment history; any refund is handled separately.`,
+  noBooking: "No paid booking was found for this phone number. Contact the organizer if you need help.",
+  loading: "Checking registration",
+  reviewTitle: "Review your booking",
+  reviewBody: "Check the price and cancellation policy before reserving your seat. Your place is confirmed after Catch verifies payment.",
+  unavailable: "Registration is unavailable right now. Try again or contact the organizer.",
+  nameError: "Enter the name you want on the guest list.",
+  alreadyRegistered: "You’re already on the guest list. No new payment is needed.",
+  admissionUnavailable: "Your payment was recorded, but we couldn’t confirm your current place. Contact your host before paying again.",
+  reviewCurrentTerms: "Review current registration",
+  quoteChanged: "Registration details may have changed. Refresh and review them before trying again.",
+  signedIn: (phone: string) => `Phone verified: ${phone}`,
+  pay: (amount: string) => `Reserve a seat and pay ${amount}`,
 } as const;

@@ -57,6 +57,17 @@ export const resolveEventInviteLandingCallableResponseSchema: Record<string, unk
       ],
       "maxLength": 2048
     },
+    "paidBookingAvailable": {
+      "type": "boolean"
+    },
+    "registrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    },
     "sourceLabel": {
       "type": "string",
       "minLength": 1,

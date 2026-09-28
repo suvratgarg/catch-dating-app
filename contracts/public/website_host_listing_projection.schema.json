@@ -239,6 +239,9 @@
         "checkedInCount": {"type": "integer", "minimum": 0},
         "waitlistedCount": {"type": "integer", "minimum": 0},
         "publicRegistrationEnabled": {"type": "boolean"},
+        "registrationMode": {"type": "string", "enum": ["closed", "free", "paid"]},
+        "amountPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
         "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
         "scorecard": {
           "anyOf": [
