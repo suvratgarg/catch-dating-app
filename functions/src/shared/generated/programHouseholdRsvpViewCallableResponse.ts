@@ -30,5 +30,31 @@ export interface ProgramHouseholdRsvpViewCallableResponse {
       partySize: number | null;
       responseNote: string | null;
     }[];
+    /**
+     * This member's previously captured travel blocks, one per journey kind, echoed so the form can pre-fill. Only household-submitted (formResponse) legs appear.
+     *
+     * @maxItems 6
+     */
+    travel: {
+      kind: "inbound" | "outbound" | "ground";
+      flightNumber: string | null;
+      carrierCode: string | null;
+      originIata: string | null;
+      destinationIata: string | null;
+      scheduledArrivalAtMillis: number | null;
+      destinationHotelId: string | null;
+      destinationLabel: string | null;
+      passengers: number;
+      luggageUnits: number;
+    }[];
+  }[];
+  /**
+   * The program's configured hotels for the travel destination picker; names only.
+   *
+   * @maxItems 50
+   */
+  hotels: {
+    hotelId: string;
+    name: string;
   }[];
 }

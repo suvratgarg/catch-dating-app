@@ -411,6 +411,37 @@ test("submits without travel write no legs", async () => {
     db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound"), undefined);
 });
 
+test("view echoes submitted travel and the program hotels", async () => {
+  const db = new FakeFirestore({...seed(),
+    "programTravelLegs/rsvp_hh-1_g-1_inbound": leg(
+      "rsvp_hh-1_g-1_inbound", {
+        flightNumber: "UA123", passengers: 3, luggageUnits: 2,
+        pickupPointId: "pickup-1", partyId: "party-1",
+      }),
+    // A planner-owned leg for the same member must not echo.
+    "programTravelLegs/leg-planner": leg("leg-planner", {
+      source: "planner", flightNumber: "AI400"}),
+    // hh-2's captured leg must not leak into hh-1's view.
+    "programTravelLegs/rsvp_hh-2_g-3_inbound": leg(
+      "rsvp_hh-2_g-3_inbound", {guestId: "g-3",
+        flightNumber: "AI900"})});
+  const view = await getProgramHouseholdRsvpViewHandler(
+    request({token: token()}, "anonymous"), deps(db));
+  // hotel-foreign belongs to program-9 and must not appear.
+  assert.deepEqual(view.hotels, [{hotelId: "hotel-1", name: "Grand"}]);
+  const g1 = view.members.find((member) => member.guestId === "g-1")!;
+  assert.equal(g1.travel.length, 1);
+  const block = g1.travel[0];
+  assert.equal(block.kind, "inbound");
+  assert.equal(block.flightNumber, "UA123");
+  assert.equal(block.passengers, 3);
+  assert.equal(block.luggageUnits, 2);
+  assert.equal(block.destinationHotelId, "hotel-1");
+  assert.equal(block.scheduledArrivalAtMillis, 1_800_500_000_000);
+  const g2 = view.members.find((member) => member.guestId === "g-2")!;
+  assert.equal(g2.travel.length, 0);
+});
+
 test("bad, expired and foreign tokens never open a view", async () => {
   const db = new FakeFirestore(seed());
   const bad = getProgramHouseholdRsvpViewHandler(

@@ -268,6 +268,50 @@ export async function getProgramHouseholdRsvpViewHandler(
     .filter(([, fn]) => fn.status !== "cancelled")
     .sort((a, b) => staffTimestampMillis(a[1].startsAt) -
       staffTimestampMillis(b[1].startsAt) || a[0].localeCompare(b[0]));
+  // Travel echo: only household-submitted legs at their deterministic
+  // ids are visible to the token — planner legs stay server-side.
+  const legKinds = ["inbound", "outbound", "ground"] as const;
+  const legRefs = household.memberGuestIds.flatMap((guestId) =>
+    legKinds.map((kind) => db.collection("programTravelLegs")
+      .doc(rsvpTravelLegId(identity.householdId, guestId, kind))));
+  const [hotelSnap, legSnaps] = await Promise.all([
+    db.collection("programHotels")
+      .where("programId", "==", identity.programId).limit(50).get(),
+    Promise.all(legRefs.map((ref) => ref.get())),
+  ]);
+  type MemberTravel =
+    ProgramHouseholdRsvpViewCallableResponse["members"][number][
+      "travel"][number];
+  const travelByGuest = new Map<string, MemberTravel[]>();
+  for (const snap of legSnaps) {
+    if (!snap.exists) continue;
+    const leg = snap.data() as ProgramTravelLegDocument;
+    if (leg.programId !== identity.programId ||
+        leg.organizerId !== household.organizerId ||
+        leg.source !== "formResponse") continue;
+    const list = travelByGuest.get(leg.guestId) ?? [];
+    list.push({
+      kind: leg.kind,
+      flightNumber: leg.flightNumber,
+      carrierCode: leg.carrierCode,
+      originIata: leg.originIata,
+      destinationIata: leg.destinationIata,
+      scheduledArrivalAtMillis: leg.scheduledArrivalAt?.toMillis() ?? null,
+      destinationHotelId: leg.destinationHotelId,
+      destinationLabel: leg.destinationLabel,
+      passengers: leg.passengers,
+      luggageUnits: leg.luggageUnits,
+    });
+    travelByGuest.set(leg.guestId, list);
+  }
+  const hotels = hotelSnap.docs
+    .map((doc) => ({
+      hotelId: doc.id,
+      name: (doc.data() as {name?: unknown}).name,
+    }))
+    .filter((hotel): hotel is {hotelId: string; name: string} =>
+      typeof hotel.name === "string" && hotel.name !== "")
+    .sort((a, b) => a.name.localeCompare(b.name));
   type MemberFunction =
     ProgramHouseholdRsvpViewCallableResponse["members"][number][
       "functions"][number];
@@ -301,6 +345,7 @@ export async function getProgramHouseholdRsvpViewHandler(
       guestId,
       displayName: guest.displayName,
       functions: memberFunctions,
+      travel: travelByGuest.get(guestId) ?? [],
     });
   }
   return {
@@ -311,6 +356,7 @@ export async function getProgramHouseholdRsvpViewHandler(
     householdLabel: household.label,
     messagingConsentGranted: household.messagingConsent?.granted === true,
     members,
+    hotels,
   };
 }
 

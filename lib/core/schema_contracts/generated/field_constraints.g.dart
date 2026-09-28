@@ -105584,6 +105584,29 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHouseholdRsvpViewCallableResponseHotels = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.hotels',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseHotelsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.hotels.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseHotelsItemsName = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.hotels.items.name',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programHouseholdRsvpViewCallableResponseHouseholdId = CatchContractFieldConstraints(
     path: 'programHouseholdRsvpViewCallableResponse.householdId',
     maxLength: 180,
@@ -105695,6 +105718,81 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravel = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsCarrierCode = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.carrierCode',
+    maxLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationHotelId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationHotelId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationIata = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationIata',
+    maxLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationLabel = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationLabel',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsFlightNumber = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.flightNumber',
+    maxLength: 16,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsKind = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inbound', 'outbound', 'ground'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsLuggageUnits = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.luggageUnits',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsOriginIata = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.originIata',
+    maxLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsPassengers = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.passengers',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsScheduledArrivalAtMillis = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.travel.items.scheduledArrivalAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
   );
 
   static const programHouseholdRsvpViewCallableResponseMessagingConsentGranted = CatchContractFieldConstraints(
@@ -140925,6 +141023,9 @@ abstract final class CatchContractConstraints {
     'programHouseholdRsvpLinkCallableResponse.entityId': programHouseholdRsvpLinkCallableResponseEntityId,
     'programHouseholdRsvpLinkCallableResponse.expiresAtMillis': programHouseholdRsvpLinkCallableResponseExpiresAtMillis,
     'programHouseholdRsvpLinkCallableResponse.token': programHouseholdRsvpLinkCallableResponseToken,
+    'programHouseholdRsvpViewCallableResponse.hotels': programHouseholdRsvpViewCallableResponseHotels,
+    'programHouseholdRsvpViewCallableResponse.hotels.items.hotelId': programHouseholdRsvpViewCallableResponseHotelsItemsHotelId,
+    'programHouseholdRsvpViewCallableResponse.hotels.items.name': programHouseholdRsvpViewCallableResponseHotelsItemsName,
     'programHouseholdRsvpViewCallableResponse.householdId': programHouseholdRsvpViewCallableResponseHouseholdId,
     'programHouseholdRsvpViewCallableResponse.householdLabel': programHouseholdRsvpViewCallableResponseHouseholdLabel,
     'programHouseholdRsvpViewCallableResponse.members': programHouseholdRsvpViewCallableResponseMembers,
@@ -140941,6 +141042,17 @@ abstract final class CatchContractConstraints {
     'programHouseholdRsvpViewCallableResponse.members.items.functions.items.startsAtMillis': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsStartsAtMillis,
     'programHouseholdRsvpViewCallableResponse.members.items.functions.items.venueName': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsVenueName,
     'programHouseholdRsvpViewCallableResponse.members.items.guestId': programHouseholdRsvpViewCallableResponseMembersItemsGuestId,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel': programHouseholdRsvpViewCallableResponseMembersItemsTravel,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.carrierCode': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsCarrierCode,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationHotelId': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationHotelId,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationIata': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationIata,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.destinationLabel': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsDestinationLabel,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.flightNumber': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsFlightNumber,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.kind': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsKind,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.luggageUnits': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsLuggageUnits,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.originIata': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsOriginIata,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.passengers': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsPassengers,
+    'programHouseholdRsvpViewCallableResponse.members.items.travel.items.scheduledArrivalAtMillis': programHouseholdRsvpViewCallableResponseMembersItemsTravelItemsScheduledArrivalAtMillis,
     'programHouseholdRsvpViewCallableResponse.messagingConsentGranted': programHouseholdRsvpViewCallableResponseMessagingConsentGranted,
     'programHouseholdRsvpViewCallableResponse.programId': programHouseholdRsvpViewCallableResponseProgramId,
     'programHouseholdRsvpViewCallableResponse.programTitle': programHouseholdRsvpViewCallableResponseProgramTitle,
