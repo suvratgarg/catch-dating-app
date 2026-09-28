@@ -183,10 +183,11 @@ export async function inventorySalesOrganizer(port: InventoryPort,
   if (account) {
     if (account.data.organizerId !== organizerId) block("identity_mismatch", accountPath);
     else add(account);
-    for (const row of await child(accountPath, "customValues")) {
-      if (row.data.organizerId === organizerId) add(row);
-      else block("identity_mismatch", row.path);
-    }
+  }
+  // Firestore subcollections survive deletion of their parent document.
+  for (const row of await child(accountPath, "customValues")) {
+    if (row.data.organizerId === organizerId) add(row);
+    else block("identity_mismatch", row.path);
   }
   for (const collection of DIRECT_SALES_COLLECTIONS) {
     for (const row of await scan(collection, organizerId)) {
@@ -312,7 +313,26 @@ export async function inventorySalesOrganizer(port: InventoryPort,
     "assistant_budget_metadata_unverified"]) {
     block(code, `external:${code}:${organizerId}`);
   }
-  const sorted = [...items.values()].sort((a, b) => a.path.localeCompare(b.path));
+  // A later plan must still be able to attribute every surviving dependent.
+  // Keep each attribution parent until all of its children have been drained.
+  const deletionOrder = (item: InventoryItem): number => {
+    const collection = collectionOf(item.path);
+    if (collection === "salesDemoReceipts") return 0;
+    if (collection === "salesDemoSessions") return 1;
+    if (collection === "salesDemoInvitations") return 2;
+    if (collection === "salesDemoBlueprints") return 3;
+    if (collection === "salesContacts") return 4;
+    if (collection === "salesContactRelationships") return 5;
+    if (collection === "salesImportJobs") {
+      return item.path.split("/").length === 4 ? 6 : 7;
+    }
+    if (collection === "organizerSalesAccounts") {
+      return item.path.split("/").length === 4 ? 8 : 10;
+    }
+    return 9;
+  };
+  const sorted = [...items.values()].sort((a, b) =>
+    deletionOrder(a) - deletionOrder(b) || a.path.localeCompare(b.path));
   const uniqueBlockers = [...new Map(blockers.map((item) =>
     [`${item.code}:${item.fingerprint}`, item])).values()].sort((a, b) =>
     a.code.localeCompare(b.code) || a.fingerprint.localeCompare(b.fingerprint));

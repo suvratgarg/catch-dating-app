@@ -2,7 +2,8 @@
 import {strict as assert} from "node:assert";
 import {test} from "node:test";
 import type {SalesPrincipal} from "../sales/types";
-import {type SalesPrivacyInventory} from "./inventory";
+import {inventorySalesOrganizer, type InventoryPort,
+  type SalesPrivacyInventory} from "./inventory";
 import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead,
   privacyHash} from "./model";
 import {applySalesPrivacyBatch, previewSalesPrivacyPlan,
@@ -16,6 +17,7 @@ class FakeRef {
     return this.path.split("/").at(-1)!;
   }
   async get() {
+    this.db.onRead?.(this.path);
     return this.db.snapshot(this.path);
   }
   collection(name: string) {
@@ -77,6 +79,7 @@ class FakeTx {
 }
 class FakeDb {
   docs = new Map<string, Data>();
+  onRead?: (path: string) => void;
   collection(name: string) {
     return new FakeCollection(this, name);
   }
@@ -93,6 +96,23 @@ class FakeDb {
     const result = await run(tx);
     tx.commit(); return result;
   }
+}
+async function liveInventory(db: FakeDb, organizerId: string) {
+  const port: InventoryPort = {
+    get: async (path) => {
+      const data = db.docs.get(path);
+      return data ? {path, data: structuredClone(data)} : null;
+    },
+    scan: async (collection, id) => [...db.docs].filter(([path, data]) =>
+      path.startsWith(`${collection}/`) && path.split("/").length === 2 &&
+      (!id || data.organizerId === id)).map(([path, data]) =>
+      ({path, data: structuredClone(data)})),
+    scanChild: async (parent, child) => [...db.docs]
+      .filter(([path]) => path.startsWith(`${parent}/${child}/`) &&
+        path.split("/").length === 4)
+      .map(([path, data]) => ({path, data: structuredClone(data)})),
+  };
+  return inventorySalesOrganizer(port, organizerId);
 }
 const principal: SalesPrincipal = {uid: "owner-a", roles: ["adminOwner"]};
 const at = "2026-09-28T10:00:00.000Z";
@@ -291,4 +311,105 @@ test("overflow and policy drift fail closed before deletion", async () => {
       restrictionRevision: preview.restrictionRevision,
       expectedActivePlanId: preview.activePlanId, policyHash: preview.policyHash, inventoryHash: overflow.inventoryHash}),
   /exceeded its bound/u);
+});
+
+test("partial cleanup replans after policy and source drift without orphaning children", async () => {
+  const h = deps();
+  const privateRow = (path: string, data: Data) =>
+    h.db.docs.set(path, {schemaVersion: 1,
+      classification: "sales_private", ...data});
+  privateRow("organizerSalesAccounts/org-a", {organizerId: "org-a",
+    summary: "private"});
+  privateRow("salesTasks/task-a", {organizerId: "org-a", title: "first"});
+  privateRow("salesImportJobs/job-a", {
+    accountEffects: [{organizerId: "org-a"}]});
+  privateRow("salesDemoBlueprints/blueprint-a", {organizerId: "org-a"});
+  privateRow("salesDemoInvitations/invitation-a", {
+    blueprintId: "blueprint-a"});
+  privateRow("salesDemoSessions/session-a", {
+    invitationId: "invitation-a"});
+  privateRow("salesContactRelationships/rel-a", {organizerId: "org-a",
+    contactId: "contact-shared"});
+  privateRow("salesContactRelationships/rel-b", {organizerId: "org-b",
+    contactId: "contact-shared"});
+  privateRow("salesContacts/contact-shared", {contactId: "contact-shared"});
+  privateRow("salesHostSettlementAttestations/finance-a", {
+    organizerId: "org-a", settlementReference: "retain"});
+  for (let index = 0; index < 25; index++) {
+    privateRow(`organizerSalesAccounts/org-a/customValues/value-${index}`,
+      {organizerId: "org-a"});
+    privateRow(`salesImportJobs/job-a/rows/row-${index}`,
+      {organizerId: "org-a"});
+    privateRow(`salesDemoReceipts/receipt-${index}`,
+      {targetId: "session-a"});
+  }
+  h.value.inventory = (_port, id) => liveInventory(h.db, id);
+  const policyInput = {requestId: "policy-req-0001", expectedRevision: 0,
+    sourceReference: "Reviewed internal policy", sourceHash: "a".repeat(64),
+    financeReason: "Finance reconciliation open",
+    auditReason: "Audit review open"};
+  await reviewSalesPrivacyPolicy(h.value, principal, policyInput);
+  await restrictSalesOrganizer(h.value, principal, {organizerId: "org-a",
+    requestId: "restrict-0001", reason: "Approved private processing hold"});
+  const preview = await previewSalesPrivacyPlan(h.value, principal,
+    {organizerId: "org-a"});
+  const reviewed = await reviewSalesPrivacyPlan(h.value, principal,
+    {organizerId: "org-a", requestId: "plan-review-0001",
+      restrictionRevision: preview.restrictionRevision,
+      expectedActivePlanId: preview.activePlanId,
+      policyHash: preview.policyHash, inventoryHash: preview.inventoryHash});
+  const first = await applySalesPrivacyBatch(h.value, principal,
+    {organizerId: "org-a", planId: reviewed.plan.planId,
+      requestId: "batch-req-0001", expectedCursor: 0});
+  assert.equal(first.batch.nextCursor, 20);
+  assert.ok(h.db.docs.has("salesDemoSessions/session-a"));
+  assert.ok(h.db.docs.has("salesImportJobs/job-a"));
+  assert.ok(h.db.docs.has("organizerSalesAccounts/org-a"));
+  h.db.docs.get("salesTasks/task-a")!.title = "revised before replan";
+  await reviewSalesPrivacyPolicy(h.value, principal, {...policyInput,
+    requestId: "policy-req-0002", expectedRevision: 1,
+    sourceHash: "b".repeat(64)});
+  await assert.rejects(applySalesPrivacyBatch(h.value, principal,
+    {organizerId: "org-a", planId: reviewed.plan.planId,
+      requestId: "old-batch-0002", expectedCursor: 20}),
+  /Privacy plan or retention policy changed/u);
+  const fresh = await previewSalesPrivacyPlan(h.value, principal,
+    {organizerId: "org-a"});
+  assert.equal(fresh.activePlanId, reviewed.plan.planId);
+  const replacement = await reviewSalesPrivacyPlan(h.value, principal,
+    {organizerId: "org-a", requestId: "plan-review-0002",
+      restrictionRevision: fresh.restrictionRevision,
+      expectedActivePlanId: fresh.activePlanId,
+      policyHash: fresh.policyHash, inventoryHash: fresh.inventoryHash});
+  assert.notEqual(replacement.plan.planId, reviewed.plan.planId);
+  let cursor = 0;
+  for (let batch = 0; batch < 10; batch++) {
+    const result = await applySalesPrivacyBatch(h.value, principal,
+      {organizerId: "org-a", planId: replacement.plan.planId,
+        requestId: `batch-req-new-${batch}`, expectedCursor: cursor});
+    cursor = result.batch.nextCursor;
+    if (cursor === result.batch.itemCount) break;
+  }
+  assert.equal(cursor, replacement.plan.itemCount);
+  assert.equal(h.db.docs.has("organizerSalesAccounts/org-a"), false);
+  assert.equal(h.db.docs.has("salesImportJobs/job-a"), false);
+  assert.equal(h.db.docs.has("salesDemoBlueprints/blueprint-a"), false);
+  assert.equal(h.db.docs.has("salesDemoSessions/session-a"), false);
+  assert.equal(h.db.docs.has("salesContactRelationships/rel-a"), false);
+  assert.equal(h.db.docs.has("salesContacts/contact-shared"), true);
+  assert.equal(h.db.docs.has("salesContactRelationships/rel-b"), true);
+  assert.equal(h.db.docs.has("salesHostSettlementAttestations/finance-a"), true);
+  assert.equal([...h.db.docs.keys()].some((path) =>
+    path.startsWith("organizerSalesAccounts/org-a/customValues/") ||
+    path.startsWith("salesImportJobs/job-a/rows/") ||
+    path.startsWith("salesDemoReceipts/")), false);
+});
+
+test("unrestricted case read rechecks current owner after reading policy", async () => {
+  const h = deps();
+  h.db.onRead = (path) => {
+    if (path === "salesPrivacyPolicies/current") h.revoke();
+  };
+  await assert.rejects(getSalesPrivacyCase(h.value, principal,
+    {organizerId: "org-a"}), /owner role revoked/u);
 });

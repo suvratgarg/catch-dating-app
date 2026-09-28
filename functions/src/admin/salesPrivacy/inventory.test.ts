@@ -34,15 +34,55 @@ test("inventory deletes only the target relationship and preserves a shared cont
   ]);
   const result = await inventorySalesOrganizer(port, "org-a");
   assert.deepEqual(result.items.map((item) => item.path), [
-    "organizerSalesAccounts/org-a",
-    "organizerSalesAccounts/org-a/customValues/sales.rank",
     "salesContactRelationships/rel-a",
+    "organizerSalesAccounts/org-a/customValues/sales.rank",
+    "organizerSalesAccounts/org-a",
   ]);
   assert.equal(result.items.some((item) => item.path ===
     "salesContacts/contact-1"), false);
   assert.equal(result.counts.unresolved >= 3, true);
   assert.equal((await inventorySalesOrganizer(port, "org-a")).inventoryHash,
     result.inventoryHash);
+});
+
+test("inventory drains attribution dependents before their parents", async () => {
+  const rows = [
+    privateRow("organizerSalesAccounts/org-a", {organizerId: "org-a"}),
+    privateRow("salesImportJobs/job-a", {
+      accountEffects: [{organizerId: "org-a"}]}),
+    privateRow("salesDemoBlueprints/blueprint-a", {organizerId: "org-a"}),
+    privateRow("salesDemoInvitations/invitation-a", {
+      blueprintId: "blueprint-a"}),
+    privateRow("salesDemoSessions/session-a", {
+      invitationId: "invitation-a"}),
+    privateRow("salesDemoReceipts/receipt-a", {targetId: "session-a"}),
+    ...Array.from({length: 25}, (_, index) => privateRow(
+      `organizerSalesAccounts/org-a/customValues/value-${index}`,
+      {organizerId: "org-a"})),
+    ...Array.from({length: 25}, (_, index) => privateRow(
+      `salesImportJobs/job-a/rows/row-${index}`,
+      {organizerId: "org-a"})),
+  ];
+  const result = await inventorySalesOrganizer(memory(rows), "org-a");
+  const paths = result.items.map((item) => item.path);
+  const before = (child: string, parent: string) =>
+    assert.ok(paths.indexOf(child) < paths.indexOf(parent),
+      `${child} must precede ${parent}`);
+  before("salesDemoReceipts/receipt-a", "salesDemoSessions/session-a");
+  before("salesDemoSessions/session-a", "salesDemoInvitations/invitation-a");
+  before("salesDemoInvitations/invitation-a", "salesDemoBlueprints/blueprint-a");
+  for (let index = 0; index < 25; index++) {
+    before(`organizerSalesAccounts/org-a/customValues/value-${index}`,
+      "organizerSalesAccounts/org-a");
+    before(`salesImportJobs/job-a/rows/row-${index}`,
+      "salesImportJobs/job-a");
+  }
+  assert.equal(result.overflow, false);
+  const orphanedChildren = rows.filter((row) =>
+    row.path.startsWith("organizerSalesAccounts/org-a/customValues/"));
+  const orphaned = await inventorySalesOrganizer(memory(orphanedChildren),
+    "org-a");
+  assert.equal(orphaned.items.length, 25);
 });
 
 test("inventory includes nested import originals but quarantines mixed jobs and receipts", async () => {

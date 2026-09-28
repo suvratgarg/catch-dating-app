@@ -453,6 +453,7 @@ export async function getSalesPrivacyCase(deps: PrivacyDeps,
     financeReason: policy.financeReason,
     auditReason: policy.auditReason} : null;
   if (!restriction) {
+    await authorize(deps, principal);
     return {organizerId, restricted: false, plan: null, policy: safePolicy,
       completeDeletion: false};
   }
