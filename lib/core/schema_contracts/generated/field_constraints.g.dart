@@ -120105,6 +120105,148 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programRoomBlockDocumentAssignedCount = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.assignedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const programRoomBlockDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRoomBlockDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRoomBlockDocumentEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRoomBlockDocumentEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRoomBlockDocumentHeldForGroupIds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.heldForGroupIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const programRoomBlockDocumentHeldForGroupIdsItems = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.heldForGroupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentHotelId = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentLabel = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentNotes = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.notes',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentRevision = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programRoomBlockDocumentRoomType = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.roomType',
+    maxLength: 140,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRoomBlockDocumentStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRoomBlockDocumentTotalRooms = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.totalRooms',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const programRoomBlockDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRoomBlockDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programStaffGrantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.createdAt._nanoseconds',
     required: true,
@@ -120661,6 +120803,164 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStayDocumentEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStayDocumentGuestId = CatchContractFieldConstraints(
+    path: 'programStayDocument.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentHotelArrivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.hotelArrivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentHotelArrivedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.hotelArrivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStayDocumentHotelId = CatchContractFieldConstraints(
+    path: 'programStayDocument.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentNotes = CatchContractFieldConstraints(
+    path: 'programStayDocument.notes',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programStayDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programStayDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentRevision = CatchContractFieldConstraints(
+    path: 'programStayDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStayDocumentRoomBlockId = CatchContractFieldConstraints(
+    path: 'programStayDocument.roomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentRoomLabel = CatchContractFieldConstraints(
+    path: 'programStayDocument.roomLabel',
+    maxLength: 40,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentRoomReadyAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.roomReadyAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentRoomReadyAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.roomReadyAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStayDocumentSource = CatchContractFieldConstraints(
+    path: 'programStayDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manual', 'import', 'planner'],
+  );
+
+  static const programStayDocumentStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStayDocumentStatus = CatchContractFieldConstraints(
+    path: 'programStayDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['held', 'confirmed', 'checkedIn', 'checkedOut', 'cancelled'],
+  );
+
+  static const programStayDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const programTransportPlanCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
@@ -165380,6 +165680,25 @@ abstract final class CatchContractConstraints {
     'programPickupPointDocument.terminal': programPickupPointDocumentTerminal,
     'programPickupPointDocument.updatedAt._nanoseconds': programPickupPointDocumentUpdatedAtNanoseconds,
     'programPickupPointDocument.updatedAt._seconds': programPickupPointDocumentUpdatedAtSeconds,
+    'programRoomBlockDocument.assignedCount': programRoomBlockDocumentAssignedCount,
+    'programRoomBlockDocument.createdAt._nanoseconds': programRoomBlockDocumentCreatedAtNanoseconds,
+    'programRoomBlockDocument.createdAt._seconds': programRoomBlockDocumentCreatedAtSeconds,
+    'programRoomBlockDocument.endsAt._nanoseconds': programRoomBlockDocumentEndsAtNanoseconds,
+    'programRoomBlockDocument.endsAt._seconds': programRoomBlockDocumentEndsAtSeconds,
+    'programRoomBlockDocument.heldForGroupIds': programRoomBlockDocumentHeldForGroupIds,
+    'programRoomBlockDocument.heldForGroupIds.items': programRoomBlockDocumentHeldForGroupIdsItems,
+    'programRoomBlockDocument.hotelId': programRoomBlockDocumentHotelId,
+    'programRoomBlockDocument.label': programRoomBlockDocumentLabel,
+    'programRoomBlockDocument.notes': programRoomBlockDocumentNotes,
+    'programRoomBlockDocument.organizerId': programRoomBlockDocumentOrganizerId,
+    'programRoomBlockDocument.programId': programRoomBlockDocumentProgramId,
+    'programRoomBlockDocument.revision': programRoomBlockDocumentRevision,
+    'programRoomBlockDocument.roomType': programRoomBlockDocumentRoomType,
+    'programRoomBlockDocument.startsAt._nanoseconds': programRoomBlockDocumentStartsAtNanoseconds,
+    'programRoomBlockDocument.startsAt._seconds': programRoomBlockDocumentStartsAtSeconds,
+    'programRoomBlockDocument.totalRooms': programRoomBlockDocumentTotalRooms,
+    'programRoomBlockDocument.updatedAt._nanoseconds': programRoomBlockDocumentUpdatedAtNanoseconds,
+    'programRoomBlockDocument.updatedAt._seconds': programRoomBlockDocumentUpdatedAtSeconds,
     'programStaffGrantDocument.createdAt._nanoseconds': programStaffGrantDocumentCreatedAtNanoseconds,
     'programStaffGrantDocument.createdAt._seconds': programStaffGrantDocumentCreatedAtSeconds,
     'programStaffGrantDocument.createdBy': programStaffGrantDocumentCreatedBy,
@@ -165453,6 +165772,28 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
+    'programStayDocument.createdAt._nanoseconds': programStayDocumentCreatedAtNanoseconds,
+    'programStayDocument.createdAt._seconds': programStayDocumentCreatedAtSeconds,
+    'programStayDocument.endsAt._nanoseconds': programStayDocumentEndsAtNanoseconds,
+    'programStayDocument.endsAt._seconds': programStayDocumentEndsAtSeconds,
+    'programStayDocument.guestId': programStayDocumentGuestId,
+    'programStayDocument.hotelArrivedAt._nanoseconds': programStayDocumentHotelArrivedAtNanoseconds,
+    'programStayDocument.hotelArrivedAt._seconds': programStayDocumentHotelArrivedAtSeconds,
+    'programStayDocument.hotelId': programStayDocumentHotelId,
+    'programStayDocument.notes': programStayDocumentNotes,
+    'programStayDocument.organizerId': programStayDocumentOrganizerId,
+    'programStayDocument.programId': programStayDocumentProgramId,
+    'programStayDocument.revision': programStayDocumentRevision,
+    'programStayDocument.roomBlockId': programStayDocumentRoomBlockId,
+    'programStayDocument.roomLabel': programStayDocumentRoomLabel,
+    'programStayDocument.roomReadyAt._nanoseconds': programStayDocumentRoomReadyAtNanoseconds,
+    'programStayDocument.roomReadyAt._seconds': programStayDocumentRoomReadyAtSeconds,
+    'programStayDocument.source': programStayDocumentSource,
+    'programStayDocument.startsAt._nanoseconds': programStayDocumentStartsAtNanoseconds,
+    'programStayDocument.startsAt._seconds': programStayDocumentStartsAtSeconds,
+    'programStayDocument.status': programStayDocumentStatus,
+    'programStayDocument.updatedAt._nanoseconds': programStayDocumentUpdatedAtNanoseconds,
+    'programStayDocument.updatedAt._seconds': programStayDocumentUpdatedAtSeconds,
     'programTransportPlanCallableResponse.accessExpiresAtMillis': programTransportPlanCallableResponseAccessExpiresAtMillis,
     'programTransportPlanCallableResponse.generatedAtMillis': programTransportPlanCallableResponseGeneratedAtMillis,
     'programTransportPlanCallableResponse.groups': programTransportPlanCallableResponseGroups,

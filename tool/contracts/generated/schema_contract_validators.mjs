@@ -548,6 +548,8 @@ import {
   programStaffInviteDocumentSchema,
   programPickupPointDocumentSchema,
   programHotelDocumentSchema,
+  programStayDocumentSchema,
+  programRoomBlockDocumentSchema,
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
   organizerMomentDocumentSchema,
@@ -1678,6 +1680,8 @@ export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDo
 export const validateProgramStaffInviteDocument = ajv.compile(programStaffInviteDocumentSchema);
 export const validateProgramPickupPointDocument = ajv.compile(programPickupPointDocumentSchema);
 export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
+export const validateProgramStayDocument = ajv.compile(programStayDocumentSchema);
+export const validateProgramRoomBlockDocument = ajv.compile(programRoomBlockDocumentSchema);
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);

@@ -1,0 +1,24 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "guestId": "g-1",
+  "hotelId": "hotel-1",
+  "roomBlockId": "block-1",
+  "roomLabel": null,
+  "startsAt": null,
+  "endsAt": null,
+  "status": "overbooked",
+  "roomReadyAt": null,
+  "hotelArrivedAt": null,
+  "notes": null,
+  "source": "manual",
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1
+}
