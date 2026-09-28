@@ -294,7 +294,9 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       ? hostResponseQueryCapability(
                           context.l10n,
                           versionId: value.editor.form.activeVersionId!,
-                          offersEnabled: privateEventSetupAvailable(),
+                          offersEnabled: ref.watch(
+                            privateEventSetupAvailableProvider,
+                          ),
                         )
                       : null,
                 ),
@@ -311,7 +313,9 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       definition: value.editor.definition,
                       notifier: notifier,
                       accountId: responseAccountId,
-                      enableEventTargetSettings: privateEventSetupAvailable(),
+                      enableEventTargetSettings: ref.watch(
+                        privateEventSetupAvailableProvider,
+                      ),
                       hasPublishedVersion:
                           value.editor.form.activeVersionId != null,
                     ),

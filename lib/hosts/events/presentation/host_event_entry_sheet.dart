@@ -25,7 +25,7 @@ Future<HostEventEntrySelection?> showHostEventEntrySheet({
     builder: (sheetContext) => Consumer(
       builder: (context, ref, _) => HostEventEntrySheet(
         state: state,
-        readPrivateInventory: privateEventSetupAvailable()
+        readPrivateInventory: ref.watch(privateEventSetupAvailableProvider)
             ? PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).list
             : null,
         onDeleteDraft:

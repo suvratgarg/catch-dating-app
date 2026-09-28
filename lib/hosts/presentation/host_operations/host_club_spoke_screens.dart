@@ -1,9 +1,5 @@
 part of '../host_operations_screen.dart';
 
-// The current updateOrganizer contract rejects progressive default fields.
-// Show these controls only with the versioned defaults save command.
-bool _progressiveEventDefaultsAvailable() => false;
-
 class HostClubSpokeResolver extends ConsumerWidget {
   const HostClubSpokeResolver._({
     required this.clubId,
@@ -245,25 +241,27 @@ class _HostClubDefaultsEditorState
   }
 }
 
-class HostClubReadOnlyEventDefaults extends StatelessWidget {
+class HostClubReadOnlyEventDefaults extends ConsumerWidget {
   const HostClubReadOnlyEventDefaults._({required this.club});
 
   final Club club;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final policy = club.hostDefaults.eventPolicy;
+    final progressiveDefaultsAvailable =
+        ref.watch(progressiveEventDefaultsAvailableProvider);
     return CatchSection.fieldRows(
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
-        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+        if (progressiveDefaultsAvailable) CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsPrivateEventCity,
           body: club.location,
           icon: CatchIcons.locationOnOutlined,
         ),
-        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+        if (progressiveDefaultsAvailable) CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsPrivateEventTimezone,
           body: club.hostDefaults.timezone ??

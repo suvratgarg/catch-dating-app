@@ -50,6 +50,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_defaults_saver.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_publication_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
