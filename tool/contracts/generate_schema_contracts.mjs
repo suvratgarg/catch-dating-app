@@ -2399,6 +2399,27 @@ const schemaSpecs = [
       "getProgramHotelInboundCallablePayload.ts",
   },
   {
+    name: "GetProgramHotelRoomsCallablePayload",
+    source: "callables/get_program_hotel_rooms_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getProgramHotelRoomsCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramStayCallablePayload",
+    source: "callables/upsert_program_stay_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramStayCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramRoomBlockCallablePayload",
+    source: "callables/upsert_program_room_block_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramRoomBlockCallablePayload.ts",
+  },
+  {
     name: "ListTransportVendorsCallablePayload",
     source: "callables/list_transport_vendors_payload.schema.json",
     typeOutput:
@@ -2543,6 +2564,13 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "programHotelInboundCallableResponse.ts",
+  },
+  {
+    name: "ProgramHotelRoomsCallableResponse",
+    source: "callable_responses/program_hotel_rooms_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHotelRoomsCallableResponse.ts",
   },
   {
     name: "RecordProgramDoorJournalCallableResponse",

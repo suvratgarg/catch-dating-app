@@ -172886,6 +172886,228 @@ export const getProgramHotelInboundCallablePayloadSchema = {
   }
 };
 
+export const getProgramHotelRoomsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "callables/get_program_hotel_rooms_payload.schema.json",
+  "title": "GetProgramHotelRoomsCallablePayload",
+  "description": "Hotel-scoped accommodation view: room blocks with computed capacity, live stays, and guests routed to the hotel with no live stay. Requires the caller's hotelDesk duty to cover the hotel, or program coordinator/manager access.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const upsertProgramStayCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "callables/upsert_program_stay_payload.schema.json",
+  "title": "UpsertProgramStayCallablePayload",
+  "description": "Create or update one guest's stay at a hotel. hotelDesk callers may only touch stays at hotels their duty covers; program coordinators and managers are unscoped. Null fields clear the stored value; omitted fields keep it. Room-block capacity is re-counted from live stays server-side, so a stale client never overbooks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guestId",
+    "hotelId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "stayId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Existing stay to update. Omit to create a new stay row."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Required on updates; the write fails when the stored revision moved."
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Hotel the stay is at. Immutable on existing stays — cancel and recreate to move a guest."
+    },
+    "roomBlockId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Block to draw capacity from. Null keeps/creates an ad-hoc stay outside any block. The write fails when the block has no remaining rooms."
+    },
+    "roomLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "Room or suite label shared by roommates (e.g. \"312\")."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "held",
+        "confirmed",
+        "checkedIn",
+        "checkedOut",
+        "cancelled"
+      ],
+      "description": "Omitted on create defaults to held; on update keeps the stored status."
+    },
+    "startsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Planned check-in; null while the stay is undated."
+    },
+    "endsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Planned check-out; null while the stay is undated."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "markRoomReady": {
+      "type": "boolean",
+      "description": "When true, stamps roomReadyAt with the server time."
+    },
+    "markHotelArrived": {
+      "type": "boolean",
+      "description": "When true, stamps hotelArrivedAt with the server time."
+    }
+  }
+};
+
+export const upsertProgramRoomBlockCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "callables/upsert_program_room_block_payload.schema.json",
+  "title": "UpsertProgramRoomBlockCallablePayload",
+  "description": "Create or update reserved room inventory at a program hotel. Coordinator/manager only — hotelDesk consumes inventory but cannot define it. totalRooms may not be lowered below the block's live consuming stays.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId",
+    "label",
+    "totalRooms",
+    "heldForGroupIds"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "roomBlockId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Existing block to update. Omit to create a new block."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Required on updates; the write fails when the stored revision moved."
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Hotel the block is at. Immutable on existing blocks."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Human label for the block (e.g. \"Bride family\", \"Floor 3\")."
+    },
+    "roomType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Optional room class (Deluxe, Suite). Null when the block is type-agnostic."
+    },
+    "totalRooms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "heldForGroupIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Guest groups this block is earmarked for; empty for general inventory."
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Block window start. Required on create; omit on update to keep the stored value."
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Block window end. Required on create; omit on update to keep the stored value."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
 export const listTransportVendorsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_transport_vendors_payload.schema.json",
@@ -175738,6 +175960,263 @@ export const programHotelInboundCallableResponseSchema = {
       ],
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+};
+
+export const programHotelRoomsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "callable_responses/program_hotel_rooms_response.schema.json",
+  "title": "ProgramHotelRoomsCallableResponse",
+  "description": "Hotel desk room-management view. Counts-only block capacity plus stay rows carrying display names already authorized to the caller's duty. Unplaced guests are program guests routed to this hotel (inbound legs or prior stays) with no capacity-consuming stay.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId",
+    "hotelName",
+    "accessExpiresAtMillis",
+    "generatedAtMillis",
+    "roomBlocks",
+    "stays",
+    "unplacedGuests"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999
+    },
+    "roomBlocks": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roomBlockId",
+          "label",
+          "roomType",
+          "totalRooms",
+          "assignedCount",
+          "remainingRooms",
+          "heldForGroupIds",
+          "startsAtMillis",
+          "endsAtMillis"
+        ],
+        "properties": {
+          "roomBlockId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "roomType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "totalRooms": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "assignedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "remainingRooms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "heldForGroupIds": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 253402300799999
+          }
+        }
+      }
+    },
+    "stays": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stayId",
+          "guestId",
+          "guestDisplayName",
+          "roomBlockId",
+          "roomLabel",
+          "status",
+          "startsAtMillis",
+          "endsAtMillis",
+          "roomReadyAtMillis",
+          "hotelArrivedAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "stayId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestDisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roomBlockId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "roomLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "held",
+              "confirmed",
+              "checkedIn",
+              "checkedOut",
+              "cancelled"
+            ]
+          },
+          "startsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "endsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "roomReadyAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "hotelArrivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "unplacedGuests": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "suggestedRoomBlockId"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "suggestedRoomBlockId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180,
+            "description": "Block the allocation policy would draw from for this guest; null when no block at this hotel has capacity."
+          }
+        }
+      }
     }
   }
 };

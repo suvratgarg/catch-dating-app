@@ -717,6 +717,11 @@ export {
   listProgramTrips,
 } from "./transport/programDispatch";
 export {
+  getProgramHotelRooms,
+  upsertProgramStay,
+  upsertProgramRoomBlock,
+} from "./programs/programRooms";
+export {
   refreshProgramTravelLeg,
   refreshProgramFlightStatuses,
 } from "./transport/programFlightRefresh";
