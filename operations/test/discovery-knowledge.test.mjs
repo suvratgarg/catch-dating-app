@@ -6,6 +6,7 @@ import test from "node:test";
 import {FileOperationsStore} from "../src/platform/storage/file-store.mjs";
 import {
   continueDiscoveryAfterReview,
+  discoveryReviewBinding,
   readDiscoveryKnowledge,
   recordDiscoveryCandidates,
   recordDiscoveryCellReview,
@@ -58,6 +59,7 @@ test("the 25th retained identity pauses before candidate 26, including after res
     store: restarted, market: "sample-market", now,
     receipt: {
       decision: "continue", reviewRevision: pause.reviewRevision + 1,
+      ...discoveryReviewBinding(replay.state),
       candidateFingerprint: pause.candidateFingerprint,
       retainedCount: pause.retainedCount, reviewerId: "reviewer",
       inputRefs: ["synthetic-review"],
@@ -70,6 +72,7 @@ test("the 25th retained identity pauses before candidate 26, including after res
     store: restarted, market: "sample-market", now,
     receipt: {
       decision: "continue", reviewRevision: pause.reviewRevision,
+      ...discoveryReviewBinding(replay.state),
       candidateFingerprint: pause.candidateFingerprint,
       retainedCount: pause.retainedCount, reviewerId: "reviewer",
       inputRefs: ["synthetic-review"],
@@ -82,6 +85,7 @@ test("the 25th retained identity pauses before candidate 26, including after res
     store: restarted, market: "sample-market", now,
     receipt: {
       decision: "continue", reviewRevision: pause.reviewRevision,
+      ...discoveryReviewBinding(replay.state),
       candidateFingerprint: pause.candidateFingerprint,
       retainedCount: pause.retainedCount, reviewerId: "reviewer",
       inputRefs: ["synthetic-review"],
@@ -126,6 +130,7 @@ test("failed checkpoint and failed continuation write replay without double coun
   const pause = processed.state.pause;
   const receipt = {
     decision: "continue", reviewRevision: pause.reviewRevision,
+    ...discoveryReviewBinding(processed.state),
     candidateFingerprint: pause.candidateFingerprint,
     retainedCount: pause.retainedCount, reviewerId: "reviewer",
     inputRefs: ["synthetic-review"],
@@ -201,4 +206,89 @@ test("reviewed lens and leader coverage is durable", async (t) => {
   const state = await readDiscoveryKnowledge({store: restarted, market: "sample-market"});
   assert.equal(state.coverage["sample-segment"].reviewRevision, 1);
   assert.equal(state.coverage["sample-segment"].leaderCensus.status, "incomplete");
+});
+
+test("paused observations and coverage invalidate an earlier review binding", async (t) => {
+  const {store} = await fixture(t);
+  const paused = await recordDiscoveryCandidates({
+    store, market: "sample-market", candidates: [candidate(1), candidate(2)],
+    reviewEvery: 2, now,
+  });
+  const oldReceipt = {
+    decision: "continue",
+    reviewRevision: paused.state.pause.reviewRevision,
+    candidateFingerprint: paused.state.pause.candidateFingerprint,
+    retainedCount: paused.state.pause.retainedCount,
+    ...discoveryReviewBinding(paused.state),
+    reviewerId: "reviewer",
+    inputRefs: ["synthetic-review"],
+    precisionAudit: {outcome: "checked", inputRefs: ["synthetic-precision"]},
+    leaderRecallAudit: {outcome: "checked", inputRefs: ["synthetic-recall"]},
+    findings: [], changes: [],
+  };
+  await recordDiscoveryCandidates({
+    store, market: "sample-market",
+    candidates: [{...candidate(1), observationRefs: ["query:new"]}],
+    reviewEvery: 2, now,
+  });
+  await assert.rejects(() => continueDiscoveryAfterReview({
+    store, market: "sample-market", receipt: oldReceipt, now,
+  }), {code: "INVALID_DISCOVERY_REVIEW"});
+  await recordDiscoveryCellReview({
+    store, market: "sample-market", segment: "sample-segment", now,
+    coverage: {
+      reviewRevision: 1, reviewerId: "reviewer",
+      ruleIds: ["synthetic-coverage@1"], inputRefs: ["synthetic-query:1"],
+      lenses: {},
+      leaderCensus: {
+        status: "incomplete", candidateFingerprints: [],
+        prominenceEvidenceRefs: [], topCandidateFingerprints: [], gateOutcomes: {},
+      },
+    },
+  });
+  const current = await readDiscoveryKnowledge({store, market: "sample-market"});
+  assert.equal(current.pause.reviewRevision, oldReceipt.reviewRevision);
+  await assert.rejects(() => continueDiscoveryAfterReview({
+    store, market: "sample-market", receipt: oldReceipt, now,
+  }), {code: "INVALID_DISCOVERY_REVIEW"});
+  const accepted = await continueDiscoveryAfterReview({
+    store, market: "sample-market",
+    receipt: {...oldReceipt, ...discoveryReviewBinding(current)}, now,
+  });
+  assert.equal(accepted.state.pause, null);
+});
+
+test("lost lease cannot persist a continuation receipt or clear the pause", async (t) => {
+  const {root, store} = await fixture(t);
+  const paused = await recordDiscoveryCandidates({
+    store, market: "sample-market", candidates: [candidate(1)],
+    reviewEvery: 1, now,
+  });
+  const receipt = {
+    decision: "continue",
+    reviewRevision: paused.state.pause.reviewRevision,
+    candidateFingerprint: paused.state.pause.candidateFingerprint,
+    retainedCount: paused.state.pause.retainedCount,
+    ...discoveryReviewBinding(paused.state),
+    reviewerId: "reviewer", inputRefs: ["synthetic-review"],
+    precisionAudit: {outcome: "checked", inputRefs: ["synthetic-precision"]},
+    leaderRecallAudit: {outcome: "checked", inputRefs: ["synthetic-recall"]},
+    findings: [], changes: [],
+  };
+  const lostOwner = Object.create(store);
+  lostOwner.withFencedWrite = async (lease, leaseNow, write) => {
+    await store.releaseLease(lease);
+    return store.withFencedWrite(lease, leaseNow, write);
+  };
+  await assert.rejects(() => continueDiscoveryAfterReview({
+    store: lostOwner, market: "sample-market", receipt, now,
+  }), {code: "LEASE_LOST"});
+  assert.deepEqual(await fs.readdir(path.join(root, "idempotency")), []);
+  const restarted = await new FileOperationsStore(root).initialize();
+  const replay = await recordDiscoveryCandidates({
+    store: restarted, market: "sample-market",
+    candidates: [candidate(1), candidate(2)], reviewEvery: 1, now,
+  });
+  assert.equal(replay.state.pause.reviewRevision, paused.state.pause.reviewRevision);
+  assert.equal(replay.processed, 1);
 });

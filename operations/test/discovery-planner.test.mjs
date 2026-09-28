@@ -92,6 +92,22 @@ test("four-lens frontier keeps cap closed while leader evidence is unknown", asy
   const complete = planDiscoveryFrontier({market: "sample-market", policy, coverage});
   assert.equal(complete.cells[0].capEligible, true);
   assert.deepEqual(complete.cells[0].unknowns, []);
+  const repeatedCensus = structuredClone(coverage);
+  repeatedCensus["sample-segment"].leaderCensus.candidateFingerprints = ["one", "one"];
+  assert.equal(planDiscoveryFrontier({market: "sample-market", policy,
+    coverage: repeatedCensus}).cells[0].capEligible, false);
+  const sameLeader = structuredClone(coverage);
+  sameLeader["sample-segment"].leaderCensus.runnerUpFingerprint = "one";
+  assert.equal(planDiscoveryFrontier({market: "sample-market", policy,
+    coverage: sameLeader}).cells[0].capEligible, false);
+  const repeatedTop = structuredClone(coverage);
+  repeatedTop["sample-segment"].leaderCensus.topCandidateFingerprints = ["one", "one"];
+  assert.equal(planDiscoveryFrontier({market: "sample-market", policy,
+    coverage: repeatedTop}).cells[0].capEligible, false);
+  const ungatedLeader = structuredClone(coverage);
+  ungatedLeader["sample-segment"].leaderCensus.topCandidateFingerprints = ["two", "one"];
+  assert.equal(planDiscoveryFrontier({market: "sample-market", policy,
+    coverage: ungatedLeader}).cells[0].capEligible, false);
 
   const configured = await planDiscoveryQueries({
     market: "mumbai",

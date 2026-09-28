@@ -213,23 +213,43 @@ export function planDiscoveryFrontier({market, policy, coverage = {}}) {
         unknowns.push("source_diversity_unproven");
       }
       const census = observed?.leaderCensus;
-      if ((census?.candidateFingerprints?.length ?? 0) <
-        policy.minimumCensusSize) unknowns.push("leader_set_incomplete");
+      const censusIds = Array.isArray(census?.candidateFingerprints) ?
+        census.candidateFingerprints : [];
+      const uniqueCensus = new Set(censusIds);
+      if (censusIds.some((id) => typeof id !== "string" || id.length === 0) ||
+        uniqueCensus.size < policy.minimumCensusSize ||
+        uniqueCensus.size !== censusIds.length) {
+        unknowns.push("leader_set_incomplete");
+      }
       if (!Array.isArray(census?.prominenceEvidenceRefs) ||
         census.prominenceEvidenceRefs.length === 0) {
         unknowns.push("leader_prominence_unproven");
       }
-      if (!census?.presumedLeaderFingerprint ||
-        !census?.runnerUpFingerprint) unknowns.push("leader_order_unknown");
+      if (typeof census?.presumedLeaderFingerprint !== "string" ||
+        census.presumedLeaderFingerprint.length === 0 ||
+        typeof census?.runnerUpFingerprint !== "string" ||
+        census.runnerUpFingerprint.length === 0 ||
+        census.presumedLeaderFingerprint === census.runnerUpFingerprint ||
+        !uniqueCensus.has(census.presumedLeaderFingerprint) ||
+        !uniqueCensus.has(census.runnerUpFingerprint)) {
+        unknowns.push("leader_order_unknown");
+      }
       if (census?.stabilityConfirmed !== true) {
         unknowns.push("leader_stability_unproven");
       }
-      const top = census?.topCandidateFingerprints ?? [];
+      const top = Array.isArray(census?.topCandidateFingerprints) ?
+        census.topCandidateFingerprints : [];
+      const uniqueTop = new Set(top);
       const outcomes = census?.gateOutcomes ?? {};
       const terminal = new Set(["pass", "benchmark_pass", "reject"]);
-      if (top.length < policy.topLeaderGateCount ||
+      if (top.some((id) => typeof id !== "string" || id.length === 0) ||
+        top.length < policy.topLeaderGateCount ||
+        uniqueTop.size !== top.length ||
+        top[0] !== census?.presumedLeaderFingerprint ||
+        (policy.topLeaderGateCount > 1 &&
+          top[1] !== census?.runnerUpFingerprint) ||
         top.slice(0, policy.topLeaderGateCount).some((id) =>
-          !census?.candidateFingerprints?.includes(id)) ||
+          !uniqueCensus.has(id)) ||
         top.slice(0, policy.topLeaderGateCount).some((id) =>
           !terminal.has(outcomes[id]?.outcome) ||
           !Array.isArray(outcomes[id]?.inputRefs) ||

@@ -27,6 +27,23 @@ export async function readDiscoveryKnowledge({store, market}) {
   return structuredClone(state);
 }
 
+export function discoveryReviewBinding(state) {
+  invariant(state?.pause && Number.isSafeInteger(state.revision),
+    "DISCOVERY_NOT_PAUSED", "A paused discovery ledger is required for review.");
+  return {
+    knowledgeRevision: state.revision,
+    knowledgeHash: hashValue({
+      market: state.market,
+      revision: state.revision,
+      retainedCount: state.retainedCount,
+      batchRetained: state.batchRetained,
+      pause: state.pause,
+      candidates: state.candidates,
+      coverage: state.coverage,
+    }),
+  };
+}
+
 export async function recordDiscoveryCandidates({
   store, market, candidates, reviewEvery, now, owner = "discovery-worker",
 }) {
@@ -137,14 +154,15 @@ export async function continueDiscoveryAfterReview({
     }
     invariant(state.pause, "DISCOVERY_NOT_PAUSED",
       "No retained-row review is awaiting continuation.");
-    assertReviewReceipt(receipt, state.pause);
-    const key = continuationKey(market, state.pause.reviewRevision);
+    assertReviewReceipt(receipt, state);
+    const key = continuationKey(market, receipt);
     const receiptHash = hashValue(receipt);
-    const result = await store.recordIdempotency(key, {
-      receiptHash,
-      receipt: structuredClone(receipt),
-      recordedAt: now,
-    });
+    const result = await store.withFencedWrite(lease, leaseNow(), () =>
+      store.recordIdempotency(key, {
+        receiptHash,
+        receipt: structuredClone(receipt),
+        recordedAt: now,
+      }));
     invariant(result.record.receiptHash === receiptHash,
       "DISCOVERY_REVIEW_CONFLICT",
       "A different review already controls this pause.");
@@ -249,11 +267,15 @@ function assertCoverage(value) {
   "Leader census needs candidate identities, prominence evidence and gate outcomes.");
 }
 
-function assertReviewReceipt(receipt, pause) {
+function assertReviewReceipt(receipt, state) {
+  const pause = state.pause;
+  const binding = discoveryReviewBinding(state);
   invariant(receipt && receipt.decision === "continue" &&
     receipt.reviewRevision === pause.reviewRevision &&
     receipt.candidateFingerprint === pause.candidateFingerprint &&
     receipt.retainedCount === pause.retainedCount &&
+    receipt.knowledgeRevision === binding.knowledgeRevision &&
+    receipt.knowledgeHash === binding.knowledgeHash &&
     typeof receipt.reviewerId === "string" && receipt.reviewerId.length > 0 &&
     nonemptyStrings(receipt.inputRefs) &&
     validAudit(receipt.precisionAudit) &&
@@ -269,9 +291,12 @@ function assertReviewReceipt(receipt, pause) {
 async function recoverContinuation({store, state, lease, leaseNow}) {
   if (!state.pause) return state;
   const receipt = await store.getIdempotency(
-    continuationKey(state.market, state.pause.reviewRevision));
+    continuationKey(state.market, {
+      reviewRevision: state.pause.reviewRevision,
+      ...discoveryReviewBinding(state),
+    }));
   if (!receipt) return state;
-  assertReviewReceipt(receipt.receipt, state.pause);
+  assertReviewReceipt(receipt.receipt, state);
   invariant(receipt.receiptHash === hashValue(receipt.receipt),
     "DISCOVERY_REVIEW_CONFLICT", "Saved continuation receipt hash is invalid.");
   const recovered = applyContinuation(state, receipt);
@@ -346,7 +371,8 @@ function assertKnowledge(state, market) {
 
 function assertStore(store) {
   invariant(store && ["getCheckpoint", "putCheckpoint", "acquireLease",
-    "releaseLease", "getIdempotency", "recordIdempotency"].every((key) =>
+    "releaseLease", "getIdempotency", "recordIdempotency",
+    "withFencedWrite"].every((key) =>
     typeof store[key] === "function"),
   "INVALID_DISCOVERY_STORE", "Discovery needs the Operations store primitives.");
 }
@@ -355,8 +381,8 @@ function ledgerId(market) {
   return `supply-discovery-${market}`;
 }
 
-function continuationKey(market, revision) {
-  return `supply-discovery-review:${market}:${revision}`;
+function continuationKey(market, receipt) {
+  return `supply-discovery-review:${market}:${receipt.reviewRevision}:${receipt.knowledgeRevision}:${receipt.knowledgeHash}`;
 }
 
 function validSlug(value) {
