@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "35d6dff492a36834c2df3931b1adde3e3ebf1329bc338d77b3811e606e38c5ab",
-    "routeContractSha256": "4135add41ce2679e9d02a0c2332a267dfc2275629f24f4b92f9071a48ab463c1",
+    "normalizedFileSha256": "7b20a4beea7e4bec3c1db6afc5ef52e3c0384a00be842313526c0b32615e36ac",
+    "routeContractSha256": "cbe37d2e00d105525ad35a849421cac92211349f80ea2188707697d2fbb91aef",
     "goRouteCount": 108,
     "shellBranchCount": 9,
     "enumRouteCount": 93,
@@ -946,8 +946,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCustomersLegacyScreen.path",
       "renderKind": "redirect",
-      "presentationExpression": "_customersUriRedirect",
-      "presentationTarget": "_customersUriRedirect",
+      "presentationExpression": "(context,state)=>hostCustomersLegacyRedirect(state.uri)",
+      "presentationTarget": "hostCustomersLegacyRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -961,8 +961,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormsLegacyScreen.path",
       "renderKind": "redirect",
-      "presentationExpression": "_formsUriRedirect",
-      "presentationTarget": "_formsUriRedirect",
+      "presentationExpression": "(context,state)=>hostFormsLegacyRedirect(state.uri)",
+      "presentationTarget": "hostFormsLegacyRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },

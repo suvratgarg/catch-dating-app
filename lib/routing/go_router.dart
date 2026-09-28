@@ -877,7 +877,7 @@ GoRoute _hostCustomersLegacyRoute() {
   return GoRoute(
     path: Routes.hostCustomersLegacyScreen.path,
     name: Routes.hostCustomersLegacyScreen.name,
-    redirect: _customersUriRedirect,
+    redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
     routes: [
       GoRoute(path: 'new', redirect: _customersUriRedirect),
       GoRoute(path: 'audiences/new', redirect: _customersUriRedirect),
@@ -896,7 +896,7 @@ GoRoute _hostFormsLegacyRoute() {
   return GoRoute(
     path: Routes.hostFormsLegacyScreen.path,
     name: Routes.hostFormsLegacyScreen.name,
-    redirect: _formsUriRedirect,
+    redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
     routes: [
       GoRoute(path: 'new', redirect: _formsUriRedirect),
       GoRoute(path: 'responses/:responseId', redirect: _formsUriRedirect),
