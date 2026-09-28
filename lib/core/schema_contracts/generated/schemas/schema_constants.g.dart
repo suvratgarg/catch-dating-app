@@ -733,6 +733,7 @@ export 'program_pickup_point_document.g.dart';
 export 'program_staff_grant_document.g.dart';
 export 'program_staff_invite_document.g.dart';
 export 'program_staff_list_callable_response.g.dart';
+export 'program_stakeholder_counts_callable_response.g.dart';
 export 'program_station_scope_callable_payload.g.dart';
 export 'program_transport_plan_callable_response.g.dart';
 export 'program_travel_leg_document.g.dart';
