@@ -317,6 +317,9 @@ test("reviewed source history and privacy cleanup use real atomic receipts", asy
   assert.equal(listed.records.length, 1);
   assert.equal(listed.records[0].occurredAt, null);
   const ajv = new Ajv({allErrors: true, strict: false}); addFormats(ajv);
+  ajv.addSchema(JSON.parse(fs.readFileSync(path.resolve(__dirname,
+    "../../contracts/callable_responses/admin_apply_sales_privacy_batch_response.schema.json"),
+  "utf8")));
   const validateCollection = async (collection, schema) => {
     const validate = ajv.compile(JSON.parse(fs.readFileSync(path.resolve(__dirname,
       `../../contracts/firestore/${schema}.schema.json`), "utf8")));
