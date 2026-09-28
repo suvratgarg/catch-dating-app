@@ -142,6 +142,19 @@ function packet(): HistoryPacket {
         occurredAt: null, dateSourceColumn: null, dateSourceValue: null}]}]};
 }
 const firestore = (db: Db) => db as unknown as FirebaseFirestore.Firestore;
+function firstTouch(db: Db, input: HistoryPacket, raw: string,
+  occurredAt: string | null) {
+  const entry = input.rows[0].entries[0];
+  entry.sourceValue = raw;
+  entry.occurredAt = occurredAt;
+  entry.dateSourceColumn = occurredAt === null ? null : "First touch";
+  entry.dateSourceValue = occurredAt === null ? null : raw;
+  const sourceKey = `salesImportRows/${digest(
+    `${sourceId}\u0000${sourceRowId}`)}`;
+  const lineage = db.docs.get(sourceKey)!;
+  const cells = lineage.originalCells as Array<{column: string; value: string}>;
+  cells[0].value = raw;
+}
 async function apply(db: Db, input = packet(), previewHash?: string) {
   const review = previewHash ?? (await previewSalesImportHistory(firestore(db),
     owner, input)).previewHash as string;
@@ -237,6 +250,44 @@ test("unknown dates stay null, ambiguous dates cannot be promoted as exact",
     bad.rows[0].entries[0].dateSourceValue = "04/01/2026";
     await assert.rejects(previewSalesImportHistory(firestore(fixture()), owner,
       bad), /exact source timestamp/);
+  });
+
+test("exact source dates validate calendar days and timezone offsets",
+  async () => {
+    for (const [raw, normalized] of [
+      ["2024-02-29T10:00:00Z", "2024-02-29T10:00:00.000Z"],
+      ["2024-02-29T10:00:00+05:30", "2024-02-29T04:30:00.000Z"],
+    ]) {
+      const db = fixture();
+      const input = packet();
+      firstTouch(db, input, raw, normalized);
+      await apply(db, input);
+      const activity = [...db.docs.values()].find((value) =>
+        value.kind === "activity");
+      assert.equal(activity?.occurredAt, normalized);
+      assert.equal(activity?.dateCertainty, "source_exact");
+    }
+  });
+
+test("impossible source dates remain unknown rather than rolling over",
+  async () => {
+    for (const [raw, rolled] of [
+      ["2026-02-30T10:00:00Z", "2026-03-02T10:00:00.000Z"],
+      ["2025-02-29T10:00:00Z", "2025-03-01T10:00:00.000Z"],
+      ["2024-02-29T24:00:00Z", "2024-03-01T00:00:00.000Z"],
+    ]) {
+      const db = fixture();
+      const input = packet();
+      firstTouch(db, input, raw, rolled);
+      await assert.rejects(previewSalesImportHistory(firestore(db), owner,
+        input), /exact source timestamp/);
+      firstTouch(db, input, raw, null);
+      await apply(db, input);
+      const activity = [...db.docs.values()].find((value) =>
+        value.kind === "activity");
+      assert.equal(activity?.occurredAt, null);
+      assert.equal(activity?.dateCertainty, "unknown");
+    }
   });
 
 test("non-owner, concurrent workers and invalid source identity cannot write",

@@ -8,13 +8,38 @@ import type {SalesPrincipal} from "./types";
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$/u;
 const hash = /^[a-f0-9]{64}$/u;
 const exactDate = new RegExp(
-  "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d" +
-  "(?:\\.\\d+)?(?:Z|[+-]\\d\\d:\\d\\d)$", "u");
+  "^(\\d{4})-(\\d\\d)-(\\d\\d)T(\\d\\d):(\\d\\d):(\\d\\d)" +
+  "(?:\\.\\d+)?(?:Z|[+-](\\d\\d):(\\d\\d))$", "u");
 const digest = (value: string): string => createHash("sha256")
   .update(value).digest("hex");
 const invalid = (message: string): never => {
   throw new HttpsError("invalid-argument", message);
 };
+
+function exactSourceInstant(value: string): string | null {
+  const match = exactDate.exec(value);
+  if (!match) return null;
+  const [, yearText, monthText, dayText, hourText, minuteText,
+    secondText, offsetHourText, offsetMinuteText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+  const second = Number(secondText);
+  const offsetHour = Number(offsetHourText ?? 0);
+  const offsetMinute = Number(offsetMinuteText ?? 0);
+  const leapYear = year % 4 === 0 &&
+    (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leapYear ? 29 : 28, 31, 30, 31, 30,
+    31, 31, 30, 31, 30, 31];
+  if (year < 1 || month < 1 || month > 12 ||
+      day < 1 || day > days[month - 1] ||
+      hour > 23 || minute > 59 || second > 59 ||
+      offsetHour > 23 || offsetMinute > 59) return null;
+  const instant = Date.parse(value);
+  return Number.isFinite(instant) ? new Date(instant).toISOString() : null;
+}
 
 export interface HistoryEntry {
   sourceColumn: string;
@@ -101,10 +126,7 @@ function assertPacket(packet: HistoryPacket): void {
       if (entry.occurredAt !== null &&
           (typeof entry.dateSourceColumn !== "string" ||
             typeof entry.dateSourceValue !== "string" ||
-            !exactDate.test(entry.dateSourceValue) ||
-            !Number.isFinite(Date.parse(entry.dateSourceValue)) ||
-            new Date(entry.dateSourceValue).toISOString() !==
-              entry.occurredAt)) {
+            exactSourceInstant(entry.dateSourceValue) !== entry.occurredAt)) {
         invalid("Only an exact source timestamp may become occurrence time.");
       }
     }
