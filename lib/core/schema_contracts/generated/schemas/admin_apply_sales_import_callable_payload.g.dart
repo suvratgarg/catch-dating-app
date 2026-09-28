@@ -157,6 +157,17 @@ const schemaAdminApplySalesImportCallablePayloadSchema = <String, Object?>{
               },
             },
           },
+          'cohortIds': <String, Object?>{
+            'type': 'array',
+            'maxItems': 30,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 96,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
         },
       },
     },

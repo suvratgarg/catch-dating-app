@@ -5,7 +5,7 @@
 /**
  * Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.
  */
-export interface SalesIntelligencePoliciesDocument {
+export interface SalesIntelligencePolicyDocument {
   schemaVersion: 1;
   classification: "sales_private";
   policyRecordId: "current";

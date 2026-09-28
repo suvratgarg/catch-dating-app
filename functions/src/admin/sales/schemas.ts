@@ -132,6 +132,8 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
           {
             sourceRowId: id,
             organizerId: nullableId,
+            cohortIds: {type: "array", maxItems: 30,
+              uniqueItems: true, items: id},
             name: shortText,
             researchStatus,
             summary: nullableText(1200),

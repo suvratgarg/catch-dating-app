@@ -14,6 +14,7 @@ final class AdminUpsertSalesOpportunityCallableRequest {
     this.opportunityId,
     required this.fields,
     this.transitionReason,
+    this.financeAttestationId,
   });
 
   final String organizerId;
@@ -22,6 +23,7 @@ final class AdminUpsertSalesOpportunityCallableRequest {
   final String? opportunityId;
   final Map<String, Object?> fields;
   final String? transitionReason;
+  final String? financeAttestationId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -30,5 +32,6 @@ final class AdminUpsertSalesOpportunityCallableRequest {
     'opportunityId': ?opportunityId,
     'fields': fields,
     'transitionReason': ?transitionReason,
+    'financeAttestationId': ?financeAttestationId,
   };
 }

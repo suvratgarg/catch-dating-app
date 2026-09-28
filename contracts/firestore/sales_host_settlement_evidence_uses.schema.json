@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_host_settlement_evidence_uses.schema.json",
-  "title": "salesHostSettlementEvidenceUses document",
+  "title": "SalesHostSettlementEvidenceUsesDocument",
   "description": "Immutable uniqueness receipt preventing one settlement source from double counting.",
   "type": "object",
   "additionalProperties": false,

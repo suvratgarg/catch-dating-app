@@ -788,6 +788,7 @@ export {
   adminReviseSalesQuote,
   adminApproveSalesQuote,
   adminAcceptSalesQuote,
+  adminAttestSalesHostSettlement,
 } from "./admin/sales/callables";
 
 export {
@@ -799,6 +800,8 @@ export {
   adminReviewSalesOutreachDraft,
   adminCopySalesOutreachDraft,
   adminGetSalesIntelligenceScore,
+  adminGetSalesIntelligenceCatalog,
+  adminListSalesOutreachDrafts,
   adminBuildSalesOutreachInput,
   adminGenerateSalesOutreachDraft,
   adminGetSalesOutreachDraftJob,
@@ -826,3 +829,6 @@ export {
 export {
   salesAssistant,
 } from "./salesAssistant/http";
+
+export {adminLinkOrganizerIntakeToSales} from
+  "./admin/salesIntakeBridge/callables";

@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {ClipboardList, Sparkles} from "lucide-react";
 import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel,
   SelectField, StateRow, TextareaField, TextField} from
@@ -219,6 +219,8 @@ function PolicyPanel({c}: {c: Controller}) {
 
 function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
   const [factorId, setFactorId] = useState("");
+  const [reviewedRevision, setReviewedRevision] = useState(0);
+  const [reviewedPolicyRevision, setReviewedPolicyRevision] = useState(0);
   const [state, setState] = useState<"known" | "unknown" | "disputed">("unknown");
   const [rating, setRating] = useState("3");
   const [evidenceId, setEvidenceId] = useState("");
@@ -227,6 +229,8 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
   const factor = policy?.factors.find((item) => item.id === factorId);
   const assessment = c.catalog.data?.assessments.find((item) =>
     item.factorId === factorId);
+  const stale = Boolean(factorId && ((assessment?.revision ?? 0) !==
+    reviewedRevision || (policy?.revision ?? 0) !== reviewedPolicyRevision));
   const evidenceRows = c.evidence.data?.rows ?? [];
   const relevant = factor ? evidenceRows.filter((row) =>
     row.organizerId === organizerId && !row.contactId &&
@@ -236,15 +240,17 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
   const selectFactor = (next: string) => {
     setFactorId(next); setEvidenceId(""); setReason("");
     const found = c.catalog.data?.assessments.find((item) => item.factorId === next);
+    setReviewedRevision(found?.revision ?? 0);
+    setReviewedPolicyRevision(policy?.revision ?? 0);
     setState(found?.state ?? "unknown"); setRating(String(found?.value ?? 3));
     setReason(found?.reason ?? "");
     setEvidenceId(found?.evidenceIds[0] ?? "");
   };
   const save = async () => {
-    if (!factor || c.busy || c.pending) return;
+    if (!factor || stale || c.busy || c.pending) return;
     if (state === "known" && (!evidenceId || !Number.isInteger(Number(rating)))) return;
     if (state !== "known" && !reason.trim()) return;
-    await c.assess({factorId: factor.id, expectedRevision: assessment?.revision ?? 0,
+    await c.assess({factorId: factor.id, expectedRevision: reviewedRevision,
       state, value: state === "known" ? Number(rating) : null,
       evidenceIds: state === "known" ? [evidenceId] : [],
       reason: state === "known" ? null : reason.trim()});
@@ -275,6 +281,11 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       })}
       <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
         <h3>Review one fit factor</h3>
+        {stale ? <p role="alert">This factor or policy changed during your review.
+          Your edits are retained. Compare the current review before saving.
+          <AdminButton onClick={() => selectFactor(factorId)}>
+            Use current factor review</AdminButton>
+        </p> : null}
         <SelectField label="Factor" value={factorId} onChange={selectFactor}
           options={[{value: "", label: "Choose factor"},
             ...policy.factors.map((item) => ({value: item.id,
@@ -298,7 +309,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
           </> : <TextareaField label="Why is this unknown or disputed?"
             rows={2} value={reason} onChange={setReason} />}
           <AdminButton type="submit" variant="primary" disabled={c.busy ||
-            Boolean(c.pending) || (state === "known" ? !evidenceId :
+            Boolean(c.pending) || stale || (state === "known" ? !evidenceId :
             !reason.trim())}>Record review</AdminButton>
         </> : null}
       </AdminForm>
@@ -369,6 +380,11 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
 }
 
 function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
+  const copyEpoch = useRef(0);
+  useLayoutEffect(() => {
+    copyEpoch.current += 1;
+    return () => {copyEpoch.current += 1;};
+  }, []);
   const [contactId, setContactId] = useState("");
   const [opportunityId, setOpportunityId] = useState("");
   const [observationId, setObservationId] = useState("");
@@ -377,6 +393,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
   const [ctaId, setCtaId] = useState("");
   const [channel, setChannel] = useState<"email" | "message">("email");
   const [factsChecked, setFactsChecked] = useState(false);
+  const [acknowledgedDraftKey, setAcknowledgedDraftKey] = useState("");
   const [toneChecked, setToneChecked] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const account = c.account.data?.account;
@@ -401,10 +418,16 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       [referenceId] : [], ctaIds: [ctaId], channel,
     purpose: "first_message"});
   const selected = c.draft.data;
+  const reviewKey = selected ? `${selected.draftId}:${selected.draft.contentHash}` : "";
+  useEffect(() => {
+    setFactsChecked(false); setToneChecked(false); setCopyStatus("");
+    setAcknowledgedDraftKey("");
+  }, [selected?.draftId, selected?.draft.contentHash]);
   const copy = async () => {
+    const epoch = copyEpoch.current;
     if (!selected || selected.status !== "approved") return;
     const receipt = await c.copy(selected.draftId, selected.draft.contentHash);
-    if (!receipt) return;
+    if (!receipt || copyEpoch.current !== epoch) return;
     try {
       await navigator.clipboard.writeText(
         [receipt.subject, receipt.text].filter(Boolean).join("\n\n"));
@@ -483,11 +506,13 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       <StateRow label="Model use" value="None · deterministic wording" />
       <StateRow label="Status" value={label(selected.status)} />
       {selected.status === "pending_review" ? <>
-        <CheckboxField checked={factsChecked} onChange={setFactsChecked}
+        <CheckboxField checked={factsChecked && acknowledgedDraftKey === reviewKey}
+          onChange={(checked) => {setFactsChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
           label="I checked every factual claim against the current source." />
-        <CheckboxField checked={toneChecked} onChange={setToneChecked}
+        <CheckboxField checked={toneChecked && acknowledgedDraftKey === reviewKey}
+          onChange={(checked) => {setToneChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
           label="I approve the tone and understand this is manual copy only." />
-        <AdminButton disabled={!factsChecked || !toneChecked ||
+        <AdminButton disabled={!factsChecked || !toneChecked || acknowledgedDraftKey !== reviewKey ||
           c.busy || Boolean(c.pending)} onClick={() => void c.review(
           selected.draftId, selected.draft.contentHash)}>
           Approve exact draft</AdminButton>

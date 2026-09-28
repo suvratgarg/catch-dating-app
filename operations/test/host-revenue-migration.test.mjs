@@ -105,6 +105,22 @@ test("unknown receipt failures never fall back to a mutation", async () => {
   } finally {await fs.rm(root, {recursive: true, force: true});}
 });
 
+test("unresolved identities cannot start an apply run", async () => {
+  const input = source(1);
+  input.rows[0].organizerId = null;
+  const manifest = freezeMigration(input);
+  const review = await reviewMigration(manifest, {invoke: async (_name, packet) => ({
+    previewHash: "b".repeat(64), effectsApplied: false,
+    packetRowCount: packet.rows.length,
+    rows: [{sourceRowId: packet.rows[0].sourceRowId, organizerId: null,
+      disposition: "unresolved"}],
+    counts: {created: 0, matched: 0, duplicate: 0, unresolved: 1, rejected: 0},
+  })});
+  await assert.rejects(applyReviewedMigration({manifest, review,
+    approvedReviewHash: review.reviewHash, client: {}, store: {}, owner: "worker"}),
+  /Resolve every source identity/);
+});
+
 
 test("more than sixty wide batches respect read and write minute budgets", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "sales-migration-rate-"));
@@ -141,11 +157,14 @@ test("more than sixty wide batches respect read and write minute budgets", async
 });
 
 
-test("repeated canonical identities cannot invalidate a later frozen batch", () => {
+test("repeated canonical identities stay in one frozen packet", () => {
   const input = source(26);
   input.rows[25].organizerId = input.rows[0].organizerId;
-  assert.throws(() => freezeMigration(input), /organizer spans multiple batches/);
-  input.rows[25].organizerId = null;
-  input.rows[1].organizerId = input.rows[0].organizerId;
-  assert.equal(freezeMigration(input).packets.length, 2);
+  const manifest = freezeMigration(input);
+  assert.deepEqual(manifest.packets.map(packet => packet.rows.length), [25, 1]);
+  assert.deepEqual(manifest.packets[0].rows.slice(0, 2).map(row => row.sourceRowId),
+    ["row-0", "row-25"]);
+  const oversized = source(26);
+  oversized.rows.forEach(row => {row.organizerId = "org-shared";});
+  assert.throws(() => freezeMigration(oversized), /organizer exceeds a packet limit/);
 });

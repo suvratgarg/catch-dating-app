@@ -4,23 +4,41 @@ import path from "node:path";
 import {FirebaseAdminCallableClient, callableBaseUrl} from "../../admin/callable-client.mjs";
 import {FileOperationsStore} from "../../platform/storage/file-store.mjs";
 import {freezeMigration, reviewMigration, applyReviewedMigration, readPrivateJson} from "./migration.mjs";
+import {identityDecisionTemplate, prepareIdentityReview} from "./identity-review.mjs";
+import {planMigrationCompensation} from "./compensation-plan.mjs";
 
 const [command, ...args] = process.argv.slice(2);
-const usage = "freeze <mapped-source.json> <private-manifest.json> | " +
+const usage = "identity-template <mapped-source.json> <private-decisions.json> | " +
+  "identity-review <mapped-source.json> <identity-decisions.json> <private-review.json> | " +
+  "freeze <mapped-source.json> <private-manifest.json> | " +
   "review <manifest.json> <private-review.json> | " +
-  "apply <manifest.json> <review.json> <approved-review-hash> <private-state-dir> <private-result.json>";
+  "apply <manifest.json> <review.json> <approved-review-hash> <private-state-dir> <private-result.json> | " +
+  "compensation-plan <manifest.json> <review.json> <receipts.json> <accounts.json> <related-records.json> <private-plan.json>";
 try {
   if (!command || command === "--help") {
     console.log(usage);
   } else {
-    const expected = {freeze: 2, review: 2, apply: 5}[command];
+    const expected = {"identity-template": 2, "identity-review": 3,
+      freeze: 2, review: 2, apply: 5, "compensation-plan": 6}[command];
     if (!expected || args.length !== expected) throw new Error(usage);
     const input = await readPrivateJson(args[0]);
     let result;
     let output;
-    if (command === "freeze") {
+    if (command === "identity-template") {
+      result = identityDecisionTemplate(input);
+      output = args[1];
+    } else if (command === "identity-review") {
+      result = prepareIdentityReview(input, await readPrivateJson(args[1]));
+      output = args[2];
+    } else if (command === "freeze") {
       result = freezeMigration(input);
       output = args[1];
+    } else if (command === "compensation-plan") {
+      result = planMigrationCompensation({manifest: input,
+        review: await readPrivateJson(args[1]), receipts: await readPrivateJson(args[2]),
+        currentAccounts: await readPrivateJson(args[3]),
+        relatedRecords: await readPrivateJson(args[4])});
+      output = args[5];
     } else {
       const client = new FirebaseAdminCallableClient({
         baseUrl: callableBaseUrl({project: process.env.CATCH_ADMIN_FIREBASE_PROJECT,

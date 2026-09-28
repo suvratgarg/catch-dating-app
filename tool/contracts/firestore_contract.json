@@ -3868,7 +3868,7 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee and delegated projections",
       "write": "server only",
-      "typescriptInterface": "SalesIntelligenceAssessmentsDocument"
+      "typescriptInterface": "SalesIntelligenceAssessmentDocument"
     },
     {
       "id": "salesIntelligenceClauses",
@@ -3882,7 +3882,7 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee and delegated projections",
       "write": "server only",
-      "typescriptInterface": "SalesIntelligenceClausesDocument"
+      "typescriptInterface": "SalesIntelligenceClauseDocument"
     },
     {
       "id": "salesIntelligencePolicies",
@@ -3896,7 +3896,7 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee and delegated projections",
       "write": "server only",
-      "typescriptInterface": "SalesIntelligencePoliciesDocument"
+      "typescriptInterface": "SalesIntelligencePolicyDocument"
     },
     {
       "id": "salesIntelligenceReceipts",
@@ -3910,7 +3910,7 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee and delegated projections",
       "write": "server only",
-      "typescriptInterface": "SalesIntelligenceReceiptsDocument"
+      "typescriptInterface": "SalesIntelligenceReceiptDocument"
     },
     {
       "id": "salesIntelligenceScoreSnapshots",
@@ -3924,7 +3924,7 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee and delegated projections",
       "write": "server only",
-      "typescriptInterface": "SalesIntelligenceScoreSnapshotsDocument"
+      "typescriptInterface": "SalesIntelligenceScoreSnapshotDocument"
     },
     {
       "id": "salesOpportunities",
@@ -4071,6 +4071,62 @@
       "path": "salesOutreachJobs/{id}",
       "rulesMatch": "/salesOutreachJobs/{privateDocument=**}",
       "typescriptInterface": "SalesOutreachJobsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementAttestations",
+      "path": "salesHostSettlementAttestations/{id}",
+      "rulesMatch": "/salesHostSettlementAttestations/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementAttestationsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementEvidenceUses",
+      "path": "salesHostSettlementEvidenceUses/{id}",
+      "rulesMatch": "/salesHostSettlementEvidenceUses/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementEvidenceUsesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementIdentities",
+      "path": "salesHostSettlementIdentities/{id}",
+      "rulesMatch": "/salesHostSettlementIdentities/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementIdentitiesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private host Sales server operations",
+      "read": "server only; scoped employee projections",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntakeLinks",
+      "path": "salesIntakeLinks/{linkId}",
+      "rulesMatch": "/salesIntakeLinks/{privateDocument=**}",
+      "typescriptInterface": "SalesIntakeLinkDocument",
       "dartModel": null,
       "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
       "rulesTestNames": [

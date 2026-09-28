@@ -11,6 +11,7 @@ export interface ImportRow {
   summary?: string | null;
   originalScore?: Record<string, string | number | boolean | null> | null;
   originalCells?: Array<{column: string; value: string}>;
+  cohortIds?: string[];
 }
 export interface ImportPacket {
   sourceId: string;
@@ -69,7 +70,7 @@ async function evaluateRows(
   ) => Promise<FirebaseFirestore.DocumentSnapshot>,
 ): Promise<RowDecision[]> {
   const seenRows = new Set<string>();
-  const seenOrganizers = new Set<string>();
+  const organizerDecisions = new Map<string, RowDecision>();
   const decisions: RowDecision[] = [];
   for (const row of packet.rows) {
     const sourceKey = `${packet.sourceId}\u0000${row.sourceRowId}`;
@@ -93,26 +94,8 @@ async function evaluateRows(
       });
       continue;
     }
-    if (seenOrganizers.has(row.organizerId)) {
-      decisions.push({
-        ...base,
-        disposition: "duplicate",
-        reason: "repeated_organizer",
-        accountRevision: null,
-      });
-      continue;
-    }
-    seenOrganizers.add(row.organizerId);
     const sourceRef = db.collection("salesImportRows").doc(sha(sourceKey));
-    const organizerRef = db.collection("organizers").doc(row.organizerId);
-    const accountRef = db
-      .collection("organizerSalesAccounts")
-      .doc(row.organizerId);
-    const [sourceSnap, organizerSnap, accountSnap] = await Promise.all([
-      get(sourceRef),
-      get(organizerRef),
-      get(accountRef),
-    ]);
+    const sourceSnap = await get(sourceRef);
     if (sourceSnap.exists) {
       const changed =
         sourceSnap.data()?.sourceContentHash !== packet.contentHash;
@@ -122,38 +105,61 @@ async function evaluateRows(
         reason: changed ? "source_content_conflict" : "source_row_imported",
         accountRevision: null,
       });
-    } else if (!organizerSnap.exists) {
-      decisions.push({
+      continue;
+    }
+    const prior = organizerDecisions.get(row.organizerId);
+    if (prior) {
+      decisions.push({...base,
+        disposition: prior.disposition === "created" || prior.disposition === "matched" ?
+          "matched" : prior.disposition,
+        reason: prior.disposition === "created" || prior.disposition === "matched" ?
+          "same_batch_organizer" : prior.reason,
+        accountRevision: prior.accountRevision});
+      continue;
+    }
+    const organizerRef = db.collection("organizers").doc(row.organizerId);
+    const accountRef = db
+      .collection("organizerSalesAccounts")
+      .doc(row.organizerId);
+    const [organizerSnap, accountSnap] = await Promise.all([
+      get(organizerRef),
+      get(accountRef),
+    ]);
+    let decision: RowDecision;
+    if (!organizerSnap.exists) {
+      decision = {
         ...base,
         disposition: "rejected",
         reason: "canonical_organizer_missing",
         accountRevision: null,
-      });
+      };
     } else if (
       accountSnap.exists &&
       accountSnap.data()?.classification !== "sales_private"
     ) {
-      decisions.push({
+      decision = {
         ...base,
         disposition: "rejected",
         reason: "account_contract_invalid",
         accountRevision: null,
-      });
+      };
     } else if (accountSnap.exists) {
-      decisions.push({
+      decision = {
         ...base,
         disposition: "matched",
         reason: "existing_private_account",
         accountRevision: Number(accountSnap.data()?.revision),
-      });
+      };
     } else {
-      decisions.push({
+      decision = {
         ...base,
         disposition: "created",
         reason: "new_private_companion",
         accountRevision: 0,
-      });
+      };
     }
+    organizerDecisions.set(row.organizerId, decision);
+    decisions.push(decision);
   }
   return decisions;
 }
@@ -220,6 +226,11 @@ export async function applySalesImport(
         .map((decision) => decision.organizerId as string),
     ),
   ];
+  const matchedIds = [
+    ...new Set(decisions.filter((decision) =>
+      decision.disposition === "matched" && decision.organizerId)
+      .map((decision) => decision.organizerId as string)),
+  ].filter((id) => !createdIds.includes(id));
   const canonicalSnapshots = await Promise.all(
     createdIds.map(
       async (id) =>
@@ -227,6 +238,38 @@ export async function applySalesImport(
     ),
   );
   const canonicalById = new Map(canonicalSnapshots);
+  const accountSnapshots = await Promise.all(matchedIds.map(async (id) =>
+    [id, await tx.get(db.collection("organizerSalesAccounts").doc(id))] as const));
+  const accountById = new Map(accountSnapshots);
+  const cohortsById = new Map<string, Set<string>>();
+  input.rows.forEach((row, index) => {
+    if (!row.organizerId || !["created", "matched"].includes(decisions[index].disposition)) return;
+    const cohorts = cohortsById.get(row.organizerId) ?? new Set<string>();
+    for (const cohortId of row.cohortIds ?? []) cohorts.add(cohortId);
+    cohortsById.set(row.organizerId, cohorts);
+  });
+  for (const [organizerId, cohorts] of cohortsById) {
+    const accountSnap = accountById.get(organizerId);
+    if (!accountSnap) continue;
+    const account = accountSnap.data();
+    if (!accountSnap.exists || account?.classification !== "sales_private" ||
+      account.revision !== decisions.find((decision) =>
+        decision.organizerId === organizerId && decision.disposition === "matched")?.accountRevision) {
+      throw new HttpsError("aborted", "Sales account changed during import review.");
+    }
+    const existing = account.cohortIds;
+    if (!Array.isArray(existing) || existing.some((value) => typeof value !== "string")) {
+      throw new HttpsError("aborted", "Sales account cohorts are invalid.");
+    }
+    const merged = [...new Set([...existing, ...cohorts])];
+    if (merged.length > 30) {
+      throw new HttpsError("failed-precondition", "Sales account cohort limit exceeded.");
+    }
+    if (merged.length !== existing.length) {
+      tx.update(accountSnap.ref, {cohortIds: merged, revision: account.revision + 1,
+        updatedAt: now, updatedBy: principal.uid});
+    }
+  }
   for (let index = 0; index < input.rows.length; index += 1) {
     const row = input.rows[index];
     const decision = decisions[index];
@@ -245,6 +288,7 @@ export async function applySalesImport(
       originalResearchStatus: row.researchStatus,
       originalSummary: row.summary ?? null,
       originalCells: row.originalCells ?? null,
+      cohortIds: row.cohortIds ?? [],
       importedAt: now,
       importedBy: principal.uid,
     };
@@ -270,13 +314,13 @@ export async function applySalesImport(
       }
       tx.create(
         db.collection("organizerSalesAccounts").doc(row.organizerId),
-        newSalesAccount(
+        {...newSalesAccount(
           row.organizerId,
           canonicalSnap.data() ?? {},
           principal.uid,
           now,
           "needs_research",
-        ),
+        ), cohortIds: [...(cohortsById.get(row.organizerId) ?? [])]},
       );
     }
   }

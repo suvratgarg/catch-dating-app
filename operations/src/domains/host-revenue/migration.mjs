@@ -15,6 +15,7 @@ export function freezeMigration({sourceId, contentHash, mappingVersion, rows}) {
   invariant(Array.isArray(rows) && rows.length > 0 && rows.length <= 2000,
     "INVALID_MIGRATION", "Provide 1–2000 mapped source rows.");
   const seen = new Set();
+  const groups = new Map();
   const packets = [];
   let packet = {sourceId, contentHash, mappingVersion, rows: []};
   for (const original of rows) {
@@ -24,29 +25,33 @@ export function freezeMigration({sourceId, contentHash, mappingVersion, rows}) {
     seen.add(row.sourceRowId);
     invariant(row.organizerId === null || id.test(row.organizerId),
       "INVALID_MIGRATION", "Identity must be reviewed or explicitly unresolved.");
-    const next = {...packet, rows: [...packet.rows, row]};
+    invariant(row.cohortIds === undefined ||
+      (Array.isArray(row.cohortIds) && row.cohortIds.length <= 30 &&
+        row.cohortIds.every(value => id.test(value)) &&
+        new Set(row.cohortIds).size === row.cohortIds.length),
+    "INVALID_MIGRATION", "Cohort memberships must be reviewed IDs.");
+    // Preserve each canonical organizer's source rows in one transaction. Null
+    // identities remain independent review work and cannot merge by accident.
+    const key = row.organizerId === null ? `unresolved:${row.sourceRowId}` :
+      `organizer:${row.organizerId}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+  for (const group of groups.values()) {
+    const next = {...packet, rows: [...packet.rows, ...group]};
     // Callable boundary is 128 KiB; leave space for request and preview hashes.
     if (next.rows.length > 25 || Buffer.byteLength(JSON.stringify(next)) > 120_000) {
-      invariant(packet.rows.length > 0, "INVALID_MIGRATION", "A source row is too large.");
-      packets.push(packet);
+      invariant(packet.rows.length > 0 || group.length > 25,
+        "INVALID_MIGRATION", "A source row is too large.");
+      if (packet.rows.length) packets.push(packet);
       packet = {...packet, rows: []};
     }
-    packet.rows.push(row);
-    invariant(Buffer.byteLength(JSON.stringify(packet)) <= 120_000,
-      "INVALID_MIGRATION", "A source row is too large; retain a private artifact reference.");
+    packet.rows.push(...group);
+    invariant(packet.rows.length <= 25 && Buffer.byteLength(JSON.stringify(packet)) <= 120_000,
+      "DEPENDENT_MIGRATION_BATCHES",
+      "One organizer exceeds a packet limit; review a smaller private source partition.");
   }
   if (packet.rows.length) packets.push(packet);
-  // A prior batch must never change another batch's frozen account preview.
-  // Keep repeated source rows for one organizer together in the reviewed mapping.
-  const organizerPackets = new Map();
-  packets.forEach((batch, index) => batch.rows.forEach(row => {
-    if (row.organizerId === null) return;
-    invariant(!organizerPackets.has(row.organizerId) ||
-      organizerPackets.get(row.organizerId) === index,
-    "DEPENDENT_MIGRATION_BATCHES",
-    "An organizer spans multiple batches; group its source rows before freezing.");
-    organizerPackets.set(row.organizerId, index);
-  }));
   const material = {schemaVersion: 1, sourceId, contentHash, mappingVersion,
     rowCount: rows.length, packets};
   return {...material, manifestHash: digest(material)};
@@ -92,6 +97,9 @@ export async function applyReviewedMigration({manifest, review, approvedReviewHa
     assertResult({...batch, packetRowCount: batch.rows.length, effectsApplied: false},
       manifest.packets[index], false);
   });
+  invariant(review.batches.every(batch => batch.counts.unresolved === 0 &&
+    batch.counts.rejected === 0), "MIGRATION_INCOMPLETE",
+  "Resolve every source identity and rejected row before applying a migration.");
   const runId = `migration-${manifest.manifestHash.slice(0, 40)}`;
   let lease = await store.acquireLease(runId, {owner, ttlMs: 120_000, now: now()});
   const results = [];

@@ -103,5 +103,11 @@ const schemaAdminUpsertSalesOpportunityCallablePayloadSchema = <String, Object?>
       'minLength': 1,
       'maxLength': 1000,
     },
+    'financeAttestationId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 96,
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
   },
 };

@@ -12,6 +12,40 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SalesIntakeLinkDocument | `firestore/sales_intake_links.schema.json` | `functions/src/shared/generated/salesIntakeLinkDocument.ts` |
+| AdminLinkOrganizerIntakeToSalesResponse | `callable_responses/admin_link_organizer_intake_to_sales_response.schema.json` | `functions/src/shared/generated/adminLinkOrganizerIntakeToSalesResponse.ts` |
+| AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `functions/src/shared/generated/adminLinkOrganizerIntakeToSalesPayload.ts` |
+| AdminBuildSalesOutreachInputResponse | `callable_responses/admin_sales_outreach_input_response.schema.json` | `functions/src/shared/generated/adminBuildSalesOutreachInputResponse.ts` |
+| AdminSalesIntelligenceClauseMutationResponse | `callable_responses/admin_sales_intelligence_clause_response.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceClauseMutationResponse.ts` |
+| AdminReviewSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_review_response.schema.json` | `functions/src/shared/generated/adminReviewSalesOutreachDraftResponse.ts` |
+| AdminGetSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_draft_response.schema.json` | `functions/src/shared/generated/adminGetSalesOutreachDraftResponse.ts` |
+| AdminGetSalesIntelligenceCatalogRequest | `callables/admin_sales_intelligence_catalog_request.schema.json` | `functions/src/shared/generated/adminGetSalesIntelligenceCatalogRequest.ts` |
+| AdminListSalesOutreachDraftsRequest | `callables/admin_sales_outreach_list_request.schema.json` | `functions/src/shared/generated/adminListSalesOutreachDraftsRequest.ts` |
+| AdminSaveSalesFactorAssessmentResponse | `callable_responses/admin_sales_intelligence_assessment_response.schema.json` | `functions/src/shared/generated/adminSaveSalesFactorAssessmentResponse.ts` |
+| AdminGetSalesOutreachDraftJobRequest | `callables/admin_sales_outreach_job_request.schema.json` | `functions/src/shared/generated/adminGetSalesOutreachDraftJobRequest.ts` |
+| AdminReviewSalesIntelligenceClauseRequest | `callables/admin_sales_intelligence_clause_review_request.schema.json` | `functions/src/shared/generated/adminReviewSalesIntelligenceClauseRequest.ts` |
+| AdminSaveSalesIntelligencePolicyResponse | `callable_responses/admin_sales_intelligence_policy_response.schema.json` | `functions/src/shared/generated/adminSaveSalesIntelligencePolicyResponse.ts` |
+| AdminCopySalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_copy_response.schema.json` | `functions/src/shared/generated/adminCopySalesOutreachDraftResponse.ts` |
+| AdminGetSalesOutreachDraftJobResponse | `callable_responses/admin_sales_outreach_job_response.schema.json` | `functions/src/shared/generated/adminGetSalesOutreachDraftJobResponse.ts` |
+| AdminGenerateSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_generate_response.schema.json` | `functions/src/shared/generated/adminGenerateSalesOutreachDraftResponse.ts` |
+| AdminGetSalesIntelligenceScoreRequest | `callables/admin_sales_intelligence_score_request.schema.json` | `functions/src/shared/generated/adminGetSalesIntelligenceScoreRequest.ts` |
+| AdminReviewSalesOutreachDraftRequest | `callables/admin_sales_outreach_review_request.schema.json` | `functions/src/shared/generated/adminReviewSalesOutreachDraftRequest.ts` |
+| AdminCopySalesOutreachDraftRequest | `callables/admin_sales_outreach_copy_request.schema.json` | `functions/src/shared/generated/adminCopySalesOutreachDraftRequest.ts` |
+| AdminAttestSalesHostSettlementPayload | `callables/admin_attest_sales_host_settlement_payload.schema.json` | `functions/src/shared/generated/adminAttestSalesHostSettlementPayload.ts` |
+| AdminListSalesOutreachDraftsResponse | `callable_responses/admin_sales_outreach_list_response.schema.json` | `functions/src/shared/generated/adminListSalesOutreachDraftsResponse.ts` |
+| AdminGetSalesIntelligenceCatalogResponse | `callable_responses/admin_sales_intelligence_catalog_response.schema.json` | `functions/src/shared/generated/adminGetSalesIntelligenceCatalogResponse.ts` |
+| AdminGetSalesIntelligenceScoreResponse | `callable_responses/admin_sales_intelligence_score_response.schema.json` | `functions/src/shared/generated/adminGetSalesIntelligenceScoreResponse.ts` |
+| AdminGetSalesOutreachDraftRequest | `callables/admin_sales_outreach_draft_request.schema.json` | `functions/src/shared/generated/adminGetSalesOutreachDraftRequest.ts` |
+| AdminReviseSalesQuoteResponse | `callable_responses/admin_revise_sales_quote_response.schema.json` | `functions/src/shared/generated/adminReviseSalesQuoteResponse.ts` |
+| AdminAttestSalesHostSettlementResponse | `callable_responses/admin_attest_sales_host_settlement_response.schema.json` | `functions/src/shared/generated/adminAttestSalesHostSettlementResponse.ts` |
+| AdminAcceptSalesQuoteResponse | `callable_responses/admin_accept_sales_quote_response.schema.json` | `functions/src/shared/generated/adminAcceptSalesQuoteResponse.ts` |
+| AdminGetSalesCommercialDetailResponse | `callable_responses/admin_get_sales_commercial_detail_response.schema.json` | `functions/src/shared/generated/adminGetSalesCommercialDetailResponse.ts` |
+| AdminListSalesCommercialReportResponse | `callable_responses/admin_list_sales_commercial_report_response.schema.json` | `functions/src/shared/generated/adminListSalesCommercialReportResponse.ts` |
+| AdminApproveSalesQuoteResponse | `callable_responses/admin_approve_sales_quote_response.schema.json` | `functions/src/shared/generated/adminApproveSalesQuoteResponse.ts` |
+| AdminUpsertSalesPilotPlanResponse | `callable_responses/admin_upsert_sales_pilot_plan_response.schema.json` | `functions/src/shared/generated/adminUpsertSalesPilotPlanResponse.ts` |
+| SalesHostSettlementIdentitiesDocument | `firestore/sales_host_settlement_identities.schema.json` | `functions/src/shared/generated/salesHostSettlementIdentities.ts` |
+| SalesHostSettlementAttestationsDocument | `firestore/sales_host_settlement_attestations.schema.json` | `functions/src/shared/generated/salesHostSettlementAttestations.ts` |
+| SalesHostSettlementEvidenceUsesDocument | `firestore/sales_host_settlement_evidence_uses.schema.json` | `functions/src/shared/generated/salesHostSettlementEvidenceUses.ts` |
 | OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `functions/src/shared/generated/outreachDraftingInput.ts` |
 | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `functions/src/shared/generated/outreachDraftingSelection.ts` |
 | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts` |
@@ -89,11 +123,11 @@ Do not edit it by hand.
 | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
 | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
 | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
-| SalesIntelligenceAssessmentsDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
-| SalesIntelligenceClausesDocument | `firestore/sales_intelligence_clauses.schema.json` | `functions/src/shared/generated/salesIntelligenceClausesDocument.ts` |
-| SalesIntelligencePoliciesDocument | `firestore/sales_intelligence_policies.schema.json` | `functions/src/shared/generated/salesIntelligencePoliciesDocument.ts` |
-| SalesIntelligenceReceiptsDocument | `firestore/sales_intelligence_receipts.schema.json` | `functions/src/shared/generated/salesIntelligenceReceiptsDocument.ts` |
-| SalesIntelligenceScoreSnapshotsDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `functions/src/shared/generated/salesIntelligenceScoreSnapshotsDocument.ts` |
+| SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
+| SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `functions/src/shared/generated/salesIntelligenceClausesDocument.ts` |
+| SalesIntelligencePolicyDocument | `firestore/sales_intelligence_policies.schema.json` | `functions/src/shared/generated/salesIntelligencePoliciesDocument.ts` |
+| SalesIntelligenceReceiptDocument | `firestore/sales_intelligence_receipts.schema.json` | `functions/src/shared/generated/salesIntelligenceReceiptsDocument.ts` |
+| SalesIntelligenceScoreSnapshotDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `functions/src/shared/generated/salesIntelligenceScoreSnapshotsDocument.ts` |
 | SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `functions/src/shared/generated/salesOutreachDraftsDocument.ts` |
 | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
 | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
@@ -1041,6 +1075,40 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSalesIntakeLinkDocumentSchema` | SalesIntakeLinkDocument | `firestore/sales_intake_links.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intake_link_document.g.dart` |
+| `schemaAdminLinkOrganizerIntakeToSalesResponseSchema` | AdminLinkOrganizerIntakeToSalesResponse | `callable_responses/admin_link_organizer_intake_to_sales_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_link_organizer_intake_to_sales_response.g.dart` |
+| `schemaAdminLinkOrganizerIntakeToSalesPayloadSchema` | AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_link_organizer_intake_to_sales_payload.g.dart` |
+| `schemaAdminBuildSalesOutreachInputResponseSchema` | AdminBuildSalesOutreachInputResponse | `callable_responses/admin_sales_outreach_input_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_build_sales_outreach_input_response.g.dart` |
+| `schemaAdminSalesIntelligenceClauseMutationResponseSchema` | AdminSalesIntelligenceClauseMutationResponse | `callable_responses/admin_sales_intelligence_clause_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_clause_mutation_response.g.dart` |
+| `schemaAdminReviewSalesOutreachDraftResponseSchema` | AdminReviewSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_review_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_outreach_draft_response.g.dart` |
+| `schemaAdminGetSalesOutreachDraftResponseSchema` | AdminGetSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_draft_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_outreach_draft_response.g.dart` |
+| `schemaAdminGetSalesIntelligenceCatalogRequestSchema` | AdminGetSalesIntelligenceCatalogRequest | `callables/admin_sales_intelligence_catalog_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_intelligence_catalog_request.g.dart` |
+| `schemaAdminListSalesOutreachDraftsRequestSchema` | AdminListSalesOutreachDraftsRequest | `callables/admin_sales_outreach_list_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_outreach_drafts_request.g.dart` |
+| `schemaAdminSaveSalesFactorAssessmentResponseSchema` | AdminSaveSalesFactorAssessmentResponse | `callable_responses/admin_sales_intelligence_assessment_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_save_sales_factor_assessment_response.g.dart` |
+| `schemaAdminGetSalesOutreachDraftJobRequestSchema` | AdminGetSalesOutreachDraftJobRequest | `callables/admin_sales_outreach_job_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_outreach_draft_job_request.g.dart` |
+| `schemaAdminReviewSalesIntelligenceClauseRequestSchema` | AdminReviewSalesIntelligenceClauseRequest | `callables/admin_sales_intelligence_clause_review_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_intelligence_clause_request.g.dart` |
+| `schemaAdminSaveSalesIntelligencePolicyResponseSchema` | AdminSaveSalesIntelligencePolicyResponse | `callable_responses/admin_sales_intelligence_policy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_save_sales_intelligence_policy_response.g.dart` |
+| `schemaAdminCopySalesOutreachDraftResponseSchema` | AdminCopySalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_copy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_copy_sales_outreach_draft_response.g.dart` |
+| `schemaAdminGetSalesOutreachDraftJobResponseSchema` | AdminGetSalesOutreachDraftJobResponse | `callable_responses/admin_sales_outreach_job_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_outreach_draft_job_response.g.dart` |
+| `schemaAdminGenerateSalesOutreachDraftResponseSchema` | AdminGenerateSalesOutreachDraftResponse | `callable_responses/admin_sales_outreach_generate_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_generate_sales_outreach_draft_response.g.dart` |
+| `schemaAdminGetSalesIntelligenceScoreRequestSchema` | AdminGetSalesIntelligenceScoreRequest | `callables/admin_sales_intelligence_score_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_intelligence_score_request.g.dart` |
+| `schemaAdminReviewSalesOutreachDraftRequestSchema` | AdminReviewSalesOutreachDraftRequest | `callables/admin_sales_outreach_review_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_outreach_draft_request.g.dart` |
+| `schemaAdminCopySalesOutreachDraftRequestSchema` | AdminCopySalesOutreachDraftRequest | `callables/admin_sales_outreach_copy_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_copy_sales_outreach_draft_request.g.dart` |
+| `schemaAdminAttestSalesHostSettlementPayloadSchema` | AdminAttestSalesHostSettlementPayload | `callables/admin_attest_sales_host_settlement_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_attest_sales_host_settlement_payload.g.dart` |
+| `schemaAdminListSalesOutreachDraftsResponseSchema` | AdminListSalesOutreachDraftsResponse | `callable_responses/admin_sales_outreach_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_outreach_drafts_response.g.dart` |
+| `schemaAdminGetSalesIntelligenceCatalogResponseSchema` | AdminGetSalesIntelligenceCatalogResponse | `callable_responses/admin_sales_intelligence_catalog_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_intelligence_catalog_response.g.dart` |
+| `schemaAdminGetSalesIntelligenceScoreResponseSchema` | AdminGetSalesIntelligenceScoreResponse | `callable_responses/admin_sales_intelligence_score_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_intelligence_score_response.g.dart` |
+| `schemaAdminGetSalesOutreachDraftRequestSchema` | AdminGetSalesOutreachDraftRequest | `callables/admin_sales_outreach_draft_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_outreach_draft_request.g.dart` |
+| `schemaAdminReviseSalesQuoteResponseSchema` | AdminReviseSalesQuoteResponse | `callable_responses/admin_revise_sales_quote_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_revise_sales_quote_response.g.dart` |
+| `schemaAdminAttestSalesHostSettlementResponseSchema` | AdminAttestSalesHostSettlementResponse | `callable_responses/admin_attest_sales_host_settlement_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_attest_sales_host_settlement_response.g.dart` |
+| `schemaAdminAcceptSalesQuoteResponseSchema` | AdminAcceptSalesQuoteResponse | `callable_responses/admin_accept_sales_quote_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_accept_sales_quote_response.g.dart` |
+| `schemaAdminGetSalesCommercialDetailResponseSchema` | AdminGetSalesCommercialDetailResponse | `callable_responses/admin_get_sales_commercial_detail_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_commercial_detail_response.g.dart` |
+| `schemaAdminListSalesCommercialReportResponseSchema` | AdminListSalesCommercialReportResponse | `callable_responses/admin_list_sales_commercial_report_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_commercial_report_response.g.dart` |
+| `schemaAdminApproveSalesQuoteResponseSchema` | AdminApproveSalesQuoteResponse | `callable_responses/admin_approve_sales_quote_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_approve_sales_quote_response.g.dart` |
+| `schemaAdminUpsertSalesPilotPlanResponseSchema` | AdminUpsertSalesPilotPlanResponse | `callable_responses/admin_upsert_sales_pilot_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_upsert_sales_pilot_plan_response.g.dart` |
+| `schemaSalesHostSettlementIdentitiesDocumentSchema` | SalesHostSettlementIdentitiesDocument | `firestore/sales_host_settlement_identities.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_host_settlement_identities_document.g.dart` |
+| `schemaSalesHostSettlementAttestationsDocumentSchema` | SalesHostSettlementAttestationsDocument | `firestore/sales_host_settlement_attestations.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_host_settlement_attestations_document.g.dart` |
+| `schemaSalesHostSettlementEvidenceUsesDocumentSchema` | SalesHostSettlementEvidenceUsesDocument | `firestore/sales_host_settlement_evidence_uses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_host_settlement_evidence_uses_document.g.dart` |
 | `schemaOutreachDraftingInputSchema` | OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_input.g.dart` |
 | `schemaOutreachDraftingSelectionSchema` | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_selection.g.dart` |
 | `schemaAdminSalesIntelligenceGenerateCallablePayloadSchema` | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_generate_callable_payload.g.dart` |
@@ -1118,11 +1186,11 @@ Do not edit it by hand.
 | `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
 | `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
 | `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
-| `schemaSalesIntelligenceAssessmentsDocumentSchema` | SalesIntelligenceAssessmentsDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessments_document.g.dart` |
-| `schemaSalesIntelligenceClausesDocumentSchema` | SalesIntelligenceClausesDocument | `firestore/sales_intelligence_clauses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_clauses_document.g.dart` |
-| `schemaSalesIntelligencePoliciesDocumentSchema` | SalesIntelligencePoliciesDocument | `firestore/sales_intelligence_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_policies_document.g.dart` |
-| `schemaSalesIntelligenceReceiptsDocumentSchema` | SalesIntelligenceReceiptsDocument | `firestore/sales_intelligence_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_receipts_document.g.dart` |
-| `schemaSalesIntelligenceScoreSnapshotsDocumentSchema` | SalesIntelligenceScoreSnapshotsDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_score_snapshots_document.g.dart` |
+| `schemaSalesIntelligenceAssessmentDocumentSchema` | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessment_document.g.dart` |
+| `schemaSalesIntelligenceClauseDocumentSchema` | SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_clause_document.g.dart` |
+| `schemaSalesIntelligencePolicyDocumentSchema` | SalesIntelligencePolicyDocument | `firestore/sales_intelligence_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_policy_document.g.dart` |
+| `schemaSalesIntelligenceReceiptDocumentSchema` | SalesIntelligenceReceiptDocument | `firestore/sales_intelligence_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_receipt_document.g.dart` |
+| `schemaSalesIntelligenceScoreSnapshotDocumentSchema` | SalesIntelligenceScoreSnapshotDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_score_snapshot_document.g.dart` |
 | `schemaSalesOutreachDraftsDocumentSchema` | SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_drafts_document.g.dart` |
 | `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
 | `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
@@ -2070,6 +2138,13 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| AdminLinkOrganizerIntakeToSalesRequest | AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_link_organizer_intake_to_sales_request.g.dart` |
+| AdminGetSalesIntelligenceCatalogRequest | AdminGetSalesIntelligenceCatalogRequest | `callables/admin_sales_intelligence_catalog_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_intelligence_catalog_request.g.dart` |
+| AdminListSalesOutreachDraftsRequest | AdminListSalesOutreachDraftsRequest | `callables/admin_sales_outreach_list_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_outreach_drafts_request.g.dart` |
+| AdminGetSalesOutreachDraftJobRequest | AdminGetSalesOutreachDraftJobRequest | `callables/admin_sales_outreach_job_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_outreach_draft_job_request.g.dart` |
+| AdminGetSalesIntelligenceScoreRequest | AdminGetSalesIntelligenceScoreRequest | `callables/admin_sales_intelligence_score_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_intelligence_score_request.g.dart` |
+| AdminCopySalesOutreachDraftRequest | AdminCopySalesOutreachDraftRequest | `callables/admin_sales_outreach_copy_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_copy_sales_outreach_draft_request.g.dart` |
+| AdminGetSalesOutreachDraftRequest | AdminGetSalesOutreachDraftRequest | `callables/admin_sales_outreach_draft_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_outreach_draft_request.g.dart` |
 | AdminSalesIntelligenceGenerateCallableRequest | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_generate_callable_request.g.dart` |
 | AdminAcceptSalesQuoteCallableRequest | AdminAcceptSalesQuoteCallablePayload | `callables/admin_accept_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_accept_sales_quote_callable_request.g.dart` |
 | AdminApproveSalesQuoteCallableRequest | AdminApproveSalesQuoteCallablePayload | `callables/admin_approve_sales_quote_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_approve_sales_quote_callable_request.g.dart` |
@@ -2449,6 +2524,9 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |
+| AdminReviewSalesOutreachDraftRequest | cannot map field "factualValidity" (no type) |
+| AdminAttestSalesHostSettlementPayload | cannot map field "purpose" (no type) |
 | AdminListSalesAccountsCallablePayload | cannot map field "researchStatus" (no type) |
 | AdminListSalesTasksCallablePayload | cannot map field "status" (no type) |
 | AdminListSalesOpportunitiesCallablePayload | cannot map field "stage" (no type) |

@@ -2096,6 +2096,499 @@
       },
       "confirmation": "action-and-target",
       "targetField": "opportunityId"
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceCatalog",
+      "callable": "adminGetSalesIntelligenceCatalog",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_catalog_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_catalog_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceScore",
+      "callable": "adminGetSalesIntelligenceScore",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_score_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_score_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligencePolicy",
+      "callable": "adminSaveSalesIntelligencePolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_policy_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_policy_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "expectedRevision": 0,
+        "policy": {
+          "policyId": "policy-example",
+          "version": "v1",
+          "status": "active",
+          "factors": [
+            {
+              "id": "one",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "two",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "three",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "four",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "five",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "six",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "seven",
+              "weight": 16,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            }
+          ],
+          "priorityBands": {
+            "high": 80,
+            "medium": 50
+          },
+          "promptVersion": "zero_model_v1",
+          "playbookVersion": "reviewed_v1"
+        }
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "requestId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesFactorAssessment",
+      "callable": "adminSaveSalesFactorAssessment",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_assessment_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_assessment_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "organizerId": "org-example",
+        "factorId": "one",
+        "expectedRevision": 0,
+        "state": "known",
+        "value": 3,
+        "evidenceIds": [
+          "evidence-example"
+        ],
+        "reason": null
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligenceClause",
+      "callable": "adminSaveSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_clause_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "clauseId": "clause-example",
+        "organizerId": "org-example",
+        "expectedRevision": 0,
+        "kind": "observation",
+        "text": "The synthetic host uses an application step.",
+        "evidenceIds": [
+          "evidence-example"
+        ],
+        "validUntil": "2099-01-01T00:00:00.000Z",
+        "permission": "not_required"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesIntelligenceClause",
+      "callable": "adminReviewSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_clause_review_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "clauseId": "clause-example",
+        "expectedRevision": 1,
+        "decision": "approve"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "clauseId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesScoreSnapshot",
+      "callable": "adminSaveSalesScoreSnapshot",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_score_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_score_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "organizerId": "org-example",
+        "expectedAccountRevision": 1,
+        "expectedPolicyRevision": 1
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intelligence.BuildSalesOutreachInput",
+      "callable": "adminBuildSalesOutreachInput",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_draft_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_input_response.schema.json",
+      "example": {
+        "organizerId": "org-example",
+        "contactId": "contact-example",
+        "opportunityId": "opportunity-example",
+        "observationIds": [
+          "observation-example"
+        ],
+        "capabilityIds": [
+          "capability-example"
+        ],
+        "referenceIds": [],
+        "ctaIds": [
+          "cta-example"
+        ],
+        "channel": "email",
+        "purpose": "first_message"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intelligence.GenerateSalesOutreachDraft",
+      "callable": "adminGenerateSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_generate_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "sourceRequest": {
+          "organizerId": "org-example",
+          "contactId": "contact-example",
+          "opportunityId": "opportunity-example",
+          "observationIds": [
+            "observation-example"
+          ],
+          "capabilityIds": [
+            "capability-example"
+          ],
+          "referenceIds": [],
+          "ctaIds": [
+            "cta-example"
+          ],
+          "channel": "email",
+          "purpose": "first_message"
+        }
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "requestId"
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraftJob",
+      "callable": "adminGetSalesOutreachDraftJob",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_job_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_job_response.schema.json",
+      "example": {
+        "requestId": "request-example-001"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.ListSalesOutreachDrafts",
+      "callable": "adminListSalesOutreachDrafts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_list_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_list_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraft",
+      "callable": "adminGetSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_draft_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_draft_response.schema.json",
+      "example": {
+        "draftId": "draft-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesOutreachDraft",
+      "callable": "adminReviewSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_review_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_review_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "draftId": "draft-example",
+        "expectedContentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "factualValidity": "verified",
+        "tone": "approved",
+        "channelReadiness": "manual_copy_only"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "draftId"
+    },
+    {
+      "actionId": "sales.intelligence.CopySalesOutreachDraft",
+      "callable": "adminCopySalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_copy_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_copy_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "draftId": "draft-example",
+        "expectedContentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "draftId"
+    },
+    {
+      "actionId": "sales.commercial.finance.attest",
+      "callable": "adminAttestSalesHostSettlement",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_attest_sales_host_settlement_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_attest_sales_host_settlement_response.schema.json",
+      "summary": "Attest a reviewed host subscription collection against accepted terms.",
+      "example": {
+        "organizerId": "org-example",
+        "opportunityId": "opportunity-example",
+        "requestId": "request-example-001",
+        "expectedQuoteRevision": 3,
+        "termVersion": 1,
+        "amountMinor": 120000,
+        "currency": "INR",
+        "purpose": "host_subscription",
+        "receivedAt": "2026-09-27T00:00:00Z",
+        "settlementMethod": "bank_transfer",
+        "servicePeriod": null,
+        "evidence": {
+          "evidenceId": "evidence-example"
+        },
+        "settlementReference": "synthetic-bank-123",
+        "recipientAccountScope": "synthetic-account"
+      },
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intake.link",
+      "callable": "adminLinkOrganizerIntakeToSales",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/organizer-intake",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_link_organizer_intake_to_sales_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_link_organizer_intake_to_sales_response.schema.json",
+      "summary": "Join an explicitly reviewed Intake identity to its private Sales account.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "example": {
+        "workItemId": "work-example",
+        "candidateId": "candidate-example",
+        "expectedWorkItemRevision": 1,
+        "expectedCandidateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "organizerId": "org-example",
+        "curationPath": "organizerIntakeCurationDecisions/example-decision",
+        "requestId": "request-example-001"
+      }
     }
   ],
   "workflows": [
@@ -2333,7 +2826,23 @@
         "sales.commercial.pilots.upsert",
         "sales.commercial.quotes.revise",
         "sales.commercial.quotes.approve",
-        "sales.commercial.quotes.accept"
+        "sales.commercial.quotes.accept",
+        "sales.intelligence.GetSalesIntelligenceCatalog",
+        "sales.intelligence.GetSalesIntelligenceScore",
+        "sales.intelligence.SaveSalesIntelligencePolicy",
+        "sales.intelligence.SaveSalesFactorAssessment",
+        "sales.intelligence.SaveSalesIntelligenceClause",
+        "sales.intelligence.ReviewSalesIntelligenceClause",
+        "sales.intelligence.SaveSalesScoreSnapshot",
+        "sales.intelligence.BuildSalesOutreachInput",
+        "sales.intelligence.GenerateSalesOutreachDraft",
+        "sales.intelligence.GetSalesOutreachDraftJob",
+        "sales.intelligence.ListSalesOutreachDrafts",
+        "sales.intelligence.GetSalesOutreachDraft",
+        "sales.intelligence.ReviewSalesOutreachDraft",
+        "sales.intelligence.CopySalesOutreachDraft",
+        "sales.commercial.finance.attest",
+        "sales.intake.link"
       ]
     }
   ]

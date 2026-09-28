@@ -5,7 +5,7 @@
 /**
  * Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.
  */
-export interface SalesIntelligenceClausesDocument {
+export interface SalesIntelligenceClauseDocument {
   schemaVersion: 1;
   classification: "sales_private";
   clauseId: string;

@@ -29,4 +29,5 @@ export interface AdminUpsertSalesOpportunityCallablePayload {
     nextStepAt: string | null;
   };
   transitionReason?: string;
+  financeAttestationId?: string;
 }

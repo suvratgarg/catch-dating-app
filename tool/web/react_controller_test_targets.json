@@ -218,6 +218,11 @@
       "source": "admin/src/features/sales/controllers/useSalesDemoManagementController.ts",
       "test": "admin/src/features/sales/controllers/useSalesDemoManagementController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesIntelligenceController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesIntelligenceController.test.tsx",
+      "status": "required"
     }
   ]
 }

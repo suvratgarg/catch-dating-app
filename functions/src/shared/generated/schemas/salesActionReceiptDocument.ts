@@ -63,7 +63,8 @@ export const salesActionReceiptDocumentSchema: Record<string, unknown> = {
         "commercial.pilots.upsert",
         "commercial.quotes.revise",
         "commercial.quotes.approve",
-        "commercial.quotes.accept"
+        "commercial.quotes.accept",
+        "commercial.finance.attest"
       ]
     },
     "actorUid": {

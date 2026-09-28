@@ -1,6 +1,6224 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const salesIntakeLinkDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intake_links.schema.json",
+  "title": "SalesIntakeLinkDocument",
+  "description": "Immutable private join from exact reviewed Supply Intake candidate and canonical identity decision to the Sales companion account.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntakeLinks",
+  "x-firestore-path": "salesIntakeLinks/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "adminLinkOrganizerIntakeToSales",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "linkId",
+    "workItemId",
+    "candidateId",
+    "sourceRunId",
+    "sourceWorkItemRevision",
+    "sourceCandidateHash",
+    "organizerId",
+    "curationPath",
+    "curationOperationType",
+    "curationReviewedByUid",
+    "curationReviewedAt",
+    "linkedByUid",
+    "linkedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "linkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "workItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceRunId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceWorkItemRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sourceCandidateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "curationPath": {
+      "type": "string",
+      "minLength": 34,
+      "maxLength": 270
+    },
+    "curationOperationType": {
+      "enum": [
+        "create_entity_draft",
+        "attach_surface"
+      ]
+    },
+    "curationReviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "curationReviewedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "linkedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "linkedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  }
+};
+
+export const adminLinkOrganizerIntakeToSalesResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_link_organizer_intake_to_sales_response.schema.json",
+  "title": "AdminLinkOrganizerIntakeToSalesResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "link",
+    "account",
+    "accountCreated"
+  ],
+  "properties": {
+    "link": {
+      "title": "SalesIntakeLinkDocument",
+      "description": "Immutable private join from exact reviewed Supply Intake candidate and canonical identity decision to the Sales companion account.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesIntakeLinks",
+      "x-firestore-path": "salesIntakeLinks/{linkId}",
+      "x-document-id-field": "linkId",
+      "x-owner": "adminLinkOrganizerIntakeToSales",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "linkId",
+        "workItemId",
+        "candidateId",
+        "sourceRunId",
+        "sourceWorkItemRevision",
+        "sourceCandidateHash",
+        "organizerId",
+        "curationPath",
+        "curationOperationType",
+        "curationReviewedByUid",
+        "curationReviewedAt",
+        "linkedByUid",
+        "linkedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "linkId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "workItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sourceRunId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceWorkItemRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceCandidateHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "curationPath": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 270
+        },
+        "curationOperationType": {
+          "enum": [
+            "create_entity_draft",
+            "attach_surface"
+          ]
+        },
+        "curationReviewedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "curationReviewedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "linkedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "linkedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        }
+      }
+    },
+    "account": {
+      "title": "OrganizerSalesAccountDocument",
+      "description": "Private organizer-linked Sales companion; no canonical ownership, payment, or publication authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "organizerSalesAccounts",
+      "x-firestore-path": "organizerSalesAccounts/{organizerId}",
+      "x-owner": "private Sales account service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "revision",
+        "researchStatus",
+        "assignedOwnerUid",
+        "summary",
+        "nextAction",
+        "suppressionStatus",
+        "suppressionReason",
+        "suppressionAt",
+        "suppressionBy",
+        "duplicateReviewRequired",
+        "qualificationPolicy",
+        "name",
+        "city",
+        "market",
+        "marketLabel",
+        "eventTypes",
+        "cohortIds",
+        "searchTokens",
+        "createdAt",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "researchStatus": {
+          "enum": [
+            "new",
+            "needs_research",
+            "ready_for_review",
+            "qualified",
+            "benchmark_only",
+            "no_fit",
+            "archived"
+          ]
+        },
+        "assignedOwnerUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAction": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 320
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "suppressionStatus": {
+          "enum": [
+            "clear",
+            "held",
+            "suppressed"
+          ]
+        },
+        "suppressionReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "suppressionAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "suppressionBy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duplicateReviewRequired": {
+          "type": "boolean"
+        },
+        "qualificationPolicy": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "policyId",
+                "version",
+                "policyHash"
+              ],
+              "properties": {
+                "policyId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "market": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "marketLabel": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventTypes": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 30,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "cohortIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 30,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "searchTokens": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 96
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      },
+      "x-document-id-field": "organizerId"
+    },
+    "accountCreated": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminLinkOrganizerIntakeToSalesPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_link_organizer_intake_to_sales_payload.schema.json",
+  "title": "AdminLinkOrganizerIntakeToSalesPayload",
+  "description": "Links an employee-reviewed Supply Intake canonical organizer decision to its private Sales account; no organizer, publication or ownership mutation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workItemId",
+    "candidateId",
+    "expectedWorkItemRevision",
+    "expectedCandidateHash",
+    "organizerId",
+    "curationPath",
+    "requestId"
+  ],
+  "properties": {
+    "workItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "expectedWorkItemRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expectedCandidateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "curationPath": {
+      "type": "string",
+      "minLength": 34,
+      "maxLength": 270,
+      "pattern": "^organizerIntakeCurationDecisions/[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminBuildSalesOutreachInputResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_input_response.schema.json",
+  "title": "AdminBuildSalesOutreachInputResponse",
+  "x-callable-aliases": [
+    "adminBuildSalesOutreachInput"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bundle",
+    "sourceHash",
+    "sendAuthority"
+  ],
+  "properties": {
+    "bundle": {
+      "title": "OutreachDraftingInput",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "organizer",
+        "contact",
+        "opportunity",
+        "language",
+        "channel",
+        "purpose",
+        "evaluatedAt",
+        "policy",
+        "observations",
+        "capabilities",
+        "references",
+        "ctas",
+        "priorInteraction",
+        "evidenceConflictStatus"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "revision",
+            "identityStatus"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "identityStatus": {
+              "const": "verified"
+            }
+          }
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contactId",
+            "revision",
+            "role",
+            "eligibility",
+            "suppressionStatus",
+            "claimStatus"
+          ],
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "eligibility": {
+              "const": "eligible"
+            },
+            "suppressionStatus": {
+              "const": "clear"
+            },
+            "claimStatus": {
+              "enum": [
+                "verified",
+                "not_required"
+              ]
+            }
+          }
+        },
+        "opportunity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opportunityId",
+            "revision",
+            "stage",
+            "motion"
+          ],
+          "properties": {
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stage": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "motion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en"
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "promptVersion",
+            "playbookVersion",
+            "modelId"
+          ],
+          "properties": {
+            "promptVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "playbookVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "modelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "observations": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision",
+              "organizerId",
+              "approved",
+              "validUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approved": {
+                "const": true
+              },
+              "validUntil": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "ctas": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text",
+              "revision"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "priorInteraction": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "activityId",
+                "summary",
+                "revision"
+              ],
+              "properties": {
+                "activityId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          ]
+        },
+        "evidenceConflictStatus": {
+          "enum": [
+            "clear",
+            "needs_review"
+          ]
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "revision",
+            "identityStatus"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "identityStatus": {
+              "const": "verified"
+            }
+          }
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contactId",
+            "revision",
+            "role",
+            "eligibility",
+            "suppressionStatus",
+            "claimStatus"
+          ],
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "eligibility": {
+              "const": "eligible"
+            },
+            "suppressionStatus": {
+              "const": "clear"
+            },
+            "claimStatus": {
+              "enum": [
+                "verified",
+                "not_required"
+              ]
+            }
+          }
+        },
+        "opportunity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "opportunityId",
+            "revision",
+            "stage",
+            "motion"
+          ],
+          "properties": {
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stage": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "motion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "clause": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "text",
+            "revision",
+            "organizerId",
+            "approved",
+            "validUntil"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approved": {
+              "const": true
+            },
+            "validUntil": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  }
+};
+
+export const adminSalesIntelligenceClauseMutationResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+  "title": "AdminSalesIntelligenceClauseMutationResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clause"
+  ],
+  "properties": {
+    "clause": {
+      "title": "SalesIntelligenceClauseDocument",
+      "description": "Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesIntelligenceClauses",
+      "x-firestore-path": "salesIntelligenceClauses/{clauseId}",
+      "x-document-id-field": "clauseId",
+      "x-owner": "private Sales intelligence clause callable",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "clauseId",
+        "organizerId",
+        "revision",
+        "kind",
+        "text",
+        "state",
+        "evidenceIds",
+        "validUntil",
+        "permission",
+        "reviewedAt",
+        "reviewedBy",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "clauseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "enum": [
+            "observation",
+            "capability",
+            "reference",
+            "cta"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "approved",
+            "withdrawn"
+          ]
+        },
+        "evidenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "permission": {
+          "enum": [
+            "not_required",
+            "private_mention",
+            "withdrawn"
+          ]
+        },
+        "reviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reviewedBy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminSaveSalesIntelligenceClause",
+    "adminReviewSalesIntelligenceClause"
+  ]
+};
+
+export const adminReviewSalesOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_review_response.schema.json",
+  "title": "AdminReviewSalesOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "exactContentHash",
+    "factualValidity",
+    "tone",
+    "channelReadiness",
+    "sendAuthority",
+    "providerConfirmed",
+    "reviewedAt"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "factualValidity": {
+      "const": "verified"
+    },
+    "tone": {
+      "const": "approved"
+    },
+    "channelReadiness": {
+      "const": "manual_copy_only"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-callable-aliases": [
+    "adminReviewSalesOutreachDraft"
+  ]
+};
+
+export const adminGetSalesOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_draft_response.schema.json",
+  "title": "AdminGetSalesOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draft",
+    "status",
+    "reviewedAt",
+    "reviewedBy",
+    "sendAuthority"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "draft": {
+      "title": "OutreachDraft",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "draftId",
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "language",
+        "channel",
+        "subject",
+        "text",
+        "sentences",
+        "selection",
+        "inputHash",
+        "contentHash",
+        "sourceRevisions",
+        "model",
+        "reviewStatus",
+        "sendAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "const": "en"
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "subject": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sentences": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "kind",
+              "sourceIds"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "enum": [
+                  "observation",
+                  "capability",
+                  "reference",
+                  "cta",
+                  "prior_interaction"
+                ]
+              },
+              "sourceIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "selection": {
+          "title": "OutreachDraftingSelection",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "contactId",
+            "opportunityId",
+            "language",
+            "observationId",
+            "capabilityId",
+            "referenceId",
+            "ctaId",
+            "reasonToBlock",
+            "omittedIds"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "language": {
+              "const": "en"
+            },
+            "observationId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "capabilityId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ctaId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasonToBlock": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "omittedIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceRevisions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelId",
+            "promptVersion",
+            "playbookVersion",
+            "cacheHit",
+            "usage"
+          ],
+          "properties": {
+            "modelId": {
+              "type": "string"
+            },
+            "promptVersion": {
+              "type": "string"
+            },
+            "playbookVersion": {
+              "type": "string"
+            },
+            "cacheHit": {
+              "type": "boolean"
+            },
+            "usage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inputTokens",
+                "outputTokens",
+                "costMicros"
+              ],
+              "properties": {
+                "inputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "outputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "costMicros": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "reviewStatus": {
+          "const": "pending_review"
+        },
+        "sendAuthority": {
+          "const": false
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "reviewedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reviewedBy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesOutreachDraft"
+  ]
+};
+
+export const adminGetSalesIntelligenceCatalogRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_catalog_request.schema.json",
+  "title": "AdminGetSalesIntelligenceCatalogRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminListSalesOutreachDraftsRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_outreach_list_request.schema.json",
+  "title": "AdminListSalesOutreachDraftsRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminSaveSalesFactorAssessmentResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_assessment_response.schema.json",
+  "title": "AdminSaveSalesFactorAssessmentResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment"
+  ],
+  "properties": {
+    "assessment": {
+      "title": "SalesIntelligenceAssessmentDocument",
+      "description": "Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesIntelligenceAssessments",
+      "x-firestore-path": "salesIntelligenceAssessments/{assessmentId}",
+      "x-document-id-field": "assessmentId",
+      "x-owner": "private Sales intelligence assessment callable",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "assessmentId",
+        "organizerId",
+        "factorId",
+        "revision",
+        "state",
+        "value",
+        "evidenceIds",
+        "reason",
+        "reviewedAt",
+        "reviewerUid"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "assessmentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "factorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "enum": [
+            "known",
+            "unknown",
+            "disputed"
+          ]
+        },
+        "value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 5
+        },
+        "evidenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminSaveSalesFactorAssessment"
+  ]
+};
+
+export const adminGetSalesOutreachDraftJobRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_outreach_job_request.schema.json",
+  "title": "AdminGetSalesOutreachDraftJobRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminReviewSalesIntelligenceClauseRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_clause_review_request.schema.json",
+  "title": "AdminReviewSalesIntelligenceClauseRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "clauseId",
+    "expectedRevision",
+    "decision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "clauseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "decision": {
+      "enum": [
+        "approve",
+        "withdraw"
+      ]
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminSaveSalesIntelligencePolicyResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_policy_response.schema.json",
+  "title": "AdminSaveSalesIntelligencePolicyResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy"
+  ],
+  "properties": {
+    "policy": {
+      "title": "SalesIntelligencePolicyDocument",
+      "description": "Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesIntelligencePolicies",
+      "x-firestore-path": "salesIntelligencePolicies/{policyRecordId}",
+      "x-document-id-field": "policyRecordId",
+      "x-owner": "private Sales intelligence policy callable",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "policyRecordId",
+        "policyId",
+        "revision",
+        "version",
+        "status",
+        "factors",
+        "priorityBands",
+        "promptVersion",
+        "playbookVersion",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "policyRecordId": {
+          "const": "current"
+        },
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "paused"
+          ]
+        },
+        "factors": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "weight",
+              "claimKeys",
+              "maxAgeDays"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "weight": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "claimKeys": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "identity",
+                    "recurrence",
+                    "operation",
+                    "stack",
+                    "other"
+                  ]
+                }
+              },
+              "maxAgeDays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 365
+              }
+            }
+          }
+        },
+        "priorityBands": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "high",
+            "medium"
+          ],
+          "properties": {
+            "high": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "medium": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "playbookVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminSaveSalesIntelligencePolicy"
+  ]
+};
+
+export const adminCopySalesOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_copy_response.schema.json",
+  "title": "AdminCopySalesOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "subject",
+    "text",
+    "exactContentHash",
+    "copiedAt",
+    "sendAuthority",
+    "providerConfirmed"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "subject": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2500
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "copiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "providerConfirmed": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminCopySalesOutreachDraft"
+  ]
+};
+
+export const adminGetSalesOutreachDraftJobResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_job_response.schema.json",
+  "title": "AdminGetSalesOutreachDraftJobResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "result",
+    "failure",
+    "retryAfterSeconds"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "running",
+        "completed",
+        "failed"
+      ]
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "draftId",
+            "contentHash"
+          ],
+          "properties": {
+            "draftId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failure": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "retryAfterSeconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 60
+    }
+  },
+  "definitions": {
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "contentHash"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesOutreachDraftJob"
+  ]
+};
+
+export const adminGenerateSalesOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_generate_response.schema.json",
+  "title": "AdminGenerateSalesOutreachDraftResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "result",
+        "idempotentReplay"
+      ],
+      "properties": {
+        "status": {
+          "const": "completed"
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "draftId",
+            "contentHash"
+          ],
+          "properties": {
+            "draftId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "idempotentReplay": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "retryAfterSeconds"
+      ],
+      "properties": {
+        "status": {
+          "const": "running"
+        },
+        "retryAfterSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "failure"
+      ],
+      "properties": {
+        "status": {
+          "const": "failed"
+        },
+        "failure": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        }
+      }
+    }
+  ],
+  "x-callable-aliases": [
+    "adminGenerateSalesOutreachDraft"
+  ]
+};
+
+export const adminGetSalesIntelligenceScoreRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_score_request.schema.json",
+  "title": "AdminGetSalesIntelligenceScoreRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminReviewSalesOutreachDraftRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_outreach_review_request.schema.json",
+  "title": "AdminReviewSalesOutreachDraftRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "draftId",
+    "expectedContentHash",
+    "factualValidity",
+    "tone",
+    "channelReadiness"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "factualValidity": {
+      "const": "verified"
+    },
+    "tone": {
+      "const": "approved"
+    },
+    "channelReadiness": {
+      "const": "manual_copy_only"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const adminCopySalesOutreachDraftRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_outreach_copy_request.schema.json",
+  "title": "AdminCopySalesOutreachDraftRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "draftId",
+    "expectedContentHash"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const adminAttestSalesHostSettlementPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_attest_sales_host_settlement_payload.schema.json",
+  "title": "commercial.finance.attest request",
+  "description": "Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "opportunityId",
+    "requestId",
+    "expectedQuoteRevision",
+    "termVersion",
+    "amountMinor",
+    "currency",
+    "purpose",
+    "receivedAt",
+    "settlementMethod",
+    "settlementReference",
+    "recipientAccountScope",
+    "servicePeriod",
+    "evidence"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedQuoteRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000000
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "purpose": {
+      "const": "host_subscription"
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "settlementMethod": {
+      "enum": [
+        "bank_transfer",
+        "cash",
+        "other_external"
+      ]
+    },
+    "settlementReference": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "recipientAccountScope": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "servicePeriod": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "startsAt",
+            "endsAt"
+          ],
+          "properties": {
+            "startsAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endsAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  }
+};
+
+export const adminListSalesOutreachDraftsResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_list_response.schema.json",
+  "title": "AdminListSalesOutreachDraftsResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rows"
+  ],
+  "properties": {
+    "rows": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "draftId",
+          "contactId",
+          "opportunityId",
+          "subject",
+          "status",
+          "contentHash",
+          "createdAt",
+          "reviewedAt"
+        ],
+        "properties": {
+          "draftId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "opportunityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "subject": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          },
+          "status": {
+            "enum": [
+              "pending_review",
+              "approved"
+            ]
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSalesOutreachDrafts"
+  ]
+};
+
+export const adminGetSalesIntelligenceCatalogResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_catalog_response.schema.json",
+  "title": "AdminGetSalesIntelligenceCatalogResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy",
+    "assessments",
+    "clauses",
+    "evaluatedAt"
+  ],
+  "properties": {
+    "policy": {
+      "anyOf": [
+        {
+          "title": "SalesIntelligencePolicyDocument",
+          "description": "Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesIntelligencePolicies",
+          "x-firestore-path": "salesIntelligencePolicies/{policyRecordId}",
+          "x-document-id-field": "policyRecordId",
+          "x-owner": "private Sales intelligence policy callable",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "policyRecordId",
+            "policyId",
+            "revision",
+            "version",
+            "status",
+            "factors",
+            "priorityBands",
+            "promptVersion",
+            "playbookVersion",
+            "updatedAt",
+            "updatedBy"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "policyRecordId": {
+              "const": "current"
+            },
+            "policyId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "enum": [
+                "active",
+                "paused"
+              ]
+            },
+            "factors": {
+              "type": "array",
+              "minItems": 7,
+              "maxItems": 7,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "weight",
+                  "claimKeys",
+                  "maxAgeDays"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "claimKeys": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "uniqueItems": true,
+                    "items": {
+                      "enum": [
+                        "identity",
+                        "recurrence",
+                        "operation",
+                        "stack",
+                        "other"
+                      ]
+                    }
+                  },
+                  "maxAgeDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 365
+                  }
+                }
+              }
+            },
+            "priorityBands": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "high",
+                "medium"
+              ],
+              "properties": {
+                "high": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "medium": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "promptVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "playbookVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "definitions": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "assessments": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "title": "SalesIntelligenceAssessmentDocument",
+        "description": "Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "salesIntelligenceAssessments",
+        "x-firestore-path": "salesIntelligenceAssessments/{assessmentId}",
+        "x-document-id-field": "assessmentId",
+        "x-owner": "private Sales intelligence assessment callable",
+        "required": [
+          "schemaVersion",
+          "classification",
+          "assessmentId",
+          "organizerId",
+          "factorId",
+          "revision",
+          "state",
+          "value",
+          "evidenceIds",
+          "reason",
+          "reviewedAt",
+          "reviewerUid"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "classification": {
+            "const": "sales_private"
+          },
+          "assessmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "factorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "enum": [
+              "known",
+              "unknown",
+              "disputed"
+            ]
+          },
+          "value": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 5
+          },
+          "evidenceIds": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewerUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "definitions": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    },
+    "clauses": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "title": "SalesIntelligenceClauseDocument",
+        "description": "Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "salesIntelligenceClauses",
+        "x-firestore-path": "salesIntelligenceClauses/{clauseId}",
+        "x-document-id-field": "clauseId",
+        "x-owner": "private Sales intelligence clause callable",
+        "required": [
+          "schemaVersion",
+          "classification",
+          "clauseId",
+          "organizerId",
+          "revision",
+          "kind",
+          "text",
+          "state",
+          "evidenceIds",
+          "validUntil",
+          "permission",
+          "reviewedAt",
+          "reviewedBy",
+          "updatedAt",
+          "updatedBy"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "classification": {
+            "const": "sales_private"
+          },
+          "clauseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "enum": [
+              "observation",
+              "capability",
+              "reference",
+              "cta"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "state": {
+            "enum": [
+              "draft",
+              "approved",
+              "withdrawn"
+            ]
+          },
+          "evidenceIds": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "permission": {
+            "enum": [
+              "not_required",
+              "private_mention",
+              "withdrawn"
+            ]
+          },
+          "reviewedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "reviewedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "definitions": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesIntelligenceCatalog"
+  ]
+};
+
+export const adminGetSalesIntelligenceScoreResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_intelligence_score_response.schema.json",
+  "title": "AdminGetSalesIntelligenceScoreResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshot"
+  ],
+  "properties": {
+    "snapshot": {
+      "title": "SalesIntelligenceScoreSnapshotDocument",
+      "description": "Immutable reviewed-source fit snapshot. Unknown or disputed factors yield a null score and unranked priority.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesIntelligenceScoreSnapshots",
+      "x-firestore-path": "salesIntelligenceScoreSnapshots/{snapshotId}",
+      "x-document-id-field": "snapshotId",
+      "x-owner": "private Sales intelligence score callable",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "snapshotId",
+        "organizerId",
+        "accountRevision",
+        "policyId",
+        "policyRevision",
+        "policyVersion",
+        "sourceHash",
+        "status",
+        "score",
+        "priority",
+        "factors",
+        "evaluatedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "snapshotId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "accountRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "needs_research",
+            "review_required"
+          ]
+        },
+        "score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "priority": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unranked"
+          ]
+        },
+        "factors": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "factorId",
+              "state",
+              "value",
+              "evidenceIds",
+              "reason"
+            ],
+            "properties": {
+              "factorId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "state": {
+                "enum": [
+                  "known",
+                  "unknown",
+                  "disputed"
+                ]
+              },
+              "value": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 5
+              },
+              "evidenceIds": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesIntelligenceScore",
+    "adminSaveSalesScoreSnapshot"
+  ]
+};
+
+export const adminGetSalesOutreachDraftRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_outreach_draft_request.schema.json",
+  "title": "AdminGetSalesOutreachDraftRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const adminReviseSalesQuoteResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_revise_sales_quote_response.schema.json",
+  "title": "admin_revise_sales_quote_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "quote",
+    "quoteVersion",
+    "receipt"
+  ],
+  "properties": {
+    "quote": {
+      "title": "salesQuotes document",
+      "description": "Current quote head; accepted terms do not prove collection.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesQuotes",
+      "x-firestore-path": "salesQuotes/{quoteId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "revision",
+        "termVersion",
+        "status",
+        "approvedDecisionId",
+        "acceptedDecisionId",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved",
+            "accepted_reviewed"
+          ]
+        },
+        "approvedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-document-id-field": "quoteId"
+    },
+    "quoteVersion": {
+      "title": "salesQuoteVersions document",
+      "description": "Immutable exact commercial terms with reviewed source fact references.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesQuoteVersions",
+      "x-firestore-path": "salesQuoteVersions/{versionId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "termVersion",
+        "terms",
+        "termsHash",
+        "createdAt",
+        "createdBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "terms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "amountMinor",
+            "billingCadence",
+            "scope",
+            "validUntil",
+            "sourceFactRefs"
+          ],
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000000
+            },
+            "billingCadence": {
+              "enum": [
+                "one_time",
+                "monthly",
+                "annual",
+                "usage_based"
+              ]
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "validUntil": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "sourceFactRefs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              }
+            }
+          }
+        },
+        "termsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "createdBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminAttestSalesHostSettlementResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_attest_sales_host_settlement_response.schema.json",
+  "title": "admin_attest_sales_host_settlement_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attestation",
+    "receipt"
+  ],
+  "properties": {
+    "attestation": {
+      "title": "SalesHostSettlementAttestationsDocument",
+      "description": "Owner-attested first-party host subscription collection; provider unconfirmed and separate from guest payments.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesHostSettlementAttestations",
+      "x-firestore-path": "salesHostSettlementAttestations/{attestationId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "revision",
+        "attestationId",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "termVersion",
+        "termsHash",
+        "amountMinor",
+        "currency",
+        "purpose",
+        "receivedAt",
+        "settlementMethod",
+        "settlementReference",
+        "recipientAccountScope",
+        "settlementIdentityHash",
+        "servicePeriod",
+        "evidence",
+        "status",
+        "providerConfirmed",
+        "actorUid",
+        "attestedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "revision": {
+          "const": 1
+        },
+        "attestationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "termsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000000
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "purpose": {
+          "const": "host_subscription"
+        },
+        "receivedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "settlementMethod": {
+          "enum": [
+            "bank_transfer",
+            "cash",
+            "other_external"
+          ]
+        },
+        "settlementReference": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+        },
+        "recipientAccountScope": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+        },
+        "settlementIdentityHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "servicePeriod": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "startsAt",
+                "endsAt"
+              ],
+              "properties": {
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId",
+            "sourceRef",
+            "contentHash",
+            "observedAt"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "observedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        "status": {
+          "const": "manual_attested_collected"
+        },
+        "providerConfirmed": {
+          "const": false
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attestedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        }
+      },
+      "x-document-id-field": "attestationId"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminAcceptSalesQuoteResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_accept_sales_quote_response.schema.json",
+  "title": "admin_accept_sales_quote_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "quote",
+    "decision",
+    "receipt"
+  ],
+  "properties": {
+    "quote": {
+      "title": "salesQuotes document",
+      "description": "Current quote head; accepted terms do not prove collection.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesQuotes",
+      "x-firestore-path": "salesQuotes/{quoteId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "revision",
+        "termVersion",
+        "status",
+        "approvedDecisionId",
+        "acceptedDecisionId",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved",
+            "accepted_reviewed"
+          ]
+        },
+        "approvedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-document-id-field": "quoteId"
+    },
+    "decision": {
+      "title": "salesCommercialDecisions document",
+      "description": "Append-only exact-version approval or reviewed terms acceptance; not a receipt.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesCommercialDecisions",
+      "x-firestore-path": "salesCommercialDecisions/{decisionId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "decisionId",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "termVersion",
+        "termsHash",
+        "kind",
+        "evidence",
+        "approvedDecisionId",
+        "actorUid",
+        "decidedAt",
+        "paymentStatus"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "kind": {
+          "enum": [
+            "quote_approved",
+            "terms_acceptance_reviewed"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId",
+            "sourceRef",
+            "contentHash",
+            "observedAt"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "observedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        "approvedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decidedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "paymentStatus": {
+          "const": "unknown"
+        }
+      },
+      "x-document-id-field": "decisionId"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminGetSalesCommercialDetailResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_sales_commercial_detail_response.schema.json",
+  "title": "admin_get_sales_commercial_detail_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "opportunity",
+    "pilotPlan",
+    "quote",
+    "quoteVersion",
+    "approvedDecision",
+    "acceptedDecision",
+    "settlementAttestation",
+    "history",
+    "historyTruncated",
+    "paymentStatus",
+    "bookedHostRevenueMinor"
+  ],
+  "properties": {
+    "opportunity": {
+      "title": "SalesOpportunityDocument",
+      "description": "Private sales pipeline stage, independent of public organizer status.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesOpportunities",
+      "x-firestore-path": "salesOpportunities/{opportunityId}",
+      "x-owner": "private Sales opportunity service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "opportunityId",
+        "organizerId",
+        "revision",
+        "motion",
+        "stage",
+        "ownerUid",
+        "nextStep",
+        "nextStepAt",
+        "stageEnteredAt",
+        "createdAt",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "motion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "stage": {
+          "enum": [
+            "new_enquiry",
+            "ready_to_contact",
+            "contacted",
+            "in_conversation",
+            "demo_arranged",
+            "demo_completed",
+            "pilot_agreed",
+            "pilot_running",
+            "commercial_discussion",
+            "closed_won",
+            "closed_lost"
+          ]
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "nextStep": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 320
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextStepAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stageEnteredAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      },
+      "x-document-id-field": "opportunityId"
+    },
+    "pilotPlan": {
+      "anyOf": [
+        {
+          "title": "salesPilotPlans document",
+          "description": "Private revisioned pilot scope; no revenue or product activation authority.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesPilotPlans",
+          "x-firestore-path": "salesPilotPlans/{opportunityId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "organizerId",
+            "opportunityId",
+            "revision",
+            "status",
+            "workflowId",
+            "objective",
+            "successMeasures",
+            "startsAt",
+            "endsAt",
+            "reviewEvidence",
+            "outcomeEvidence",
+            "updatedAt",
+            "updatedBy"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "status": {
+              "enum": [
+                "draft",
+                "reviewed",
+                "active",
+                "completed",
+                "cancelled"
+              ]
+            },
+            "workflowId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "objective": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "successMeasures": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "startsAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "endsAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reviewEvidence": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidenceId",
+                    "sourceRef",
+                    "contentHash",
+                    "observedAt"
+                  ],
+                  "properties": {
+                    "evidenceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 96,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "sourceRef": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "contentHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "observedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outcomeEvidence": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidenceId",
+                    "sourceRef",
+                    "contentHash",
+                    "observedAt"
+                  ],
+                  "properties": {
+                    "evidenceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 96,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "sourceRef": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "contentHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "observedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "updatedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "x-document-id-field": "opportunityId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "quote": {
+      "anyOf": [
+        {
+          "title": "salesQuotes document",
+          "description": "Current quote head; accepted terms do not prove collection.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesQuotes",
+          "x-firestore-path": "salesQuotes/{quoteId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "organizerId",
+            "opportunityId",
+            "quoteId",
+            "revision",
+            "termVersion",
+            "status",
+            "approvedDecisionId",
+            "acceptedDecisionId",
+            "updatedAt",
+            "updatedBy"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "quoteId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "termVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "status": {
+              "enum": [
+                "draft",
+                "approved",
+                "accepted_reviewed"
+              ]
+            },
+            "approvedDecisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "acceptedDecisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "updatedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "x-document-id-field": "quoteId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "quoteVersion": {
+      "anyOf": [
+        {
+          "title": "salesQuoteVersions document",
+          "description": "Immutable exact commercial terms with reviewed source fact references.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesQuoteVersions",
+          "x-firestore-path": "salesQuoteVersions/{versionId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "organizerId",
+            "opportunityId",
+            "quoteId",
+            "termVersion",
+            "terms",
+            "termsHash",
+            "createdAt",
+            "createdBy"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "quoteId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "termVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "terms": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "currency",
+                "amountMinor",
+                "billingCadence",
+                "scope",
+                "validUntil",
+                "sourceFactRefs"
+              ],
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "amountMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "billingCadence": {
+                  "enum": [
+                    "one_time",
+                    "monthly",
+                    "annual",
+                    "usage_based"
+                  ]
+                },
+                "scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                "sourceFactRefs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  }
+                }
+              }
+            },
+            "termsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "createdBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "approvedDecision": {
+      "anyOf": [
+        {
+          "title": "salesCommercialDecisions document",
+          "description": "Append-only exact-version approval or reviewed terms acceptance; not a receipt.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesCommercialDecisions",
+          "x-firestore-path": "salesCommercialDecisions/{decisionId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "decisionId",
+            "organizerId",
+            "opportunityId",
+            "quoteId",
+            "termVersion",
+            "termsHash",
+            "kind",
+            "evidence",
+            "approvedDecisionId",
+            "actorUid",
+            "decidedAt",
+            "paymentStatus"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "quoteId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termVersion": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "kind": {
+              "enum": [
+                "quote_approved",
+                "terms_acceptance_reviewed"
+              ]
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "contentHash",
+                "observedAt"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            "approvedDecisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "decidedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "paymentStatus": {
+              "const": "unknown"
+            }
+          },
+          "x-document-id-field": "decisionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "acceptedDecision": {
+      "anyOf": [
+        {
+          "title": "salesCommercialDecisions document",
+          "description": "Append-only exact-version approval or reviewed terms acceptance; not a receipt.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesCommercialDecisions",
+          "x-firestore-path": "salesCommercialDecisions/{decisionId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "decisionId",
+            "organizerId",
+            "opportunityId",
+            "quoteId",
+            "termVersion",
+            "termsHash",
+            "kind",
+            "evidence",
+            "approvedDecisionId",
+            "actorUid",
+            "decidedAt",
+            "paymentStatus"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "quoteId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termVersion": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "kind": {
+              "enum": [
+                "quote_approved",
+                "terms_acceptance_reviewed"
+              ]
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "contentHash",
+                "observedAt"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            "approvedDecisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "decidedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "paymentStatus": {
+              "const": "unknown"
+            }
+          },
+          "x-document-id-field": "decisionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settlementAttestation": {
+      "anyOf": [
+        {
+          "title": "SalesHostSettlementAttestationsDocument",
+          "description": "Owner-attested first-party host subscription collection; provider unconfirmed and separate from guest payments.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "salesHostSettlementAttestations",
+          "x-firestore-path": "salesHostSettlementAttestations/{attestationId}",
+          "x-owner": "private Sales commercial service",
+          "required": [
+            "schemaVersion",
+            "classification",
+            "revision",
+            "attestationId",
+            "organizerId",
+            "opportunityId",
+            "quoteId",
+            "termVersion",
+            "termsHash",
+            "amountMinor",
+            "currency",
+            "purpose",
+            "receivedAt",
+            "settlementMethod",
+            "settlementReference",
+            "recipientAccountScope",
+            "settlementIdentityHash",
+            "servicePeriod",
+            "evidence",
+            "status",
+            "providerConfirmed",
+            "actorUid",
+            "attestedAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "classification": {
+              "const": "sales_private"
+            },
+            "revision": {
+              "const": 1
+            },
+            "attestationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "quoteId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "termVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "termsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000000000
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "purpose": {
+              "const": "host_subscription"
+            },
+            "receivedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "settlementMethod": {
+              "enum": [
+                "bank_transfer",
+                "cash",
+                "other_external"
+              ]
+            },
+            "settlementReference": {
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 120,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+            },
+            "recipientAccountScope": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+            },
+            "settlementIdentityHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "servicePeriod": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "startsAt",
+                    "endsAt"
+                  ],
+                  "properties": {
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    "endsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "contentHash",
+                "observedAt"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            "status": {
+              "const": "manual_attested_collected"
+            },
+            "providerConfirmed": {
+              "const": false
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attestedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          },
+          "x-document-id-field": "attestationId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "history": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "title": "salesOpportunityStageHistory document",
+        "description": "Append-only private stage movement with explicit loss/reopen reason.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "salesOpportunityStageHistory",
+        "x-firestore-path": "salesOpportunityStageHistory/{historyId}",
+        "x-owner": "private Sales commercial service",
+        "required": [
+          "schemaVersion",
+          "classification",
+          "historyId",
+          "organizerId",
+          "opportunityId",
+          "fromStage",
+          "toStage",
+          "reason",
+          "actorUid",
+          "changedAt"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "classification": {
+            "const": "sales_private"
+          },
+          "historyId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "opportunityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "fromStage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "toStage": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 48
+          }
+        },
+        "x-document-id-field": "historyId"
+      }
+    },
+    "historyTruncated": {
+      "type": "boolean"
+    },
+    "paymentStatus": {
+      "enum": [
+        "unknown",
+        "manual_attested"
+      ]
+    },
+    "bookedHostRevenueMinor": {
+      "type": "null"
+    }
+  }
+};
+
+export const adminListSalesCommercialReportResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_sales_commercial_report_response.schema.json",
+  "title": "admin_list_sales_commercial_report_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rows",
+    "nextCursor",
+    "pageScope"
+  ],
+  "properties": {
+    "rows": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "opportunityId",
+          "stage",
+          "ownerUid",
+          "pilotStatus",
+          "pilotRevision",
+          "quoteStatus",
+          "quoteRevision",
+          "termVersion",
+          "paymentStatus",
+          "manuallyAttestedHostRevenue",
+          "bookedHostRevenueMinor"
+        ],
+        "properties": {
+          "opportunityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "stage": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "ownerUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "pilotStatus": {
+            "anyOf": [
+              {
+                "enum": [
+                  "draft",
+                  "reviewed",
+                  "active",
+                  "completed",
+                  "cancelled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pilotRevision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quoteStatus": {
+            "anyOf": [
+              {
+                "enum": [
+                  "draft",
+                  "approved",
+                  "accepted_reviewed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quoteRevision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "termVersion": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paymentStatus": {
+            "enum": [
+              "unknown",
+              "manual_attested"
+            ]
+          },
+          "manuallyAttestedHostRevenue": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amountMinor",
+                  "currency",
+                  "providerConfirmed",
+                  "purpose"
+                ],
+                "properties": {
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "providerConfirmed": {
+                    "const": false
+                  },
+                  "purpose": {
+                    "const": "host_subscription"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bookedHostRevenueMinor": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pageScope": {
+      "const": true
+    }
+  }
+};
+
+export const adminApproveSalesQuoteResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_approve_sales_quote_response.schema.json",
+  "title": "admin_approve_sales_quote_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "quote",
+    "decision",
+    "receipt"
+  ],
+  "properties": {
+    "quote": {
+      "title": "salesQuotes document",
+      "description": "Current quote head; accepted terms do not prove collection.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesQuotes",
+      "x-firestore-path": "salesQuotes/{quoteId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "revision",
+        "termVersion",
+        "status",
+        "approvedDecisionId",
+        "acceptedDecisionId",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "termVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved",
+            "accepted_reviewed"
+          ]
+        },
+        "approvedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-document-id-field": "quoteId"
+    },
+    "decision": {
+      "title": "salesCommercialDecisions document",
+      "description": "Append-only exact-version approval or reviewed terms acceptance; not a receipt.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesCommercialDecisions",
+      "x-firestore-path": "salesCommercialDecisions/{decisionId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "decisionId",
+        "organizerId",
+        "opportunityId",
+        "quoteId",
+        "termVersion",
+        "termsHash",
+        "kind",
+        "evidence",
+        "approvedDecisionId",
+        "actorUid",
+        "decidedAt",
+        "paymentStatus"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "quoteId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "kind": {
+          "enum": [
+            "quote_approved",
+            "terms_acceptance_reviewed"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceId",
+            "sourceRef",
+            "contentHash",
+            "observedAt"
+          ],
+          "properties": {
+            "evidenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "observedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        "approvedDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decidedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "paymentStatus": {
+          "const": "unknown"
+        }
+      },
+      "x-document-id-field": "decisionId"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSalesPilotPlanResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_upsert_sales_pilot_plan_response.schema.json",
+  "title": "admin_upsert_sales_pilot_plan_response response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pilotPlan",
+    "receipt"
+  ],
+  "properties": {
+    "pilotPlan": {
+      "title": "salesPilotPlans document",
+      "description": "Private revisioned pilot scope; no revenue or product activation authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-firestore-collection": "salesPilotPlans",
+      "x-firestore-path": "salesPilotPlans/{opportunityId}",
+      "x-owner": "private Sales commercial service",
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "opportunityId",
+        "revision",
+        "status",
+        "workflowId",
+        "objective",
+        "successMeasures",
+        "startsAt",
+        "endsAt",
+        "reviewEvidence",
+        "outcomeEvidence",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "active",
+            "completed",
+            "cancelled"
+          ]
+        },
+        "workflowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "successMeasures": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "startsAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endsAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewEvidence": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "contentHash",
+                "observedAt"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcomeEvidence": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "contentHash",
+                "observedAt"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-document-id-field": "opportunityId"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const salesHostSettlementIdentitiesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_host_settlement_identities.schema.json",
+  "title": "SalesHostSettlementIdentitiesDocument",
+  "description": "Immutable uniqueness receipt for one external host settlement reference within one recipient ledger scope, independent of evidence and quote IDs.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesHostSettlementIdentities",
+  "x-firestore-path": "salesHostSettlementIdentities/{settlementIdentityHash}",
+  "x-document-id-field": "settlementIdentityHash",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "settlementIdentityHash",
+    "attestationId",
+    "organizerId",
+    "opportunityId",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "settlementIdentityHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attestationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  }
+};
+
+export const salesHostSettlementAttestationsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_host_settlement_attestations.schema.json",
+  "title": "SalesHostSettlementAttestationsDocument",
+  "description": "Owner-attested first-party host subscription collection; provider unconfirmed and separate from guest payments.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesHostSettlementAttestations",
+  "x-firestore-path": "salesHostSettlementAttestations/{attestationId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "revision",
+    "attestationId",
+    "organizerId",
+    "opportunityId",
+    "quoteId",
+    "termVersion",
+    "termsHash",
+    "amountMinor",
+    "currency",
+    "purpose",
+    "receivedAt",
+    "settlementMethod",
+    "settlementReference",
+    "recipientAccountScope",
+    "settlementIdentityHash",
+    "servicePeriod",
+    "evidence",
+    "status",
+    "providerConfirmed",
+    "actorUid",
+    "attestedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "revision": {
+      "const": 1
+    },
+    "attestationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "quoteId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "termVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "termsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000000
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "purpose": {
+      "const": "host_subscription"
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "settlementMethod": {
+      "enum": [
+        "bank_transfer",
+        "cash",
+        "other_external"
+      ]
+    },
+    "settlementReference": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "recipientAccountScope": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "settlementIdentityHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "servicePeriod": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "startsAt",
+            "endsAt"
+          ],
+          "properties": {
+            "startsAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            },
+            "endsAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 48
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId",
+        "sourceRef",
+        "contentHash",
+        "observedAt"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        }
+      }
+    },
+    "status": {
+      "const": "manual_attested_collected"
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attestedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  },
+  "x-document-id-field": "attestationId"
+};
+
+export const salesHostSettlementEvidenceUsesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_host_settlement_evidence_uses.schema.json",
+  "title": "SalesHostSettlementEvidenceUsesDocument",
+  "description": "Immutable uniqueness receipt preventing one settlement source from double counting.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesHostSettlementEvidenceUses",
+  "x-firestore-path": "salesHostSettlementEvidenceUses/{evidenceId}",
+  "x-owner": "private Sales commercial service",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "evidenceId",
+    "attestationId",
+    "organizerId",
+    "opportunityId",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "evidenceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attestationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "opportunityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    }
+  },
+  "x-document-id-field": "evidenceId"
+};
+
 export const outreachDraftingInputSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/operations/outreach_drafting_input.schema.json",
@@ -3646,6 +9864,17 @@ export const adminPreviewSalesImportCallablePayloadSchema = {
                 }
               }
             }
+          },
+          "cohortIds": {
+            "type": "array",
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
           }
         }
       }
@@ -4024,6 +10253,12 @@ export const adminUpsertSalesOpportunityCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 1000
+    },
+    "financeAttestationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   }
 };
@@ -4416,6 +10651,17 @@ export const adminApplySalesImportCallablePayloadSchema = {
                   "maxLength": 2000
                 }
               }
+            }
+          },
+          "cohortIds": {
+            "type": "array",
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             }
           }
         }
@@ -6247,7 +12493,8 @@ export const salesActionReceiptDocumentSchema = {
         "commercial.pilots.upsert",
         "commercial.quotes.revise",
         "commercial.quotes.approve",
-        "commercial.quotes.accept"
+        "commercial.quotes.accept",
+        "commercial.finance.attest"
       ]
     },
     "actorUid": {
@@ -7265,6 +13512,17 @@ export const salesImportRowDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "cohortIds": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
     }
   }
 };
@@ -7457,6 +13715,17 @@ export const salesImportJobRowDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "cohortIds": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
     }
   }
 };
@@ -11325,7 +17594,7 @@ export const salesInboundIntentsDocumentSchema = {
   ]
 };
 
-export const salesIntelligenceAssessmentsDocumentSchema = {
+export const salesIntelligenceAssessmentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_assessments.schema.json",
   "title": "SalesIntelligenceAssessmentDocument",
@@ -11433,7 +17702,7 @@ export const salesIntelligenceAssessmentsDocumentSchema = {
   }
 };
 
-export const salesIntelligenceClausesDocumentSchema = {
+export const salesIntelligenceClauseDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_clauses.schema.json",
   "title": "SalesIntelligenceClauseDocument",
@@ -11567,7 +17836,7 @@ export const salesIntelligenceClausesDocumentSchema = {
   }
 };
 
-export const salesIntelligencePoliciesDocumentSchema = {
+export const salesIntelligencePolicyDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_policies.schema.json",
   "title": "SalesIntelligencePolicyDocument",
@@ -11726,7 +17995,7 @@ export const salesIntelligencePoliciesDocumentSchema = {
   }
 };
 
-export const salesIntelligenceReceiptsDocumentSchema = {
+export const salesIntelligenceReceiptDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json",
   "title": "SalesIntelligenceReceiptDocument",
@@ -11808,7 +18077,7 @@ export const salesIntelligenceReceiptsDocumentSchema = {
   }
 };
 
-export const salesIntelligenceScoreSnapshotsDocumentSchema = {
+export const salesIntelligenceScoreSnapshotDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_score_snapshots.schema.json",
   "title": "SalesIntelligenceScoreSnapshotDocument",

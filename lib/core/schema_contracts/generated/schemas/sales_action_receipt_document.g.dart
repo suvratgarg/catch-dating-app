@@ -66,6 +66,7 @@ const schemaSalesActionReceiptDocumentSchema = <String, Object?>{
         'commercial.quotes.revise',
         'commercial.quotes.approve',
         'commercial.quotes.accept',
+        'commercial.finance.attest',
       ],
     },
     'actorUid': <String, Object?>{

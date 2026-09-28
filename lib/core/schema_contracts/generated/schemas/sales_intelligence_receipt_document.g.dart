@@ -4,7 +4,7 @@
 
 // JSON Schema constant emitted from firestore/sales_intelligence_receipts.schema.json.
 
-const schemaSalesIntelligenceReceiptsDocumentSchema = <String, Object?>{
+const schemaSalesIntelligenceReceiptDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json',
   'title': 'SalesIntelligenceReceiptDocument',

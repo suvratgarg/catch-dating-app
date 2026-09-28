@@ -100,6 +100,12 @@ export const adminUpsertSalesOpportunityCallablePayloadSchema: Record<string, un
       "type": "string",
       "minLength": 1,
       "maxLength": 1000
+    },
+    "financeAttestationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   }
 } as const;

@@ -74,10 +74,18 @@
       "owner": "features/sales",
       "source": "admin/src/features/sales/ui/SalesWorkspaceScreen.tsx",
       "exportName": "SalesWorkspaceScreen",
-      "css": ["admin/src/styles.css"],
+      "css": [
+        "admin/src/styles.css"
+      ],
       "preview": {
         "status": "planned",
-        "states": ["today", "hosts", "pipeline", "detail", "save-conflict"]
+        "states": [
+          "today",
+          "hosts",
+          "pipeline",
+          "detail",
+          "save-conflict"
+        ]
       },
       "notes": "Private Sales route with server-paged host, task and opportunity queries; account, task, activity and opportunity changes use revision checks and request receipts."
     },
@@ -87,8 +95,18 @@
       "owner": "features/sales",
       "source": "admin/src/features/sales/ui/SalesRecordsPanels.tsx",
       "exportName": "SalesRecordsWorkspace",
-      "css": ["admin/src/styles.css"],
-      "preview": {"status": "planned", "states": ["contacts", "evidence", "suppression", "draft-blocked"]},
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "contacts",
+          "evidence",
+          "suppression",
+          "draft-blocked"
+        ]
+      },
       "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
     },
     {
@@ -97,8 +115,19 @@
       "owner": "features/sales",
       "source": "admin/src/features/sales/ui/SalesDemoPanel.tsx",
       "exportName": "SalesDemoWorkspace",
-      "css": ["admin/src/styles.css"],
-      "preview": {"status": "planned", "states": ["unavailable", "draft", "reviewed", "invitation", "conflict"]},
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unavailable",
+          "draft",
+          "reviewed",
+          "invitation",
+          "conflict"
+        ]
+      },
       "notes": "Owner-reviewed private synthetic demo setup and revocable invitations; grants remain only in memory."
     },
     {
@@ -107,8 +136,17 @@
       "owner": "features/sales",
       "source": "admin/src/features/sales/ui/SalesImportPanel.tsx",
       "exportName": "SalesImportWorkspace",
-      "css": ["admin/src/styles.css"],
-      "preview": {"status": "planned", "states": ["csv-mapping", "batch-preview", "batch-applied"]},
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "csv-mapping",
+          "batch-preview",
+          "batch-applied"
+        ]
+      },
       "notes": "CSV mapping and explicit server preview before each bounded import batch is applied."
     },
     {
@@ -700,12 +738,17 @@
       "owner": "features/cross-paths",
       "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
       "exportName": "CrossPathsShowcaseScreen",
-      "css": ["admin/src/styles.css"],
+      "css": [
+        "admin/src/styles.css"
+      ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "CrossPathsShowcaseRouteStory",
-        "states": ["queue", "review-decision"]
+        "states": [
+          "queue",
+          "review-decision"
+        ]
       },
       "notes": "Role-gated route wrapper loads the bounded score-free showcase queue and keeps all server mutations behind the pending-operation guard."
     },
@@ -715,12 +758,17 @@
       "owner": "features/cross-paths",
       "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
       "exportName": "CrossPathsShowcaseWorkspace",
-      "css": ["admin/src/styles.css"],
+      "css": [
+        "admin/src/styles.css"
+      ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "CrossPathsShowcaseWorkspaceStory",
-        "states": ["queue", "review-decision"]
+        "states": [
+          "queue",
+          "review-decision"
+        ]
       },
       "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
     },
@@ -730,12 +778,16 @@
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminProfilePhotoGrid",
-      "css": ["admin/src/styles.css"],
+      "css": [
+        "admin/src/styles.css"
+      ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminPrimitives.stories.tsx",
         "exportName": "AdminProfilePhotoGridStory",
-        "states": ["three-photos"]
+        "states": [
+          "three-photos"
+        ]
       },
       "notes": "Shared read-only photo grid for bounded public-profile evidence in admin review workspaces."
     },
@@ -5419,6 +5471,27 @@
         ]
       },
       "notes": "Prop-driven Event Intake workspace view used by the live hook wrapper and deterministic Storybook previews; query and mutation logic stay in EventIntakeWorkspace."
+    },
+    {
+      "id": "workspace_sales_intelligence",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesIntelligenceWorkspace.tsx",
+      "exportName": "SalesIntelligenceWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unknown-fit",
+          "review-factor",
+          "source-restricted",
+          "draft-review",
+          "manual-copy"
+        ]
+      },
+      "notes": "Reviewed private scoring, grounded draft preparation and manual copy; no messaging provider."
     }
   ]
 }

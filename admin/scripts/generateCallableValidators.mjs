@@ -159,15 +159,50 @@ function buildModel() {
   };
 }
 
+// Share identical immutable schema fragments without weakening validation or
+// loading a second validator system. Dependencies are emitted before parents.
+function renderSchemaPool(schemas) {
+  const counts = new Map();
+  const visit = value => {
+    if (!value || typeof value !== "object") return;
+    const key = JSON.stringify(value);
+    if (key.length >= 80) counts.set(key, (counts.get(key) ?? 0) + 1);
+    Object.values(value).forEach(visit);
+  };
+  schemas.forEach(visit);
+  const emitted = new Map();
+  const declarations = [];
+  const literal = value => {
+    if (!value || typeof value !== "object") return JSON.stringify(value);
+    const key = JSON.stringify(value);
+    const pooled = (counts.get(key) ?? 0) > 1;
+    if (pooled && emitted.has(key)) return emitted.get(key);
+    const source = Array.isArray(value) ?
+      `[${value.map(literal).join(",")}]` :
+      `{${Object.entries(value).map(([name, child]) =>
+        `${JSON.stringify(name)}:${literal(child)}`).join(",")}}`;
+    if (!pooled) return source;
+    const name = `schemaPart${emitted.size}`;
+    emitted.set(key, name);
+    declarations.push(`const ${name} = ${source};`);
+    return name;
+  };
+  const expression = `[${schemas.map(literal).join(",\n")}]`;
+  return {declarations: declarations.join("\n"), expression};
+}
+
 function render(model) {
-  const data = JSON.stringify(model, null, 2);
+  const {schemas, ...metadata} = model;
+  const data = JSON.stringify(metadata, null, 2);
+  const pool = renderSchemaPool(schemas);
   return `// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators\n` +
 `import Ajv, {type ErrorObject, type ValidateFunction} from "ajv";\n` +
 `import addFormats from "ajv-formats";\n\n` +
 `const model = ${data} as const;\n` +
+`${pool.declarations}\nconst schemas = ${pool.expression};\n` +
 `const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});\n` +
 `addFormats(ajv);\n` +
-`for (const schema of model.schemas) ajv.addSchema(schema);\n\n` +
+`for (const schema of schemas) ajv.addSchema(schema);\n\n` +
 `function validators(ids: Record<string, string>): Record<string, ValidateFunction> {\n` +
 `  return Object.fromEntries(Object.entries(ids).map(([name, id]) => {\n` +
 `    const validate = ajv.getSchema(id);\n` +
@@ -221,6 +256,13 @@ function render(model) {
 const model = buildModel();
 const output = render(model);
 if (selfTest) {
+  const pool = renderSchemaPool(model.schemas);
+  const reconstructed = Function(`${pool.declarations}\nreturn ${pool.expression};`)();
+  assert.deepEqual(reconstructed, model.schemas,
+    "Pooling must preserve every schema keyword and value.");
+  assert.ok(pool.declarations.length + pool.expression.length <
+    JSON.stringify(model.schemas).length,
+  "Repeated schema fragments must reduce the generated payload.");
   const changed = structuredClone(model);
   changed.schemas[0] = {...changed.schemas[0], title: "simulated schema drift"};
   assert.notEqual(render(changed), output);

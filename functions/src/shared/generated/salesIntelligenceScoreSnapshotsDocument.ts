@@ -5,7 +5,7 @@
 /**
  * Immutable reviewed-source fit snapshot. Unknown or disputed factors yield a null score and unranked priority.
  */
-export interface SalesIntelligenceScoreSnapshotsDocument {
+export interface SalesIntelligenceScoreSnapshotDocument {
   schemaVersion: 1;
   classification: "sales_private";
   snapshotId: string;

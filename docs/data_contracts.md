@@ -4558,3 +4558,20 @@ an explicit start is required to materialize synthetic state. A demo never
 grants organizer ownership, publishes a listing, admits a real guest or charges
 a payment. Source contracts and rules tests live with the Sales feature; generated
 types and validators follow the existing schema generator.
+
+Sales commercial closing uses owner-attested host collection, bound to the exact
+accepted terms, current reviewed payment evidence and a normalized external
+settlement reference plus receiving account scope. The unique settlement identity
+prevents the same confirmation being counted through multiple evidence records.
+Attestation remains provider-unconfirmed and separate from guest payments.
+The generic opportunity mutation requires fresh Admin Owner authority before
+receipt replay and at transaction execution; stage history retains its finance
+proof. Loss and reopening require a reason, and reopening needs a dated next step.
+
+`salesIntakeLinks` joins the exact reviewed Supply Intake candidate generation and
+curation decision to its private organizer Sales companion. Explicit identity
+selection precedes linking; retry can complete the private join after Intake
+succeeded without overwriting an existing account or publishing the organizer.
+Imports retain every reviewed cohort/source-row relationship and union cohort IDs
+once per account, fenced by the preview's account revision. Unresolved identities
+remain in offline review; neither import nor an assistant invents canonical IDs.

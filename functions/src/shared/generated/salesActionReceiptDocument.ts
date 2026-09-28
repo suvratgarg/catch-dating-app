@@ -29,7 +29,8 @@ export interface SalesActionReceiptDocument {
     | "commercial.pilots.upsert"
     | "commercial.quotes.revise"
     | "commercial.quotes.approve"
-    | "commercial.quotes.accept";
+    | "commercial.quotes.accept"
+    | "commercial.finance.attest";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;

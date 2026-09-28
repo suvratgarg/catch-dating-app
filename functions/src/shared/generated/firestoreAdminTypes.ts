@@ -548,6 +548,90 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Immutable private join from exact reviewed Supply Intake candidate and canonical identity decision to the Sales companion account.
+ */
+export interface SalesIntakeLinkDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  linkId: string;
+  workItemId: string;
+  candidateId: string;
+  sourceRunId: string;
+  sourceWorkItemRevision: number;
+  sourceCandidateHash: string;
+  organizerId: string;
+  curationPath: string;
+  curationOperationType: "create_entity_draft" | "attach_surface";
+  curationReviewedByUid: string;
+  curationReviewedAt: string;
+  linkedByUid: string;
+  linkedAt: string;
+}
+
+/**
+ * Immutable uniqueness receipt for one external host settlement reference within one recipient ledger scope, independent of evidence and quote IDs.
+ */
+export interface SalesHostSettlementIdentitiesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  settlementIdentityHash: string;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  createdAt: string;
+}
+
+/**
+ * Owner-attested first-party host subscription collection; provider unconfirmed and separate from guest payments.
+ */
+export interface SalesHostSettlementAttestationsDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: 1;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string;
+  termVersion: number;
+  termsHash: string;
+  amountMinor: number;
+  currency: string;
+  purpose: "host_subscription";
+  receivedAt: string;
+  settlementMethod: "bank_transfer" | "cash" | "other_external";
+  settlementReference: string;
+  recipientAccountScope: string;
+  settlementIdentityHash: string;
+  servicePeriod: {
+    startsAt: string;
+    endsAt: string;
+  } | null;
+  evidence: {
+    evidenceId: string;
+    sourceRef: string;
+    contentHash: string;
+    observedAt: string;
+  };
+  status: "manual_attested_collected";
+  providerConfirmed: false;
+  actorUid: string;
+  attestedAt: string;
+}
+
+/**
+ * Immutable uniqueness receipt preventing one settlement source from double counting.
+ */
+export interface SalesHostSettlementEvidenceUsesDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  evidenceId: string;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  createdAt: string;
+}
+
+/**
  * Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.
  */
 export interface SalesOutreachJobsDocument {
@@ -1085,7 +1169,8 @@ export interface SalesActionReceiptDocument {
     | "commercial.pilots.upsert"
     | "commercial.quotes.revise"
     | "commercial.quotes.approve"
-    | "commercial.quotes.accept";
+    | "commercial.quotes.accept"
+    | "commercial.finance.attest";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -1228,6 +1313,10 @@ export interface SalesImportRowDocument {
   originalSummary: string | null;
   importedAt: string;
   importedBy: string;
+  /**
+   * @maxItems 30
+   */
+  cohortIds?: string[];
 }
 
 /**
@@ -1264,6 +1353,10 @@ export interface SalesImportJobRowDocument {
   originalSummary: string | null;
   importedAt: string;
   importedBy: string;
+  /**
+   * @maxItems 30
+   */
+  cohortIds?: string[];
 }
 
 /**
@@ -1639,7 +1732,7 @@ export interface SalesInboundIntentsDocument {
 /**
  * Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.
  */
-export interface SalesIntelligenceAssessmentsDocument {
+export interface SalesIntelligenceAssessmentDocument {
   schemaVersion: 1;
   classification: "sales_private";
   assessmentId: string;
@@ -1660,7 +1753,7 @@ export interface SalesIntelligenceAssessmentsDocument {
 /**
  * Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.
  */
-export interface SalesIntelligenceClausesDocument {
+export interface SalesIntelligenceClauseDocument {
   schemaVersion: 1;
   classification: "sales_private";
   clauseId: string;
@@ -1684,7 +1777,7 @@ export interface SalesIntelligenceClausesDocument {
 /**
  * Private, owner-reviewed, versioned fit and priority policy. No production weights are checked into source.
  */
-export interface SalesIntelligencePoliciesDocument {
+export interface SalesIntelligencePolicyDocument {
   schemaVersion: 1;
   classification: "sales_private";
   policyRecordId: "current";
@@ -1719,7 +1812,7 @@ export interface SalesIntelligencePoliciesDocument {
 /**
  * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
  */
-export interface SalesIntelligenceReceiptsDocument {
+export interface SalesIntelligenceReceiptDocument {
   schemaVersion: 1;
   classification: "sales_private";
   receiptId: string;
@@ -1744,7 +1837,7 @@ export interface SalesIntelligenceReceiptsDocument {
 /**
  * Immutable reviewed-source fit snapshot. Unknown or disputed factors yield a null score and unranked priority.
  */
-export interface SalesIntelligenceScoreSnapshotsDocument {
+export interface SalesIntelligenceScoreSnapshotDocument {
   schemaVersion: 1;
   classification: "sales_private";
   snapshotId: string;

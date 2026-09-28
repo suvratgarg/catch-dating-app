@@ -572,3 +572,11 @@ steps, owner blueprint/invitation management and bounded expiration cleanup.
 Activation requires the private runtime capability record and a valid
 `SALES_DEMO_GRANT_KEY` secret. These source exports do not establish deployment
 or live feature activation.
+
+The private Sales workspace additionally exposes evidence-based fit review,
+owner policy editing, current clause approval, deterministic draft jobs and exact
+manual copy. Draft preparation uses the existing Operations workflow with no
+model provider or sending capability by default. Stale source facts invalidate
+review/copy. Host settlement attestation and Intake-to-Sales joining are separate
+employee operations with strict request/response contracts; their records have
+no direct browser access. These source APIs do not establish deployed activation.

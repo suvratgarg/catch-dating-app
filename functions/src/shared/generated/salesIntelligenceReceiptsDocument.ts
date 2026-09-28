@@ -5,7 +5,7 @@
 /**
  * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
  */
-export interface SalesIntelligenceReceiptsDocument {
+export interface SalesIntelligenceReceiptDocument {
   schemaVersion: 1;
   classification: "sales_private";
   receiptId: string;

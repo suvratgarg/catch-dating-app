@@ -30,7 +30,7 @@ export async function linkOrganizerIntakeToSales(
     await import("../../../../generated/validators/adminCallableValidators");
   validateAdminCallableRequest(name, input);
   const response = await httpsCallable<IntakeSalesLinkInput,
-    IntakeSalesLinkResult>(functions, name)(input);
+    IntakeSalesLinkResult>(functions, "adminLinkOrganizerIntakeToSales")(input);
   validateAdminCallableResponse(name, response.data);
   return response.data;
 }

@@ -3,6 +3,40 @@
 
 import {createRequire} from "node:module";
 import {
+  salesIntakeLinkDocumentSchema,
+  adminLinkOrganizerIntakeToSalesResponseSchema,
+  adminLinkOrganizerIntakeToSalesPayloadSchema,
+  adminBuildSalesOutreachInputResponseSchema,
+  adminSalesIntelligenceClauseMutationResponseSchema,
+  adminReviewSalesOutreachDraftResponseSchema,
+  adminGetSalesOutreachDraftResponseSchema,
+  adminGetSalesIntelligenceCatalogRequestSchema,
+  adminListSalesOutreachDraftsRequestSchema,
+  adminSaveSalesFactorAssessmentResponseSchema,
+  adminGetSalesOutreachDraftJobRequestSchema,
+  adminReviewSalesIntelligenceClauseRequestSchema,
+  adminSaveSalesIntelligencePolicyResponseSchema,
+  adminCopySalesOutreachDraftResponseSchema,
+  adminGetSalesOutreachDraftJobResponseSchema,
+  adminGenerateSalesOutreachDraftResponseSchema,
+  adminGetSalesIntelligenceScoreRequestSchema,
+  adminReviewSalesOutreachDraftRequestSchema,
+  adminCopySalesOutreachDraftRequestSchema,
+  adminAttestSalesHostSettlementPayloadSchema,
+  adminListSalesOutreachDraftsResponseSchema,
+  adminGetSalesIntelligenceCatalogResponseSchema,
+  adminGetSalesIntelligenceScoreResponseSchema,
+  adminGetSalesOutreachDraftRequestSchema,
+  adminReviseSalesQuoteResponseSchema,
+  adminAttestSalesHostSettlementResponseSchema,
+  adminAcceptSalesQuoteResponseSchema,
+  adminGetSalesCommercialDetailResponseSchema,
+  adminListSalesCommercialReportResponseSchema,
+  adminApproveSalesQuoteResponseSchema,
+  adminUpsertSalesPilotPlanResponseSchema,
+  salesHostSettlementIdentitiesDocumentSchema,
+  salesHostSettlementAttestationsDocumentSchema,
+  salesHostSettlementEvidenceUsesDocumentSchema,
   outreachDraftingInputSchema,
   outreachDraftingSelectionSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
@@ -80,11 +114,11 @@ import {
   salesDemoSessionsDocumentSchema,
   salesEvidenceProposalsDocumentSchema,
   salesInboundIntentsDocumentSchema,
-  salesIntelligenceAssessmentsDocumentSchema,
-  salesIntelligenceClausesDocumentSchema,
-  salesIntelligencePoliciesDocumentSchema,
-  salesIntelligenceReceiptsDocumentSchema,
-  salesIntelligenceScoreSnapshotsDocumentSchema,
+  salesIntelligenceAssessmentDocumentSchema,
+  salesIntelligenceClauseDocumentSchema,
+  salesIntelligencePolicyDocumentSchema,
+  salesIntelligenceReceiptDocumentSchema,
+  salesIntelligenceScoreSnapshotDocumentSchema,
   salesOutreachDraftsDocumentSchema,
   setEventPublicationCallablePayloadSchema,
   eventPublicationCallableResponseSchema,
@@ -1051,6 +1085,40 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateSalesIntakeLinkDocument = ajv.compile(salesIntakeLinkDocumentSchema);
+export const validateAdminLinkOrganizerIntakeToSalesResponse = ajv.compile(adminLinkOrganizerIntakeToSalesResponseSchema);
+export const validateAdminLinkOrganizerIntakeToSalesPayload = ajv.compile(adminLinkOrganizerIntakeToSalesPayloadSchema);
+export const validateAdminBuildSalesOutreachInputResponse = ajv.compile(adminBuildSalesOutreachInputResponseSchema);
+export const validateAdminSalesIntelligenceClauseMutationResponse = ajv.compile(adminSalesIntelligenceClauseMutationResponseSchema);
+export const validateAdminReviewSalesOutreachDraftResponse = ajv.compile(adminReviewSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesOutreachDraftResponse = ajv.compile(adminGetSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesIntelligenceCatalogRequest = ajv.compile(adminGetSalesIntelligenceCatalogRequestSchema);
+export const validateAdminListSalesOutreachDraftsRequest = ajv.compile(adminListSalesOutreachDraftsRequestSchema);
+export const validateAdminSaveSalesFactorAssessmentResponse = ajv.compile(adminSaveSalesFactorAssessmentResponseSchema);
+export const validateAdminGetSalesOutreachDraftJobRequest = ajv.compile(adminGetSalesOutreachDraftJobRequestSchema);
+export const validateAdminReviewSalesIntelligenceClauseRequest = ajv.compile(adminReviewSalesIntelligenceClauseRequestSchema);
+export const validateAdminSaveSalesIntelligencePolicyResponse = ajv.compile(adminSaveSalesIntelligencePolicyResponseSchema);
+export const validateAdminCopySalesOutreachDraftResponse = ajv.compile(adminCopySalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesOutreachDraftJobResponse = ajv.compile(adminGetSalesOutreachDraftJobResponseSchema);
+export const validateAdminGenerateSalesOutreachDraftResponse = ajv.compile(adminGenerateSalesOutreachDraftResponseSchema);
+export const validateAdminGetSalesIntelligenceScoreRequest = ajv.compile(adminGetSalesIntelligenceScoreRequestSchema);
+export const validateAdminReviewSalesOutreachDraftRequest = ajv.compile(adminReviewSalesOutreachDraftRequestSchema);
+export const validateAdminCopySalesOutreachDraftRequest = ajv.compile(adminCopySalesOutreachDraftRequestSchema);
+export const validateAdminAttestSalesHostSettlementPayload = ajv.compile(adminAttestSalesHostSettlementPayloadSchema);
+export const validateAdminListSalesOutreachDraftsResponse = ajv.compile(adminListSalesOutreachDraftsResponseSchema);
+export const validateAdminGetSalesIntelligenceCatalogResponse = ajv.compile(adminGetSalesIntelligenceCatalogResponseSchema);
+export const validateAdminGetSalesIntelligenceScoreResponse = ajv.compile(adminGetSalesIntelligenceScoreResponseSchema);
+export const validateAdminGetSalesOutreachDraftRequest = ajv.compile(adminGetSalesOutreachDraftRequestSchema);
+export const validateAdminReviseSalesQuoteResponse = ajv.compile(adminReviseSalesQuoteResponseSchema);
+export const validateAdminAttestSalesHostSettlementResponse = ajv.compile(adminAttestSalesHostSettlementResponseSchema);
+export const validateAdminAcceptSalesQuoteResponse = ajv.compile(adminAcceptSalesQuoteResponseSchema);
+export const validateAdminGetSalesCommercialDetailResponse = ajv.compile(adminGetSalesCommercialDetailResponseSchema);
+export const validateAdminListSalesCommercialReportResponse = ajv.compile(adminListSalesCommercialReportResponseSchema);
+export const validateAdminApproveSalesQuoteResponse = ajv.compile(adminApproveSalesQuoteResponseSchema);
+export const validateAdminUpsertSalesPilotPlanResponse = ajv.compile(adminUpsertSalesPilotPlanResponseSchema);
+export const validateSalesHostSettlementIdentitiesDocument = ajv.compile(salesHostSettlementIdentitiesDocumentSchema);
+export const validateSalesHostSettlementAttestationsDocument = ajv.compile(salesHostSettlementAttestationsDocumentSchema);
+export const validateSalesHostSettlementEvidenceUsesDocument = ajv.compile(salesHostSettlementEvidenceUsesDocumentSchema);
 export const validateOutreachDraftingInput = ajv.compile(outreachDraftingInputSchema);
 export const validateOutreachDraftingSelection = ajv.compile(outreachDraftingSelectionSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
@@ -1128,11 +1196,11 @@ export const validateSalesDemoReceiptsDocument = ajv.compile(salesDemoReceiptsDo
 export const validateSalesDemoSessionsDocument = ajv.compile(salesDemoSessionsDocumentSchema);
 export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceProposalsDocumentSchema);
 export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);
-export const validateSalesIntelligenceAssessmentsDocument = ajv.compile(salesIntelligenceAssessmentsDocumentSchema);
-export const validateSalesIntelligenceClausesDocument = ajv.compile(salesIntelligenceClausesDocumentSchema);
-export const validateSalesIntelligencePoliciesDocument = ajv.compile(salesIntelligencePoliciesDocumentSchema);
-export const validateSalesIntelligenceReceiptsDocument = ajv.compile(salesIntelligenceReceiptsDocumentSchema);
-export const validateSalesIntelligenceScoreSnapshotsDocument = ajv.compile(salesIntelligenceScoreSnapshotsDocumentSchema);
+export const validateSalesIntelligenceAssessmentDocument = ajv.compile(salesIntelligenceAssessmentDocumentSchema);
+export const validateSalesIntelligenceClauseDocument = ajv.compile(salesIntelligenceClauseDocumentSchema);
+export const validateSalesIntelligencePolicyDocument = ajv.compile(salesIntelligencePolicyDocumentSchema);
+export const validateSalesIntelligenceReceiptDocument = ajv.compile(salesIntelligenceReceiptDocumentSchema);
+export const validateSalesIntelligenceScoreSnapshotDocument = ajv.compile(salesIntelligenceScoreSnapshotDocumentSchema);
 export const validateSalesOutreachDraftsDocument = ajv.compile(salesOutreachDraftsDocumentSchema);
 export const validateSetEventPublicationCallablePayload = ajv.compile(setEventPublicationCallablePayloadSchema);
 export const validateEventPublicationCallableResponse = ajv.compile(eventPublicationCallableResponseSchema);

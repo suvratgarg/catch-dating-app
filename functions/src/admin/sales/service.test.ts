@@ -25,7 +25,7 @@ class FakeRef {
   }
   async get() {
     const data = this.db.docs.get(this.path);
-    return {exists: data !== undefined, data: () => structuredClone(data)};
+    return {ref: this, exists: data !== undefined, data: () => structuredClone(data)};
   }
 }
 class FakeCollection {
@@ -93,7 +93,11 @@ class FakeTx {
     if (this.writes.length > 0) throw new Error("Firestore read after write");
     if (ref instanceof FakeQuery) return ref.get();
     const data = this.db.docs.get(ref.path);
-    return {exists: data !== undefined, data: () => structuredClone(data)};
+    return {ref, exists: data !== undefined, data: () => structuredClone(data)};
+  }
+  update(ref: FakeRef, patch: Doc) {
+    this.writes.push(() => this.db.docs.set(ref.path, {
+      ...this.db.docs.get(ref.path), ...structuredClone(patch)}));
   }
   create(ref: FakeRef, value: Doc) {
     this.writes.push(() => {
@@ -1074,6 +1078,8 @@ test("finance closing binds owner authority, accepted terms and replay", async (
     termVersion: 1, amountMinor: 120000, currency: "INR",
     purpose: "host_subscription", receivedAt: "2026-09-27T00:00:00Z",
     settlementMethod: "bank_transfer", servicePeriod: null,
+    settlementReference: "synthetic-bank-123",
+    recipientAccountScope: "synthetic-catch-bank",
     evidence: {evidenceId: "finance-confirmation"}};
   const result = await executeSalesAction(owner, "commercial.finance.attest",
     settle, deps);

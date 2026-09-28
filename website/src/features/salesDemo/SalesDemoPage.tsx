@@ -63,7 +63,7 @@ function SalesDemoInvitation({invitationId, api, auth}: {
             <ul>{preview.preview.limitations.map((limit) =>
               <li key={limit}>{limit}</li>)}</ul>
           </EventRuntimeModule> : null}
-          <p>{salesDemoCopy.availableUntil}{new Date(preview.expiresAt).toLocaleString()}.</p>
+          <p>{salesDemoCopy.availableUntil}{" "}{new Date(preview.expiresAt).toLocaleString()}.</p>
           <p>{salesDemoCopy.noRealMessagesChargesGuestAdmission}</p>
           {controller.notice ? <FormStatus status={{message: controller.notice,
             tone: "is-error"}} /> : null}
@@ -121,7 +121,7 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
     {!controller.authReady ? <EventRuntimeLoading label={salesDemoCopy.checkingSignin} /> :
       <>
       {controller.canTry ? <>
-        <p>{salesDemoCopy.signedInAs}{controller.viewer?.email ||
+        <p>{salesDemoCopy.signedInAs}{" "}{controller.viewer?.email ||
           controller.viewer?.phoneNumber || "verified account"}{salesDemoCopy.theServerWillCheckThisIdentity}</p>
         <Button type="button" onClick={() => void controller.start()}
           disabled={controller.pending || authPending} loading={controller.pending}
@@ -164,18 +164,18 @@ function DemoSessionView({controller}: {controller: Controller}) {
     "welcome" | "clarify") => void controller.advance({action, choice});
   return <>
     <EventRuntimeModule title={salesDemoCopy.yourIsolatedSample}>
-      <p>{salesDemoCopy.step}{session.step.replaceAll("_", " ")} ·
+      <p>{salesDemoCopy.step}{" "}{session.step.replaceAll("_", " ")} ·
         {session.status === "completed" ? " Completed" : " In progress"}</p>
-      <p>{salesDemoCopy.sampleApplicant}{session.application.applicantName} ·
+      <p>{salesDemoCopy.sampleApplicant}{" "}{session.application.applicantName} ·
         {session.application.request}</p>
-      <p>{salesDemoCopy.review}{session.application.review.replaceAll("_", " ")}{salesDemoCopy.reply}{session.reply.template.replaceAll("_", " ")}{salesDemoCopy.guest}{session.guest.status.replaceAll("_", " ")}</p>
+      <p>{salesDemoCopy.review}{" "}{session.application.review.replaceAll("_", " ")}{salesDemoCopy.reply}{" "}{session.reply.template.replaceAll("_", " ")}{salesDemoCopy.guest}{" "}{session.guest.status.replaceAll("_", " ")}</p>
       <p>{salesDemoCopy.onlySyntheticRecordsAreChanged}</p>
     </EventRuntimeModule>
     <EventRuntimeModule title={salesDemoCopy.nextSampleStep}>
       {!controller.fresh ? <p>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</p> : null}
       <EventRuntimeActionGrid>
         {retry ? <Button type="button" disabled={controller.pending || !controller.fresh}
-          onClick={() => act(retry.action, retry.choice)}>{salesDemoCopy.retry}{salesDemoActionTitle(retry.action, retry.choice)}
+          onClick={() => act(retry.action, retry.choice)}>{salesDemoCopy.retry}{" "}{salesDemoActionTitle(retry.action, retry.choice)}
         </Button> : <DemoStepActions session={session} disabled={controller.pending ||
           !controller.fresh} onAction={act} />}
         {available("requestAssistance") && !session.assistanceRequested && !retry ?

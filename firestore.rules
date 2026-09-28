@@ -2764,6 +2764,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /salesHostSettlementAttestations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesHostSettlementEvidenceUses/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesHostSettlementIdentities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesIntakeLinks/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /salesOutreachJobs/{privateDocument=**} {
       allow read, write: if false;
     }

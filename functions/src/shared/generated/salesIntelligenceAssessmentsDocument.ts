@@ -5,7 +5,7 @@
 /**
  * Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.
  */
-export interface SalesIntelligenceAssessmentsDocument {
+export interface SalesIntelligenceAssessmentDocument {
   schemaVersion: 1;
   classification: "sales_private";
   assessmentId: string;

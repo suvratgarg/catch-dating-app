@@ -1,4 +1,4 @@
-import {cleanup, fireEvent, render, screen, waitFor} from
+import {act, cleanup, fireEvent, render, screen, waitFor} from
   "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {afterEach, expect, it, vi} from "vitest";
@@ -58,11 +58,12 @@ function fixture() {
     copiedAt: evaluatedAt, sendAuthority: false, providerConfirmed: false}))} as
     IntelligenceApi;
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
-  const view = (isAdminOwner = false) => render(<QueryClientProvider client={client}>
-    <SalesIntelligenceWorkspace organizerId="org-one" organizerName="Example Host"
-      currentUserUid="employee-one" isAdminOwner={isAdminOwner} api={api} />
-  </QueryClientProvider>);
-  return {api, view};
+  const tree = (isAdminOwner = false, actorUid = "employee-one", organizerId = "org-one") => <QueryClientProvider client={client}>
+    <SalesIntelligenceWorkspace organizerId={organizerId} organizerName="Example Host"
+      currentUserUid={actorUid} isAdminOwner={isAdminOwner} api={api} />
+  </QueryClientProvider>;
+  const view = (isAdminOwner = false) => render(tree(isAdminOwner));
+  return {api, view, tree, client};
 }
 
 it("selects current approved sources and prepares a real private draft request", async () => {
@@ -177,4 +178,61 @@ it("preserves unchanged existing factor IDs when editing an owner policy", async
   expect(request.expectedRevision).toBe(1);
   expect(request.policy.factors[0].id).toBe("a.one");
   expect(request.policy.factors[1].id).toBe("b.two");
+});
+
+
+it("freezes factor review revision until the changed source is compared", async () => {
+  const {api, view, client} = fixture();
+  view();
+  await screen.findByText("Host uses applications.");
+  fireEvent.change(screen.getByLabelText("Factor"), {target: {value: "a"}});
+  fireEvent.change(screen.getByLabelText("Why is this unknown or disputed?"),
+    {target: {value: "Original review"}});
+  const current = await api.catalog("org-one");
+  act(() => client.setQueryData(["sales-intelligence", "employee-one", "org-one", "catalog"],
+    {...current, assessments: [{factorId: "a", revision: 2, state: "unknown",
+      value: null, evidenceIds: [], reason: "Another reviewer"}]}));
+  await waitFor(() => expect(screen.getByRole("button", {name: "Record review"})).toHaveProperty("disabled", true));
+  expect(screen.getByLabelText("Why is this unknown or disputed?"))
+    .toHaveProperty("value", "Original review");
+  fireEvent.click(screen.getByRole("button", {name: "Use current factor review"}));
+  fireEvent.click(screen.getByRole("button", {name: "Record review"}));
+  await waitFor(() => expect(api.assess).toHaveBeenCalledOnce());
+  expect(vi.mocked(api.assess).mock.calls[0][0]).toMatchObject({
+    expectedRevision: 2, reason: "Another reviewer"});
+});
+
+for (const changedScope of ["actor", "host"] as const) {
+  it(`does not copy a pending prior ${changedScope} result after scope changes`, async () => {
+    const {api, view, tree} = fixture();
+    const originalCopy = await api.copy({} as never);
+    let resolveCopy!: (value: typeof originalCopy) => void;
+    vi.mocked(api.copy).mockImplementation(() => new Promise(resolve => {resolveCopy = resolve;}));
+    const writeText = vi.fn(async () => undefined);
+    vi.stubGlobal("navigator", {...navigator, clipboard: {writeText}});
+    const shown = view();
+    fireEvent.click(await screen.findByRole("button", {name: "Open draft"}));
+    fireEvent.click(await screen.findByRole("button", {name: "Copy approved text"}));
+    shown.rerender(tree(false, changedScope === "actor" ? "employee-two" : "employee-one",
+      changedScope === "host" ? "org-two" : "org-one"));
+    await act(async () => {resolveCopy(originalCopy);});
+    expect(writeText).not.toHaveBeenCalled();
+  });
+}
+
+it("requires new factual and tone review for an automatically replaced draft", async () => {
+  const {api, view, client} = fixture();
+  const original = await api.draft("draft-one");
+  vi.mocked(api.draft).mockResolvedValue({...original, status: "pending_review"});
+  view();
+  fireEvent.click(await screen.findByRole("button", {name: "Open draft"}));
+  const facts = await screen.findByLabelText("I checked every factual claim against the current source.");
+  fireEvent.click(facts);
+  fireEvent.click(screen.getByLabelText("I approve the tone and understand this is manual copy only."));
+  expect(screen.getByRole("button", {name: "Approve exact draft"})).toHaveProperty("disabled", false);
+  act(() => client.setQueryData(["sales-intelligence", "employee-one", "org-one", "draft", "draft-one"],
+    {...original, draftId: "draft-two", status: "pending_review",
+      draft: {...original.draft, draftId: "draft-two", contentHash: "b".repeat(64)}}));
+  await waitFor(() => expect(screen.getByRole("button", {name: "Approve exact draft"})).toHaveProperty("disabled", true));
+  expect(api.review).not.toHaveBeenCalled();
 });

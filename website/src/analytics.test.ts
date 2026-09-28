@@ -25,7 +25,7 @@ test("marketing listeners stop emitting after navigation to a private demo", () 
   window.history.replaceState(null, "", "/demo/synthetic-invite/#grant=synthetic");
   initializeMarketingAnalytics();
   expect(trackClientErrorSignal("window_error")).toBe(false);
-  window.dispatchEvent(new ErrorEvent("error", {message: "Synthetic error"}));
+  window.dispatchEvent(new ErrorEvent("error", {message: new Error("Synthetic error").message}));
   trackPageView("sales_demo");
   expect(window.dataLayer).toEqual([]);
   expect(localStorage.getItem("catch_marketing_attribution_v1")).toEqual(before);

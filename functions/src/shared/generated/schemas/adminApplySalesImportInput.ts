@@ -154,6 +154,17 @@ export const adminApplySalesImportCallablePayloadSchema: Record<string, unknown>
                 }
               }
             }
+          },
+          "cohortIds": {
+            "type": "array",
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
           }
         }
       }

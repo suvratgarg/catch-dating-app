@@ -2,7 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-export const salesIntelligencePoliciesDocumentSchema: Record<string, unknown> = {
+export const salesIntelligencePolicyDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_policies.schema.json",
   "title": "SalesIntelligencePolicyDocument",

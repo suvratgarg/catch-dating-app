@@ -36,4 +36,8 @@ export interface SalesImportRowDocument {
   originalSummary: string | null;
   importedAt: string;
   importedBy: string;
+  /**
+   * @maxItems 30
+   */
+  cohortIds?: string[];
 }

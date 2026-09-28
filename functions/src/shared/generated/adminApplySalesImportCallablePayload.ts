@@ -38,5 +38,9 @@ export interface AdminApplySalesImportCallablePayload {
       column: string;
       value: string;
     }[];
+    /**
+     * @maxItems 30
+     */
+    cohortIds?: string[];
   }[];
 }

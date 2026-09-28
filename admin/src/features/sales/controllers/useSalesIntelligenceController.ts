@@ -1,5 +1,5 @@
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {salesIntelligenceApi} from "../api/salesIntelligenceRepository";
 import type {ApprovedClause, DraftSourceRequest, FactorAssessment,
@@ -37,8 +37,14 @@ export function useSalesIntelligenceController({actorUid, organizerId,
   const [notice, setNotice] = useState("");
   const [confirmedPolicy, setConfirmedPolicy] = useState<{
     policyId: string; revision: number} | null>(null);
-  useEffect(() => () => {
-    client.removeQueries({queryKey: scope});
+  const scopeEpoch = useRef(0);
+  useLayoutEffect(() => {
+    scopeEpoch.current += 1;
+    return () => {
+      scopeEpoch.current += 1;
+      pendingRef.current = null;
+      client.removeQueries({queryKey: scope});
+    };
   }, [client, scope]);
   const catalog = useQuery({queryKey: [...scope, "catalog"],
     queryFn: () => api.catalog(organizerId), retry: false});
@@ -88,12 +94,14 @@ export function useSalesIntelligenceController({actorUid, organizerId,
   }, [client, scope]);
   const run = useCallback(async <T,>(operation: Pending): Promise<T | null> => {
     if (busy || (pendingRef.current && pendingRef.current !== operation)) return null;
+    const epoch = scopeEpoch.current;
     const lease = beginOperation();
     if (!lease) return null;
     pendingRef.current = operation; setRetryTicket(operation);
     setBusy(true); setError(""); setNotice("");
     try {
       const result = await operation.run() as T;
+      if (scopeEpoch.current !== epoch) return null;
       if (operation.kind === "generate" &&
           (result as {status?: string}).status === "failed") {
         throw Object.assign(new Error("Draft preparation failed."),
@@ -109,10 +117,13 @@ export function useSalesIntelligenceController({actorUid, organizerId,
           "Draft is being prepared. Check its status or retry this request." :
           "Draft prepared for factual review." : `${operation.label} confirmed.`);
       void refresh().catch(() => {
-        setError("The change was confirmed, but the latest view could not refresh.");
+        if (scopeEpoch.current === epoch) {
+          setError("The change was confirmed, but the latest view could not refresh.");
+        }
       });
       return result;
     } catch (failure) {
+      if (scopeEpoch.current !== epoch) return null;
       if (definitiveCodes.has(codeOf(failure))) {
         pendingRef.current = null; setRetryTicket(null);
         void refresh();
@@ -123,7 +134,8 @@ export function useSalesIntelligenceController({actorUid, organizerId,
       }
       return null;
     } finally {
-      setBusy(false); endOperation(lease);
+      if (scopeEpoch.current === epoch) setBusy(false);
+      endOperation(lease);
     }
   }, [beginOperation, busy, endOperation, refresh]);
   const submit = useCallback(<T,>(operation: Pending): Promise<T | null> => {
