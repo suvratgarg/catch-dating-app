@@ -27,7 +27,13 @@ export interface DemoCapability {
   revision: string;
   evidenceRevision: string;
   enabled: boolean;
+  templateOptions: Array<{templateId: string; title: string}>;
 }
+export type DemoSetupPlanInput = {mode: "manual"; requirements: string[]} |
+  {mode: "template"; requirements: string[]; templateId: string; title: string};
+export type DemoSetupPlan = DemoSetupPlanInput & {
+  templateVersion?: number; templateHash?: string; materializerVersion?: 1;
+};
 export interface DemoBlueprint {
   blueprintId: string;
   revision: number;
@@ -39,6 +45,7 @@ export interface DemoBlueprint {
   evidenceRevision: string;
   formCapabilityReview: DemoCapabilityReview;
   fieldMappings: DemoFieldMapping[];
+  setupPlan?: DemoSetupPlan;
   preview: DemoPreviewCopy;
   reviewedAt: string | null;
   updatedAt: string;
@@ -68,6 +75,7 @@ export interface DemoSaveInput extends DemoChange {
   preview: DemoPreviewCopy;
   formCapabilityReview: DemoCapabilityReview;
   fieldMappings: DemoFieldMapping[];
+  setupPlan: DemoSetupPlanInput;
 }
 export interface DemoIssueInput {
   requestId: string;

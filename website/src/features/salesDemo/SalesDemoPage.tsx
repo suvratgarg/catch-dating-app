@@ -1,13 +1,14 @@
 import {salesDemoCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
-import {Button, EventRuntimeActionGrid, EventRuntimeFrame,
+import {Button, ButtonLink, EventRuntimeActionGrid, EventRuntimeFrame,
   EventRuntimeLoading, EventRuntimeModule, EventRuntimePanel,
   EventRuntimePracticeBanner, EventRuntimeSectionStack, FormStatus,
   TextField} from "../../shared/ui/primitives";
 import {websiteSalesDemoAuth, type SalesDemoAuth,
   type SalesDemoPhoneChallenge} from "./salesDemoAuth";
 import {grantFromSalesDemoFragment, salesDemoActionTitle,
+  salesDemoFormEditorUrl,
   type SalesDemoAction, type SalesDemoApi, type SalesDemoSession} from
   "./salesDemoModel";
 import {useSalesDemoController} from "./useSalesDemoController";
@@ -187,7 +188,56 @@ function DemoSessionView({controller}: {controller: Controller}) {
       {session.assistanceRequested ? <p role="status">{salesDemoCopy.assistanceRequestedThisRecordsAnInproduct}</p> : null}
       {session.status === "completed" ? <p role="status">{salesDemoCopy.youCompletedThisSyntheticWorkflowA}</p> : null}
     </EventRuntimeModule>
+    {session.status === "completed" ? <DemoSetupView controller={controller} /> : null}
   </>;
+}
+
+function DemoSetupView({controller}: {controller: Controller}) {
+  const [confirm, setConfirm] = useState(false);
+  const setup = controller.setup;
+  const editorUrl = salesDemoFormEditorUrl(setup?.editorPath ?? null);
+  return <EventRuntimeModule title={salesDemoCopy.realSetupHandoff}>
+    <p>{salesDemoCopy.realSetupIsSeparate}</p>
+    {!setup || !controller.setupFresh ? <Button type="button"
+      disabled={controller.pending || !controller.fresh}
+      onClick={() => {setConfirm(false); void controller.readSetup();}}>
+      {salesDemoCopy.reviewSetupOptions}</Button> : null}
+    {controller.setupNotice ? <FormStatus status={{message: controller.setupNotice,
+      tone: "is-error"}} /> : null}
+    {setup && controller.setupFresh ? <>
+      <p>{setup.plan.mode === "template" ?
+        `${salesDemoCopy.reviewedTemplate}: ${setup.plan.title}` :
+        salesDemoCopy.manualHandoff}</p>
+      <ul>{setup.plan.requirements.map((step, index) =>
+        <li key={`${index}-${step}`}>{step}</li>)}</ul>
+      {setup.status === "manual_setup" ? <p>{salesDemoCopy.manualSetupNeeded}</p> : null}
+      {setup.status === "claim_required" ? <>
+        <p>{salesDemoCopy.claimRequiredForDraft}</p>
+        <ButtonLink href="/claim/">{salesDemoCopy.openClaimSetup}</ButtonLink>
+      </> : null}
+      {setup.status === "ready" ? <>
+        <p>{salesDemoCopy.templateDraftNotPublished}</p>
+        {!confirm ? <Button type="button" disabled={controller.pending}
+          onClick={() => setConfirm(true)}>{salesDemoCopy.prepareTemplateDraft}</Button> :
+          <EventRuntimeActionGrid>
+            <Button type="button" disabled={controller.pending ||
+              !controller.fresh || !controller.setupFresh}
+              onClick={() => {setConfirm(false); void controller.prepareSetup();}}>
+              {salesDemoCopy.confirmPrepareTemplateDraft}</Button>
+            <Button type="button" variant="ghost" disabled={controller.pending}
+              onClick={() => setConfirm(false)}>{salesDemoCopy.cancel}</Button>
+          </EventRuntimeActionGrid>}
+      </> : null}
+      {setup.status === "prepared" ? <>
+        <p role="status">{salesDemoCopy.draftPrepared}</p>
+        {editorUrl ? <ButtonLink href={editorUrl}>{salesDemoCopy.finishInForms}</ButtonLink> :
+          <p>{salesDemoCopy.hostAppLinkUnavailable}</p>}
+      </> : null}
+      <Button type="button" variant="ghost" disabled={controller.pending}
+        onClick={() => {setConfirm(false); void controller.readSetup();}}>
+        {salesDemoCopy.refreshSetup}</Button>
+    </> : null}
+  </EventRuntimeModule>;
 }
 
 function DemoStepActions({session, disabled, onAction}: {

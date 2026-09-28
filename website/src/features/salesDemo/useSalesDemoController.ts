@@ -1,7 +1,7 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useRef, useState} from "react";
 import type {SalesDemoAuth, SalesDemoViewer} from "./salesDemoAuth";
-import type {SalesDemoAction, SalesDemoApi, SalesDemoSession} from
+import type {SalesDemoAction, SalesDemoApi, SalesDemoSession, SalesDemoSetup} from
   "./salesDemoModel";
 
 type Choice = "approve" | "needs_info" | "welcome" | "clarify";
@@ -34,6 +34,9 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
   const [session, setSession] = useState<SalesDemoSession | null>(null);
   const sessionRef = useRef<SalesDemoSession | null>(null);
   const [fresh, setFresh] = useState(false);
+  const [setup, setSetup] = useState<SalesDemoSetup | null>(null);
+  const [setupFresh, setSetupFresh] = useState(false);
+  const [setupNotice, setSetupNotice] = useState("");
   const [notice, setNotice] = useState("");
   const [retryAction, setRetryAction] = useState<ActionInput | null>(null);
   const startRequestId = useRef<string | null>(null);
@@ -55,6 +58,7 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
       if (authUid.current !== next?.uid && authUid.current !== null) {
         epoch.current += 1;
         setSession(null); setFresh(false); setNotice("");
+        setSetup(null); setSetupFresh(false); setSetupNotice("");
         startRequestId.current = null; actionAttempt.current = null;
         setRetryAction(null);
       }
@@ -81,6 +85,7 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
         throw new Error("Invalid synthetic session projection.");
       }
       setSession(next); setFresh(true); startRequestId.current = null;
+      setSetup(null); setSetupFresh(false);
     } catch (error) {
       if (epoch.current === startedEpoch) setNotice(errorMessage(error));
     } finally {
@@ -99,12 +104,14 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
         throw new Error("Invalid synthetic session projection.");
       }
       setSession(latest); setFresh(true);
+      setSetup(null); setSetupFresh(false);
       if (actionAttempt.current && latest.revision >
           actionAttempt.current.expectedRevision) {
         actionAttempt.current = null; setRetryAction(null);
       }
     } catch (error) {
-      if (epoch.current === startedEpoch) {setFresh(false); setNotice(errorMessage(error));}
+      if (epoch.current === startedEpoch) {setFresh(false); setSetupFresh(false);
+        setNotice(errorMessage(error));}
     } finally {
       locked.current = false;
     }
@@ -131,6 +138,7 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
         throw new Error("Invalid synthetic session projection.");
       }
       setSession(next); setFresh(true); actionAttempt.current = null;
+      setSetup(null); setSetupFresh(false);
       setRetryAction(null);
     } catch (error) {
       if (epoch.current !== startedEpoch) return;
@@ -142,6 +150,7 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
           throw new Error("Invalid synthetic session projection.");
         }
         setSession(latest); setFresh(true);
+        setSetup(null); setSetupFresh(false);
         if (latest.revision > attempt.expectedRevision) {
           actionAttempt.current = null; setRetryAction(null);
           setNotice("The latest sample state is shown.");
@@ -154,18 +163,82 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
     }
   }, [api, fresh, grantToken, session]);
 
+  const performReadSetup = useCallback(async () => {
+    if (locked.current || !session || session.status !== "completed" ||
+        !fresh || !viewer || !grantToken ||
+        sessionRef.current?.revision !== session.revision ||
+        Date.parse(session.expiresAt) <= Date.now()) return;
+    locked.current = true; setSetupNotice(""); setSetupFresh(false); setSetup(null);
+    const startedEpoch = epoch.current;
+    try {
+      const latest = await api.getSetup({sessionId: session.sessionId, grantToken});
+      if (epoch.current !== startedEpoch || sessionRef.current?.revision !==
+          session.revision) return;
+      if (latest.schemaVersion !== 1 || latest.publicationAuthority !== false ||
+          !/^[a-f0-9]{64}$/u.test(latest.setupHash)) {
+        throw new Error("Invalid setup projection.");
+      }
+      setSetup(latest); setSetupFresh(true);
+    } catch (error) {
+      if (epoch.current === startedEpoch) setSetupNotice(errorMessage(error));
+    } finally {locked.current = false;}
+  }, [api, fresh, grantToken, session, viewer]);
+
+  const performPrepareSetup = useCallback(async () => {
+    if (locked.current || !session || session.status !== "completed" ||
+        !fresh || !setupFresh || setup?.status !== "ready" ||
+        setup.plan.mode !== "template" || !viewer || !grantToken ||
+        sessionRef.current?.revision !== session.revision ||
+        Date.parse(session.expiresAt) <= Date.now()) return;
+    locked.current = true; setSetupNotice(""); setSetupFresh(false);
+    const startedEpoch = epoch.current;
+    try {
+      const result = await api.prepareSetup({sessionId: session.sessionId,
+        grantToken, setupHash: setup.setupHash});
+      if (epoch.current !== startedEpoch || sessionRef.current?.revision !==
+          session.revision) return;
+      if (result.schemaVersion !== 1 || result.publicationAuthority !== false ||
+          result.setupHash !== setup.setupHash || result.status !== "prepared") {
+        throw new Error("Invalid prepared setup projection.");
+      }
+      setSetup(result); setSetupFresh(true);
+    } catch (error) {
+      if (epoch.current !== startedEpoch) return;
+      setSetup(null); setSetupNotice(errorMessage(error));
+      // A timed-out transaction might have committed. Read before another action.
+      try {
+        const latest = await api.getSetup({sessionId: session.sessionId,
+          grantToken});
+        if (epoch.current !== startedEpoch || sessionRef.current?.revision !==
+            session.revision) return;
+        if (latest.schemaVersion === 1 && latest.publicationAuthority === false) {
+          setSetup(latest); setSetupFresh(true);
+          if (latest.status === "prepared") setSetupNotice("");
+        }
+      } catch { /* Keep the explicit retry-read action available. */ }
+    } finally {locked.current = false;}
+  }, [api, fresh, grantToken, session, setup, setupFresh, viewer]);
+
   const startMutation = useMutation({mutationFn: performStart,
     retry: false, gcTime: 0});
   const refreshMutation = useMutation({mutationFn: performRefresh,
     retry: false, gcTime: 0});
   const advanceMutation = useMutation({mutationFn: performAdvance,
     retry: false, gcTime: 0});
+  const setupMutation = useMutation({mutationFn: performReadSetup,
+    retry: false, gcTime: 0});
+  const prepareMutation = useMutation({mutationFn: performPrepareSetup,
+    retry: false, gcTime: 0});
   const pending = startMutation.isPending || refreshMutation.isPending ||
-    advanceMutation.isPending;
+    advanceMutation.isPending || setupMutation.isPending ||
+    prepareMutation.isPending;
   const start = () => startMutation.mutateAsync();
   const refresh = () => refreshMutation.mutateAsync();
   const advance = (input: ActionInput) => advanceMutation.mutateAsync(input);
+  const readSetup = () => setupMutation.mutateAsync();
+  const prepareSetup = () => prepareMutation.mutateAsync();
 
   return {preview, viewer, authReady, session, fresh, pending, notice,
-    canTry, start, refresh, advance, retryAction};
+    canTry, start, refresh, advance, retryAction, setup, setupFresh,
+    setupNotice, readSetup, prepareSetup};
 }

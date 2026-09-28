@@ -28,7 +28,8 @@ function fixture() {
     revision: 1, grantToken: "x".repeat(43)}));
   const api = {capability: vi.fn(async () => ({
     capability: "synthetic_forms_v1", revision: "revision-001",
-    evidenceRevision: "evidence-001", enabled: true})),
+    evidenceRevision: "evidence-001", enabled: true,
+    templateOptions: [{templateId: "template-basic", title: "Basic RSVP"}]})),
   listBlueprints: vi.fn(async () => ({rows: [blueprint], nextCursor: null})),
   listInvitations: vi.fn(async () => ({rows: [], nextCursor: null})),
   getBlueprint: vi.fn(async () => blueprint), getInvitation: vi.fn(),
@@ -145,4 +146,28 @@ it("preserves multiline typing and normalizes lists only on save", async () => {
   expect(sent?.preview.retainedTools).toEqual(["Google Forms", "Sheets"]);
   expect(sent?.preview.limitations).toEqual(
     ["No real messages", "No charges"]);
+  expect(sent?.setupPlan).toEqual({mode: "manual", requirements: [
+    "Review requirements with the Catch team before creating a form."]});
+});
+
+it("saves a reviewed catalog template without stored revision metadata", async () => {
+  const {api, view} = fixture();
+  const stored = {...blueprint, setupPlan: {mode: "template" as const,
+    templateId: "template-basic", title: "Prior form",
+    requirements: ["Review answers"], templateVersion: 2,
+    templateHash: "a".repeat(64), materializerVersion: 1 as const}};
+  vi.mocked(api.listBlueprints).mockResolvedValue({rows: [stored], nextCursor: null});
+  vi.mocked(api.getBlueprint).mockResolvedValue(stored);
+  vi.mocked(api.saveBlueprint).mockResolvedValue({blueprintId: blueprint.blueprintId,
+    revision: 3, state: "draft"});
+  view(true);
+  fireEvent.click(await screen.findByRole("button", {name: "Open"}));
+  fireEvent.change(await screen.findByLabelText("Draft form title"),
+    {target: {value: "Reviewed handoff form"}});
+  fireEvent.click(screen.getByRole("button", {name: "Save draft"}));
+  await waitFor(() => expect(api.saveBlueprint).toHaveBeenCalledOnce());
+  expect(vi.mocked(api.saveBlueprint).mock.calls[0][0].setupPlan).toEqual({
+    mode: "template", templateId: "template-basic",
+    title: "Reviewed handoff form", requirements: ["Review answers"],
+  });
 });

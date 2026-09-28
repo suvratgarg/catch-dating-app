@@ -3,7 +3,7 @@ import {act, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {describe, expect, it, vi} from "vitest";
 import type {SalesDemoAuth, SalesDemoViewer} from "./salesDemoAuth";
-import type {SalesDemoApi, SalesDemoPreview, SalesDemoSession} from
+import type {SalesDemoApi, SalesDemoPreview, SalesDemoSession, SalesDemoSetup} from
   "./salesDemoModel";
 import {useSalesDemoController} from "./useSalesDemoController";
 
@@ -29,6 +29,14 @@ const session: SalesDemoSession = {schemaVersion: 1, synthetic: true,
   assistanceRequested: false};
 const verified: SalesDemoViewer = {uid: "user-one", email: "owner@example.test",
   emailVerified: true, phoneNumber: null};
+const completed: SalesDemoSession = {...session, status: "completed",
+  step: "complete", revision: 4, allowedActions: []};
+const readySetup: SalesDemoSetup = {schemaVersion: 1,
+  setupHash: "a".repeat(64), organizerId: "organizer-1", formId: null,
+  editorPath: null, publicationAuthority: false, status: "ready",
+  plan: {mode: "template", requirements: ["Review your draft"],
+    templateId: "basic", templateVersion: 1, templateHash: "b".repeat(64),
+    materializerVersion: 1, title: "Example form"}};
 
 function harness(token: string | null = grantToken) {
   let authCallback: (viewer: SalesDemoViewer | null) => void = () => undefined;
@@ -41,7 +49,11 @@ function harness(token: string | null = grantToken) {
     start: vi.fn().mockResolvedValue(session),
     getSession: vi.fn().mockResolvedValue(session),
     advance: vi.fn().mockResolvedValue({...session, revision: 2, step: "reply",
-      application: {...session.application, review: "approved"}})};
+      application: {...session.application, review: "approved"}}),
+    getSetup: vi.fn().mockResolvedValue(readySetup),
+    prepareSetup: vi.fn().mockResolvedValue({...readySetup,
+      status: "prepared", formId: "demo_123",
+      editorPath: "/host/audience/forms/demo_123"})};
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
   const wrapper = ({children}: PropsWithChildren) =>
     <QueryClientProvider client={client}>{children}</QueryClientProvider>;
@@ -108,6 +120,60 @@ describe("private Sales demo controller", () => {
     h.setViewer({...verified, uid: "other-user"});
     expect(h.result.current.session).toBeNull();
     expect(h.result.current.fresh).toBe(false);
+    h.unmount();
+  });
+
+  it("requires a completed session and explicit setup read before preparing", async () => {
+    const h = harness();
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    await act(async () => h.result.current.readSetup());
+    expect(h.api.getSetup).not.toHaveBeenCalled();
+    expect(h.api.prepareSetup).not.toHaveBeenCalled();
+    vi.mocked(h.api.getSession).mockResolvedValue(completed);
+    await act(async () => h.result.current.refresh());
+    await act(async () => h.result.current.readSetup());
+    expect(h.result.current.setup?.status).toBe("ready");
+    await act(async () => h.result.current.prepareSetup());
+    expect(h.api.prepareSetup).toHaveBeenCalledWith({sessionId: "session-1",
+      grantToken, setupHash: readySetup.setupHash});
+    expect(h.result.current.setup?.status).toBe("prepared");
+    h.unmount();
+  });
+
+  it("clears a reviewed setup on viewer change and ignores a late read", async () => {
+    const h = harness();
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    vi.mocked(h.api.start).mockResolvedValue(completed);
+    await act(async () => h.result.current.start());
+    let completeRead!: (value: SalesDemoSetup) => void;
+    vi.mocked(h.api.getSetup).mockImplementation(() => new Promise((resolve) => {
+      completeRead = resolve;
+    }));
+    let pending!: Promise<void>;
+    act(() => {pending = h.result.current.readSetup();});
+    await waitFor(() => expect(h.api.getSetup).toHaveBeenCalledOnce());
+    h.setViewer({...verified, uid: "another-user"});
+    completeRead(readySetup);
+    await act(async () => pending);
+    expect(h.result.current.setup).toBeNull();
+    expect(h.result.current.setupFresh).toBe(false);
+    h.unmount();
+  });
+
+  it("reads current setup after uncertain prepare and does not create twice", async () => {
+    const h = harness();
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    vi.mocked(h.api.start).mockResolvedValue(completed);
+    await act(async () => h.result.current.start());
+    await act(async () => h.result.current.readSetup());
+    vi.mocked(h.api.prepareSetup).mockRejectedValueOnce(new Error("network timeout"));
+    vi.mocked(h.api.getSetup).mockResolvedValueOnce({...readySetup,
+      status: "prepared", formId: "demo_123",
+      editorPath: "/host/audience/forms/demo_123"});
+    await act(async () => h.result.current.prepareSetup());
+    expect(h.result.current.setup?.status).toBe("prepared");
+    expect(h.api.prepareSetup).toHaveBeenCalledOnce();
     h.unmount();
   });
 });

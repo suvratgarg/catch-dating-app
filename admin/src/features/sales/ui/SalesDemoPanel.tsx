@@ -5,6 +5,7 @@ import {AdminButton, AdminForm, Panel, SelectField, StateRow,
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
   "../api/salesDemoManagement";
+import type {DemoSetupPlanInput} from "../api/salesDemoManagement";
 import {useSalesDemoManagementController} from
   "../controllers/useSalesDemoManagementController";
 
@@ -20,7 +21,15 @@ const dispositions: Array<{value: DemoDisposition; label: string}> = [
   {value: "unsupported", label: "Not supported"},
 ];
 type FormState = {preview: DemoPreviewCopy;
-  review: DemoCapabilityReview; mappings: DemoFieldMapping[]};
+  review: DemoCapabilityReview; mappings: DemoFieldMapping[];
+  setupPlan: DemoSetupPlanInput};
+function editablePlan(plan: DemoBlueprint["setupPlan"]): DemoSetupPlanInput {
+  if (plan?.mode === "template") return {mode: "template",
+    requirements: [...plan.requirements], templateId: plan.templateId,
+    title: plan.title};
+  return {mode: "manual", requirements: plan?.requirements ??
+    ["Review requirements with the Catch team before creating a form."]};
+}
 function emptyForm(organizerName: string): FormState {
   return {preview: {brandName: organizerName.slice(0, 160), headline: "",
     scenario: "", steps: ["", "", ""], retainedTools: [],
@@ -28,7 +37,7 @@ function emptyForm(organizerName: string): FormState {
     cta: "Try the example"},
   review: {questionTypes: "manual", branching: "manual",
     requiredFields: "manual", scoringApproval: "manual", uploads: "retained"},
-  mappings: []};
+  mappings: [], setupPlan: editablePlan(undefined)};
 }
 function lines(values: string[]): string {return values.join("\n");}
 function splitLines(value: string): string[] {
@@ -90,7 +99,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         selected.revision < controller.confirmedSave.revision) return;
     setForm({preview: selected.preview,
       review: selected.formCapabilityReview,
-      mappings: selected.fieldMappings});
+      mappings: selected.fieldMappings, setupPlan: editablePlan(selected.setupPlan)});
     setFormRevision(selected.revision);
     setFormBlueprintId(selected.blueprintId);
   }, [selected, dirty, controller.confirmedSave]);
@@ -102,7 +111,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   const selectBlueprint = (item: DemoBlueprint) => {
     controller.loadBlueprint(item.blueprintId);
     setForm({preview: item.preview, review: item.formCapabilityReview,
-      mappings: item.fieldMappings});
+      mappings: item.fieldMappings, setupPlan: editablePlan(item.setupPlan)});
     setFormRevision(item.revision); setFormBlueprintId(item.blueprintId);
     setDirty(false); setCopyNotice("");
   };
@@ -117,11 +126,20 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
     form.preview.steps.length === 3 &&
     form.preview.steps.every((step) => step.trim()) &&
     normalizedLines(form.preview.limitations).length);
+  const requirements = normalizedLines(form.setupPlan.requirements);
+  const templateId = form.setupPlan.mode === "template" ?
+    form.setupPlan.templateId : null;
+  const setupValid = requirements.length <= 12 &&
+    requirements.every((part) => part.length <= 160) &&
+    (form.setupPlan.mode === "manual" ? requirements.length > 0 :
+      Boolean(templateId && form.setupPlan.title.trim() &&
+      controller.capability.data?.templateOptions.some((option) =>
+        option.templateId === templateId)));
   const expiryMillis = Date.parse(expiresAt);
   const expiryValid = Number.isFinite(expiryMillis) &&
     expiryMillis > Date.now() && expiryMillis <= Date.now() + 7 * 86_400_000;
   const save = async () => {
-    if (!controller.blueprintId || !capabilityReady || !previewValid ||
+    if (!controller.blueprintId || !capabilityReady || !previewValid || !setupValid ||
         stale || locked || selected?.state === "withdrawn") return;
     await controller.save({blueprintId: controller.blueprintId,
       expectedRevision: formRevision, organizerId, candidateId: null,
@@ -131,7 +149,11 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         retainedTools: normalizedLines(form.preview.retainedTools),
         limitations: normalizedLines(form.preview.limitations)},
       formCapabilityReview: form.review,
-      fieldMappings: form.mappings});
+      fieldMappings: form.mappings,
+      setupPlan: form.setupPlan.mode === "manual" ?
+        {mode: "manual", requirements} :
+        {mode: "template", requirements, templateId: form.setupPlan.templateId,
+          title: form.setupPlan.title.trim()}});
   };
   const issue = async () => {
     if (!selected || selected.state !== "reviewed" || locked || stale ||
@@ -195,10 +217,11 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         be loaded. Choose it again from the list.</p> : null}
       {stale ? <p role="alert">This blueprint changed while you were editing.
         Review the current version before saving.</p> : null}
-      <BlueprintEditor form={form} edit={edit} disabled={locked ||
+      <BlueprintEditor form={form} edit={edit} templateOptions={
+        controller.capability.data?.templateOptions ?? []} disabled={locked ||
         selected?.state === "withdrawn"} />
       <AdminButton variant="primary" disabled={locked || !capabilityReady ||
-        !previewValid || stale || selected?.state === "withdrawn" ||
+        !previewValid || !setupValid || stale || selected?.state === "withdrawn" ||
         (controller.blueprintExists && !dirty)} onClick={() => void save()}>
         Save draft</AdminButton>
       {selected?.state === "draft" ? <AdminButton disabled={locked || dirty ||
@@ -271,11 +294,43 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   </Panel>;
 }
 
-function BlueprintEditor({form, edit, disabled}: {form: FormState;
-  edit: (next: FormState) => void; disabled: boolean}) {
+function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormState;
+  edit: (next: FormState) => void; disabled: boolean;
+  templateOptions: Array<{templateId: string; title: string}>}) {
   const setPreview = (patch: Partial<DemoPreviewCopy>) => edit({...form,
     preview: {...form.preview, ...patch}});
   return <AdminForm onSubmit={(event) => event.preventDefault()}>
+    <h4>After the sample</h4>
+    <p>This plan is reviewed separately. It never publishes a form or copies
+      sample answers into a real form.</p>
+    <SelectField label="Setup approach" value={form.setupPlan.mode}
+      disabled={disabled} options={[{value: "manual", label: "Manual handoff"},
+        {value: "template", label: "Prepare a reviewed form template"}]}
+      onChange={(value) => edit({...form, setupPlan: value === "template" ?
+        {mode: "template", requirements: form.setupPlan.requirements,
+          templateId: "", title: ""} :
+        {mode: "manual", requirements: form.setupPlan.requirements}})} />
+    {form.setupPlan.mode === "template" ? <>
+      <SelectField label="Reviewed form template" disabled={disabled}
+        value={form.setupPlan.templateId}
+        options={[{value: "", label: "Choose a template"},
+          ...templateOptions.map((item) => ({value: item.templateId,
+            label: item.title}))]}
+        onChange={(templateId) => {
+          if (form.setupPlan.mode === "template") edit({...form,
+            setupPlan: {...form.setupPlan, templateId}});
+        }} />
+      <TextField label="Draft form title" disabled={disabled}
+        value={form.setupPlan.title} onChange={(title) => {
+          if (form.setupPlan.mode === "template") edit({...form,
+            setupPlan: {...form.setupPlan, title}});
+        }} />
+    </> : null}
+    <TextareaField label="Setup steps (one per line)" rows={3}
+      disabled={disabled} value={lines(form.setupPlan.requirements)}
+      onChange={(value) => edit({...form, setupPlan: {...form.setupPlan,
+        requirements: splitLines(value)}})} />
+    <p>Up to twelve steps, 160 characters each. Manual handoff needs at least one.</p>
     <TextField label="Host name in preview" value={form.preview.brandName}
       onChange={(brandName) => setPreview({brandName})} disabled={disabled} />
     <TextField label="Headline" value={form.preview.headline}

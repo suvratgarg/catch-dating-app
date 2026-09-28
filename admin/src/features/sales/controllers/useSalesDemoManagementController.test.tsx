@@ -8,7 +8,8 @@ import {useSalesDemoManagementController} from "./useSalesDemoManagementControll
 
 afterEach(cleanup);
 const capability = {capability: "synthetic_forms_v1" as const,
-  revision: "revision-001", evidenceRevision: "evidence-001", enabled: true};
+  revision: "revision-001", evidenceRevision: "evidence-001", enabled: true,
+  templateOptions: [{templateId: "basic", title: "Basic form"}]};
 function fixture() {
   const saveBlueprint = vi.fn<DemoManagementApi["saveBlueprint"]>();
   const api = {capability: vi.fn(async () => capability),
@@ -32,6 +33,7 @@ const draft: Omit<DemoSaveInput, "requestId"> = {
   formCapabilityReview: {questionTypes: "manual", branching: "manual",
     requiredFields: "manual", scoringApproval: "unsupported",
     uploads: "retained"}, fieldMappings: [],
+  setupPlan: {mode: "manual", requirements: ["Review form requirements"]},
 };
 
 it("retries uncertain save with frozen material and the same request ID",
