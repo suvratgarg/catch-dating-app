@@ -2836,6 +2836,149 @@
         "since": "2026-09-01T00:00:00.000Z"
       },
       "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.policy.review",
+      "callable": "adminReviewSalesPrivacyPolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_review_sales_privacy_policy_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_review_sales_privacy_policy_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "requestId": "request-policy-001",
+        "expectedRevision": 0,
+        "sourceReference": "private:reviewed-policy",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "financeReason": "Retain pending finance review.",
+        "auditReason": "Retain pending audit review."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "sourceReference"
+    },
+    {
+      "actionId": "sales.privacy.organizer.restrict",
+      "callable": "adminRestrictSalesOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_restrict_sales_organizer_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_restrict_sales_organizer_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-restrict-001",
+        "reason": "Reviewed privacy request."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.plan.preview",
+      "callable": "adminPreviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_preview_sales_privacy_plan_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_preview_sales_privacy_plan_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.plan.review",
+      "callable": "adminReviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_review_sales_privacy_plan_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_review_sales_privacy_plan_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-plan-001",
+        "restrictionRevision": 1,
+        "policyHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "inventoryHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expectedActivePlanId": null
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.batch.apply",
+      "callable": "adminApplySalesPrivacyBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_apply_sales_privacy_batch_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_apply_sales_privacy_batch_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "planId": "privacy-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestId": "request-batch-001",
+        "expectedCursor": 0
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.case.get",
+      "callable": "adminGetSalesPrivacyCase",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_privacy_case_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_sales_privacy_case_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -3099,7 +3242,13 @@
         "sales.imports.history.apply",
         "sales.imports.history.list",
         "sales.imports.history.rows.list",
-        "sales.reporting.funnel"
+        "sales.reporting.funnel",
+        "sales.privacy.policy.review",
+        "sales.privacy.organizer.restrict",
+        "sales.privacy.plan.preview",
+        "sales.privacy.plan.review",
+        "sales.privacy.batch.apply",
+        "sales.privacy.case.get"
       ]
     }
   ]

@@ -284,3 +284,94 @@ test("private demo uses real atomic start limits and only synthetic records", as
     .filter((name) => !beforeCollections.includes(name));
   assert.ok(added.every((name) => name in collections || name === "adminAuditLogs"));
 });
+
+
+test("reviewed source history and privacy cleanup use real atomic receipts", async () => {
+  const privacy = require("../lib/admin/salesPrivacy/service");
+  const owner = {uid: "privacy-owner", roles: ["adminOwner"]};
+  const organizerId = "privacy-history-emulator";
+  const canonical = {name: "Synthetic Privacy Host", appVisibility: "hidden"};
+  await db.doc(`organizers/${organizerId}`).set(canonical);
+  const packet = {sourceId: "privacy-source", contentHash: "c".repeat(64),
+    mappingVersion: "source-v1", rows: [{sourceRowId: "row-1", organizerId,
+      name: canonical.name, researchStatus: "new",
+      originalCells: [{column: "Notes", value: "Synthetic prior observation"}]}]};
+  const preview = await read(owner, "imports.preview", packet, deps);
+  const applied = await write(owner, "imports.apply", {...packet,
+    requestId: "privacy-import-001", previewHash: preview.previewHash}, deps);
+  const history = {sourceId: packet.sourceId, contentHash: packet.contentHash,
+    mappingVersion: packet.mappingVersion, promotionVersion: "history-v1",
+    rows: [{sourceRowId: "row-1", organizerId, importId: applied.importId,
+      disposition: "promoted", reason: "Reviewed source cell", entries: [{
+        sourceColumn: "Notes", sourceValue: "Synthetic prior observation",
+        kind: "observation", occurredAt: null, dateSourceColumn: null,
+        dateSourceValue: null}]}]};
+  const historyPreview = await read(owner, "imports.history.preview", history, deps);
+  const request = {...history, requestId: "privacy-history-001",
+    previewHash: historyPreview.previewHash};
+  const [one, two] = await Promise.all([
+    write(owner, "imports.history.apply", request, deps),
+    write(owner, "imports.history.apply", request, deps)]);
+  assert.deepEqual(one, two);
+  const listed = await read(owner, "imports.history.list", {organizerId}, deps);
+  assert.equal(listed.records.length, 1);
+  assert.equal(listed.records[0].occurredAt, null);
+  const ajv = new Ajv({allErrors: true, strict: false}); addFormats(ajv);
+  const validateCollection = async (collection, schema) => {
+    const validate = ajv.compile(JSON.parse(fs.readFileSync(path.resolve(__dirname,
+      `../../contracts/firestore/${schema}.schema.json`), "utf8")));
+    for (const doc of (await db.collection(collection).get()).docs) {
+      assert.ok(validate(doc.data()), `${doc.ref.path}: ${ajv.errorsText(validate.errors)}`);
+    }
+  };
+  await validateCollection("salesImportHistoryRows", "sales_import_history_rows");
+  await validateCollection("salesImportHistoryRecords", "sales_import_history_records");
+  let allowed = true;
+  const privacyDeps = {db, now: deps.now, authorizeOwner: async () => {
+    if (!allowed) throw new Error("Owner revoked");
+  }};
+  await privacy.reviewSalesPrivacyPolicy(privacyDeps, owner, {
+    requestId: "privacy-policy-001", expectedRevision: 0,
+    sourceReference: "synthetic:reviewed-policy", sourceHash: "d".repeat(64),
+    financeReason: "Retain pending review", auditReason: "Retain pending review"});
+  await privacy.restrictSalesOrganizer(privacyDeps, owner, {organizerId,
+    requestId: "privacy-restrict-001", reason: "Synthetic cleanup test"});
+  await assert.rejects(write(owner, "imports.history.apply", request, deps),
+    {code: "failed-precondition"});
+  const planPreview = await privacy.previewSalesPrivacyPlan(privacyDeps, owner,
+    {organizerId});
+  assert.equal(planPreview.overflow, false);
+  const reviewed = await privacy.reviewSalesPrivacyPlan(privacyDeps, owner, {
+    organizerId, requestId: "privacy-plan-001",
+    restrictionRevision: planPreview.restrictionRevision,
+    expectedActivePlanId: planPreview.activePlanId,
+    policyHash: planPreview.policyHash, inventoryHash: planPreview.inventoryHash});
+  let cursor = 0; let lastRequest;
+  while (cursor < reviewed.plan.itemCount) {
+    lastRequest = {organizerId, planId: reviewed.plan.planId,
+      requestId: `privacy-batch-${cursor}`, expectedCursor: cursor};
+    const [first, retried] = await Promise.all([
+      privacy.applySalesPrivacyBatch(privacyDeps, owner, lastRequest),
+      privacy.applySalesPrivacyBatch(privacyDeps, owner, lastRequest)]);
+    assert.deepEqual(first, retried);
+    assert.equal(first.batch.completeDeletion, false);
+    cursor = first.batch.nextCursor;
+  }
+  assert.equal((await db.collection("salesImportHistoryRecords")
+    .where("organizerId", "==", organizerId).get()).size, 0);
+  assert.equal((await db.doc(`organizerSalesAccounts/${organizerId}`).get()).exists, false);
+  assert.deepEqual((await db.doc(`organizers/${organizerId}`).get()).data(), canonical);
+  assert.ok((await db.doc(`salesPrivacyRestrictions/${organizerId}`).get()).exists);
+  await assert.rejects(write(owner, "hosts.create", {organizerId,
+    requestId: "privacy-recreate-001"}, deps), {code: "failed-precondition"});
+  allowed = false;
+  await assert.rejects(privacy.applySalesPrivacyBatch(privacyDeps, owner,
+    lastRequest), /Owner revoked/);
+  for (const [collection, schema] of Object.entries({
+    salesPrivacyRestrictions: "sales_privacy_restrictions",
+    salesPrivacyPolicies: "sales_privacy_policies",
+    salesPrivacyPlans: "sales_privacy_plans",
+    salesPrivacyBatchReceipts: "sales_privacy_batch_receipts"})) {
+    await validateCollection(collection, schema);
+  }
+});
