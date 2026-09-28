@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/program_trip_export.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_trip_actions_controller.g.dart';
@@ -41,4 +43,34 @@ class ProgramTripActions extends _$ProgramTripActions {
         reason: reason,
         clientOperationId: clientOperationId,
       );
+
+  /// Walks the bounded ledger pages and shares the reconciliation CSV.
+  Future<void> exportLedger({
+    required String programId,
+    required String programTitle,
+    int pageLimit = 20,
+  }) async {
+    final repository = ref.read(programWorkRepositoryProvider);
+    final share = ref.read(externalShareControllerProvider);
+    final trips = <ProgramTripSummary>[];
+    String? cursor;
+    for (var page = 0; page < pageLimit; page++) {
+      final result = await repository.listTrips(programId, cursor: cursor);
+      trips.addAll(result.trips);
+      cursor = result.nextCursor;
+      if (cursor == null) break;
+    }
+    final export = buildProgramTripLedgerExport(
+      programId: programId,
+      programTitle: programTitle,
+      trips: trips,
+      exportedAt: DateTime.now().toUtc(),
+    );
+    await share.shareCsvFile(
+      csv: export.csv,
+      fileName: export.fileName,
+      subject: export.subject,
+      text: export.subject,
+    );
+  }
 }

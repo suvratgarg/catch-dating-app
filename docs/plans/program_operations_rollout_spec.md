@@ -101,10 +101,10 @@ never CRM, saved audiences, sender connections, or payouts.
 | `transportDispatcher` → Arrivals · Dispatch | **built** — dispatch screen on same prefix |
 | `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
 | `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
-| `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
-| `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
+| `functionLead` → Now/Next · Door · Attention | **in review** — Now/Next projection + duty-filtered attention feed (`listProgramStaffAttention`) in #470; Door destination is shared with `functionCheckIn` (#448) |
+| `guestRelations` → Guests · RSVP inbox · Imports | **in review** — duty widening on guest/household reads + import callables, guest desk screen on `ProgramWorkAccess.functions` (#469) |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
-| `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
+| `reconciliationViewer` → Trips · Exceptions · Export | **built** — needs-review strip + review-only filter on the `/trips` ledger, bounded CSV export via external share, void affordance gated to dispatch authority |
 | `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |

@@ -12,11 +12,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The trip ledger: every dispatch as a reconciliation record — plate,
 /// vendor, class, manifest and outcome. Voided trips keep their row so the
-/// vendor invoice can be checked line by line.
+/// vendor invoice can be checked line by line. Rows that are not yet
+/// arrived surface in the needs-review strip for reconciliation viewers,
+/// and the whole ledger exports to CSV.
 class ProgramTripsScreen extends ConsumerStatefulWidget {
-  const ProgramTripsScreen({super.key, required this.programId});
+  const ProgramTripsScreen({super.key, required this.programId, this.now});
 
   final String programId;
+
+  /// Test seam for duty-expiry checks; production uses wall clock.
+  final DateTime Function()? now;
 
   @override
   ConsumerState<ProgramTripsScreen> createState() => _ProgramTripsScreenState();
@@ -24,6 +29,8 @@ class ProgramTripsScreen extends ConsumerStatefulWidget {
 
 class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
   final List<String> _cursors = [];
+  bool _exceptionsOnly = false;
+  bool _exporting = false;
 
   @override
   void didUpdateWidget(ProgramTripsScreen oldWidget) {
@@ -36,8 +43,31 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
     ref.invalidate(programTripListProvider(widget.programId));
   }
 
+  Future<void> _export(String programTitle) async {
+    setState(() => _exporting = true);
+    try {
+      await ref
+          .read(programTripActionsProvider.notifier)
+          .exportLedger(
+            programId: widget.programId,
+            programTitle: programTitle,
+          );
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final now = widget.now?.call() ?? DateTime.now();
+    final accessAsync = ref.watch(
+      programWorkEntryProvider(widget.programId, null),
+    );
+    final access = accessAsync.value?.value;
+    final canVoid =
+        access != null &&
+        (access.isManager ||
+            access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now));
     final provider = programTripListProvider(
       widget.programId,
       cursor: _cursors.lastOrNull,
@@ -95,28 +125,72 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
         ),
         body: CatchRouteBody.standardSections(
           sections: [
-            if (_cursors.isNotEmpty || list.nextCursor != null)
+            CatchSectionListItem(
+              child: Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  if (_cursors.isNotEmpty) ...[
+                    CatchButton.command(
+                      label: context.l10n.programsTripsNewer,
+                      onPressed: () => setState(_cursors.removeLast),
+                    ),
+                    CatchButton.command(
+                      label: context.l10n.programsTripsLatest,
+                      onPressed: _latest,
+                    ),
+                  ],
+                  if (list.nextCursor case final cursor?)
+                    CatchButton.command(
+                      label: context.l10n.programsTripsOlder,
+                      onPressed: () => setState(() => _cursors.add(cursor)),
+                    ),
+                  CatchButton.command(
+                    label: _exporting
+                        ? context.l10n.programsTripsExporting
+                        : context.l10n.programsTripsExport,
+                    leading: Icon(CatchIcons.downloadRounded),
+                    onPressed: _exporting
+                        ? null
+                        : () => _export(access?.title ?? widget.programId),
+                  ),
+                ],
+              ),
+            ),
+            if (list.trips.any(
+              (trip) => trip.status != TransportTripStatus.arrived,
+            ))
               CatchSectionListItem(
-                child: Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    if (_cursors.isNotEmpty) ...[
-                      CatchButton.command(
-                        label: context.l10n.programsTripsNewer,
-                        onPressed: () => setState(_cursors.removeLast),
+                child: CatchSection.contained(
+                  title: context.l10n.programsTripsReviewTitle,
+                  subtitle: context.l10n.programsTripsReviewSubtitle,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final status in TransportTripStatus.values)
+                            if (status != TransportTripStatus.arrived)
+                              _StatusCountBadge(
+                                status: status,
+                                count: list.trips
+                                    .where((t) => t.status == status)
+                                    .length,
+                              ),
+                        ],
                       ),
+                      gapH8,
                       CatchButton.command(
-                        label: context.l10n.programsTripsLatest,
-                        onPressed: _latest,
+                        label: _exceptionsOnly
+                            ? context.l10n.programsTripsShowAll
+                            : context.l10n.programsTripsReviewOnly,
+                        onPressed: () =>
+                            setState(() => _exceptionsOnly = !_exceptionsOnly),
                       ),
                     ],
-                    if (list.nextCursor case final cursor?)
-                      CatchButton.command(
-                        label: context.l10n.programsTripsOlder,
-                        onPressed: () => setState(() => _cursors.add(cursor)),
-                      ),
-                  ],
+                  ),
                 ),
               ),
             CatchSectionListItem(
@@ -129,18 +203,39 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                         message: context.l10n.programsTripsEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
-                    : Column(
-                        children: [
-                          for (final trip in list.trips) ...[
-                            ProgramTripLedgerRow(
-                              key: ValueKey(trip.tripId),
-                              trip: trip,
-                              programId: widget.programId,
-                              onChanged: () => ref.invalidate(provider),
-                            ),
-                            gapH8,
-                          ],
-                        ],
+                    : Builder(
+                        builder: (context) {
+                          final visible = _exceptionsOnly
+                              ? list.trips
+                                    .where(
+                                      (t) =>
+                                          t.status !=
+                                          TransportTripStatus.arrived,
+                                    )
+                                    .toList()
+                              : list.trips;
+                          if (visible.isEmpty) {
+                            return CatchEmptyState(
+                              icon: CatchIcons.checkCircleOutlineRounded,
+                              message: context.l10n.programsTripsReviewEmpty,
+                              variant: CatchEmptyStateVariant.inline,
+                            );
+                          }
+                          return Column(
+                            children: [
+                              for (final trip in visible) ...[
+                                ProgramTripLedgerRow(
+                                  key: ValueKey(trip.tripId),
+                                  trip: trip,
+                                  programId: widget.programId,
+                                  canVoid: canVoid,
+                                  onChanged: () => ref.invalidate(provider),
+                                ),
+                                gapH8,
+                              ],
+                            ],
+                          );
+                        },
                       ),
               ),
             ),
@@ -151,16 +246,51 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
   }
 }
 
+class _StatusCountBadge extends StatelessWidget {
+  const _StatusCountBadge({required this.status, required this.count});
+
+  final TransportTripStatus status;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => CatchBadge.functional(
+    label: '${_statusLabel(context, status)} · $count',
+    tone: _statusTone(status),
+  );
+}
+
+String _statusLabel(BuildContext context, TransportTripStatus status) {
+  return switch (status) {
+    TransportTripStatus.enRoute => context.l10n.programsTripsStatusEnRoute,
+    TransportTripStatus.arrived => context.l10n.programsTripsStatusArrived,
+    TransportTripStatus.cancelled => context.l10n.programsTripsStatusCancelled,
+    TransportTripStatus.voided => context.l10n.programsTripsStatusVoided,
+  };
+}
+
+CatchBadgeTone _statusTone(TransportTripStatus status) {
+  return switch (status) {
+    TransportTripStatus.enRoute => CatchBadgeTone.brand,
+    TransportTripStatus.arrived => CatchBadgeTone.success,
+    TransportTripStatus.cancelled => CatchBadgeTone.warning,
+    TransportTripStatus.voided => CatchBadgeTone.danger,
+  };
+}
+
 class ProgramTripLedgerRow extends ConsumerStatefulWidget {
   const ProgramTripLedgerRow({
     super.key,
     required this.trip,
     required this.programId,
+    required this.canVoid,
     required this.onChanged,
   });
 
   final ProgramTripSummary trip;
   final String programId;
+
+  /// Read-only duties (reconciliation viewer) never see the void affordance.
+  final bool canVoid;
   final VoidCallback onChanged;
 
   @override
@@ -266,7 +396,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
               message: appErrorMessage(_error!, l10n: context.l10n),
             ),
           ],
-          if (trip.status == TransportTripStatus.enRoute) ...[
+          if (widget.canVoid && trip.status == TransportTripStatus.enRoute) ...[
             gapH12,
             CatchButton.command(
               label: context.l10n.programsTripsVoidAction,
@@ -277,25 +407,6 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
         ],
       ),
     );
-  }
-
-  String _statusLabel(BuildContext context, TransportTripStatus status) {
-    return switch (status) {
-      TransportTripStatus.enRoute => context.l10n.programsTripsStatusEnRoute,
-      TransportTripStatus.arrived => context.l10n.programsTripsStatusArrived,
-      TransportTripStatus.cancelled =>
-        context.l10n.programsTripsStatusCancelled,
-      TransportTripStatus.voided => context.l10n.programsTripsStatusVoided,
-    };
-  }
-
-  CatchBadgeTone _statusTone(TransportTripStatus status) {
-    return switch (status) {
-      TransportTripStatus.enRoute => CatchBadgeTone.brand,
-      TransportTripStatus.arrived => CatchBadgeTone.success,
-      TransportTripStatus.cancelled => CatchBadgeTone.warning,
-      TransportTripStatus.voided => CatchBadgeTone.danger,
-    };
   }
 }
 
