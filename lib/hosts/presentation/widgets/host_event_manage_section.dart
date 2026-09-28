@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
-    show EventAdmissionFormat;
+    show EventAdmissionFormat, EventPrivateAccessMode;
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
@@ -127,6 +127,7 @@ class HostEventActionsSection extends StatelessWidget {
     required this.actionError,
     required this.privateLinkActionState,
     required this.onEditEvent,
+    this.onManagePublication,
     required this.onCancelEvent,
     required this.onDeleteEvent,
     required this.onSharePrivateLink,
@@ -138,6 +139,7 @@ class HostEventActionsSection extends StatelessWidget {
   final Object? actionError;
   final HostPrivateLinkActionState? privateLinkActionState;
   final VoidCallback onEditEvent;
+  final VoidCallback? onManagePublication;
   final Future<void> Function() onCancelEvent;
   final Future<void> Function() onDeleteEvent;
   final ValueChanged<String> onSharePrivateLink;
@@ -146,6 +148,12 @@ class HostEventActionsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final privateLinkState = privateLinkActionState;
     final hostActions = <Widget>[
+      if (onManagePublication != null)
+        HostActionRow(
+          label: context.l10n.hostsPrivateEventPublicListing,
+          detail: context.l10n.hostsPublicationPublishedBody,
+          onTap: actionState.isMutating ? null : onManagePublication,
+        ),
       if (actionState.showEditAction)
         HostActionRow(
           label: context.l10n.hostsHostEventManageScreenLabelEditEventDetails,
@@ -268,12 +276,31 @@ class HostPublicRegistrationField extends StatelessWidget {
         club.publicPage?.allowsPublicWebRead == true;
     final policy = event.effectiveEventPolicy;
     final supportsStandaloneRegistration =
-        policy.basePriceInPaise == 0 &&
+        event.currency == 'INR' &&
+        policy.basePriceInPaise == event.priceInPaise &&
+        (event.priceInPaise == 0 ||
+            event.priceInPaise >= 100 && event.priceInPaise <= 100000000) &&
+        policy.pricingPolicy.cohortAdjustments.isEmpty &&
+        policy.pricingPolicy.demandPricingRules.isEmpty &&
+        policy.admissionPolicy.privateAccessPolicy.mode ==
+            EventPrivateAccessMode.none &&
+        policy.admissionPolicy.cohortCapacityLimits.isEmpty &&
+        policy.admissionPolicy.balancedRatioPolicy == null &&
+        !policy.admissionPolicy.crossPathsPairInventory.enabled &&
+        event.constraints.maxMen == null &&
+        event.constraints.maxWomen == null &&
+        event.crossPathsPairHeldCount == 0 &&
+        event.crossPathsPairConfirmedCount == 0 &&
+        event.crossPathsPairHeldCohortCounts.values.every(
+          (count) => count == 0,
+        ) &&
         policy.admissionPolicy.format == EventAdmissionFormat.open &&
         !policy.admissionPolicy.inviteRequired &&
         !policy.admissionPolicy.membershipRequired &&
         !policy.admissionPolicy.manualApprovalRequired;
-    final enabled = event.publicRegistrationEnabled;
+    final enabled =
+        event.publicRegistrationEnabled &&
+        event.publicRegistrationMode != EventPublicRegistrationMode.closed;
     return CatchFieldLanes.single(
       child: CatchField.control(
         copy: catchFieldCopy(context.l10n),
@@ -303,7 +330,9 @@ class HostPublicRegistrationField extends StatelessWidget {
               !supportsStandaloneRegistration
                   ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
                   : organizerPublished
-                  ? context.l10n.hostsHostPublicRegistrationBodyPublished
+                  ? event.priceInPaise > 0
+                        ? context.l10n.hostsHostPublicRegistrationBodyPaid
+                        : context.l10n.hostsHostPublicRegistrationBodyPublished
                   : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
               style: CatchTextStyles.supporting(
                 context,
@@ -314,6 +343,8 @@ class HostPublicRegistrationField extends StatelessWidget {
             CatchButton(
               label: enabled
                   ? context.l10n.hostsHostPublicRegistrationActionDisable
+                  : event.priceInPaise > 0
+                  ? context.l10n.hostsHostPublicRegistrationActionEnablePaid
                   : context.l10n.hostsHostPublicRegistrationActionEnable,
               onPressed:
                   mutation.isPending ||

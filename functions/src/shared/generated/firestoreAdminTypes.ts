@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
@@ -30,7 +31,7 @@ import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerF
 export type Gender = "man" | "woman" | "nonBinary" | "other";
 
 /**
- * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+ * refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.
  */
 export type PaymentStatus =
   | "pending"
@@ -545,6 +546,296 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Server-owned public OTP checkout. Holds and financial recovery share the event payment engine; no application approval or form-offer identity is implied.
+ */
+export interface PublicEventPaymentDocument {
+  organizerId: string;
+  eventId: string;
+  recipientUid: string;
+  requestId: string;
+  canonicalSeatKey: string;
+  identityRevision: number;
+  migrationRevision: number;
+  routing: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
+  amountPaise: number;
+  currency: "INR";
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "admitted"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired"
+    | "failed"
+    | "cancelled";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  admissionReceiptId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  admittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+  /**
+   * Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.
+   */
+  settlement?: {
+    state:
+      | "waiting"
+      | "releasePending"
+      | "released"
+      | "settled"
+      | "blocked"
+      | "reviewRequired"
+      | "reversed";
+    transferId: string | null;
+    nextAttemptAtMillis: number;
+    leaseUntilMillis: number;
+    leaseId: string | null;
+    authorizedAtMillis: number | null;
+    completedAtMillis: number | null;
+    releasedAtMillis: number | null;
+    settledAtMillis: number | null;
+  };
+  cancellation?: {
+    reason: "eventCancelled" | "guestCancelled";
+    requestedAtMillis: number;
+    attendeeId: string;
+    refundAmountPaise: number;
+    seatRetained: boolean;
+  };
+  cancellationPolicy: {
+    refundDeadlineMillis: number;
+    eventStartsAtMillis: number;
+  };
+  registrationRevision: number;
+  attendeeId: string;
+  phoneE164: string;
+  displayName: string;
+  eventName: string;
+  requestHash: string;
+  inviteLinkId: string | null;
+}
+
+export interface PublicEventAdmissionReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  recipientUid: string;
+  attendeeId: string;
+  canonicalSeatKey: string;
+  identityRevision: number;
+  migrationRevision: number;
+  registrationRevision: number;
+  amountPaise: number;
+  currency: "INR";
+  routing: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
+  paymentId: string;
+  providerOrderId: string;
+  providerPaymentId: string;
+  admittedAtMillis: number;
+  resultingLedgerRevision: number;
+}
+
+export interface EventRegistrationReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  actorUid: string;
+  requestHash: string;
+  registrationRevision: number;
+  mode: "closed" | "free" | "paid";
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.
+ */
+export interface OrganizerEventOfferPaymentDocument {
+  organizerId: string;
+  eventId: string;
+  offerId: string;
+  responseId: string;
+  contactId: string;
+  originId: string;
+  recipientUid: string;
+  grantId: string;
+  requestId: string;
+  canonicalSeatKey: string;
+  offerGeneration: number;
+  offerRevision: number;
+  identityRevision: number;
+  migrationRevision: number;
+  routing: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  amountPaise: number;
+  currency: "INR";
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "admitted"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired"
+    | "failed"
+    | "cancelled";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  admissionReceiptId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  admittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+  /**
+   * Durable Route hold-release intent and provider observation. Release is separate from settled funds. Optional only for pre-admission and older attempts.
+   */
+  settlement?: {
+    state:
+      | "waiting"
+      | "releasePending"
+      | "released"
+      | "settled"
+      | "blocked"
+      | "reviewRequired"
+      | "reversed";
+    transferId: string | null;
+    nextAttemptAtMillis: number;
+    leaseUntilMillis: number;
+    leaseId: string | null;
+    authorizedAtMillis: number | null;
+    completedAtMillis: number | null;
+    releasedAtMillis: number | null;
+    settledAtMillis: number | null;
+  };
+  cancellation?: {
+    reason: "eventCancelled" | "guestCancelled";
+    requestedAtMillis: number;
+    attendeeId: string;
+    refundAmountPaise: number;
+    seatRetained: boolean;
+  };
+  cancellationPolicy?: {
+    refundDeadlineMillis: number;
+    eventStartsAtMillis: number;
+  };
+}
+
+/**
+ * Private OTP recipient invitation and single-UID claim. Document ID hashes a random token; raw tokens and phone numbers are never persisted. Immutable offer/source/phone bindings are rechecked in every payment transaction.
+ */
+export interface OrganizerEventOfferRecipientDocument {
+  organizerId: string;
+  eventId: string;
+  offerId: string;
+  responseId: string;
+  originId: string;
+  contactId: string;
+  issuedByUid: string;
+  offerGeneration: number;
+  offerRevision: number;
+  issuedAtMillis: number;
+  expiresAtMillis: number;
+  phoneHash: string;
+  recipientUid: string | null;
+  claimedAtMillis: number | null;
+  revokedAtMillis: number | null;
+}
+
+/**
  * Server-owned immutable organizer/event/response admission ownership. Created atomically with the seat and request receipt; new request IDs cannot admit this source again.
  */
 export interface OrganizerFormAdmissionDocument {
@@ -579,6 +870,52 @@ export interface OrganizerFormAdmissionReceiptDocument {
   actorUid: string;
   paymentSnapshot: EventOfferPaymentSnapshot;
   manualPayment: EventOfferManualPayment;
+  /**
+   * Current native form application approval checked atomically at admission. Absent on legacy receipts.
+   */
+  applicationApproval?: null | {
+    applicationId: string;
+    contactId: string;
+    revision: number;
+    reviewedAtMillis: number;
+  };
+  /**
+   * Frozen server-verified payment authority for automatic admission; absent on manual/free admissions.
+   */
+  providerPayment?: {
+    paymentId: string;
+    providerOrderId: string;
+    providerPaymentId: string;
+    recipientUid: string;
+    grantId: string;
+    capturedAtMillis: number;
+    routing: {
+      version: 1;
+      amountMinor: number;
+      transferAmountMinor: number | null;
+      settlementHold: boolean | null;
+      purpose: "formFee" | "eventAdmission";
+      organizerId: string;
+      selection: {
+        route:
+          | "razorpayRoute"
+          | "razorpayOAuth"
+          | "stripeConnectDirect"
+          | "stripeConnectDestination";
+        mode: "test" | "live";
+        currency: string;
+        merchantCountry: string;
+      };
+      policySource: "app" | "organizer" | "legacy";
+      appRevision: number;
+      organizerRevision: number;
+      bindingId: string;
+      merchantAccountId: string;
+      destinationAccountId: string | null;
+      configurationVersion: string;
+      checkoutKey: string | null;
+    };
+  };
 }
 
 export interface EventOfferConfigurationReceiptDocument {
@@ -602,13 +939,21 @@ export interface EventSetupPreferencesDocument {
 }
 
 export interface EventSetupReceiptDocument {
-  operation: "create" | "update" | "preferences" | "details";
+  operation:
+    | "create"
+    | "update"
+    | "preferences"
+    | "details"
+    | "publish"
+    | "unpublish";
   actorUid: string;
   organizerId: string;
   requestHash: string;
   eventId: string;
-  appliedRevision: number;
+  appliedRevision?: number;
   createdAt: FirebaseFirestore.Timestamp;
+  outcome?: "discarded";
+  expectedSetupRevision?: number;
 }
 
 export interface OrganizerEventSetupDefaultsDocument {
@@ -6553,15 +6898,86 @@ export interface OrganizerPaymentOauthStateDocument {
 }
 
 /**
+ * Operator-owned app defaults and organizer overrides. Null inherits at organizer scope and disables at app scope. An explicit disabled selection never inherits.
+ */
+export interface PaymentRoutingPolicyDocument {
+  scope: "app" | "organizer";
+  organizerId: string | null;
+  revision: number;
+  formFee:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
+  eventAdmission:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastMutationHash?: string;
+}
+
+/**
  * Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.
  */
 export interface OrganizerFormPaymentDocument {
+  routing?: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
   organizerId: string;
   formId: string;
   versionId: string;
   draftId: string;
   respondentUid: string;
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   mode: "test" | "live";
   draftRevision: number;
@@ -6609,7 +7025,7 @@ export interface OrganizerFormPaymentDocument {
  * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
  */
 export interface OrganizerFormPaymentWebhookDocument {
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   providerEventId: string;
   event: string;
@@ -6620,6 +7036,7 @@ export interface OrganizerFormPaymentWebhookDocument {
   processedAt: FirebaseFirestore.Timestamp | null;
   expiresAt: FirebaseFirestore.Timestamp;
   nextAttemptAt: FirebaseFirestore.Timestamp;
+  platformConfigurationVersion?: string;
 }
 
 /**
@@ -6809,7 +7226,7 @@ export interface OrganizerFormDraftDocument {
       retentionCopy: string;
     };
     payment?: {
-      connectionId: string;
+      connectionId: string | null;
       amountPaise: number;
       currency: "INR";
       description: string;
@@ -7040,7 +7457,7 @@ export interface OrganizerFormVersionDocument {
       retentionCopy: string;
     };
     payment?: {
-      connectionId: string;
+      connectionId: string | null;
       amountPaise: number;
       currency: "INR";
       description: string;
@@ -8654,6 +9071,12 @@ export interface EventDocument {
   eventLocalStartTime?: string;
   eventTimezone?: string;
   setupDefaults?: EventSetupDefaults;
+  /**
+   * Explicit registration capability. Older enabled events without this field support free OTP registration only.
+   */
+  publicRegistrationMode?: "closed" | "free" | "paid";
+  publicRegistrationRevision?: number;
+  firstPublishedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -12936,7 +13359,7 @@ export interface PaymentDocument {
   currency: string;
   provider?: "razorpay" | "stripe";
   /**
-   * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+   * refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.
    */
   status: "pending" | "completed" | "failed" | "refunded" | "refundFailed";
   providerPaymentId?: string | null;
@@ -12959,6 +13382,8 @@ export interface PaymentDocument {
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
   completedAt?: FirebaseFirestore.Timestamp;
+  cancellationRefund?: LegacyPaymentRefundIntent;
+  updatedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

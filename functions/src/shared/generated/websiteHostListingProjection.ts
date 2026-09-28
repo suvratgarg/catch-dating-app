@@ -74,6 +74,9 @@ export interface WebsiteHostListingProjection {
     checkedInCount: number;
     waitlistedCount: number;
     publicRegistrationEnabled?: boolean;
+    registrationMode?: "closed" | "free" | "paid";
+    amountPaise?: number;
+    currency?: string;
     priceLabel: string;
     scorecard?: {
       [k: string]: unknown;

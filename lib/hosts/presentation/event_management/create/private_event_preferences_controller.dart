@@ -1,22 +1,45 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+
+import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
+
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-typedef ReadPrivateEventForPreferences = Future<PrivateEventBasicSummary>
-    Function({required String organizerId, required String eventId});
-typedef ReadDefaultsForPrivateEvent = Future<ManagerEventSetupDefaults>
-    Function(String organizerId);
-typedef WritePrivateEventPreferences = Future<PrivateEventCreateReceipt>
-    Function(PrivateEventPreferencesUpdateRequest request);
+typedef ReadPrivateEventForPreferences =
+    Future<PrivateEventBasicSummary> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadDefaultsForPrivateEvent =
+    Future<ManagerEventSetupDefaults> Function(String organizerId);
+typedef WritePrivateEventPreferences =
+    Future<PrivateEventCreateReceipt> Function(
+      PrivateEventPreferencesUpdateRequest request,
+    );
 
 /// Shared presentation contract. Private setup and published offer settings
 /// retain separate reads, revision fences, journals and mutations.
 abstract class EventPreferencesEditorController extends ChangeNotifier {
   String? get eventName;
+  String get userId;
+  String? Function()? get currentUserId;
+  bool _actorInvalidated = false;
+  bool get actorAvailable =>
+      !_actorInvalidated &&
+      !_editorDisposed &&
+      (currentUserId == null || currentUserId!() == userId);
+
+  void invalidateActor() {
+    _actorInvalidated = true;
+    resetDraft();
+  }
+
   bool get hasLoadedEvent;
   bool get isPrivateEvent;
   PrivateEventPreferenceIntents get intents;
@@ -32,6 +55,96 @@ abstract class EventPreferencesEditorController extends ChangeNotifier {
   Future<void> retryPending();
   Future<void> save(PrivateEventPreferenceIntents intents);
 
+  PreviewEventOfferPreferences? get readPreview;
+  EventOfferPreferencesUpdateRequest buildPreviewRequest(
+    PrivateEventPreferenceIntents intents,
+  );
+
+  PrivateEventPreferenceIntents? draftIntents;
+  EventOfferPreferencesPreview? review;
+  bool previewing = false;
+  int _reviewEpoch = 0;
+  bool _editorDisposed = false;
+
+  PrivateEventPreferenceIntents get editorIntents => draftIntents ?? intents;
+
+  void stage(PrivateEventPreferenceIntents next) {
+    if (!canEdit) return;
+    draftIntents = next;
+    review = null;
+    error = null;
+    _reviewEpoch++;
+    notifyListeners();
+  }
+
+  void resetDraft() {
+    draftIntents = null;
+    review = null;
+    previewing = false;
+    _reviewEpoch++;
+  }
+
+  Future<void> previewChanges() async {
+    final reader = readPreview;
+    if (!canEdit || reader == null) return;
+    final request = buildPreviewRequest(editorIntents);
+    final epoch = ++_reviewEpoch;
+    previewing = true;
+    review = null;
+    error = null;
+    notifyListeners();
+    try {
+      final result = await reader(request);
+      if (!actorAvailable || epoch != _reviewEpoch) return;
+      if (!const DeepCollectionEquality().equals(
+        result.request.toJson(),
+        request.toJson(),
+      )) {
+        throw const FormatException('Preview command identity changed');
+      }
+      review = result;
+    } catch (cause) {
+      if (!_editorDisposed && epoch == _reviewEpoch) error = cause;
+    } finally {
+      if (!_editorDisposed && epoch == _reviewEpoch) {
+        previewing = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> applyReview() async {
+    final approved = review;
+    if (!canEdit || approved == null) return;
+    final current = buildPreviewRequest(editorIntents);
+    final frozen = approved.request;
+    if (current.organizerId != frozen.organizerId ||
+        current.eventId != frozen.eventId ||
+        current.expectedEventSourceRevision !=
+            frozen.expectedEventSourceRevision ||
+        current.expectedPreferencesRevision !=
+            frozen.expectedPreferencesRevision ||
+        current.reviewedDefaultsHash != frozen.reviewedDefaultsHash) {
+      resetDraft();
+      reportError(
+        StateError('Event settings changed. Reload and review again.'),
+      );
+      return;
+    }
+    await save(frozen.intents);
+    if (_editorDisposed) return;
+    // A failed write may have committed. Its existing journal owns all retries.
+    resetDraft();
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _editorDisposed = true;
+    resetDraft();
+    super.dispose();
+  }
+
   /// Surface an inline editor validation failure through the owned state.
   void reportError(Object cause) {
     error = cause;
@@ -41,7 +154,8 @@ abstract class EventPreferencesEditorController extends ChangeNotifier {
 
 /// Event-scoped editor state. Once a command is sent, every retry uses the
 /// same persisted body even after a lost response, revocation or app restart.
-class PrivateEventPreferencesController extends EventPreferencesEditorController {
+class PrivateEventPreferencesController
+    extends EventPreferencesEditorController {
   PrivateEventPreferencesController({
     required this.userId,
     required this.organizerId,
@@ -49,15 +163,22 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     required this.readEvent,
     required this.readDefaults,
     required this.write,
+    this.readPreview,
+    this.currentUserId,
     this.journal = const PrivateEventPreferencesJournal(),
   });
 
+  @override
   final String userId;
+  @override
+  final String? Function()? currentUserId;
   final String organizerId;
   final String eventId;
   final ReadPrivateEventForPreferences readEvent;
   final ReadDefaultsForPrivateEvent readDefaults;
   final WritePrivateEventPreferences write;
+  @override
+  final PreviewEventOfferPreferences? readPreview;
   final PrivateEventPreferencesJournal journal;
 
   PrivateEventBasicSummary? event;
@@ -84,7 +205,8 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
   @override
   Map<String, Object?> get resolvedValues =>
       event?.eventPreferences?.resolvedValues ??
-      defaults?.preferences.toSparseJson() ?? const <String, Object?>{};
+      defaults?.preferences.toSparseJson() ??
+      const <String, Object?>{};
   @override
   bool get hasPending => pending != null;
 
@@ -100,11 +222,18 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
   }
 
   @override
-  bool get canEdit => event?.canEditBasics == true && defaults != null &&
-      pending == null && !loading && !saving;
+  bool get canEdit =>
+      event?.canEditBasics == true &&
+      defaults != null &&
+      actorAvailable &&
+      pending == null &&
+      !loading &&
+      !saving &&
+      !previewing;
 
   @override
   Future<void> load() async {
+    resetDraft();
     loading = true;
     error = null;
     event = null;
@@ -112,7 +241,9 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     notifyListeners();
     try {
       pending = await journal.load(
-        userId: userId, organizerId: organizerId, eventId: eventId,
+        userId: userId,
+        organizerId: organizerId,
+        eventId: eventId,
       );
       final results = await Future.wait<Object>([
         readEvent(organizerId: organizerId, eventId: eventId),
@@ -123,7 +254,9 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
       if (nextEvent.eventId != eventId ||
           nextEvent.organizerId != organizerId ||
           nextDefaults.organizerId != organizerId) {
-        throw const FormatException('Private event preferences identity changed');
+        throw const FormatException(
+          'Private event preferences identity changed',
+        );
       }
       event = nextEvent;
       defaults = nextDefaults;
@@ -136,9 +269,24 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
   }
 
   @override
+  EventOfferPreferencesUpdateRequest buildPreviewRequest(
+    PrivateEventPreferenceIntents intents,
+  ) => EventOfferPreferencesUpdateRequest(
+    expectedActorUid: userId,
+    organizerId: organizerId,
+    eventId: eventId,
+    requestId: _newRequestId(),
+    expectedEventSourceRevision: event!.setupRevision,
+    expectedPreferencesRevision: event!.eventPreferences?.revision ?? 0,
+    reviewedDefaultsHash: defaults!.preferencesHash,
+    intents: intents,
+  );
+
+  @override
   Future<void> save(PrivateEventPreferenceIntents intents) async {
     if (!canEdit) return;
     final request = PrivateEventPreferencesUpdateRequest(
+      expectedActorUid: userId,
       organizerId: organizerId,
       eventId: eventId,
       requestId: _newRequestId(),
@@ -188,8 +336,30 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     }
   }
 
-  Future<void> _sendPending(PrivateEventPreferencesUpdateRequest request) async {
-    final receipt = await write(request);
+  Future<void> _sendPending(
+    PrivateEventPreferencesUpdateRequest request,
+  ) async {
+    if (!actorAvailable) {
+      throw const SignInRequiredException('apply event settings');
+    }
+    late final PrivateEventCreateReceipt receipt;
+    try {
+      receipt = await write(request);
+    } catch (cause) {
+      if (isDefinitiveEventPreferenceRejection(
+        cause,
+        requestId: request.requestId,
+        eventId: eventId,
+        organizerId: organizerId,
+      )) {
+        await journal.clear(userId: userId, request: request);
+        pending = null;
+        event = null;
+        defaults = null;
+        resetDraft();
+      }
+      rethrow;
+    }
     if (receipt.eventId != eventId ||
         receipt.setupRevision <= request.expectedSetupRevision) {
       throw const FormatException('Invalid event preferences receipt');
@@ -210,7 +380,8 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
 
 String _newRequestId() {
   final random = Random.secure();
-  return List<int>.generate(24, (_) => random.nextInt(256))
-      .map((value) => value.toRadixString(16).padLeft(2, '0'))
-      .join();
+  return List<int>.generate(
+    24,
+    (_) => random.nextInt(256),
+  ).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

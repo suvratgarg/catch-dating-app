@@ -14,6 +14,8 @@ import {planEventSeatMigration, SeatMigrationAttendee,
   SeatMigrationFormReceipt, SeatMigrationParticipation,
   SeatMigrationVerifiedPhone} from "./seatMigration";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {assertNoOutstandingMigrationHolds} from
+  "./seatAuthority/migrationOutstandingHolds";
 import {assertLiveMigrationSourcesMatchStage,
   MAX_LIVE_MIGRATION_SOURCE_ROWS} from
   "./seatAuthority/liveMigrationSource";
@@ -25,7 +27,7 @@ const MAX_OUTPUT_ROWS = 1500;
 const SOURCES = ["eventParticipations", "eventAttendees",
   "organizerContactOrigins"] as const;
 type Source = typeof SOURCES[number];
-type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete";
+type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete" | "discard";
 
 interface MigrationRun {
   eventId: string;
@@ -41,6 +43,7 @@ interface MigrationRun {
   planHash: string | null;
   outputCursor: number;
   outputCount: number;
+  reviewedRequestHash?: string | null;
 }
 
 export interface PagedSeatBootstrapDeps {
@@ -49,6 +52,20 @@ export interface PagedSeatBootstrapDeps {
     phoneNumber?: string | null}>};
   /** Deployment assertion: each seat writer reads this fence in its TX. */
   allWritersIntegrated?: () => boolean;
+  /** Host entry points must recheck current manager/deletion authority inside
+   * every page transaction. Internal reviewed migrations may omit this hook.
+   */
+  authorizeTransaction?: (tx: FirebaseFirestore.Transaction,
+    command: PagedSeatBootstrapCommand) => Promise<void>;
+  /** A manager adapter may prepare explicitly reviewed missing event terms.
+   * It must check the original event revision in this tx on every page. The
+   * patch and receipt are applied only with the ready ledger, never on scan.
+   */
+  prepareReviewedEvent?: (params: {
+    tx: FirebaseFirestore.Transaction;
+    command: PagedSeatBootstrapCommand;
+    event: Record<string, unknown>;
+  }) => Promise<{patch: Record<string, unknown>; finish?: () => void}>;
 }
 
 export interface PagedSeatBootstrapCommand {
@@ -56,6 +73,7 @@ export interface PagedSeatBootstrapCommand {
   organizerId: string;
   migrationRevision: number;
   asOfMillis: number;
+  reviewedRequestHash?: string;
 }
 
 /**
@@ -141,9 +159,11 @@ function exactRun(raw: FirebaseFirestore.DocumentData | undefined,
       raw.organizerId !== command.organizerId ||
       raw.migrationRevision !== command.migrationRevision ||
       raw.asOfMillis !== command.asOfMillis ||
+      (raw.reviewedRequestHash ?? null) !==
+        (command.reviewedRequestHash ?? null) ||
       !ID.test(raw.fenceToken) ||
       !/^[a-f0-9]{64}$/u.test(raw.policyHash) ||
-      !["scan", "plan", "apply", "cleanup", "complete"]
+      !["scan", "plan", "apply", "cleanup", "complete", "discard"]
         .includes(raw.phase) ||
       !Number.isSafeInteger(raw.sourceIndex) ||
       raw.sourceIndex < 0 || raw.sourceIndex > SOURCES.length ||
@@ -185,7 +205,8 @@ function assertLedger(raw: FirebaseFirestore.DocumentData | undefined,
 
 async function readBase(params: {tx: FirebaseFirestore.Transaction;
   db: FirebaseFirestore.Firestore;
-  command: PagedSeatBootstrapCommand}) {
+  command: PagedSeatBootstrapCommand;
+  prepareReviewedEvent?: PagedSeatBootstrapDeps["prepareReviewedEvent"]}) {
   const {tx, db, command} = params;
   const eventRef = db.collection("events").doc(command.eventId);
   const ledgerRef = db.collection("eventSeatLedgers").doc(command.eventId);
@@ -196,12 +217,16 @@ async function readBase(params: {tx: FirebaseFirestore.Transaction;
   const [eventSnap, ledgerSnap, runSnap, fenceSnap] = await Promise.all([
     tx.get(eventRef), tx.get(ledgerRef), tx.get(runRef), tx.get(fenceRef),
   ]);
-  const event = exactEvent(eventSnap.data(), command);
+  const sourceEvent = exactEvent(eventSnap.data(), command);
+  const review = command.reviewedRequestHash === undefined ? undefined :
+    await params.prepareReviewedEvent!({tx, command, event: sourceEvent});
+  const event = review ?
+    exactEvent({...sourceEvent, ...review.patch}, command) : sourceEvent;
   const policy = deriveEventSeatPolicy(event);
   if (policy.organizerId !== command.organizerId) {
     unavailable("Event capacity owner is unavailable.");
   }
-  return {event, policy, ledgerRef, runRef, fenceRef,
+  return {event, eventRef, review, policy, ledgerRef, runRef, fenceRef,
     ledger: ledgerSnap.data(), run: runSnap.data(), fence: fenceSnap.data()};
 }
 
@@ -209,6 +234,7 @@ async function readBase(params: {tx: FirebaseFirestore.Transaction;
 async function initialize(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<void> {
   await deps.db.runTransaction(async (tx) => {
+    await deps.authorizeTransaction?.(tx, command);
     const runRef = deps.db.collection("eventSeatMigrationRuns")
       .doc(command.eventId);
     const existingRun = await tx.get(runRef);
@@ -231,7 +257,8 @@ async function initialize(command: PagedSeatBootstrapCommand,
         return;
       }
     }
-    const base = await readBase({tx, db: deps.db, command});
+    const base = await readBase({tx, db: deps.db, command,
+      prepareReviewedEvent: deps.prepareReviewedEvent});
     if (base.run) {
       const run = exactRun(base.run, command);
       assertFence(base.fence, run);
@@ -251,6 +278,8 @@ async function initialize(command: PagedSeatBootstrapCommand,
     if (base.policy.status !== "active") {
       unavailable("Event capacity is unavailable.");
     }
+    await assertNoOutstandingMigrationHolds({db: deps.db, tx,
+      eventId: command.eventId});
     const token = `mig_${digest([command.eventId,
       command.migrationRevision, command.asOfMillis]).slice(0, 48)}`;
     const run: MigrationRun = {eventId: command.eventId,
@@ -259,7 +288,8 @@ async function initialize(command: PagedSeatBootstrapCommand,
       asOfMillis: command.asOfMillis, fenceToken: token,
       policyHash: base.policy.policyHash, phase: "scan", sourceIndex: 0,
       cursor: null, sourceCounts: [0, 0, 0], planHash: null,
-      outputCursor: 0, outputCount: 0};
+      outputCursor: 0, outputCount: 0,
+      reviewedRequestHash: command.reviewedRequestHash ?? null};
     tx.create(base.fenceRef, {eventId: command.eventId,
       organizerId: command.organizerId,
       migrationRevision: command.migrationRevision, token,
@@ -277,7 +307,9 @@ async function initialize(command: PagedSeatBootstrapCommand,
 async function scanPage(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<boolean> {
   return deps.db.runTransaction(async (tx) => {
-    const base = await readBase({tx, db: deps.db, command});
+    await deps.authorizeTransaction?.(tx, command);
+    const base = await readBase({tx, db: deps.db, command,
+      prepareReviewedEvent: deps.prepareReviewedEvent});
     const run = exactRun(base.run, command);
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
@@ -431,6 +463,8 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
     }
   });
   if (params.verifyLiveSources) {
+    await assertNoOutstandingMigrationHolds({db: deps.db, tx,
+      eventId: command.eventId});
     await assertLiveMigrationSourcesMatchStage({db: deps.db, tx,
       eventId: command.eventId, organizerId: command.organizerId,
       migrationRevision: command.migrationRevision,
@@ -539,7 +573,9 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
 async function freezePlan(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<void> {
   await deps.db.runTransaction(async (tx) => {
-    const base = await readBase({tx, db: deps.db, command});
+    await deps.authorizeTransaction?.(tx, command);
+    const base = await readBase({tx, db: deps.db, command,
+      prepareReviewedEvent: deps.prepareReviewedEvent});
     const run = exactRun(base.run, command);
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
@@ -568,7 +604,9 @@ async function freezePlan(command: PagedSeatBootstrapCommand,
 async function applyPage(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<boolean> {
   return deps.db.runTransaction(async (tx) => {
-    const base = await readBase({tx, db: deps.db, command});
+    await deps.authorizeTransaction?.(tx, command);
+    const base = await readBase({tx, db: deps.db, command,
+      prepareReviewedEvent: deps.prepareReviewedEvent});
     const run = exactRun(base.run, command);
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
@@ -588,6 +626,10 @@ async function applyPage(command: PagedSeatBootstrapCommand,
         verifyLiveSources: true});
       if (current.hash !== frozen.hash) {
         unavailable("Migration source changed before activation.");
+      }
+      if (base.review) {
+        tx.update(base.eventRef, base.review.patch);
+        base.review.finish?.();
       }
       tx.update(base.ledgerRef, {...frozen.ledger,
         revision: (base.ledger!.revision as number) + 1,
@@ -617,6 +659,7 @@ async function applyPage(command: PagedSeatBootstrapCommand,
 async function cleanupPage(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<boolean> {
   return deps.db.runTransaction(async (tx) => {
+    await deps.authorizeTransaction?.(tx, command);
     const runRef = deps.db.collection("eventSeatMigrationRuns")
       .doc(command.eventId);
     const [runSnap, fenceSnap, ledgerSnap] = await Promise.all([
@@ -671,15 +714,7 @@ export async function bootstrapEventSeatLedgerPaged(params: {
 }): Promise<{eventId: string; occupied: number;
   migrationRevision: number}> {
   const {command, deps} = params;
-  if (!command || !ID.test(command.eventId) ||
-      !ID.test(command.organizerId) ||
-      !Number.isSafeInteger(command.migrationRevision) ||
-      command.migrationRevision < 1 ||
-      !Number.isSafeInteger(command.asOfMillis) ||
-      command.asOfMillis < 0 ||
-      deps.allWritersIntegrated?.() !== true) {
-    unavailable("Seat bootstrap is unavailable.");
-  }
+  validateBootstrap(command, deps);
   await initialize(command, deps);
   const maxPageSteps = Math.ceil(MAX_SOURCE_ROWS * SOURCES.length /
     PAGE_SIZE) + Math.ceil(MAX_OUTPUT_ROWS / PAGE_SIZE) +
@@ -689,13 +724,8 @@ export async function bootstrapEventSeatLedgerPaged(params: {
       .doc(command.eventId).get();
     const run = exactRun(runSnap.data(), command);
     if (run.phase === "complete") {
-      const ledger = (await deps.db.collection("eventSeatLedgers")
-        .doc(command.eventId).get()).data();
-      if (ledger?.state !== "ready" ||
-          ledger.migrationRevision !== command.migrationRevision) {
-        unavailable("Seat migration completion is inconsistent.");
-      }
-      return {eventId: command.eventId, occupied: ledger.occupied,
+      const progress = await readMigrationProgress(command, deps);
+      return {eventId: command.eventId, occupied: progress.occupied!,
         migrationRevision: command.migrationRevision};
     }
     if (run.phase === "scan") {
@@ -713,4 +743,177 @@ export async function bootstrapEventSeatLedgerPaged(params: {
     await cleanupPage(command, deps);
   }
   unavailable("Seat migration exceeded its bounded page budget.");
+}
+
+function validateBootstrap(command: PagedSeatBootstrapCommand,
+  deps: PagedSeatBootstrapDeps): void {
+  if (!command || !ID.test(command.eventId) ||
+      !ID.test(command.organizerId) ||
+      !Number.isSafeInteger(command.migrationRevision) ||
+      command.migrationRevision < 1 ||
+      !Number.isSafeInteger(command.asOfMillis) ||
+      command.asOfMillis < 0 ||
+      (command.reviewedRequestHash !== undefined &&
+        (!/^[a-f0-9]{64}$/.test(command.reviewedRequestHash) ||
+          deps.prepareReviewedEvent === undefined ||
+          deps.authorizeTransaction === undefined)) ||
+      deps.allWritersIntegrated?.() !== true) {
+    unavailable("Seat bootstrap is unavailable.");
+  }
+}
+
+export interface SeatMigrationProgress {
+  eventId: string;
+  migrationRevision: number;
+  phase: Phase;
+  scannedRows: number;
+  appliedRows: number;
+  outputRows: number;
+  occupied: number | null;
+}
+
+/** One bounded Host request, resumable from the durable checkpoint. A caller
+ * must journal its exact command; a returned scan/apply phase is not readiness.
+ */
+export async function advanceEventSeatLedgerMigration(params: {
+  command: PagedSeatBootstrapCommand;
+  deps: PagedSeatBootstrapDeps;
+  pageBudget?: number;
+}): Promise<SeatMigrationProgress> {
+  const {command, deps, pageBudget = 3} = params;
+  validateBootstrap(command, deps);
+  if (!Number.isInteger(pageBudget) || pageBudget < 1 || pageBudget > 5) {
+    unavailable("Invalid seat reconciliation page budget.");
+  }
+  await initialize(command, deps);
+  for (let step = 0; step < pageBudget; step++) {
+    const run = exactRun((await deps.db.collection("eventSeatMigrationRuns")
+      .doc(command.eventId).get()).data(), command);
+    if (run.phase === "complete") break;
+    if (run.phase === "scan") await scanPage(command, deps);
+    else if (run.phase === "plan") await freezePlan(command, deps);
+    else if (run.phase === "apply") await applyPage(command, deps);
+    else await cleanupPage(command, deps);
+  }
+  return readMigrationProgress(command, deps);
+}
+
+async function readMigrationProgress(command: PagedSeatBootstrapCommand,
+  deps: PagedSeatBootstrapDeps): Promise<SeatMigrationProgress> {
+  return deps.db.runTransaction(async (tx) => {
+    await deps.authorizeTransaction?.(tx, command);
+    const [runSnap, ledgerSnap, fenceSnap] = await Promise.all([
+      tx.get(deps.db.collection("eventSeatMigrationRuns").doc(command.eventId)),
+      tx.get(deps.db.collection("eventSeatLedgers").doc(command.eventId)),
+      tx.get(deps.db.collection("eventSeatMigrationFences")
+        .doc(command.eventId)),
+    ]);
+    const run = exactRun(runSnap.data(), command);
+    const ledger = ledgerSnap.data();
+    const fence = fenceSnap.data();
+    if (run.phase === "complete" || run.phase === "cleanup") {
+      if (ledger?.state !== "ready" || ledger.eventId !== command.eventId ||
+          ledger.migrationRevision !== command.migrationRevision ||
+          fence?.state !== "ready" || fence.eventId !== command.eventId ||
+          fence.organizerId !== command.organizerId ||
+          fence.migrationRevision !== command.migrationRevision ||
+          fence.token !== run.fenceToken) {
+        unavailable("Seat migration completion is inconsistent.");
+      }
+    } else {
+      assertFence(fence, run);
+      assertLedger(ledger, run);
+    }
+    return {eventId: command.eventId,
+      migrationRevision: command.migrationRevision, phase: run.phase,
+      scannedRows: run.sourceCounts.reduce((sum, count) => sum + count, 0),
+      appliedRows: run.outputCursor, outputRows: run.outputCount,
+      occupied: run.phase === "complete" ? ledger!.occupied as number : null};
+  });
+}
+
+
+/** Explicitly abandons only a pre-apply run. A durable caller-owned tombstone
+ * commits before the writer lock is released, preventing delayed old commands
+ * from starting again after the organizer reviews corrected terms.
+ */
+export async function discardEventSeatLedgerMigration(params: {
+  command: PagedSeatBootstrapCommand;
+  deps: PagedSeatBootstrapDeps;
+  prepareDiscard: (tx: FirebaseFirestore.Transaction) => Promise<() => void>;
+  pageBudget?: number;
+}): Promise<{complete: boolean; progress: SeatMigrationProgress | null}> {
+  const {command, deps, pageBudget = 3} = params;
+  validateBootstrap(command, deps);
+  if (!deps.authorizeTransaction || !Number.isInteger(pageBudget) ||
+      pageBudget < 1 || pageBudget > 5) {
+    unavailable("Invalid guest reconciliation discard request.");
+  }
+  let progress: SeatMigrationProgress | null = null;
+  for (let page = 0; page < pageBudget; page++) {
+    const result = await deps.db.runTransaction(async (tx) => {
+      await deps.authorizeTransaction!(tx, command);
+      const runRef = deps.db.collection("eventSeatMigrationRuns")
+        .doc(command.eventId);
+      const fenceRef = deps.db.collection("eventSeatMigrationFences")
+        .doc(command.eventId);
+      const ledgerRef = deps.db.collection("eventSeatLedgers")
+        .doc(command.eventId);
+      const planRef = deps.db.collection("eventSeatMigrationPlans")
+        .doc(command.eventId);
+      const [runSnap, fenceSnap, ledgerSnap, planSnap] = await Promise.all([
+        tx.get(runRef), tx.get(fenceRef), tx.get(ledgerRef), tx.get(planRef),
+      ]);
+      if (!runSnap.exists || runSnap.data()?.phase === "complete") {
+        // Cancelling an unapplied settings command on an already-ready event
+        // leaves its existing ledger/fence entirely untouched.
+        await readSeatMigrationWriterFence({db: deps.db, tx,
+          eventId: command.eventId});
+        if (planSnap.exists) unavailable("Unowned seat plan needs review.");
+        const finish = await params.prepareDiscard(tx);
+        finish();
+        return {complete: true, progress: null};
+      }
+      const run = exactRun(runSnap.data(), command);
+      assertFence(fenceSnap.data(), run);
+      assertLedger(ledgerSnap.data(), run);
+      if (!["scan", "plan", "discard"].includes(run.phase) ||
+          run.outputCursor !== 0 || run.outputCount !== 0 ||
+          run.planHash !== null || planSnap.exists) {
+        throw new HttpsError("failed-precondition",
+          "Guest changes have begun. Continue the saved change.",
+          {reason: "seat-reconciliation-discard-unavailable"});
+      }
+      const rows = await tx.get(deps.db.collection("eventSeatMigrationStages")
+        .where("eventId", "==", command.eventId)
+        .where("migrationRevision", "==", command.migrationRevision)
+        .limit(PAGE_SIZE));
+      const finish = await params.prepareDiscard(tx);
+      for (const doc of rows.docs) {
+        const value = doc.data();
+        if (value.eventId !== command.eventId ||
+            value.migrationRevision !== command.migrationRevision) {
+          unavailable("Foreign staged guest source cannot be discarded.");
+        }
+      }
+      if (rows.docs.length === 0) {
+        finish();
+        tx.delete(runRef);
+        tx.delete(ledgerRef);
+        tx.delete(fenceRef);
+        return {complete: true, progress: null};
+      }
+      for (const doc of rows.docs) {
+        tx.delete(deps.db.collection("eventSeatMigrationStages").doc(doc.id));
+      }
+      tx.update(runRef, {phase: "discard"});
+      return {complete: false, progress: {eventId: command.eventId,
+        migrationRevision: command.migrationRevision, phase: "discard" as const,
+        scannedRows: run.sourceCounts.reduce((a, b) => a + b, 0),
+        appliedRows: 0, outputRows: 0, occupied: null}};
+    });
+    if (result.complete) return result;
+    progress = result.progress;
+  }
+  return {complete: false, progress};
 }

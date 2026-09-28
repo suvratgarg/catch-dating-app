@@ -9,6 +9,10 @@ import type {UploadedPhoto} from "./uploadedPhoto";
  */
 export interface UpdateEventCallablePayload {
   eventId: string;
+  /**
+   * Required for published progressive events; rejects stale Host edits.
+   */
+  expectedSetupRevision?: number;
   fields: {
     name?: string;
     startTimeMillis?: number;

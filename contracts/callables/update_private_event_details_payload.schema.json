@@ -101,18 +101,25 @@
                   "type": "string"
                 },
                 "value": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "name"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 240
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
                     }
-                  }
+                  ]
                 }
               }
             },
@@ -177,6 +184,53 @@
               }
             }
           ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "admissionTerms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capacityLimit",
+            "priceInPaise",
+            "currency",
+            "cancellationPolicyId"
+          ],
+          "properties": {
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "priceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "cancellationPolicyId": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "distanceKm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
         }
       },
       "minProperties": 1

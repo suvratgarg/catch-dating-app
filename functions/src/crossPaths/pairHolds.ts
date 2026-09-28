@@ -1,3 +1,5 @@
+import {preparePairSeatTransition} from "./pairSeatAuthority";
+import {readSeatMigrationWriterFence} from "../events/seatMigrationPaged";
 import * as admin from "firebase-admin";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import type {CrossPathsPairHoldDocument} from
@@ -27,10 +29,34 @@ export async function releaseCrossPathsPairHoldInTransaction(params: {
   );
   if (hold.status !== "active" && hold.status !== "confirmed") return hold;
 
+  // A stale expiry query must never cancel a booking that won the race.
+  if (params.reason === "expired" && (hold.status !== "active" ||
+      hold.expiresAt.toMillis() > params.now.toMillis())) return hold;
+  await readSeatMigrationWriterFence({db: params.db, tx: params.tx,
+    eventId: hold.eventId});
   const eventRef = params.db.collection("events").doc(hold.eventId);
   const eventSnap = await params.tx.get(eventRef);
-  if (eventSnap.exists) {
-    const event = eventSnap.data() ?? {};
+  const event = eventSnap.data();
+  const seatHold = hold.status === "active" ?
+    await preparePairSeatTransition({db: params.db, tx: params.tx,
+      event, eventId: hold.eventId, organizerId: hold.organizerId,
+      requesterUid: hold.requesterUid, holdId: params.holdId,
+      expiresAtMillis: hold.expiresAt.toMillis(),
+      nowMillis: params.now.toMillis(), operation: "releaseTemporaryHold"}) :
+    null;
+  const invitationRef = params.reason === "expired" ?
+    params.db.collection("crossPathsInvitations").doc(hold.invitationId) :
+    null;
+  const invitation = invitationRef ?
+    (await params.tx.get(invitationRef)).data() : null;
+  seatHold?.apply();
+  if (invitationRef && invitation?.status === "accepted" &&
+      invitation.pairHoldId === params.holdId) {
+    params.tx.update(invitationRef, {status: "invalidated",
+      updatedAt: params.now, invalidatedAt: params.now,
+      invalidationReason: "hold_expired"});
+  }
+  if (event) {
     const eventUpdate: Record<string, unknown> = {};
     if (hold.status === "active") {
       eventUpdate.crossPathsPairHeldCount = Math.max(
@@ -96,20 +122,12 @@ export const expireCrossPathsPairHolds = onSchedule(
       .limit(400)
       .get();
     for (const doc of snap.docs) {
-      const hold = await releaseCrossPathsPairHold({
+      await releaseCrossPathsPairHold({
         db,
         holdId: doc.id,
         reason: "expired",
         now,
       });
-      if (!hold) continue;
-      await db.collection("crossPathsInvitations")
-        .doc(hold.invitationId).set({
-          status: "invalidated",
-          updatedAt: now,
-          invalidatedAt: now,
-          invalidationReason: "hold_expired",
-        }, {merge: true});
     }
   }
 );

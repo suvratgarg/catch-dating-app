@@ -216,7 +216,7 @@ export type BeginOrganizerFormResponseCallableResponse = {
         retentionCopy: string;
       };
       payment?: {
-        connectionId: string;
+        connectionId: string | null;
         amountPaise: number;
         currency: "INR";
         description: string;

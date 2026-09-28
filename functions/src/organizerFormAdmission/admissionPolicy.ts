@@ -1,4 +1,5 @@
 import {createHash} from "node:crypto";
+import type {ApplicationAdmissionApproval} from "./applicationAuthority";
 
 /**
  * These facts are read and validated by the server adapter in one Firestore
@@ -16,7 +17,8 @@ export interface AdmissionFacts {
     submittedVersionValid: boolean;
     purpose: string; targetKind: string;
     targetId: string | null; crmReceiptCompleted: boolean;
-    crmReceiptContactId: string | null};
+    crmReceiptContactId: string | null;
+    applicationApproval?: ApplicationAdmissionApproval | null};
   origin: {organizerId: string; responseId: string; formId: string;
     originContactId: string; currentContactId: string} | null;
   contact: {organizerId: string; contactId: string; available: boolean;
@@ -214,24 +216,34 @@ export function decideFormAdmission(command: AdmissionCommand,
   const source = facts.source;
   const origin = facts.origin;
   const contact = facts.contact;
+  const approval = source.applicationApproval;
+  const applicationSource = source.purpose === "application" &&
+    facts.offer.sourceKind === "application" && approval != null &&
+    id.test(approval.applicationId) && positive(approval.revision) &&
+    positive(approval.reviewedAtMillis) &&
+    approval.reviewedAtMillis <= facts.nowMillis && origin != null &&
+    [origin.originContactId, origin.currentContactId]
+      .includes(approval.contactId);
+  const convertedSource = ["registration", "intake"].includes(source.purpose) &&
+    facts.offer.sourceKind === "formResponse" &&
+    source.crmReceiptCompleted && source.crmReceiptContactId !== null &&
+    origin?.originContactId === source.crmReceiptContactId;
   if (source.organizerId !== command.organizerId ||
       source.responseId !== command.responseId ||
       !id.test(source.formId) || !id.test(source.versionId) ||
       source.status !== "submitted" || source.withdrawn ||
       !source.submittedVersionValid ||
-      !["registration", "intake"].includes(source.purpose) ||
+      !(applicationSource || convertedSource) ||
       source.targetKind === "campaign" ||
       source.targetKind === "event" &&
         source.targetId !== command.eventId ||
       source.targetKind === "organizer" &&
         source.targetId !== null ||
       !["event", "organizer"].includes(source.targetKind) ||
-      !source.crmReceiptCompleted ||
-      source.crmReceiptContactId === null || !origin || !contact ||
+      !origin || !contact ||
       origin.organizerId !== command.organizerId ||
       origin.responseId !== command.responseId ||
       origin.formId !== source.formId ||
-      origin.originContactId !== source.crmReceiptContactId ||
       origin.currentContactId !== command.contactId ||
       contact.organizerId !== command.organizerId ||
       contact.contactId !== command.contactId ||
@@ -252,7 +264,7 @@ export function decideFormAdmission(command: AdmissionCommand,
       offer.eventId !== command.eventId ||
       offer.contactId !== command.contactId ||
       offer.responseId !== command.responseId ||
-      offer.sourceKind !== "formResponse" ||
+      !["application", "formResponse"].includes(offer.sourceKind) ||
       offer.status !== "offered" ||
       !positive(offer.expiresAtMillis) ||
       offer.expiresAtMillis <= facts.nowMillis ||

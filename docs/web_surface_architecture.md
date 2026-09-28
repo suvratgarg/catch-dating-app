@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.23.1
-updated: 2026-09-23
+version: 0.23.2
+updated: 2026-09-27
 owner: web_platform
 status: active
 ---
@@ -1094,12 +1094,28 @@ Implemented website behavior:
   persistent matching/chat, universal provider sync and exact external revenue
   are not prerequisites and must not be presented as current dependencies.
 
+Catch event discovery is live. `PublicEventListingsProvider` subscribes through
+`firebase.ts` to explicitly published events; `usePublicEventListingsController` owns the
+TanStack Query cache used by home, directory, organizer, and event-detail routes.
+Cache-only snapshots, pending writes, subscription failures, and oversized feeds
+withhold Catch rows. The current bounded feed supports at most 400 published
+records; overflow fails closed and requires a paginated discovery service before
+that scale. No cached Catch rows are used as an offline fallback. Restricted
+admission terms render without an open registration CTA; the server remains the
+booking authority. A missing static organizer profile still excludes its events.
+
+Production organizer generation reads organizer documents and external evidence
+only. Catch event details are absent from generated JSON, prerendered event HTML,
+Event JSON-LD, and sitemaps. Postbuild removes old generated event pages before
+writing external event pages and a generic noindex event shell; `/events/**`
+rewrites to that shell with `no-store`. Explicit synthetic Storybook data remains
+separate. Rollout requires replacing previously deployed static exports; this
+cannot retract historical browser caches or copies made while an event was public.
+
 Deferred website decisions:
 
 - Decide whether fabricated prototype organizers become real seed listings,
   demo-only fixtures, or stay excluded.
-- Decide whether the public website should call a live public event projection
-  callable or keep public events inside generated static JSON.
 - Add an Instagram DM code-verification backend path before promising that as
   an automated claim option.
 - Add new marketing capture slots only through
@@ -1171,6 +1187,18 @@ channel permission or mount in rehearsal.
 ### No-Download Event Runtime And Invite Landing
 
 The React marketing runtime owns the following non-SEO transactional routes:
+
+- `/offer/` owns private, phone-verified invitation checkout. The token is
+  consumed from the URL fragment before rendering and remains in page memory;
+  this route excludes marketing analytics, consent banners and attribution.
+  Only non-secret grant/payment IDs are saved in the current history entry for
+  reload recovery, and every API operation checks the authenticated payer. The existing
+  Catch OTP and shared provider window lead to server-verified payment and
+  admission; the provider callback cannot confirm a seat. Retry preserves the
+  attempt identity, account changes discard stale results, and expired or
+  refunded attempts remain readable. The route uses shared event runtime
+  primitives, owned content and Storybook states. Hosting activation and real
+  provider evidence are separate from this source implementation.
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster

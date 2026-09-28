@@ -193,6 +193,21 @@
       "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
       "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/eventOffers/useOfferCheckoutController.ts",
+      "test": "website/src/features/eventOffers/useOfferCheckoutController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/events/usePublicCheckoutController.ts",
+      "test": "website/src/features/events/usePublicCheckoutController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/organizers/usePublicEventListingsController.ts",
+      "test": "website/src/features/organizers/usePublicEventListingsController.test.tsx",
+      "status": "required"
     }
   ]
 }

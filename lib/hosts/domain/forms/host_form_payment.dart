@@ -19,13 +19,13 @@ class HostFormPayment {
       throw const FormatException('Unsupported form payment currency.');
     }
     return HostFormPayment(
-      connectionId: formDefinitionStringValue(map['connectionId']),
+      connectionId: formDefinitionNullableString(map['connectionId']),
       amountPaise: amount,
       description: formDefinitionStringValue(map['description']),
       refundPolicy: formDefinitionStringValue(map['refundPolicy']),
     );
   }
-  final String connectionId;
+  final String? connectionId;
   final int amountPaise;
   final String description;
   final String refundPolicy;
@@ -106,6 +106,7 @@ class HostFormPaymentSetup {
     required this.available,
     required this.connections,
     this.authorizationUri,
+    this.collection,
   });
   factory HostFormPaymentSetup.fromCallableData(Object? data) {
     if (data is! Map<Object?, Object?> ||
@@ -127,6 +128,11 @@ class HostFormPaymentSetup {
     }
     return HostFormPaymentSetup(
       available: data['available']! as bool,
+      collection: data['collection'] == null
+          ? null
+          : HostFormPaymentCollection.fromMap(
+              data['collection'] as Map<Object?, Object?>,
+            ),
       authorizationUri: uri,
       connections: List.unmodifiable(
         (data['connections']! as List).map(
@@ -139,4 +145,47 @@ class HostFormPaymentSetup {
   final bool available;
   final List<HostFormPaymentConnection> connections;
   final Uri? authorizationUri;
+  final HostFormPaymentCollection? collection;
+}
+
+enum HostFormCollectionRoute {
+  disabled,
+  razorpayRoute,
+  razorpayOAuth,
+  stripeConnectDirect,
+  stripeConnectDestination,
+}
+
+@immutable
+class HostFormPaymentCollection {
+  const HostFormPaymentCollection({
+    required this.route,
+    required this.mode,
+    required this.ready,
+  });
+  factory HostFormPaymentCollection.fromMap(Map<Object?, Object?> map) {
+    if (map['ready'] is! bool) {
+      throw const FormatException('Invalid collection readiness.');
+    }
+    return HostFormPaymentCollection(
+      route: formDefinitionEnumByName(
+        HostFormCollectionRoute.values,
+        formDefinitionStringValue(map['route']),
+        'collection route',
+      ),
+      mode: map['mode'] == null
+          ? null
+          : formDefinitionEnumByName(
+              HostFormPaymentMode.values,
+              formDefinitionStringValue(map['mode']),
+              'collection mode',
+            ),
+      ready: map['ready']! as bool,
+    );
+  }
+  final HostFormCollectionRoute route;
+  final HostFormPaymentMode? mode;
+  final bool ready;
+  bool get throughCatch => route == HostFormCollectionRoute.razorpayRoute;
+  bool get throughOrganizer => route == HostFormCollectionRoute.razorpayOAuth;
 }

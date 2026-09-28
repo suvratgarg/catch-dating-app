@@ -1,3 +1,7 @@
+import {Timestamp} from "firebase-admin/firestore";
+import {validateEventDocument} from
+  "../../shared/generated/validators/eventDocument";
+import {eventPublicationReadiness} from "./publicationReadiness";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PrivateEventSetupCallableResponse} from
   "../../shared/generated/privateEventSetupCallableResponse";
@@ -5,6 +9,10 @@ import {validateGetPrivateEventSetupCallablePayload} from
   "../../shared/generated/validators/getPrivateEventSetupInput";
 import {validatePrivateEventSetupCallableResponse} from
   "../../shared/generated/validators/privateEventSetupOutput";
+import {eventPolicyFromEvent} from "../eventPolicy";
+import type {EventDocument} from
+  "../../shared/generated/firestoreAdminTypes";
+import {isEventPolicyTerms} from "../configuredEvent";
 import {projectEventPreferences} from "./preferences";
 import {authorizeSetupManager} from "./service";
 import {canEditPrivateEventBasics} from "./commitments";
@@ -14,6 +22,7 @@ export async function getPrivateEventSetup(params: {
   actorUid: string;
   command: unknown;
   db: FirebaseFirestore.Firestore;
+  nowMillis?: () => number;
 }): Promise<PrivateEventSetupCallableResponse> {
   const {actorUid, db} = params;
   if (!actorUid) throw new HttpsError("unauthenticated", "Sign in first.");
@@ -28,15 +37,17 @@ export async function getPrivateEventSetup(params: {
       tx.get(db.collection("events").doc(command.eventId)),
       tx.get(db.collection("eventSetupPreferences").doc(command.eventId)),
     ]);
-    authorizeSetupManager(organizer, deleted, actorUid);
+    const manager = authorizeSetupManager(organizer, deleted, actorUid);
     const event = eventSnap.data();
     if (!event || event.organizerId !== command.organizerId ||
         event.clubId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    if (event.publicationState !== "private") {
+    if (event.publicationState !== "private" &&
+        (event.publicationState !== "published" ||
+          !validateEventDocument(event))) {
       throw new HttpsError("failed-precondition",
-        "Use the published event editor for this event.");
+        "Event publication state needs review.");
     }
     const endTimeMillis = event.endTime?.toMillis?.() ?? null;
     if (event.endTime !== undefined &&
@@ -56,6 +67,16 @@ export async function getPrivateEventSetup(params: {
       eventDetails: {
         endTimeMillis,
         venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
+        meetingLocation: event.meetingLocation ?? null,
+        description: event.description ?? null,
+        distanceKm: event.distanceKm ?? null,
+        pace: event.pace ?? null,
+        admissionTerms: isEventPolicyTerms(event as EventDocument) ? {
+          capacityLimit: event.capacityLimit, priceInPaise: event.priceInPaise,
+          currency: event.currency ?? "INR",
+          cancellationPolicyId: eventPolicyFromEvent(event as EventDocument)
+            .cancellation.policyId,
+        } : null,
         sourceVenueId: event.sourceVenueId ?? null,
         eventFormat: event.eventFormat ?? null,
       },
@@ -68,13 +89,18 @@ export async function getPrivateEventSetup(params: {
       timezone: event.eventTimezone,
       startTimeMillis: event.startTime?.toMillis?.(),
       publicationState: event.publicationState,
+      publicationReadiness: eventPublicationReadiness({
+        event: event as EventDocument, organizer: manager,
+        nowMillis: (params.nowMillis ?? Date.now)(),
+        timestampFromMillis: Timestamp.fromMillis}),
       status: event.status,
       setupDefaults: event.setupDefaults,
       detailsConfigured: event.endTime !== undefined ||
         event.meetingLocation !== undefined ||
         event.meetingPoint !== undefined ||
         event.eventFormat !== undefined ||
-        event.eventSuccessPlanId !== undefined,
+        event.eventSuccessPlanId !== undefined ||
+        event.description !== undefined || event.capacityLimit !== undefined,
     };
     if (!validatePrivateEventSetupCallableResponse(result)) {
       throw new HttpsError("failed-precondition",

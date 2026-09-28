@@ -40,6 +40,9 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "expectedActorUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

@@ -28,7 +28,16 @@ export function classifyEventPublication(data) {
     return {action: "blocked", reason: "organizer_mismatch"};
   }
   if (!validateEventDocument(data)) {
-    return {action: "blocked", reason: "invalid_legacy_event"};
+    // Include paths and validation keywords, never source field values or PII.
+    const validationIssues = [...new Set((validateEventDocument.errors ?? [])
+      .map((error) => {
+        const missing = error.keyword === "required" ? error.params?.missingProperty : null;
+        const path = typeof missing === "string" ?
+          `${error.instancePath}/${missing.replaceAll("~", "~0").replaceAll("/", "~1")}` :
+          error.instancePath || "/";
+        return `${path}:${error.keyword}`;
+      }))].sort();
+    return {action: "blocked", reason: "invalid_legacy_event", validationIssues};
   }
   return {action: "publish", reason: "legacy_public_event"};
 }

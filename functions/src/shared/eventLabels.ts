@@ -40,3 +40,14 @@ function humanizeToken(value: string): string {
   const words = value.replace(/([a-z])([A-Z])/g, "$1 $2");
   return words.charAt(0).toUpperCase() + words.slice(1).toLowerCase();
 }
+
+/** Returns copy only for distance activities with a positive distance. */
+export function eventDistanceLabel(event: EventDocument): string | null {
+  const kind = event.eventFormat?.activityKind;
+  const distance = event.distanceKm;
+  if (kind && !["socialRun", "running", "walking", "cycling"].includes(kind) ||
+      typeof distance !== "number" || !Number.isFinite(distance) ||
+      distance <= 0) return null;
+  return Number.isInteger(distance) ?
+    `${distance} km` : `${distance.toFixed(1)} km`;
+}

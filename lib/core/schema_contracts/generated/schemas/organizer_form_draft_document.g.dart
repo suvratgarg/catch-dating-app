@@ -752,9 +752,16 @@ const schemaOrganizerFormDraftDocumentSchema = <String, Object?>{
               ],
               'properties': <String, Object?>{
                 'connectionId': <String, Object?>{
-                  'type': 'string',
-                  'minLength': 1,
-                  'maxLength': 180,
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
                 },
                 'amountPaise': <String, Object?>{
                   'type': 'integer',

@@ -1,5 +1,7 @@
 import {createHash} from "crypto";
 import {normalizeRosterPhone} from "./eventAttendees";
+import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
+  "../organizerEventOfferRecipients/recipientGrant";
 
 /** Structural adapter compatibility until the seat core is integrated. */
 export class SeatIdentityAuthorityError extends Error {
@@ -318,6 +320,8 @@ export async function prepareCrmOriginSeatIdentity(params: {
   responseId: string;
   verifiedRespondent?: {uid: string; currentAuthPhoneNumber: string;
     now: FirebaseFirestore.Timestamp};
+  verifiedOfferRecipient?: {grantId: string; uid: string;
+    now: FirebaseFirestore.Timestamp; loadCurrentAuthUser?: LoadRecipientAuth};
 }): Promise<{identity: CanonicalSeatIdentity; seatAlreadyOccupied: boolean;
   sourceAttendeeId: string | null; resultingLedgerRevision: number;
   apply: () => void}> {
@@ -388,8 +392,25 @@ export async function prepareCrmOriginSeatIdentity(params: {
           originAlias.identityRevision !== contactAlias.identityRevision)) {
     fail("CRM origin aliases are stale, moved or ambiguous.");
   }
-  if (params.verifiedRespondent) {
-    const verified = params.verifiedRespondent;
+  if (params.verifiedRespondent && params.verifiedOfferRecipient) {
+    fail("Use one verified recipient authority.");
+  }
+  let verified = params.verifiedRespondent;
+  if (params.verifiedOfferRecipient) {
+    const recipient = params.verifiedOfferRecipient;
+    const {grant, source} = await readVerifiedOfferRecipient({db, tx,
+      grantId: recipient.grantId, uid: recipient.uid,
+      nowMillis: recipient.now.toMillis(),
+      loadCurrentAuthUser: recipient.loadCurrentAuthUser});
+    if (grant.organizerId !== organizerId || grant.eventId !== eventId ||
+        grant.originId !== originId || grant.responseId !== responseId ||
+        grant.contactId !== contactId) {
+      fail("Verified offer and CRM seat scope disagree.");
+    }
+    verified = {uid: recipient.uid, currentAuthPhoneNumber: source.phoneE164,
+      now: recipient.now};
+  }
+  if (verified) {
     if (!validId(verified.uid) || !phone ||
         currentPhone(verified.currentAuthPhoneNumber) !== phone ||
         contact.linkedUid !== null && contact.linkedUid !== verified.uid) {
@@ -399,9 +420,10 @@ export async function prepareCrmOriginSeatIdentity(params: {
     if (!response || response.organizerId !== organizerId ||
         response.status !== "submitted" ||
         response.withdrawnAt !== null ||
-        response.identityKind !== "phoneVerified" ||
-        response.respondentUid !== verified.uid ||
-        response.identity?.phoneE164 !== phone) {
+        params.verifiedRespondent &&
+          (response.identityKind !== "phoneVerified" ||
+            response.respondentUid !== verified.uid ||
+            response.identity?.phoneE164 !== phone)) {
       fail("Current verified form response is unavailable.");
     }
     const uidAlias = await read("eventSeatIdentityAliases",
@@ -684,7 +706,7 @@ async function prepareVerifiedUidAttendeeEnrollmentInternal(params: Parameters<
       !["hostImport", "hostManual", "providerSync", "webOtp"]
         .includes(attendee.source) ||
       !(allowPending ?
-        ["registered", "checkedIn", "invited", "waitlisted"] :
+        ["registered", "checkedIn", "invited", "waitlisted", "cancelled"] :
         ["registered", "checkedIn"]).includes(attendee.status) ||
       attendee.phoneE164 !== normalized.value ||
       attendee.linkedUid !== null && attendee.linkedUid !== uid) {

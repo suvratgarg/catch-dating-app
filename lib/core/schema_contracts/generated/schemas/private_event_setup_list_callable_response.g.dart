@@ -86,7 +86,10 @@ const schemaPrivateEventSetupListCallableResponseSchema = <String, Object?>{
           },
           'status': <String, Object?>{
             'type': 'string',
-            'const': 'active',
+            'enum': <Object?>[
+              'active',
+              'cancelled',
+            ],
           },
           'detailsConfigured': <String, Object?>{
             'type': 'boolean',

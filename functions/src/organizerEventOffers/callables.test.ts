@@ -6,6 +6,7 @@ import {
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
   getEventOfferConfigurationHandler, configureEventOfferPreferencesHandler,
+  previewEventOfferPreferencesHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
 import type {OfferTransaction} from "./eventOfferService";
@@ -77,7 +78,8 @@ test("all offer endpoints require auth and exact input before database access",
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
       mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
       prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler,
-      configureEventOfferPreferencesHandler]) {
+      configureEventOfferPreferencesHandler,
+      previewEventOfferPreferencesHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
         code("unauthenticated"));
       await assert.rejects(handler(request({actorAuthorized: true}), h.deps),

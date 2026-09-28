@@ -5,6 +5,8 @@ export const staticMetaKeys = [
   "host",
   "event_runtime",
   "event_assistance",
+  "event_offer",
+  "event_booking",
   "event_rehearsal",
   "event_invite",
   "household_rsvp",

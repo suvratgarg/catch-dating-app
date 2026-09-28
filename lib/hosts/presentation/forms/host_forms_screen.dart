@@ -166,7 +166,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     // A settled stream value can lag a live FirebaseAuth account change.
-    if (uid != null && ref.watch(firebaseAuthProvider).currentUser?.uid != uid) {
+    if (uid != null &&
+        ref.watch(firebaseAuthProvider).currentUser?.uid != uid) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
@@ -268,7 +269,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
     String? responseVersionId;
     if (canMountHostResponseQuery(
-      enabled: privateEventSetupAvailable(),
+      enabled: true,
       formId: _responseFormId,
       searchQuery: _responseQuery,
       contactId: _responseContactId,
@@ -276,17 +277,20 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       final directoryState = catchAsyncStateFromAsyncValue(directory);
       responseVersionId = directoryState.isSettledData
           ? directoryState.value?.forms
-              .where((form) => form.formId == _responseFormId)
-              .firstOrNull?.activeVersionId
+                .where((form) => form.formId == _responseFormId)
+                .firstOrNull
+                ?.activeVersionId
           : null;
       final responses = catchAsyncStateFromAsyncValue(
-        ref.watch(hostFormResponsesControllerProvider(
-          HostFormResponseListRequest(
-            organizerId: selectedClub.id,
-            formId: _responseFormId,
-            includeApplications: true,
+        ref.watch(
+          hostFormResponsesControllerProvider(
+            HostFormResponseListRequest(
+              organizerId: selectedClub.id,
+              formId: _responseFormId,
+              includeApplications: true,
+            ),
           ),
-        )),
+        ),
       );
       if (responses.isSettledData) {
         responseVersionId ??= responses.value?.versionScope?.activeVersionId;
@@ -367,9 +371,13 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                   organizerId: selectedClub.id,
                   accountId: uid,
                   requireAccount: true,
-                  queryCapability: responseVersionId == null ? null :
-                      hostResponseQueryCapability(context.l10n,
-                        versionId: responseVersionId),
+                  queryCapability: responseVersionId == null
+                      ? null
+                      : hostResponseQueryCapability(
+                          context.l10n,
+                          versionId: responseVersionId,
+                          offersEnabled: privateEventSetupAvailable(),
+                        ),
                   query: _responseQuery,
                   contactId: _responseContactId,
                   onClearContactFilter: () {
@@ -468,7 +476,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       queryParameters: {'organizerId': organizerId},
     );
   }
-
 
   void _openForm(HostFormSummary form) {
     context.pushNamed(

@@ -1,3 +1,5 @@
+import {Timestamp} from "firebase-admin/firestore";
+import {prepareNativePaidBooking} from "./nativeBooking";
 import assert from "node:assert/strict";
 import * as crypto from "node:crypto";
 import test from "node:test";
@@ -10,7 +12,8 @@ test(
   "razorpayWebhookHandler signs up and completes a captured payment",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/pay_123": {status: "pending", createdAt: "created-at"},
+      "payments/pay_123": {status: "pending",
+        createdAt: Timestamp.fromMillis(1)},
       "razorpayPendingOrders/order_123": {
         status: "pending",
         orderId: "order_123",
@@ -27,8 +30,12 @@ test(
         firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
         createClient: () => razorpayClient(),
         serverTimestamp: () => "server-now",
-        signUpForEvent: async (_db, eventId, userId) => {
+        signUpForEvent: async (_db, eventId, userId, paymentId, options) => {
           signUps.push({eventId, userId});
+          await _db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db: _db, tx, eventId, userId,
+              paymentId, booking: options!.paidBooking!}))();
+          });
         },
       }
     );
@@ -49,7 +56,8 @@ test(
   "razorpayWebhookHandler is idempotent when the callback already fulfilled",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/pay_123": {status: "completed", createdAt: "created-at"},
+      "payments/pay_123": {status: "completed",
+        createdAt: Timestamp.fromMillis(1)},
       "razorpayPendingOrders/order_123": {
         status: "pending",
         orderId: "order_123",
@@ -75,7 +83,7 @@ test(
     // The already-completed payment doc is left untouched.
     assert.deepEqual(firestore.data["payments/pay_123"], {
       status: "completed",
-      createdAt: "created-at",
+      createdAt: Timestamp.fromMillis(1),
     });
     // The leftover pending-order doc is cleaned up.
     assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);

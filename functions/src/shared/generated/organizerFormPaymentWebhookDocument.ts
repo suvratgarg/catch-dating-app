@@ -5,8 +5,10 @@
 /**
  * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
  */
-export interface OrganizerFormPaymentWebhookDocument {
-  connectionId: string;
+export type OrganizerFormPaymentWebhookDocument = {
+  [k: string]: unknown;
+} & {
+  connectionId: string | null;
   accountId: string;
   providerEventId: string;
   event: string;
@@ -38,4 +40,5 @@ export interface OrganizerFormPaymentWebhookDocument {
     _seconds: number;
     _nanoseconds: number;
   };
-}
+  platformConfigurationVersion?: string;
+};

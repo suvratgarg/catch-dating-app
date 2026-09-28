@@ -43,7 +43,7 @@ void runHostCreateEventLifecycleTests() {
       300,
       scrollable: hostManageScrollable(),
     );
-    expect(find.text('Website registration'), findsOneWidget);
+    expect(find.text('Catch registration'), findsOneWidget);
     expect(find.text('Imported guest list'), findsOneWidget);
 
     await tester.scrollUntilVisible(
@@ -73,7 +73,7 @@ void runHostCreateEventLifecycleTests() {
     expect(
       find.descendant(
         of: rosterPanel,
-        matching: find.text('Website registration'),
+        matching: find.text('Catch registration'),
       ),
       findsNothing,
     );

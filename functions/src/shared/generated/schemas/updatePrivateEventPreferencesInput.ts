@@ -561,6 +561,11 @@ export const updatePrivateEventPreferencesCallablePayloadSchema: Record<string, 
           ]
         }
       }
+    },
+    "expectedActorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

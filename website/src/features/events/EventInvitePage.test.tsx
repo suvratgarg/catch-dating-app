@@ -1,6 +1,6 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import {cleanup, render, screen, waitFor} from "@testing-library/react";
 import {MemoryRouter, Route, Routes} from "react-router";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 const resolveEventInviteLanding = vi.hoisted(() => vi.fn());
 
@@ -9,10 +9,11 @@ vi.mock("../../firebase", () => ({
 }));
 
 vi.mock("./PublicEventRegistration", () => ({
-  PublicEventRegistration: ({eventId, inviteToken}: {
+  PublicEventRegistration: ({eventId, inviteToken, mode}: {
+    mode?: string;
     eventId: string;
     inviteToken?: string | null;
-  }) => <div data-testid="registration">{eventId}:{inviteToken}</div>,
+  }) => <div data-testid="registration">{eventId}:{inviteToken}:{mode}</div>,
 }));
 
 import {EventInvitePage} from "./EventInvitePage";
@@ -38,6 +39,8 @@ function renderInvite(path = "/invite/v2_link_token") {
   );
 }
 
+afterEach(cleanup);
+
 describe("EventInvitePage", () => {
   beforeEach(() => {
     resolveEventInviteLanding.mockResolvedValue(landing);
@@ -51,7 +54,18 @@ describe("EventInvitePage", () => {
     }));
     expect((await screen.findAllByText("Courtyard Social")).length).toBe(2);
     expect(screen.getByTestId("registration").textContent)
-      .toBe("event-1:v2_link_token");
+      .toBe("event-1:v2_link_token:free");
+  });
+
+  it("routes paid invites to paid checkout and closed invites to status", async () => {
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, registrationMode: "paid"});
+    const view = renderInvite();
+    expect((await screen.findByTestId("registration")).textContent).toBe("event-1:v2_link_token:paid");
+    view.unmount();
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, registrationMode: "closed"});
+    renderInvite();
+    await screen.findByText("Registration is closed for this event.");
+    expect(screen.queryByTestId("registration")).toBeNull();
   });
 
   it("hands external invitations to the provider-labelled destination", () => {

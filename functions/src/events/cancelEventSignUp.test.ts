@@ -4,6 +4,8 @@ import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
 import {cancelEventSignUpHandler} from "./cancelEventSignUp";
+import {processLegacyCancellationRefund} from
+  "../payments/legacyRefunds/processor";
 import {eventAttendeeId} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
@@ -654,7 +656,8 @@ test(
 
 function harness(
   initialDocs: Record<string, FakeData | undefined>,
-  options: {nowMillis?: number; sendNotificationError?: Error} = {}
+  options: {nowMillis?: number; sendNotificationError?: Error;
+    refundError?: Error} = {}
 ) {
   const firestore = new FakeFirestore(initialDocs);
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
@@ -679,9 +682,24 @@ function harness(
         void uid;
         return null;
       },
-      refundPayment: async (paymentId: string, amountInPaise: number) => {
-        refunds.push({paymentId, amountInPaise});
-      },
+      processRefund: async (db: FirebaseFirestore.Firestore,
+        paymentId: string) => processLegacyCancellationRefund({db, paymentId,
+        clock: () => options.nowMillis ??
+          Date.parse("2026-05-01T00:00:00.000Z"),
+        provider: {
+          verifyPayment: async () => undefined,
+          createRefund: async (intent, attempt) => {
+            if (options.refundError) throw options.refundError;
+            refunds.push({paymentId: intent.providerPaymentId,
+              amountInPaise: attempt.amountMinor});
+            return {id: "rfnd_test", paymentId: intent.providerPaymentId,
+              amountMinor: attempt.amountMinor, currency: intent.currency,
+              state: "processed"};
+          },
+          fetchRefund: async () => {
+            throw new Error("No pending provider result in this fixture.");
+          },
+        }}),
       sendNotification: async (push: {
         token: string;
         title: string;
@@ -812,3 +830,28 @@ function sortableValue(value: unknown): number {
   }
   return 0;
 }
+
+
+test("guest cancellation saves its refund before provider failure and replays",
+  async () => {
+    const options: {nowMillis: number; refundError?: Error} = {
+      nowMillis: Date.parse("2026-05-01T00:00:00.000Z"),
+      refundError: new Error("Provider unavailable")};
+    const h = harness({"events/event-1": event(),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "payments/pay-1": payment()}, options);
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    const saved = h.firestore.get("payments/pay-1")?.cancellationRefund as
+      {state: string; targetAmountMinor: number};
+    assert.equal(saved.state, "pending");
+    assert.equal(saved.targetAmountMinor, 25000);
+    assert.equal(h.firestore.get("payments/pay-1")?.status, "completed");
+    delete options.refundError;
+    // Replay after the event/policy deadline must use the saved quote.
+    options.nowMillis += 3 * 86400_000;
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.refunds.length, 1);
+  });

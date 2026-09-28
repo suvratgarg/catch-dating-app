@@ -3,24 +3,14 @@ import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
-  incrementInviteLinkCounterInTransaction,
   InviteAttribution,
 } from "../events/inviteLinks";
-import {buildPaymentRecord, VerifiedPaymentBooking} from "./paymentValidation";
+import {VerifiedPaymentBooking} from "./paymentValidation";
+import {NativePaidBooking, stageRejectedNativeBooking} from "./nativeBooking";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
-
-/**
- * Issues a Razorpay refund for a payment that could not be fulfilled.
- * Returns whether the refund succeeded so callers can pick the wire status.
- */
-export type RazorpayRefund = (
-  paymentId: string,
-  amountInPaise: number
-) => Promise<void>;
 
 export interface RazorpayFulfillmentDeps {
   signUpForEvent: typeof signUpUserForEvent;
-  refund: RazorpayRefund;
   serverTimestamp: () => unknown;
 }
 
@@ -35,33 +25,7 @@ const terminalPaymentStatuses = new Set([
   "refundFailed",
 ]);
 
-/**
- * Shared Razorpay payment fulfillment.
- *
- * Signs the user up for the event and writes the canonical
- * `payments/{paymentId}` "completed" record (plus a best-effort invite
- * paidCount increment).
- * If sign-up fails (e.g. the event filled up after order creation), issues an
- * immediate refund and records "refunded", or "refundFailed" with an alert log
- * when the refund itself fails.
- *
- * Idempotent: if the payment doc is already in a terminal state
- * (completed/refunded/refundFailed) this returns immediately without touching
- * Razorpay or Firestore, and signUpUserForEvent's own existing-participation
- * guard protects against partial-write races. Safe to call from the client
- * callback, the webhook, and the reconciliation sweep.
- *
- * On success the matching `razorpayPendingOrders/{orderId}` tracking doc is
- * deleted (best effort) so reconciliation stops considering the order stranded.
- *
- * @param {object} params Fulfillment parameters.
- * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
- * @param {string} params.orderId Razorpay order id.
- * @param {string} params.paymentId Razorpay payment id.
- * @param {VerifiedPaymentBooking} params.booking Verified booking truth.
- * @param {RazorpayFulfillmentDeps} params.deps Injectable dependencies.
- * @return {Promise<{fulfilled: boolean, alreadyFinalized: boolean}>} Outcome.
- */
+/** Commit admission/payment together; persist refunds for rejected bookings. */
 export async function fulfillRazorpayPayment({
   db,
   orderId,
@@ -91,9 +55,15 @@ export async function fulfillRazorpayPayment({
     return {fulfilled: existingStatus === "completed", alreadyFinalized: true};
   }
 
-  // Sign the user up. If this fails (e.g. event filled up in a race between
-  // order creation and payment), issue an immediate refund so the user is
-  // never charged for a spot they didn't get.
+  const paidBooking: NativePaidBooking = {
+    userId: booking.userId, orderId, paymentId, eventId: booking.eventId,
+    amount: booking.amountInPaise, amountMinor: booking.amountInPaise,
+    currency: booking.currency, provider: "razorpay",
+    ...(booking.inviteLinkId ? {inviteLinkId: booking.inviteLinkId} : {}),
+    ...(booking.inviteSource ? {inviteSource: booking.inviteSource} : {}),
+    ...(booking.crossPathsPairHoldId ?
+      {crossPathsPairHoldId: booking.crossPathsPairHoldId} : {}),
+  };
   try {
     const participationSnap = await db
       .collection("eventParticipations")
@@ -102,6 +72,7 @@ export async function fulfillRazorpayPayment({
     const hasHostApproval =
       hasHostApprovedJoinRequest(participationSnap.data());
     await deps.signUpForEvent(db, booking.eventId, booking.userId, paymentId, {
+      paidBooking,
       hasValidInvite: booking.inviteVerified,
       ...(hasHostApproval ? {hasHostApproval} : {}),
       ...(inviteAttribution ? {inviteAttribution} : {}),
@@ -109,36 +80,12 @@ export async function fulfillRazorpayPayment({
         {crossPathsPairHoldId: booking.crossPathsPairHoldId} : {}),
     });
   } catch (signUpError) {
-    let refundSucceeded = false;
-    try {
-      await deps.refund(paymentId, booking.amountInPaise);
-      refundSucceeded = true;
-    } catch (refundError) {
-      // The user was charged, the booking failed, AND we could not refund.
-      // Flag a distinct non-recoverable state so reconciliation can find it.
-      logger.error(
-        "ALERT manual refund required: Razorpay refund failed",
-        {paymentId, orderId, userId: booking.userId, eventId: booking.eventId},
-        refundError
-      );
+    const outcome = await stageRejectedNativeBooking({db,
+      booking: paidBooking});
+    if (outcome === "admitted") {
+      await deletePendingOrderBestEffort(db, orderId);
+      return {fulfilled: true, alreadyFinalized: true};
     }
-
-    await paymentRef.set({
-      ...buildPaymentRecord({
-        userId: booking.userId,
-        orderId,
-        paymentId,
-        eventId: booking.eventId,
-        amountInPaise: booking.amountInPaise,
-        currency: booking.currency,
-        status: refundSucceeded ? "refunded" : "refundFailed",
-        signUpFailed: true,
-        inviteLinkId: booking.inviteLinkId,
-        inviteSource: booking.inviteSource,
-        crossPathsPairHoldId: booking.crossPathsPairHoldId,
-      }),
-      createdAt: deps.serverTimestamp(),
-    });
     if (booking.crossPathsPairHoldId) {
       await releaseCrossPathsPairHold({
         db,
@@ -147,56 +94,11 @@ export async function fulfillRazorpayPayment({
       });
     }
 
-    // The order reached a terminal (refunded/refundFailed) state — stop the
-    // reconciliation sweep from re-processing it.
+    // The durable payment refund queue now owns recovery.
     await deletePendingOrderBestEffort(db, orderId);
 
     throw signUpError;
   }
-
-  const completedRecord = {
-    ...buildPaymentRecord({
-      userId: booking.userId,
-      orderId,
-      paymentId,
-      eventId: booking.eventId,
-      amountInPaise: booking.amountInPaise,
-      currency: booking.currency,
-      status: "completed",
-      inviteLinkId: booking.inviteLinkId,
-      inviteSource: booking.inviteSource,
-      crossPathsPairHoldId: booking.crossPathsPairHoldId,
-    }),
-    createdAt: deps.serverTimestamp(),
-    completedAt: deps.serverTimestamp(),
-  };
-
-  // Atomically flip the payment to "completed" and (exactly once) bump the
-  // invite paidCount. The transaction's read-then-write on paymentRef
-  // serializes the client callback, webhook, and reconciliation sweep: only the
-  // caller that observes a non-terminal status *inside* the transaction writes
-  // the completed record and the single counter increment; the losers retry,
-  // re-read "completed", and no-op. This closes the paidCount double-increment
-  // race where all callers passed the pre-signup status read before any of them
-  // had flipped the doc. (signUpUserForEvent above is already idempotent via
-  // its own existing-participation guard, so re-running it for every caller is
-  // safe; only the counter needed an atomic gate.)
-  await db.runTransaction(async (tx) => {
-    const snap = await tx.get(paymentRef);
-    const status = snap.data()?.status as string | undefined;
-    if (status !== undefined && terminalPaymentStatuses.has(status)) {
-      return;
-    }
-    tx.set(paymentRef, completedRecord);
-    if (inviteAttribution) {
-      incrementInviteLinkCounterInTransaction({
-        tx,
-        db,
-        attribution: inviteAttribution,
-        field: "paidCount",
-      });
-    }
-  });
 
   await deletePendingOrderBestEffort(db, orderId);
 
@@ -239,19 +141,6 @@ export function inviteAttributionFromBooking(booking: {
     inviteLinkId: booking.inviteLinkId,
     inviteSource: booking.inviteSource ?? null,
   } : null;
-}
-
-/**
- * Default refund function bound to a Razorpay SDK client.
- * @param {import("razorpay")} razorpay Razorpay SDK client.
- * @return {RazorpayRefund} Refund function for the fulfillment helper.
- */
-export function razorpayRefundFromClient(razorpay: {
-  payments: {refund: (id: string, opts: {amount: number}) => unknown};
-}): RazorpayRefund {
-  return async (paymentId: string, amountInPaise: number) => {
-    await razorpay.payments.refund(paymentId, {amount: amountInPaise});
-  };
 }
 
 /**

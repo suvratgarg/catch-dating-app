@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
-import {listPrivateEventSetups} from "./listPrivateEventSetups";
+import {listPrivateEventSetups, PrivateEventSetupScope} from
+  "./listPrivateEventSetups";
 import {validatePrivateEventSetupListCallableResponse} from
   "../../shared/generated/validators/privateEventSetupListOutput";
 import {listPrivateEventSetupsHandler} from "./callables";
@@ -43,46 +44,47 @@ class FakeQuery {
   constructor(readonly store: FakeStore, readonly path: string,
     readonly filters: Array<[string, string, unknown]> = [],
     readonly after: [number, string] | null = null,
-    readonly max = Infinity) {}
+    readonly max = Infinity, readonly direction = "asc") {}
   doc(id: string) {
     return new FakeRef(this.store, `${this.path}/${id}`);
   }
   where(field: string, op: string, value: unknown) {
     return new FakeQuery(this.store, this.path,
-      [...this.filters, [field, op, value]], this.after, this.max);
+      [...this.filters, [field, op, value]],
+      this.after, this.max, this.direction);
   }
   orderBy(_field: unknown, _direction: string) {
     assert.ok(_field);
-    assert.equal(_direction, "asc");
-    return this;
+    return new FakeQuery(this.store, this.path, this.filters,
+      this.after, this.max, _direction);
   }
   startAfter(time: Timestamp, id: string) {
     return new FakeQuery(this.store, this.path, this.filters,
-      [time.toMillis(), id], this.max);
+      [time.toMillis(), id], this.max, this.direction);
   }
   limit(max: number) {
     return new FakeQuery(this.store, this.path, this.filters,
-      this.after, max);
+      this.after, max, this.direction);
   }
   async get() {
     this.store.queryLimits.push(this.max);
+    const sign = this.direction === "asc" ? 1 : -1;
     const docs = [...this.store.rows.entries()]
       .filter(([path, row]) => path.startsWith(`${this.path}/`) &&
         this.filters.every(([field, op, expected]) => {
           const actual = row[field];
           return op === "==" ? actual === expected :
-            op === ">=" && actual instanceof Timestamp &&
-              expected instanceof Timestamp &&
-              actual.toMillis() >= expected.toMillis();
+            actual instanceof Timestamp && expected instanceof Timestamp &&
+              (op === ">=" ? actual.toMillis() >= expected.toMillis() :
+                op === "<" && actual.toMillis() < expected.toMillis());
         }))
       .sort(([aPath, a], [bPath, b]) =>
-        (a.startTime as Timestamp).toMillis() -
+        sign * ((a.startTime as Timestamp).toMillis() -
         (b.startTime as Timestamp).toMillis() ||
-        aPath.localeCompare(bPath))
+        aPath.localeCompare(bPath)))
       .filter(([path, row]) => !this.after ||
-        (row.startTime as Timestamp).toMillis() > this.after[0] ||
-        ((row.startTime as Timestamp).toMillis() === this.after[0] &&
-          path.split("/").at(-1)! > this.after[1]))
+        sign * ((row.startTime as Timestamp).toMillis() - this.after[0] ||
+          path.split("/").at(-1)!.localeCompare(this.after[1])) > 0)
       .slice(0, this.max)
       .map(([path, row]) => ({id: path.split("/").at(-1)!,
         data: () => row}));
@@ -124,6 +126,7 @@ function setup() {
 
 function list(store: FakeStore, command: {
   organizerId: string; limit?: number; cursor?: string;
+  scope?: PrivateEventSetupScope;
 }, now = NOW, actorUid = "host1") {
   return listPrivateEventSetups({actorUid, command, db: store.db(),
     nowMillis: () => now});
@@ -232,4 +235,47 @@ test("list API validates bounded input, rate limits and returns private DTO",
     await assert.rejects(listPrivateEventSetupsHandler(
       request({organizerId: "org1"}), deps),
     (e) => e instanceof HttpsError && e.code === "failed-precondition");
+  });
+
+for (const scope of ["past", "cancelled"] as const) {
+  test(`${scope} history is newest first, scoped and bounded`, async () => {
+    const store = setup();
+    for (const id of ["a", "b", "c"]) {
+      store.rows.set(`events/${id}`, event(NOW - 1000,
+        scope === "cancelled" ? {status: "cancelled",
+          cancelledAt: Timestamp.fromMillis(NOW - 500),
+          cancellationReason: "Weather"} : {}));
+    }
+    store.rows.set("events/upcoming", event(NOW + 1000));
+    store.rows.set("events/other", event(NOW - 1000,
+      {organizerId: "org2", clubId: "org2"}));
+    const first = await list(store, {organizerId: "org1", scope, limit: 1});
+    const second = await list(store, {organizerId: "org1", scope, limit: 1,
+      cursor: first.nextCursor!});
+    const third = await list(store, {organizerId: "org1", scope, limit: 1,
+      cursor: second.nextCursor!});
+    assert.deepEqual([first, second, third].flatMap((page) =>
+      page.events.map((row) => row.eventId)), ["c", "b", "a"]);
+    assert.equal(third.nextCursor, null);
+    assert.equal(validatePrivateEventSetupListCallableResponse(first), true);
+    assert.deepEqual(store.queryLimits, [2, 2, 2]);
+    const before = store.queryLimits.length;
+    await assert.rejects(list(store, {organizerId: "org1",
+      cursor: first.nextCursor!}),
+    (error) => error instanceof HttpsError &&
+      error.code === "invalid-argument");
+    assert.equal(store.queryLimits.length, before);
+  });
+}
+
+test("cancelled history includes future cancellations; upcoming excludes them",
+  async () => {
+    const store = setup();
+    store.rows.set("events/cancelled", event(NOW + 1000,
+      {status: "cancelled", cancelledAt: Timestamp.fromMillis(NOW),
+        cancellationReason: "Weather"}));
+    assert.equal((await list(store, {organizerId: "org1"})).events.length, 0);
+    const result = await list(store, {organizerId: "org1", scope: "cancelled"});
+    assert.equal(result.events[0].status, "cancelled");
+    assert.equal(validatePrivateEventSetupListCallableResponse(result), true);
   });

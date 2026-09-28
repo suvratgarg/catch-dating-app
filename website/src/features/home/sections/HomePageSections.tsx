@@ -44,8 +44,7 @@ import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {hostListings} from "../../organizers/data";
 import {featuredOrganizerCardItemForListing} from "../../organizers/featuredOrganizerCardItem";
 import {
-  publicEventSummaries,
-  publicSearchSuggestions,
+  usePublicDiscoveryData,
 } from "../../organizers/publicDiscoveryData";
 import {
   isPubliclyReadableListing,
@@ -106,11 +105,12 @@ export function HomeHeroSection({captures}: {captures: Record<string, CaptureRec
 }
 
 export function HomeDiscoverySection({
-  events = publicEventSummaries,
+  events: suppliedEvents,
 }: {
   events?: PublicEventCardModel[];
 } = {}) {
-  const visibleEvents = events.slice(0, 3);
+  const discovery = usePublicDiscoveryData();
+  const visibleEvents = (suppliedEvents ?? discovery.events).slice(0, 3);
   return (
     <MarketingSection variant="home-discovery" id="events" aria-labelledby="home-events-title">
       <SectionHeader
@@ -127,7 +127,7 @@ export function HomeDiscoverySection({
         onSearchSubmit={trackPublicSearchSubmit}
         onSuggestionClick={trackPublicSearchSuggestionClick}
         searchHrefForQuery={publicSearchHrefForQuery}
-        suggestions={publicSearchSuggestions}
+        suggestions={discovery.suggestions}
       />
       <ContentGrid variant="public-event">
         {visibleEvents.length ? (

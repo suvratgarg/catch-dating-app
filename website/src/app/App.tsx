@@ -1,4 +1,7 @@
-import {lazy, Suspense} from "react";
+import {captureOfferCredential} from "../features/eventOffers/offerCredential";
+import {lazy, Suspense, useMemo} from "react";
+import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
+import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
 import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router";
 import {
   getPageKey,
@@ -22,6 +25,7 @@ import {assistanceCredential} from "../features/eventAssistance/eventAssistanceM
 import {householdRsvpCredential} from "../features/householdRsvp/householdRsvpModel";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
+  buildPublicEventDetailRecords,
   getEventDetailForPath,
   isEventDetailPath,
 } from "../features/events/eventDetailModel";
@@ -44,6 +48,12 @@ const EventDetailPage = lazy(async () => ({
 }));
 const EventRuntimePage = lazy(async () => ({
   default: (await import("../features/eventRuntime/EventRuntimePage")).EventRuntimePage,
+}));
+const PublicBookingPage = lazy(async () => ({
+  default: (await import("../features/events/PublicBookingPage")).PublicBookingPage,
+}));
+const EventOfferPage = lazy(async () => ({
+  default: (await import("../features/eventOffers/EventOfferPage")).EventOfferPage,
 }));
 const EventAssistancePage = lazy(async () => ({
   default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
@@ -83,7 +93,9 @@ function App() {
     <BrowserRouter>
       <PendingRequestProvider>
         <CustomFormDomainGate>
-          <MarketingRouteShell />
+          <PublicEventListingsProvider>
+            <MarketingRouteShell />
+          </PublicEventListingsProvider>
         </CustomFormDomainGate>
       </PendingRequestProvider>
     </BrowserRouter>
@@ -92,8 +104,10 @@ function App() {
 
 function MarketingRouteShell() {
   const location = useLocation();
-  const event = getEventDetailForPath(location.pathname);
-  const listingRoute = getHostListingRouteForPath(location.pathname);
+  const {listings, phase: eventFeedPhase} = usePublicHostListings();
+  const events = useMemo(() => buildPublicEventDetailRecords(listings), [listings]);
+  const event = getEventDetailForPath(location.pathname, events);
+  const listingRoute = getHostListingRouteForPath(location.pathname, listings);
   const listing = listingRoute?.listing ?? null;
   const fallbackPage = pageKeyForCurrentRoute(
     location.pathname,
@@ -106,7 +120,7 @@ function MarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
-  const routeKey = page === "event_assistance" ||
+  const routeKey = page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
@@ -126,7 +140,7 @@ function MarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={page === "event_assistance" || page === "household_rsvp" ?
+          hash={page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ?
             "" : location.hash}
         />
         <Routes>
@@ -154,6 +168,8 @@ function MarketingRouteShell() {
             path={marketingRoutePaths.event_detail}
             element={event ? (
               <EventDetailPage event={event} />
+            ) : eventFeedPhase === "loading" ? (
+              <RouteLoadingState />
             ) : (
               <NotFoundPage />
             )}
@@ -162,6 +178,8 @@ function MarketingRouteShell() {
             path={marketingRoutePaths.event_runtime}
             element={<EventRuntimePage />}
           />
+          <Route path={marketingRoutePaths.event_booking} element={<PublicBookingPage />} />
+          <Route path={marketingRoutePaths.event_offer} element={<EventOfferRoute />} />
           <Route
             path={marketingRoutePaths.event_assistance}
             element={<EventAssistanceRoute />}
@@ -224,13 +242,21 @@ function MarketingRouteShell() {
         </Routes>
       </Suspense>
       {page === "event_runtime" || page === "event_rehearsal" ||
-       page === "event_assistance" ||
+       page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
        page === "household_rsvp" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>
   );
+}
+
+function EventOfferRoute() {
+  const location = useLocation();
+  const credential = captureOfferCredential(location,
+    (path) => window.history.replaceState({...window.history.state, catchOfferPaymentId: null, catchOfferGrantId: null}, "", path),
+    window.history.state);
+  return <EventOfferPage key={credential?.instance ?? "missing"} credential={credential} />;
 }
 
 function pageKeyForCurrentRoute(

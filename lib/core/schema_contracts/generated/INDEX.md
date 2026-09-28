@@ -12,17 +12,41 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `functions/src/shared/generated/legacyPaymentRefundIntent.ts` |
+| SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
+| EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
+| PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
+| PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `functions/src/shared/generated/publicEventAdmissionReceiptDocument.ts` |
+| EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `functions/src/shared/generated/eventRegistrationReceiptDocument.ts` |
+| ManagePublicEventCheckoutCallablePayload | `callables/manage_public_event_checkout_payload.schema.json` | `functions/src/shared/generated/managePublicEventCheckoutCallablePayload.ts` |
+| ManagePublicEventCheckoutCallableResponse | `callable_responses/manage_public_event_checkout_response.schema.json` | `functions/src/shared/generated/managePublicEventCheckoutCallableResponse.ts` |
+| ConfigureEventRegistrationCallablePayload | `callables/configure_event_registration_payload.schema.json` | `functions/src/shared/generated/configureEventRegistrationCallablePayload.ts` |
+| ConfigureEventRegistrationCallableResponse | `callable_responses/configure_event_registration_response.schema.json` | `functions/src/shared/generated/configureEventRegistrationCallableResponse.ts` |
+| OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `functions/src/shared/generated/organizerEventOfferPaymentDocument.ts` |
+| OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `functions/src/shared/generated/organizerEventOfferRecipientDocument.ts` |
+| PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
+| ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` |
+| ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts` |
+| ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts` |
+| PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferInvitationCallablePayload.ts` |
+| PrepareEventOfferInvitationCallableResponse | `callable_responses/prepare_event_offer_invitation_response.schema.json` | `functions/src/shared/generated/prepareEventOfferInvitationCallableResponse.ts` |
+| ManageEventOfferCheckoutCallableResponse | `callable_responses/manage_event_offer_checkout_response.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallableResponse.ts` |
+| PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallablePayload.ts` |
+| PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `functions/src/shared/generated/organizerFormAdmissionDocument.ts` |
 | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts` |
 | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts` |
 | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `functions/src/shared/generated/configureEventOfferPreferencesCallablePayload.ts` |
 | ConfigureEventOfferPreferencesCallableResponse | `callable_responses/configure_event_offer_preferences_response.schema.json` | `functions/src/shared/generated/configureEventOfferPreferencesCallableResponse.ts` |
+| PreviewEventOfferPreferencesCallableResponse | `callable_responses/preview_event_offer_preferences_response.schema.json` | `functions/src/shared/generated/previewEventOfferPreferencesCallableResponse.ts` |
 | EventOfferConfigurationReceiptDocument | `firestore/event_offer_configuration_receipts.schema.json` | `functions/src/shared/generated/eventOfferConfigurationReceiptDocument.ts` |
 | ListOfferEventTargetsCallablePayload | `callables/list_offer_event_targets_payload.schema.json` | `functions/src/shared/generated/listOfferEventTargetsCallablePayload.ts` |
 | OfferEventTargetListCallableResponse | `callable_responses/offer_event_target_list_response.schema.json` | `functions/src/shared/generated/offerEventTargetListCallableResponse.ts` |
 | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `functions/src/shared/generated/getEventOfferConfigurationCallablePayload.ts` |
 | EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `functions/src/shared/generated/eventOfferConfigurationCallableResponse.ts` |
+| ReconcilePrivateEventSeatsCallablePayload | `callables/reconcile_private_event_seats_payload.schema.json` | `functions/src/shared/generated/reconcilePrivateEventSeatsCallablePayload.ts` |
+| PrivateSeatReconciliationCallableResponse | `callable_responses/private_seat_reconciliation_response.schema.json` | `functions/src/shared/generated/privateSeatReconciliationCallableResponse.ts` |
 | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts` |
 | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts` |
 | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `functions/src/shared/generated/eventOfferHandoffCallableResponse.ts` |
@@ -308,6 +332,7 @@ Do not edit it by hand.
 | OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `functions/src/shared/generated/organizerFormDomainDocument.ts` |
 | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `functions/src/shared/generated/organizerPaymentConnectionDocument.ts` |
 | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `functions/src/shared/generated/organizerPaymentOauthStateDocument.ts` |
+| PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `functions/src/shared/generated/paymentRoutingPolicyDocument.ts` |
 | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `functions/src/shared/generated/organizerFormPaymentDocument.ts` |
 | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts` |
 | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `functions/src/shared/generated/organizerFormDraftDocument.ts` |
@@ -936,17 +961,41 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaLegacyPaymentRefundIntentSchema` | LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `lib/core/schema_contracts/generated/schemas/legacy_payment_refund_intent.g.dart` |
+| `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
+| `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
+| `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |
+| `schemaPublicEventAdmissionReceiptDocumentSchema` | PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_admission_receipt_document.g.dart` |
+| `schemaEventRegistrationReceiptDocumentSchema` | EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_registration_receipt_document.g.dart` |
+| `schemaManagePublicEventCheckoutCallablePayloadSchema` | ManagePublicEventCheckoutCallablePayload | `callables/manage_public_event_checkout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_public_event_checkout_callable_payload.g.dart` |
+| `schemaManagePublicEventCheckoutCallableResponseSchema` | ManagePublicEventCheckoutCallableResponse | `callable_responses/manage_public_event_checkout_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_public_event_checkout_callable_response.g.dart` |
+| `schemaConfigureEventRegistrationCallablePayloadSchema` | ConfigureEventRegistrationCallablePayload | `callables/configure_event_registration_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_registration_callable_payload.g.dart` |
+| `schemaConfigureEventRegistrationCallableResponseSchema` | ConfigureEventRegistrationCallableResponse | `callable_responses/configure_event_registration_response.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_registration_callable_response.g.dart` |
+| `schemaOrganizerEventOfferPaymentDocumentSchema` | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_payment_document.g.dart` |
+| `schemaOrganizerEventOfferRecipientDocumentSchema` | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_recipient_document.g.dart` |
+| `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
+| `schemaManagePaymentRoutingPolicyCallablePayloadSchema` | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_payload.g.dart` |
+| `schemaManagePaymentRoutingPolicyCallableResponseSchema` | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_response.g.dart` |
+| `schemaManageEventOfferCheckoutCallablePayloadSchema` | ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_offer_checkout_callable_payload.g.dart` |
+| `schemaPrepareEventOfferInvitationCallablePayloadSchema` | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_invitation_callable_payload.g.dart` |
+| `schemaPrepareEventOfferInvitationCallableResponseSchema` | PrepareEventOfferInvitationCallableResponse | `callable_responses/prepare_event_offer_invitation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_invitation_callable_response.g.dart` |
+| `schemaManageEventOfferCheckoutCallableResponseSchema` | ManageEventOfferCheckoutCallableResponse | `callable_responses/manage_event_offer_checkout_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_offer_checkout_callable_response.g.dart` |
+| `schemaPreviewOrganizerFormAdmissionCallablePayloadSchema` | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_payload.g.dart` |
+| `schemaPreviewOrganizerFormAdmissionCallableResponseSchema` | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionDocumentSchema` | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_document.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallablePayloadSchema` | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_payload.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallableResponseSchema` | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionReceiptDocumentSchema` | OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_receipt_document.g.dart` |
 | `schemaConfigureEventOfferPreferencesCallablePayloadSchema` | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_offer_preferences_callable_payload.g.dart` |
 | `schemaConfigureEventOfferPreferencesCallableResponseSchema` | ConfigureEventOfferPreferencesCallableResponse | `callable_responses/configure_event_offer_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_offer_preferences_callable_response.g.dart` |
+| `schemaPreviewEventOfferPreferencesCallableResponseSchema` | PreviewEventOfferPreferencesCallableResponse | `callable_responses/preview_event_offer_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_event_offer_preferences_callable_response.g.dart` |
 | `schemaEventOfferConfigurationReceiptDocumentSchema` | EventOfferConfigurationReceiptDocument | `firestore/event_offer_configuration_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_configuration_receipt_document.g.dart` |
 | `schemaListOfferEventTargetsCallablePayloadSchema` | ListOfferEventTargetsCallablePayload | `callables/list_offer_event_targets_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_offer_event_targets_callable_payload.g.dart` |
 | `schemaOfferEventTargetListCallableResponseSchema` | OfferEventTargetListCallableResponse | `callable_responses/offer_event_target_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/offer_event_target_list_callable_response.g.dart` |
 | `schemaGetEventOfferConfigurationCallablePayloadSchema` | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_offer_configuration_callable_payload.g.dart` |
 | `schemaEventOfferConfigurationCallableResponseSchema` | EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_configuration_callable_response.g.dart` |
+| `schemaReconcilePrivateEventSeatsCallablePayloadSchema` | ReconcilePrivateEventSeatsCallablePayload | `callables/reconcile_private_event_seats_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/reconcile_private_event_seats_callable_payload.g.dart` |
+| `schemaPrivateSeatReconciliationCallableResponseSchema` | PrivateSeatReconciliationCallableResponse | `callable_responses/private_seat_reconciliation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_seat_reconciliation_callable_response.g.dart` |
 | `schemaUpdatePrivateEventDetailsCallablePayloadSchema` | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_details_callable_payload.g.dart` |
 | `schemaPrepareEventOfferHandoffCallablePayloadSchema` | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_handoff_callable_payload.g.dart` |
 | `schemaEventOfferHandoffCallableResponseSchema` | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_handoff_callable_response.g.dart` |
@@ -1232,6 +1281,7 @@ Do not edit it by hand.
 | `schemaOrganizerFormDomainDocumentSchema` | OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_domain_document.g.dart` |
 | `schemaOrganizerPaymentConnectionDocumentSchema` | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_connection_document.g.dart` |
 | `schemaOrganizerPaymentOauthStateDocumentSchema` | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_oauth_state_document.g.dart` |
+| `schemaPaymentRoutingPolicyDocumentSchema` | PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_policy_document.g.dart` |
 | `schemaOrganizerFormPaymentDocumentSchema` | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_document.g.dart` |
 | `schemaOrganizerFormPaymentWebhookDocumentSchema` | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_webhook_document.g.dart` |
 | `schemaOrganizerFormDraftDocumentSchema` | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_draft_document.g.dart` |
@@ -1860,10 +1910,14 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
+| PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
+| PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
 | ConfigureEventOfferPreferencesCallableRequest | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/configure_event_offer_preferences_callable_request.g.dart` |
 | ListOfferEventTargetsCallableRequest | ListOfferEventTargetsCallablePayload | `callables/list_offer_event_targets_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_offer_event_targets_callable_request.g.dart` |
 | GetEventOfferConfigurationCallableRequest | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_offer_configuration_callable_request.g.dart` |
+| ReconcilePrivateEventSeatsCallableRequest | ReconcilePrivateEventSeatsCallablePayload | `callables/reconcile_private_event_seats_payload.schema.json` | `lib/core/schema_contracts/generated/callables/reconcile_private_event_seats_callable_request.g.dart` |
 | UpdatePrivateEventDetailsCallableRequest | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_details_callable_request.g.dart` |
 | PrepareEventOfferHandoffCallableRequest | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_handoff_callable_request.g.dart` |
 | ListPrivateEventSetupsCallableRequest | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_private_event_setups_callable_request.g.dart` |
@@ -2212,6 +2266,10 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| ManagePublicEventCheckoutCallablePayload | not an object schema |
+| ConfigureEventRegistrationCallablePayload | cannot map field "mode" (no type) |
+| ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |
+| ManageEventOfferCheckoutCallablePayload | not an object schema |
 | SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceRuntimeConfigCallablePayload | cannot map field "command" (no type) |
 | SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |

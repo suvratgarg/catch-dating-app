@@ -5,21 +5,41 @@ import type {OrganizerFormPaymentDocument as Payment,
   OrganizerFormDocument as Form} from
   "../../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../../shared/validation";
+import {paymentRoutingSnapshotsMatch, assertPaymentRouteSnapshot,
+  type PaymentRoutingSnapshot} from
+  "../paymentRouting";
 import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentCredentials} from "./formPaymentCredentials";
 import {FormPaymentProviderError, type FormProviderPayment,
-  type RazorpayFormProvider} from "./razorpayFormProvider";
+  type RazorpayPaymentProvider} from "./razorpayPaymentProvider";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
 import {decideFormPaymentObservation} from "./formPaymentState";
 import {expireFormPaymentReservation, finalizeCapturedFormPayment} from
   "./formPaymentSubmission";
 
+export interface FormPaymentMerchant {
+  accountId: string;
+  mode: "test" | "live";
+  authorizationHandle: string;
+  checkoutKey: string;
+  expiresAtMillis: number;
+}
+
+export interface FormPaymentAuthority {
+  resolve(payment: Payment): Promise<FormPaymentMerchant>;
+  assertReady(tx: FirebaseFirestore.Transaction, payment: Payment,
+    merchant: FormPaymentMerchant): Promise<void>;
+}
+
 interface ProcessorDeps {
   db: FirebaseFirestore.Firestore;
-  provider: Pick<RazorpayFormProvider, "createOrder" | "findOrderByReceipt" |
+  boundPaymentId?: string;
+  expectedRouting?: PaymentRoutingSnapshot;
+  provider: Pick<RazorpayPaymentProvider, "createOrder" | "findOrderByReceipt" |
     "fetchOrder" | "fetchOrderPayments" | "fetchPayment" | "capturePayment" |
     "refundPayment" | "fetchRefund" | "verifyCheckout">;
-  vault: Pick<RazorpayCredentialVault, "access">;
+  vault?: Pick<RazorpayCredentialVault, "access">;
+  authority?: FormPaymentAuthority;
   credentials?: Pick<FormPaymentCredentials, "access">;
   now?: () => number;
 }
@@ -28,6 +48,9 @@ interface ProcessorDeps {
 export class FormPaymentProcessor {
   private readonly now: () => number;
   constructor(private readonly deps: ProcessorDeps) {
+    if (deps.authority && !deps.boundPaymentId) {
+      throw new Error("A routed processor must be bound to one payment.");
+    }
     this.now = deps.now ?? Date.now;
   }
 
@@ -52,16 +75,24 @@ export class FormPaymentProcessor {
         current.checkoutExpiresAt.toMillis() > this.now() &&
         !current.reservationReleased;
       if (create) {
-        const connectionSnap = await tx.get(this.deps.db
-          .collection("organizerPaymentConnections").doc(current.connectionId));
-        const connection = requireDoc<Connection>(connectionSnap,
-          "OrganizerPaymentConnectionDocument");
-        requireReadyFormPaymentConnection(connection, current.organizerId,
-          this.now());
-        if (connection.accountId !== credential.accountId ||
-            connection.mode !== credential.mode ||
-            connection.publicToken !== credential.token.publicToken) {
-          throw new HttpsError("unavailable", "Merchant connection changed.");
+        if (this.deps.authority) {
+          await this.deps.authority.assertReady(tx, current, credential);
+        } else {
+          if (!current.connectionId) {
+            throw new Error("Merchant OAuth connection is required.");
+          }
+          const connectionSnap = await tx.get(this.deps.db
+            .collection("organizerPaymentConnections")
+            .doc(current.connectionId));
+          const connection = requireDoc<Connection>(connectionSnap,
+            "OrganizerPaymentConnectionDocument");
+          requireReadyFormPaymentConnection(connection, current.organizerId,
+            this.now());
+          if (connection.accountId !== credential.accountId ||
+              connection.mode !== credential.mode ||
+              connection.publicToken !== credential.checkoutKey) {
+            throw new HttpsError("unavailable", "Merchant connection changed.");
+          }
         }
       }
       // Before the POST, write uncertainty durably. Every later owner recovers
@@ -74,10 +105,10 @@ export class FormPaymentProcessor {
     if (!claim) return this.read(paymentId);
     try {
       const order = claim.create ? await this.deps.provider.createOrder(
-        credential.token.accessToken, {amount: claim.payment.amountPaise,
+        credential.authorizationHandle, {amount: claim.payment.amountPaise,
           receipt: claim.payment.receipt}) :
         await this.deps.provider.findOrderByReceipt(
-          credential.token.accessToken,
+          credential.authorizationHandle,
           claim.payment.receipt);
       if (order && (order.amount !== claim.payment.amountPaise ||
           order.currency !== claim.payment.currency ||
@@ -144,7 +175,7 @@ export class FormPaymentProcessor {
       return this.read(paymentId);
     }
     const {credential} = await this.merchant(ledger);
-    const token = credential.token.accessToken;
+    const token = credential.authorizationHandle;
     const order = await this.deps.provider.fetchOrder(token,
       ledger.providerOrderId);
     if (order.receipt !== ledger.receipt ||
@@ -185,12 +216,33 @@ export class FormPaymentProcessor {
   }
 
   async read(paymentId: string): Promise<Payment> {
+    if (this.deps.boundPaymentId && paymentId !== this.deps.boundPaymentId) {
+      throw new HttpsError("permission-denied", "Payment runtime mismatch.");
+    }
     if (!/^fp_[a-f0-9]{32}$/u.test(paymentId)) {
       throw new HttpsError("invalid-argument", "Invalid form payment id.");
     }
     const snap = await this.ref(paymentId).get();
     if (!snap.exists) throw new HttpsError("not-found", "Payment not found.");
-    return requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+    const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+    if (this.deps.expectedRouting && (!payment.routing ||
+        !paymentRoutingSnapshotsMatch(payment.routing,
+          this.deps.expectedRouting))) {
+      throw new HttpsError("failed-precondition", "Payment routing changed.");
+    }
+    if (payment.routing) {
+      assertPaymentRouteSnapshot(payment.routing, {
+        organizerId: payment.organizerId, purpose: "formFee",
+        currency: payment.currency, amountMinor: payment.amountPaise});
+      const oauth = payment.routing.selection.route === "razorpayOAuth";
+      if (payment.accountId !== payment.routing.merchantAccountId ||
+          payment.mode !== payment.routing.selection.mode ||
+          (oauth ? payment.connectionId !== payment.routing.bindingId :
+            payment.connectionId !== null)) {
+        throw new HttpsError("failed-precondition", "Payment binding changed.");
+      }
+    }
+    return payment;
   }
 
   private async observe(paymentId: string, observation: FormProviderPayment):
@@ -216,9 +268,9 @@ export class FormPaymentProcessor {
         ledger.responseId || ledger.refundedAmountPaise > 0) return;
     const {credential} = await this.merchant(ledger);
     const refund = ledger.providerRefundId ?
-      await this.deps.provider.fetchRefund(credential.token.accessToken,
+      await this.deps.provider.fetchRefund(credential.authorizationHandle,
         ledger.providerRefundId) :
-      await this.deps.provider.refundPayment(credential.token.accessToken, {
+      await this.deps.provider.refundPayment(credential.authorizationHandle, {
         paymentId: ledger.providerPaymentId, amount: ledger.amountPaise,
         idempotencyKey: `form_refund_${paymentId}`,
       });
@@ -251,7 +303,14 @@ export class FormPaymentProcessor {
     });
   }
 
-  private async merchant(payment: Payment) {
+  private async merchant(payment: Payment):
+    Promise<{credential: FormPaymentMerchant}> {
+    if (this.deps.authority) {
+      return {credential: await this.deps.authority.resolve(payment)};
+    }
+    if (!this.deps.vault || !payment.connectionId) {
+      throw new Error("Form payment authority is unavailable.");
+    }
     const snap = await this.deps.db.collection("organizerPaymentConnections")
       .doc(payment.connectionId).get();
     const connection = requireDoc<Connection>(snap,
@@ -271,7 +330,10 @@ export class FormPaymentProcessor {
       throw new HttpsError("unavailable",
         "Merchant connection needs refreshing.");
     }
-    return {connection, credential};
+    return {credential: {accountId: credential.accountId, mode: credential.mode,
+      authorizationHandle: credential.token.accessToken,
+      checkoutKey: credential.token.publicToken,
+      expiresAtMillis: credential.token.expiresAt}};
   }
 
   private ref(paymentId: string): FirebaseFirestore.DocumentReference {

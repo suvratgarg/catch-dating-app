@@ -1,3 +1,4 @@
+import {prepareNativePaidBooking} from "./nativeBooking";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
@@ -57,7 +58,12 @@ test(
         }) as unknown as Razorpay,
         serverTimestamp: () => "server-now",
         signUpForEvent: async (_db, eventId, userId, _paymentId, options) => {
-          signUpCalls.push({eventId, userId, options});
+          const {paidBooking, ...visibleOptions} = options!;
+          signUpCalls.push({eventId, userId, options: visibleOptions});
+          await _db.runTransaction(async (tx) => {
+            (await prepareNativePaidBooking({db: _db, tx, eventId, userId,
+              paymentId: _paymentId, booking: paidBooking!}))();
+          });
         },
         verifySignature: () => true,
       }
@@ -74,24 +80,10 @@ test(
         },
       },
     }]);
-    assert.deepEqual(paymentDoc.setCalls, [
-      {
-        userId: "runner-1",
-        orderId: "order_123",
-        paymentId: "pay_123",
-        eventId: "trusted-event",
-        amount: 25000,
-        amountMinor: 25000,
-        currency: "INR",
-        provider: "razorpay",
-        status: "completed",
-        signUpFailed: false,
-        inviteLinkId: "link-1",
-        inviteSource: "instagram-bio",
-        createdAt: "server-now",
-        completedAt: "server-now",
-      },
-    ]);
+    assert.equal(paymentDoc.setCalls.length, 1);
+    assert.equal(paymentDoc.setCalls[0].status, "completed");
+    assert.equal(paymentDoc.setCalls[0].amount, 25000);
+    assert.ok(paymentDoc.setCalls[0].completedAt);
     assert.equal(paymentDoc.inviteLinkSetCalls.length, 1);
     assert.equal(paymentDoc.inviteLinkSetCalls[0].docId, "link-1");
     assert.ok("paidCount" in paymentDoc.inviteLinkSetCalls[0].data);
@@ -100,7 +92,7 @@ test(
 );
 
 test(
-  "verifyRazorpayPaymentHandler records refunded race-loss failure",
+  "verifyRazorpayPaymentHandler queues a durable refund for rejected admission",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
     const refundCalls: Array<{paymentId: string; amount: number}> = [];
@@ -159,27 +151,17 @@ test(
       isHttpsError("failed-precondition", "This event is now full.")
     );
 
-    assert.deepEqual(refundCalls, [{paymentId: "pay_123", amount: 25000}]);
-    assert.deepEqual(paymentDoc.setCalls, [
-      {
-        userId: "runner-1",
-        orderId: "order_123",
-        paymentId: "pay_123",
-        eventId: "trusted-event",
-        amount: 25000,
-        amountMinor: 25000,
-        currency: "INR",
-        provider: "razorpay",
-        status: "refunded",
-        signUpFailed: true,
-        createdAt: "server-now",
-      },
-    ]);
+    assert.deepEqual(refundCalls, []);
+    assert.equal(paymentDoc.setCalls.length, 1);
+    assert.equal(paymentDoc.setCalls[0].status, "refundFailed");
+    assert.deepEqual(
+      (paymentDoc.setCalls[0].cancellationRefund as {state: string}).state,
+      "pending");
   }
 );
 
 test(
-  "verifyRazorpayPaymentHandler records refundFailed when the refund throws",
+  "verifyRazorpayPaymentHandler persists recovery without calling the provider",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
 

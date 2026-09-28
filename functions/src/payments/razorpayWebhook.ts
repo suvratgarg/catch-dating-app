@@ -7,7 +7,6 @@ import {verifyPaidEventBooking} from "./paymentValidation";
 import {
   fulfillRazorpayPayment,
   markRazorpayPendingOrder,
-  razorpayRefundFromClient,
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
@@ -133,7 +132,6 @@ async function handlePaymentCaptured({
     booking,
     deps: {
       signUpForEvent: deps.signUpForEvent,
-      refund: razorpayRefundFromClient(razorpay),
       serverTimestamp: deps.serverTimestamp,
     },
   });

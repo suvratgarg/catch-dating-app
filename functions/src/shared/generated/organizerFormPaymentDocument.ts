@@ -6,12 +6,38 @@
  * Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.
  */
 export interface OrganizerFormPaymentDocument {
+  routing?: {
+    version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
+    purpose: "formFee" | "eventAdmission";
+    organizerId: string;
+    selection: {
+      route:
+        | "razorpayRoute"
+        | "razorpayOAuth"
+        | "stripeConnectDirect"
+        | "stripeConnectDestination";
+      mode: "test" | "live";
+      currency: string;
+      merchantCountry: string;
+    };
+    policySource: "app" | "organizer" | "legacy";
+    appRevision: number;
+    organizerRevision: number;
+    bindingId: string;
+    merchantAccountId: string;
+    destinationAccountId: string | null;
+    configurationVersion: string;
+    checkoutKey: string | null;
+  };
   organizerId: string;
   formId: string;
   versionId: string;
   draftId: string;
   respondentUid: string;
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   mode: "test" | "live";
   draftRevision: number;
