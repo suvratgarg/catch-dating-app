@@ -107,6 +107,13 @@
       "canonicalPath": "/booking/",
       "twitterDescription": "Manage your event booking with Catch.",
       "robots": "noindex, follow"
+    },
+    "sales_demo": {
+      "title": "Private workflow preview | Catch",
+      "description": "Explore a synthetic example of a host workflow.",
+      "twitterDescription": "Explore a synthetic example of a host workflow.",
+      "canonicalPath": "/demo/",
+      "robots": "noindex, follow"
     }
   },
   "listing": {

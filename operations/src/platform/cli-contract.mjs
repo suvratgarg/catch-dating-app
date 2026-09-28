@@ -8,5 +8,6 @@ export const CLI_COMMANDS = Object.freeze([
   "promote",
   "reconcile",
   "learn",
+  "discovery",
   "export-admin",
 ]);

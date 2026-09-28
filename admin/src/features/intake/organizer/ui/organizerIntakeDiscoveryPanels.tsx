@@ -5,6 +5,7 @@ import {
   EmptyState,
   QualityRow,
   StateRow,
+  SelectField,
   StatusChip,
   AdminCommandRow,
   AdminCommandStack,
@@ -294,12 +295,16 @@ function OrganizerSearchCandidateQueueView({
   curationInFlight,
   localCuration,
   onAttachCandidate,
+  onSelectMatch,
   queue,
+  selectedMatchByCandidate,
 }: {
   curationInFlight: Record<string, boolean>;
   localCuration: Record<string, AdminRecordOrganizerCurationResponse>;
   onAttachCandidate: (candidate: Intake.OrganizerSearchCandidate) => void;
+  onSelectMatch: (candidateId: string, organizerId: string) => void;
   queue: Intake.OrganizerSearchCandidateQueue;
+  selectedMatchByCandidate: Record<string, string>;
 }) {
   const platformEntries = Object.entries(queue.summary.platforms)
     .sort(([left], [right]) => left.localeCompare(right));
@@ -353,6 +358,8 @@ function OrganizerSearchCandidateQueueView({
               key={candidate.candidateId}
               localCuration={localCuration[candidate.candidateId]}
               onAttachCandidate={onAttachCandidate}
+              onSelectMatch={onSelectMatch}
+              selectedMatch={selectedMatchByCandidate[candidate.candidateId] ?? ""}
             />
           ))
         )}
@@ -798,21 +805,26 @@ function OrganizerSearchCandidateCard({
   inFlight,
   localCuration,
   onAttachCandidate,
+  onSelectMatch,
+  selectedMatch,
 }: {
   candidate: Intake.OrganizerSearchCandidate;
   commands: Intake.OrganizerSearchCandidateCommands;
   inFlight: boolean;
   localCuration?: AdminRecordOrganizerCurationResponse;
   onAttachCandidate: (candidate: Intake.OrganizerSearchCandidate) => void;
+  onSelectMatch: (candidateId: string, organizerId: string) => void;
+  selectedMatch: string;
 }) {
   const matchedEntityIds = candidate.existingEntityMatches.map((match) => match.entityId);
-  const entityTarget = matchedEntityIds[0] ?? "ENTITY";
+  const entityTarget = selectedMatch || "ENTITY";
   const attachCommand = commands.curateSurface
     .replace("ENTITY", entityTarget)
     .replace("CANDIDATE_ID", candidate.candidateId);
   const canAttach =
     candidate.reviewAction !== "supporting_evidence_only" &&
     matchedEntityIds.length > 0 &&
+    Boolean(selectedMatch) &&
     !localCuration;
 
   return (
@@ -859,6 +871,15 @@ function OrganizerSearchCandidateCard({
       </AdminTagList>
       {candidate.reviewAction !== "supporting_evidence_only" ? (
         <AdminSearchCandidateActions>
+          {matchedEntityIds.length > 0 ? <SelectField
+            label="Reviewed canonical organizer"
+            value={selectedMatch}
+            onChange={(value) => onSelectMatch(candidate.candidateId, value)}
+            disabled={Boolean(localCuration)}
+            options={[{value: "", label: "Choose a matched organizer"},
+              ...matchedEntityIds.map((entityId) => ({
+                value: entityId, label: entityId,
+              }))]} /> : null}
           {localCuration ? (
             <AdminIntakeDecisionState>
               <CheckCircle2 size={16} strokeWidth={1.9} />

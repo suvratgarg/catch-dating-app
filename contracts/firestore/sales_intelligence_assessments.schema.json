@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_intelligence_assessments.schema.json",
+  "title": "SalesIntelligenceAssessmentDocument",
+  "description": "Employee-reviewed factor rating linked to existing reviewed Sales evidence; unknown and disputed ratings cannot score.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesIntelligenceAssessments",
+  "x-firestore-path": "salesIntelligenceAssessments/{assessmentId}",
+  "x-document-id-field": "assessmentId",
+  "x-owner": "private Sales intelligence assessment callable",
+  "required": ["schemaVersion", "classification", "assessmentId", "organizerId", "factorId", "revision", "state", "value", "evidenceIds", "reason", "reviewedAt", "reviewerUid"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "classification": {"const": "sales_private"},
+    "assessmentId": {"$ref": "#/definitions/id"},
+    "organizerId": {"$ref": "#/definitions/id"},
+    "factorId": {"$ref": "#/definitions/id"},
+    "revision": {"type": "integer", "minimum": 1},
+    "state": {"enum": ["known", "unknown", "disputed"]},
+    "value": {"type": ["integer", "null"], "minimum": 0, "maximum": 5},
+    "evidenceIds": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/id"}},
+    "reason": {"type": ["string", "null"], "maxLength": 240},
+    "reviewedAt": {"type": "string", "format": "date-time"},
+    "reviewerUid": {"$ref": "#/definitions/id"}
+  },
+  "definitions": {"id": {"type": "string", "minLength": 1, "maxLength": 96, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}}
+}

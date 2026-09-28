@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.88.0
+version: 1.88.1
 updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
@@ -550,3 +550,71 @@ server-only rule documents and are never returned by callable projections.
 
 | `getOrganizerEventSetupDefaults` | Callable | Current-manager projection of private event defaults. |
 | `updateOrganizerEventSetupDefaults` | Callable | Idempotent private defaults save with current-manager and revision checks. |
+
+## Private host Sales operations
+
+`admin/sales/callables.ts` owns bounded account, contact, evidence, suggestion
+review, task, opportunity, custom-field, inbound-intent and import operations.
+Commercial pilot/quote handlers execute inside the same current-authority and
+receipt transaction. Read projections are bounded and organizer scoped.
+`admin/salesIntelligence/callables.ts` owns private configurable score policy,
+reviewed factors and approved outreach clauses; missing factors remain unknown.
+Draft review/copy recheck source material and suppression and grant no send
+permission. Production draft execution remains a separate runtime acceptance
+step.
+
+`salesAssistant` provides scoped third-party access through a registered service
+identity and short-lived employee delegation. Every operation revalidates the
+client, employee, delegation and budget; there is no direct database credential
+handoff. Evidence suggestions enter an employee review queue. Connecting a
+particular assistant vendor is separate from deploying this endpoint.
+
+`salesDemo/callables.ts` owns preview, explicit verified-contact start, synthetic
+steps, owner blueprint/invitation management and bounded expiration cleanup.
+Activation requires the private runtime capability record and a valid
+`SALES_DEMO_GRANT_KEY` secret. These source exports do not establish deployment
+or live feature activation.
+
+The private Sales workspace additionally exposes evidence-based fit review,
+owner policy editing, current clause approval, deterministic draft jobs and exact
+manual copy. Draft preparation uses the existing Operations workflow with no
+model provider or sending capability by default. Stale source facts invalidate
+review/copy. Host settlement attestation and Intake-to-Sales joining are separate
+employee operations with strict request/response contracts; their records have
+no direct browser access. These source APIs do not establish deployed activation.
+
+### Demo-to-Forms setup
+
+`getSalesDemoSetup` and `prepareSalesDemoFormDraft` in `salesDemo/callables.ts`
+project a reviewed setup plan and explicitly prepare its draft. The completed
+session grant authenticates the invited contact; canonical organizer claim and
+Forms manager checks separately authorize product mutation. Preparation uses the
+existing Forms transaction helper and an immutable `salesDemoSetups` receipt.
+It returns the existing Host Forms editor route and grants no publication,
+response, payment or messaging authority.
+
+`adminListSalesFitQueue`, `adminRefreshSalesFitQueue` and
+`adminRefreshSalesFitQueueBatch` own the employee-only bounded current ranking
+projection. `adminPreviewSalesImportCompensation` and
+`adminApplySalesImportCompensation` own read-only owner review and exact-hash
+application of one proven import correction. Each action is registered in the
+Admin action catalog; no assistant delegation exposes these controls.
+
+
+### Private Sales history, report and privacy operations
+
+| Operations | Authority and behavior |
+|---|---|
+| `adminPreviewSalesImportHistory`, `adminApplySalesImportHistory` | Current Owner, source-cell/import-lineage proof, exact preview hash and immutable row/cell identity; current privacy/archive/hold checks also apply to retries. No current score, contact or send effect. |
+| `adminListSalesImportHistory`, `adminListSalesImportHistoryRows` | Current employee, one host and bounded pages; original source history is separate from current activity. |
+| `adminGetSalesFunnelReport` | Current employee only; one bounded read-only company snapshot, separate hosts/opportunities and dated stage movements, no partial totals or revenue inference. |
+| `adminReviewSalesPrivacyPolicy`, `adminRestrictSalesOrganizer` | Current Owner only; source-bound retention decision or permanent Sales processing fence. Policy documents stay private. |
+| `adminPreviewSalesPrivacyPlan`, `adminReviewSalesPrivacyPlan` | Current Owner, bounded complete inventory, explicit retained/unresolved records, exact source/policy hashes and active-plan replacement binding. |
+| `adminApplySalesPrivacyBatch`, `adminGetSalesPrivacyCase` | Current Owner including receipt replay/post-read checks; atomic reviewed batches of at most 20 records, dependency-first order, saved cursor and receipts. Product ownership is untouched; `completeDeletion` remains false. |
+
+The new operations use strict request/response contracts and appear in the
+Admin action catalog as control-plane operations; they are not delegated
+third-party assistant actions. App Check and bounded rate limits apply to
+callables. The Admin host Activity pane shows source history, Pipeline shows
+company totals, and Owner privacy controls are reachable both from a host and
+through a canonical-name lookup in Settings after a Sales companion is removed.

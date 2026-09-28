@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "workflowId": "outreach-drafting",
+  "version": "0.1.0",
+  "executionModes": ["shadow"],
+  "capabilities": {"network": false, "modelCalls": true, "publicWrites": false, "ruleDeployment": false},
+  "commands": ["plan", "run", "resume", "queue", "status"],
+  "primaryStages": ["drafting", "human_review", "blocked"],
+  "entityKinds": ["outreach_draft"],
+  "allowedTransitions": {"drafting": ["human_review", "blocked"], "human_review": ["blocked"], "blocked": []},
+  "lifecycleStatuses": ["active", "blocked"],
+  "lifecycleSemantics": {"activeStatuses": ["active"], "publishedStatuses": [], "expiredStatuses": []},
+  "maxWorkItemsPerRun": 50,
+  "sourceProfiles": [],
+  "compatibilityInputs": []
+}

@@ -79,3 +79,15 @@ function createFixture(files) {
   }
   return root;
 }
+
+
+test("action extraction ignores uid and config literals around dynamic actions", () => {
+  const source = [
+    'checkRateLimit(db, normalize("employee,one"), "actualAction", {windowMs: 60000});',
+    'checkRateLimit(db, uid, `sales:${action}`, {maxRequests: action === "draft.generate" ? 5 : 40});',
+    'checkRateLimit(db, uid, action, select("refresh.batch"));',
+  ].join("\n");
+  const actions = extractCheckRateLimitActions(source);
+  assert.deepEqual(actions.map((action) => action.value), ["actualAction"]);
+  assert.equal(source.slice(actions[0].offset).startsWith('"actualAction"'), true);
+});

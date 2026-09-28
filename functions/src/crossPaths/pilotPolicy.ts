@@ -1,5 +1,7 @@
 import type {EventDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {isEventPubliclyAccessible} from
+  "../events/eventPublicationAccess";
 
 export const crossPathsPilotMarketId = "in-mh-mumbai";
 export const crossPathsPilotMinimumEvents = 2;
@@ -32,6 +34,13 @@ export function crossPathsEventWriteInvalidationMode(
   const afterRow = after && typeof after === "object" && !Array.isArray(after) ?
     after as Record<string, unknown> : null;
   if (afterRow?.status !== "active") return "all";
-  return crossPathsPilotEventEnabled(before) &&
-    !crossPathsPilotEventEnabled(after) ? "pending" : "none";
+  const beforeRow = before && typeof before === "object" &&
+    !Array.isArray(before) ? before as Record<string, unknown> : null;
+  const wasAvailable = beforeRow !== null &&
+    crossPathsPilotEventEnabled(before) &&
+    isEventPubliclyAccessible(beforeRow);
+  const remainsAvailable = afterRow !== null &&
+    crossPathsPilotEventEnabled(after) &&
+    isEventPubliclyAccessible(afterRow);
+  return wasAvailable && !remainsAvailable ? "pending" : "none";
 }

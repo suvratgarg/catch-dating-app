@@ -376,7 +376,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                       : hostResponseQueryCapability(
                           context.l10n,
                           versionId: responseVersionId,
-                          offersEnabled: privateEventSetupAvailable(),
+                          offersEnabled: ref.watch(
+                            privateEventSetupAvailableProvider,
+                          ),
                         ),
                   query: _responseQuery,
                   contactId: _responseContactId,
