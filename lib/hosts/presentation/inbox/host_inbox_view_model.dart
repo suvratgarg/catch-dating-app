@@ -130,7 +130,10 @@ class HostInboxViewModel {
         : programsById[selectedScope.programId];
     final effectiveScope = switch (selectedScope.kind) {
       HostInboxScopeKind.event when selectedEvent != null => selectedScope,
-      HostInboxScopeKind.program when selectedProgram != null => selectedScope,
+      // Program authority is checked by the exact-detail provider. A
+      // truncated or loading menu must never turn a requested program into
+      // General and expose an unrelated composer or conversation.
+      HostInboxScopeKind.program => selectedScope,
       HostInboxScopeKind.general => selectedScope,
       _ => const HostInboxScope.general(),
     };
@@ -143,7 +146,7 @@ class HostInboxViewModel {
         .where((preview) => preview.match.clubId == selectedOrganizerId)
         .toList(growable: false);
 
-    if (selectedProgram != null) {
+    if (effectiveScope.isProgram) {
       final linkedUids = programAudience?.linkedUids ?? const <String>{};
       final programThreads = allThreads
           .where((preview) => linkedUids.contains(preview.otherUid))
@@ -297,9 +300,7 @@ HostInboxScope resolveHostInboxScope({
 }) {
   final requestedProgramId = requestedScope?.programId;
   if (requestedProgramId != null) {
-    return programs.any((program) => program.programId == requestedProgramId)
-        ? HostInboxScope.program(requestedProgramId)
-        : const HostInboxScope.general();
+    return HostInboxScope.program(requestedProgramId);
   }
   final byId = {for (final event in events) event.id: event};
   final requestedEventId = requestedScope?.eventId ?? initialEventId;

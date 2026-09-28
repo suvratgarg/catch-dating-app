@@ -19595,6 +19595,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxMoreConversations => 'Load more conversations';
 
   @override
+  String get hostInboxMoreProgramGuests => 'Load more program guests';
+
+  @override
+  String get hostInboxProgramContactsUnlinked =>
+      'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.';
+
+  @override
   String get hostInboxUnclassified =>
       'Booking status is unavailable for some people. Their conversations are included below.';
 

@@ -63,7 +63,7 @@ void main() {
       );
     });
 
-    test('program scope validates against organizer programs', () {
+    test('requested program scope survives a truncated or loading menu', () {
       final programs = [_program('program-1')];
       expect(
         resolveHostInboxScope(
@@ -81,7 +81,7 @@ void main() {
           requestedScope: const HostInboxScope.program('foreign'),
           programs: programs,
         ),
-        const HostInboxScope.general(),
+        const HostInboxScope.program('foreign'),
       );
       expect(
         resolveHostInboxScope(
@@ -89,7 +89,7 @@ void main() {
           now: now,
           requestedScope: const HostInboxScope.program('program-1'),
         ),
-        const HostInboxScope.general(),
+        const HostInboxScope.program('program-1'),
       );
     });
 
@@ -297,7 +297,7 @@ void main() {
       );
     });
 
-    test('unknown program scope falls back to general threads', () {
+    test('unverified program scope never shows general threads', () {
       final workspace = HostInboxViewModel.compose(
         events: [live],
         inbox: _inbox([
@@ -313,8 +313,11 @@ void main() {
         programs: [_program('program-1')],
       );
 
-      expect(workspace.selectedScope, const HostInboxScope.general());
-      expect(workspace.threads.single.preview.otherUid, 'general');
+      expect(
+        workspace.selectedScope,
+        const HostInboxScope.program('deleted-program'),
+      );
+      expect(workspace.threads, isEmpty);
     });
   });
 }

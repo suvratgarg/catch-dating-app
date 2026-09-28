@@ -26331,6 +26331,20 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
   },
+  "hostInboxMoreProgramGuests": "Load more program guests",
+  "@hostInboxMoreProgramGuests": {
+    "description": "Loads the next verified guest page for a program-scoped Inbox.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxProgramContactsUnlinked": "Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.",
+  "@hostInboxProgramContactsUnlinked": {
+    "description": "Explains why unlinked program guests cannot be shown or messaged from the Inbox.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
   "hostInboxUnclassified": "Booking status is unavailable for some people. Their conversations are included below.",
   "@hostInboxUnclassified": {
     "description": "Person-based Host messaging interface copy.",

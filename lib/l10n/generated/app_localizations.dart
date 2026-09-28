@@ -31178,6 +31178,18 @@ abstract class AppLocalizations {
   /// **'Load more conversations'**
   String get hostInboxMoreConversations;
 
+  /// Loads the next verified guest page for a program-scoped Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more program guests'**
+  String get hostInboxMoreProgramGuests;
+
+  /// Explains why unlinked program guests cannot be shown or messaged from the Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.'**
+  String get hostInboxProgramContactsUnlinked;
+
   /// Person-based Host messaging interface copy.
   ///
   /// In en, this message translates to:
