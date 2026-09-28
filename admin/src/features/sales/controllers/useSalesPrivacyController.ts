@@ -29,6 +29,9 @@ export function useSalesPrivacyController({actorUid, organizerId,
   const [previewBusy, setPreviewBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [policyConflict, setPolicyConflict] = useState(false);
+  const [confirmedPolicySaveId, setConfirmedPolicySaveId] =
+    useState<string | null>(null);
   const [retryTicket, setRetryTicket] = useState<Ticket | null>(null);
   const pendingRef = useRef<Ticket | null>(null);
   const caseQuery = useQuery({queryKey: [...scope, "case"],
@@ -42,6 +45,7 @@ export function useSalesPrivacyController({actorUid, organizerId,
     const lease = beginOperation();
     if (!lease) return false;
     setBusy(true); setError(""); setNotice("");
+    if (ticket.kind === "policy") setPolicyConflict(false);
     try {
       if (ticket.kind === "policy") {
         await api.reviewPolicy(ticket.input);
@@ -60,11 +64,16 @@ export function useSalesPrivacyController({actorUid, organizerId,
       }
       pendingRef.current = null; setRetryTicket(null); setPreview(null);
       await client.invalidateQueries({queryKey: [...scope, "case"]});
+      if (ticket.kind === "policy") {
+        setConfirmedPolicySaveId(ticket.input.requestId);
+      }
       return true;
     } catch (failure) {
-      if (definitive.has(errorCode(failure))) {
+      const code = errorCode(failure);
+      if (definitive.has(code)) {
         pendingRef.current = null; setRetryTicket(null); setPreview(null);
         void client.invalidateQueries({queryKey: [...scope, "case"]});
+        setPolicyConflict(ticket.kind === "policy" && code === "aborted");
         setError(failure instanceof Error ? failure.message :
           "The privacy action was rejected. Read the current case and review again.");
       } else {
@@ -117,7 +126,14 @@ export function useSalesPrivacyController({actorUid, organizerId,
   }, [caseQuery.data?.plan, dispatch, organizerId]);
   const retryPending = useCallback(() => pendingRef.current ?
     run(pendingRef.current) : Promise.resolve(false), [run]);
+  const reviewCurrentPolicy = useCallback(async () => {
+    const result = await caseQuery.refetch();
+    if (!result.isSuccess || !result.data) return null;
+    setPolicyConflict(false); setError("");
+    return {revision: result.data.policy?.revision ?? 0};
+  }, [caseQuery]);
   return {caseQuery, preview, previewBusy, busy, error, notice,
+    policyConflict, confirmedPolicySaveId, reviewCurrentPolicy,
     pending: retryTicket, reviewPolicy, restrict, loadPreview, reviewPlan,
     applyBatch, retryPending};
 }

@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {useEffect, useState, type FormEvent} from "react";
+import {useEffect, useRef, useState, type FormEvent} from "react";
 import {LockKeyhole} from "lucide-react";
 import {AdminButton, AdminForm, AdminToolbar, CheckboxField, EmptyState,
   FilePickerButton, Panel, TextareaField, TextField} from
@@ -112,14 +112,33 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
   const [policyReference, setPolicyReference] = useState("");
   const [policyHash, setPolicyHash] = useState("");
   const [policyFile, setPolicyFile] = useState("");
+  const [hashingBusy, setHashingBusy] = useState(false);
   const [financeReason, setFinanceReason] = useState("");
   const [auditReason, setAuditReason] = useState("");
   const [reviewedPlanKey, setReviewedPlanKey] = useState<string | null>(null);
   const [policyEditRevision, setPolicyEditRevision] = useState<number | null>(null);
+  const fileSelectionEpoch = useRef(0);
+  const referenceAutoFilled = useRef(true);
+  const lastConfirmedPolicySaveId = useRef<string | null>(null);
   const ownerCase = c.caseQuery.data;
   const plan = ownerCase?.plan;
   const planKey = plan ? `${plan.planId}:${plan.cursor}` : "";
   const canEdit = !c.busy && !c.pending;
+  function resetPolicyDraft(revision: number | null) {
+    fileSelectionEpoch.current += 1;
+    referenceAutoFilled.current = true;
+    setHashingBusy(false);
+    setPolicyReference(""); setPolicyHash(""); setPolicyFile("");
+    setFinanceReason(""); setAuditReason("");
+    setPolicyEditRevision(revision);
+  }
+  useEffect(() => () => {fileSelectionEpoch.current += 1;}, []);
+  useEffect(() => {
+    if (!c.confirmedPolicySaveId ||
+        c.confirmedPolicySaveId === lastConfirmedPolicySaveId.current) return;
+    lastConfirmedPolicySaveId.current = c.confirmedPolicySaveId;
+    resetPolicyDraft(null);
+  }, [c.confirmedPolicySaveId]);
   function touchPolicy() {
     if (policyEditRevision === null) {
       setPolicyEditRevision(ownerCase?.policy?.revision ?? 0);
@@ -128,28 +147,37 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
   async function readPolicyFile(file: File | undefined) {
     if (!file) return;
     touchPolicy();
-    setPolicyHash(""); setPolicyFile("");
+    const epoch = ++fileSelectionEpoch.current;
+    setPolicyHash(""); setPolicyFile(""); setHashingBusy(true);
     try {
-      const digest = await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+      const bytes = await file.arrayBuffer();
+      if (epoch !== fileSelectionEpoch.current) return;
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      if (epoch !== fileSelectionEpoch.current) return;
       setPolicyHash([...new Uint8Array(digest)].map((n) =>
         n.toString(16).padStart(2, "0")).join(""));
       setPolicyFile(file.name);
-      setPolicyReference((current) => current.trim() ? current : file.name);
-    } catch {setPolicyFile("Could not read the selected file. Choose it again.");}
+      if (referenceAutoFilled.current) setPolicyReference(file.name);
+    } catch {
+      if (epoch === fileSelectionEpoch.current) {
+        setPolicyFile("Could not read the selected file. Choose it again.");
+      }
+    } finally {
+      if (epoch === fileSelectionEpoch.current) setHashingBusy(false);
+    }
+  }
+  async function discardAndReviewCurrentPolicy() {
+    if (!canEdit) return;
+    const current = await c.reviewCurrentPolicy();
+    if (current) resetPolicyDraft(current.revision);
   }
   function submitPolicy(event: FormEvent) {
     event.preventDefault();
-    if (!policyHash) return;
+    if (!policyHash || hashingBusy) return;
     void c.reviewPolicy({expectedRevision: policyEditRevision ??
       ownerCase?.policy?.revision ?? 0,
       sourceReference: policyReference.trim(), sourceHash: policyHash,
-      financeReason: financeReason.trim(), auditReason: auditReason.trim()})
-      .then((saved) => {
-        if (saved) {
-          setPolicyEditRevision(null); setPolicyHash(""); setPolicyFile("");
-          setPolicyReference(""); setFinanceReason(""); setAuditReason("");
-        }
-      });
+      financeReason: financeReason.trim(), auditReason: auditReason.trim()});
   }
   return <Panel title={`Private Sales privacy · ${organizerName}`}
     icon={<LockKeyhole size={18} />}>
@@ -195,16 +223,29 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
         {" · "}revision {ownerCase.policy.revision}. Finance and audit records
         remain held for separate review.</p> : <p>No reviewed retention policy is
         recorded. Inventory planning is blocked until an Admin owner reviews one.</p>}
+      {c.policyConflict ? <p role="alert">Another owner changed the retention
+        decision. Your draft is still here but cannot be submitted against the
+        new version. Discard it and review the current policy before editing.</p> :
+        null}
+      {(policyEditRevision !== null || c.policyConflict) ? <AdminButton
+        disabled={!canEdit || c.caseQuery.isFetching}
+        onClick={() => void discardAndReviewCurrentPolicy()}>
+        Discard draft and review current policy
+      </AdminButton> : null}
       <AdminForm onSubmit={submitPolicy}>
         <TextField label="Reviewed policy reference" value={policyReference}
-          onChange={(value) => {touchPolicy(); setPolicyReference(value);}}
+          onChange={(value) => {
+            touchPolicy(); referenceAutoFilled.current = !value.trim();
+            setPolicyReference(value);
+          }}
           required maxLength={240} disabled={!canEdit} />
         <FilePickerButton inputLabel="Choose reviewed policy file"
           disabled={!canEdit}
           onChange={(event) => void readPolicyFile(event.target.files?.[0])}>
           Choose reviewed policy file
         </FilePickerButton>
-        <p>{policyFile ? `${policyFile} · SHA-256 checked locally; file not uploaded.` :
+        <p>{hashingBusy ? "Reading the selected policy file locally…" :
+          policyFile ? `${policyFile} · SHA-256 checked locally; file not uploaded.` :
           "Choose the exact reviewed policy file. Only its fingerprint is saved."}</p>
         <TextareaField label="Why finance records remain held for review"
           rows={2} value={financeReason} onChange={(value) => {
@@ -214,7 +255,8 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
           rows={2} value={auditReason} onChange={(value) => {
             touchPolicy(); setAuditReason(value);
           }} required maxLength={500} disabled={!canEdit} />
-        <AdminButton type="submit" disabled={!canEdit || !policyHash ||
+        <AdminButton type="submit" disabled={!canEdit || hashingBusy ||
+          c.policyConflict || !policyHash ||
           !policyReference.trim() || !financeReason.trim() ||
           !auditReason.trim()}>Save reviewed retention decision</AdminButton>
       </AdminForm>

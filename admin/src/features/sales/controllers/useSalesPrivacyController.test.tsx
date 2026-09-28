@@ -84,3 +84,45 @@ it("clears stale preview after a definitive revision conflict", async () => {
   expect(hook.result.current.pending).toBeNull();
   expect(hook.result.current.error).toMatch(/preview again/u);
 });
+
+it("requires explicit current-policy review after a revision conflict", async () => {
+  const {api, hook} = fixture();
+  await waitFor(() => expect(hook.result.current.caseQuery.isSuccess).toBe(true));
+  const current = {...caseData, policy: {...caseData.policy!, revision: 2}};
+  vi.mocked(api.getCase).mockResolvedValue(current);
+  vi.mocked(api.reviewPolicy).mockRejectedValueOnce(Object.assign(
+    new Error("Policy changed"), {code: "functions/aborted"}));
+  const draft = {expectedRevision: 1, sourceReference: "Reviewed file",
+    sourceHash: hash, financeReason: "Finance review",
+    auditReason: "Audit review"};
+  await act(async () => {await hook.result.current.reviewPolicy(draft);});
+  expect(hook.result.current.policyConflict).toBe(true);
+  let reviewed: {revision: number} | null = null;
+  await act(async () => {
+    reviewed = await hook.result.current.reviewCurrentPolicy();
+  });
+  expect(reviewed).toEqual({revision: 2});
+  expect(hook.result.current.policyConflict).toBe(false);
+  await act(async () => {await hook.result.current.reviewPolicy({
+    ...draft, expectedRevision: 2});});
+  expect(api.reviewPolicy).toHaveBeenLastCalledWith(expect.objectContaining({
+    expectedRevision: 2}));
+});
+
+it("emits confirmed policy save only after retrying the unchanged request", async () => {
+  const {api, hook} = fixture();
+  await waitFor(() => expect(hook.result.current.caseQuery.isSuccess).toBe(true));
+  vi.mocked(api.reviewPolicy).mockRejectedValueOnce(new Error("network lost"));
+  const draft = {expectedRevision: 1, sourceReference: "Reviewed file",
+    sourceHash: hash, financeReason: "Finance review",
+    auditReason: "Audit review"};
+  await act(async () => {await hook.result.current.reviewPolicy(draft);});
+  expect(hook.result.current.confirmedPolicySaveId).toBeNull();
+  const pending = hook.result.current.pending;
+  expect(pending?.kind).toBe("policy");
+  await act(async () => {await hook.result.current.retryPending();});
+  const calls = vi.mocked(api.reviewPolicy).mock.calls;
+  expect(calls[1][0]).toEqual(calls[0][0]);
+  expect(hook.result.current.confirmedPolicySaveId).toBe(
+    calls[0][0].requestId);
+});
