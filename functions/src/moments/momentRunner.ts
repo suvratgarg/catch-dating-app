@@ -226,6 +226,7 @@ export async function runMomentSweep(
       const legacy = runs.filter((run) =>
         run.anchorRevision === preview.run.anchorRevision &&
         run.runId !== preview.run.runId &&
+        run.occurrenceVersion !== 2 &&
         run.travelPlanHash === undefined);
       if (legacy.length > 0) {
         let held = false;

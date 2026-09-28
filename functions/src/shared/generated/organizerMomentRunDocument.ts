@@ -9,6 +9,7 @@ export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  occurrenceVersion?: 2;
   plannedWakeAtMillis?: number;
   travelPlanHash?: string;
   anchorRevision: number;

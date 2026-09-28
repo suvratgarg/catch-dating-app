@@ -172,6 +172,8 @@ export interface RunRecord {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  /** New time-based identity: runId uses nominal due, not mutable wake. */
+  occurrenceVersion?: 2;
   /** Initial cohort wake, separate from mutable quiet/recipient deferral. */
   plannedWakeAtMillis?: number;
   /** Hash of effective recipient leads for one travel planning generation. */

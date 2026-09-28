@@ -162,6 +162,51 @@ test("moved function supersedes the planned run", async () => {
   assert.equal(newRun.exists, true);
 });
 
+test("fresh non-travel scheduled and anchored edits replan normally",
+  async () => {
+    for (const initiation of [
+      {kind: "scheduled" as const, atMillis: 10_000_000},
+      {kind: "anchored" as const, anchorKind: "functionStart" as const,
+        anchorId: "sangeet", offsetMinutes: -15},
+    ]) {
+      const db = new FakeFirestore({});
+      seedTravelProgram(db);
+      const firstMoment: MomentDefinition = {...travelReminder,
+        audience: {kind: "functionGuests", functionId: "sangeet",
+          rsvp: ["attending"], householdDedupe: true,
+          travelTimeLead: false},
+        initiation};
+      writeMoment(db, firstMoment);
+      const {deps} = makeDeps(db, 0);
+      await runMomentSweep(deps);
+      const firstDue = initiation.kind === "scheduled" ?
+        10_000_000 : 9_100_000;
+      const oldId = `m_travel_${initiation.kind === "scheduled" ?
+        0 : 7}_${firstDue}`;
+      const oldRun = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/${oldId}`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(oldRun.occurrenceVersion, 2);
+      const changedInitiation = initiation.kind === "scheduled" ?
+        {kind: "scheduled" as const, atMillis: 11_000_000} :
+        {...initiation, offsetMinutes: -10};
+      writeMoment(db, {...firstMoment, initiation: changedInitiation,
+        revision: 2});
+      const changed = await runMomentSweep(deps);
+      assert.equal(changed.runsSuperseded, 1);
+      assert.equal(changed.runsCreated, 1);
+      const newDue = initiation.kind === "scheduled" ?
+        11_000_000 : 9_400_000;
+      const newId = `m_travel_${initiation.kind === "scheduled" ?
+        0 : 7}_${newDue}`;
+      const nextRun = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/${newId}`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(nextRun.status, "planned");
+      assert.equal(nextRun.occurrenceVersion, 2);
+    }
+  });
+
 test("consenting household receives the template send", async () => {
   const db = new FakeFirestore({});
   seedProgram(db);

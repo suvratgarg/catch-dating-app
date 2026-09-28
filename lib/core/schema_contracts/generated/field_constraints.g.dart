@@ -96109,6 +96109,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentRunDocumentOccurrenceVersion = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.occurrenceVersion',
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerMomentRunDocumentPlannedWakeAtMillis = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.plannedWakeAtMillis',
     valueTypes: <String>['integer'],
@@ -139582,6 +139587,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
     'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
     'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
+    'organizerMomentRunDocument.occurrenceVersion': organizerMomentRunDocumentOccurrenceVersion,
     'organizerMomentRunDocument.plannedWakeAtMillis': organizerMomentRunDocumentPlannedWakeAtMillis,
     'organizerMomentRunDocument.reason': organizerMomentRunDocumentReason,
     'organizerMomentRunDocument.recipients': organizerMomentRunDocumentRecipients,

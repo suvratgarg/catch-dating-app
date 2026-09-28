@@ -197,6 +197,7 @@ export function planRun(
       runId: `${moment.momentId}_${anchor.anchorRevision}_${nominalDue}`,
       momentId: moment.momentId,
       dueAtMillis,
+      occurrenceVersion: 2,
       ...(wantsLead && options?.travel ?
         {plannedWakeAtMillis: dueAtMillis} : {}),
       anchorRevision: anchor.anchorRevision,

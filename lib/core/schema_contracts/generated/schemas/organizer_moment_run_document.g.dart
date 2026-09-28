@@ -38,6 +38,12 @@ const schemaOrganizerMomentRunDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'occurrenceVersion': <String, Object?>{
+      'type': 'integer',
+      'enum': <Object?>[
+        2,
+      ],
+    },
     'plannedWakeAtMillis': <String, Object?>{
       'type': 'integer',
       'minimum': 0,

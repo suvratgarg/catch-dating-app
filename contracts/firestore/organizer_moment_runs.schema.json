@@ -20,6 +20,7 @@
     "runId": {"type": "string", "minLength": 1, "maxLength": 300},
     "momentId": {"type": "string", "minLength": 1, "maxLength": 180},
     "dueAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "occurrenceVersion": {"type": "integer", "enum": [2]},
     "plannedWakeAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "travelPlanHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "anchorRevision": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},

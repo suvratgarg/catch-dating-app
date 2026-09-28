@@ -78,6 +78,7 @@ test("functionStart minus 15 minutes plans a deterministic run", () => {
     runId: "m1_7_1100000",
     momentId: "m1",
     dueAtMillis: 1_100_000,
+    occurrenceVersion: 2,
     anchorRevision: 7,
     status: "planned",
   });
@@ -269,6 +270,7 @@ test("travelTimeLead wakes the run early by the farthest hotel's lead",
     assert.deepEqual(result.kind === "planned" && result.run, {
       runId: "m1_7_1100000",
       momentId: "m1", dueAtMillis: 500_000,
+      occurrenceVersion: 2,
       plannedWakeAtMillis: 500_000, anchorRevision: 7,
       status: "planned",
     });

@@ -97,6 +97,7 @@ test("functionStartReminder defaults to T-15m for attending guests", () => {
     runId: "prog_sangeet_function_start_reminder_7_9100000",
     momentId: "prog_sangeet_function_start_reminder",
     dueAtMillis: 9_100_000,
+    occurrenceVersion: 2,
     anchorRevision: 7,
     status: "planned",
   });
@@ -172,6 +173,7 @@ test("transportReadyNotice anchors the departure and its guests", () => {
     runId: "prog_udrT1_transport_ready_4_1700000",
     momentId: "prog_udrT1_transport_ready",
     dueAtMillis: 1_700_000,
+    occurrenceVersion: 2,
     anchorRevision: 4,
     status: "planned",
   });

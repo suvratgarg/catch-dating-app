@@ -90,6 +90,7 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
     runId: requireString(data.runId, "runId"),
     momentId: requireString(data.momentId, "momentId"),
     dueAtMillis: readInt(data.dueAtMillis, 0),
+    ...(data.occurrenceVersion === 2 ? {occurrenceVersion: 2 as const} : {}),
     ...(typeof data.plannedWakeAtMillis === "number" ?
       {plannedWakeAtMillis: readInt(data.plannedWakeAtMillis, 0)} : {}),
     ...(typeof data.travelPlanHash === "string" ?

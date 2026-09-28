@@ -136385,6 +136385,12 @@ export const organizerMomentRunDocumentSchema = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "occurrenceVersion": {
+      "type": "integer",
+      "enum": [
+        2
+      ]
+    },
     "plannedWakeAtMillis": {
       "type": "integer",
       "minimum": 0,
