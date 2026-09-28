@@ -141,6 +141,10 @@ enum Routes {
     AppRouteAudience.host,
   ),
   hostWorkTripsScreen('/host/work/:programId/trips', AppRouteAudience.host),
+  hostWorkAttendanceReportScreen(
+    '/host/work/:programId/attendance',
+    AppRouteAudience.host,
+  ),
   hostProgramsScreen('/host/programs', AppRouteAudience.host),
   hostProgramWorkspaceScreen(
     '/host/programs/:programId',

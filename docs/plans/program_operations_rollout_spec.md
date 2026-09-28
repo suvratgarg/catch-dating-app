@@ -104,7 +104,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
 | `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
-| `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
+| `reconciliationViewer` → Trips · Exceptions · Export | **in review** — `/trips` ledger + needs-review exceptions + CSV export (#471); per-function attendance report + CSV export (#460) |
 | `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
@@ -218,7 +218,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R8 | `stakeholderViewer` counts API + read surface | **blocked** — decision 5.4 (field-safety contract) | API + surface |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
-| R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |
+| R11 | Reconciliation/export, per-function attendance report, retention | **in review #460** — callable + report screen + CSV export | retention policy |
 | R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
 Merge-ready now (no ordering dependency): R9's entitlements PR (#455).
