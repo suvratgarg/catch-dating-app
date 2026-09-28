@@ -1,3 +1,5 @@
+import {assertSalesMaterialPrivacyOpen, filterSalesPrivacyRows} from
+  "./privacyBoundary";
 import {executeCommercialActionInTransaction, executeCommercialRead,
   appendOpportunityStageHistory} from "../salesCommercial/service";
 import {validateHostFinanceCloseInTransaction} from
@@ -225,6 +227,7 @@ export async function executeSalesAction(
       organizerId,
       fieldId,
     );
+    await assertSalesMaterialPrivacyOpen(db, input, tx);
     const receiptSnapshot = await tx.get(receiptRef);
     if (organizerId && action !== "imports.compensation.apply") {
       const account = await tx.get(db.collection(accountCollection)
@@ -240,6 +243,7 @@ export async function executeSalesAction(
     }
     if (receiptSnapshot.exists) {
       const existing = receiptSnapshot.data() as SalesActionReceipt;
+      await assertSalesMaterialPrivacyOpen(db, existing, tx);
       if (
         existing.actorUid !== principal.uid ||
         existing.action !== action ||
@@ -461,6 +465,7 @@ export async function executeSalesRead(
     await deps.authorizeRead?.(db, principal, name, id, fieldId);
   };
   await checkCurrent(action, organizerId);
+  await assertSalesMaterialPrivacyOpen(db, input);
   let response: Record<string, unknown>;
   switch (action) {
   case "commercial.detail":
@@ -576,6 +581,11 @@ export async function executeSalesRead(
     throw new HttpsError("unimplemented", "Sales read is not implemented.");
   }
   await checkCurrent(action, organizerId);
+  await assertSalesMaterialPrivacyOpen(db, input);
+  if (Array.isArray(response.rows) && action !== "imports.preview") {
+    response = {...response,
+      rows: await filterSalesPrivacyRows(db, response.rows)};
+  } else await assertSalesMaterialPrivacyOpen(db, response);
   return response;
 }
 

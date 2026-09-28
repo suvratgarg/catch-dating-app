@@ -1,3 +1,4 @@
+import {assertSalesPrivacyOpen} from "../salesPrivacy/model";
 import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -97,6 +98,7 @@ export async function linkOrganizerIntakeToSales(
     .doc(input.organizerId);
   const linkRef = db.collection("salesIntakeLinks").doc(linkId);
   return db.runTransaction(async (tx) => {
+    await assertSalesPrivacyOpen(tx, db, input.organizerId);
     await recheckEmployee?.();
     const [itemSnap, curationSnap, organizerSnap, accountSnap, linkSnap] =
       await Promise.all([tx.get(workItemRef), tx.get(curationRef),

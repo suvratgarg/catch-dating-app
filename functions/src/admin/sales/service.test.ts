@@ -1185,3 +1185,19 @@ test("finance close binds authority, terms and replay", async () => {
     ...wonRequest, requestId: "finance-proof-wrong-stage", expectedRevision: 2,
     fields}, deps), /applies only to closed won/);
 });
+
+test("privacy restriction blocks replay, reads and recreation", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  db.docs.set("salesPrivacyRestrictions/org-1", {status: "restricted"});
+  await assert.rejects(
+    executeSalesAction(employee, "hosts.create", create, deps),
+    /Sales processing is restricted/u);
+  await assert.rejects(executeSalesRead(employee, "receipts.get",
+    {requestId: create.requestId}, deps), /Sales processing is restricted/u);
+  db.docs.delete("organizerSalesAccounts/org-1");
+  await assert.rejects(executeSalesAction(employee, "hosts.create",
+    {...create, requestId: "new-after-deletion"}, deps),
+  /Sales processing is restricted/u);
+  assert.equal(db.docs.has("organizerSalesAccounts/org-1"), false);
+});

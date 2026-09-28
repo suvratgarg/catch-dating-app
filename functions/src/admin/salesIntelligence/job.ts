@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import {assertSalesMaterialPrivacyOpen} from "../sales/privacyBoundary";
 import {randomUUID} from "node:crypto";
 import type {SalesPrincipal} from "../sales/types";
 import {fail, hash, object, requestId} from "./model";
@@ -150,6 +151,7 @@ export async function failDraftJob(deps: IntelligenceDeps,
     await deps.authorize(principal, false);
     const raw = (await tx.get(ref)).data() as DraftJob | undefined;
     const current = raw ? assertStoredJob(raw, ref.id) : undefined;
+    await assertSalesMaterialPrivacyOpen(deps.db, current, tx);
     if (!current || current.actorUid !== principal.uid ||
         current.leaseOwner !== job.leaseOwner || current.status !== "running") {
       return;
@@ -180,6 +182,7 @@ export async function getDraftJob(deps: IntelligenceDeps,
   if (Date.parse(job.expiresAt) <= deps.now().getTime()) {
     return fail("failed-precondition", "Draft request expired.");
   }
+  await assertSalesMaterialPrivacyOpen(deps.db, job);
   return {status: job.status, result: job.result, failure: job.failure,
     retryAfterSeconds: job.status === "running" ? 5 : null};
 }

@@ -1,4 +1,6 @@
 /* eslint-disable max-len */
+import {assertSalesPrivacyOpen} from "../salesPrivacy/model";
+import {filterSalesPrivacyRows} from "../sales/privacyBoundary";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {SalesAccount, SalesPrincipal} from "../sales/types";
@@ -86,6 +88,7 @@ export async function refreshFitQueue(deps: FitQueueDeps,
     .doc(receiptId(principal.uid, requestId));
   return deps.db.runTransaction(async (tx) => {
     await deps.authorize(principal);
+    await assertSalesPrivacyOpen(tx, deps.db, organizerId);
     const accountRef = deps.db.collection("organizerSalesAccounts").doc(organizerId);
     const currentAccount = (await tx.get(accountRef)).data();
     if (currentAccount?.researchStatus === "archived") {
@@ -237,7 +240,7 @@ export async function listFitQueue(deps: FitQueueDeps,
   }
   const mayHaveMore = last !== null &&
     (rows.length === limit || snapshot.size === pageScan);
-  return {rows, nextCursor: mayHaveMore ? encodeCursor({...bound,
+  return {rows: await filterSalesPrivacyRows(deps.db, rows), nextCursor: mayHaveMore ? encodeCursor({...bound,
     lastId: last!.id,
     lastScore: view === "needs_research" ? null : Number(last!.get("score"))}) : null,
   generation: firstGeneration, policyRevision: policy.revision,

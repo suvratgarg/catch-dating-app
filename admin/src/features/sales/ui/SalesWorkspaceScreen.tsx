@@ -25,6 +25,8 @@ import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 
+import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
+
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "people" | "workflow" | "activity" |
   "opportunities" | "research" | "demo" | "commercial" | "intelligence";
@@ -136,8 +138,9 @@ export function SalesWorkspaceScreen({
         <HostsView controller={controller} currentUserUid={currentUserUid}
           onOpenHost={onOpenHost} onOpenIntake={onOpenIntake} />
       ) : area === "pipeline" ? (
-        <PipelineView controller={controller} currentUserUid={currentUserUid}
-          onOpenHost={onOpenHost} />
+        <>{renderSalesFunnelWorkspace(currentUserUid)}
+          <PipelineView controller={controller} currentUserUid={currentUserUid}
+            onOpenHost={onOpenHost} /></>
       ) : area === "research" ? (
         <ResearchView controller={controller} onOpenHost={onOpenHost}
           onOpenIntake={onOpenIntake} />

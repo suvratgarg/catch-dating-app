@@ -1,4 +1,6 @@
 /* eslint-disable max-len */
+import {assertSalesMaterialPrivacyOpen} from "../sales/privacyBoundary";
+import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead} from "../salesPrivacy/model";
 import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import * as admin from "firebase-admin";
 import {hasCurrentDraftContact} from "../sales/suppression";
@@ -50,10 +52,21 @@ async function mutate<T extends Record<string, unknown>>(
   const materialHash = hash([principal.uid, action, material]);
   return db.runTransaction(async (tx) => {
     await deps.authorize(principal, ownerOnly);
+    await assertSalesMaterialPrivacyOpen(db, material, tx);
+    const scoped = material as {clauseId?: string; draftId?: string};
+    if (scoped?.clauseId) {
+      await assertSalesMaterialPrivacyOpen(db,
+        (await tx.get(db.collection("salesIntelligenceClauses").doc(scoped.clauseId))).data(), tx);
+    }
+    if (scoped?.draftId) {
+      await assertSalesMaterialPrivacyOpen(db,
+        (await tx.get(db.collection("salesOutreachDrafts").doc(scoped.draftId))).data(), tx);
+    }
     if (replayGuard) await replayGuard(tx);
     const existing = await tx.get(ref);
     if (existing.exists) {
       const data = existing.data();
+      await assertSalesMaterialPrivacyOpen(db, data, tx);
       if (data?.materialHash !== materialHash || data?.actorUid !== principal.uid ||
           data?.action !== action) {
         return fail("already-exists", "Request ID belongs to different material.");
@@ -96,6 +109,7 @@ function currentReviewedEvidence(row: FirebaseFirestore.DocumentData | undefined
 }
 async function requireAccount(tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore, organizerId: string) {
+  await assertSalesPrivacyOpen(tx, db, organizerId);
   const snap = await tx.get(db.collection("organizerSalesAccounts").doc(organizerId));
   if (!snap.exists || !accountOk(snap.data(), organizerId)) {
     return fail("not-found", "Private Sales account not found.");
@@ -223,6 +237,7 @@ export async function getIntelligenceScore(deps: IntelligenceDeps,
     accountSnap.data()!.revision as number,
     assessments.filter((doc) => doc.exists).map((doc) => doc.data() as Assessment),
     evidenceSnap.docs.map((doc) => doc.data()), deps.now().toISOString());
+  await assertSalesPrivacyOpenRead(db, organizerId);
   return {snapshot};
 }
 
@@ -263,6 +278,7 @@ export async function getIntelligenceCatalog(deps: IntelligenceDeps,
     return fail("failed-precondition", "Private catalog contains invalid records.");
   }
   await deps.authorize(principal, false);
+  await assertSalesPrivacyOpenRead(db, organizerId);
   return {policy, assessments: assessments.map((row) => ({
     schemaVersion: 1, classification: "sales_private", assessmentId: row.assessmentId,
     organizerId: row.organizerId, factorId: row.factorId, revision: row.revision,
@@ -471,6 +487,7 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   }
   await deps.authorize(principal, false);
   const db = deps.db;
+  await assertSalesPrivacyOpen(tx, db, organizerId);
   const read = (ref: FirebaseFirestore.DocumentReference) =>
     tx ? tx.get(ref) : ref.get();
   const now = deps.now().toISOString();
@@ -806,5 +823,6 @@ export async function getOutreachDraft(deps: IntelligenceDeps,
       sendAuthority: false};
   });
   await deps.authorize(principal, false);
+  await assertSalesMaterialPrivacyOpen(deps.db, result);
   return result;
 }

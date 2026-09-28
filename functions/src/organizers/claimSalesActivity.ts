@@ -18,6 +18,9 @@ export async function prepareClaimSalesTransition(
   db: FirebaseFirestore.Firestore,
   transition: ClaimSalesTransition
 ): Promise<() => void> {
+  const restriction = await tx.get(db.collection("salesPrivacyRestrictions")
+    .doc(transition.organizerId));
+  if (restriction.exists) return () => {};
   const account = await tx.get(db.collection("organizerSalesAccounts")
     .doc(transition.organizerId));
   const data = account.data();

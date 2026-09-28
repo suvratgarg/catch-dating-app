@@ -1,3 +1,6 @@
+import {assertSalesMaterialPrivacyOpen} from "../admin/sales/privacyBoundary";
+import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead} from
+  "../admin/salesPrivacy/model";
 import {organizerFormTemplateCatalog} from
   "../shared/generated/catalogs/organizerFormTemplateCatalog";
 import {checkDemoSalesLinks, prepareDemoSalesActivity} from "./salesActivity";
@@ -119,6 +122,8 @@ async function availableSalesAccount(deps: DemoDeps,
   organizerId: string | null,
   tx?: FirebaseFirestore.Transaction): Promise<void> {
   if (!organizerId) return;
+  if (tx) await assertSalesPrivacyOpen(tx, deps.db, organizerId);
+  else await assertSalesPrivacyOpenRead(deps.db, organizerId);
   const ref = deps.db.collection("organizerSalesAccounts").doc(organizerId);
   const account = (tx ? await tx.get(ref) : await ref.get()).data();
   if (account?.researchStatus === "archived") {
@@ -151,9 +156,16 @@ async function adminMutation(deps: DemoDeps, identity: Identity,
     .doc(`sales_demo_${receiptRef.id}`);
   return deps.db.runTransaction(async (tx) => {
     await owner(deps, identity);
+    await assertSalesMaterialPrivacyOpen(deps.db, input, tx);
+    const targetCollection = action.includes("blueprint") ?
+      BLUEPRINTS : INVITATIONS;
+    const scopedTarget = (await tx.get(deps.db.collection(targetCollection)
+      .doc(target))).data();
+    await assertSalesMaterialPrivacyOpen(deps.db, scopedTarget, tx);
     const receipt = await tx.get(receiptRef);
     if (receipt.exists) {
       const saved = receipt.data();
+      await assertSalesMaterialPrivacyOpen(deps.db, saved, tx);
       if (saved?.actorUid !== identity.uid || saved?.action !== action ||
           saved?.targetId !== target || saved?.materialHash !== digest) {
         return fail("already-exists", "Request id has different material.");
@@ -739,6 +751,7 @@ export async function adminGetBlueprint(deps: DemoDeps, identity: Identity,
     .doc(id(body.blueprintId)).get();
   await owner(deps, identity);
   if (!snap.exists) return fail("not-found", "Blueprint not found.");
+  await assertSalesMaterialPrivacyOpen(deps.db, snap.data());
   return snap.data() as Blueprint;
 }
 export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
@@ -753,6 +766,7 @@ export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
   const {tokenDigest, contactBinding, ...safe} = snap.data() as Invitation;
   void tokenDigest;
   void contactBinding;
+  await assertSalesMaterialPrivacyOpen(deps.db, safe);
   return safe;
 }
 
@@ -797,6 +811,7 @@ export async function adminListBlueprints(deps: DemoDeps, identity: Identity,
   const snaps = await query.limit(limit + 1).get();
   await owner(deps, identity);
   const rows = snaps.docs.slice(0, limit);
+  await assertSalesPrivacyOpenRead(deps.db, target);
   return {rows: rows.map((snap) => snap.data() as Blueprint),
     nextCursor: snaps.docs.length > limit ? rows[rows.length - 1].id : null};
 }
@@ -823,6 +838,9 @@ export async function adminListInvitations(deps: DemoDeps,
     void contactBinding;
     return safe;
   });
+  const blueprint = (await deps.db.collection(BLUEPRINTS)
+    .doc(target).get()).data();
+  await assertSalesMaterialPrivacyOpen(deps.db, [blueprint, rows]);
   return {rows, nextCursor: snaps.docs.length > limit ?
     snaps.docs[limit - 1].id : null};
 }
