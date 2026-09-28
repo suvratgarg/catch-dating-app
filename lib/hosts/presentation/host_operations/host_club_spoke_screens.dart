@@ -241,16 +241,18 @@ class _HostClubDefaultsEditorState
   }
 }
 
-class HostClubReadOnlyEventDefaults extends ConsumerWidget {
-  const HostClubReadOnlyEventDefaults._({required this.club});
+class HostClubReadOnlyEventDefaults extends StatelessWidget {
+  const HostClubReadOnlyEventDefaults._({
+    required this.club,
+    required this.progressiveDefaultsAvailable,
+  });
 
   final Club club;
+  final bool progressiveDefaultsAvailable;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final policy = club.hostDefaults.eventPolicy;
-    final progressiveDefaultsAvailable =
-        ref.watch(progressiveEventDefaultsAvailableProvider);
     return CatchSection.fieldRows(
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,

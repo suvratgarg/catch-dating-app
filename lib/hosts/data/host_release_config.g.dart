@@ -66,7 +66,7 @@ final class HostReleaseFlagProvider
   }
 }
 
-String _$hostReleaseFlagHash() => r'2eeb621dfe1c70e724888a4699f16af840b3acaf';
+String _$hostReleaseFlagHash() => r'3d9fa6f9a3b8fd8b2ea78f5445b71f03eb757ba1';
 
 final class HostReleaseFlagFamily extends $Family
     with $FunctionalFamilyOverride<bool, String> {

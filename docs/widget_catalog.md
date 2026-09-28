@@ -281,7 +281,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>ForceUpdateGate</code> | <code>lib/app.dart:113</code> | — | — | No class documentation or registry summary. |
+| <code>ForceUpdateGate</code> | <code>lib/app.dart:115</code> | — | — | No class documentation or registry summary. |
 | <code>HostAuthFlowFrame</code> | <code>lib/auth/presentation/auth_screen.dart:82</code> | — | — | Host auth frame whose top brand stage is geometrically identical to the Flutter startup surface. Only the lower content is animated. |
 | <code>HostAuthCard</code> | <code>lib/auth/presentation/host_auth_widgets.dart:6</code> | — | — | The outlined lower-stage container shared by every Catch Host auth state. |
 | <code>HostAuthHeader</code> | <code>lib/auth/presentation/host_auth_widgets.dart:22</code> | — | — | No class documentation or registry summary. |
@@ -884,10 +884,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostWhatsappSetupPane</code> | <code>lib/hosts/presentation/host_operations/host_audience.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubEditTab</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_tab.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubMediaSummary</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_tab.dart:899</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:162</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:248</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:131</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:158</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:244</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:127</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
 | <code>HostTeamProfileRows</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:528</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:455</code> | — | — | No class documentation or registry summary. |
@@ -1171,8 +1171,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 |---|---|---|---|---|
 | <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:11</code> | — | — | Consumer-owned native capability bindings around the shared Consumer UI. |
 | <code>HostPlatformApp</code> | <code>apps/host/lib/host_platform_app.dart:6</code> | — | — | Host-owned app root selecting only the Host router and default capabilities. |
-| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:224</code> | — | — | No class documentation or registry summary. |
-| <code>MyApp</code> | <code>lib/app.dart:42</code> | — | — | No class documentation or registry summary. |
+| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:229</code> | — | — | No class documentation or registry summary. |
+| <code>MyApp</code> | <code>lib/app.dart:44</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>OtpPage</code> | <code>lib/auth/presentation/otp_page.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>PhonePage</code> | <code>lib/auth/presentation/phone_page.dart:23</code> | — | — | No class documentation or registry summary. |

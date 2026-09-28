@@ -61,7 +61,16 @@ bool hostReleaseFlag(Ref ref, String key) {
           },
         );
       } catch (error, stackTrace) {
-        report(error, stackTrace);
+        logAppError(
+          error,
+          stackTrace: stackTrace,
+          context: const AppErrorContext(
+            operation: AppOperation.runtime,
+            action: 'activate host release config',
+            resource: 'remote_config',
+          ),
+          logError: logError,
+        );
       }
     }());
   }, onError: report);

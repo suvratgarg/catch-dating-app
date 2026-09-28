@@ -203,7 +203,10 @@ class _HostClubEventDefaultsScreenState
                     ],
                   ),
             )
-          : HostClubReadOnlyEventDefaults._(club: club);
+          : HostClubReadOnlyEventDefaults._(
+              club: club,
+              progressiveDefaultsAvailable: progressiveDefaultsAvailable,
+            );
       },
     );
   }
