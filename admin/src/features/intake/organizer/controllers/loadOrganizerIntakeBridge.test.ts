@@ -82,6 +82,8 @@ describe("loadOrganizerIntakeBridge", () => {
     expect(result.workbench.searchCandidates.candidates.find((candidate) =>
       candidate.candidateId === "mumbai-candidate-10")).toMatchObject({
       workItemId: "wi-mumbai-candidate-10",
+      workItemRevision: 0,
+      candidateHash: "b".repeat(64),
       draftLink: {
         organizerId: "courtside",
       },
