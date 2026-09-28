@@ -51,7 +51,7 @@ export async function prepareEventOfferInvitationHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv<InvitationInput>(request,
     validatePrepareEventOfferInvitationCallablePayload);
-  if (!deps.enabled()) unavailable();
+  if (!await deps.enabled()) unavailable();
   const db = deps.db();
   await deps.rateLimit(db, uid, "prepareEventOfferInvitation");
   const invitation = await deps.issue({db, actorUid: uid,
@@ -82,7 +82,7 @@ export async function manageEventOfferCheckoutHandler(
     const grantId = offerRecipientGrantId(data.token);
     result.payment = await findOwnedPayment(db, uid, grantId, deps);
     if (result.payment) return checkedResponse(result, deps.now());
-    if (!deps.enabled()) unavailable();
+    if (!await deps.enabled()) unavailable();
     const claimed = await deps.claim({db, uid, token: data.token,
       authTokenPhoneNumber: phone, nowMillis: deps.now});
     const {source} = await db.runTransaction((tx) => deps.readRecipient({
@@ -110,7 +110,7 @@ export async function manageEventOfferCheckoutHandler(
       if (payment.recipientUid !== uid || data.action === "prepare" &&
           payment.grantId !== data.grantId) unavailable();
     } else {
-      if (data.action !== "prepare" || !deps.enabled()) unavailable();
+      if (data.action !== "prepare" || !await deps.enabled()) unavailable();
       const {grant, source} = await db.runTransaction((tx) =>
         deps.readRecipient({db, tx, grantId: data.grantId,
           uid, nowMillis: deps.now()}));
