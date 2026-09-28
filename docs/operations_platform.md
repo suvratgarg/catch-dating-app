@@ -1052,6 +1052,35 @@ activation and acceptance gates. Runtime port
 details are maintained in the
 [outreach workflow README](../operations/src/workflows/outreach-drafting/README.md).
 
+## Reviewed host discovery batches
+
+The optional private discovery policy is supplied through the ordinary
+Operations CLI, then frozen into the run plan. It identifies reviewed candidate
+retention decisions with their source hashes. Raw search hits do not count as
+retained prospects. The engine records each decision before creating its work
+item; a paused projection remains incomplete and cannot silently finish.
+Known/rejected identities remain in market coverage without increasing the
+retained count. The normal provider-disabled behavior remains the default.
+
+```sh
+node operations/src/cli/main.mjs run --workflow supply-intake \
+  --market MARKET --discovery-policy /private/path/reviewed-policy.json
+node operations/src/cli/main.mjs discovery preview --run RUN_ID
+node operations/src/cli/main.mjs discovery continue --run RUN_ID \
+  --receipt /private/path/reviewed-continuation.json
+node operations/src/cli/main.mjs resume --run RUN_ID
+```
+
+The reviewer records the exact paused-state binding and required audits in the
+private continuation receipt. A changed state, run, interval or receipt fails
+closed. Continuing the review does not itself project more candidates; the
+ordinary resume command owns that work. If a work-item write is interrupted
+after its retention record, retry repairs the item without double-counting it.
+For a saved plan, `plan --discovery-policy ... --output /private/path/plan.json`
+writes the full frozen material exclusively with mode 0600 and prints only its
+path and hash. The policy, plan and review files belong outside Git. This path
+does not acquire sources, invoke a model, publish listings or send outreach.
+
 ## Adding Another Workflow
 
 Event Assistance is the second registered workflow. Its initial supported
