@@ -122,6 +122,7 @@ enum Routes {
   hostFormsLegacyScreen('/host/forms', AppRouteAudience.host),
   hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
   hostWorkScreen('/host/work', AppRouteAudience.host),
+  hostWorkEventScreen('/host/work/event/:eventId', AppRouteAudience.host),
   hostWorkProgramScreen('/host/work/:programId', AppRouteAudience.host),
   hostWorkArrivalsScreen(
     '/host/work/:programId/arrivals/:pickupPointId',

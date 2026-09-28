@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-09-28",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -480,7 +480,7 @@
         },
         {
           "routes": [
-            "hostOperatorEventScreen"
+            "hostWorkEventScreen"
           ],
           "file": "lib/hosts/presentation/host_event_operator_screen.dart",
           "symbol": "HostEventOperatorScreen",
@@ -14572,8 +14572,8 @@
           "role": "primary"
         },
         {
-          "id": "hostOperatorEventScreen",
-          "path": "/host/operator/:eventId",
+          "id": "hostWorkEventScreen",
+          "path": "/host/work/event/:eventId",
           "role": "host"
         },
         {
