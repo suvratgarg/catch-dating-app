@@ -1201,3 +1201,62 @@ test("privacy restriction blocks replay, reads and recreation", async () => {
   /Sales processing is restricted/u);
   assert.equal(db.docs.has("organizerSalesAccounts/org-1"), false);
 });
+
+
+test("history promotion rechecks Owner, account state and replay scope",
+  async () => {
+    const {db, deps} = fixture();
+    const owner = {...employee, roles: ["adminOwner"]};
+    const packet = {sourceId: "history-source", contentHash: "a".repeat(64),
+      mappingVersion: "history-v1", rows: [{sourceRowId: "row-1",
+        organizerId: "org-1", name: "Example Host", researchStatus: "new",
+        originalCells: [{column: "Notes", value: "Prior conversation"}]}]};
+    const preview = await executeSalesRead(owner, "imports.preview",
+      packet, deps);
+    const imported = await executeSalesAction(owner, "imports.apply",
+      {...packet, requestId: "history-source-import",
+        previewHash: preview.previewHash}, deps);
+    const history = {sourceId: packet.sourceId, contentHash: packet.contentHash,
+      mappingVersion: packet.mappingVersion, promotionVersion: "review-v1",
+      rows: [{importId: imported.importId, sourceRowId: "row-1",
+        organizerId: "org-1", disposition: "promoted", reason: "Reviewed cell",
+        entries: [{sourceColumn: "Notes", sourceValue: "Prior conversation",
+          kind: "observation", occurredAt: null, dateSourceColumn: null,
+          dateSourceValue: null}]}]};
+    const plan = await executeSalesRead(owner, "imports.history.preview",
+      history, deps);
+    const payload = {...history, requestId: "history-apply-reviewed",
+      previewHash: plan.previewHash};
+    const result = await executeSalesAction(owner, "imports.history.apply",
+      payload, deps);
+    assert.equal(result.recordsCreated, 1);
+    assert.deepEqual(await executeSalesAction(owner, "imports.history.apply",
+      payload, deps), result);
+    await assert.rejects(executeSalesAction(employee, "imports.history.apply",
+      payload, deps), /Admin Owner finance authority/u);
+    await assert.rejects(executeSalesRead(employee, "receipts.get",
+      {requestId: payload.requestId}, deps), /Admin Owner finance authority/u);
+    await assert.rejects(executeSalesAction(owner, "imports.history.apply",
+      payload, {...deps, authorizeInTransaction: async () => {
+        assertSalesFinanceAuthority(employee, "imports.history.apply", null);
+      }}), /Admin Owner finance authority/u);
+    const compensation = await executeSalesRead(owner,
+      "imports.compensation.preview",
+      {organizerId: "org-1", importId: imported.importId}, deps);
+    assert.equal(compensation.mode, "blocked");
+    const account = db.docs.get("organizerSalesAccounts/org-1")!;
+    for (const state of [{researchStatus: "archived"},
+      {suppressionStatus: "held"}]) {
+      db.docs.set("organizerSalesAccounts/org-1", {...account, ...state});
+      await assert.rejects(executeSalesAction(owner, "imports.history.apply",
+        payload, deps), /active private Sales account/u);
+      await assert.rejects(executeSalesRead(owner, "receipts.get",
+        {requestId: payload.requestId}, deps), /active private Sales account/u);
+    }
+    db.docs.set("organizerSalesAccounts/org-1", account);
+    db.docs.set("salesPrivacyRestrictions/org-1", {status: "restricted"});
+    await assert.rejects(executeSalesAction(owner, "imports.history.apply",
+      payload, deps), /Sales processing is restricted/u);
+    assert.equal([...db.docs.keys()].filter((key) =>
+      key.startsWith("salesImportHistoryRecords/")).length, 1);
+  });

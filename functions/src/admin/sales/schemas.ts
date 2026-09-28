@@ -84,8 +84,36 @@ const strict = (
 const page = (extra: Record<string, unknown> = {}): Schema =>
   strict([], {limit: listLimit, cursor, ...extra});
 
+const historyEntry = strict(["sourceColumn", "sourceValue", "kind",
+  "occurredAt", "dateSourceColumn", "dateSourceValue"], {
+  sourceColumn: {type: "string", minLength: 1, maxLength: 160},
+  sourceValue: {type: "string", minLength: 1, maxLength: 2000},
+  kind: {enum: ["activity", "observation", "benchmark"]},
+  occurredAt: {anyOf: [{type: "string", format: "date-time", maxLength: 48},
+    {type: "null"}]},
+  dateSourceColumn: {anyOf: [
+    {type: "string", minLength: 1, maxLength: 160}, {type: "null"}]},
+  dateSourceValue: {anyOf: [
+    {type: "string", minLength: 1, maxLength: 160}, {type: "null"}]},
+});
+const historyPacket = {
+  sourceId: id, contentHash: {type: "string", pattern: "^[a-f0-9]{64}$"},
+  mappingVersion: id, promotionVersion: id,
+  rows: {type: "array", minItems: 1, maxItems: 10,
+    items: strict(["importId", "sourceRowId", "organizerId", "disposition",
+      "reason", "entries"], {importId: id, sourceRowId: id, organizerId: id,
+      disposition: {enum: ["promoted", "skipped", "review_needed"]},
+      reason: {type: "string", minLength: 1, maxLength: 300},
+      entries: {type: "array", minItems: 0, maxItems: 5, items: historyEntry}})},
+};
+const historyList = strict(["organizerId"], {organizerId: id,
+  limit: {type: "integer", minimum: 1, maximum: 25}, cursor: id});
+
 export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
   ...COMMERCIAL_READ_SCHEMAS,
+  "imports.history.preview": strict(Object.keys(historyPacket), historyPacket),
+  "imports.history.list": historyList,
+  "imports.history.rows.list": historyList,
   "hosts.search": page({
     query: {
       type: "string",
@@ -410,6 +438,11 @@ const baseActionSchemas = {
 export const SALES_ACTION_SCHEMAS: Record<SalesMutationAction, Schema> = {
   ...baseActionSchemas,
   ...COMMERCIAL_ACTION_SCHEMAS,
+  "imports.history.apply": strict(
+    [...Object.keys(historyPacket), "requestId", "previewHash"], {
+      ...historyPacket, requestId: id,
+      previewHash: {type: "string", pattern: "^[a-f0-9]{64}$"},
+    }),
   "evidence.propose": baseActionSchemas["evidence.add"],
   "evidence.reviewProposal": strict(
     ["organizerId", "requestId", "proposalId", "expectedRevision",

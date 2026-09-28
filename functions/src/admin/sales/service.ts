@@ -1,4 +1,5 @@
-import {assertSalesMaterialPrivacyOpen, filterSalesPrivacyRows} from
+import {assertSalesMaterialPrivacyOpen, filterSalesPrivacyRows,
+  salesMaterialOrganizerIds} from
   "./privacyBoundary";
 import {executeCommercialActionInTransaction, executeCommercialRead,
   appendOpportunityStageHistory} from "../salesCommercial/service";
@@ -21,6 +22,9 @@ import {
   type ImportApply,
   type ImportPacket,
 } from "./imports";
+import {applySalesImportHistory, previewSalesImportHistory,
+  listSalesImportHistory, listSalesImportHistoryRows,
+  type HistoryApply, type HistoryPacket} from "./importsHistory";
 import {applyImportCompensation, previewImportCompensation,
   type ImportCompensationApply, type ImportCompensationInput} from
   "./importsCompensation";
@@ -163,6 +167,7 @@ type MutationPayload =
   | SetFieldValuePayload
   | ImportApply
   | ImportCompensationApply
+  | HistoryApply
   | LinkInput
   | ContactInput
   | EvidenceInput
@@ -177,6 +182,7 @@ export function assertSalesFinanceAuthority(
   const data = payload as {fields?: {stage?: string}} | null;
   const finance = action === "commercial.finance.attest" ||
     action === "imports.compensation.apply" ||
+    action === "imports.history.apply" ||
     action === "opportunities.upsert" && data?.fields?.stage === "closed_won";
   if (finance && (!principal.uid || principal.clientId ||
     !principal.roles.includes("adminOwner"))) {
@@ -228,6 +234,9 @@ export async function executeSalesAction(
       fieldId,
     );
     await assertSalesMaterialPrivacyOpen(db, input, tx);
+    if (action === "imports.history.apply") {
+      await assertHistoryAccountsOpen(db, input, tx);
+    }
     const receiptSnapshot = await tx.get(receiptRef);
     if (organizerId && action !== "imports.compensation.apply") {
       const account = await tx.get(db.collection(accountCollection)
@@ -348,6 +357,10 @@ export async function executeSalesAction(
           input as ImportApply,
           timestamp,
       );
+      break;
+    case "imports.history.apply":
+      result = await applySalesImportHistory(tx, db, principal,
+        input as HistoryApply, timestamp);
       break;
     case "imports.compensation.apply":
       result = await applyImportCompensation(tx, db, principal,
@@ -509,6 +522,16 @@ export async function executeSalesRead(
         input as unknown as ImportPacket,
     );
     break;
+  case "imports.history.preview":
+    response = await previewSalesImportHistory(db, principal,
+      input as unknown as HistoryPacket);
+    break;
+  case "imports.history.list":
+  case "imports.history.rows.list":
+    response = await (action === "imports.history.list" ?
+      listSalesImportHistory : listSalesImportHistoryRows)(db, principal,
+      input as {organizerId: string; limit?: number; cursor?: string});
+    break;
   case "imports.compensation.preview":
     response = await previewImportCompensation(db, principal,
       input as unknown as ImportCompensationInput);
@@ -574,6 +597,9 @@ export async function executeSalesRead(
       const result = receipt.result as { fieldId?: string };
       if (result.fieldId) assertFieldScope(principal, result.fieldId);
     }
+    if (receipt.action === "imports.history.apply") {
+      await assertHistoryAccountsOpen(db, receipt.result);
+    }
     response = {receipt: receipt.result};
     break;
   }
@@ -582,11 +608,29 @@ export async function executeSalesRead(
   }
   await checkCurrent(action, organizerId);
   await assertSalesMaterialPrivacyOpen(db, input);
+  if (action.startsWith("imports.history.")) {
+    await assertHistoryAccountsOpen(db, input);
+  }
   if (Array.isArray(response.rows) && action !== "imports.preview") {
     response = {...response,
       rows: await filterSalesPrivacyRows(db, response.rows)};
   } else await assertSalesMaterialPrivacyOpen(db, response);
   return response;
+}
+
+/** Generic receipts must not bypass a later archive or privacy hold. */
+async function assertHistoryAccountsOpen(db: FirebaseFirestore.Firestore,
+  material: unknown, tx?: FirebaseFirestore.Transaction): Promise<void> {
+  for (const organizerId of salesMaterialOrganizerIds(material)) {
+    const ref = db.collection(accountCollection).doc(organizerId);
+    const account = (await (tx ? tx.get(ref) : ref.get())).data();
+    if (account?.classification !== "sales_private" ||
+        account.researchStatus === "archived" ||
+        account.suppressionStatus !== "clear") {
+      throw new HttpsError("failed-precondition",
+        "Imported history requires an active private Sales account.");
+    }
+  }
 }
 
 async function createHost(
@@ -1416,6 +1460,7 @@ function authorize(
   }
   if (principal.clientId &&
     (action.startsWith("commercial.") ||
+      action.startsWith("imports.history.") ||
       ["evidence.add", "evidence.reviewProposal"].includes(action))) {
     throw new HttpsError("permission-denied",
       "Evidence review requires a current employee session.");

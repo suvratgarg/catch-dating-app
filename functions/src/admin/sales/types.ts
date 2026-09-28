@@ -175,6 +175,9 @@ export type SalesReadAction =
   | "intents.list"
   | "imports.preview"
   | "imports.compensation.preview"
+  | "imports.history.preview"
+  | "imports.history.list"
+  | "imports.history.rows.list"
   | "contacts.list"
   | "evidence.list"
   | "evidenceProposals.list";
@@ -190,6 +193,7 @@ export type SalesMutationAction =
   | "intents.link"
   | "imports.apply"
   | "imports.compensation.apply"
+  | "imports.history.apply"
   | "contacts.upsert"
   | "evidence.add"
   | "evidence.propose"

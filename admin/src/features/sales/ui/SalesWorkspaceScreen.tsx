@@ -25,6 +25,7 @@ import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 
+import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
 import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
@@ -583,7 +584,10 @@ function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}:
     {tab === "overview" || tab === "research" ?
       <HostAccountEditor key={detail.account.organizerId} detail={detail}
         controller={controller} currentUserUid={currentUserUid} /> : null}
-    {tab === "activity" ? <HostActivity detail={detail} controller={controller} /> : null}
+    {tab === "activity" ? <>
+      <HostActivity detail={detail} controller={controller} />
+      {renderSalesImportedHistory(detail.account.organizerId, currentUserUid)}
+    </> : null}
     {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
     {tab === "intelligence" ? <SalesIntelligenceWorkspace

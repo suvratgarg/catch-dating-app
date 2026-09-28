@@ -38,6 +38,7 @@ export const COMPENSATION_DEPENDENCY_COLLECTIONS = [
   "salesIntelligenceAssessments", "salesIntelligenceClauses",
   "salesIntelligenceScoreSnapshots", "salesOutreachDrafts",
   "salesDemoBlueprints", "salesIntakeLinks",
+  "salesImportHistoryRows", "salesImportHistoryRecords",
 ] as const;
 
 function sha(value: string): string {

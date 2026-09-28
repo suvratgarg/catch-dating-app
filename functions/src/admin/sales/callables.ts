@@ -74,7 +74,8 @@ async function handleRead(
   request: CallableRequest<unknown>,
 ): Promise<Record<string, unknown>> {
   const principal = await currentSalesEmployee(request);
-  if (action === "imports.compensation.preview" &&
+  if (["imports.compensation.preview", "imports.history.preview"].includes(
+    action) &&
       !principal.roles.includes("adminOwner")) {
     throw new HttpsError("permission-denied",
       "Current Admin Owner authority is required for compensation.");
@@ -89,12 +90,14 @@ async function handleRead(
     now: () => new Date(),
     authorizeRead: async (_db, _principal, readAction) => {
       const current = await currentSalesEmployee(request);
-      if (readAction === "imports.compensation.preview" &&
+      if (["imports.compensation.preview", "imports.history.preview"].includes(
+        readAction) &&
           !current.roles.includes("adminOwner")) {
         throw new HttpsError("permission-denied",
           "Current Admin Owner authority is required for compensation.");
       }
       if (readAction === "imports.compensation.apply" ||
+          readAction === "imports.history.apply" ||
           readAction === "commercial.finance.attest") {
         assertSalesFinanceAuthority(current, readAction, null);
       }
@@ -174,3 +177,8 @@ export const adminAcceptSalesQuote = write("commercial.quotes.accept");
 
 export const adminAttestSalesHostSettlement =
   write("commercial.finance.attest");
+
+export const adminPreviewSalesImportHistory = read("imports.history.preview");
+export const adminApplySalesImportHistory = write("imports.history.apply");
+export const adminListSalesImportHistory = read("imports.history.list");
+export const adminListSalesImportHistoryRows = read("imports.history.rows.list");
