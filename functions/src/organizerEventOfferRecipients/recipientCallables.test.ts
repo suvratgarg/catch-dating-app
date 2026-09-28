@@ -141,6 +141,16 @@ test("disabled rollout blocks new claims but preserves ended payment history",
     assert.equal(h.executions(), 0);
   });
 
+test("async release denial blocks fresh recipient claims", async () => {
+  const h = await harness();
+  h.deps.enabled = async () => false;
+  await assert.rejects(manageEventOfferCheckoutHandler(request({
+    action: "claim", token: h.invitation.token,
+  }), h.deps));
+  assert.equal(h.routes(), 0);
+  assert.equal(h.executions(), 0);
+});
+
 test("invitation links are manager-only and keep secrets in the fragment",
   async () => {
     const h = await harness();
