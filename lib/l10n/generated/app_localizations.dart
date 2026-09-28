@@ -34545,6 +34545,228 @@ abstract class AppLocalizations {
   /// **'Voided'**
   String get programsHotelStatusVoided;
 
+  /// Program operations copy: programsHotelRoomsOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms & stays'**
+  String get programsHotelRoomsOpen;
+
+  /// Program operations copy: programsRoomsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Room board'**
+  String get programsRoomsTitle;
+
+  /// Program operations copy: programsRoomsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays & blocks'**
+  String get programsRoomsSubtitle;
+
+  /// Program operations copy: programsRoomsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh rooms'**
+  String get programsRoomsRefresh;
+
+  /// Program operations copy: programsRoomsUnplacedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a room'**
+  String get programsRoomsUnplacedTitle;
+
+  /// Program operations copy: programsRoomsUnplacedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests routed to this hotel with no live stay.'**
+  String get programsRoomsUnplacedSubtitle;
+
+  /// Program operations copy: programsRoomsUnplacedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone routed here already has a stay.'**
+  String get programsRoomsUnplacedEmpty;
+
+  /// Program operations copy: programsRoomsStaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays'**
+  String get programsRoomsStaysTitle;
+
+  /// Program operations copy: programsRoomsStaysSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Room assignments and stay status at this hotel.'**
+  String get programsRoomsStaysSubtitle;
+
+  /// Program operations copy: programsRoomsStaysEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No stays recorded at this hotel yet.'**
+  String get programsRoomsStaysEmpty;
+
+  /// Program operations copy: programsRoomsBlocksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Room blocks'**
+  String get programsRoomsBlocksTitle;
+
+  /// Program operations copy: programsRoomsBlocksSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved inventory with live capacity.'**
+  String get programsRoomsBlocksSubtitle;
+
+  /// Program operations copy: programsRoomsBlocksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No blocks reserved — stays assign ad-hoc.'**
+  String get programsRoomsBlocksEmpty;
+
+  /// Program operations copy: programsRoomsSuggestedBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested block: {label}'**
+  String programsRoomsSuggestedBlock({required String label});
+
+  /// Program operations copy: programsRoomsNoSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'No block suggestion — assign ad-hoc.'**
+  String get programsRoomsNoSuggestion;
+
+  /// Program operations copy: programsRoomsStayRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Room {room} · {block}'**
+  String programsRoomsStayRoom({required String room, required String block});
+
+  /// Program operations copy: programsRoomsAdHocBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad-hoc — outside any block'**
+  String get programsRoomsAdHocBlock;
+
+  /// Program operations copy: programsRoomsMarkedReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Room ready {time}'**
+  String programsRoomsMarkedReady({required String time});
+
+  /// Program operations copy: programsRoomsMarkedArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived {time}'**
+  String programsRoomsMarkedArrived({required String time});
+
+  /// Program operations copy: programsRoomsBlockWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'{checkIn} → {checkOut}'**
+  String programsRoomsBlockWindow({
+    required String checkIn,
+    required String checkOut,
+  });
+
+  /// Program operations copy: programsRoomsBlockHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Held for {count} groups'**
+  String programsRoomsBlockHeld({required int count});
+
+  /// Program operations copy: programsRoomsBlockCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} of {total} left'**
+  String programsRoomsBlockCapacity({
+    required int remaining,
+    required int total,
+  });
+
+  /// Program operations copy: programsRoomsAssignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign a room'**
+  String get programsRoomsAssignTitle;
+
+  /// Program operations copy: programsRoomsManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage stay'**
+  String get programsRoomsManageTitle;
+
+  /// Program operations copy: programsRoomsAssignConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign room'**
+  String get programsRoomsAssignConfirm;
+
+  /// Program operations copy: programsRoomsManageConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Save stay'**
+  String get programsRoomsManageConfirm;
+
+  /// Program operations copy: programsRoomsBlockLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Room block'**
+  String get programsRoomsBlockLabel;
+
+  /// Program operations copy: programsRoomsRoomLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Room label'**
+  String get programsRoomsRoomLabel;
+
+  /// Program operations copy: programsRoomsStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get programsRoomsStatusLabel;
+
+  /// Program operations copy: programsRoomsMarkReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark room ready'**
+  String get programsRoomsMarkReady;
+
+  /// Program operations copy: programsRoomsMarkArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark guest arrived'**
+  String get programsRoomsMarkArrived;
+
+  /// Program operations copy: programsRoomsStatusHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Held'**
+  String get programsRoomsStatusHeld;
+
+  /// Program operations copy: programsRoomsStatusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get programsRoomsStatusConfirmed;
+
+  /// Program operations copy: programsRoomsStatusCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get programsRoomsStatusCheckedIn;
+
+  /// Program operations copy: programsRoomsStatusCheckedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked out'**
+  String get programsRoomsStatusCheckedOut;
+
+  /// Program operations copy: programsRoomsStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get programsRoomsStatusCancelled;
+
   /// Trip ledger pagination action
   ///
   /// In en, this message translates to:

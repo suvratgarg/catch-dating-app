@@ -66,6 +66,7 @@ import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.d
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
@@ -511,6 +512,14 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       path: Routes.hostWorkHotelScreen.path,
       name: Routes.hostWorkHotelScreen.name,
       builder: (context, state) => ProgramHotelDeskScreen(
+        programId: state.pathParameters['programId']!,
+        hotelId: state.pathParameters['hotelId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkHotelRoomsScreen.path,
+      name: Routes.hostWorkHotelRoomsScreen.name,
+      builder: (context, state) => ProgramHotelRoomsScreen(
         programId: state.pathParameters['programId']!,
         hotelId: state.pathParameters['hotelId']!,
       ),

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "09f09977fa7a638985694a9766ce41ee411f10a43dfd2f9063a4f4521f94e62d",
-    "routeContractSha256": "7c05ad78beb49f82fc299af60b58ffe42240699ee9e53a619322d2faf8497051",
-    "goRouteCount": 109,
+    "normalizedFileSha256": "a49ddf1315c70f3b9f1964f84d3cbef8a705c39eb4a5750e726c0b319e4a1b7e",
+    "routeContractSha256": "ccb24eb9e6b0b453ee6d3362bd470f56bd5a7518087e18b0b500c56596c02b0f",
+    "goRouteCount": 110,
     "shellBranchCount": 9,
-    "enumRouteCount": 94,
-    "referencedRouteCount": 94,
-    "runtimeRouteCount": 94,
+    "enumRouteCount": 95,
+    "referencedRouteCount": 95,
+    "runtimeRouteCount": 95,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1087,6 +1087,24 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkHotelRoomsScreen",
+      "path": "/host/work/:programId/hotel/:hotelId/rooms",
+      "pathParameters": [
+        "programId",
+        "hotelId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/hotel/:hotelId/rooms",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkHotelRoomsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramHotelRoomsScreen(programId:state.pathParameters['programId']!,hotelId:state.pathParameters['hotelId']!)",
+      "presentationTarget": "ProgramHotelRoomsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkDoorScreen",
       "path": "/host/work/:programId/door/:functionId",
       "pathParameters": [
@@ -1791,6 +1809,7 @@
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",
     "hostWorkEventScreen",
+    "hostWorkHotelRoomsScreen",
     "hostWorkHotelScreen",
     "hostWorkProgramScreen",
     "hostWorkScreen",

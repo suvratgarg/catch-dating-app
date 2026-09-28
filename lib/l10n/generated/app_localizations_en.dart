@@ -21528,6 +21528,140 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsHotelStatusVoided => 'Voided';
 
   @override
+  String get programsHotelRoomsOpen => 'Rooms & stays';
+
+  @override
+  String get programsRoomsTitle => 'Room board';
+
+  @override
+  String get programsRoomsSubtitle => 'Stays & blocks';
+
+  @override
+  String get programsRoomsRefresh => 'Refresh rooms';
+
+  @override
+  String get programsRoomsUnplacedTitle => 'Needs a room';
+
+  @override
+  String get programsRoomsUnplacedSubtitle =>
+      'Guests routed to this hotel with no live stay.';
+
+  @override
+  String get programsRoomsUnplacedEmpty =>
+      'Everyone routed here already has a stay.';
+
+  @override
+  String get programsRoomsStaysTitle => 'Stays';
+
+  @override
+  String get programsRoomsStaysSubtitle =>
+      'Room assignments and stay status at this hotel.';
+
+  @override
+  String get programsRoomsStaysEmpty => 'No stays recorded at this hotel yet.';
+
+  @override
+  String get programsRoomsBlocksTitle => 'Room blocks';
+
+  @override
+  String get programsRoomsBlocksSubtitle =>
+      'Reserved inventory with live capacity.';
+
+  @override
+  String get programsRoomsBlocksEmpty =>
+      'No blocks reserved — stays assign ad-hoc.';
+
+  @override
+  String programsRoomsSuggestedBlock({required String label}) {
+    return 'Suggested block: $label';
+  }
+
+  @override
+  String get programsRoomsNoSuggestion =>
+      'No block suggestion — assign ad-hoc.';
+
+  @override
+  String programsRoomsStayRoom({required String room, required String block}) {
+    return 'Room $room · $block';
+  }
+
+  @override
+  String get programsRoomsAdHocBlock => 'Ad-hoc — outside any block';
+
+  @override
+  String programsRoomsMarkedReady({required String time}) {
+    return 'Room ready $time';
+  }
+
+  @override
+  String programsRoomsMarkedArrived({required String time}) {
+    return 'Arrived $time';
+  }
+
+  @override
+  String programsRoomsBlockWindow({
+    required String checkIn,
+    required String checkOut,
+  }) {
+    return '$checkIn → $checkOut';
+  }
+
+  @override
+  String programsRoomsBlockHeld({required int count}) {
+    return 'Held for $count groups';
+  }
+
+  @override
+  String programsRoomsBlockCapacity({
+    required int remaining,
+    required int total,
+  }) {
+    return '$remaining of $total left';
+  }
+
+  @override
+  String get programsRoomsAssignTitle => 'Assign a room';
+
+  @override
+  String get programsRoomsManageTitle => 'Manage stay';
+
+  @override
+  String get programsRoomsAssignConfirm => 'Assign room';
+
+  @override
+  String get programsRoomsManageConfirm => 'Save stay';
+
+  @override
+  String get programsRoomsBlockLabel => 'Room block';
+
+  @override
+  String get programsRoomsRoomLabel => 'Room label';
+
+  @override
+  String get programsRoomsStatusLabel => 'Status';
+
+  @override
+  String get programsRoomsMarkReady => 'Mark room ready';
+
+  @override
+  String get programsRoomsMarkArrived => 'Mark guest arrived';
+
+  @override
+  String get programsRoomsStatusHeld => 'Held';
+
+  @override
+  String get programsRoomsStatusConfirmed => 'Confirmed';
+
+  @override
+  String get programsRoomsStatusCheckedIn => 'Checked in';
+
+  @override
+  String get programsRoomsStatusCheckedOut => 'Checked out';
+
+  @override
+  String get programsRoomsStatusCancelled => 'Cancelled';
+
+  @override
   String get programsTripsNewer => 'Newer trips';
 
   @override

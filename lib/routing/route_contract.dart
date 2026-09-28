@@ -136,6 +136,10 @@ enum Routes {
     '/host/work/:programId/hotel/:hotelId',
     AppRouteAudience.host,
   ),
+  hostWorkHotelRoomsScreen(
+    '/host/work/:programId/hotel/:hotelId/rooms',
+    AppRouteAudience.host,
+  ),
   hostWorkDoorScreen(
     '/host/work/:programId/door/:functionId',
     AppRouteAudience.host,

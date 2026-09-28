@@ -255,6 +255,93 @@ class ProgramWorkRepository {
     parse: ProgramHotelInbound.fromCallableData,
   );
 
+  /// The hotel desk's room board: block capacity, live stays, and routed
+  /// guests still needing a room — all scoped to `hotelId`.
+  Future<ProgramHotelRooms> getHotelRooms({
+    required String programId,
+    required String hotelId,
+  }) => _call(
+    name: 'getProgramHotelRooms',
+    authorityScopedRead: true,
+    payload: GetProgramHotelRoomsCallableRequest(
+      programId: programId,
+      hotelId: hotelId,
+    ).toJson(),
+    action: 'load the room board',
+    parse: ProgramHotelRooms.fromCallableData,
+  );
+
+  /// Assign or update one guest's stay — room block, room label, lifecycle
+  /// status and desk marks. Omit `stayId` to create; `expectedRevision`
+  /// fences updates against a stale board.
+  Future<ProgramMutationResult> upsertStay({
+    required String programId,
+    required String guestId,
+    required String hotelId,
+    String? stayId,
+    int? expectedRevision,
+    String? roomBlockId,
+    String? roomLabel,
+    ProgramStayStatus? status,
+    DateTime? startsAt,
+    DateTime? endsAt,
+    String? notes,
+    bool? markRoomReady,
+    bool? markHotelArrived,
+  }) => _call(
+    name: 'upsertProgramStay',
+    payload: UpsertProgramStayCallableRequest(
+      programId: programId,
+      guestId: guestId,
+      hotelId: hotelId,
+      stayId: stayId,
+      expectedRevision: expectedRevision,
+      roomBlockId: roomBlockId,
+      roomLabel: roomLabel,
+      status: status?.name,
+      startsAtMillis: startsAt?.millisecondsSinceEpoch,
+      endsAtMillis: endsAt?.millisecondsSinceEpoch,
+      notes: notes,
+      markRoomReady: markRoomReady,
+      markHotelArrived: markHotelArrived,
+    ).toJson(),
+    action: 'update the stay',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// Coordinator-only room-block inventory write; the server refuses to
+  /// shrink a block below its live occupancy.
+  Future<ProgramMutationResult> upsertRoomBlock({
+    required String programId,
+    required String hotelId,
+    required String label,
+    required int totalRooms,
+    required List<String> heldForGroupIds,
+    String? roomBlockId,
+    int? expectedRevision,
+    String? roomType,
+    DateTime? startsAt,
+    DateTime? endsAt,
+    String? notes,
+  }) => _call(
+    name: 'upsertProgramRoomBlock',
+    payload: UpsertProgramRoomBlockCallableRequest(
+      programId: programId,
+      hotelId: hotelId,
+      roomBlockId: roomBlockId,
+      expectedRevision: expectedRevision,
+      label: label,
+      roomType: roomType,
+      totalRooms: totalRooms,
+      heldForGroupIds: heldForGroupIds,
+      startsAtMillis: startsAt?.millisecondsSinceEpoch,
+      endsAtMillis: endsAt?.millisecondsSinceEpoch,
+      notes: notes,
+    ).toJson(),
+    action: 'update the room block',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
   Future<ProgramTripList> listTrips(String programId, {String? cursor}) =>
       _call(
         name: 'listProgramTrips',
@@ -666,6 +753,25 @@ Future<ProgramHotelInbound> programHotelInbound(
           tripCursor: tripCursor,
           expectedCursor: expectedCursor,
         ),
+  );
+  retainProgramProjection(ref, result.accessExpiresAt);
+  return result;
+}
+
+@riverpod
+Future<ProgramHotelRooms> programHotelRooms(
+  Ref ref,
+  String programId,
+  String hotelId,
+) async {
+  final accountId = _watchWorkAccount(ref);
+  final result = await readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () => ref
+        .read(programWorkRepositoryProvider)
+        .getHotelRooms(programId: programId, hotelId: hotelId),
   );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;

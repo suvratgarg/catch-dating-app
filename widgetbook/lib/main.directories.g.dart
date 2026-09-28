@@ -12626,6 +12626,61 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program hotel rooms',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelRoomsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelRoomsScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramRoomBlockRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programRoomBlockRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStayRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programStayRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStaySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programStaySheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramUnplacedGuestRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programUnplacedGuestRowStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program import',
         children: [
           _widgetbook.WidgetbookComponent(
