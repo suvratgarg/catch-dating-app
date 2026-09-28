@@ -85,6 +85,15 @@
               "value": "application/json"
             }
           ]
+        },
+        {
+          "source": "/events/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store"
+            }
+          ]
         }
       ],
       "redirects": [
@@ -100,6 +109,10 @@
         }
       ],
       "rewrites": [
+        {
+          "source": "/events/**",
+          "destination": "/events/index.html"
+        },
         {
           "source": "/booking/**",
           "destination": "/booking/index.html"

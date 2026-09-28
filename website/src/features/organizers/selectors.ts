@@ -29,7 +29,7 @@ export const organizerSortOptions: OrganizerSort[] = [
   "confidence",
 ];
 
-const organizerSearchTextCache = new Map<string, string>();
+const organizerSearchTextCache = new WeakMap<HostListing, string>();
 
 type OrganizerFilterSearchSource = string | URLSearchParams;
 
@@ -93,7 +93,7 @@ export function organizerAppearanceContext(filters: OrganizerDirectoryFilters) {
 }
 
 export function organizerDirectorySearchText(listing: HostListing) {
-  const cached = organizerSearchTextCache.get(listing.id);
+  const cached = organizerSearchTextCache.get(listing);
   if (cached) return cached;
   const policy = organizerPolicyForListing(listing);
   const text = [
@@ -141,7 +141,7 @@ export function organizerDirectorySearchText(listing: HostListing) {
       event.dedupeKey,
     ]),
   ].filter(Boolean).join(" ").toLowerCase();
-  organizerSearchTextCache.set(listing.id, text);
+  organizerSearchTextCache.set(listing, text);
   return text;
 }
 

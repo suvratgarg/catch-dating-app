@@ -257652,7 +257652,8 @@ export const websiteHostListingProjectionSchema = {
             "maximum": 100000000
           },
           "currency": {
-            "const": "INR"
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
           },
           "priceLabel": {
             "type": "string",
@@ -258636,7 +258637,8 @@ export const websiteHostListingProjectionSchema = {
           "maximum": 100000000
         },
         "currency": {
-          "const": "INR"
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
         },
         "priceLabel": {
           "type": "string",

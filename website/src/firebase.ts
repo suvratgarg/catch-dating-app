@@ -1202,3 +1202,21 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
 export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {
   return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
 }
+
+
+/** Published-only live feed. Never deliver Firestore's local cache as authority. */
+export async function subscribePublicCatchEvents(
+  onSnapshotReceived: (snapshot: {
+    metadata: {fromCache: boolean; hasPendingWrites: boolean};
+    size: number; docs: readonly {id: string; data(): unknown}[];
+  }) => void,
+  onUnavailable: () => void
+): Promise<() => void> {
+  const runtime = await getPublicFirebaseRuntime();
+  if (!runtime) throw new Error("Public event service is unavailable.");
+  const {getFirestore, collection, query, where, limit, onSnapshot} =
+    await import("firebase/firestore");
+  const source = query(collection(getFirestore(runtime.app), "events"),
+    where("publicationState", "==", "published"), limit(401));
+  return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
+}

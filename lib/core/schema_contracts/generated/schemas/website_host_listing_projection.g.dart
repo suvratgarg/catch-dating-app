@@ -358,7 +358,8 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'maximum': 100000000,
           },
           'currency': <String, Object?>{
-            'const': 'INR',
+            'type': 'string',
+            'pattern': '^[A-Z]{3}\$',
           },
           'priceLabel': <String, Object?>{
             'type': 'string',
@@ -1342,7 +1343,8 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'maximum': 100000000,
         },
         'currency': <String, Object?>{
-          'const': 'INR',
+          'type': 'string',
+          'pattern': '^[A-Z]{3}\$',
         },
         'priceLabel': <String, Object?>{
           'type': 'string',
