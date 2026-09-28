@@ -1,6 +1,3826 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const salesImportHistoryRowDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_import_history_rows.schema.json",
+  "title": "SalesImportHistoryRowDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "sourceId",
+    "sourceRowId",
+    "sourceContentHash",
+    "importId",
+    "organizerId",
+    "promotionVersion",
+    "rowId",
+    "disposition",
+    "reason",
+    "recordIds",
+    "reviewHash",
+    "reviewedAt",
+    "reviewedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "promotionVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "rowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "disposition": {
+      "enum": [
+        "promoted",
+        "skipped",
+        "review_needed"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "recordIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 96,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "reviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "reviewedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-firestore-collection": "salesImportHistoryRows",
+  "x-firestore-path": "salesImportHistoryRows/{rowId}",
+  "x-owner": "private Sales import history service",
+  "x-document-id-field": "rowId"
+};
+
+export const salesImportHistoryRecordDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_import_history_records.schema.json",
+  "title": "SalesImportHistoryRecordDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "sourceId",
+    "sourceRowId",
+    "sourceContentHash",
+    "importId",
+    "organizerId",
+    "promotionVersion",
+    "recordId",
+    "kind",
+    "sourceColumn",
+    "sourceValue",
+    "occurredAt",
+    "dateSourceColumn",
+    "dateSourceValue",
+    "contentHash",
+    "recordedAt",
+    "recordedBy",
+    "providerConfirmed",
+    "currentFitAuthority",
+    "contactAuthority",
+    "sendAuthority",
+    "relativeChronology",
+    "dateCertainty"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "promotionVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recordId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "kind": {
+      "enum": [
+        "activity",
+        "observation",
+        "benchmark"
+      ]
+    },
+    "sourceColumn": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sourceValue": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "occurredAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dateSourceColumn": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dateSourceValue": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "recordedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "currentFitAuthority": {
+      "const": false
+    },
+    "contactAuthority": {
+      "const": false
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "relativeChronology": {
+      "enum": [
+        "first_touch",
+        "last_touch",
+        "unspecified"
+      ]
+    },
+    "dateCertainty": {
+      "enum": [
+        "source_exact",
+        "unknown"
+      ]
+    }
+  },
+  "x-firestore-collection": "salesImportHistoryRecords",
+  "x-firestore-path": "salesImportHistoryRecords/{recordId}",
+  "x-owner": "private Sales import history service",
+  "x-document-id-field": "recordId"
+};
+
+export const salesPrivacyRestrictionSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_privacy_restrictions.schema.json",
+  "title": "SalesPrivacyRestriction",
+  "description": "Permanent organizer-scoped private Sales reintroduction fence. Existence blocks reads, writes and receipt replay.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "status",
+    "revision",
+    "reason",
+    "requestId",
+    "materialHash",
+    "restrictedByUid",
+    "restrictedAt",
+    "activePlanId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "status": {
+      "enum": [
+        "restricted",
+        "processing",
+        "internal_processed_with_unresolved"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "restrictedByUid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "restrictedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "activePlanId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "salesPrivacyRestrictions",
+  "x-firestore-path": "salesPrivacyRestrictions/{id}",
+  "x-owner": "Private Sales privacy lifecycle"
+};
+
+export const salesPrivacyPolicySchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_privacy_policies.schema.json",
+  "title": "SalesPrivacyPolicy",
+  "description": "Admin Owner reviewed retention decision; finance and audit remain retained pending their own reviews. No period is invented.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "policyId",
+    "revision",
+    "status",
+    "sourceReference",
+    "sourceHash",
+    "financeDisposition",
+    "financeReason",
+    "auditDisposition",
+    "auditReason",
+    "externalCopies",
+    "policyHash",
+    "requestId",
+    "reviewedByUid",
+    "reviewedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "policyId": {
+      "const": "current"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "const": "reviewed"
+    },
+    "sourceReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "financeDisposition": {
+      "const": "retain_pending_finance_review"
+    },
+    "financeReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "auditDisposition": {
+      "const": "retain_pending_audit_review"
+    },
+    "auditReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "externalCopies": {
+      "const": "unverified"
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "salesPrivacyPolicies",
+  "x-firestore-path": "salesPrivacyPolicies/{id}",
+  "x-owner": "Private Sales privacy lifecycle"
+};
+
+export const salesPrivacyPlanSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_privacy_plans.schema.json",
+  "title": "SalesPrivacyPlan",
+  "description": "Server-inventoried, exact-source cleanup plan. Paths are private and never returned in owner previews.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "planId",
+    "requestId",
+    "organizerId",
+    "restrictionRevision",
+    "policyHash",
+    "inventoryHash",
+    "items",
+    "blockers",
+    "cursor",
+    "status",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^privacy-[a-f0-9]{40}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "restrictionRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inventoryHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 240,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "contentHash",
+          "disposition"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 400
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "disposition": {
+            "enum": [
+              "delete",
+              "retain_finance",
+              "retain_audit"
+            ]
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "maxItems": 240,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "fingerprint"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z_]{3,80}$"
+          },
+          "fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{16}$"
+          }
+        }
+      }
+    },
+    "cursor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    },
+    "status": {
+      "enum": [
+        "reviewed",
+        "processing",
+        "internal_processed_with_unresolved"
+      ]
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "contentHash",
+        "disposition"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 400
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "disposition": {
+          "enum": [
+            "delete",
+            "retain_finance",
+            "retain_audit"
+          ]
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "salesPrivacyPlans",
+  "x-firestore-path": "salesPrivacyPlans/{id}",
+  "x-owner": "Private Sales privacy lifecycle"
+};
+
+export const salesPrivacyBatchReceiptSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_privacy_batch_receipts.schema.json",
+  "title": "SalesPrivacyBatchReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "receiptId",
+    "organizerId",
+    "planId",
+    "expectedCursor",
+    "requestId",
+    "result",
+    "createdAt",
+    "actorUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^privacy-batch-[a-f0-9]{40}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^privacy-[a-f0-9]{40}$"
+    },
+    "expectedCursor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "x-firestore-collection": "salesPrivacyBatchReceipts",
+  "x-firestore-path": "salesPrivacyBatchReceipts/{id}",
+  "x-owner": "Private Sales privacy lifecycle"
+};
+
+export const adminPreviewSalesImportHistoryPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_import_history_preview_payload.schema.json",
+  "title": "AdminSalesImportHistoryPreviewPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceId",
+    "contentHash",
+    "mappingVersion",
+    "promotionVersion",
+    "rows"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "promotionVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "importId",
+          "sourceRowId",
+          "organizerId",
+          "disposition",
+          "reason",
+          "entries"
+        ],
+        "properties": {
+          "importId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "disposition": {
+            "enum": [
+              "promoted",
+              "skipped",
+              "review_needed"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sourceColumn",
+                "sourceValue",
+                "kind",
+                "occurredAt",
+                "dateSourceColumn",
+                "dateSourceValue"
+              ],
+              "properties": {
+                "sourceColumn": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "sourceValue": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "enum": [
+                    "activity",
+                    "observation",
+                    "benchmark"
+                  ]
+                },
+                "occurredAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dateSourceColumn": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dateSourceValue": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminPreviewSalesImportHistory"
+  ]
+};
+
+export const adminPreviewSalesImportHistoryResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_import_history_preview_response.schema.json",
+  "title": "AdminSalesImportHistoryPreviewResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "previewHash",
+    "rows",
+    "packetRowCount",
+    "effectsApplied"
+  ],
+  "properties": {
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRowId",
+          "organizerId",
+          "status",
+          "recordIds"
+        ],
+        "properties": {
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "status": {
+            "enum": [
+              "promoted",
+              "skipped",
+              "review_needed",
+              "duplicate"
+            ]
+          },
+          "recordIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 5,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    "packetRowCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "effectsApplied": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminPreviewSalesImportHistory"
+  ]
+};
+
+export const adminApplySalesImportHistoryPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_import_history_apply_payload.schema.json",
+  "title": "AdminSalesImportHistoryApplyPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceId",
+    "contentHash",
+    "mappingVersion",
+    "promotionVersion",
+    "rows",
+    "requestId",
+    "previewHash"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "promotionVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "importId",
+          "sourceRowId",
+          "organizerId",
+          "disposition",
+          "reason",
+          "entries"
+        ],
+        "properties": {
+          "importId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "disposition": {
+            "enum": [
+              "promoted",
+              "skipped",
+              "review_needed"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sourceColumn",
+                "sourceValue",
+                "kind",
+                "occurredAt",
+                "dateSourceColumn",
+                "dateSourceValue"
+              ],
+              "properties": {
+                "sourceColumn": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "sourceValue": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "enum": [
+                    "activity",
+                    "observation",
+                    "benchmark"
+                  ]
+                },
+                "occurredAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dateSourceColumn": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dateSourceValue": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminApplySalesImportHistory"
+  ]
+};
+
+export const adminApplySalesImportHistoryResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_import_history_apply_response.schema.json",
+  "title": "AdminSalesImportHistoryApplyResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "previewHash",
+    "rows",
+    "packetRowCount",
+    "effectsApplied",
+    "recordsCreated",
+    "receipt"
+  ],
+  "properties": {
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRowId",
+          "organizerId",
+          "status",
+          "recordIds"
+        ],
+        "properties": {
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "status": {
+            "enum": [
+              "promoted",
+              "skipped",
+              "review_needed",
+              "duplicate"
+            ]
+          },
+          "recordIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 5,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    "packetRowCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "effectsApplied": {
+      "const": true
+    },
+    "recordsCreated": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "revision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminApplySalesImportHistory"
+  ]
+};
+
+export const adminListSalesImportHistoryPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_import_history_list_payload.schema.json",
+  "title": "AdminSalesImportHistoryListPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSalesImportHistory"
+  ]
+};
+
+export const adminListSalesImportHistoryResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_import_history_list_response.schema.json",
+  "title": "AdminSalesImportHistoryListResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "records",
+    "nextCursor"
+  ],
+  "properties": {
+    "records": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "classification",
+          "sourceId",
+          "sourceRowId",
+          "sourceContentHash",
+          "importId",
+          "organizerId",
+          "promotionVersion",
+          "recordId",
+          "kind",
+          "sourceColumn",
+          "sourceValue",
+          "occurredAt",
+          "dateSourceColumn",
+          "dateSourceValue",
+          "contentHash",
+          "recordedAt",
+          "recordedBy",
+          "providerConfirmed",
+          "currentFitAuthority",
+          "contactAuthority",
+          "sendAuthority",
+          "relativeChronology",
+          "dateCertainty"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "classification": {
+            "const": "sales_private"
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceContentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "importId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "promotionVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "recordId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "kind": {
+            "enum": [
+              "activity",
+              "observation",
+              "benchmark"
+            ]
+          },
+          "sourceColumn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "sourceValue": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "occurredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "maxLength": 48
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dateSourceColumn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dateSourceValue": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 48
+          },
+          "recordedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "providerConfirmed": {
+            "const": false
+          },
+          "currentFitAuthority": {
+            "const": false
+          },
+          "contactAuthority": {
+            "const": false
+          },
+          "sendAuthority": {
+            "const": false
+          },
+          "relativeChronology": {
+            "enum": [
+              "first_touch",
+              "last_touch",
+              "unspecified"
+            ]
+          },
+          "dateCertainty": {
+            "enum": [
+              "source_exact",
+              "unknown"
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSalesImportHistory"
+  ]
+};
+
+export const adminListSalesImportHistoryRowsPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_import_history_rows_list_payload.schema.json",
+  "title": "AdminSalesImportHistoryRowsListPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSalesImportHistoryRows"
+  ]
+};
+
+export const adminListSalesImportHistoryRowsResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_import_history_rows_list_response.schema.json",
+  "title": "AdminSalesImportHistoryRowsListResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rows",
+    "nextCursor"
+  ],
+  "properties": {
+    "rows": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "classification",
+          "sourceId",
+          "sourceRowId",
+          "sourceContentHash",
+          "importId",
+          "organizerId",
+          "promotionVersion",
+          "rowId",
+          "disposition",
+          "reason",
+          "recordIds",
+          "reviewHash",
+          "reviewedAt",
+          "reviewedBy"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "classification": {
+            "const": "sales_private"
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceRowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceContentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "importId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "promotionVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "rowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "disposition": {
+            "enum": [
+              "promoted",
+              "skipped",
+              "review_needed"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "recordIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 5,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "reviewHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 48
+          },
+          "reviewedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSalesImportHistoryRows"
+  ]
+};
+
+export const adminGetSalesFunnelReportPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "AdminGetSalesFunnelReportPayload",
+  "x-callable-aliases": [
+    "adminGetSalesFunnelReport"
+  ],
+  "required": [
+    "since"
+  ],
+  "properties": {
+    "since": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$id": "https://catch.app/contracts/callables/admin_sales_funnel_report.schema.json"
+};
+
+export const adminGetSalesFunnelReportResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "AdminGetSalesFunnelReportResponse",
+  "required": [
+    "activeHosts",
+    "opportunities",
+    "hostsWithOpportunities",
+    "overdueOpportunities",
+    "hostsWithOverdueOpportunities",
+    "opportunitiesMissingNextStep",
+    "openObligations",
+    "overdueObligations",
+    "heldHosts",
+    "duplicateReviewHosts",
+    "excludedArchivedOrRestrictedHosts",
+    "movementEvents",
+    "schemaVersion",
+    "asOf",
+    "since",
+    "coverage",
+    "revenueStatus",
+    "stages"
+  ],
+  "properties": {
+    "activeHosts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "opportunities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hostsWithOpportunities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "overdueOpportunities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hostsWithOverdueOpportunities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "opportunitiesMissingNextStep": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "openObligations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "overdueObligations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "heldHosts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "duplicateReviewHosts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "excludedArchivedOrRestrictedHosts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "movementEvents": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "since": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "coverage": {
+      "const": "complete_bounded_snapshot"
+    },
+    "revenueStatus": {
+      "const": "not_calculated"
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "opportunities",
+          "distinctHosts",
+          "enteredInWindow",
+          "distinctHostsEntered"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "new_enquiry",
+              "ready_to_contact",
+              "contacted",
+              "in_conversation",
+              "demo_arranged",
+              "demo_completed",
+              "pilot_agreed",
+              "pilot_running",
+              "commercial_discussion",
+              "closed_won",
+              "closed_lost"
+            ]
+          },
+          "opportunities": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "distinctHosts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "enteredInWindow": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "distinctHostsEntered": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_funnel_report.schema.json",
+  "x-callable-aliases": [
+    "adminGetSalesFunnelReport"
+  ]
+};
+
+export const adminReviewSalesPrivacyPolicyPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_review_sales_privacy_policy_payload.schema.json",
+  "title": "adminReviewSalesPrivacyPolicyPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "expectedRevision",
+    "sourceReference",
+    "sourceHash",
+    "financeReason",
+    "auditReason"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sourceReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "financeReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "auditReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "x-callable-aliases": [
+    "adminReviewSalesPrivacyPolicy"
+  ]
+};
+
+export const adminReviewSalesPrivacyPolicyResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_review_sales_privacy_policy_response.schema.json",
+  "title": "adminReviewSalesPrivacyPolicyResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy"
+  ],
+  "properties": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "classification",
+        "policyId",
+        "revision",
+        "status",
+        "sourceReference",
+        "sourceHash",
+        "financeDisposition",
+        "financeReason",
+        "auditDisposition",
+        "auditReason",
+        "externalCopies",
+        "policyHash",
+        "requestId",
+        "reviewedByUid",
+        "reviewedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "policyId": {
+          "const": "current"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "const": "reviewed"
+        },
+        "sourceReference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "financeDisposition": {
+          "const": "retain_pending_finance_review"
+        },
+        "financeReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "auditDisposition": {
+          "const": "retain_pending_audit_review"
+        },
+        "auditReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "externalCopies": {
+          "const": "unverified"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "reviewedByUid": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminReviewSalesPrivacyPolicy"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
+export const adminRestrictSalesOrganizerPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_restrict_sales_organizer_payload.schema.json",
+  "title": "adminRestrictSalesOrganizerPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "x-callable-aliases": [
+    "adminRestrictSalesOrganizer"
+  ]
+};
+
+export const adminRestrictSalesOrganizerResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_restrict_sales_organizer_response.schema.json",
+  "title": "adminRestrictSalesOrganizerResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "restriction"
+  ],
+  "properties": {
+    "restriction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "classification",
+        "organizerId",
+        "status",
+        "revision",
+        "reason",
+        "requestId",
+        "materialHash",
+        "restrictedByUid",
+        "restrictedAt",
+        "activePlanId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "status": {
+          "enum": [
+            "restricted",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reason": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "materialHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "restrictedByUid": {
+          "type": "string"
+        },
+        "restrictedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activePlanId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminRestrictSalesOrganizer"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
+export const adminPreviewSalesPrivacyPlanPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_preview_sales_privacy_plan_payload.schema.json",
+  "title": "adminPreviewSalesPrivacyPlanPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminPreviewSalesPrivacyPlan"
+  ]
+};
+
+export const adminPreviewSalesPrivacyPlanResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_preview_sales_privacy_plan_response.schema.json",
+  "title": "adminPreviewSalesPrivacyPlanResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "restrictionRevision",
+    "policyHash",
+    "inventoryHash",
+    "counts",
+    "blockers",
+    "overflow",
+    "effectsApplied",
+    "activePlanId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "restrictionRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inventoryHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deletable",
+        "retained",
+        "unresolved"
+      ],
+      "properties": {
+        "deletable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retained": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "maxItems": 240,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "fingerprint"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z_]{3,80}$"
+          },
+          "fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{16}$"
+          }
+        }
+      }
+    },
+    "overflow": {
+      "type": "boolean"
+    },
+    "effectsApplied": {
+      "const": false
+    },
+    "activePlanId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminPreviewSalesPrivacyPlan"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
+export const adminReviewSalesPrivacyPlanPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_review_sales_privacy_plan_payload.schema.json",
+  "title": "adminReviewSalesPrivacyPlanPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "restrictionRevision",
+    "policyHash",
+    "inventoryHash",
+    "expectedActivePlanId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "restrictionRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "inventoryHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expectedActivePlanId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminReviewSalesPrivacyPlan"
+  ]
+};
+
+export const adminReviewSalesPrivacyPlanResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_review_sales_privacy_plan_response.schema.json",
+  "title": "adminReviewSalesPrivacyPlanResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan"
+  ],
+  "properties": {
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminReviewSalesPrivacyPlan"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
+export const adminApplySalesPrivacyBatchPayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_apply_sales_privacy_batch_payload.schema.json",
+  "title": "adminApplySalesPrivacyBatchPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "planId",
+    "requestId",
+    "expectedCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^privacy-[a-f0-9]{40}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+    },
+    "expectedCursor": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "x-callable-aliases": [
+    "adminApplySalesPrivacyBatch"
+  ]
+};
+
+export const adminApplySalesPrivacyBatchResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_apply_sales_privacy_batch_response.schema.json",
+  "title": "adminApplySalesPrivacyBatchResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch"
+  ],
+  "properties": {
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminApplySalesPrivacyBatch"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
+export const adminGetSalesPrivacyCasePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_sales_privacy_case_payload.schema.json",
+  "title": "adminGetSalesPrivacyCasePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesPrivacyCase"
+  ]
+};
+
+export const adminGetSalesPrivacyCaseResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_sales_privacy_case_response.schema.json",
+  "title": "adminGetSalesPrivacyCaseResponse",
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "restricted",
+        "plan",
+        "completeDeletion",
+        "policy"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "restricted": {
+          "const": false
+        },
+        "plan": {
+          "type": "null"
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "policyHash",
+                "sourceReference",
+                "reviewedAt",
+                "financeDisposition",
+                "auditDisposition",
+                "financeReason",
+                "auditReason"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sourceReference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "financeDisposition": {
+                  "const": "retain_pending_finance_review"
+                },
+                "auditDisposition": {
+                  "const": "retain_pending_audit_review"
+                },
+                "financeReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "auditReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "restricted",
+        "restriction",
+        "plan",
+        "completeDeletion",
+        "policy"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "restricted": {
+          "const": true
+        },
+        "restriction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "revision",
+            "restrictedAt",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "restricted",
+                "processing",
+                "internal_processed_with_unresolved"
+              ]
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "restrictedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "planId",
+                "organizerId",
+                "policyHash",
+                "inventoryHash",
+                "cursor",
+                "itemCount",
+                "retainedCount",
+                "unresolvedCount",
+                "blockers",
+                "status"
+              ],
+              "properties": {
+                "planId": {
+                  "type": "string",
+                  "pattern": "^privacy-[a-f0-9]{40}$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "inventoryHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "cursor": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "itemCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "retainedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unresolvedCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "blockers": {
+                  "type": "array",
+                  "maxItems": 240,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "code",
+                      "fingerprint"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "pattern": "^[a-z_]{3,80}$"
+                      },
+                      "fingerprint": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{16}$"
+                      }
+                    }
+                  }
+                },
+                "status": {
+                  "enum": [
+                    "reviewed",
+                    "processing",
+                    "internal_processed_with_unresolved"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "policyHash",
+                "sourceReference",
+                "reviewedAt",
+                "financeDisposition",
+                "auditDisposition",
+                "financeReason",
+                "auditReason"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "policyHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sourceReference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "financeDisposition": {
+                  "const": "retain_pending_finance_review"
+                },
+                "auditDisposition": {
+                  "const": "retain_pending_audit_review"
+                },
+                "financeReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "auditReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "x-callable-aliases": [
+    "adminGetSalesPrivacyCase"
+  ],
+  "definitions": {
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "fingerprint"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]{3,80}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "organizerId",
+        "policyHash",
+        "inventoryHash",
+        "cursor",
+        "itemCount",
+        "retainedCount",
+        "unresolvedCount",
+        "blockers",
+        "status"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "fingerprint"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z_]{3,80}$"
+              },
+              "fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{16}$"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "reviewed",
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "planId",
+        "previousCursor",
+        "nextCursor",
+        "itemCount",
+        "deletedCount",
+        "retainedCount",
+        "unresolvedCount",
+        "status",
+        "completeDeletion",
+        "receiptId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^privacy-[a-f0-9]{40}$"
+        },
+        "previousCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextCursor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolvedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "internal_processed_with_unresolved"
+          ]
+        },
+        "completeDeletion": {
+          "const": false
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^privacy-batch-[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+};
+
 export const salesIntakeLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intake_links.schema.json",
@@ -12616,7 +16436,8 @@ export const salesActionReceiptDocumentSchema = {
         "commercial.quotes.approve",
         "commercial.quotes.accept",
         "commercial.finance.attest",
-        "imports.compensation.apply"
+        "imports.compensation.apply",
+        "imports.history.apply"
       ]
     },
     "actorUid": {
@@ -20899,6 +24720,168 @@ export const salesOutreachDraftsDocumentSchema = {
         "maxLength": 160,
         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
       }
+    }
+  }
+};
+
+export const legacyPaymentRefundIntentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/legacy_payment_refund.schema.json",
+  "title": "LegacyPaymentRefundIntent",
+  "description": "Frozen native cancellation refund authority and up to two observed attempts: guest refund then host cancellation remainder. Provider success is distinct from submission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reason",
+    "state",
+    "targetAmountMinor",
+    "confirmedAmountMinor",
+    "paymentFingerprint",
+    "provider",
+    "providerPaymentId",
+    "orderId",
+    "currency",
+    "stripeAccountId",
+    "refundApplicationFee",
+    "requestedAtMillis",
+    "nextAttemptAtMillis",
+    "leaseUntilMillis",
+    "attempts",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "reason": {
+      "enum": [
+        "guestCancelled",
+        "eventCancelled"
+      ],
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "complete",
+        "reviewRequired"
+      ],
+      "type": "string"
+    },
+    "targetAmountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "confirmedAmountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "paymentFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "provider": {
+      "enum": [
+        "razorpay",
+        "stripe"
+      ],
+      "type": "string"
+    },
+    "providerPaymentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "stripeAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "refundApplicationFee": {
+      "type": "boolean"
+    },
+    "requestedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nextAttemptAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "leaseUntilMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "amountMinor",
+          "idempotencyKey",
+          "providerRefundId",
+          "state",
+          "startedAtMillis"
+        ],
+        "properties": {
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000000
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{10,100}$"
+          },
+          "providerRefundId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "state": {
+            "enum": [
+              "pending",
+              "processed",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "startedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
     }
   }
 };
@@ -194489,6 +198472,187 @@ export const paymentDocumentSchema = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "cancellationRefund": {
+      "title": "LegacyPaymentRefundIntent",
+      "description": "Frozen native cancellation refund authority and up to two observed attempts: guest refund then host cancellation remainder. Provider success is distinct from submission.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "reason",
+        "state",
+        "targetAmountMinor",
+        "confirmedAmountMinor",
+        "paymentFingerprint",
+        "provider",
+        "providerPaymentId",
+        "orderId",
+        "currency",
+        "stripeAccountId",
+        "refundApplicationFee",
+        "requestedAtMillis",
+        "nextAttemptAtMillis",
+        "leaseUntilMillis",
+        "attempts",
+        "lastErrorCode"
+      ],
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "enum": [
+            "guestCancelled",
+            "eventCancelled"
+          ],
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "complete",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "targetAmountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "confirmedAmountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "paymentFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "provider": {
+          "enum": [
+            "razorpay",
+            "stripe"
+          ],
+          "type": "string"
+        },
+        "providerPaymentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "stripeAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "refundApplicationFee": {
+          "type": "boolean"
+        },
+        "requestedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "nextAttemptAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "leaseUntilMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "attempts": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "amountMinor",
+              "idempotencyKey",
+              "providerRefundId",
+              "state",
+              "startedAtMillis"
+            ],
+            "properties": {
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000000
+              },
+              "idempotencyKey": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{10,100}$"
+              },
+              "providerRefundId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "state": {
+                "enum": [
+                  "pending",
+                  "processed",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              "startedAtMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "lastErrorCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };

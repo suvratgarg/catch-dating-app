@@ -2733,6 +2733,24 @@ service cloud.firestore {
     match /salesFitQueueReceipts/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /salesImportHistoryRows/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportHistoryRecords/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyRestrictions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyPolicies/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyPlans/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPrivacyBatchReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /salesImportCompensations/{privateDocument=**} {
       allow read, write: if false;
     }

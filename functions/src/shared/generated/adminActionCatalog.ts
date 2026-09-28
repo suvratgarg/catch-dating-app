@@ -988,6 +988,97 @@ export const ADMIN_ACTION_CATALOG = {
     "roles": [
       "adminOwner"
     ]
+  },
+  "sales.imports.history.preview": {
+    "callable": "adminPreviewSalesImportHistory",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.apply": {
+    "callable": "adminApplySalesImportHistory",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.list": {
+    "callable": "adminListSalesImportHistory",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.rows.list": {
+    "callable": "adminListSalesImportHistoryRows",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.reporting.funnel": {
+    "callable": "adminGetSalesFunnelReport",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.policy.review": {
+    "callable": "adminReviewSalesPrivacyPolicy",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.organizer.restrict": {
+    "callable": "adminRestrictSalesOrganizer",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.plan.preview": {
+    "callable": "adminPreviewSalesPrivacyPlan",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.plan.review": {
+    "callable": "adminReviewSalesPrivacyPlan",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.batch.apply": {
+    "callable": "adminApplySalesPrivacyBatch",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.case.get": {
+    "callable": "adminGetSalesPrivacyCase",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
   }
 } as const;
 

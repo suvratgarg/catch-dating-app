@@ -5,6 +5,34 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateSalesImportHistoryRowDocument} from "./validators/salesImportHistoryRowDocument";
+export {validateSalesImportHistoryRecordDocument} from "./validators/salesImportHistoryRecordDocument";
+export {validateSalesPrivacyRestriction} from "./validators/salesPrivacyRestriction";
+export {validateSalesPrivacyPolicy} from "./validators/salesPrivacyPolicy";
+export {validateSalesPrivacyPlan} from "./validators/salesPrivacyPlan";
+export {validateSalesPrivacyBatchReceipt} from "./validators/salesPrivacyBatchReceipt";
+export {validateAdminPreviewSalesImportHistoryPayload} from "./validators/adminPreviewSalesImportHistoryPayload";
+export {validateAdminPreviewSalesImportHistoryResponse} from "./validators/adminPreviewSalesImportHistoryResponse";
+export {validateAdminApplySalesImportHistoryPayload} from "./validators/adminApplySalesImportHistoryPayload";
+export {validateAdminApplySalesImportHistoryResponse} from "./validators/adminApplySalesImportHistoryResponse";
+export {validateAdminListSalesImportHistoryPayload} from "./validators/adminListSalesImportHistoryPayload";
+export {validateAdminListSalesImportHistoryResponse} from "./validators/adminListSalesImportHistoryResponse";
+export {validateAdminListSalesImportHistoryRowsPayload} from "./validators/adminListSalesImportHistoryRowsPayload";
+export {validateAdminListSalesImportHistoryRowsResponse} from "./validators/adminListSalesImportHistoryRowsResponse";
+export {validateAdminGetSalesFunnelReportPayload} from "./validators/adminGetSalesFunnelReportPayload";
+export {validateAdminGetSalesFunnelReportResponse} from "./validators/adminGetSalesFunnelReportResponse";
+export {validateAdminReviewSalesPrivacyPolicyPayload} from "./validators/adminReviewSalesPrivacyPolicyPayload";
+export {validateAdminReviewSalesPrivacyPolicyResponse} from "./validators/adminReviewSalesPrivacyPolicyResponse";
+export {validateAdminRestrictSalesOrganizerPayload} from "./validators/adminRestrictSalesOrganizerPayload";
+export {validateAdminRestrictSalesOrganizerResponse} from "./validators/adminRestrictSalesOrganizerResponse";
+export {validateAdminPreviewSalesPrivacyPlanPayload} from "./validators/adminPreviewSalesPrivacyPlanPayload";
+export {validateAdminPreviewSalesPrivacyPlanResponse} from "./validators/adminPreviewSalesPrivacyPlanResponse";
+export {validateAdminReviewSalesPrivacyPlanPayload} from "./validators/adminReviewSalesPrivacyPlanPayload";
+export {validateAdminReviewSalesPrivacyPlanResponse} from "./validators/adminReviewSalesPrivacyPlanResponse";
+export {validateAdminApplySalesPrivacyBatchPayload} from "./validators/adminApplySalesPrivacyBatchPayload";
+export {validateAdminApplySalesPrivacyBatchResponse} from "./validators/adminApplySalesPrivacyBatchResponse";
+export {validateAdminGetSalesPrivacyCasePayload} from "./validators/adminGetSalesPrivacyCasePayload";
+export {validateAdminGetSalesPrivacyCaseResponse} from "./validators/adminGetSalesPrivacyCaseResponse";
 export {validateSalesIntakeLinkDocument} from "./validators/salesIntakeLinkDocument";
 export {validateAdminLinkOrganizerIntakeToSalesResponse} from "./validators/adminLinkOrganizerIntakeToSalesResponse";
 export {validateAdminLinkOrganizerIntakeToSalesPayload} from "./validators/adminLinkOrganizerIntakeToSalesPayload";
@@ -139,6 +167,7 @@ export {validateSalesIntelligencePolicyDocument} from "./validators/salesIntelli
 export {validateSalesIntelligenceReceiptDocument} from "./validators/salesIntelligenceReceiptsDocument";
 export {validateSalesIntelligenceScoreSnapshotDocument} from "./validators/salesIntelligenceScoreSnapshotsDocument";
 export {validateSalesOutreachDraftsDocument} from "./validators/salesOutreachDraftsDocument";
+export {validateLegacyPaymentRefundIntent} from "./validators/legacyPaymentRefundIntent";
 export {validateSetEventPublicationCallablePayload} from "./validators/setEventPublicationInput";
 export {validateEventPublicationCallableResponse} from "./validators/eventPublicationOutput";
 export {validatePublicEventPaymentDocument} from "./validators/publicEventPaymentDocument";

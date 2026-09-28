@@ -12,6 +12,34 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `functions/src/shared/generated/salesImportHistoryRowDocument.ts` |
+| SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `functions/src/shared/generated/salesImportHistoryRecordDocument.ts` |
+| SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `functions/src/shared/generated/salesPrivacyRestriction.ts` |
+| SalesPrivacyPolicy | `firestore/sales_privacy_policies.schema.json` | `functions/src/shared/generated/salesPrivacyPolicy.ts` |
+| SalesPrivacyPlan | `firestore/sales_privacy_plans.schema.json` | `functions/src/shared/generated/salesPrivacyPlan.ts` |
+| SalesPrivacyBatchReceipt | `firestore/sales_privacy_batch_receipts.schema.json` | `functions/src/shared/generated/salesPrivacyBatchReceipt.ts` |
+| AdminPreviewSalesImportHistoryPayload | `callables/admin_sales_import_history_preview_payload.schema.json` | `functions/src/shared/generated/adminPreviewSalesImportHistoryPayload.ts` |
+| AdminPreviewSalesImportHistoryResponse | `callable_responses/admin_sales_import_history_preview_response.schema.json` | `functions/src/shared/generated/adminPreviewSalesImportHistoryResponse.ts` |
+| AdminApplySalesImportHistoryPayload | `callables/admin_sales_import_history_apply_payload.schema.json` | `functions/src/shared/generated/adminApplySalesImportHistoryPayload.ts` |
+| AdminApplySalesImportHistoryResponse | `callable_responses/admin_sales_import_history_apply_response.schema.json` | `functions/src/shared/generated/adminApplySalesImportHistoryResponse.ts` |
+| AdminListSalesImportHistoryPayload | `callables/admin_sales_import_history_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesImportHistoryPayload.ts` |
+| AdminListSalesImportHistoryResponse | `callable_responses/admin_sales_import_history_list_response.schema.json` | `functions/src/shared/generated/adminListSalesImportHistoryResponse.ts` |
+| AdminListSalesImportHistoryRowsPayload | `callables/admin_sales_import_history_rows_list_payload.schema.json` | `functions/src/shared/generated/adminListSalesImportHistoryRowsPayload.ts` |
+| AdminListSalesImportHistoryRowsResponse | `callable_responses/admin_sales_import_history_rows_list_response.schema.json` | `functions/src/shared/generated/adminListSalesImportHistoryRowsResponse.ts` |
+| AdminGetSalesFunnelReportPayload | `callables/admin_sales_funnel_report.schema.json` | `functions/src/shared/generated/adminGetSalesFunnelReportPayload.ts` |
+| AdminGetSalesFunnelReportResponse | `callable_responses/admin_sales_funnel_report.schema.json` | `functions/src/shared/generated/adminGetSalesFunnelReportResponse.ts` |
+| AdminReviewSalesPrivacyPolicyPayload | `callables/admin_review_sales_privacy_policy_payload.schema.json` | `functions/src/shared/generated/adminReviewSalesPrivacyPolicyPayload.ts` |
+| AdminReviewSalesPrivacyPolicyResponse | `callable_responses/admin_review_sales_privacy_policy_response.schema.json` | `functions/src/shared/generated/adminReviewSalesPrivacyPolicyResponse.ts` |
+| AdminRestrictSalesOrganizerPayload | `callables/admin_restrict_sales_organizer_payload.schema.json` | `functions/src/shared/generated/adminRestrictSalesOrganizerPayload.ts` |
+| AdminRestrictSalesOrganizerResponse | `callable_responses/admin_restrict_sales_organizer_response.schema.json` | `functions/src/shared/generated/adminRestrictSalesOrganizerResponse.ts` |
+| AdminPreviewSalesPrivacyPlanPayload | `callables/admin_preview_sales_privacy_plan_payload.schema.json` | `functions/src/shared/generated/adminPreviewSalesPrivacyPlanPayload.ts` |
+| AdminPreviewSalesPrivacyPlanResponse | `callable_responses/admin_preview_sales_privacy_plan_response.schema.json` | `functions/src/shared/generated/adminPreviewSalesPrivacyPlanResponse.ts` |
+| AdminReviewSalesPrivacyPlanPayload | `callables/admin_review_sales_privacy_plan_payload.schema.json` | `functions/src/shared/generated/adminReviewSalesPrivacyPlanPayload.ts` |
+| AdminReviewSalesPrivacyPlanResponse | `callable_responses/admin_review_sales_privacy_plan_response.schema.json` | `functions/src/shared/generated/adminReviewSalesPrivacyPlanResponse.ts` |
+| AdminApplySalesPrivacyBatchPayload | `callables/admin_apply_sales_privacy_batch_payload.schema.json` | `functions/src/shared/generated/adminApplySalesPrivacyBatchPayload.ts` |
+| AdminApplySalesPrivacyBatchResponse | `callable_responses/admin_apply_sales_privacy_batch_response.schema.json` | `functions/src/shared/generated/adminApplySalesPrivacyBatchResponse.ts` |
+| AdminGetSalesPrivacyCasePayload | `callables/admin_get_sales_privacy_case_payload.schema.json` | `functions/src/shared/generated/adminGetSalesPrivacyCasePayload.ts` |
+| AdminGetSalesPrivacyCaseResponse | `callable_responses/admin_get_sales_privacy_case_response.schema.json` | `functions/src/shared/generated/adminGetSalesPrivacyCaseResponse.ts` |
 | SalesIntakeLinkDocument | `firestore/sales_intake_links.schema.json` | `functions/src/shared/generated/salesIntakeLinkDocument.ts` |
 | AdminLinkOrganizerIntakeToSalesResponse | `callable_responses/admin_link_organizer_intake_to_sales_response.schema.json` | `functions/src/shared/generated/adminLinkOrganizerIntakeToSalesResponse.ts` |
 | AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `functions/src/shared/generated/adminLinkOrganizerIntakeToSalesPayload.ts` |
@@ -146,6 +174,7 @@ Do not edit it by hand.
 | SalesIntelligenceReceiptDocument | `firestore/sales_intelligence_receipts.schema.json` | `functions/src/shared/generated/salesIntelligenceReceiptsDocument.ts` |
 | SalesIntelligenceScoreSnapshotDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `functions/src/shared/generated/salesIntelligenceScoreSnapshotsDocument.ts` |
 | SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `functions/src/shared/generated/salesOutreachDraftsDocument.ts` |
+| LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `functions/src/shared/generated/legacyPaymentRefundIntent.ts` |
 | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
 | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
 | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
@@ -1094,6 +1123,34 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSalesImportHistoryRowDocumentSchema` | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_row_document.g.dart` |
+| `schemaSalesImportHistoryRecordDocumentSchema` | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_record_document.g.dart` |
+| `schemaSalesPrivacyRestrictionSchema` | SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_restriction.g.dart` |
+| `schemaSalesPrivacyPolicySchema` | SalesPrivacyPolicy | `firestore/sales_privacy_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_policy.g.dart` |
+| `schemaSalesPrivacyPlanSchema` | SalesPrivacyPlan | `firestore/sales_privacy_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_plan.g.dart` |
+| `schemaSalesPrivacyBatchReceiptSchema` | SalesPrivacyBatchReceipt | `firestore/sales_privacy_batch_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_batch_receipt.g.dart` |
+| `schemaAdminPreviewSalesImportHistoryPayloadSchema` | AdminPreviewSalesImportHistoryPayload | `callables/admin_sales_import_history_preview_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_import_history_payload.g.dart` |
+| `schemaAdminPreviewSalesImportHistoryResponseSchema` | AdminPreviewSalesImportHistoryResponse | `callable_responses/admin_sales_import_history_preview_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_import_history_response.g.dart` |
+| `schemaAdminApplySalesImportHistoryPayloadSchema` | AdminApplySalesImportHistoryPayload | `callables/admin_sales_import_history_apply_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_import_history_payload.g.dart` |
+| `schemaAdminApplySalesImportHistoryResponseSchema` | AdminApplySalesImportHistoryResponse | `callable_responses/admin_sales_import_history_apply_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_import_history_response.g.dart` |
+| `schemaAdminListSalesImportHistoryPayloadSchema` | AdminListSalesImportHistoryPayload | `callables/admin_sales_import_history_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_import_history_payload.g.dart` |
+| `schemaAdminListSalesImportHistoryResponseSchema` | AdminListSalesImportHistoryResponse | `callable_responses/admin_sales_import_history_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_import_history_response.g.dart` |
+| `schemaAdminListSalesImportHistoryRowsPayloadSchema` | AdminListSalesImportHistoryRowsPayload | `callables/admin_sales_import_history_rows_list_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_import_history_rows_payload.g.dart` |
+| `schemaAdminListSalesImportHistoryRowsResponseSchema` | AdminListSalesImportHistoryRowsResponse | `callable_responses/admin_sales_import_history_rows_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_import_history_rows_response.g.dart` |
+| `schemaAdminGetSalesFunnelReportPayloadSchema` | AdminGetSalesFunnelReportPayload | `callables/admin_sales_funnel_report.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_funnel_report_payload.g.dart` |
+| `schemaAdminGetSalesFunnelReportResponseSchema` | AdminGetSalesFunnelReportResponse | `callable_responses/admin_sales_funnel_report.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_funnel_report_response.g.dart` |
+| `schemaAdminReviewSalesPrivacyPolicyPayloadSchema` | AdminReviewSalesPrivacyPolicyPayload | `callables/admin_review_sales_privacy_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_privacy_policy_payload.g.dart` |
+| `schemaAdminReviewSalesPrivacyPolicyResponseSchema` | AdminReviewSalesPrivacyPolicyResponse | `callable_responses/admin_review_sales_privacy_policy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_privacy_policy_response.g.dart` |
+| `schemaAdminRestrictSalesOrganizerPayloadSchema` | AdminRestrictSalesOrganizerPayload | `callables/admin_restrict_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_restrict_sales_organizer_payload.g.dart` |
+| `schemaAdminRestrictSalesOrganizerResponseSchema` | AdminRestrictSalesOrganizerResponse | `callable_responses/admin_restrict_sales_organizer_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_restrict_sales_organizer_response.g.dart` |
+| `schemaAdminPreviewSalesPrivacyPlanPayloadSchema` | AdminPreviewSalesPrivacyPlanPayload | `callables/admin_preview_sales_privacy_plan_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_privacy_plan_payload.g.dart` |
+| `schemaAdminPreviewSalesPrivacyPlanResponseSchema` | AdminPreviewSalesPrivacyPlanResponse | `callable_responses/admin_preview_sales_privacy_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_privacy_plan_response.g.dart` |
+| `schemaAdminReviewSalesPrivacyPlanPayloadSchema` | AdminReviewSalesPrivacyPlanPayload | `callables/admin_review_sales_privacy_plan_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_privacy_plan_payload.g.dart` |
+| `schemaAdminReviewSalesPrivacyPlanResponseSchema` | AdminReviewSalesPrivacyPlanResponse | `callable_responses/admin_review_sales_privacy_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_sales_privacy_plan_response.g.dart` |
+| `schemaAdminApplySalesPrivacyBatchPayloadSchema` | AdminApplySalesPrivacyBatchPayload | `callables/admin_apply_sales_privacy_batch_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_privacy_batch_payload.g.dart` |
+| `schemaAdminApplySalesPrivacyBatchResponseSchema` | AdminApplySalesPrivacyBatchResponse | `callable_responses/admin_apply_sales_privacy_batch_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_privacy_batch_response.g.dart` |
+| `schemaAdminGetSalesPrivacyCasePayloadSchema` | AdminGetSalesPrivacyCasePayload | `callables/admin_get_sales_privacy_case_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_privacy_case_payload.g.dart` |
+| `schemaAdminGetSalesPrivacyCaseResponseSchema` | AdminGetSalesPrivacyCaseResponse | `callable_responses/admin_get_sales_privacy_case_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_sales_privacy_case_response.g.dart` |
 | `schemaSalesIntakeLinkDocumentSchema` | SalesIntakeLinkDocument | `firestore/sales_intake_links.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intake_link_document.g.dart` |
 | `schemaAdminLinkOrganizerIntakeToSalesResponseSchema` | AdminLinkOrganizerIntakeToSalesResponse | `callable_responses/admin_link_organizer_intake_to_sales_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_link_organizer_intake_to_sales_response.g.dart` |
 | `schemaAdminLinkOrganizerIntakeToSalesPayloadSchema` | AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_link_organizer_intake_to_sales_payload.g.dart` |
@@ -1228,6 +1285,7 @@ Do not edit it by hand.
 | `schemaSalesIntelligenceReceiptDocumentSchema` | SalesIntelligenceReceiptDocument | `firestore/sales_intelligence_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_receipt_document.g.dart` |
 | `schemaSalesIntelligenceScoreSnapshotDocumentSchema` | SalesIntelligenceScoreSnapshotDocument | `firestore/sales_intelligence_score_snapshots.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_score_snapshot_document.g.dart` |
 | `schemaSalesOutreachDraftsDocumentSchema` | SalesOutreachDraftsDocument | `firestore/sales_outreach_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_drafts_document.g.dart` |
+| `schemaLegacyPaymentRefundIntentSchema` | LegacyPaymentRefundIntent | `embedded/legacy_payment_refund.schema.json` | `lib/core/schema_contracts/generated/schemas/legacy_payment_refund_intent.g.dart` |
 | `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
 | `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
 | `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |
@@ -2176,6 +2234,17 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| AdminPreviewSalesImportHistoryRequest | AdminPreviewSalesImportHistoryPayload | `callables/admin_sales_import_history_preview_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_preview_sales_import_history_request.g.dart` |
+| AdminApplySalesImportHistoryRequest | AdminApplySalesImportHistoryPayload | `callables/admin_sales_import_history_apply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_apply_sales_import_history_request.g.dart` |
+| AdminListSalesImportHistoryRequest | AdminListSalesImportHistoryPayload | `callables/admin_sales_import_history_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_import_history_request.g.dart` |
+| AdminListSalesImportHistoryRowsRequest | AdminListSalesImportHistoryRowsPayload | `callables/admin_sales_import_history_rows_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_import_history_rows_request.g.dart` |
+| AdminGetSalesFunnelReportRequest | AdminGetSalesFunnelReportPayload | `callables/admin_sales_funnel_report.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_funnel_report_request.g.dart` |
+| AdminReviewSalesPrivacyPolicyRequest | AdminReviewSalesPrivacyPolicyPayload | `callables/admin_review_sales_privacy_policy_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_sales_privacy_policy_request.g.dart` |
+| AdminRestrictSalesOrganizerRequest | AdminRestrictSalesOrganizerPayload | `callables/admin_restrict_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_restrict_sales_organizer_request.g.dart` |
+| AdminPreviewSalesPrivacyPlanRequest | AdminPreviewSalesPrivacyPlanPayload | `callables/admin_preview_sales_privacy_plan_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_preview_sales_privacy_plan_request.g.dart` |
+| AdminReviewSalesPrivacyPlanRequest | AdminReviewSalesPrivacyPlanPayload | `callables/admin_review_sales_privacy_plan_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_sales_privacy_plan_request.g.dart` |
+| AdminApplySalesPrivacyBatchRequest | AdminApplySalesPrivacyBatchPayload | `callables/admin_apply_sales_privacy_batch_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_apply_sales_privacy_batch_request.g.dart` |
+| AdminGetSalesPrivacyCaseRequest | AdminGetSalesPrivacyCasePayload | `callables/admin_get_sales_privacy_case_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_privacy_case_request.g.dart` |
 | AdminLinkOrganizerIntakeToSalesRequest | AdminLinkOrganizerIntakeToSalesPayload | `callables/admin_link_organizer_intake_to_sales_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_link_organizer_intake_to_sales_request.g.dart` |
 | AdminGetSalesIntelligenceCatalogRequest | AdminGetSalesIntelligenceCatalogRequest | `callables/admin_sales_intelligence_catalog_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_sales_intelligence_catalog_request.g.dart` |
 | AdminListSalesOutreachDraftsRequest | AdminListSalesOutreachDraftsRequest | `callables/admin_sales_outreach_list_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_outreach_drafts_request.g.dart` |

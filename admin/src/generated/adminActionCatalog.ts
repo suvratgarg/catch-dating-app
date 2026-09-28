@@ -1750,6 +1750,174 @@ export const adminActionCatalog = {
       ],
       "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
       "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.preview",
+      "callable": "adminPreviewSalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.apply",
+      "callable": "adminApplySalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.list",
+      "callable": "adminListSalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.rows.list",
+      "callable": "adminListSalesImportHistoryRows",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.reporting.funnel",
+      "callable": "adminGetSalesFunnelReport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read bounded current funnel totals, stage entries, and follow-up obligations.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.policy.review",
+      "callable": "adminReviewSalesPrivacyPolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.organizer.restrict",
+      "callable": "adminRestrictSalesOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.plan.preview",
+      "callable": "adminPreviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.plan.review",
+      "callable": "adminReviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.batch.apply",
+      "callable": "adminApplySalesPrivacyBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.case.get",
+      "callable": "adminGetSalesPrivacyCase",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -2008,7 +2176,18 @@ export const adminActionCatalog = {
         "sales.fitQueue.refresh",
         "sales.fitQueue.refresh_batch",
         "sales.imports.compensation.preview",
-        "sales.imports.compensation.apply"
+        "sales.imports.compensation.apply",
+        "sales.imports.history.preview",
+        "sales.imports.history.apply",
+        "sales.imports.history.list",
+        "sales.imports.history.rows.list",
+        "sales.reporting.funnel",
+        "sales.privacy.policy.review",
+        "sales.privacy.organizer.restrict",
+        "sales.privacy.plan.preview",
+        "sales.privacy.plan.review",
+        "sales.privacy.batch.apply",
+        "sales.privacy.case.get"
       ]
     }
   ]

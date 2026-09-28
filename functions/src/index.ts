@@ -837,3 +837,14 @@ export {adminLinkOrganizerIntakeToSales} from
 
 export {adminListSalesFitQueue, adminRefreshSalesFitQueue,
   adminRefreshSalesFitQueueBatch} from "./admin/salesFitQueue/callables";
+export {onCancelledNativeEventRefunds, onNativeCancellationRefund,
+  recoverNativeCancellationRefunds} from "./payments/legacyRefunds/recovery";
+
+export {adminPreviewSalesImportHistory, adminApplySalesImportHistory,
+  adminListSalesImportHistory, adminListSalesImportHistoryRows} from
+  "./admin/sales/callables";
+export {adminGetSalesFunnelReport} from "./admin/salesReporting/callables";
+export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
+  adminPreviewSalesPrivacyPlan, adminReviewSalesPrivacyPlan,
+  adminApplySalesPrivacyBatch, adminGetSalesPrivacyCase} from
+  "./admin/salesPrivacy/callables";

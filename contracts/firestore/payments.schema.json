@@ -142,7 +142,10 @@
       "x-catch-ownership": "callable-owned"
     },
     "crossPathsPairHoldId": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
       "maxLength": 180,
       "description": "Pair hold consumed by this booking, when present.",
@@ -178,6 +181,14 @@
     },
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    },
+    "cancellationRefund": {
+      "$ref": "../embedded/legacy_payment_refund.schema.json",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

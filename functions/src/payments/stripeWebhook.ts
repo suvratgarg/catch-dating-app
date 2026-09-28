@@ -254,10 +254,15 @@ async function markStripeCheckoutFailed({
     .limit(1)
     .get();
   if (snap.empty) return;
-  await snap.docs[0].ref.set({
-    status: "failed",
-    updatedAt: serverTimestamp,
-  }, {merge: true});
+  const ref = snap.docs[0].ref;
+  await db.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data();
+    // A delayed failure cannot undo captured money, admission or a refund.
+    if (current?.status !== "pending" ||
+        current.checkoutSessionId !== sessionId ||
+        current.provider && current.provider !== "stripe") return;
+    tx.set(ref, {status: "failed", updatedAt: serverTimestamp}, {merge: true});
+  });
 }
 
 interface StripeWebhookEvent {

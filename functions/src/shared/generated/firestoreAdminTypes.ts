@@ -6,6 +6,7 @@ import type {OutreachDraftingInput} from "./outreachDraftingInput";
 import type {OutreachDraft} from "./outreachDraft";
 import type {AdminBuildSalesOutreachInputPayload} from "./adminSalesIntelligenceDraftCallablePayload";
 import type {AdminRefreshSalesFitQueueResponse} from "./adminRefreshSalesFitQueueResponse";
+import type {LegacyPaymentRefundIntent} from "./legacyPaymentRefundIntent";
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
@@ -546,6 +547,153 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+export interface SalesImportHistoryRowDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  importId: string;
+  organizerId: string;
+  promotionVersion: string;
+  rowId: string;
+  disposition: "promoted" | "skipped" | "review_needed";
+  reason: string;
+  /**
+   * @minItems 0
+   * @maxItems 5
+   */
+  recordIds: string[];
+  reviewHash: string;
+  reviewedAt: string;
+  reviewedBy: string;
+}
+
+export interface SalesImportHistoryRecordDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  sourceId: string;
+  sourceRowId: string;
+  sourceContentHash: string;
+  importId: string;
+  organizerId: string;
+  promotionVersion: string;
+  recordId: string;
+  kind: "activity" | "observation" | "benchmark";
+  sourceColumn: string;
+  sourceValue: string;
+  occurredAt: string | null;
+  dateSourceColumn: string | null;
+  dateSourceValue: string | null;
+  contentHash: string;
+  recordedAt: string;
+  recordedBy: string;
+  providerConfirmed: false;
+  currentFitAuthority: false;
+  contactAuthority: false;
+  sendAuthority: false;
+  relativeChronology: "first_touch" | "last_touch" | "unspecified";
+  dateCertainty: "source_exact" | "unknown";
+}
+
+/**
+ * Permanent organizer-scoped private Sales reintroduction fence. Existence blocks reads, writes and receipt replay.
+ */
+export interface SalesPrivacyRestriction {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  status: "restricted" | "processing" | "internal_processed_with_unresolved";
+  revision: number;
+  reason: string;
+  requestId: string;
+  materialHash: string;
+  restrictedByUid: string;
+  restrictedAt: string;
+  activePlanId: string | null;
+}
+
+/**
+ * Admin Owner reviewed retention decision; finance and audit remain retained pending their own reviews. No period is invented.
+ */
+export interface SalesPrivacyPolicy {
+  schemaVersion: 1;
+  classification: "sales_private";
+  policyId: "current";
+  revision: number;
+  status: "reviewed";
+  sourceReference: string;
+  sourceHash: string;
+  financeDisposition: "retain_pending_finance_review";
+  financeReason: string;
+  auditDisposition: "retain_pending_audit_review";
+  auditReason: string;
+  externalCopies: "unverified";
+  policyHash: string;
+  requestId: string;
+  reviewedByUid: string;
+  reviewedAt: string;
+}
+
+/**
+ * Server-inventoried, exact-source cleanup plan. Paths are private and never returned in owner previews.
+ */
+export interface SalesPrivacyPlan {
+  schemaVersion: 1;
+  classification: "sales_private";
+  planId: string;
+  requestId: string;
+  organizerId: string;
+  restrictionRevision: number;
+  policyHash: string;
+  inventoryHash: string;
+  /**
+   * @maxItems 240
+   */
+  items: {
+    path: string;
+    contentHash: string;
+    disposition: "delete" | "retain_finance" | "retain_audit";
+  }[];
+  /**
+   * @maxItems 240
+   */
+  blockers: {
+    code: string;
+    fingerprint: string;
+  }[];
+  cursor: number;
+  status: "reviewed" | "processing" | "internal_processed_with_unresolved";
+  reviewedByUid: string;
+  reviewedAt: string;
+  updatedAt: string;
+}
+
+export interface SalesPrivacyBatchReceipt {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  organizerId: string;
+  planId: string;
+  expectedCursor: number;
+  requestId: string;
+  result: {
+    organizerId: string;
+    planId: string;
+    previousCursor: number;
+    nextCursor: number;
+    itemCount: number;
+    deletedCount: number;
+    retainedCount: number;
+    unresolvedCount: number;
+    status: "processing" | "internal_processed_with_unresolved";
+    completeDeletion: false;
+    receiptId: string;
+  };
+  createdAt: string;
+  actorUid: string;
 }
 
 /**
@@ -1183,7 +1331,8 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.approve"
     | "commercial.quotes.accept"
     | "commercial.finance.attest"
-    | "imports.compensation.apply";
+    | "imports.compensation.apply"
+    | "imports.history.apply";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -14915,6 +15064,8 @@ export interface PaymentDocument {
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
   completedAt?: FirebaseFirestore.Timestamp;
+  cancellationRefund?: LegacyPaymentRefundIntent;
+  updatedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

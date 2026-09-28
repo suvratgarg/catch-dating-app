@@ -5,6 +5,34 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
+export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";
+export {salesPrivacyRestrictionSchema} from "./schemas/salesPrivacyRestriction";
+export {salesPrivacyPolicySchema} from "./schemas/salesPrivacyPolicy";
+export {salesPrivacyPlanSchema} from "./schemas/salesPrivacyPlan";
+export {salesPrivacyBatchReceiptSchema} from "./schemas/salesPrivacyBatchReceipt";
+export {adminPreviewSalesImportHistoryPayloadSchema} from "./schemas/adminPreviewSalesImportHistoryPayload";
+export {adminPreviewSalesImportHistoryResponseSchema} from "./schemas/adminPreviewSalesImportHistoryResponse";
+export {adminApplySalesImportHistoryPayloadSchema} from "./schemas/adminApplySalesImportHistoryPayload";
+export {adminApplySalesImportHistoryResponseSchema} from "./schemas/adminApplySalesImportHistoryResponse";
+export {adminListSalesImportHistoryPayloadSchema} from "./schemas/adminListSalesImportHistoryPayload";
+export {adminListSalesImportHistoryResponseSchema} from "./schemas/adminListSalesImportHistoryResponse";
+export {adminListSalesImportHistoryRowsPayloadSchema} from "./schemas/adminListSalesImportHistoryRowsPayload";
+export {adminListSalesImportHistoryRowsResponseSchema} from "./schemas/adminListSalesImportHistoryRowsResponse";
+export {adminGetSalesFunnelReportPayloadSchema} from "./schemas/adminGetSalesFunnelReportPayload";
+export {adminGetSalesFunnelReportResponseSchema} from "./schemas/adminGetSalesFunnelReportResponse";
+export {adminReviewSalesPrivacyPolicyPayloadSchema} from "./schemas/adminReviewSalesPrivacyPolicyPayload";
+export {adminReviewSalesPrivacyPolicyResponseSchema} from "./schemas/adminReviewSalesPrivacyPolicyResponse";
+export {adminRestrictSalesOrganizerPayloadSchema} from "./schemas/adminRestrictSalesOrganizerPayload";
+export {adminRestrictSalesOrganizerResponseSchema} from "./schemas/adminRestrictSalesOrganizerResponse";
+export {adminPreviewSalesPrivacyPlanPayloadSchema} from "./schemas/adminPreviewSalesPrivacyPlanPayload";
+export {adminPreviewSalesPrivacyPlanResponseSchema} from "./schemas/adminPreviewSalesPrivacyPlanResponse";
+export {adminReviewSalesPrivacyPlanPayloadSchema} from "./schemas/adminReviewSalesPrivacyPlanPayload";
+export {adminReviewSalesPrivacyPlanResponseSchema} from "./schemas/adminReviewSalesPrivacyPlanResponse";
+export {adminApplySalesPrivacyBatchPayloadSchema} from "./schemas/adminApplySalesPrivacyBatchPayload";
+export {adminApplySalesPrivacyBatchResponseSchema} from "./schemas/adminApplySalesPrivacyBatchResponse";
+export {adminGetSalesPrivacyCasePayloadSchema} from "./schemas/adminGetSalesPrivacyCasePayload";
+export {adminGetSalesPrivacyCaseResponseSchema} from "./schemas/adminGetSalesPrivacyCaseResponse";
 export {salesIntakeLinkDocumentSchema} from "./schemas/salesIntakeLinkDocument";
 export {adminLinkOrganizerIntakeToSalesResponseSchema} from "./schemas/adminLinkOrganizerIntakeToSalesResponse";
 export {adminLinkOrganizerIntakeToSalesPayloadSchema} from "./schemas/adminLinkOrganizerIntakeToSalesPayload";
@@ -139,6 +167,7 @@ export {salesIntelligencePolicyDocumentSchema} from "./schemas/salesIntelligence
 export {salesIntelligenceReceiptDocumentSchema} from "./schemas/salesIntelligenceReceiptsDocument";
 export {salesIntelligenceScoreSnapshotDocumentSchema} from "./schemas/salesIntelligenceScoreSnapshotsDocument";
 export {salesOutreachDraftsDocumentSchema} from "./schemas/salesOutreachDraftsDocument";
+export {legacyPaymentRefundIntentSchema} from "./schemas/legacyPaymentRefundIntent";
 export {setEventPublicationCallablePayloadSchema} from "./schemas/setEventPublicationInput";
 export {eventPublicationCallableResponseSchema} from "./schemas/eventPublicationOutput";
 export {publicEventPaymentDocumentSchema} from "./schemas/publicEventPaymentDocument";

@@ -1275,6 +1275,354 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['compensated', 'already_compensated'],
   );
 
+  static const adminApplySalesImportHistoryPayloadContentHash = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadMappingVersion = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.mappingVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadPreviewHash = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.previewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadPromotionVersion = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.requestId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadRows = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsDisposition = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.disposition',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntries = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceColumn = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.dateSourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceValue = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.dateSourceValue',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsKind = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.kind',
+    required: true,
+    enumValues: <String>['activity', 'observation', 'benchmark'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsOccurredAt = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.occurredAt',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsSourceColumn = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.sourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsSourceValue = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.entries.items.sourceValue',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsImportId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsReason = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.reason',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplySalesImportHistoryPayloadRowsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.rows.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryPayloadSourceId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryPayload.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseEffectsApplied = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.effectsApplied',
+    required: true,
+  );
+
+  static const adminApplySalesImportHistoryResponsePacketRowCount = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.packetRowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const adminApplySalesImportHistoryResponsePreviewHash = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.previewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseReceiptRequestId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.receipt.requestId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseReceiptRevision = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.receipt.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminApplySalesImportHistoryResponseRecordsCreated = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.recordsCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 50,
+  );
+
+  static const adminApplySalesImportHistoryResponseRows = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const adminApplySalesImportHistoryResponseRowsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseRowsItemsRecordIds = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows.items.recordIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const adminApplySalesImportHistoryResponseRowsItemsRecordIdsItems = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows.items.recordIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseRowsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplySalesImportHistoryResponseRowsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminApplySalesImportHistoryResponse.rows.items.status',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed', 'duplicate'],
+  );
+
+  static const adminApplySalesPrivacyBatchPayloadExpectedCursor = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchPayload.expectedCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchPayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchPayloadPlanId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchPayload.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchPayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchPayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchCompleteDeletion = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.completeDeletion',
+    required: true,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchDeletedCount = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.deletedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchItemCount = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.itemCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchNextCursor = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.nextCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchOrganizerId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchPlanId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchPreviousCursor = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.previousCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchReceiptId = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-batch-[a-f0-9]{40}\$',
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchRetainedCount = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.retainedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchStatus = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.status',
+    required: true,
+    enumValues: <String>['processing', 'internal_processed_with_unresolved'],
+  );
+
+  static const adminApplySalesPrivacyBatchResponseBatchUnresolvedCount = CatchContractFieldConstraints(
+    path: 'adminApplySalesPrivacyBatchResponse.batch.unresolvedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const adminApproveSalesQuoteCallablePayloadEvidenceEvidenceId = CatchContractFieldConstraints(
     path: 'adminApproveSalesQuoteCallablePayload.evidence.evidenceId',
     maxLength: 96,
@@ -4976,6 +5324,170 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const adminGetSalesFunnelReportPayloadSince = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportPayload.since',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesFunnelReportResponseActiveHosts = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.activeHosts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseAsOf = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.asOf',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesFunnelReportResponseCoverage = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.coverage',
+    required: true,
+  );
+
+  static const adminGetSalesFunnelReportResponseDuplicateReviewHosts = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.duplicateReviewHosts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseExcludedArchivedOrRestrictedHosts = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.excludedArchivedOrRestrictedHosts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseHeldHosts = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.heldHosts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseHostsWithOpportunities = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.hostsWithOpportunities',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseHostsWithOverdueOpportunities = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.hostsWithOverdueOpportunities',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseMovementEvents = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.movementEvents',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseOpenObligations = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.openObligations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseOpportunities = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.opportunities',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseOpportunitiesMissingNextStep = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.opportunitiesMissingNextStep',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseOverdueObligations = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.overdueObligations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseOverdueOpportunities = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.overdueOpportunities',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseRevenueStatus = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.revenueStatus',
+    required: true,
+  );
+
+  static const adminGetSalesFunnelReportResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.schemaVersion',
+    required: true,
+  );
+
+  static const adminGetSalesFunnelReportResponseSince = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.since',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesFunnelReportResponseStages = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 11,
+    maxItems: 11,
+  );
+
+  static const adminGetSalesFunnelReportResponseStagesItemsDistinctHosts = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages.items.distinctHosts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseStagesItemsDistinctHostsEntered = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages.items.distinctHostsEntered',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseStagesItemsEnteredInWindow = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages.items.enteredInWindow',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseStagesItemsOpportunities = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages.items.opportunities',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesFunnelReportResponseStagesItemsStage = CatchContractFieldConstraints(
+    path: 'adminGetSalesFunnelReportResponse.stages.items.stage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_enquiry', 'ready_to_contact', 'contacted', 'in_conversation', 'demo_arranged', 'demo_completed', 'pilot_agreed', 'pilot_running', 'commercial_discussion', 'closed_won', 'closed_lost'],
+  );
+
   static const adminGetSalesIntelligenceCatalogRequestOrganizerId = CatchContractFieldConstraints(
     path: 'adminGetSalesIntelligenceCatalogRequest.organizerId',
     maxLength: 96,
@@ -5843,6 +6355,195 @@ abstract final class CatchContractConstraints {
     path: 'adminGetSalesOutreachDraftResponse.status',
     required: true,
     enumValues: <String>['pending_review', 'approved'],
+  );
+
+  static const adminGetSalesPrivacyCasePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCasePayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponseCompleteDeletion = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.completeDeletion',
+    required: true,
+  );
+
+  static const adminGetSalesPrivacyCaseResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanBlockers = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 240,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanBlockersItemsCode = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.blockers.items.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z_]{3,80}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanBlockersItemsFingerprint = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.blockers.items.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{16}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanCursor = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.cursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanInventoryHash = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanItemCount = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.itemCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanOrganizerId = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanPlanId = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanPolicyHash = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanRetainedCount = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.retainedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanStatus = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.status',
+    required: true,
+    enumValues: <String>['reviewed', 'processing', 'internal_processed_with_unresolved'],
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePlanUnresolvedCount = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.plan.unresolvedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyAuditDisposition = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.auditDisposition',
+    required: true,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyAuditReason = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.auditReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyFinanceDisposition = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.financeDisposition',
+    required: true,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyFinanceReason = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.financeReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyPolicyHash = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyReviewedAt = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicyRevision = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminGetSalesPrivacyCaseResponsePolicySourceReference = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.policy.sourceReference',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetSalesPrivacyCaseResponseRestricted = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.restricted',
+    required: true,
+  );
+
+  static const adminGetSalesPrivacyCaseResponseRestrictionReason = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.restriction.reason',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetSalesPrivacyCaseResponseRestrictionRestrictedAt = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.restriction.restrictedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesPrivacyCaseResponseRestrictionRevision = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.restriction.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminGetSalesPrivacyCaseResponseRestrictionStatus = CatchContractFieldConstraints(
+    path: 'adminGetSalesPrivacyCaseResponse.restriction.status',
+    required: true,
+    enumValues: <String>['restricted', 'processing', 'internal_processed_with_unresolved'],
   );
 
   static const adminGetSalesReceiptCallablePayloadRequestId = CatchContractFieldConstraints(
@@ -7207,6 +7908,386 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['clear', 'held', 'suppressed'],
   );
 
+  static const adminListSalesImportHistoryPayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryPayload.cursor',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryPayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryPayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 25,
+  );
+
+  static const adminListSalesImportHistoryPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryPayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseNextCursor = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.nextCursor',
+    maxLength: 96,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecords = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 0,
+    maxItems: 25,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsClassification = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.classification',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsContactAuthority = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.contactAuthority',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsContentHash = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsCurrentFitAuthority = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.currentFitAuthority',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsDateCertainty = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.dateCertainty',
+    required: true,
+    enumValues: <String>['source_exact', 'unknown'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsDateSourceColumn = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.dateSourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsDateSourceValue = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.dateSourceValue',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsImportId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsKind = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.kind',
+    required: true,
+    enumValues: <String>['activity', 'observation', 'benchmark'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsOccurredAt = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.occurredAt',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsPromotionVersion = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsProviderConfirmed = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.providerConfirmed',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsRecordedAt = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.recordedAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsRecordedBy = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.recordedBy',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsRecordId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.recordId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsRelativeChronology = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.relativeChronology',
+    required: true,
+    enumValues: <String>['first_touch', 'last_touch', 'unspecified'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.schemaVersion',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSendAuthority = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sendAuthority',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSourceColumn = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSourceContentHash = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sourceContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSourceId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryResponseRecordsItemsSourceValue = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryResponse.records.items.sourceValue',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSalesImportHistoryRowsPayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsPayload.cursor',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsPayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsPayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 25,
+  );
+
+  static const adminListSalesImportHistoryRowsPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsPayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseNextCursor = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.nextCursor',
+    maxLength: 96,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRows = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 25,
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsClassification = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.classification',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsDisposition = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.disposition',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed'],
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsImportId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsPromotionVersion = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsReason = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.reason',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsRecordIds = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.recordIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsRecordIdsItems = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.recordIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsReviewedAt = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.reviewedAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsReviewedBy = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.reviewedBy',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsReviewHash = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.rowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.schemaVersion',
+    required: true,
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsSourceContentHash = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.sourceContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsSourceId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminListSalesImportHistoryRowsResponseRowsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminListSalesImportHistoryRowsResponse.rows.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const adminListSalesInboundIntentsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'adminListSalesInboundIntentsCallablePayload.cursor',
     maxLength: 512,
@@ -7545,6 +8626,308 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadContentHash = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadMappingVersion = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.mappingVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadPromotionVersion = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRows = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsDisposition = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.disposition',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntries = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceColumn = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.dateSourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceValue = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.dateSourceValue',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsKind = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.kind',
+    required: true,
+    enumValues: <String>['activity', 'observation', 'benchmark'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsOccurredAt = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.occurredAt',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsSourceColumn = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.sourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsSourceValue = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.sourceValue',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsImportId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsReason = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.reason',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadRowsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.rows.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryPayloadSourceId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryPayload.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryResponseEffectsApplied = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.effectsApplied',
+    required: true,
+  );
+
+  static const adminPreviewSalesImportHistoryResponsePacketRowCount = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.packetRowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const adminPreviewSalesImportHistoryResponsePreviewHash = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.previewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRows = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRowsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows.items.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRowsItemsRecordIds = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows.items.recordIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRowsItemsRecordIdsItems = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows.items.recordIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRowsItemsSourceRowId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows.items.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPreviewSalesImportHistoryResponseRowsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesImportHistoryResponse.rows.items.status',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed', 'duplicate'],
+  );
+
+  static const adminPreviewSalesPrivacyPlanPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanPayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseActivePlanId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.activePlanId',
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseBlockers = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 240,
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseBlockersItemsCode = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.blockers.items.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z_]{3,80}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseBlockersItemsFingerprint = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.blockers.items.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{16}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseCountsDeletable = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.counts.deletable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseCountsRetained = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.counts.retained',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseCountsUnresolved = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.counts.unresolved',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseEffectsApplied = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.effectsApplied',
+    required: true,
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseInventoryHash = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseOverflow = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.overflow',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponsePolicyHash = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminPreviewSalesPrivacyPlanResponseRestrictionRevision = CatchContractFieldConstraints(
+    path: 'adminPreviewSalesPrivacyPlanResponse.restrictionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const adminPublishExternalEventCallablePayloadChecklistNoCatchBookingPaymentsWaitlist = CatchContractFieldConstraints(
@@ -8457,6 +9840,96 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminRestrictSalesOrganizerPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerPayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminRestrictSalesOrganizerPayloadReason = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerPayload.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRestrictSalesOrganizerPayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerPayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionActivePlanId = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.activePlanId',
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionClassification = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.classification',
+    required: true,
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionMaterialHash = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.materialHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionOrganizerId = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionReason = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.reason',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionRequestId = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionRestrictedAt = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.restrictedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionRestrictedByUid = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.restrictedByUid',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionRevision = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.schemaVersion',
+    required: true,
+  );
+
+  static const adminRestrictSalesOrganizerResponseRestrictionStatus = CatchContractFieldConstraints(
+    path: 'adminRestrictSalesOrganizerResponse.restriction.status',
+    required: true,
+    enumValues: <String>['restricted', 'processing', 'internal_processed_with_unresolved'],
+  );
+
   static const adminReviewEventMessagingBudgetCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'adminReviewEventMessagingBudgetCallablePayload.eventId',
     maxLength: 180,
@@ -9142,6 +10615,277 @@ abstract final class CatchContractConstraints {
 
   static const adminReviewSalesOutreachDraftResponseTone = CatchContractFieldConstraints(
     path: 'adminReviewSalesOutreachDraftResponse.tone',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadExpectedActivePlanId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.expectedActivePlanId',
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadInventoryHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadPolicyHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanPayloadRestrictionRevision = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanPayload.restrictionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanBlockers = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 240,
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanBlockersItemsCode = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.blockers.items.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z_]{3,80}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanBlockersItemsFingerprint = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.blockers.items.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{16}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanCursor = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.cursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanInventoryHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanItemCount = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.itemCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanPlanId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanPolicyHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanRetainedCount = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.retainedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanStatus = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.status',
+    required: true,
+    enumValues: <String>['reviewed', 'processing', 'internal_processed_with_unresolved'],
+  );
+
+  static const adminReviewSalesPrivacyPlanResponsePlanUnresolvedCount = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPlanResponse.plan.unresolvedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadAuditReason = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.auditReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadFinanceReason = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.financeReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadSourceHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPolicyPayloadSourceReference = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyPayload.sourceReference',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyAuditDisposition = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.auditDisposition',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyAuditReason = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.auditReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyClassification = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.classification',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyExternalCopies = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.externalCopies',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyFinanceDisposition = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.financeDisposition',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyFinanceReason = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.financeReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyPolicyHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyPolicyId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.policyId',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyRequestId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyReviewedAt = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyReviewedByUid = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.reviewedByUid',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyRevision = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicySchemaVersion = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.schemaVersion',
+    required: true,
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicySourceHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicySourceReference = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.sourceReference',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewSalesPrivacyPolicyResponsePolicyStatus = CatchContractFieldConstraints(
+    path: 'adminReviewSalesPrivacyPolicyResponse.policy.status',
     required: true,
   );
 
@@ -80702,6 +82446,165 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const legacyPaymentRefundIntentAttempts = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsIdempotencyKey = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.idempotencyKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,100}\$',
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsProviderRefundId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.providerRefundId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsStartedAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.startedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.attempts.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'failed'],
+  );
+
+  static const legacyPaymentRefundIntentConfirmedAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.confirmedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentCurrency = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const legacyPaymentRefundIntentLastErrorCode = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.lastErrorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentLeaseUntilMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.leaseUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentNextAttemptAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.nextAttemptAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentOrderId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.orderId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentPaymentFingerprint = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.paymentFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const legacyPaymentRefundIntentProvider = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['razorpay', 'stripe'],
+  );
+
+  static const legacyPaymentRefundIntentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.providerPaymentId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentReason = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guestCancelled', 'eventCancelled'],
+  );
+
+  static const legacyPaymentRefundIntentRefundApplicationFee = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.refundApplicationFee',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const legacyPaymentRefundIntentRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.requestedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const legacyPaymentRefundIntentState = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'complete', 'reviewRequired'],
+  );
+
+  static const legacyPaymentRefundIntentStripeAccountId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.stripeAccountId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const legacyPaymentRefundIntentTargetAmountMinor = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.targetAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const legacyPaymentRefundIntentVersion = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const listEventAssignmentFeatureChoicesCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'listEventAssignmentFeatureChoicesCallablePayload.eventId',
     maxLength: 180,
@@ -111294,6 +113197,165 @@ abstract final class CatchContractConstraints {
     maximum: 100000000,
   );
 
+  static const paymentDocumentCancellationRefundAttempts = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsIdempotencyKey = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.idempotencyKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,100}\$',
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsProviderRefundId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.providerRefundId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsStartedAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.startedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.attempts.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'failed'],
+  );
+
+  static const paymentDocumentCancellationRefundConfirmedAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.confirmedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundCurrency = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const paymentDocumentCancellationRefundLastErrorCode = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.lastErrorCode',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundLeaseUntilMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.leaseUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundNextAttemptAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.nextAttemptAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundOrderId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.orderId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundPaymentFingerprint = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.paymentFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const paymentDocumentCancellationRefundProvider = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['razorpay', 'stripe'],
+  );
+
+  static const paymentDocumentCancellationRefundProviderPaymentId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.providerPaymentId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundReason = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guestCancelled', 'eventCancelled'],
+  );
+
+  static const paymentDocumentCancellationRefundRefundApplicationFee = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.refundApplicationFee',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const paymentDocumentCancellationRefundRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.requestedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentDocumentCancellationRefundState = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'complete', 'reviewRequired'],
+  );
+
+  static const paymentDocumentCancellationRefundStripeAccountId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.stripeAccountId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentCancellationRefundTargetAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.targetAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const paymentDocumentCancellationRefundVersion = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const paymentDocumentCheckoutSessionId = CatchContractFieldConstraints(
     path: 'paymentDocument.checkoutSessionId',
     maxLength: 240,
@@ -111460,6 +113522,20 @@ abstract final class CatchContractConstraints {
   static const paymentDocumentSynthetic = CatchContractFieldConstraints(
     path: 'paymentDocument.synthetic',
     valueTypes: <String>['boolean'],
+  );
+
+  static const paymentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const paymentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const paymentDocumentUserId = CatchContractFieldConstraints(
@@ -124862,7 +126938,7 @@ abstract final class CatchContractConstraints {
   static const salesActionReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesActionReceiptDocument.action',
     required: true,
-    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply'],
+    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply'],
   );
 
   static const salesActionReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -128093,6 +130169,303 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const salesImportHistoryRecordDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.classification',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentContactAuthority = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.contactAuthority',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentContentHash = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesImportHistoryRecordDocumentCurrentFitAuthority = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.currentFitAuthority',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentDateCertainty = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.dateCertainty',
+    required: true,
+    enumValues: <String>['source_exact', 'unknown'],
+  );
+
+  static const salesImportHistoryRecordDocumentDateSourceColumn = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.dateSourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesImportHistoryRecordDocumentDateSourceValue = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.dateSourceValue',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesImportHistoryRecordDocumentImportId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentKind = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.kind',
+    required: true,
+    enumValues: <String>['activity', 'observation', 'benchmark'],
+  );
+
+  static const salesImportHistoryRecordDocumentOccurredAt = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.occurredAt',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesImportHistoryRecordDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentPromotionVersion = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentProviderConfirmed = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.providerConfirmed',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentRecordedAt = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.recordedAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesImportHistoryRecordDocumentRecordedBy = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.recordedBy',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentRecordId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.recordId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentRelativeChronology = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.relativeChronology',
+    required: true,
+    enumValues: <String>['first_touch', 'last_touch', 'unspecified'],
+  );
+
+  static const salesImportHistoryRecordDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentSendAuthority = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sendAuthority',
+    required: true,
+  );
+
+  static const salesImportHistoryRecordDocumentSourceColumn = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sourceColumn',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesImportHistoryRecordDocumentSourceContentHash = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sourceContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesImportHistoryRecordDocumentSourceId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentSourceRowId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRecordDocumentSourceValue = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRecordDocument.sourceValue',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesImportHistoryRowDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.classification',
+    required: true,
+  );
+
+  static const salesImportHistoryRowDocumentDisposition = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.disposition',
+    required: true,
+    enumValues: <String>['promoted', 'skipped', 'review_needed'],
+  );
+
+  static const salesImportHistoryRowDocumentImportId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.importId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentPromotionVersion = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.promotionVersion',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentReason = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.reason',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesImportHistoryRowDocumentRecordIds = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.recordIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 5,
+  );
+
+  static const salesImportHistoryRowDocumentRecordIdsItems = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.recordIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentReviewedAt = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.reviewedAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesImportHistoryRowDocumentReviewedBy = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.reviewedBy',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentReviewHash = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesImportHistoryRowDocumentRowId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.rowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesImportHistoryRowDocumentSourceContentHash = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.sourceContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesImportHistoryRowDocumentSourceId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.sourceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesImportHistoryRowDocumentSourceRowId = CatchContractFieldConstraints(
+    path: 'salesImportHistoryRowDocument.sourceRowId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const salesImportJobDocumentAccountEffects = CatchContractFieldConstraints(
     path: 'salesImportJobDocument.accountEffects',
     valueTypes: <String>['array'],
@@ -131011,6 +133384,451 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesPrivacyBatchReceiptActorUid = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.actorUid',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyBatchReceiptClassification = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.classification',
+    required: true,
+  );
+
+  static const salesPrivacyBatchReceiptCreatedAt = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.createdAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPrivacyBatchReceiptExpectedCursor = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.expectedCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 240,
+  );
+
+  static const salesPrivacyBatchReceiptOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const salesPrivacyBatchReceiptPlanId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyBatchReceiptReceiptId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-batch-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyBatchReceiptRequestId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const salesPrivacyBatchReceiptResultCompleteDeletion = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.completeDeletion',
+    required: true,
+  );
+
+  static const salesPrivacyBatchReceiptResultDeletedCount = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.deletedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptResultItemCount = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.itemCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptResultNextCursor = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.nextCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptResultOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const salesPrivacyBatchReceiptResultPlanId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyBatchReceiptResultPreviousCursor = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.previousCursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptResultReceiptId = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-batch-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyBatchReceiptResultRetainedCount = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.retainedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptResultStatus = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.status',
+    required: true,
+    enumValues: <String>['processing', 'internal_processed_with_unresolved'],
+  );
+
+  static const salesPrivacyBatchReceiptResultUnresolvedCount = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.result.unresolvedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const salesPrivacyBatchReceiptSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPrivacyBatchReceipt.schemaVersion',
+    required: true,
+  );
+
+  static const salesPrivacyPlanBlockers = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 240,
+  );
+
+  static const salesPrivacyPlanBlockersItemsCode = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.blockers.items.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z_]{3,80}\$',
+  );
+
+  static const salesPrivacyPlanBlockersItemsFingerprint = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.blockers.items.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{16}\$',
+  );
+
+  static const salesPrivacyPlanClassification = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.classification',
+    required: true,
+  );
+
+  static const salesPrivacyPlanCursor = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.cursor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 240,
+  );
+
+  static const salesPrivacyPlanInventoryHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyPlanItems = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 240,
+  );
+
+  static const salesPrivacyPlanItemsItemsContentHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.items.items.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyPlanItemsItemsDisposition = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.items.items.disposition',
+    required: true,
+    enumValues: <String>['delete', 'retain_finance', 'retain_audit'],
+  );
+
+  static const salesPrivacyPlanItemsItemsPath = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.items.items.path',
+    maxLength: 400,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPlanOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const salesPrivacyPlanPlanId = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyPlanPolicyHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyPlanRequestId = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const salesPrivacyPlanRestrictionRevision = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.restrictionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesPrivacyPlanReviewedAt = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPrivacyPlanReviewedByUid = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.reviewedByUid',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPlanSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.schemaVersion',
+    required: true,
+  );
+
+  static const salesPrivacyPlanStatus = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.status',
+    required: true,
+    enumValues: <String>['reviewed', 'processing', 'internal_processed_with_unresolved'],
+  );
+
+  static const salesPrivacyPlanUpdatedAt = CatchContractFieldConstraints(
+    path: 'salesPrivacyPlan.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPrivacyPolicyAuditDisposition = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.auditDisposition',
+    required: true,
+  );
+
+  static const salesPrivacyPolicyAuditReason = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.auditReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPolicyClassification = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.classification',
+    required: true,
+  );
+
+  static const salesPrivacyPolicyExternalCopies = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.externalCopies',
+    required: true,
+  );
+
+  static const salesPrivacyPolicyFinanceDisposition = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.financeDisposition',
+    required: true,
+  );
+
+  static const salesPrivacyPolicyFinanceReason = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.financeReason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPolicyPolicyHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyPolicyPolicyId = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.policyId',
+    required: true,
+  );
+
+  static const salesPrivacyPolicyRequestId = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const salesPrivacyPolicyReviewedAt = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPrivacyPolicyReviewedByUid = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.reviewedByUid',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPolicyRevision = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesPrivacyPolicySchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.schemaVersion',
+    required: true,
+  );
+
+  static const salesPrivacyPolicySourceHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyPolicySourceReference = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.sourceReference',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyPolicyStatus = CatchContractFieldConstraints(
+    path: 'salesPrivacyPolicy.status',
+    required: true,
+  );
+
+  static const salesPrivacyRestrictionActivePlanId = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.activePlanId',
+    valueTypes: <String>['string'],
+    pattern: '^privacy-[a-f0-9]{40}\$',
+  );
+
+  static const salesPrivacyRestrictionClassification = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.classification',
+    required: true,
+  );
+
+  static const salesPrivacyRestrictionMaterialHash = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.materialHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPrivacyRestrictionOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}\$',
+  );
+
+  static const salesPrivacyRestrictionReason = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyRestrictionRequestId = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}\$',
+  );
+
+  static const salesPrivacyRestrictionRestrictedAt = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.restrictedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPrivacyRestrictionRestrictedByUid = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.restrictedByUid',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPrivacyRestrictionRevision = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesPrivacyRestrictionSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.schemaVersion',
+    required: true,
+  );
+
+  static const salesPrivacyRestrictionStatus = CatchContractFieldConstraints(
+    path: 'salesPrivacyRestriction.status',
+    required: true,
+    enumValues: <String>['restricted', 'processing', 'internal_processed_with_unresolved'],
   );
 
   static const salesQuotesDocumentAcceptedDecisionId = CatchContractFieldConstraints(
@@ -146375,6 +149193,52 @@ abstract final class CatchContractConstraints {
     'adminApplySalesImportCompensationResponse.receipt.requestId': adminApplySalesImportCompensationResponseReceiptRequestId,
     'adminApplySalesImportCompensationResponse.receipt.revision': adminApplySalesImportCompensationResponseReceiptRevision,
     'adminApplySalesImportCompensationResponse.status': adminApplySalesImportCompensationResponseStatus,
+    'adminApplySalesImportHistoryPayload.contentHash': adminApplySalesImportHistoryPayloadContentHash,
+    'adminApplySalesImportHistoryPayload.mappingVersion': adminApplySalesImportHistoryPayloadMappingVersion,
+    'adminApplySalesImportHistoryPayload.previewHash': adminApplySalesImportHistoryPayloadPreviewHash,
+    'adminApplySalesImportHistoryPayload.promotionVersion': adminApplySalesImportHistoryPayloadPromotionVersion,
+    'adminApplySalesImportHistoryPayload.requestId': adminApplySalesImportHistoryPayloadRequestId,
+    'adminApplySalesImportHistoryPayload.rows': adminApplySalesImportHistoryPayloadRows,
+    'adminApplySalesImportHistoryPayload.rows.items.disposition': adminApplySalesImportHistoryPayloadRowsItemsDisposition,
+    'adminApplySalesImportHistoryPayload.rows.items.entries': adminApplySalesImportHistoryPayloadRowsItemsEntries,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.dateSourceColumn': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceColumn,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.dateSourceValue': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceValue,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.kind': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsKind,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.occurredAt': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsOccurredAt,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.sourceColumn': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsSourceColumn,
+    'adminApplySalesImportHistoryPayload.rows.items.entries.items.sourceValue': adminApplySalesImportHistoryPayloadRowsItemsEntriesItemsSourceValue,
+    'adminApplySalesImportHistoryPayload.rows.items.importId': adminApplySalesImportHistoryPayloadRowsItemsImportId,
+    'adminApplySalesImportHistoryPayload.rows.items.organizerId': adminApplySalesImportHistoryPayloadRowsItemsOrganizerId,
+    'adminApplySalesImportHistoryPayload.rows.items.reason': adminApplySalesImportHistoryPayloadRowsItemsReason,
+    'adminApplySalesImportHistoryPayload.rows.items.sourceRowId': adminApplySalesImportHistoryPayloadRowsItemsSourceRowId,
+    'adminApplySalesImportHistoryPayload.sourceId': adminApplySalesImportHistoryPayloadSourceId,
+    'adminApplySalesImportHistoryResponse.effectsApplied': adminApplySalesImportHistoryResponseEffectsApplied,
+    'adminApplySalesImportHistoryResponse.packetRowCount': adminApplySalesImportHistoryResponsePacketRowCount,
+    'adminApplySalesImportHistoryResponse.previewHash': adminApplySalesImportHistoryResponsePreviewHash,
+    'adminApplySalesImportHistoryResponse.receipt.requestId': adminApplySalesImportHistoryResponseReceiptRequestId,
+    'adminApplySalesImportHistoryResponse.receipt.revision': adminApplySalesImportHistoryResponseReceiptRevision,
+    'adminApplySalesImportHistoryResponse.recordsCreated': adminApplySalesImportHistoryResponseRecordsCreated,
+    'adminApplySalesImportHistoryResponse.rows': adminApplySalesImportHistoryResponseRows,
+    'adminApplySalesImportHistoryResponse.rows.items.organizerId': adminApplySalesImportHistoryResponseRowsItemsOrganizerId,
+    'adminApplySalesImportHistoryResponse.rows.items.recordIds': adminApplySalesImportHistoryResponseRowsItemsRecordIds,
+    'adminApplySalesImportHistoryResponse.rows.items.recordIds.items': adminApplySalesImportHistoryResponseRowsItemsRecordIdsItems,
+    'adminApplySalesImportHistoryResponse.rows.items.sourceRowId': adminApplySalesImportHistoryResponseRowsItemsSourceRowId,
+    'adminApplySalesImportHistoryResponse.rows.items.status': adminApplySalesImportHistoryResponseRowsItemsStatus,
+    'adminApplySalesPrivacyBatchPayload.expectedCursor': adminApplySalesPrivacyBatchPayloadExpectedCursor,
+    'adminApplySalesPrivacyBatchPayload.organizerId': adminApplySalesPrivacyBatchPayloadOrganizerId,
+    'adminApplySalesPrivacyBatchPayload.planId': adminApplySalesPrivacyBatchPayloadPlanId,
+    'adminApplySalesPrivacyBatchPayload.requestId': adminApplySalesPrivacyBatchPayloadRequestId,
+    'adminApplySalesPrivacyBatchResponse.batch.completeDeletion': adminApplySalesPrivacyBatchResponseBatchCompleteDeletion,
+    'adminApplySalesPrivacyBatchResponse.batch.deletedCount': adminApplySalesPrivacyBatchResponseBatchDeletedCount,
+    'adminApplySalesPrivacyBatchResponse.batch.itemCount': adminApplySalesPrivacyBatchResponseBatchItemCount,
+    'adminApplySalesPrivacyBatchResponse.batch.nextCursor': adminApplySalesPrivacyBatchResponseBatchNextCursor,
+    'adminApplySalesPrivacyBatchResponse.batch.organizerId': adminApplySalesPrivacyBatchResponseBatchOrganizerId,
+    'adminApplySalesPrivacyBatchResponse.batch.planId': adminApplySalesPrivacyBatchResponseBatchPlanId,
+    'adminApplySalesPrivacyBatchResponse.batch.previousCursor': adminApplySalesPrivacyBatchResponseBatchPreviousCursor,
+    'adminApplySalesPrivacyBatchResponse.batch.receiptId': adminApplySalesPrivacyBatchResponseBatchReceiptId,
+    'adminApplySalesPrivacyBatchResponse.batch.retainedCount': adminApplySalesPrivacyBatchResponseBatchRetainedCount,
+    'adminApplySalesPrivacyBatchResponse.batch.status': adminApplySalesPrivacyBatchResponseBatchStatus,
+    'adminApplySalesPrivacyBatchResponse.batch.unresolvedCount': adminApplySalesPrivacyBatchResponseBatchUnresolvedCount,
     'adminApproveSalesQuoteCallablePayload.evidence.evidenceId': adminApproveSalesQuoteCallablePayloadEvidenceEvidenceId,
     'adminApproveSalesQuoteCallablePayload.expectedRevision': adminApproveSalesQuoteCallablePayloadExpectedRevision,
     'adminApproveSalesQuoteCallablePayload.opportunityId': adminApproveSalesQuoteCallablePayloadOpportunityId,
@@ -146876,6 +149740,30 @@ abstract final class CatchContractConstraints {
     'adminGetSalesCommercialDetailResponse.settlementAttestation.status': adminGetSalesCommercialDetailResponseSettlementAttestationStatus,
     'adminGetSalesCommercialDetailResponse.settlementAttestation.termsHash': adminGetSalesCommercialDetailResponseSettlementAttestationTermsHash,
     'adminGetSalesCommercialDetailResponse.settlementAttestation.termVersion': adminGetSalesCommercialDetailResponseSettlementAttestationTermVersion,
+    'adminGetSalesFunnelReportPayload.since': adminGetSalesFunnelReportPayloadSince,
+    'adminGetSalesFunnelReportResponse.activeHosts': adminGetSalesFunnelReportResponseActiveHosts,
+    'adminGetSalesFunnelReportResponse.asOf': adminGetSalesFunnelReportResponseAsOf,
+    'adminGetSalesFunnelReportResponse.coverage': adminGetSalesFunnelReportResponseCoverage,
+    'adminGetSalesFunnelReportResponse.duplicateReviewHosts': adminGetSalesFunnelReportResponseDuplicateReviewHosts,
+    'adminGetSalesFunnelReportResponse.excludedArchivedOrRestrictedHosts': adminGetSalesFunnelReportResponseExcludedArchivedOrRestrictedHosts,
+    'adminGetSalesFunnelReportResponse.heldHosts': adminGetSalesFunnelReportResponseHeldHosts,
+    'adminGetSalesFunnelReportResponse.hostsWithOpportunities': adminGetSalesFunnelReportResponseHostsWithOpportunities,
+    'adminGetSalesFunnelReportResponse.hostsWithOverdueOpportunities': adminGetSalesFunnelReportResponseHostsWithOverdueOpportunities,
+    'adminGetSalesFunnelReportResponse.movementEvents': adminGetSalesFunnelReportResponseMovementEvents,
+    'adminGetSalesFunnelReportResponse.openObligations': adminGetSalesFunnelReportResponseOpenObligations,
+    'adminGetSalesFunnelReportResponse.opportunities': adminGetSalesFunnelReportResponseOpportunities,
+    'adminGetSalesFunnelReportResponse.opportunitiesMissingNextStep': adminGetSalesFunnelReportResponseOpportunitiesMissingNextStep,
+    'adminGetSalesFunnelReportResponse.overdueObligations': adminGetSalesFunnelReportResponseOverdueObligations,
+    'adminGetSalesFunnelReportResponse.overdueOpportunities': adminGetSalesFunnelReportResponseOverdueOpportunities,
+    'adminGetSalesFunnelReportResponse.revenueStatus': adminGetSalesFunnelReportResponseRevenueStatus,
+    'adminGetSalesFunnelReportResponse.schemaVersion': adminGetSalesFunnelReportResponseSchemaVersion,
+    'adminGetSalesFunnelReportResponse.since': adminGetSalesFunnelReportResponseSince,
+    'adminGetSalesFunnelReportResponse.stages': adminGetSalesFunnelReportResponseStages,
+    'adminGetSalesFunnelReportResponse.stages.items.distinctHosts': adminGetSalesFunnelReportResponseStagesItemsDistinctHosts,
+    'adminGetSalesFunnelReportResponse.stages.items.distinctHostsEntered': adminGetSalesFunnelReportResponseStagesItemsDistinctHostsEntered,
+    'adminGetSalesFunnelReportResponse.stages.items.enteredInWindow': adminGetSalesFunnelReportResponseStagesItemsEnteredInWindow,
+    'adminGetSalesFunnelReportResponse.stages.items.opportunities': adminGetSalesFunnelReportResponseStagesItemsOpportunities,
+    'adminGetSalesFunnelReportResponse.stages.items.stage': adminGetSalesFunnelReportResponseStagesItemsStage,
     'adminGetSalesIntelligenceCatalogRequest.organizerId': adminGetSalesIntelligenceCatalogRequestOrganizerId,
     'adminGetSalesIntelligenceCatalogResponse.assessments': adminGetSalesIntelligenceCatalogResponseAssessments,
     'adminGetSalesIntelligenceCatalogResponse.assessments.items.assessmentId': adminGetSalesIntelligenceCatalogResponseAssessmentsItemsAssessmentId,
@@ -146998,6 +149886,34 @@ abstract final class CatchContractConstraints {
     'adminGetSalesOutreachDraftResponse.reviewedBy': adminGetSalesOutreachDraftResponseReviewedBy,
     'adminGetSalesOutreachDraftResponse.sendAuthority': adminGetSalesOutreachDraftResponseSendAuthority,
     'adminGetSalesOutreachDraftResponse.status': adminGetSalesOutreachDraftResponseStatus,
+    'adminGetSalesPrivacyCasePayload.organizerId': adminGetSalesPrivacyCasePayloadOrganizerId,
+    'adminGetSalesPrivacyCaseResponse.completeDeletion': adminGetSalesPrivacyCaseResponseCompleteDeletion,
+    'adminGetSalesPrivacyCaseResponse.organizerId': adminGetSalesPrivacyCaseResponseOrganizerId,
+    'adminGetSalesPrivacyCaseResponse.plan.blockers': adminGetSalesPrivacyCaseResponsePlanBlockers,
+    'adminGetSalesPrivacyCaseResponse.plan.blockers.items.code': adminGetSalesPrivacyCaseResponsePlanBlockersItemsCode,
+    'adminGetSalesPrivacyCaseResponse.plan.blockers.items.fingerprint': adminGetSalesPrivacyCaseResponsePlanBlockersItemsFingerprint,
+    'adminGetSalesPrivacyCaseResponse.plan.cursor': adminGetSalesPrivacyCaseResponsePlanCursor,
+    'adminGetSalesPrivacyCaseResponse.plan.inventoryHash': adminGetSalesPrivacyCaseResponsePlanInventoryHash,
+    'adminGetSalesPrivacyCaseResponse.plan.itemCount': adminGetSalesPrivacyCaseResponsePlanItemCount,
+    'adminGetSalesPrivacyCaseResponse.plan.organizerId': adminGetSalesPrivacyCaseResponsePlanOrganizerId,
+    'adminGetSalesPrivacyCaseResponse.plan.planId': adminGetSalesPrivacyCaseResponsePlanPlanId,
+    'adminGetSalesPrivacyCaseResponse.plan.policyHash': adminGetSalesPrivacyCaseResponsePlanPolicyHash,
+    'adminGetSalesPrivacyCaseResponse.plan.retainedCount': adminGetSalesPrivacyCaseResponsePlanRetainedCount,
+    'adminGetSalesPrivacyCaseResponse.plan.status': adminGetSalesPrivacyCaseResponsePlanStatus,
+    'adminGetSalesPrivacyCaseResponse.plan.unresolvedCount': adminGetSalesPrivacyCaseResponsePlanUnresolvedCount,
+    'adminGetSalesPrivacyCaseResponse.policy.auditDisposition': adminGetSalesPrivacyCaseResponsePolicyAuditDisposition,
+    'adminGetSalesPrivacyCaseResponse.policy.auditReason': adminGetSalesPrivacyCaseResponsePolicyAuditReason,
+    'adminGetSalesPrivacyCaseResponse.policy.financeDisposition': adminGetSalesPrivacyCaseResponsePolicyFinanceDisposition,
+    'adminGetSalesPrivacyCaseResponse.policy.financeReason': adminGetSalesPrivacyCaseResponsePolicyFinanceReason,
+    'adminGetSalesPrivacyCaseResponse.policy.policyHash': adminGetSalesPrivacyCaseResponsePolicyPolicyHash,
+    'adminGetSalesPrivacyCaseResponse.policy.reviewedAt': adminGetSalesPrivacyCaseResponsePolicyReviewedAt,
+    'adminGetSalesPrivacyCaseResponse.policy.revision': adminGetSalesPrivacyCaseResponsePolicyRevision,
+    'adminGetSalesPrivacyCaseResponse.policy.sourceReference': adminGetSalesPrivacyCaseResponsePolicySourceReference,
+    'adminGetSalesPrivacyCaseResponse.restricted': adminGetSalesPrivacyCaseResponseRestricted,
+    'adminGetSalesPrivacyCaseResponse.restriction.reason': adminGetSalesPrivacyCaseResponseRestrictionReason,
+    'adminGetSalesPrivacyCaseResponse.restriction.restrictedAt': adminGetSalesPrivacyCaseResponseRestrictionRestrictedAt,
+    'adminGetSalesPrivacyCaseResponse.restriction.revision': adminGetSalesPrivacyCaseResponseRestrictionRevision,
+    'adminGetSalesPrivacyCaseResponse.restriction.status': adminGetSalesPrivacyCaseResponseRestrictionStatus,
     'adminGetSalesReceiptCallablePayload.requestId': adminGetSalesReceiptCallablePayloadRequestId,
     'adminLinkOrganizerIntakeToSalesPayload.candidateId': adminLinkOrganizerIntakeToSalesPayloadCandidateId,
     'adminLinkOrganizerIntakeToSalesPayload.curationPath': adminLinkOrganizerIntakeToSalesPayloadCurationPath,
@@ -147189,6 +150105,56 @@ abstract final class CatchContractConstraints {
     'adminListSalesFitQueueResponse.rows.items.sourceHash': adminListSalesFitQueueResponseRowsItemsSourceHash,
     'adminListSalesFitQueueResponse.rows.items.status': adminListSalesFitQueueResponseRowsItemsStatus,
     'adminListSalesFitQueueResponse.rows.items.suppressionStatus': adminListSalesFitQueueResponseRowsItemsSuppressionStatus,
+    'adminListSalesImportHistoryPayload.cursor': adminListSalesImportHistoryPayloadCursor,
+    'adminListSalesImportHistoryPayload.limit': adminListSalesImportHistoryPayloadLimit,
+    'adminListSalesImportHistoryPayload.organizerId': adminListSalesImportHistoryPayloadOrganizerId,
+    'adminListSalesImportHistoryResponse.nextCursor': adminListSalesImportHistoryResponseNextCursor,
+    'adminListSalesImportHistoryResponse.records': adminListSalesImportHistoryResponseRecords,
+    'adminListSalesImportHistoryResponse.records.items.classification': adminListSalesImportHistoryResponseRecordsItemsClassification,
+    'adminListSalesImportHistoryResponse.records.items.contactAuthority': adminListSalesImportHistoryResponseRecordsItemsContactAuthority,
+    'adminListSalesImportHistoryResponse.records.items.contentHash': adminListSalesImportHistoryResponseRecordsItemsContentHash,
+    'adminListSalesImportHistoryResponse.records.items.currentFitAuthority': adminListSalesImportHistoryResponseRecordsItemsCurrentFitAuthority,
+    'adminListSalesImportHistoryResponse.records.items.dateCertainty': adminListSalesImportHistoryResponseRecordsItemsDateCertainty,
+    'adminListSalesImportHistoryResponse.records.items.dateSourceColumn': adminListSalesImportHistoryResponseRecordsItemsDateSourceColumn,
+    'adminListSalesImportHistoryResponse.records.items.dateSourceValue': adminListSalesImportHistoryResponseRecordsItemsDateSourceValue,
+    'adminListSalesImportHistoryResponse.records.items.importId': adminListSalesImportHistoryResponseRecordsItemsImportId,
+    'adminListSalesImportHistoryResponse.records.items.kind': adminListSalesImportHistoryResponseRecordsItemsKind,
+    'adminListSalesImportHistoryResponse.records.items.occurredAt': adminListSalesImportHistoryResponseRecordsItemsOccurredAt,
+    'adminListSalesImportHistoryResponse.records.items.organizerId': adminListSalesImportHistoryResponseRecordsItemsOrganizerId,
+    'adminListSalesImportHistoryResponse.records.items.promotionVersion': adminListSalesImportHistoryResponseRecordsItemsPromotionVersion,
+    'adminListSalesImportHistoryResponse.records.items.providerConfirmed': adminListSalesImportHistoryResponseRecordsItemsProviderConfirmed,
+    'adminListSalesImportHistoryResponse.records.items.recordedAt': adminListSalesImportHistoryResponseRecordsItemsRecordedAt,
+    'adminListSalesImportHistoryResponse.records.items.recordedBy': adminListSalesImportHistoryResponseRecordsItemsRecordedBy,
+    'adminListSalesImportHistoryResponse.records.items.recordId': adminListSalesImportHistoryResponseRecordsItemsRecordId,
+    'adminListSalesImportHistoryResponse.records.items.relativeChronology': adminListSalesImportHistoryResponseRecordsItemsRelativeChronology,
+    'adminListSalesImportHistoryResponse.records.items.schemaVersion': adminListSalesImportHistoryResponseRecordsItemsSchemaVersion,
+    'adminListSalesImportHistoryResponse.records.items.sendAuthority': adminListSalesImportHistoryResponseRecordsItemsSendAuthority,
+    'adminListSalesImportHistoryResponse.records.items.sourceColumn': adminListSalesImportHistoryResponseRecordsItemsSourceColumn,
+    'adminListSalesImportHistoryResponse.records.items.sourceContentHash': adminListSalesImportHistoryResponseRecordsItemsSourceContentHash,
+    'adminListSalesImportHistoryResponse.records.items.sourceId': adminListSalesImportHistoryResponseRecordsItemsSourceId,
+    'adminListSalesImportHistoryResponse.records.items.sourceRowId': adminListSalesImportHistoryResponseRecordsItemsSourceRowId,
+    'adminListSalesImportHistoryResponse.records.items.sourceValue': adminListSalesImportHistoryResponseRecordsItemsSourceValue,
+    'adminListSalesImportHistoryRowsPayload.cursor': adminListSalesImportHistoryRowsPayloadCursor,
+    'adminListSalesImportHistoryRowsPayload.limit': adminListSalesImportHistoryRowsPayloadLimit,
+    'adminListSalesImportHistoryRowsPayload.organizerId': adminListSalesImportHistoryRowsPayloadOrganizerId,
+    'adminListSalesImportHistoryRowsResponse.nextCursor': adminListSalesImportHistoryRowsResponseNextCursor,
+    'adminListSalesImportHistoryRowsResponse.rows': adminListSalesImportHistoryRowsResponseRows,
+    'adminListSalesImportHistoryRowsResponse.rows.items.classification': adminListSalesImportHistoryRowsResponseRowsItemsClassification,
+    'adminListSalesImportHistoryRowsResponse.rows.items.disposition': adminListSalesImportHistoryRowsResponseRowsItemsDisposition,
+    'adminListSalesImportHistoryRowsResponse.rows.items.importId': adminListSalesImportHistoryRowsResponseRowsItemsImportId,
+    'adminListSalesImportHistoryRowsResponse.rows.items.organizerId': adminListSalesImportHistoryRowsResponseRowsItemsOrganizerId,
+    'adminListSalesImportHistoryRowsResponse.rows.items.promotionVersion': adminListSalesImportHistoryRowsResponseRowsItemsPromotionVersion,
+    'adminListSalesImportHistoryRowsResponse.rows.items.reason': adminListSalesImportHistoryRowsResponseRowsItemsReason,
+    'adminListSalesImportHistoryRowsResponse.rows.items.recordIds': adminListSalesImportHistoryRowsResponseRowsItemsRecordIds,
+    'adminListSalesImportHistoryRowsResponse.rows.items.recordIds.items': adminListSalesImportHistoryRowsResponseRowsItemsRecordIdsItems,
+    'adminListSalesImportHistoryRowsResponse.rows.items.reviewedAt': adminListSalesImportHistoryRowsResponseRowsItemsReviewedAt,
+    'adminListSalesImportHistoryRowsResponse.rows.items.reviewedBy': adminListSalesImportHistoryRowsResponseRowsItemsReviewedBy,
+    'adminListSalesImportHistoryRowsResponse.rows.items.reviewHash': adminListSalesImportHistoryRowsResponseRowsItemsReviewHash,
+    'adminListSalesImportHistoryRowsResponse.rows.items.rowId': adminListSalesImportHistoryRowsResponseRowsItemsRowId,
+    'adminListSalesImportHistoryRowsResponse.rows.items.schemaVersion': adminListSalesImportHistoryRowsResponseRowsItemsSchemaVersion,
+    'adminListSalesImportHistoryRowsResponse.rows.items.sourceContentHash': adminListSalesImportHistoryRowsResponseRowsItemsSourceContentHash,
+    'adminListSalesImportHistoryRowsResponse.rows.items.sourceId': adminListSalesImportHistoryRowsResponseRowsItemsSourceId,
+    'adminListSalesImportHistoryRowsResponse.rows.items.sourceRowId': adminListSalesImportHistoryRowsResponseRowsItemsSourceRowId,
     'adminListSalesInboundIntentsCallablePayload.cursor': adminListSalesInboundIntentsCallablePayloadCursor,
     'adminListSalesInboundIntentsCallablePayload.limit': adminListSalesInboundIntentsCallablePayloadLimit,
     'adminListSalesInboundIntentsCallablePayload.status': adminListSalesInboundIntentsCallablePayloadStatus,
@@ -147234,6 +150200,46 @@ abstract final class CatchContractConstraints {
     'adminPreviewSalesImportCompensationResponse.mode': adminPreviewSalesImportCompensationResponseMode,
     'adminPreviewSalesImportCompensationResponse.organizerId': adminPreviewSalesImportCompensationResponseOrganizerId,
     'adminPreviewSalesImportCompensationResponse.previewHash': adminPreviewSalesImportCompensationResponsePreviewHash,
+    'adminPreviewSalesImportHistoryPayload.contentHash': adminPreviewSalesImportHistoryPayloadContentHash,
+    'adminPreviewSalesImportHistoryPayload.mappingVersion': adminPreviewSalesImportHistoryPayloadMappingVersion,
+    'adminPreviewSalesImportHistoryPayload.promotionVersion': adminPreviewSalesImportHistoryPayloadPromotionVersion,
+    'adminPreviewSalesImportHistoryPayload.rows': adminPreviewSalesImportHistoryPayloadRows,
+    'adminPreviewSalesImportHistoryPayload.rows.items.disposition': adminPreviewSalesImportHistoryPayloadRowsItemsDisposition,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries': adminPreviewSalesImportHistoryPayloadRowsItemsEntries,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.dateSourceColumn': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceColumn,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.dateSourceValue': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsDateSourceValue,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.kind': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsKind,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.occurredAt': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsOccurredAt,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.sourceColumn': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsSourceColumn,
+    'adminPreviewSalesImportHistoryPayload.rows.items.entries.items.sourceValue': adminPreviewSalesImportHistoryPayloadRowsItemsEntriesItemsSourceValue,
+    'adminPreviewSalesImportHistoryPayload.rows.items.importId': adminPreviewSalesImportHistoryPayloadRowsItemsImportId,
+    'adminPreviewSalesImportHistoryPayload.rows.items.organizerId': adminPreviewSalesImportHistoryPayloadRowsItemsOrganizerId,
+    'adminPreviewSalesImportHistoryPayload.rows.items.reason': adminPreviewSalesImportHistoryPayloadRowsItemsReason,
+    'adminPreviewSalesImportHistoryPayload.rows.items.sourceRowId': adminPreviewSalesImportHistoryPayloadRowsItemsSourceRowId,
+    'adminPreviewSalesImportHistoryPayload.sourceId': adminPreviewSalesImportHistoryPayloadSourceId,
+    'adminPreviewSalesImportHistoryResponse.effectsApplied': adminPreviewSalesImportHistoryResponseEffectsApplied,
+    'adminPreviewSalesImportHistoryResponse.packetRowCount': adminPreviewSalesImportHistoryResponsePacketRowCount,
+    'adminPreviewSalesImportHistoryResponse.previewHash': adminPreviewSalesImportHistoryResponsePreviewHash,
+    'adminPreviewSalesImportHistoryResponse.rows': adminPreviewSalesImportHistoryResponseRows,
+    'adminPreviewSalesImportHistoryResponse.rows.items.organizerId': adminPreviewSalesImportHistoryResponseRowsItemsOrganizerId,
+    'adminPreviewSalesImportHistoryResponse.rows.items.recordIds': adminPreviewSalesImportHistoryResponseRowsItemsRecordIds,
+    'adminPreviewSalesImportHistoryResponse.rows.items.recordIds.items': adminPreviewSalesImportHistoryResponseRowsItemsRecordIdsItems,
+    'adminPreviewSalesImportHistoryResponse.rows.items.sourceRowId': adminPreviewSalesImportHistoryResponseRowsItemsSourceRowId,
+    'adminPreviewSalesImportHistoryResponse.rows.items.status': adminPreviewSalesImportHistoryResponseRowsItemsStatus,
+    'adminPreviewSalesPrivacyPlanPayload.organizerId': adminPreviewSalesPrivacyPlanPayloadOrganizerId,
+    'adminPreviewSalesPrivacyPlanResponse.activePlanId': adminPreviewSalesPrivacyPlanResponseActivePlanId,
+    'adminPreviewSalesPrivacyPlanResponse.blockers': adminPreviewSalesPrivacyPlanResponseBlockers,
+    'adminPreviewSalesPrivacyPlanResponse.blockers.items.code': adminPreviewSalesPrivacyPlanResponseBlockersItemsCode,
+    'adminPreviewSalesPrivacyPlanResponse.blockers.items.fingerprint': adminPreviewSalesPrivacyPlanResponseBlockersItemsFingerprint,
+    'adminPreviewSalesPrivacyPlanResponse.counts.deletable': adminPreviewSalesPrivacyPlanResponseCountsDeletable,
+    'adminPreviewSalesPrivacyPlanResponse.counts.retained': adminPreviewSalesPrivacyPlanResponseCountsRetained,
+    'adminPreviewSalesPrivacyPlanResponse.counts.unresolved': adminPreviewSalesPrivacyPlanResponseCountsUnresolved,
+    'adminPreviewSalesPrivacyPlanResponse.effectsApplied': adminPreviewSalesPrivacyPlanResponseEffectsApplied,
+    'adminPreviewSalesPrivacyPlanResponse.inventoryHash': adminPreviewSalesPrivacyPlanResponseInventoryHash,
+    'adminPreviewSalesPrivacyPlanResponse.organizerId': adminPreviewSalesPrivacyPlanResponseOrganizerId,
+    'adminPreviewSalesPrivacyPlanResponse.overflow': adminPreviewSalesPrivacyPlanResponseOverflow,
+    'adminPreviewSalesPrivacyPlanResponse.policyHash': adminPreviewSalesPrivacyPlanResponsePolicyHash,
+    'adminPreviewSalesPrivacyPlanResponse.restrictionRevision': adminPreviewSalesPrivacyPlanResponseRestrictionRevision,
     'adminPublishExternalEventCallablePayload.checklist.noCatchBookingPaymentsWaitlist': adminPublishExternalEventCallablePayloadChecklistNoCatchBookingPaymentsWaitlist,
     'adminPublishExternalEventCallablePayload.checklist.outboundLinksReviewed': adminPublishExternalEventCallablePayloadChecklistOutboundLinksReviewed,
     'adminPublishExternalEventCallablePayload.checklist.ownerSafeCopyReviewed': adminPublishExternalEventCallablePayloadChecklistOwnerSafeCopyReviewed,
@@ -147366,6 +150372,20 @@ abstract final class CatchContractConstraints {
     'adminResolveOrganizerEventLocationCallablePayload.location.notes': adminResolveOrganizerEventLocationCallablePayloadLocationNotes,
     'adminResolveOrganizerEventLocationCallablePayload.location.placeId': adminResolveOrganizerEventLocationCallablePayloadLocationPlaceId,
     'adminResolveOrganizerEventLocationCallablePayload.note': adminResolveOrganizerEventLocationCallablePayloadNote,
+    'adminRestrictSalesOrganizerPayload.organizerId': adminRestrictSalesOrganizerPayloadOrganizerId,
+    'adminRestrictSalesOrganizerPayload.reason': adminRestrictSalesOrganizerPayloadReason,
+    'adminRestrictSalesOrganizerPayload.requestId': adminRestrictSalesOrganizerPayloadRequestId,
+    'adminRestrictSalesOrganizerResponse.restriction.activePlanId': adminRestrictSalesOrganizerResponseRestrictionActivePlanId,
+    'adminRestrictSalesOrganizerResponse.restriction.classification': adminRestrictSalesOrganizerResponseRestrictionClassification,
+    'adminRestrictSalesOrganizerResponse.restriction.materialHash': adminRestrictSalesOrganizerResponseRestrictionMaterialHash,
+    'adminRestrictSalesOrganizerResponse.restriction.organizerId': adminRestrictSalesOrganizerResponseRestrictionOrganizerId,
+    'adminRestrictSalesOrganizerResponse.restriction.reason': adminRestrictSalesOrganizerResponseRestrictionReason,
+    'adminRestrictSalesOrganizerResponse.restriction.requestId': adminRestrictSalesOrganizerResponseRestrictionRequestId,
+    'adminRestrictSalesOrganizerResponse.restriction.restrictedAt': adminRestrictSalesOrganizerResponseRestrictionRestrictedAt,
+    'adminRestrictSalesOrganizerResponse.restriction.restrictedByUid': adminRestrictSalesOrganizerResponseRestrictionRestrictedByUid,
+    'adminRestrictSalesOrganizerResponse.restriction.revision': adminRestrictSalesOrganizerResponseRestrictionRevision,
+    'adminRestrictSalesOrganizerResponse.restriction.schemaVersion': adminRestrictSalesOrganizerResponseRestrictionSchemaVersion,
+    'adminRestrictSalesOrganizerResponse.restriction.status': adminRestrictSalesOrganizerResponseRestrictionStatus,
     'adminReviewEventMessagingBudgetCallablePayload.eventId': adminReviewEventMessagingBudgetCallablePayloadEventId,
     'adminReviewEventMessagingBudgetCallablePayload.organizerId': adminReviewEventMessagingBudgetCallablePayloadOrganizerId,
     'adminReviewEventMessagingBudgetCallablePayload.purpose': adminReviewEventMessagingBudgetCallablePayloadPurpose,
@@ -147462,6 +150482,46 @@ abstract final class CatchContractConstraints {
     'adminReviewSalesOutreachDraftResponse.reviewedAt': adminReviewSalesOutreachDraftResponseReviewedAt,
     'adminReviewSalesOutreachDraftResponse.sendAuthority': adminReviewSalesOutreachDraftResponseSendAuthority,
     'adminReviewSalesOutreachDraftResponse.tone': adminReviewSalesOutreachDraftResponseTone,
+    'adminReviewSalesPrivacyPlanPayload.expectedActivePlanId': adminReviewSalesPrivacyPlanPayloadExpectedActivePlanId,
+    'adminReviewSalesPrivacyPlanPayload.inventoryHash': adminReviewSalesPrivacyPlanPayloadInventoryHash,
+    'adminReviewSalesPrivacyPlanPayload.organizerId': adminReviewSalesPrivacyPlanPayloadOrganizerId,
+    'adminReviewSalesPrivacyPlanPayload.policyHash': adminReviewSalesPrivacyPlanPayloadPolicyHash,
+    'adminReviewSalesPrivacyPlanPayload.requestId': adminReviewSalesPrivacyPlanPayloadRequestId,
+    'adminReviewSalesPrivacyPlanPayload.restrictionRevision': adminReviewSalesPrivacyPlanPayloadRestrictionRevision,
+    'adminReviewSalesPrivacyPlanResponse.plan.blockers': adminReviewSalesPrivacyPlanResponsePlanBlockers,
+    'adminReviewSalesPrivacyPlanResponse.plan.blockers.items.code': adminReviewSalesPrivacyPlanResponsePlanBlockersItemsCode,
+    'adminReviewSalesPrivacyPlanResponse.plan.blockers.items.fingerprint': adminReviewSalesPrivacyPlanResponsePlanBlockersItemsFingerprint,
+    'adminReviewSalesPrivacyPlanResponse.plan.cursor': adminReviewSalesPrivacyPlanResponsePlanCursor,
+    'adminReviewSalesPrivacyPlanResponse.plan.inventoryHash': adminReviewSalesPrivacyPlanResponsePlanInventoryHash,
+    'adminReviewSalesPrivacyPlanResponse.plan.itemCount': adminReviewSalesPrivacyPlanResponsePlanItemCount,
+    'adminReviewSalesPrivacyPlanResponse.plan.organizerId': adminReviewSalesPrivacyPlanResponsePlanOrganizerId,
+    'adminReviewSalesPrivacyPlanResponse.plan.planId': adminReviewSalesPrivacyPlanResponsePlanPlanId,
+    'adminReviewSalesPrivacyPlanResponse.plan.policyHash': adminReviewSalesPrivacyPlanResponsePlanPolicyHash,
+    'adminReviewSalesPrivacyPlanResponse.plan.retainedCount': adminReviewSalesPrivacyPlanResponsePlanRetainedCount,
+    'adminReviewSalesPrivacyPlanResponse.plan.status': adminReviewSalesPrivacyPlanResponsePlanStatus,
+    'adminReviewSalesPrivacyPlanResponse.plan.unresolvedCount': adminReviewSalesPrivacyPlanResponsePlanUnresolvedCount,
+    'adminReviewSalesPrivacyPolicyPayload.auditReason': adminReviewSalesPrivacyPolicyPayloadAuditReason,
+    'adminReviewSalesPrivacyPolicyPayload.expectedRevision': adminReviewSalesPrivacyPolicyPayloadExpectedRevision,
+    'adminReviewSalesPrivacyPolicyPayload.financeReason': adminReviewSalesPrivacyPolicyPayloadFinanceReason,
+    'adminReviewSalesPrivacyPolicyPayload.requestId': adminReviewSalesPrivacyPolicyPayloadRequestId,
+    'adminReviewSalesPrivacyPolicyPayload.sourceHash': adminReviewSalesPrivacyPolicyPayloadSourceHash,
+    'adminReviewSalesPrivacyPolicyPayload.sourceReference': adminReviewSalesPrivacyPolicyPayloadSourceReference,
+    'adminReviewSalesPrivacyPolicyResponse.policy.auditDisposition': adminReviewSalesPrivacyPolicyResponsePolicyAuditDisposition,
+    'adminReviewSalesPrivacyPolicyResponse.policy.auditReason': adminReviewSalesPrivacyPolicyResponsePolicyAuditReason,
+    'adminReviewSalesPrivacyPolicyResponse.policy.classification': adminReviewSalesPrivacyPolicyResponsePolicyClassification,
+    'adminReviewSalesPrivacyPolicyResponse.policy.externalCopies': adminReviewSalesPrivacyPolicyResponsePolicyExternalCopies,
+    'adminReviewSalesPrivacyPolicyResponse.policy.financeDisposition': adminReviewSalesPrivacyPolicyResponsePolicyFinanceDisposition,
+    'adminReviewSalesPrivacyPolicyResponse.policy.financeReason': adminReviewSalesPrivacyPolicyResponsePolicyFinanceReason,
+    'adminReviewSalesPrivacyPolicyResponse.policy.policyHash': adminReviewSalesPrivacyPolicyResponsePolicyPolicyHash,
+    'adminReviewSalesPrivacyPolicyResponse.policy.policyId': adminReviewSalesPrivacyPolicyResponsePolicyPolicyId,
+    'adminReviewSalesPrivacyPolicyResponse.policy.requestId': adminReviewSalesPrivacyPolicyResponsePolicyRequestId,
+    'adminReviewSalesPrivacyPolicyResponse.policy.reviewedAt': adminReviewSalesPrivacyPolicyResponsePolicyReviewedAt,
+    'adminReviewSalesPrivacyPolicyResponse.policy.reviewedByUid': adminReviewSalesPrivacyPolicyResponsePolicyReviewedByUid,
+    'adminReviewSalesPrivacyPolicyResponse.policy.revision': adminReviewSalesPrivacyPolicyResponsePolicyRevision,
+    'adminReviewSalesPrivacyPolicyResponse.policy.schemaVersion': adminReviewSalesPrivacyPolicyResponsePolicySchemaVersion,
+    'adminReviewSalesPrivacyPolicyResponse.policy.sourceHash': adminReviewSalesPrivacyPolicyResponsePolicySourceHash,
+    'adminReviewSalesPrivacyPolicyResponse.policy.sourceReference': adminReviewSalesPrivacyPolicyResponsePolicySourceReference,
+    'adminReviewSalesPrivacyPolicyResponse.policy.status': adminReviewSalesPrivacyPolicyResponsePolicyStatus,
     'adminReviseSalesQuoteCallablePayload.expectedRevision': adminReviseSalesQuoteCallablePayloadExpectedRevision,
     'adminReviseSalesQuoteCallablePayload.opportunityId': adminReviseSalesQuoteCallablePayloadOpportunityId,
     'adminReviseSalesQuoteCallablePayload.organizerId': adminReviseSalesQuoteCallablePayloadOrganizerId,
@@ -157103,6 +160163,28 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
+    'legacyPaymentRefundIntent.attempts': legacyPaymentRefundIntentAttempts,
+    'legacyPaymentRefundIntent.attempts.items.amountMinor': legacyPaymentRefundIntentAttemptsItemsAmountMinor,
+    'legacyPaymentRefundIntent.attempts.items.idempotencyKey': legacyPaymentRefundIntentAttemptsItemsIdempotencyKey,
+    'legacyPaymentRefundIntent.attempts.items.providerRefundId': legacyPaymentRefundIntentAttemptsItemsProviderRefundId,
+    'legacyPaymentRefundIntent.attempts.items.startedAtMillis': legacyPaymentRefundIntentAttemptsItemsStartedAtMillis,
+    'legacyPaymentRefundIntent.attempts.items.state': legacyPaymentRefundIntentAttemptsItemsState,
+    'legacyPaymentRefundIntent.confirmedAmountMinor': legacyPaymentRefundIntentConfirmedAmountMinor,
+    'legacyPaymentRefundIntent.currency': legacyPaymentRefundIntentCurrency,
+    'legacyPaymentRefundIntent.lastErrorCode': legacyPaymentRefundIntentLastErrorCode,
+    'legacyPaymentRefundIntent.leaseUntilMillis': legacyPaymentRefundIntentLeaseUntilMillis,
+    'legacyPaymentRefundIntent.nextAttemptAtMillis': legacyPaymentRefundIntentNextAttemptAtMillis,
+    'legacyPaymentRefundIntent.orderId': legacyPaymentRefundIntentOrderId,
+    'legacyPaymentRefundIntent.paymentFingerprint': legacyPaymentRefundIntentPaymentFingerprint,
+    'legacyPaymentRefundIntent.provider': legacyPaymentRefundIntentProvider,
+    'legacyPaymentRefundIntent.providerPaymentId': legacyPaymentRefundIntentProviderPaymentId,
+    'legacyPaymentRefundIntent.reason': legacyPaymentRefundIntentReason,
+    'legacyPaymentRefundIntent.refundApplicationFee': legacyPaymentRefundIntentRefundApplicationFee,
+    'legacyPaymentRefundIntent.requestedAtMillis': legacyPaymentRefundIntentRequestedAtMillis,
+    'legacyPaymentRefundIntent.state': legacyPaymentRefundIntentState,
+    'legacyPaymentRefundIntent.stripeAccountId': legacyPaymentRefundIntentStripeAccountId,
+    'legacyPaymentRefundIntent.targetAmountMinor': legacyPaymentRefundIntentTargetAmountMinor,
+    'legacyPaymentRefundIntent.version': legacyPaymentRefundIntentVersion,
     'listEventAssignmentFeatureChoicesCallablePayload.eventId': listEventAssignmentFeatureChoicesCallablePayloadEventId,
     'listEventAssignmentFeatureChoicesCallableResponse.choices': listEventAssignmentFeatureChoicesCallableResponseChoices,
     'listEventAssignmentFeatureChoicesCallableResponse.choices.items.answerLabel': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsAnswerLabel,
@@ -161336,6 +164418,28 @@ abstract final class CatchContractConstraints {
     'paymentDocument.amount': paymentDocumentAmount,
     'paymentDocument.amountMinor': paymentDocumentAmountMinor,
     'paymentDocument.applicationFeeAmount': paymentDocumentApplicationFeeAmount,
+    'paymentDocument.cancellationRefund.attempts': paymentDocumentCancellationRefundAttempts,
+    'paymentDocument.cancellationRefund.attempts.items.amountMinor': paymentDocumentCancellationRefundAttemptsItemsAmountMinor,
+    'paymentDocument.cancellationRefund.attempts.items.idempotencyKey': paymentDocumentCancellationRefundAttemptsItemsIdempotencyKey,
+    'paymentDocument.cancellationRefund.attempts.items.providerRefundId': paymentDocumentCancellationRefundAttemptsItemsProviderRefundId,
+    'paymentDocument.cancellationRefund.attempts.items.startedAtMillis': paymentDocumentCancellationRefundAttemptsItemsStartedAtMillis,
+    'paymentDocument.cancellationRefund.attempts.items.state': paymentDocumentCancellationRefundAttemptsItemsState,
+    'paymentDocument.cancellationRefund.confirmedAmountMinor': paymentDocumentCancellationRefundConfirmedAmountMinor,
+    'paymentDocument.cancellationRefund.currency': paymentDocumentCancellationRefundCurrency,
+    'paymentDocument.cancellationRefund.lastErrorCode': paymentDocumentCancellationRefundLastErrorCode,
+    'paymentDocument.cancellationRefund.leaseUntilMillis': paymentDocumentCancellationRefundLeaseUntilMillis,
+    'paymentDocument.cancellationRefund.nextAttemptAtMillis': paymentDocumentCancellationRefundNextAttemptAtMillis,
+    'paymentDocument.cancellationRefund.orderId': paymentDocumentCancellationRefundOrderId,
+    'paymentDocument.cancellationRefund.paymentFingerprint': paymentDocumentCancellationRefundPaymentFingerprint,
+    'paymentDocument.cancellationRefund.provider': paymentDocumentCancellationRefundProvider,
+    'paymentDocument.cancellationRefund.providerPaymentId': paymentDocumentCancellationRefundProviderPaymentId,
+    'paymentDocument.cancellationRefund.reason': paymentDocumentCancellationRefundReason,
+    'paymentDocument.cancellationRefund.refundApplicationFee': paymentDocumentCancellationRefundRefundApplicationFee,
+    'paymentDocument.cancellationRefund.requestedAtMillis': paymentDocumentCancellationRefundRequestedAtMillis,
+    'paymentDocument.cancellationRefund.state': paymentDocumentCancellationRefundState,
+    'paymentDocument.cancellationRefund.stripeAccountId': paymentDocumentCancellationRefundStripeAccountId,
+    'paymentDocument.cancellationRefund.targetAmountMinor': paymentDocumentCancellationRefundTargetAmountMinor,
+    'paymentDocument.cancellationRefund.version': paymentDocumentCancellationRefundVersion,
     'paymentDocument.checkoutSessionId': paymentDocumentCheckoutSessionId,
     'paymentDocument.completedAt._nanoseconds': paymentDocumentCompletedAtNanoseconds,
     'paymentDocument.completedAt._seconds': paymentDocumentCompletedAtSeconds,
@@ -161360,6 +164464,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.status': paymentDocumentStatus,
     'paymentDocument.stripeAccountId': paymentDocumentStripeAccountId,
     'paymentDocument.synthetic': paymentDocumentSynthetic,
+    'paymentDocument.updatedAt._nanoseconds': paymentDocumentUpdatedAtNanoseconds,
+    'paymentDocument.updatedAt._seconds': paymentDocumentUpdatedAtSeconds,
     'paymentDocument.userId': paymentDocumentUserId,
     'paymentRoutingPolicyDocument.lastMutationHash': paymentRoutingPolicyDocumentLastMutationHash,
     'paymentRoutingPolicyDocument.organizerId': paymentRoutingPolicyDocumentOrganizerId,
@@ -163658,6 +166764,46 @@ abstract final class CatchContractConstraints {
     'salesImportCompensationDocument.schemaVersion': salesImportCompensationDocumentSchemaVersion,
     'salesImportCompensationDocument.sourceRowIds': salesImportCompensationDocumentSourceRowIds,
     'salesImportCompensationDocument.sourceRowIds.items': salesImportCompensationDocumentSourceRowIdsItems,
+    'salesImportHistoryRecordDocument.classification': salesImportHistoryRecordDocumentClassification,
+    'salesImportHistoryRecordDocument.contactAuthority': salesImportHistoryRecordDocumentContactAuthority,
+    'salesImportHistoryRecordDocument.contentHash': salesImportHistoryRecordDocumentContentHash,
+    'salesImportHistoryRecordDocument.currentFitAuthority': salesImportHistoryRecordDocumentCurrentFitAuthority,
+    'salesImportHistoryRecordDocument.dateCertainty': salesImportHistoryRecordDocumentDateCertainty,
+    'salesImportHistoryRecordDocument.dateSourceColumn': salesImportHistoryRecordDocumentDateSourceColumn,
+    'salesImportHistoryRecordDocument.dateSourceValue': salesImportHistoryRecordDocumentDateSourceValue,
+    'salesImportHistoryRecordDocument.importId': salesImportHistoryRecordDocumentImportId,
+    'salesImportHistoryRecordDocument.kind': salesImportHistoryRecordDocumentKind,
+    'salesImportHistoryRecordDocument.occurredAt': salesImportHistoryRecordDocumentOccurredAt,
+    'salesImportHistoryRecordDocument.organizerId': salesImportHistoryRecordDocumentOrganizerId,
+    'salesImportHistoryRecordDocument.promotionVersion': salesImportHistoryRecordDocumentPromotionVersion,
+    'salesImportHistoryRecordDocument.providerConfirmed': salesImportHistoryRecordDocumentProviderConfirmed,
+    'salesImportHistoryRecordDocument.recordedAt': salesImportHistoryRecordDocumentRecordedAt,
+    'salesImportHistoryRecordDocument.recordedBy': salesImportHistoryRecordDocumentRecordedBy,
+    'salesImportHistoryRecordDocument.recordId': salesImportHistoryRecordDocumentRecordId,
+    'salesImportHistoryRecordDocument.relativeChronology': salesImportHistoryRecordDocumentRelativeChronology,
+    'salesImportHistoryRecordDocument.schemaVersion': salesImportHistoryRecordDocumentSchemaVersion,
+    'salesImportHistoryRecordDocument.sendAuthority': salesImportHistoryRecordDocumentSendAuthority,
+    'salesImportHistoryRecordDocument.sourceColumn': salesImportHistoryRecordDocumentSourceColumn,
+    'salesImportHistoryRecordDocument.sourceContentHash': salesImportHistoryRecordDocumentSourceContentHash,
+    'salesImportHistoryRecordDocument.sourceId': salesImportHistoryRecordDocumentSourceId,
+    'salesImportHistoryRecordDocument.sourceRowId': salesImportHistoryRecordDocumentSourceRowId,
+    'salesImportHistoryRecordDocument.sourceValue': salesImportHistoryRecordDocumentSourceValue,
+    'salesImportHistoryRowDocument.classification': salesImportHistoryRowDocumentClassification,
+    'salesImportHistoryRowDocument.disposition': salesImportHistoryRowDocumentDisposition,
+    'salesImportHistoryRowDocument.importId': salesImportHistoryRowDocumentImportId,
+    'salesImportHistoryRowDocument.organizerId': salesImportHistoryRowDocumentOrganizerId,
+    'salesImportHistoryRowDocument.promotionVersion': salesImportHistoryRowDocumentPromotionVersion,
+    'salesImportHistoryRowDocument.reason': salesImportHistoryRowDocumentReason,
+    'salesImportHistoryRowDocument.recordIds': salesImportHistoryRowDocumentRecordIds,
+    'salesImportHistoryRowDocument.recordIds.items': salesImportHistoryRowDocumentRecordIdsItems,
+    'salesImportHistoryRowDocument.reviewedAt': salesImportHistoryRowDocumentReviewedAt,
+    'salesImportHistoryRowDocument.reviewedBy': salesImportHistoryRowDocumentReviewedBy,
+    'salesImportHistoryRowDocument.reviewHash': salesImportHistoryRowDocumentReviewHash,
+    'salesImportHistoryRowDocument.rowId': salesImportHistoryRowDocumentRowId,
+    'salesImportHistoryRowDocument.schemaVersion': salesImportHistoryRowDocumentSchemaVersion,
+    'salesImportHistoryRowDocument.sourceContentHash': salesImportHistoryRowDocumentSourceContentHash,
+    'salesImportHistoryRowDocument.sourceId': salesImportHistoryRowDocumentSourceId,
+    'salesImportHistoryRowDocument.sourceRowId': salesImportHistoryRowDocumentSourceRowId,
     'salesImportJobDocument.accountEffects': salesImportJobDocumentAccountEffects,
     'salesImportJobDocument.accountEffects.items.cohortIdsAdded': salesImportJobDocumentAccountEffectsItemsCohortIdsAdded,
     'salesImportJobDocument.accountEffects.items.cohortIdsAdded.items': salesImportJobDocumentAccountEffectsItemsCohortIdsAddedItems,
@@ -164054,6 +167200,73 @@ abstract final class CatchContractConstraints {
     'salesPilotPlansDocument.updatedAt': salesPilotPlansDocumentUpdatedAt,
     'salesPilotPlansDocument.updatedBy': salesPilotPlansDocumentUpdatedBy,
     'salesPilotPlansDocument.workflowId': salesPilotPlansDocumentWorkflowId,
+    'salesPrivacyBatchReceipt.actorUid': salesPrivacyBatchReceiptActorUid,
+    'salesPrivacyBatchReceipt.classification': salesPrivacyBatchReceiptClassification,
+    'salesPrivacyBatchReceipt.createdAt': salesPrivacyBatchReceiptCreatedAt,
+    'salesPrivacyBatchReceipt.expectedCursor': salesPrivacyBatchReceiptExpectedCursor,
+    'salesPrivacyBatchReceipt.organizerId': salesPrivacyBatchReceiptOrganizerId,
+    'salesPrivacyBatchReceipt.planId': salesPrivacyBatchReceiptPlanId,
+    'salesPrivacyBatchReceipt.receiptId': salesPrivacyBatchReceiptReceiptId,
+    'salesPrivacyBatchReceipt.requestId': salesPrivacyBatchReceiptRequestId,
+    'salesPrivacyBatchReceipt.result.completeDeletion': salesPrivacyBatchReceiptResultCompleteDeletion,
+    'salesPrivacyBatchReceipt.result.deletedCount': salesPrivacyBatchReceiptResultDeletedCount,
+    'salesPrivacyBatchReceipt.result.itemCount': salesPrivacyBatchReceiptResultItemCount,
+    'salesPrivacyBatchReceipt.result.nextCursor': salesPrivacyBatchReceiptResultNextCursor,
+    'salesPrivacyBatchReceipt.result.organizerId': salesPrivacyBatchReceiptResultOrganizerId,
+    'salesPrivacyBatchReceipt.result.planId': salesPrivacyBatchReceiptResultPlanId,
+    'salesPrivacyBatchReceipt.result.previousCursor': salesPrivacyBatchReceiptResultPreviousCursor,
+    'salesPrivacyBatchReceipt.result.receiptId': salesPrivacyBatchReceiptResultReceiptId,
+    'salesPrivacyBatchReceipt.result.retainedCount': salesPrivacyBatchReceiptResultRetainedCount,
+    'salesPrivacyBatchReceipt.result.status': salesPrivacyBatchReceiptResultStatus,
+    'salesPrivacyBatchReceipt.result.unresolvedCount': salesPrivacyBatchReceiptResultUnresolvedCount,
+    'salesPrivacyBatchReceipt.schemaVersion': salesPrivacyBatchReceiptSchemaVersion,
+    'salesPrivacyPlan.blockers': salesPrivacyPlanBlockers,
+    'salesPrivacyPlan.blockers.items.code': salesPrivacyPlanBlockersItemsCode,
+    'salesPrivacyPlan.blockers.items.fingerprint': salesPrivacyPlanBlockersItemsFingerprint,
+    'salesPrivacyPlan.classification': salesPrivacyPlanClassification,
+    'salesPrivacyPlan.cursor': salesPrivacyPlanCursor,
+    'salesPrivacyPlan.inventoryHash': salesPrivacyPlanInventoryHash,
+    'salesPrivacyPlan.items': salesPrivacyPlanItems,
+    'salesPrivacyPlan.items.items.contentHash': salesPrivacyPlanItemsItemsContentHash,
+    'salesPrivacyPlan.items.items.disposition': salesPrivacyPlanItemsItemsDisposition,
+    'salesPrivacyPlan.items.items.path': salesPrivacyPlanItemsItemsPath,
+    'salesPrivacyPlan.organizerId': salesPrivacyPlanOrganizerId,
+    'salesPrivacyPlan.planId': salesPrivacyPlanPlanId,
+    'salesPrivacyPlan.policyHash': salesPrivacyPlanPolicyHash,
+    'salesPrivacyPlan.requestId': salesPrivacyPlanRequestId,
+    'salesPrivacyPlan.restrictionRevision': salesPrivacyPlanRestrictionRevision,
+    'salesPrivacyPlan.reviewedAt': salesPrivacyPlanReviewedAt,
+    'salesPrivacyPlan.reviewedByUid': salesPrivacyPlanReviewedByUid,
+    'salesPrivacyPlan.schemaVersion': salesPrivacyPlanSchemaVersion,
+    'salesPrivacyPlan.status': salesPrivacyPlanStatus,
+    'salesPrivacyPlan.updatedAt': salesPrivacyPlanUpdatedAt,
+    'salesPrivacyPolicy.auditDisposition': salesPrivacyPolicyAuditDisposition,
+    'salesPrivacyPolicy.auditReason': salesPrivacyPolicyAuditReason,
+    'salesPrivacyPolicy.classification': salesPrivacyPolicyClassification,
+    'salesPrivacyPolicy.externalCopies': salesPrivacyPolicyExternalCopies,
+    'salesPrivacyPolicy.financeDisposition': salesPrivacyPolicyFinanceDisposition,
+    'salesPrivacyPolicy.financeReason': salesPrivacyPolicyFinanceReason,
+    'salesPrivacyPolicy.policyHash': salesPrivacyPolicyPolicyHash,
+    'salesPrivacyPolicy.policyId': salesPrivacyPolicyPolicyId,
+    'salesPrivacyPolicy.requestId': salesPrivacyPolicyRequestId,
+    'salesPrivacyPolicy.reviewedAt': salesPrivacyPolicyReviewedAt,
+    'salesPrivacyPolicy.reviewedByUid': salesPrivacyPolicyReviewedByUid,
+    'salesPrivacyPolicy.revision': salesPrivacyPolicyRevision,
+    'salesPrivacyPolicy.schemaVersion': salesPrivacyPolicySchemaVersion,
+    'salesPrivacyPolicy.sourceHash': salesPrivacyPolicySourceHash,
+    'salesPrivacyPolicy.sourceReference': salesPrivacyPolicySourceReference,
+    'salesPrivacyPolicy.status': salesPrivacyPolicyStatus,
+    'salesPrivacyRestriction.activePlanId': salesPrivacyRestrictionActivePlanId,
+    'salesPrivacyRestriction.classification': salesPrivacyRestrictionClassification,
+    'salesPrivacyRestriction.materialHash': salesPrivacyRestrictionMaterialHash,
+    'salesPrivacyRestriction.organizerId': salesPrivacyRestrictionOrganizerId,
+    'salesPrivacyRestriction.reason': salesPrivacyRestrictionReason,
+    'salesPrivacyRestriction.requestId': salesPrivacyRestrictionRequestId,
+    'salesPrivacyRestriction.restrictedAt': salesPrivacyRestrictionRestrictedAt,
+    'salesPrivacyRestriction.restrictedByUid': salesPrivacyRestrictionRestrictedByUid,
+    'salesPrivacyRestriction.revision': salesPrivacyRestrictionRevision,
+    'salesPrivacyRestriction.schemaVersion': salesPrivacyRestrictionSchemaVersion,
+    'salesPrivacyRestriction.status': salesPrivacyRestrictionStatus,
     'salesQuotesDocument.acceptedDecisionId': salesQuotesDocumentAcceptedDecisionId,
     'salesQuotesDocument.approvedDecisionId': salesQuotesDocumentApprovedDecisionId,
     'salesQuotesDocument.classification': salesQuotesDocumentClassification,

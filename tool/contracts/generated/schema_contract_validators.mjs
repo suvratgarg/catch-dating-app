@@ -3,6 +3,34 @@
 
 import {createRequire} from "node:module";
 import {
+  salesImportHistoryRowDocumentSchema,
+  salesImportHistoryRecordDocumentSchema,
+  salesPrivacyRestrictionSchema,
+  salesPrivacyPolicySchema,
+  salesPrivacyPlanSchema,
+  salesPrivacyBatchReceiptSchema,
+  adminPreviewSalesImportHistoryPayloadSchema,
+  adminPreviewSalesImportHistoryResponseSchema,
+  adminApplySalesImportHistoryPayloadSchema,
+  adminApplySalesImportHistoryResponseSchema,
+  adminListSalesImportHistoryPayloadSchema,
+  adminListSalesImportHistoryResponseSchema,
+  adminListSalesImportHistoryRowsPayloadSchema,
+  adminListSalesImportHistoryRowsResponseSchema,
+  adminGetSalesFunnelReportPayloadSchema,
+  adminGetSalesFunnelReportResponseSchema,
+  adminReviewSalesPrivacyPolicyPayloadSchema,
+  adminReviewSalesPrivacyPolicyResponseSchema,
+  adminRestrictSalesOrganizerPayloadSchema,
+  adminRestrictSalesOrganizerResponseSchema,
+  adminPreviewSalesPrivacyPlanPayloadSchema,
+  adminPreviewSalesPrivacyPlanResponseSchema,
+  adminReviewSalesPrivacyPlanPayloadSchema,
+  adminReviewSalesPrivacyPlanResponseSchema,
+  adminApplySalesPrivacyBatchPayloadSchema,
+  adminApplySalesPrivacyBatchResponseSchema,
+  adminGetSalesPrivacyCasePayloadSchema,
+  adminGetSalesPrivacyCaseResponseSchema,
   salesIntakeLinkDocumentSchema,
   adminLinkOrganizerIntakeToSalesResponseSchema,
   adminLinkOrganizerIntakeToSalesPayloadSchema,
@@ -137,6 +165,7 @@ import {
   salesIntelligenceReceiptDocumentSchema,
   salesIntelligenceScoreSnapshotDocumentSchema,
   salesOutreachDraftsDocumentSchema,
+  legacyPaymentRefundIntentSchema,
   setEventPublicationCallablePayloadSchema,
   eventPublicationCallableResponseSchema,
   publicEventPaymentDocumentSchema,
@@ -1104,6 +1133,34 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
+export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
+export const validateSalesPrivacyRestriction = ajv.compile(salesPrivacyRestrictionSchema);
+export const validateSalesPrivacyPolicy = ajv.compile(salesPrivacyPolicySchema);
+export const validateSalesPrivacyPlan = ajv.compile(salesPrivacyPlanSchema);
+export const validateSalesPrivacyBatchReceipt = ajv.compile(salesPrivacyBatchReceiptSchema);
+export const validateAdminPreviewSalesImportHistoryPayload = ajv.compile(adminPreviewSalesImportHistoryPayloadSchema);
+export const validateAdminPreviewSalesImportHistoryResponse = ajv.compile(adminPreviewSalesImportHistoryResponseSchema);
+export const validateAdminApplySalesImportHistoryPayload = ajv.compile(adminApplySalesImportHistoryPayloadSchema);
+export const validateAdminApplySalesImportHistoryResponse = ajv.compile(adminApplySalesImportHistoryResponseSchema);
+export const validateAdminListSalesImportHistoryPayload = ajv.compile(adminListSalesImportHistoryPayloadSchema);
+export const validateAdminListSalesImportHistoryResponse = ajv.compile(adminListSalesImportHistoryResponseSchema);
+export const validateAdminListSalesImportHistoryRowsPayload = ajv.compile(adminListSalesImportHistoryRowsPayloadSchema);
+export const validateAdminListSalesImportHistoryRowsResponse = ajv.compile(adminListSalesImportHistoryRowsResponseSchema);
+export const validateAdminGetSalesFunnelReportPayload = ajv.compile(adminGetSalesFunnelReportPayloadSchema);
+export const validateAdminGetSalesFunnelReportResponse = ajv.compile(adminGetSalesFunnelReportResponseSchema);
+export const validateAdminReviewSalesPrivacyPolicyPayload = ajv.compile(adminReviewSalesPrivacyPolicyPayloadSchema);
+export const validateAdminReviewSalesPrivacyPolicyResponse = ajv.compile(adminReviewSalesPrivacyPolicyResponseSchema);
+export const validateAdminRestrictSalesOrganizerPayload = ajv.compile(adminRestrictSalesOrganizerPayloadSchema);
+export const validateAdminRestrictSalesOrganizerResponse = ajv.compile(adminRestrictSalesOrganizerResponseSchema);
+export const validateAdminPreviewSalesPrivacyPlanPayload = ajv.compile(adminPreviewSalesPrivacyPlanPayloadSchema);
+export const validateAdminPreviewSalesPrivacyPlanResponse = ajv.compile(adminPreviewSalesPrivacyPlanResponseSchema);
+export const validateAdminReviewSalesPrivacyPlanPayload = ajv.compile(adminReviewSalesPrivacyPlanPayloadSchema);
+export const validateAdminReviewSalesPrivacyPlanResponse = ajv.compile(adminReviewSalesPrivacyPlanResponseSchema);
+export const validateAdminApplySalesPrivacyBatchPayload = ajv.compile(adminApplySalesPrivacyBatchPayloadSchema);
+export const validateAdminApplySalesPrivacyBatchResponse = ajv.compile(adminApplySalesPrivacyBatchResponseSchema);
+export const validateAdminGetSalesPrivacyCasePayload = ajv.compile(adminGetSalesPrivacyCasePayloadSchema);
+export const validateAdminGetSalesPrivacyCaseResponse = ajv.compile(adminGetSalesPrivacyCaseResponseSchema);
 export const validateSalesIntakeLinkDocument = ajv.compile(salesIntakeLinkDocumentSchema);
 export const validateAdminLinkOrganizerIntakeToSalesResponse = ajv.compile(adminLinkOrganizerIntakeToSalesResponseSchema);
 export const validateAdminLinkOrganizerIntakeToSalesPayload = ajv.compile(adminLinkOrganizerIntakeToSalesPayloadSchema);
@@ -1238,6 +1295,7 @@ export const validateSalesIntelligencePolicyDocument = ajv.compile(salesIntellig
 export const validateSalesIntelligenceReceiptDocument = ajv.compile(salesIntelligenceReceiptDocumentSchema);
 export const validateSalesIntelligenceScoreSnapshotDocument = ajv.compile(salesIntelligenceScoreSnapshotDocumentSchema);
 export const validateSalesOutreachDraftsDocument = ajv.compile(salesOutreachDraftsDocumentSchema);
+export const validateLegacyPaymentRefundIntent = ajv.compile(legacyPaymentRefundIntentSchema);
 export const validateSetEventPublicationCallablePayload = ajv.compile(setEventPublicationCallablePayloadSchema);
 export const validateEventPublicationCallableResponse = ajv.compile(eventPublicationCallableResponseSchema);
 export const validatePublicEventPaymentDocument = ajv.compile(publicEventPaymentDocumentSchema);

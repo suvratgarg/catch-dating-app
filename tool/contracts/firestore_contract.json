@@ -3038,7 +3038,12 @@
       "write": "server only",
       "exportedFunctions": [
         "createRazorpayOrder",
-        "verifyRazorpayPayment"
+        "verifyRazorpayPayment",
+        "cancelEventSignUp",
+        "cancelEvent",
+        "onCancelledNativeEventRefunds",
+        "onNativeCancellationRefund",
+        "recoverNativeCancellationRefunds"
       ]
     },
     {
@@ -3676,6 +3681,34 @@
       "typescriptInterface": "SalesImportCompensationDocument"
     },
     {
+      "id": "salesImportHistoryRecords",
+      "path": "salesImportHistoryRecords/{id}",
+      "rulesMatch": "/salesImportHistoryRecords/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesImportHistoryRecordDocument"
+    },
+    {
+      "id": "salesImportHistoryRows",
+      "path": "salesImportHistoryRows/{id}",
+      "rulesMatch": "/salesImportHistoryRows/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesImportHistoryRowDocument"
+    },
+    {
       "id": "salesImportJobs",
       "path": "salesImportJobs/{id}",
       "rulesMatch": "/salesImportJobs/{privateDocument=**}",
@@ -3870,6 +3903,62 @@
       "owner": "Private host Sales server operations",
       "read": "server only; scoped employee projections",
       "write": "server only"
+    },
+    {
+      "id": "salesPrivacyBatchReceipts",
+      "path": "salesPrivacyBatchReceipts/{id}",
+      "rulesMatch": "/salesPrivacyBatchReceipts/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesPrivacyBatchReceipt"
+    },
+    {
+      "id": "salesPrivacyPlans",
+      "path": "salesPrivacyPlans/{id}",
+      "rulesMatch": "/salesPrivacyPlans/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesPrivacyPlan"
+    },
+    {
+      "id": "salesPrivacyPolicies",
+      "path": "salesPrivacyPolicies/{id}",
+      "rulesMatch": "/salesPrivacyPolicies/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesPrivacyPolicy"
+    },
+    {
+      "id": "salesPrivacyRestrictions",
+      "path": "salesPrivacyRestrictions/{id}",
+      "rulesMatch": "/salesPrivacyRestrictions/{privateDocument=**}",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "Private Sales history and privacy server operations",
+      "read": "server only; current scoped employee or Owner projection",
+      "write": "server only",
+      "typescriptInterface": "SalesPrivacyRestriction"
     },
     {
       "id": "salesQuoteVersions",

@@ -1739,6 +1739,37 @@ other countries recommend Stripe, while both setup paths remain available.
 Checkout routing and eventual settlement remain server-authoritative and must
 not infer readiness from the recommendation badge alone.
 
+### Native Cancellation Refund Authority
+
+Native checkout payments retain a server-owned `cancellationRefund` intent on
+`payments/{paymentId}`. Guest cancellation saves the quoted cash amount in the
+same transaction as admission release. Replays resume that amount rather than
+recomputing the deadline. A later host cancellation may raise it to the original
+charge amount while preserving an in-flight attempt. The payment fingerprint
+binds buyer, event, original provider/charge/order, currency and Stripe destination
+account/application fee; current organizer routing cannot change that authority.
+
+Each attempt persists its exact amount, provider idempotency key, provider refund
+id when known, and lease. Only observed processed refunds count toward
+`confirmedAmountMinor`; a partial refund leaves the payment status `completed`,
+and only full confirmed return sets `refunded`. Revenue consumers must subtract
+confirmed cancellation refunds. Provider failure, required customer action or
+inconsistent authority stays explicit as `reviewRequired`; request acceptance
+alone never means money returned. Unknown Stripe POST outcomes older than 23
+hours require reconciliation instead of reusing a potentially expired key.
+Native Razorpay refunds use the original platform account and supported INR
+amounts; unsupported currency/sub-minimum refunds require review. Stripe native
+destination refunds reverse the original transfer and proportionate application
+fee when present. Historical refunded records without amount evidence are not
+assumed to prove a partial or full refund.
+
+The cancelled-event trigger stages every completed payment in bounded pages;
+a payment trigger covers captures observed after cancellation. A bounded oldest
+due queue retries pending intents without a payment-age cutoff. Guest/provider
+failure does not roll back the already committed cancellation. Existing historical
+cancelled events with no refund intent require reviewed reconciliation before
+activation; the trigger does not invent historical guest refund terms.
+
 ## Contract Architecture
 
 JSON Schema draft-07 is the canonical persisted-shape format. Ajv validates
@@ -4630,3 +4661,33 @@ and canonical organizers remain intact. Missing legacy proof, ambiguous lineage,
 overflow or later cohort changes block correction. A deterministic effect marker
 prevents cross-request repetition. Archived companions reject dependent writes
 until an employee explicitly reopens them.
+
+
+### Private Sales source history, reporting and privacy
+
+`salesImportHistoryRows` accounts for reviewed source-row dispositions and
+`salesImportHistoryRecords` preserves exact original cells with accepted import
+lineage. History has nullable occurrence dates and explicit date certainty;
+it is not a current activity, score, contact permission or provider receipt.
+Preview/apply bind source hashes and current private accounts. Owner authority,
+archive/hold state and the permanent restriction are rechecked before replay.
+The history collections also prevent import compensation from archiving a
+companion with later business work.
+
+`salesPrivacyRestrictions/{organizerId}` is a permanent private processing
+fence. Owner-reviewed `salesPrivacyPolicies`, `salesPrivacyPlans` and
+`salesPrivacyBatchReceipts` govern bounded cleanup. Inventory keeps explicit
+retained finance/audit records and unresolved external/shared records. Each
+batch reads its source hashes and current policy/plan before atomically deleting
+at most 20 reviewed records and recording the new cursor. Dependencies are
+processed before their attribution parents, and explicit replacement plans
+bind the prior active-plan ID. Product organizers, Forms and users remain
+outside this owner. A completed internal plan never reports complete erasure.
+These six collections deny every direct client read/write, including Admin
+clients; only their current-role server operations expose private projections.
+
+The company funnel callable reads accounts, opportunities, tasks, recent stage
+history and privacy restrictions in one bounded read-only snapshot. It returns
+separate distinct-host and opportunity totals, stage entries and obligations.
+Overflow fails without partial totals. It does not infer conversion rates,
+provider-confirmed revenue or contact authority.

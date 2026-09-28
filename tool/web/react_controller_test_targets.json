@@ -105,8 +105,23 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/sales/controllers/useSalesFunnelController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesFunnelController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesHistoryController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesHistoryController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/sales/controllers/useSalesIntelligenceController.ts",
       "test": "admin/src/features/sales/controllers/useSalesIntelligenceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesPrivacyController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesPrivacyController.test.tsx",
       "status": "required"
     },
     {
@@ -215,6 +230,11 @@
       "status": "required"
     },
     {
+      "source": "website/src/features/organizers/usePublicEventListingsController.ts",
+      "test": "website/src/features/organizers/usePublicEventListingsController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "website/src/features/reviews/useListingReviewsController.ts",
       "test": "website/src/features/reviews/useListingReviewsController.test.tsx",
       "status": "required"
@@ -227,11 +247,6 @@
     {
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/organizers/usePublicEventListingsController.ts",
-      "test": "website/src/features/organizers/usePublicEventListingsController.test.tsx",
       "status": "required"
     }
   ]
