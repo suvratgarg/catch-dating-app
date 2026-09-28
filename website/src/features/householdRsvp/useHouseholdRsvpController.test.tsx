@@ -10,7 +10,8 @@ vi.mock("../../firebase", () => ({
 }));
 import {useHouseholdRsvpController} from "./useHouseholdRsvpController";
 import {householdRsvpViewFixture} from "../../content/householdRsvp";
-import {draftFor, draftsFromView, householdRsvpCredential} from "./householdRsvpModel";
+import {draftFor, draftsFromView, householdRsvpCredential,
+  travelDraftFor} from "./householdRsvpModel";
 import type {ProgramHouseholdRsvpViewCallableResponse} from "../../shared/contracts/generated/programHouseholdRsvpViewCallableResponse";
 const view: ProgramHouseholdRsvpViewCallableResponse = householdRsvpViewFixture;
 
@@ -101,6 +102,7 @@ describe("household RSVP controller", () => {
     expect(submitRsvp).toHaveBeenCalledWith({
       token,
       messagingConsent: true,
+      travel: [],
       responses: expect.arrayContaining([
         expect.objectContaining({
           guestId: "fixture-guest-1", functionId: "fixture-sangeet",
@@ -142,6 +144,73 @@ describe("household RSVP controller", () => {
     if (screen.kind !== "ready") throw new Error("expected ready");
     expect(draftFor(screen.drafts, "fixture-guest-1", "fixture-sangeet"))
       .toMatchObject({rsvpStatus: "pending"});
+    h.unmount();
+  });
+
+  it("seeds travel drafts from echoed legs and stays clean", async () => {
+    const h = harness();
+    await waitFor(() =>
+      expect(h.result.current.screen.kind).toBe("ready"));
+    const screen = h.result.current.screen;
+    if (screen.kind !== "ready") throw new Error("expected ready");
+    expect(screen.dirty).toBe(false);
+    expect(travelDraftFor(screen.travelDrafts,
+      "fixture-guest-1", "inbound")).toMatchObject({
+      flightNumber: "AI 610", destinationHotelId: "fixture-hotel-1",
+      passengers: 2, luggageUnits: 3});
+    expect(travelDraftFor(screen.travelDrafts,
+      "fixture-guest-1", "outbound")).toBeUndefined();
+    h.unmount();
+  });
+
+  it("submits only changed non-empty travel blocks", async () => {
+    const h = harness();
+    await waitFor(() =>
+      expect(h.result.current.screen.kind).toBe("ready"));
+    act(() => {
+      h.result.current.setTravel("fixture-guest-2", "inbound", {
+        scheduledArrivalAtMillis: 1_800_505_000_000,
+        destinationHotelId: "fixture-hotel-2",
+      });
+      // Identical re-entry of the seeded echo does not churn a resend.
+      h.result.current.setTravel("fixture-guest-1", "inbound", {
+        flightNumber: "AI 610", carrierCode: "AI", originIata: "BOM",
+        destinationIata: "JAI",
+        scheduledArrivalAtMillis: 1_800_500_000_000,
+        destinationHotelId: "fixture-hotel-1", destinationLabel: null,
+        passengers: 2, luggageUnits: 3});
+    });
+    act(() => { h.result.current.submit(); });
+    await waitFor(() => expect(submitRsvp).toHaveBeenCalled());
+    expect(submitRsvp).toHaveBeenCalledWith(expect.objectContaining({
+      travel: [
+        expect.objectContaining({
+          guestId: "fixture-guest-2", kind: "inbound",
+          scheduledArrivalAtMillis: 1_800_505_000_000,
+          destinationHotelId: "fixture-hotel-2"}),
+      ],
+    }));
+    h.unmount();
+  });
+
+  it("does not stay dirty for a fully cleared travel block", async () => {
+    const h = harness();
+    await waitFor(() =>
+      expect(h.result.current.screen.kind).toBe("ready"));
+    act(() => {
+      // An empty block has no delete semantics on the server, so it must
+      // not hold the form dirty forever.
+      h.result.current.setTravel("fixture-guest-1", "inbound", {
+        flightNumber: null, carrierCode: null, originIata: null,
+        destinationIata: null, scheduledArrivalAtMillis: null,
+        destinationHotelId: null, destinationLabel: null,
+        passengers: null, luggageUnits: null});
+    });
+    const screen = h.result.current.screen;
+    if (screen.kind !== "ready") throw new Error("expected ready");
+    expect(screen.dirty).toBe(false);
+    act(() => { h.result.current.submit(); });
+    expect(submitRsvp).not.toHaveBeenCalled();
     h.unmount();
   });
 

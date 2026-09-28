@@ -48,33 +48,66 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final inboxAsync = ref.watch(hostInboxCatchViewModelProvider);
     final whatsappAsync = ref.watch(hostInboxWhatsappPagesProvider(club.id));
+    final programsAsync = ref.watch(organizerProgramListProvider(club.id));
     final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
     final inboxState = catchAsyncStateFromAsyncValue(inboxAsync);
     final liveInboxState = catchAsyncStateFromAsyncValue(
       ref.watch(chatsListViewModelProvider),
     );
     final whatsappState = catchAsyncStateFromAsyncValue(whatsappAsync);
+    final programsState = catchAsyncStateFromAsyncValue(programsAsync);
     final events = eventsState.value;
-    final scope = events == null
-        ? const HostInboxScope.general()
-        : resolveHostInboxScope(
-            events: events,
-            now: now,
-            requestedScope: requestedScope,
+    final requestedProgramId = requestedScope?.programId;
+    final programPagesAsync = requestedProgramId == null
+        ? null
+        : ref.watch(
+            hostInboxProgramAudiencePagesProvider(club.id, requestedProgramId),
           );
+    final programPagesState = programPagesAsync == null
+        ? null
+        : catchAsyncStateFromAsyncValue(programPagesAsync);
+    if (programPagesState?.hasError == true) {
+      return CatchLocalizedSliverErrorState(
+        programPagesState!.error!,
+        context: AppErrorContext.chat,
+        onRetry: () => onRetry(club.id),
+      );
+    }
+    if (requestedProgramId != null &&
+        (programPagesState?.isLoading == true ||
+            programPagesState?.value == null)) {
+      return const ChatsListSkeleton();
+    }
+    final programPage = programPagesState?.value;
+    final programs = <OrganizerProgramSummary>[
+      ...?programsState.value,
+      if (programPage != null &&
+          programsState.value?.any(
+                (program) => program.programId == programPage.program.programId,
+              ) !=
+              true)
+        programPage.program,
+    ];
+    final scope = resolveHostInboxScope(
+      events: events ?? const [],
+      now: now,
+      requestedScope: requestedScope,
+      programs: programs,
+    );
     final eventId = scope.eventId;
+    final programId = scope.programId;
     final participationsAsync = eventId == null
         ? const AsyncData<List<EventParticipation>>([])
         : ref.watch(watchEventParticipationsForEventProvider(eventId));
     final failed = eventsState.hasError ? eventsState : null;
-    if (failed != null) {
+    if (failed != null && !scope.isProgram) {
       return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(club.id),
       );
     }
-    final loading = eventsState.isLoading;
+    final loading = eventsState.isLoading && !scope.isProgram;
     final inbox =
         inboxState.value ??
         const ChatsListViewModel(
@@ -93,10 +126,17 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
         ).value?.sourceWindowMayHaveMore ??
         true;
     final catchHasMore = catchPages.canLoadMore(sourceWindowMayHaveMore);
-    final workspace = events == null
+    final whatsappThreads = whatsappPage?.threads ?? const [];
+    final programAudience = programId == null
+        ? null
+        : hostInboxProgramAudience(
+            guestContactIds: programPage?.contactIds ?? const [],
+            whatsappThreads: whatsappThreads,
+          );
+    final workspace = events == null && !scope.isProgram
         ? null
         : HostInboxViewModel.compose(
-            events: events,
+            events: events ?? const [],
             inbox: inbox,
             participations: participations ?? const [],
             selectedOrganizerId: club.id,
@@ -104,6 +144,8 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
             selectedSegment: selectedSegment,
             query: query,
             now: now,
+            programs: programs,
+            programAudience: programAudience,
           );
     if (loading || workspace == null) {
       return const ChatsListSkeleton();
@@ -113,9 +155,10 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       scope: scope,
       segment: selectedSegment,
       catchThreads: [...inbox.newMatches, ...inbox.conversations],
-      whatsappThreads: whatsappPage?.threads ?? const [],
+      whatsappThreads: whatsappThreads,
       participations: participations,
       query: query,
+      programAudience: programAudience,
     );
     final partial =
         catchHasMore ||
@@ -126,7 +169,12 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
         inboxState.hasError ||
         whatsappState.isLoading ||
         whatsappState.hasError ||
-        whatsappPage?.nextCursor != null;
+        whatsappPage?.nextCursor != null ||
+        (programPage?.nextCursor != null) ||
+        (programPage?.loadingMore ?? false) ||
+        (programPage?.error != null) ||
+        (scope.isProgram &&
+            (programsState.isLoading || programsState.hasError));
     return SliverMainAxisGroup(
       slivers: [
         if (workspace.scopeOptions.length > 1)
@@ -135,7 +183,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
             now: now,
             onChanged: onScopeChanged,
           ),
-        if (!workspace.isGeneral)
+        if (workspace.selectedScope.kind == HostInboxScopeKind.event)
           HostInboxAudienceInput(
             workspace: workspace,
             people: people,
@@ -163,6 +211,15 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                       },
                     ),
                 ],
+              ),
+            ),
+          ),
+        if (scope.isProgram && (programPage?.unlinkedGuestCount ?? 0) > 0)
+          SliverToBoxAdapter(
+            child: CatchSection.content(
+              child: Text(
+                context.l10n.hostInboxProgramContactsUnlinked,
+                style: CatchTextStyles.supporting(context),
               ),
             ),
           ),
@@ -211,6 +268,26 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     : () => ref
                           .read(
                             hostInboxWhatsappPagesProvider(club.id).notifier,
+                          )
+                          .loadMore(),
+              ),
+            ),
+          ),
+        if (programPage?.nextCursor != null)
+          SliverToBoxAdapter(
+            child: CatchSection.content(
+              child: CatchButton(
+                label: programPage?.error == null
+                    ? context.l10n.hostInboxMoreProgramGuests
+                    : context.l10n.sharedActionTryAgain,
+                onPressed: programPage!.loadingMore
+                    ? null
+                    : () => ref
+                          .read(
+                            hostInboxProgramAudiencePagesProvider(
+                              club.id,
+                              programId!,
+                            ).notifier,
                           )
                           .loadMore(),
               ),
@@ -333,7 +410,11 @@ class HostInboxPeopleSection extends StatelessWidget {
               child: workspace.query.isNotEmpty
                   ? const ChatsEmptyState.noHostSearchResults()
                   : HostInboxEmptyState(
-                      title: workspace.isGeneral
+                      title: workspace.isProgram
+                          ? context
+                                .l10n
+                                .hostsHostInboxScreenTitleNoProgramConversations
+                          : workspace.isGeneral
                           ? context
                                 .l10n
                                 .hostsHostInboxScreenTitleNoGeneralInquiries
@@ -372,7 +453,9 @@ class HostInboxPeopleSection extends StatelessWidget {
               person.timestamp,
               now: now,
             ),
-            context: !workspace.isGeneral && person.booked == null
+            context:
+                workspace.selectedScope.kind == HostInboxScopeKind.event &&
+                    person.booked == null
                 ? context.l10n.hostInboxUnknownBooking
                 : null,
             activityLabel: unread > 0

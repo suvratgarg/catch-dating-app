@@ -1,0 +1,28 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "hotelId": "hotel-1",
+  "label": "Bride family — Deluxe",
+  "roomType": "Deluxe Sea View",
+  "totalRooms": 20,
+  "assignedCount": 7,
+  "heldForGroupIds": ["grp-bride"],
+  "startsAt": {
+    "_seconds": 1786723200,
+    "_nanoseconds": 0
+  },
+  "endsAt": {
+    "_seconds": 1786982400,
+    "_nanoseconds": 0
+  },
+  "notes": "Rate locked through block code MEHTA26.",
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 3
+}

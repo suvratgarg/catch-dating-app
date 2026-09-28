@@ -11774,6 +11774,101 @@ export interface ProgramHotelDocument {
 }
 
 /**
+ * Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.
+ */
+export interface ProgramStayDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * Exactly one guest per stay; roommates are separate stays sharing roomLabel.
+   */
+  guestId: string;
+  /**
+   * programHotels doc the guest stays at; must belong to the same program.
+   */
+  hotelId: string;
+  /**
+   * programRoomBlocks doc this stay draws capacity from; null for ad-hoc assignments outside any block.
+   */
+  roomBlockId: string | null;
+  /**
+   * Physical room assignment (e.g. '412') set by the hotel desk; null until allocated.
+   */
+  roomLabel: string | null;
+  /**
+   * Planned check-in; null while the stay is requested but undated.
+   */
+  startsAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Planned check-out; null while undated.
+   */
+  endsAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Stay lifecycle: held (reserved, not confirmed) → confirmed → checkedIn → checkedOut; cancelled releases block capacity.
+   */
+  status: "held" | "confirmed" | "checkedIn" | "checkedOut" | "cancelled";
+  /**
+   * When the hotel marked the room ready for this guest.
+   */
+  roomReadyAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * When the guest actually reached the hotel (hotel-desk observed).
+   */
+  hotelArrivedAt: FirebaseFirestore.Timestamp | null;
+  notes: string | null;
+  /**
+   * How the stay row entered the program — mirrors programTravelLegs.source.
+   */
+  source: "manual" | "import" | "planner";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned reserved room inventory at a programHotels doc — a labelled block of rooms held for a stay window, optionally earmarked for guest groups. Stays consume capacity through roomBlockId; assignedCount is the server-maintained rollup.
+ */
+export interface ProgramRoomBlockDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * programHotels doc this block reserves rooms at; must belong to the same program.
+   */
+  hotelId: string;
+  /**
+   * Organizer-facing block name, e.g. 'Bride family — Deluxe'.
+   */
+  label: string;
+  /**
+   * Optional hotel room class (Deluxe, Suite). Null when the block is type-agnostic.
+   */
+  roomType: string | null;
+  /**
+   * Rooms held under this block.
+   */
+  totalRooms: number;
+  /**
+   * Server-maintained count of live programStays rows bound to this block; never written by clients.
+   */
+  assignedCount: number;
+  /**
+   * programGuestGroups this block is earmarked for; allocation prefers matching groups before general inventory.
+   *
+   * @maxItems 12
+   */
+  heldForGroupIds: string[];
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  /**
+   * Operational notes visible to organizer and hotel desk (rate contact, holding conditions).
+   */
+  notes?: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
  * Server-owned per-guest travel leg. Carries itinerary facts, flight status snapshots, readiness/claim state and reviewed manual overrides. Provider facts are linked, never copied over manual observations.
  */
 export interface ProgramTravelLegDocument {

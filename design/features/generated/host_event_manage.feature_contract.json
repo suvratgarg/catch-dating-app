@@ -3425,8 +3425,8 @@
               "role": "primary"
             },
             {
-              "id": "hostOperatorEventScreen",
-              "path": "/host/operator/:eventId",
+              "id": "hostWorkEventScreen",
+              "path": "/host/work/event/:eventId",
               "role": "host"
             },
             {

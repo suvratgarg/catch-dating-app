@@ -3451,6 +3451,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'No general inquiries';
 
   @override
+  String get hostsHostInboxScreenTitleNoProgramConversations =>
+      'No guest conversations for this program yet';
+
+  @override
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
 
   @override
@@ -9496,6 +9500,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostInboxScreenVisiblecopyEventInquiry => 'Event inquiry';
+
+  @override
+  String get hostsHostInboxScreenVisiblecopyProgramGuests => 'Program guests';
 
   @override
   String hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel({
@@ -19579,6 +19586,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxMoreConversations => 'Load more conversations';
 
   @override
+  String get hostInboxMoreProgramGuests => 'Load more program guests';
+
+  @override
+  String get hostInboxProgramContactsUnlinked =>
+      'Some program guests have no verified messaging contact link. They cannot appear in this inbox; guest-to-contact linking is not available here yet.';
+
+  @override
   String get hostInboxUnclassified =>
       'Booking status is unavailable for some people. Their conversations are included below.';
 
@@ -21021,6 +21035,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsWorkLedgerOpen => 'Open trip ledger';
+
+  @override
+  String get programsWorkCommsTitle => 'Communications';
+
+  @override
+  String get programsWorkCommsSubtitle =>
+      'Program announcements and guest conversations.';
+
+  @override
+  String get programsWorkCommsMomentsRow => 'Moments';
+
+  @override
+  String get programsWorkCommsInboxRow => 'Guest inbox';
 
   @override
   String get programsWorkShellEmptyTitle => 'No duties assigned';
@@ -22957,6 +22984,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsWorkspaceImportTitle => 'Manifest import';
+
+  @override
+  String get programsWorkspaceCommunicationsTitle => 'Communications';
+
+  @override
+  String get programsWorkspaceMomentsTitle => 'Moments';
+
+  @override
+  String get programsWorkspaceInboxTitle => 'Guest inbox';
 
   @override
   String get programsGuestsTitle => 'Guests & RSVP';

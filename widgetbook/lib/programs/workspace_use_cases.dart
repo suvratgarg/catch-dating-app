@@ -35,6 +35,7 @@ final _club = Club(
 );
 
 final _program = OrganizerProgramSettings(
+  organizerId: _organizerId,
   programId: _programId,
   kind: ProgramKind.wedding,
   title: 'Kapoor–Shah Wedding',

@@ -36,6 +36,20 @@ export const householdRsvpViewFixture = {
           responseNote: null,
         },
       ],
+      travel: [
+        {
+          kind: "inbound" as const,
+          flightNumber: "AI 610",
+          carrierCode: "AI",
+          originIata: "BOM",
+          destinationIata: "JAI",
+          scheduledArrivalAtMillis: 1_800_500_000_000,
+          destinationHotelId: "fixture-hotel-1",
+          destinationLabel: null,
+          passengers: 2,
+          luggageUnits: 3,
+        },
+      ],
     },
     {
       guestId: "fixture-guest-2",
@@ -54,7 +68,12 @@ export const householdRsvpViewFixture = {
           responseNote: null,
         },
       ],
+      travel: [],
     },
+  ],
+  hotels: [
+    {hotelId: "fixture-hotel-1", name: "Grand Palace"},
+    {hotelId: "fixture-hotel-2", name: "Lakeview Residency"},
   ],
 };
 
@@ -81,4 +100,26 @@ export const householdRsvpCopy = {
   dressCodeLabel: "Dress code:",
   functionsHeading: "Functions",
   membersHeading: "Your household",
+  travelHeading: "Travel (optional)",
+  travelBlockTitle: (name: string, kindLabel: string) =>
+    `${name} · ${kindLabel}`,
+  travelArrival: "Arrival",
+  travelDeparture: "Departure",
+  travelFlight: "Flight or train number",
+  travelFlightPlaceholder: "e.g. AI 610 or 12951",
+  travelFrom: "From (airport/station code)",
+  travelFromPlaceholder: "e.g. BOM",
+  travelTo: "To (airport/station code)",
+  travelToPlaceholder: "e.g. JAI",
+  travelWhen: "Lands at",
+  travelWhenDeparture: "Departs at",
+  travelHotel: "Staying at",
+  travelHotelOther: "Somewhere else",
+  travelHotelChoose: "Choose a hotel",
+  travelDestinationLabel: "Where exactly? (optional)",
+  travelDestinationPlaceholder: "Hotel name or address",
+  travelPassengers: "Travellers",
+  travelLuggage: "Bags",
+  travelIncomplete:
+    "Add a landing time and a hotel or destination so we can plan pickups.",
 };

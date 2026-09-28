@@ -22,6 +22,7 @@ const schemaProgramHouseholdRsvpViewCallableResponseSchema = <String, Object?>{
     'householdLabel',
     'messagingConsentGranted',
     'members',
+    'hotels',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -59,6 +60,7 @@ const schemaProgramHouseholdRsvpViewCallableResponseSchema = <String, Object?>{
           'guestId',
           'displayName',
           'functions',
+          'travel',
         ],
         'properties': <String, Object?>{
           'guestId': <String, Object?>{
@@ -151,6 +153,122 @@ const schemaProgramHouseholdRsvpViewCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+          },
+          'travel': <String, Object?>{
+            'type': 'array',
+            'maxItems': 6,
+            'description': 'This member\'s previously captured travel blocks, one per journey kind, echoed so the form can pre-fill. Only household-submitted (formResponse) legs appear.',
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'flightNumber',
+                'carrierCode',
+                'originIata',
+                'destinationIata',
+                'scheduledArrivalAtMillis',
+                'destinationHotelId',
+                'destinationLabel',
+                'passengers',
+                'luggageUnits',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'inbound',
+                    'outbound',
+                    'ground',
+                  ],
+                },
+                'flightNumber': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 16,
+                },
+                'carrierCode': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 3,
+                },
+                'originIata': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 3,
+                },
+                'destinationIata': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 3,
+                },
+                'scheduledArrivalAtMillis': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                  'maximum': 253402300799999,
+                },
+                'destinationHotelId': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                'destinationLabel': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 140,
+                },
+                'passengers': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 200,
+                },
+                'luggageUnits': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 500,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    'hotels': <String, Object?>{
+      'type': 'array',
+      'maxItems': 50,
+      'description': 'The program\'s configured hotels for the travel destination picker; names only.',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'hotelId',
+          'name',
+        ],
+        'properties': <String, Object?>{
+          'hotelId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'name': <String, Object?>{
+            'type': 'string',
+            'maxLength': 140,
           },
         },
       },

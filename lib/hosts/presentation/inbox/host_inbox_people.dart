@@ -80,9 +80,26 @@ HostInboxPeople composeHostInboxPeople({
   required List<HostWhatsappThreadSummary> whatsappThreads,
   required List<EventParticipation>? participations,
   String query = '',
+  HostInboxProgramAudience? programAudience,
 }) {
-  bool eligible(List<String> ids) =>
-      scope.isGeneral ? ids.isEmpty : ids.contains(scope.eventId);
+  bool catchEligible(ChatThreadPreview thread) {
+    if (scope.isProgram) {
+      return programAudience?.linkedUids.contains(thread.otherUid) ?? false;
+    }
+    return scope.isGeneral
+        ? thread.eventIds.isEmpty
+        : thread.eventIds.contains(scope.eventId);
+  }
+
+  bool whatsappEligible(HostWhatsappThreadSummary thread) {
+    if (scope.isProgram) {
+      return programAudience?.contactIds.contains(thread.contactId) ?? false;
+    }
+    return scope.isGeneral
+        ? thread.eventIds.isEmpty
+        : thread.eventIds.contains(scope.eventId);
+  }
+
   final catches = <String, Map<String, ChatThreadPreview>>{};
   final whatsapp = <String, Map<String, HostWhatsappThreadSummary>>{};
   for (final thread in catchThreads) {
@@ -90,13 +107,13 @@ HostInboxPeople composeHostInboxPeople({
         !thread.match.isClubHostInquiry ||
         thread.match.isBlocked ||
         thread.match.isClosed ||
-        !eligible(thread.eventIds)) {
+        !catchEligible(thread)) {
       continue;
     }
     (catches['uid:${thread.otherUid}'] ??= {})[thread.matchId] = thread;
   }
   for (final thread in whatsappThreads) {
-    if (!eligible(thread.eventIds)) continue;
+    if (!whatsappEligible(thread)) continue;
     // An absent link from an older server is deliberately not inferred.
     final personId = thread.linkedUid == null
         ? 'contact:${thread.contactId}'
@@ -122,7 +139,11 @@ HostInboxPeople composeHostInboxPeople({
         scope: scope,
         catchThreads: List.unmodifiable(catchSources),
         whatsappThreads: List.unmodifiable(whatsappSources),
-        booked: scope.isGeneral || booked == null || !id.startsWith('uid:')
+        booked:
+            scope.isGeneral ||
+                scope.isProgram ||
+                booked == null ||
+                !id.startsWith('uid:')
             ? null
             : booked.contains(id.substring(4)),
       ),
@@ -134,6 +155,7 @@ HostInboxPeople composeHostInboxPeople({
           .where(
             (person) =>
                 (scope.isGeneral ||
+                    scope.isProgram ||
                     person.booked == null ||
                     person.booked ==
                         (segment == HostInboxAudienceSegment.booked)) &&
@@ -149,7 +171,7 @@ HostInboxPeople composeHostInboxPeople({
     people: List.unmodifiable(visible),
     bookedCount: people.where((p) => p.booked == true).length,
     prospectiveCount: people.where((p) => p.booked == false).length,
-    unclassifiedCount: scope.isGeneral
+    unclassifiedCount: scope.isGeneral || scope.isProgram
         ? 0
         : people.where((p) => p.booked == null).length,
   );
