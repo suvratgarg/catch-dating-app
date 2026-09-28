@@ -7,6 +7,9 @@ import type {SalesPrincipal} from "./types";
 type Doc = Record<string, unknown>;
 class Ref {
   constructor(readonly db: Db, readonly path: string) {}
+  get id() {
+    return this.path.split("/").at(-1) ?? "";
+  }
   collection(name: string) {
     return new Collection(this.db, `${this.path}/${name}`);
   }
@@ -22,6 +25,9 @@ class Collection {
 }
 class Db {
   docs = new Map<string, Doc>();
+  doc(path: string) {
+    return new Ref(this, path);
+  }
   collection(name: string) {
     return new Collection(this, name);
   }
@@ -50,6 +56,20 @@ class Tx {
       this.db.docs.set(ref.path, {...current, ...structuredClone(patch)});
     });
   }
+  delete(ref: Ref) {
+    this.writes.push(() => {
+      this.db.docs.delete(ref.path);
+    });
+  }
+  set(ref: Ref, value: Doc) {
+    this.writes.push(() => {
+      if (ref.path === "salesFitQueueMeta/current") {
+        const current = this.db.docs.get(ref.path) ?? {};
+        this.db.docs.set(ref.path, {...value,
+          generation: Number(current.generation ?? 0) + 1});
+      } else this.db.docs.set(ref.path, structuredClone(value));
+    });
+  }
   commit() {
     for (const write of this.writes) write();
   }
@@ -67,6 +87,7 @@ const packet: ImportPacket = {sourceId: "source-a", contentHash: "a".repeat(64),
 test("same organizer creates once and retains both source rows", async () => {
   const db = new Db();
   db.docs.set("organizers/org-1", {name: "Example"});
+  db.docs.set("salesFitQueueEntries/org-1", {organizerId: "org-1"});
   const firestore = db as unknown as FirebaseFirestore.Firestore;
   const preview = await previewSalesImport(firestore, employee, packet);
   assert.deepEqual(preview.counts, {created: 1, matched: 1, duplicate: 0,
@@ -79,6 +100,8 @@ test("same organizer creates once and retains both source rows", async () => {
   tx.commit();
   assert.deepEqual(db.docs.get("organizerSalesAccounts/org-1")?.cohortIds,
     ["cohort-a", "cohort-b"]);
+  assert.equal(db.docs.has("salesFitQueueEntries/org-1"), false);
+  assert.equal(db.docs.get("salesFitQueueMeta/current")?.generation, 1);
   assert.equal(result.counts && (result.counts as Doc).matched, 1);
   const lineagePaths = [...db.docs.keys()].filter((path) =>
     path.startsWith("salesImportRows/"));
@@ -187,4 +210,26 @@ test("new and existing accounts accept 30; existing rejects 31", async () => {
       previewHash: overPreview.previewHash as string},
     "2026-09-28T00:00:00.000Z"), /cohort limit exceeded/);
   assert.equal(overTx.writes.length, 0);
+});
+
+test("archived companion rejects later import membership", async () => {
+  const db = new Db();
+  db.docs.set("organizers/org-1", {name: "Example"});
+  db.docs.set("organizerSalesAccounts/org-1", {
+    classification: "sales_private", researchStatus: "archived",
+    revision: 3, cohortIds: [], cohortMutationId: "a".repeat(64),
+  });
+  const firestore = db as unknown as FirebaseFirestore.Firestore;
+  const preview = await previewSalesImport(firestore, employee, packet);
+  assert.equal((preview.rows as Array<{reason: string}>)[0].reason,
+    "private_account_archived");
+  const tx = new Tx(db);
+  await applySalesImport(tx as unknown as FirebaseFirestore.Transaction,
+    firestore, employee, {...packet, requestId: "request-archived-0001",
+      previewHash: preview.previewHash as string},
+    "2026-09-28T00:00:00.000Z");
+  tx.commit();
+  assert.deepEqual(db.docs.get("organizerSalesAccounts/org-1")?.cohortIds,
+    []);
+  assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.revision, 3);
 });

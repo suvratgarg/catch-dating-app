@@ -2,6 +2,7 @@ import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {canonical, importAccountHash,
   type ImportAccountEffect} from "./imports";
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import type {SalesPrincipal} from "./types";
 
 export interface ImportCompensationInput {
@@ -219,6 +220,7 @@ export async function applyImportCompensation(
     cohortMutationId: nextToken, revision: account.revision + 1,
     updatedAt: now, updatedBy: principal.uid});
   }
+  invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   tx.create(db.collection("salesImportCompensations").doc(effectId), {
     schemaVersion: 1, classification: "sales_private", effectId,
     importId: input.importId, organizerId: input.organizerId,

@@ -8,6 +8,7 @@ import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateSalesAction, validateSalesRead} from "./schemas";
 import {newSalesAccount} from "./account";
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import {proposeSalesEvidence, reviewSalesEvidenceProposal,
   listSalesEvidenceProposals, type ReviewProposalInput} from
   "./evidenceProposals";
@@ -607,6 +608,7 @@ async function createHost(
     now,
   );
   tx.create(accountRef, account);
+  invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   return {account};
 }
 
@@ -643,6 +645,7 @@ async function updateHost(
     updatedBy: principal.uid,
   };
   tx.set(ref, next);
+  invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   return {account: next};
 }
 

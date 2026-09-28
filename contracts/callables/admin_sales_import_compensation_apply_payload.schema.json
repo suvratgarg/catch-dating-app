@@ -39,5 +39,8 @@
       "minLength": 1,
       "maxLength": 2000
     }
-  }
+  },
+  "x-callable-aliases": [
+    "adminApplySalesImportCompensation"
+  ]
 }

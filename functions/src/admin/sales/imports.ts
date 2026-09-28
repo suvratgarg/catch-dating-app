@@ -1,6 +1,7 @@
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {newSalesAccount} from "./account";
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import type {SalesPrincipal} from "./types";
 
 export interface ImportRow {
@@ -160,6 +161,14 @@ async function evaluateRows(
         ...base,
         disposition: "rejected",
         reason: "account_contract_invalid",
+        accountRevision: null,
+      };
+    } else if (accountSnap.exists &&
+      accountSnap.data()?.researchStatus === "archived") {
+      decision = {
+        ...base,
+        disposition: "rejected",
+        reason: "private_account_archived",
         accountRevision: null,
       };
     } else if (accountSnap.exists) {
@@ -342,6 +351,7 @@ export async function applySalesImport(
     tx.update(update.ref, {cohortIds: update.cohortIds,
       cohortMutationId: update.cohortMutationId,
       revision: update.revision, updatedAt: now, updatedBy: principal.uid});
+    invalidateFitQueueInTransaction(tx, db, update.ref.id, now);
   }
   for (let index = 0; index < input.rows.length; index += 1) {
     const row = input.rows[index];
@@ -398,6 +408,7 @@ export async function applySalesImport(
         ), cohortIds: [...(cohortsById.get(row.organizerId) ?? [])],
         cohortMutationId: effect?.cohortMutationIdAfter},
       );
+      invalidateFitQueueInTransaction(tx, db, row.organizerId, now);
     }
   }
   const counts = countDecisions(decisions);

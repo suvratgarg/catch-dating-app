@@ -14,6 +14,9 @@ const employee: SalesPrincipal = {uid: "employee-1", roles: ["admin"]};
 
 class Ref {
   constructor(readonly db: Db, readonly path: string) {}
+  get id() {
+    return this.path.split("/").at(-1) ?? "";
+  }
   collection(name: string) {
     return new Collection(this.db, `${this.path}/${name}`);
   }
@@ -47,6 +50,9 @@ class Collection extends Query {
 }
 class Db {
   docs = new Map<string, Doc>();
+  doc(path: string) {
+    return new Ref(this, path);
+  }
   collection(name: string) {
     return new Collection(this, name);
   }
@@ -70,7 +76,8 @@ class Db {
 }
 class Tx {
   private readonly reads = new Map<string, string>();
-  private readonly writes: Array<{kind: "create" | "update";
+  private readonly writes: Array<{kind: "create" | "update" | "delete" |
+    "set";
     ref: Ref; value: Doc}> = [];
   constructor(readonly db: Db) {}
   async get(ref: Ref | Query) {
@@ -88,6 +95,12 @@ class Tx {
   update(ref: Ref, value: Doc) {
     this.writes.push({kind: "update", ref, value});
   }
+  delete(ref: Ref) {
+    this.writes.push({kind: "delete", ref, value: {}});
+  }
+  set(ref: Ref, value: Doc) {
+    this.writes.push({kind: "set", ref, value});
+  }
   commit() {
     for (const [key, prior] of this.reads) {
       const [path, field, value, cap] = key.split(":");
@@ -99,11 +112,18 @@ class Tx {
     const staged = new Map(this.db.docs);
     for (const write of this.writes) {
       const current = staged.get(write.ref.path);
+      if (write.kind === "delete") {
+        staged.delete(write.ref.path);
+        continue;
+      }
       if (write.kind === "create") assert.equal(current, undefined);
-      else assert.ok(current);
-      staged.set(write.ref.path, write.kind === "create" ?
-        structuredClone(write.value) :
-        {...current, ...structuredClone(write.value)});
+      if (write.kind === "update") assert.ok(current);
+      staged.set(write.ref.path, write.kind === "set" &&
+        write.ref.path === "salesFitQueueMeta/current" ?
+        {...write.value, generation: Number(current?.generation ?? 0) + 1} :
+        write.kind === "create" || write.kind === "set" ?
+          structuredClone(write.value) :
+          {...current, ...structuredClone(write.value)});
     }
     this.db.docs = staged;
   }
@@ -152,6 +172,7 @@ test("pristine imported companion archives with outreach held " +
   "and lineage intact", async () => {
   const db = prepared();
   const importId = await importPacket(db);
+  db.docs.set("salesFitQueueEntries/org-1", {organizerId: "org-1"});
   const plan = await preview(db, importId);
   assert.equal(plan.mode, "archive_companion");
   const result = await apply(db, importId, plan.previewHash as string);
@@ -162,6 +183,8 @@ test("pristine imported companion archives with outreach held " +
     "held");
   assert.ok(db.docs.has("organizers/org-1"));
   assert.ok(db.docs.has(`salesImportJobs/${importId}`));
+  assert.equal(db.docs.has("salesFitQueueEntries/org-1"), false);
+  assert.equal(db.docs.get("salesFitQueueMeta/current")?.generation, 2);
   assert.equal([...db.docs.keys()].filter((path) =>
     path.startsWith("salesImportCompensations/")).length, 1);
   const repeat = await apply(db, importId, plan.previewHash as string,

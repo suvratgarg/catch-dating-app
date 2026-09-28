@@ -81,6 +81,9 @@ class FakeQuery {
 class FakeDb {
   seq = 0;
   readonly docs = new Map<string, Doc>();
+  doc(path: string) {
+    return new FakeRef(this, path);
+  }
   collection(name: string) {
     return new FakeCollection(this, name);
   }
@@ -111,7 +114,18 @@ class FakeTx {
     });
   }
   set(ref: FakeRef, value: Doc) {
-    this.writes.push(() => this.db.docs.set(ref.path, structuredClone(value)));
+    this.writes.push(() => {
+      if (ref.path === "salesFitQueueMeta/current") {
+        const current = this.db.docs.get(ref.path) ?? {};
+        this.db.docs.set(ref.path, {...value,
+          generation: Number(current.generation ?? 0) + 1});
+      } else this.db.docs.set(ref.path, structuredClone(value));
+    });
+  }
+  delete(ref: FakeRef) {
+    this.writes.push(() => {
+      this.db.docs.delete(ref.path);
+    });
   }
   commit() {
     for (const write of this.writes) write();
@@ -181,6 +195,7 @@ test("compensation rechecks current Owner on apply and receipt replay",
     assert.equal((reopened.account as Doc).researchStatus, "needs_research");
     assert.deepEqual(await executeSalesAction(employee, "hosts.update",
       reopen, deps), reopened);
+    assert.equal(db.docs.get("salesFitQueueMeta/current")?.generation, 3);
   });
 
 test("requires admin and canonical organizer", async () => {
