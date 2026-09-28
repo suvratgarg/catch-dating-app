@@ -286,3 +286,14 @@ function isHttpsError(expectedCode: string, expectedMessage: string) {
     error.code === expectedCode &&
     error.message === expectedMessage;
 }
+
+
+test("authorization alone cannot admit a paid booking", () => {
+  assert.throws(() => verifyPaidEventBooking({
+    order: {id: "order_one", amount: 1000, currency: "INR",
+      amount_paid: 1000, amount_due: 0,
+      notes: {eventId: "event1", userId: "user1"}},
+    payment: {id: "pay_one", order_id: "order_one", amount: 1000,
+      currency: "INR", status: "authorized"}, expectedUserId: "user1",
+  }), /successful state/);
+});

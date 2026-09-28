@@ -12143,15 +12143,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Make organizer private';
 
   @override
-  String get hostsHostPublicRegistrationTitle => 'Website registration';
+  String get hostsHostPublicRegistrationTitle => 'Catch registration';
 
   @override
   String get hostsHostPublicRegistrationSubtitleEnabled =>
-      'Phone OTP sign-up is enabled';
+      'Guests can register on Catch';
 
   @override
   String get hostsHostPublicRegistrationSubtitleDisabled =>
-      'Consumer booking is optional';
+      'Catch registration is closed';
 
   @override
   String get hostsHostPublicRegistrationStatusOpen => 'Open';
@@ -12161,7 +12161,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationBodyPublished =>
-      'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.';
+      'Guests register on the event page using their name and verified phone number, and join this event’s guest list. The original event source and bookings on other platforms stay unchanged.';
 
   @override
   String get hostsHostPublicRegistrationBodyNeedsPage =>
@@ -12169,15 +12169,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationBodyUnsupported =>
-      'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.';
+      'Website registration supports open events with one fixed price. Invitation, approval, membership, balanced capacity, and variable pricing require their own eligibility checks.';
 
   @override
   String get hostsHostPublicRegistrationActionEnable =>
-      'Enable phone OTP sign-up';
+      'Enable free registration';
 
   @override
-  String get hostsHostPublicRegistrationActionDisable =>
-      'Disable website sign-up';
+  String get hostsHostPublicRegistrationActionEnablePaid =>
+      'Enable paid registration';
+
+  @override
+  String get hostsHostPublicRegistrationBodyPaid =>
+      'Guests verify their phone, review the price and refund policy, then pay on Catch. Checkout holds a seat for 15 minutes; verified payment confirms admission. Your payment account must be ready before registration can open.';
+
+  @override
+  String get hostsHostPublicRegistrationActionDisable => 'Close registration';
 
   @override
   String get hostsHostAudienceAttended => 'Attended';
@@ -14568,16 +14575,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationReviewNoteHint => 'Add context for your team';
 
   @override
-  String get hostApplicationMarkInReview => 'Mark in review';
-
-  @override
   String get hostApplicationApprove => 'Accept and add to People';
-
-  @override
-  String get hostApplicationWaitlist => 'Waitlist';
-
-  @override
-  String get hostApplicationDecline => 'Decline';
 
   @override
   String get hostApplicationReviewUpdated => 'Application review updated';
@@ -15477,9 +15475,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormConvertCrm => 'Add to People';
 
   @override
-  String get hostFormConvertAttendee => 'Propose attendee';
-
-  @override
   String get hostFormConversionReviewTitle => 'Review this action';
 
   @override
@@ -15582,13 +15577,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormResponseOriginRevoked => 'Access revoked';
-
-  @override
-  String get hostFormSelectEventTitle => 'Choose an event';
-
-  @override
-  String get hostFormSelectEventEmpty =>
-      'No upcoming events are available for an attendee proposal.';
 
   @override
   String get hostFormConversionExisting =>
@@ -20099,7 +20087,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPaymentHelp =>
-      'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.';
+      'Collect a fee before a response is submitted. Payment does not accept an application or book an event.';
 
   @override
   String get hostFormPaymentUnavailable =>
@@ -22061,8 +22049,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsPrivateEventSaveReturnResponses =>
-      'Save & return to responses';
+  String get hostsPrivateEventSaveReturnResponses => 'Save & return to review';
 
   @override
   String get hostsPrivateEventSaveContinue => 'Save & continue';
@@ -22452,7 +22439,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferCreate => 'Create event offers';
 
   @override
-  String get hostEventOfferSelectEvent => 'Choose an event';
+  String get hostEventOfferSelectEvent => 'Available events';
 
   @override
   String get hostEventOfferSelectEventEmpty =>
@@ -22460,10 +22447,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventOfferNeedsContact =>
-      'Convert this response to a CRM contact before offering an event.';
+      'Review these responses and add them to People before offering an event.';
 
   @override
-  String get hostEventOfferConvertContact => 'Create CRM contact';
+  String get hostEventOfferConvertContact => 'Review response';
 
   @override
   String get hostEventOfferSelectionChanged =>
@@ -22592,19 +22579,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostEventOfferCommit => 'Record offers';
+  String get hostEventOfferCommit => 'Create offers';
 
   @override
-  String get hostEventOfferCommitting => 'Recording offers…';
+  String get hostEventOfferCommitting => 'Creating offers…';
 
   @override
-  String get hostEventOfferCommitted => 'Offers recorded';
+  String get hostEventOfferCommitted => 'Offers created';
 
   @override
   String get hostEventOfferFailed => 'Could not complete this offer action.';
 
   @override
-  String get hostEventOfferNoReservation => 'No seat or admission is created.';
+  String get hostEventOfferNoReservation =>
+      'Creating an offer does not reserve a place.';
 
   @override
   String hostEventOfferPersonalPaymentLink({required String name}) {
@@ -22642,7 +22630,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferOpenExisting => 'Review offer';
 
   @override
-  String get hostEventOfferHandoffPrepare => 'Prepare personal handoff';
+  String get hostEventOfferHandoffPrepare => 'Share invitation';
 
   @override
   String get hostEventOfferHandoffBlocked =>
@@ -22674,7 +22662,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'These settings apply to future offers. Existing offers keep their recorded terms.';
 
   @override
-  String get hostsPrivateEventInventoryTitle => 'Private event setups';
+  String get hostsPrivateEventInventoryTitle => 'Private events';
+
+  @override
+  String get hostsPrivateEventInventoryUpcoming => 'Upcoming';
+
+  @override
+  String get hostsPrivateEventInventoryPast => 'Past';
+
+  @override
+  String get hostsPrivateEventInventoryCancelled => 'Cancelled';
+
+  @override
+  String get hostsPrivateEventInventoryHistoryEmpty =>
+      'No private events in this view.';
+
+  @override
+  String get hostsPrivateEventHistoryTitle => 'Event history';
+
+  @override
+  String get hostsPrivateEventHistoryBody =>
+      'This event has started or was cancelled. Its saved details are available for reference.';
 
   @override
   String get hostsPrivateEventInventoryLoading => 'Loading private events…';
@@ -22717,6 +22725,98 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormTargetLoadFailed =>
       'Could not load your events. Try again.';
+
+  @override
+  String get hostResponseQueryRefresh => 'Refresh responses';
+
+  @override
+  String get hostResponseQueryAscending => 'Ascending';
+
+  @override
+  String get hostResponseQueryDescending => 'Descending';
+
+  @override
+  String hostResponseQueryResultCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostResponseQueryFilterCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conditions',
+      one: '1 condition',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostResponseQueryReviewInbox => 'Review inbox';
+
+  @override
+  String get hostResponseQueryOpenAnswers => 'Filter by answers';
+
+  @override
+  String hostResponseQueryVersionScope({required int version}) {
+    return 'Published version $version · All review statuses';
+  }
+
+  @override
+  String get hostFormAdmissionTitle => 'Event admission';
+
+  @override
+  String get hostFormAdmissionComplete =>
+      'Admission confirmed. The guest is on the event roster.';
+
+  @override
+  String get hostFormAdmissionSaved =>
+      'A saved admission needs to be resolved before starting another.';
+
+  @override
+  String get hostFormAdmissionRetain =>
+      'This person already occupies a seat. Confirm to link this response without reserving another seat.';
+
+  @override
+  String get hostFormAdmissionReady =>
+      'Payment and capacity checks passed. Confirm to add this guest to the roster. Availability is checked again when you confirm.';
+
+  @override
+  String get hostFormAdmissionReview =>
+      'Review the response, payment evidence and available capacity before admitting this guest.';
+
+  @override
+  String get hostFormAdmissionReviewAgain => 'Review admission again';
+
+  @override
+  String get hostFormAdmissionRetry => 'Retry saved admission';
+
+  @override
+  String get hostFormAdmissionConfirm => 'Confirm admission';
+
+  @override
+  String get hostFormAdmissionCheck => 'Check admission';
+
+  @override
+  String get hostFormPaymentCatchCollection => 'Catch collects payments';
+
+  @override
+  String get hostFormPaymentCatchCollectionHelp =>
+      'Catch collects the fee and transfers the organizer share to your linked payout account.';
+
+  @override
+  String get hostFormPaymentCatchSetupRequired =>
+      'Catch collection is selected. Complete your linked payout account setup and ask Catch to verify collection is ready.';
+
+  @override
+  String get hostFormPaymentCollectionUnavailable =>
+      'The selected collection method is not ready. Ask Catch to review your payment configuration.';
 
   @override
   String get programsListTitle => 'Programs';
@@ -23125,4 +23225,219 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsImportEmptyMessage =>
       'Pick a CSV or XLSX manifest to map columns.';
+
+  @override
+  String get hostsEventPreferenceNotSet => 'Not set';
+
+  @override
+  String get hostsEventPreferenceReviewTitle => 'Review changes';
+
+  @override
+  String get hostsEventPreferenceReviewHint =>
+      'Review current organizer defaults and your edits before applying.';
+
+  @override
+  String get hostsEventPreferenceOfferWarning =>
+      'Issued offers and shared payment links keep their original terms. Review those offers separately if their payment instructions are outdated.';
+
+  @override
+  String get hostsEventPreferenceNoChanges => 'No settings have changed';
+
+  @override
+  String get hostsEventPreferenceReviewLoading => 'Preparing preview…';
+
+  @override
+  String get hostsEventPreferencePreview =>
+      'Preview changes and current defaults';
+
+  @override
+  String get hostsEventPreferenceApply => 'Apply reviewed changes';
+
+  @override
+  String hostsEventPreferenceBeforeAfter({
+    required String before,
+    required String after,
+  }) {
+    return 'Current: $before\nAfter applying: $after';
+  }
+
+  @override
+  String get hostsEventPreferenceExpectedAmount => 'Expected amount';
+
+  @override
+  String get hostResponseOfferEvent => 'Offer an event';
+
+  @override
+  String get hostResponseReviewDecision => 'Review status';
+
+  @override
+  String get hostResponseContactDetails => 'Contact details';
+
+  @override
+  String get hostEventOfferChangeEvent => 'Change event';
+
+  @override
+  String get hostEventOfferUnavailable =>
+      'Event offers are not available yet. Return to the response to continue reviewing.';
+
+  @override
+  String get hostEventOfferRecipient => 'Recipient';
+
+  @override
+  String get hostEventOfferAmount => 'Admission price';
+
+  @override
+  String get hostEventOfferFree => 'Free admission';
+
+  @override
+  String get hostResponseContinueOffer => 'Continue to offer';
+
+  @override
+  String get hostEventOfferExpiry => 'Valid until';
+
+  @override
+  String get hostResponseChooseBeforeAcceptance =>
+      'Acceptance is required before creating the offer.';
+
+  @override
+  String get hostsPrivateEventReturnToReviewHint =>
+      'Save these basics and return to your selected responses. You can finish event details later.';
+
+  @override
+  String get hostsPrivateEventDetailPickLocation =>
+      'Choose meeting place on map';
+
+  @override
+  String get hostsPrivateEventDetailLocationNeeded =>
+      'A map location is required before publishing. A name alone is fine while planning.';
+
+  @override
+  String get hostsPrivateEventDetailLocationReady =>
+      'Meeting place is ready for directions and the public listing.';
+
+  @override
+  String get hostsPrivateEventAdmissionTerms => 'Capacity and price';
+
+  @override
+  String get hostsPrivateEventAdmissionTermsHint =>
+      'Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.';
+
+  @override
+  String get hostsPrivateEventSaveTerms => 'Save capacity and price';
+
+  @override
+  String hostsPrivateEventRefundCutoff({required int hours}) {
+    return 'Full refund until $hours hours before; no refund after';
+  }
+
+  @override
+  String get hostsPublicationNeedsFuture =>
+      'Choose a future date for an active event';
+
+  @override
+  String get hostsPublicationNeedsOrganizer =>
+      'Make the organizer visible in Catch';
+
+  @override
+  String get hostsPublicationNeedsDistance => 'Set the distance and pace';
+
+  @override
+  String get hostsPublicationNeedsReview =>
+      'Review the event details before publishing';
+
+  @override
+  String get hostsPublicationPublishExplanation =>
+      'Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.';
+
+  @override
+  String get hostsPublicationUnpublishExplanation =>
+      'Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.';
+
+  @override
+  String get hostsPublicationPending =>
+      'Visibility change awaiting confirmation';
+
+  @override
+  String get hostsPublicationPendingBody =>
+      'The result has not been confirmed. Retry the same change to recover its result before making another change.';
+
+  @override
+  String get hostsPublicationSaved => 'Visibility change saved';
+
+  @override
+  String get hostsPublicationRegistrationSeparate =>
+      'Registration remains closed after a visibility change. Configure registration separately when you are ready.';
+
+  @override
+  String get hostsPublicationRefresh => 'Refresh readiness';
+
+  @override
+  String get hostsPublicationRetry => 'Recover visibility change';
+
+  @override
+  String get hostsPublicationUnpublish => 'Make event private';
+
+  @override
+  String get hostsPublicationPublish => 'Publish event';
+
+  @override
+  String get hostsPublicationPublishedBody =>
+      'This event is published. Visibility and registration are managed separately.';
+
+  @override
+  String get hostsPrivateEventCheckingGuests => 'Checking existing guests';
+
+  @override
+  String get hostsPrivateEventCheckingGuestsBody =>
+      'Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.';
+
+  @override
+  String get hostsPrivateEventContinueCheckingGuests =>
+      'Continue checking guests';
+
+  @override
+  String get hostsPrivateEventDiscardPending =>
+      'Discard change and review settings';
+
+  @override
+  String get hostsPrivateEventDiscardPendingBody =>
+      'Discard changes that have not begun. If the settings have already saved, we will show the saved result.';
+
+  @override
+  String get hostsPrivateEventDiscarding => 'Discarding pending change';
+
+  @override
+  String get hostsPrivateEventDiscardingBody =>
+      'Returning to your settings. If the change already saved, we will retrieve its result.';
+
+  @override
+  String get hostsPrivateEventContinueDiscarding =>
+      'Continue discarding change';
+
+  @override
+  String get paymentsCancellationLabel => 'Booking cancelled';
+
+  @override
+  String get paymentsCancellationRefundReview => 'Refund needs review';
+
+  @override
+  String get paymentsCancellationPartialRefund => 'Partially refunded';
+
+  @override
+  String get paymentsCancellationNoRefund =>
+      'Your booking is cancelled. No refund applies under its cancellation policy.';
+
+  @override
+  String get paymentsCancellationCheckoutMessage =>
+      'Your booking is cancelled. View payment history for the refund status.';
+
+  @override
+  String paymentsCancellationRefundPending({required String amount}) {
+    return 'Your booking is cancelled. A refund of $amount is being processed.';
+  }
+
+  @override
+  String paymentsCancellationRefundReturned({required String amount}) {
+    return '$amount returned. Your booking is cancelled.';
+  }
 }

@@ -220,3 +220,12 @@ test("active existing seat with missing alias cannot self-heal", () => {
     /missing its identity alias/);
   assert.deepEqual(writer.calls, []);
 });
+
+
+test("import capacity includes outstanding checkout holds", () => {
+  const writer = new Writer();
+  const snapshot = read([row("a"), row("b")], 1);
+  snapshot.ledger!.checkoutHeld = 1;
+  assert.throws(() => prepareBatchImportSeats(snapshot, writer), /capacity/u);
+  assert.deepEqual(writer.calls, []);
+});

@@ -1748,7 +1748,12 @@
       "write": "server only",
       "exportedFunctions": [
         "createRazorpayOrder",
-        "verifyRazorpayPayment"
+        "verifyRazorpayPayment",
+        "cancelEventSignUp",
+        "cancelEvent",
+        "onCancelledNativeEventRefunds",
+        "onNativeCancellationRefund",
+        "recoverNativeCancellationRefunds"
       ]
     },
     {
@@ -3346,7 +3351,9 @@
         "createPrivateEventSetup",
         "updatePrivateEventBasics",
         "updatePrivateEventDetails",
-        "updatePrivateEventPreferences"
+        "reconcilePrivateEventSeats",
+        "updatePrivateEventPreferences",
+        "setEventPublication"
       ]
     },
     {
@@ -3498,6 +3505,81 @@
       "owner": "atomic organizer form admission service",
       "read": "server only; current manager receipt projection",
       "write": "server only; immutable source marker and receipt in one transaction",
+      "exportedFunctions": []
+    },
+    {
+      "id": "organizerEventOfferRecipients",
+      "path": "organizerEventOfferRecipients/{documentId}",
+      "rulesMatch": "/organizerEventOfferRecipients/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferRecipientDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "OTP event offer recipient authority",
+      "read": "server only; current recipient projection after OTP claim",
+      "write": "server only; immutable invitation binding and one UID claim",
+      "exportedFunctions": []
+    },
+    {
+      "id": "organizerEventOfferPayments",
+      "path": "organizerEventOfferPayments/{documentId}",
+      "rulesMatch": "/organizerEventOfferPayments/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "event offer checkout and admission service",
+      "read": "server only; recipient payment projection",
+      "write": "server only; atomic hold, captured admission, expiry and refund lifecycle",
+      "exportedFunctions": []
+    },
+    {
+      "id": "publicEventPayments",
+      "path": "publicEventPayments/{documentId}",
+      "rulesMatch": "/publicEventPayments/{documentId}",
+      "typescriptInterface": "PublicEventPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "publicEventAdmissionReceipts",
+      "path": "publicEventAdmissionReceipts/{documentId}",
+      "rulesMatch": "/publicEventAdmissionReceipts/{documentId}",
+      "typescriptInterface": "PublicEventAdmissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "eventRegistrationReceipts",
+      "path": "eventRegistrationReceipts/{documentId}",
+      "rulesMatch": "/eventRegistrationReceipts/{documentId}",
+      "typescriptInterface": "EventRegistrationReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
       "exportedFunctions": []
     }
   ]

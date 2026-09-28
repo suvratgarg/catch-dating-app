@@ -10,15 +10,18 @@ final class ListPrivateEventSetupsCallableRequest {
     required this.organizerId,
     this.limit,
     this.cursor,
+    this.scope,
   });
 
   final String organizerId;
   final int? limit;
   final String? cursor;
+  final String? scope;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'limit': ?limit,
     'cursor': ?cursor,
+    'scope': ?scope,
   };
 }

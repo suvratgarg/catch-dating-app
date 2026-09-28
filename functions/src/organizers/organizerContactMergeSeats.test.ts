@@ -330,3 +330,16 @@ test("new contact alias in an unrecorded event blocks unmerge", async () => {
       evidence: prepared.evidence})));
   assert.equal(store.writes.length, 0);
 });
+
+test("a payment hold prevents source or survivor identity merge", async () => {
+  for (const heldKey of ["source-person", "survivor-person"]) {
+    const store = seed("source-person", "survivor-person");
+    store.put(`eventSeatReservations/${reservationId(heldKey)}`, {
+      eventId, canonicalKey: heldKey, identityRevision: 1, revision: 1,
+      active: false, checkoutHold: {paymentId: "payment-one",
+        expiresAtMillis: 901000}});
+    await assert.rejects(store.run((tx) => prepare(store, tx)),
+      /checkout hold/u);
+    assert.deepEqual(store.writes, []);
+  }
+});

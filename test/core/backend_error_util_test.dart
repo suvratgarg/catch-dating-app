@@ -17,6 +17,58 @@ void main() {
     resource: 'events',
   );
 
+  group('backendCallableErrorDetails', () {
+    test('preserves structured recovery details through mapped wrappers', () {
+      final raw = FirebaseFunctionsException(
+        code: 'aborted',
+        message: 'Rejected',
+        details: const {'reason': 'stale', 'requestId': 'request-1'},
+      );
+      final mapped = normalizeBackendError(raw, context: firestoreContext);
+      expect(backendCallableErrorDetails(raw, code: 'aborted'), raw.details);
+      expect(backendCallableErrorDetails(mapped, code: 'aborted'), raw.details);
+      expect(backendCallableErrorDetails(mapped, code: 'unavailable'), isNull);
+    });
+
+    test(
+      'rejects unstructured details, non-callable causes and deep wrappers',
+      () {
+        expect(
+          backendCallableErrorDetails(
+            FirebaseFunctionsException(
+              code: 'aborted',
+              message: 'Rejected',
+              details: 'not a receipt',
+            ),
+            code: 'aborted',
+          ),
+          isNull,
+        );
+        expect(
+          backendCallableErrorDetails(
+            FirebaseException(plugin: 'cloud_firestore', code: 'aborted'),
+            code: 'aborted',
+          ),
+          isNull,
+        );
+        Object error = FirebaseFunctionsException(
+          code: 'aborted',
+          message: 'Rejected',
+          details: const {},
+        );
+        for (var depth = 0; depth < 9; depth++) {
+          error = BackendOperationException(
+            code: 'unexpected',
+            message: 'Diagnostic',
+            context: firestoreContext,
+            cause: error,
+          );
+        }
+        expect(backendCallableErrorDetails(error, code: 'aborted'), isNull);
+      },
+    );
+  });
+
   group('normalizeBackendError', () {
     test('preserves existing AppException instances', () {
       const error = ValidationException('Name is required.');

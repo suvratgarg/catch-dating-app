@@ -27,6 +27,14 @@ export const listPrivateEventSetupsCallablePayloadSchema: Record<string, unknown
       "minLength": 1,
       "maxLength": 1024,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ]
     }
   }
 } as const;

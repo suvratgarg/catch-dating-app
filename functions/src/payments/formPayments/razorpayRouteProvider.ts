@@ -1,0 +1,245 @@
+import {RazorpayPaymentProvider, assertAmount, assertToken, invalidInput,
+  invalidResponse, providerId, type FormPaymentOrder,
+  type FormProviderPayment} from
+  "./razorpayPaymentProvider";
+
+export interface RazorpayRouteTerms {
+  paymentAmountMinor: number;
+  destinationAccountId: string;
+  transferAmountMinor: number;
+  settlementHold: boolean;
+}
+
+export interface RouteTransferSettlement {
+  transferId: string;
+  orderId: string;
+  onHold: boolean;
+  settlementStatus: "on_hold" | "pending" | "settled";
+}
+
+/** Platform credentials and explicit frozen transfer terms, without OAuth.
+ * The token argument is the bound public key handle, never a merchant token.
+ * The caller owns eligibility and durable order/refund idempotency.
+ */
+export class RazorpayRouteProvider extends RazorpayPaymentProvider {
+  private readonly terms: Readonly<RazorpayRouteTerms>;
+
+  constructor(input: {keyId: string; keySecret: string;
+    mode: "test" | "live"; terms: RazorpayRouteTerms},
+  fetchImpl: typeof fetch = fetch) {
+    if (input.mode !== "test" && input.mode !== "live") invalidInput();
+    if (!new RegExp(`^rzp_${input.mode}_[A-Za-z0-9]+$`, "u")
+      .test(input.keyId)) invalidInput();
+    assertToken(input.keySecret);
+    providerId(input.terms.destinationAccountId, "acc_");
+    assertAmount(input.terms.transferAmountMinor);
+    assertAmount(input.terms.paymentAmountMinor);
+    if (input.terms.transferAmountMinor > input.terms.paymentAmountMinor) {
+      invalidInput();
+    }
+    if (typeof input.terms.settlementHold !== "boolean") invalidInput();
+    const {keyId, keySecret} = input;
+    super({signatureSecret: keySecret, authorization: (handle) => {
+      if (handle !== keyId) invalidInput();
+      return `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
+    }}, fetchImpl);
+    this.terms = Object.freeze({...input.terms});
+  }
+
+  override async createOrder(handle: string,
+    input: {amount: number; receipt: string}): Promise<FormPaymentOrder> {
+    if (input.amount !== this.terms.paymentAmountMinor) invalidInput();
+    const order = await super.createOrder(handle, input);
+    // A successful POST does not prove that the intended transfer was attached.
+    return this.verifiedOrder(handle, order.id, true, 0);
+  }
+
+  override async findOrderByReceipt(handle: string, receipt: string):
+    Promise<FormPaymentOrder | null> {
+    const order = await super.findOrderByReceipt(handle, receipt);
+    return order ? this.fetchOrder(handle, order.id) : null;
+  }
+
+  override async fetchOrder(handle: string, orderId: string):
+    Promise<FormPaymentOrder> {
+    return this.verifiedOrder(handle, orderId, false);
+  }
+
+  /** Current provider proof for a payment's one frozen organizer transfer. */
+  async inspectSettlement(handle: string, input: {
+    orderId: string; paymentId: string; receipt: string;
+  }): Promise<RouteTransferSettlement> {
+    const payment = await super.fetchPayment(handle, input.paymentId);
+    if (payment.orderId !== input.orderId || !payment.captured ||
+        payment.status !== "captured" || payment.amountRefunded !== 0 ||
+        payment.amount !== this.terms.paymentAmountMinor ||
+        payment.currency !== "INR" || !this.terms.settlementHold) {
+      invalidResponse();
+    }
+    const {order, transfer} = await this.verifiedOrderTransfer(handle,
+      input.orderId, false, 0);
+    if (order.receipt !== input.receipt || order.status !== "paid" ||
+        transfer.status !== "processed" ||
+        typeof transfer.on_hold !== "boolean" ||
+        transfer.on_hold && transfer.on_hold_until !== null ||
+        !["on_hold", "pending", "settled"]
+          .includes(String(transfer.settlement_status)) ||
+        (transfer.settlement_status === "on_hold") !== transfer.on_hold) {
+      invalidResponse();
+    }
+    return {transferId: transfer.id as string, orderId: order.id,
+      onHold: transfer.on_hold,
+      settlementStatus: transfer.settlement_status as
+        RouteTransferSettlement["settlementStatus"]};
+  }
+
+  /** State assignment is retryable; only a fresh read proves hold release.
+   * The caller must durably authorize release before invoking this method.
+   * Releasing a hold is not evidence that the bank settlement has completed.
+   */
+  async releaseSettlement(handle: string, input: {
+    orderId: string; paymentId: string; receipt: string; transferId: string;
+  }): Promise<RouteTransferSettlement> {
+    providerId(input.transferId, "trf_");
+    const before = await this.inspectSettlement(handle, input);
+    if (before.transferId !== input.transferId) invalidResponse();
+    if (!before.onHold) return before;
+    await this.api(handle, `/v1/transfers/${input.transferId}`, "PATCH",
+      {on_hold: false});
+    const after = await this.inspectSettlement(handle, input);
+    if (after.transferId !== input.transferId || after.onHold) {
+      invalidResponse();
+    }
+    return after;
+  }
+
+  override async refundPayment(handle: string, input: {
+    paymentId: string; amount: number; idempotencyKey: string;
+  }) {
+    // reverse_all is appropriate for full failed-fulfillment refunds. Partial
+    // refunds require a separate allocation/reversal plan, not this operation.
+    if (input.amount !== this.terms.paymentAmountMinor) invalidInput();
+    const payment = await super.fetchPayment(handle, input.paymentId);
+    this.assertRefundPayment(payment);
+    await this.fetchOrder(handle, payment.orderId!);
+    const refund = await super.refundPayment(handle, input);
+    if (refund.status === "processed") {
+      await this.assertReversed(handle, refund.paymentId);
+    }
+    return refund;
+  }
+
+  override async fetchRefund(handle: string, refundId: string) {
+    const refund = await super.fetchRefund(handle, refundId);
+    if (refund.amount !== this.terms.paymentAmountMinor) invalidResponse();
+    if (refund.status === "processed") {
+      await this.assertReversed(handle, refund.paymentId);
+    }
+    return refund;
+  }
+
+  override async fetchPayment(handle: string, paymentId: string) {
+    const payment = await super.fetchPayment(handle, paymentId);
+    await this.verifyRefundObservation(handle, payment);
+    return payment;
+  }
+
+  override async fetchOrderPayments(handle: string, orderId: string) {
+    const payments = await super.fetchOrderPayments(handle, orderId);
+    for (const payment of payments) {
+      await this.verifyRefundObservation(handle, payment);
+    }
+    return payments;
+  }
+
+  private async verifyRefundObservation(handle: string,
+    payment: FormProviderPayment): Promise<void> {
+    // Every observation path, including webhook-triggered reconciliation, must
+    // prove the reversal before the shared processor can mark a full refund.
+    if (payment.amountRefunded === this.terms.paymentAmountMinor) {
+      this.assertRefundPayment(payment);
+      await this.verifiedOrder(handle, payment.orderId!, false,
+        this.terms.transferAmountMinor);
+    }
+  }
+
+  private async assertReversed(handle: string, paymentId: string):
+    Promise<void> {
+    const payment = await super.fetchPayment(handle, paymentId);
+    this.assertRefundPayment(payment);
+    if (payment.amountRefunded !== this.terms.paymentAmountMinor) {
+      invalidResponse();
+    }
+    await this.verifiedOrder(handle, payment.orderId!, false,
+      this.terms.transferAmountMinor);
+  }
+
+  private assertRefundPayment(payment: FormProviderPayment): void {
+    if (!payment.orderId || payment.amount !== this.terms.paymentAmountMinor ||
+        payment.currency !== "INR") invalidResponse();
+  }
+
+  private async verifiedOrder(handle: string, orderId: string,
+    checkInitialHold: boolean, reversedAmount?: number):
+    Promise<FormPaymentOrder> {
+    return (await this.verifiedOrderTransfer(handle, orderId,
+      checkInitialHold, reversedAmount)).order;
+  }
+
+  private async verifiedOrderTransfer(handle: string, orderId: string,
+    checkInitialHold: boolean, reversedAmount?: number):
+    Promise<{order: FormPaymentOrder; transfer: Record<string, unknown>}> {
+    // Validate the ordinary order and its expanded transfer separately. The
+    // unfiltered expansion must include the single intended transfer even after
+    // settlement or reversal. A missing/extra transfer requires review.
+    const order = await super.fetchOrder(handle, orderId);
+    const expanded = await this.api(handle,
+      `/v1/orders/${orderId}?expand[]=transfers`, "GET");
+    if (order.amount !== this.terms.paymentAmountMinor ||
+        expanded.id !== order.id || expanded.amount !== order.amount ||
+        expanded.currency !== order.currency ||
+        expanded.receipt !== order.receipt) invalidResponse();
+    const transfers = expanded.transfers;
+    if (!record(transfers) || transfers.entity !== "collection" ||
+        transfers.count !== 1 || !Array.isArray(transfers.items) ||
+        transfers.items.length !== 1) invalidResponse();
+    const transfer = transfers.items[0];
+    if (!record(transfer) || transfer.entity !== "transfer" ||
+        transfer.source !== orderId ||
+        transfer.recipient !== this.terms.destinationAccountId ||
+        transfer.amount !== this.terms.transferAmountMinor ||
+        transfer.currency !== "INR" ||
+        typeof transfer.amount_reversed !== "number" ||
+        !Number.isSafeInteger(transfer.amount_reversed) ||
+        transfer.amount_reversed < 0 ||
+        transfer.amount_reversed > this.terms.transferAmountMinor) {
+      invalidResponse();
+    }
+    if (checkInitialHold &&
+        (transfer.on_hold !== this.terms.settlementHold ||
+          this.terms.settlementHold && transfer.on_hold_until !== null)) {
+      invalidResponse();
+    }
+    providerId(transfer.id, "trf_");
+    if (reversedAmount !== undefined &&
+        transfer.amount_reversed !== reversedAmount) invalidResponse();
+    return {order, transfer};
+  }
+
+  protected override orderFields(amount: number): Record<string, unknown> {
+    if (this.terms.transferAmountMinor > amount) invalidInput();
+    return {transfers: [{account: this.terms.destinationAccountId,
+      amount: this.terms.transferAmountMinor, currency: "INR",
+      on_hold: this.terms.settlementHold}]};
+  }
+
+  protected override refundFields(): Record<string, unknown> {
+    // Full failed-fulfillment refunds must recover the organizer transfer too.
+    // A rejected reversal remains pending/review, never silently self-funded.
+    return {reverse_all: true};
+  }
+}
+
+function record(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}

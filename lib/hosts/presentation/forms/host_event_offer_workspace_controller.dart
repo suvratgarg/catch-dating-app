@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_offer_workspace_policy.dart';
 import 'package:flutter/foundation.dart';
 
 /// Owns query, event, CRM, offer, and handoff orchestration for one account.
@@ -14,7 +14,8 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   HostEventOfferWorkspaceController({
     required this.organizerId,
     required this.accountId,
-    required this.queryController,
+    this.queryController,
+    this.responseId,
     required this.offerController,
     required this.listOffers,
     required this.getOffer,
@@ -23,35 +24,47 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     required this.openHandoff,
     required this.targets,
     required this.getResponseDetail,
+    this.isResponseReviewed,
     required this.openResponseForConversion,
     required this.openEventSettings,
     required this.now,
     this.initialEventId,
     this.initialEventTarget,
   }) {
-    queryController.addListener(_onQueryChanged);
+    assert((queryController == null) != (responseId == null));
+    queryController?.addListener(_onQueryChanged);
     offerController.addListener(_onOfferChanged);
   }
 
   final String organizerId;
   final String? accountId;
-  final HostResponseQueryController queryController;
+  final HostResponseQueryController? queryController;
+  final String? responseId;
   final HostEventOfferController offerController;
-  Future<Map<String, Object?>> Function({required String organizerId,
-    required String eventId, String? afterOfferId}) listOffers;
-  Future<HostEventOffer> Function({required String organizerId,
-    required String eventId, required String contactId}) getOffer;
+  Future<Map<String, Object?>> Function({
+    required String organizerId,
+    required String eventId,
+    String? afterOfferId,
+  })
+  listOffers;
+  Future<HostEventOffer> Function({
+    required String organizerId,
+    required String eventId,
+    required String contactId,
+  })
+  getOffer;
   Future<HostOfferHandoff> Function({required HostEventOffer offer})
-      prepareHandoff;
+  prepareHandoff;
   Future<void> Function(String text) copyMessage;
   Future<bool> Function(Uri uri) openHandoff;
   HostOfferEventTargetsGateway targets;
-  Future<HostFormResponseDetail> Function(String responseId)
-      getResponseDetail;
+  Future<HostFormResponseDetail> Function(String responseId) getResponseDetail;
+  Future<bool> Function(HostFormResponseDetail)? isResponseReviewed;
   Future<void> Function(String responseId) openResponseForConversion;
   Future<void> Function(String eventId) openEventSettings;
   DateTime Function() now;
   final String? initialEventId;
+
   /// A newly saved event read back through the manager-only setup projection.
   /// The configuration read in [_choose] still checks current event authority.
   final HostOfferEventTarget? initialEventTarget;
@@ -60,17 +73,26 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   /// Parent rebuilds can supply fresh closures without changing the reviewed
   /// account, query or event context. Keep those callbacks current in place.
   void updateDependencies({
-    required Future<Map<String, Object?>> Function({required String organizerId,
-      required String eventId, String? afterOfferId}) listOffers,
-    required Future<HostEventOffer> Function({required String organizerId,
-      required String eventId, required String contactId}) getOffer,
+    required Future<Map<String, Object?>> Function({
+      required String organizerId,
+      required String eventId,
+      String? afterOfferId,
+    })
+    listOffers,
+    required Future<HostEventOffer> Function({
+      required String organizerId,
+      required String eventId,
+      required String contactId,
+    })
+    getOffer,
     required Future<HostOfferHandoff> Function({required HostEventOffer offer})
-      prepareHandoff,
+    prepareHandoff,
     required Future<void> Function(String text) copyMessage,
     required Future<bool> Function(Uri uri) openHandoff,
     required HostOfferEventTargetsGateway targets,
     required Future<HostFormResponseDetail> Function(String responseId)
-      getResponseDetail,
+    getResponseDetail,
+    Future<bool> Function(HostFormResponseDetail)? isResponseReviewed,
     required Future<void> Function(String responseId) openResponseForConversion,
     required Future<void> Function(String eventId) openEventSettings,
     required DateTime Function() now,
@@ -82,12 +104,12 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     this.openHandoff = openHandoff;
     this.targets = targets;
     this.getResponseDetail = getResponseDetail;
+    this.isResponseReviewed = isResponseReviewed;
     this.openResponseForConversion = openResponseForConversion;
     this.openEventSettings = openEventSettings;
     this.now = now;
   }
 
-  static final Random _entropy = Random.secure();
   int _generation = 0;
   bool _loading = false;
   Object? _error;
@@ -114,8 +136,10 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   bool _handoffOpenFailed = false;
 
   bool _current(int generation, String? accountId) =>
-      !_disposed && generation == _generation &&
-      accountId != null && accountId == this.accountId;
+      !_disposed &&
+      generation == _generation &&
+      accountId != null &&
+      accountId == this.accountId;
 
   void _reset() {
     ++_generation;
@@ -148,36 +172,44 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     if (_ids.isEmpty) {
       return;
     }
-    final intent = queryController.selectionIntent;
-    if (intent?.resultHash == _resultHash &&
-        _sameIds(intent!.ids, _ids)) {
+    final intent = queryController?.selectionIntent;
+    if (intent?.resultHash == _resultHash && _sameIds(intent!.ids, _ids)) {
       return;
     }
-    _update(_reset);
+    _update(() {
+      _reset();
+      _selectionStale = true;
+    });
   }
 
   void _onOfferChanged() {
     final view = offerController.view;
     final receipt = view.receipt;
     if (view.status != HostOfferFlowStatus.committed ||
-        receipt == null || receipt.requestId == _refreshedReceiptId ||
+        receipt == null ||
+        receipt.requestId == _refreshedReceiptId ||
         receipt.eventId != _event?.eventId) {
       return;
     }
     _refreshedReceiptId = receipt.requestId;
-    _refreshOffers();
+    refreshOffers().then((_) {
+      if (!_disposed && _ids.length == 1 && _offers.length == 1) {
+        selectExisting(_offers.single);
+      }
+    });
   }
 
   static bool _sameIds(List<String> a, List<String> b) =>
-      a.length == b.length &&
-      a.toSet().containsAll(b);
+      a.length == b.length && a.toSet().containsAll(b);
 
   Future<bool> _revalidate(int generation, String accountId) async {
     if (!_current(generation, accountId) || _resultHash == null) {
       return false;
     }
-    final valid = await queryController.revalidateSelection(
-      ids: _ids, resultHash: _resultHash!);
+    final query = queryController;
+    final valid = query == null
+        ? _ids.length == 1 && _ids.single == responseId
+        : await query.revalidateSelection(ids: _ids, resultHash: _resultHash!);
     if (!_current(generation, accountId)) {
       return false;
     }
@@ -190,9 +222,13 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     return valid;
   }
 
-  Future<void> _start() async {
+  Future<void> start() async {
     final accountId = this.accountId;
-    final intent = queryController.selectionIntent;
+    final intent =
+        queryController?.selectionIntent ??
+        (responseId == null
+            ? null
+            : (ids: [responseId!], resultHash: responseId!));
     if (accountId == null || intent == null || intent.ids.length > 25) {
       return;
     }
@@ -203,13 +239,13 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     });
     if (initialEventTarget case final target?) {
       _update(() => _events = List.unmodifiable([target]));
-      await _choose(target);
+      await choose(target);
       return;
     }
-    await _loadEvents();
+    await loadEvents();
   }
 
-  Future<void> _loadEvents() async {
+  Future<void> loadEvents() async {
     if (_loading) {
       return;
     }
@@ -219,10 +255,12 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       return;
     }
     final cursor = _nextEventCursor;
-    _update(() { _loading = true; _error = null; });
+    _update(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final page = await targets.list(
-        organizerId: organizerId, cursor: cursor);
+      final page = await targets.list(organizerId: organizerId, cursor: cursor);
       if (!_current(generation, accountId)) {
         return;
       }
@@ -230,14 +268,18 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         throw const FormatException('Offer target page repeated.');
       }
       _update(() {
-        _events = List.unmodifiable({
-          for (final event in _events) event.eventId: event,
-          for (final event in page.events) event.eventId: event,
-        }.values);
+        _events = List.unmodifiable(
+          {
+            for (final event in _events) event.eventId: event,
+            for (final event in page.events) event.eventId: event,
+          }.values,
+        );
         _nextEventCursor = page.nextCursor;
       });
       if (initialEventId case final initialId?) {
-        final matches = page.events.where((event) => event.eventId == initialId);
+        final matches = page.events.where(
+          (event) => event.eventId == initialId,
+        );
         if (matches.isNotEmpty) {
           // _choose runs after the list loading interlock is released.
           scheduleMicrotask(() {
@@ -252,41 +294,33 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
   }
 
-  Future<List<HostFormResponseDetail>> _resolveDetails() async {
-    final details = <HostFormResponseDetail>[];
-    // Four bounded callable reads at a time, no partial batch acceptance.
-    for (var offset = 0; offset < _ids.length; offset += 4) {
-      final end = min(offset + 4, _ids.length);
-      details.addAll(await Future.wait(
-        _ids.sublist(offset, end).map(getResponseDetail),
-      ));
-    }
-    final request = queryController.view.request;
-    if (request == null || details.length != _ids.length ||
-        details.asMap().entries.any((entry) =>
-          entry.value.response.responseId != _ids[entry.key] ||
-          entry.value.response.formId != request.formId ||
-          entry.value.response.versionId != request.versionId ||
-          entry.value.response.status != HostFormResponseStatus.submitted)) {
-      throw StateError('Selected responses changed.');
-    }
-    return details;
-  }
+  Future<List<HostFormResponseDetail>> _resolveDetails() =>
+      HostOfferWorkspacePolicy.resolveDetails(
+        ids: _ids,
+        getResponseDetail: getResponseDetail,
+        queryConfigured: queryController != null,
+        currentRequest: () => queryController?.view.request,
+      );
 
-  Future<void> _choose(HostOfferEventTarget event) async {
+  Future<void> choose(HostOfferEventTarget event) async {
     final generation = _generation;
     final accountId = this.accountId;
     if (accountId == null || _loading) {
       return;
     }
     if (_event?.eventId != event.eventId) _personalLinks.clear();
-    _update(() { _loading = true; _error = null; });
+    _update(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       if (!await _revalidate(generation, accountId)) {
         return;
       }
       final configuration = await targets.configuration(
-        organizerId: organizerId, eventId: event.eventId);
+        organizerId: organizerId,
+        eventId: event.eventId,
+      );
       final details = await _resolveDetails();
       if (!await _revalidate(generation, accountId)) {
         return;
@@ -294,15 +328,22 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       if (!_current(generation, accountId)) {
         return;
       }
-      if (configuration.organizerId != organizerId ||
-          configuration.eventId != event.eventId ||
-          !configuration.startsAt.isAtSameMomentAs(event.startTime) ||
-          event.setupRevision != null &&
-              configuration.eventSourceRevision != event.setupRevision) {
+      if (!HostOfferWorkspacePolicy.configurationMatches(
+        configuration,
+        event,
+        organizerId,
+      )) {
         throw StateError('Selected responses changed.');
       }
-      final missing = details.where((detail) =>
-          detail.contactId == null || detail.contactId!.isEmpty).toList();
+      final missing = <HostFormResponseDetail>[];
+      for (final detail in details) {
+        if (detail.contactId == null ||
+            detail.contactId!.isEmpty ||
+            isResponseReviewed != null && !await isResponseReviewed!(detail)) {
+          missing.add(detail);
+        }
+      }
+      if (!_current(generation, accountId)) return;
       _update(() {
         _event = event;
         _configuration = configuration;
@@ -313,11 +354,14 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         _selectedOffer = null;
         _handoff = null;
       });
-      await _refreshOffers();
-      if (missing.isEmpty && configuration.suggestedExpiresAt != null &&
+      await refreshOffers();
+      if (missing.isEmpty &&
+          configuration.suggestedExpiresAt != null &&
           _current(generation, accountId)) {
         await offerController.recoverPending(
-          organizerId: organizerId, eventId: event.eventId);
+          organizerId: organizerId,
+          eventId: event.eventId,
+        );
         if (!_current(generation, accountId)) {
           return;
         }
@@ -331,7 +375,15 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
           });
           return;
         }
-        if (!_personalMode) _prepareDraft(details, configuration);
+        if (_ids.length == 1 && _offers.length == 1) {
+          // Select after releasing the event-loading interlock.
+          final existing = _offers.single;
+          scheduleMicrotask(() {
+            if (_current(generation, accountId)) selectExisting(existing);
+          });
+        } else if (!_personalMode) {
+          _prepareDraft(details, configuration);
+        }
       }
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
@@ -341,85 +393,73 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   }
 
   bool get _personalMode =>
-      _configuration?.paymentTerms?['preferredCollection'] ==
-      'personalRequest';
+      _configuration?.paymentTerms?['preferredCollection'] == 'personalRequest';
 
-  void _prepareDraft(List<HostFormResponseDetail> details,
-      HostOfferEventConfiguration configuration) {
+  void _prepareDraft(
+    List<HostFormResponseDetail> details,
+    HostOfferEventConfiguration configuration,
+  ) {
     final expiry = configuration.suggestedExpiresAt;
     if (expiry == null) {
       return;
     }
-    if (_personalMode) {
-      for (final detail in details) {
-        final link = Uri.tryParse(_personalLinks[detail.contactId!] ?? '');
-        if (link == null || link.scheme != 'https' || link.host.isEmpty ||
-            link.userInfo.isNotEmpty || link.toString().length > 2048) {
-          throw ArgumentError('A recipient payment link needs review.');
-        }
-      }
-    }
-    final draft = HostOfferBatchDraft(
+    final draft = HostOfferWorkspacePolicy.draft(
       organizerId: organizerId,
-      eventId: configuration.eventId,
-      rows: [
-        for (final detail in details)
-          HostOfferRow(
-            organizerId: organizerId,
-            eventId: configuration.eventId,
-            contactId: detail.contactId!,
-            sourceKind: HostOfferSourceKind.formResponse,
-            sourceId: detail.response.responseId,
-            expiresAt: expiry,
-            organizerPaymentLink: _personalMode
-                ? Uri.tryParse(_personalLinks[detail.contactId!] ?? '')
-                : null,
-          ),
-      ],
+      details: details,
+      configuration: configuration,
+      personalMode: _personalMode,
+      personalLinks: _personalLinks,
     );
-    draft.validate(now: configuration.serverNow,
-      eventStartsAt: configuration.startsAt);
     _update(() {
       _draft = draft;
-      _commitRequestId = _newRequestId();
+      _commitRequestId = HostOfferWorkspacePolicy.newRequestId();
     });
   }
 
-  Future<void> _previewPersonal() async {
+  Future<void> previewPersonal() async {
     final accountId = this.accountId;
     final event = _event;
     final previous = _configuration;
     final generation = _generation;
-    if (accountId == null || event == null || previous == null ||
-        _loading || !_personalMode) {
+    if (accountId == null ||
+        event == null ||
+        previous == null ||
+        _loading ||
+        !_personalMode) {
       return;
     }
-    _update(() { _loading = true; _error = null; });
+    _update(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       if (!await _revalidate(generation, accountId)) {
         return;
       }
       final details = await _resolveDetails();
       final current = await targets.configuration(
-        organizerId: organizerId, eventId: event.eventId);
+        organizerId: organizerId,
+        eventId: event.eventId,
+      );
       if (!_current(generation, accountId)) {
         return;
       }
-      if (current.eventSourceRevision != previous.eventSourceRevision ||
-          current.suggestedExpiresAt != previous.suggestedExpiresAt ||
-          current.paymentTerms?['preferredCollection'] !=
-              previous.paymentTerms?['preferredCollection'] ||
-          details.any((detail) => detail.contactId == null) ||
-          details.asMap().entries.any((entry) =>
-            entry.value.contactId != _details[entry.key].contactId)) {
+      if (HostOfferWorkspacePolicy.personalReviewChanged(
+        current,
+        previous,
+        details,
+        _details,
+      )) {
         _update(() => _selectionStale = true);
         return;
       }
       _prepareDraft(details, current);
       if (_draft case final draft?) {
         await offerController.preview(
-          draft: draft, now: now(),
-          eventStartsAt: current.startsAt);
+          draft: draft,
+          now: now(),
+          eventStartsAt: current.startsAt,
+        );
       }
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
@@ -428,14 +468,7 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
   }
 
-  static String _newRequestId() {
-    final time = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    final random = List.generate(3,
-      (_) => _entropy.nextInt(1 << 32).toRadixString(36)).join();
-    return 'offer_${time}_$random';
-  }
-
-  Future<void> _returnForConversion(String responseId) async {
+  Future<void> returnForConversion(String responseId) async {
     final generation = _generation;
     final accountId = this.accountId;
     if (accountId == null) {
@@ -447,13 +480,13 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         return;
       }
       final event = _event;
-      if (event != null) await _choose(event);
+      if (event != null) await choose(event);
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
     }
   }
 
-  Future<void> _openSettings() async {
+  Future<void> openSettings() async {
     final event = _event;
     final accountId = this.accountId;
     final generation = _generation;
@@ -466,7 +499,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         return;
       }
       final current = await targets.configuration(
-        organizerId: organizerId, eventId: event.eventId);
+        organizerId: organizerId,
+        eventId: event.eventId,
+      );
       if (!_current(generation, accountId)) {
         return;
       }
@@ -481,19 +516,22 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         timezone: event.timezone,
         publicationState: event.publicationState,
         setupRevision: event.setupRevision == null
-            ? null : current.eventSourceRevision,
+            ? null
+            : current.eventSourceRevision,
       );
-      _update(() => _events = List.unmodifiable([
-        for (final item in _events)
-          item.eventId == refreshed.eventId ? refreshed : item,
-      ]));
-      await _choose(refreshed);
+      _update(
+        () => _events = List.unmodifiable([
+          for (final item in _events)
+            item.eventId == refreshed.eventId ? refreshed : item,
+        ]),
+      );
+      await choose(refreshed);
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
     }
   }
 
-  Future<void> _refreshOffers() => _fetchOffers(append: false);
+  Future<void> refreshOffers() => _fetchOffers(append: false);
 
   Future<void> _fetchOffers({required bool append}) async {
     final event = _event;
@@ -504,77 +542,69 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
     try {
       final response = await listOffers(
-        organizerId: organizerId, eventId: event.eventId,
-        afterOfferId: append ? _nextOfferCursor : null);
-      if (!_current(generation, accountId) || _event?.eventId != event.eventId) {
+        organizerId: organizerId,
+        eventId: event.eventId,
+        afterOfferId: append ? _nextOfferCursor : null,
+      );
+      if (!_current(generation, accountId) ||
+          _event?.eventId != event.eventId) {
         return;
       }
-      final rawItems = response['items'];
-      final cursor = response['nextCursor'];
-      if (rawItems is! List || cursor != null && cursor is! String) {
-        throw const FormatException('Offer list is invalid.');
-      }
-      final parsed = rawItems.map((item) {
-          if (item is! Map) {
-            throw const FormatException('Offer row is invalid.');
-          }
-          return item.cast<String, Object?>();
-        }).toList();
-      if (parsed.any((item) => item['eventId'] != event.eventId ||
-          item['offerId'] is! String || item['contactId'] is! String) ||
-          parsed.map((item) => item['offerId']).toSet().length !=
-              parsed.length ||
-          append && cursor == _nextOfferCursor) {
-        throw const FormatException('Offer list is inconsistent.');
-      }
-      // This workspace belongs to one selected response set. Keep unrelated
-      // event offers out of the chooser without fetching private CRM labels.
-      final selectedContacts = _details.map((detail) => detail.contactId)
-          .whereType<String>().toSet();
-      final visible = parsed.where((item) =>
-          selectedContacts.contains(item['contactId'])).toList();
-      final combined = append ? [..._offers, ...visible] : visible;
-      if (combined.map((item) => item['offerId']).toSet().length !=
-          combined.length) {
-        throw const FormatException('Offer list repeats an offer.');
-      }
+      final page = HostOfferWorkspacePolicy.offerPage(
+        response: response,
+        eventId: event.eventId,
+        previousCursor: _nextOfferCursor,
+        append: append,
+        details: _details,
+        offers: _offers,
+      );
       _update(() {
-        _offers = List.unmodifiable(combined);
-        _nextOfferCursor = cursor as String?;
+        _offers = page.items;
+        _nextOfferCursor = page.cursor;
       });
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
     }
   }
 
-  Future<void> _selectExisting(Map<String, Object?> item) async {
+  Future<void> selectExisting(Map<String, Object?> item) async {
     final event = _event;
     final accountId = this.accountId;
     final generation = _generation;
     final contactId = item['contactId'];
     final offerId = item['offerId'];
-    if (event == null || accountId == null || _loading ||
-        contactId is! String || offerId is! String) {
+    if (event == null ||
+        accountId == null ||
+        _loading ||
+        contactId is! String ||
+        offerId is! String) {
       return;
     }
-    _update(() { _loading = true; _error = null; });
+    _update(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final offer = await getOffer(organizerId: organizerId,
-        eventId: event.eventId, contactId: contactId);
+      final offer = await getOffer(
+        organizerId: organizerId,
+        eventId: event.eventId,
+        contactId: contactId,
+      );
       if (!_current(generation, accountId) ||
           _event?.eventId != event.eventId) {
         return;
       }
       if (offer.organizerId != organizerId ||
           offer.eventId != event.eventId ||
-          offer.contactId != contactId || offer.offerId != offerId) {
+          offer.contactId != contactId ||
+          offer.offerId != offerId) {
         throw const FormatException('Offer detail does not match selection.');
       }
       _update(() {
         _selectedOffer = offer;
         _handoff = null;
-        _referenceRequestId = _newRequestId();
-        _reviewRequestId = _newRequestId();
+        _referenceRequestId = HostOfferWorkspacePolicy.newRequestId();
+        _reviewRequestId = HostOfferWorkspacePolicy.newRequestId();
         _messageCopied = false;
         _handoffOpenFailed = false;
       });
@@ -585,9 +615,10 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
   }
 
-  void _manualUpdated(HostEventOffer updated) {
+  void manualUpdated(HostEventOffer updated) {
     final previous = _selectedOffer;
-    if (_disposed || previous == null ||
+    if (_disposed ||
+        previous == null ||
         previous.offerId != updated.offerId ||
         previous.organizerId != updated.organizerId ||
         previous.eventId != updated.eventId ||
@@ -597,48 +628,37 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     _update(() {
       _selectedOffer = updated;
       _handoff = null;
-      _referenceRequestId = _newRequestId();
-      _reviewRequestId = _newRequestId();
+      _referenceRequestId = HostOfferWorkspacePolicy.newRequestId();
+      _reviewRequestId = HostOfferWorkspacePolicy.newRequestId();
       _messageCopied = false;
     });
-    _refreshOffers();
+    refreshOffers();
   }
 
-  Future<void> _prepareHandoff() async {
+  Future<void> prepareSelectedHandoff() async {
     final selected = _selectedOffer;
     final accountId = this.accountId;
     final generation = _generation;
     if (selected == null || accountId == null || _loading) {
       return;
     }
-    _update(() { _loading = true; _error = null; _handoff = null; });
+    _update(() {
+      _loading = true;
+      _error = null;
+      _handoff = null;
+    });
     try {
-      final current = await getOffer(
-        organizerId: selected.organizerId, eventId: selected.eventId,
-        contactId: selected.contactId);
-      if (!_current(generation, accountId) ||
-          !_sameSelectedOffer(selected)) {
-        return;
-      }
-      if (current.offerId != selected.offerId ||
-          current.organizerId != selected.organizerId ||
-          current.eventId != selected.eventId ||
-          current.contactId != selected.contactId) {
-        throw const FormatException('Offer detail changed.');
-      }
-      final handoff = await prepareHandoff(offer: current);
-      if (!_current(generation, accountId) ||
-          !_sameSelectedOffer(selected)) {
-        return;
-      }
-      if (handoff.offerId != current.offerId ||
-          handoff.kind == 'prepared' &&
-              handoff.contactId != current.contactId) {
-        throw const FormatException('Offer handoff does not match selection.');
-      }
+      final prepared = await HostOfferWorkspacePolicy.verifiedHandoff(
+        selected: selected,
+        getOffer: getOffer,
+        prepareHandoff: prepareHandoff,
+        isCurrent: () =>
+            _current(generation, accountId) && _sameSelectedOffer(selected),
+      );
+      if (prepared == null) return;
       _update(() {
-        _selectedOffer = current;
-        _handoff = handoff;
+        _selectedOffer = prepared.offer;
+        _handoff = prepared.handoff;
         _messageCopied = false;
         _handoffOpenFailed = false;
       });
@@ -650,16 +670,16 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   }
 
   bool _sameSelectedOffer(HostEventOffer offer) =>
-      _selectedOffer?.offerId == offer.offerId &&
-      _selectedOffer?.revision == offer.revision &&
-      _selectedOffer?.generation == offer.generation;
+      HostOfferWorkspacePolicy.sameOfferRevision(_selectedOffer, offer);
 
-  Future<void> _copyHandoff() async {
+  Future<void> copyPreparedHandoff() async {
     final handoff = _handoff;
     final accountId = this.accountId;
     final generation = _generation;
-    if (handoff?.kind != 'prepared' || handoff?.copyText == null ||
-        accountId == null || _loading) {
+    if (handoff?.kind != 'prepared' ||
+        handoff?.copyText == null ||
+        accountId == null ||
+        _loading) {
       return;
     }
     try {
@@ -672,16 +692,19 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
   }
 
-  Future<void> _openWhatsapp() async {
+  Future<void> openPreparedWhatsapp() async {
     final handoff = _handoff;
     final accountId = this.accountId;
     final generation = _generation;
-    if (handoff?.kind != 'prepared' || handoff?.whatsappUrl == null ||
-        accountId == null || _loading) {
+    if (handoff?.kind != 'prepared' ||
+        handoff?.whatsappUrl == null ||
+        accountId == null ||
+        _loading) {
       return;
     }
     final uri = handoff!.whatsappUrl!;
-    if (uri.scheme != 'https' || uri.host != 'wa.me' ||
+    if (uri.scheme != 'https' ||
+        uri.host != 'wa.me' ||
         uri.userInfo.isNotEmpty ||
         !RegExp(r'^/[0-9]{8,15}$').hasMatch(uri.path)) {
       _update(() => _handoffOpenFailed = true);
@@ -699,8 +722,25 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
   }
 
+  bool get loading =>
+      _loading ||
+      offerController.view.status == HostOfferFlowStatus.previewing ||
+      offerController.view.status == HostOfferFlowStatus.committing;
 
-  bool get loading => _loading;
+  void changeEvent() {
+    if (loading || offerController.view.pendingRequestId != null) return;
+    _update(() {
+      _event = null;
+      _configuration = null;
+      _draft = null;
+      _selectedOffer = null;
+      _handoff = null;
+      _offers = const [];
+      _personalLinks.clear();
+    });
+    if (_events.length <= 1 && initialEventTarget != null) loadEvents();
+  }
+
   bool get hasError => _error != null;
   bool get selectionStale => _selectionStale;
   List<String> get ids => _ids;
@@ -715,6 +755,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   List<Map<String, Object?>> get offers => _offers;
   String? get nextOfferCursor => _nextOfferCursor;
   HostEventOffer? get selectedOffer => _selectedOffer;
+  String? get selectedResponseId =>
+      HostOfferWorkspacePolicy.selectedResponseId(_selectedOffer, _details);
+
   HostOfferHandoff? get handoff => _handoff;
   String? get referenceRequestId => _referenceRequestId;
   String? get reviewRequestId => _reviewRequestId;
@@ -722,20 +765,15 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   bool get handoffOpenFailed => _handoffOpenFailed;
   bool get personalMode => _personalMode;
 
-  Future<void> start() => _start();
-  Future<void> loadEvents() => _loadEvents();
-  Future<void> choose(HostOfferEventTarget event) => _choose(event);
-  Future<void> previewPersonal() => _previewPersonal();
-  Future<void> returnForConversion(String id) => _returnForConversion(id);
-  Future<void> openSettings() => _openSettings();
-  Future<void> refreshOffers() => _refreshOffers();
+  void closeExisting() {
+    if (loading) return;
+    _update(() {
+      _selectedOffer = null;
+      _handoff = null;
+    });
+  }
+
   Future<void> fetchMoreOffers() => _fetchOffers(append: true);
-  Future<void> selectExisting(Map<String, Object?> item) =>
-      _selectExisting(item);
-  void manualUpdated(HostEventOffer offer) => _manualUpdated(offer);
-  Future<void> prepareSelectedHandoff() => _prepareHandoff();
-  Future<void> copyPreparedHandoff() => _copyHandoff();
-  Future<void> openPreparedWhatsapp() => _openWhatsapp();
   void setPersonalLink(String contactId, String value) =>
       _personalLinks[contactId] = value.trim();
 
@@ -751,7 +789,7 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   void dispose() {
     ++_generation;
     _disposed = true;
-    queryController.removeListener(_onQueryChanged);
+    queryController?.removeListener(_onQueryChanged);
     offerController.removeListener(_onOfferChanged);
     super.dispose();
   }

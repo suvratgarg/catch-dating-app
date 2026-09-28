@@ -14,6 +14,8 @@
     "locationName": {"type": "string", "minLength": 1, "maxLength": 240},
     "destinationKind": {"type": "string", "enum": ["catchEvent", "eventRuntime", "externalBooking", "marketingLanding"]},
     "destinationUrl": {"type": ["string", "null"], "maxLength": 2048},
+    "paidBookingAvailable": {"type": "boolean"},
+    "registrationMode": {"type": "string", "enum": ["closed", "free", "paid"]},
     "sourceLabel": {"type": "string", "minLength": 1, "maxLength": 80}
   }
 }

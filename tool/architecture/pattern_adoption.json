@@ -194,6 +194,11 @@
           "path": "lib/hosts/presentation/host_event_manage_screen.dart",
           "role": "defined host workspace variant: canonical route aliases, uid/club/event provider wave, access gate, loaded Setup/Guests/Live/Report workspace, roster/private-access/Event Success/report/action section composition",
           "status": "variant_needed"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+          "role": "Shared single-response and query-selection offer continuation, account-bound commands and inline private event return",
+          "status": "aligned"
         }
       ],
       "variantPatterns": [

@@ -322,4 +322,16 @@ test("ready projection follows current reserved source without changing seats",
     assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.status,
       "cancelled");
     assert.equal(h.firestore.get(`eventSeatLedgers/${eventId}`)?.occupied, 0);
+    const beforeHold = h.firestore.get(`eventAttendees/${attendeeId}`);
+    h.firestore.set(`eventParticipations/${eventId}_${uid}`, {
+      ...current, status: "waitlisted"});
+    h.firestore.set(`eventSeatReservations/${reservationId}`, {eventId,
+      canonicalKey: key, identityRevision: 1, active: false,
+      revision: 3, reservedAtMillis: 1000, releasedAtMillis: null,
+      checkoutHold: {paymentId: "payment-one", expiresAtMillis: 901000}});
+    h.firestore.set(`eventSeatLedgers/${eventId}`, {
+      ...h.firestore.get(`eventSeatLedgers/${eventId}`), checkoutHeld: 1});
+    await projectEventParticipationToAttendee(undefined, current, h.deps);
+    assert.deepEqual(h.firestore.get(`eventAttendees/${attendeeId}`),
+      beforeHold);
   });

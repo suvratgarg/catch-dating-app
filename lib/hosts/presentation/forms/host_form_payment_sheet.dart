@@ -10,7 +10,11 @@ class HostFormPaymentSheet extends StatefulWidget {
     super.key,
     required this.payment,
     required this.connections,
+    this.collectThroughCatch = false,
+    this.collectionMode,
   });
+  final bool collectThroughCatch;
+  final HostFormPaymentMode? collectionMode;
   final HostFormPayment? payment;
   final List<HostFormPaymentConnection> connections;
   @override
@@ -18,7 +22,7 @@ class HostFormPaymentSheet extends StatefulWidget {
 }
 
 class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
-  late String _connectionId;
+  late String? _connectionId;
   late String _amount;
   String? _description;
   late String _refundPolicy;
@@ -26,12 +30,13 @@ class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
   @override
   void initState() {
     super.initState();
-    _connectionId =
-        widget.connections.any(
-          (c) => c.connectionId == widget.payment?.connectionId,
-        )
-        ? widget.payment!.connectionId
-        : widget.connections.first.connectionId;
+    _connectionId = widget.collectThroughCatch
+        ? null
+        : widget.connections.any(
+            (c) => c.connectionId == widget.payment?.connectionId,
+          )
+        ? widget.payment!.connectionId!
+        : widget.connections.firstOrNull?.connectionId;
     _amount = widget.payment?.rupees ?? '100';
     _description = widget.payment?.description;
     _refundPolicy = widget.payment?.refundPolicy ?? '';
@@ -44,6 +49,7 @@ class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
     final description = (_description ?? l10n.hostFormPaymentDescriptionDefault)
         .trim();
     final canSave =
+        (widget.collectThroughCatch || _connectionId != null) &&
         amount != null &&
         description.isNotEmpty &&
         description.length <= 160 &&
@@ -68,28 +74,37 @@ class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
       ),
       child: CatchSection.containedFieldRows(
         children: [
-          CatchField<String>.select(
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostFormPaymentAccount,
-            value: _connectionId,
-            values: widget.connections.map((c) => c.connectionId).toList(),
-            contract: CatchContractConstraints
-                .organizerFormDraftDocumentDefinitionPaymentConnectionId,
-            contractValueBuilder: (value) => value,
-            itemLabelBuilder: (value) => widget.connections
-                .firstWhere((c) => c.connectionId == value)
-                .accountId!,
-            helperText:
-                widget.connections
-                        .firstWhere((c) => c.connectionId == _connectionId)
-                        .mode ==
-                    HostFormPaymentMode.test
-                ? l10n.hostFormPaymentTest
-                : l10n.hostFormPaymentLive,
-            onChanged: (value) {
-              if (value != null) setState(() => _connectionId = value);
-            },
-          ),
+          if (widget.collectThroughCatch)
+            CatchField.read(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostFormPaymentCatchCollection,
+              body: widget.collectionMode == HostFormPaymentMode.test
+                  ? l10n.hostFormPaymentTest
+                  : l10n.hostFormPaymentLive,
+            )
+          else
+            CatchField<String>.select(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostFormPaymentAccount,
+              value: _connectionId,
+              values: widget.connections.map((c) => c.connectionId).toList(),
+              contract: CatchContractConstraints
+                  .organizerFormDraftDocumentDefinitionPaymentConnectionId,
+              contractValueBuilder: (value) => value,
+              itemLabelBuilder: (value) => widget.connections
+                  .firstWhere((c) => c.connectionId == value)
+                  .accountId!,
+              helperText:
+                  widget.connections
+                          .firstWhere((c) => c.connectionId == _connectionId)
+                          .mode ==
+                      HostFormPaymentMode.test
+                  ? l10n.hostFormPaymentTest
+                  : l10n.hostFormPaymentLive,
+              onChanged: (value) {
+                if (value != null) setState(() => _connectionId = value);
+              },
+            ),
           CatchField.input(
             copy: catchFieldCopy(l10n),
             title: l10n.hostFormPaymentAmount,

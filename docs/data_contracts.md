@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.152.0
-updated: 2026-09-27
+version: 1.157.0
+updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
 ---
@@ -1739,6 +1739,47 @@ other countries recommend Stripe, while both setup paths remain available.
 Checkout routing and eventual settlement remain server-authoritative and must
 not infer readiness from the recommendation badge alone.
 
+### Native Payment and Refund Authority
+
+Native captured checkout commits its payment and admission in the same
+transaction. A second payment cannot claim an existing seat; a retried completed
+payment cannot re-admit a cancelled participation. Rejected bookings persist a
+full `bookingFailed` refund intent under the same payment/participation fence
+before provider I/O. Their legacy status remains `refundFailed` while the intent
+is pending or needs review, and only observed full return sets `refunded`.
+The payment trigger and existing due queue recover these intents. Historical
+failed-booking records without an intent require reconciliation because an old
+provider request may have succeeded without a saved acknowledgement.
+
+Native checkout payments retain a server-owned `cancellationRefund` intent on
+`payments/{paymentId}`. Guest cancellation saves the quoted cash amount in the
+same transaction as admission release. Replays resume that amount rather than
+recomputing the deadline. A later host cancellation may raise it to the original
+charge amount while preserving an in-flight attempt. The payment fingerprint
+binds buyer, event, original provider/charge/order, currency and Stripe destination
+account/application fee; current organizer routing cannot change that authority.
+
+Each attempt persists its exact amount, provider idempotency key, provider refund
+id when known, and lease. Only observed processed refunds count toward
+`confirmedAmountMinor`; a partial refund leaves the payment status `completed`,
+and only full confirmed return sets `refunded`. Revenue consumers must subtract
+confirmed cancellation refunds. Provider failure, required customer action or
+inconsistent authority stays explicit as `reviewRequired`; request acceptance
+alone never means money returned. Unknown Stripe POST outcomes older than 23
+hours require reconciliation instead of reusing a potentially expired key.
+Native Razorpay refunds use the original platform account and supported INR
+amounts; unsupported currency/sub-minimum refunds require review. Stripe native
+destination refunds reverse the original transfer and proportionate application
+fee when present. Historical refunded records without amount evidence are not
+assumed to prove a partial or full refund.
+
+The cancelled-event trigger stages every completed payment in bounded pages;
+a payment trigger covers captures observed after cancellation. A bounded oldest
+due queue retries pending intents without a payment-age cutoff. Guest/provider
+failure does not roll back the already committed cancellation. Existing historical
+cancelled events with no refund intent require reviewed reconciliation before
+activation; the trigger does not invent historical guest refund terms.
+
 ## Contract Architecture
 
 JSON Schema draft-07 is the canonical persisted-shape format. Ajv validates
@@ -1762,12 +1803,46 @@ The contract layer owns:
 
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics`, `getPrivateEventSetup`, and
-`listPrivateEventSetups` payload contracts.
+`listPrivateEventSetups` payload contracts. The manager inventory defaults to
+upcoming active events and accepts explicit `past` or `cancelled` scopes. History
+is ordered newest first; pages are bounded to 50 and cursors bind the organizer,
+scope, first-page clock and timestamp/document-ID position for at most 24 hours.
+History reopens in a read-only Host view and never expands offer eligibility.
 `updatePrivateEventDetails` adds or clears duration, venue and format on the
 same private event, with setup revision, reviewed defaults hash and durable
 request identity. Duration and saved venue can inherit reviewed organizer
-defaults. A named venue does not invent coordinates; replacing a saved venue
-clears stale map fields. Neither save publishes the event nor admits a guest.
+defaults. A named venue does not invent coordinates; hosts can instead use the existing
+map picker to save a canonical named meeting location. Its coordinates and
+legacy mirrors are persisted together; replacing a saved venue clears its
+source-venue reference. Name-only replacement clears stale map fields. Neither save publishes the event nor admits a guest.
+Description and distance/pace for distance-based activities are explicit details.
+Non-distance format selection writes the existing compatibility values (0/easy),
+which readers hide for those formats. Capacity, price/currency and cash-refund
+policy are saved together; credits remain deferred. The update preserves existing
+admission restrictions and never changes offer payment snapshots. An empty,
+ordinary private event receives matching ready seat ledger and fence records in
+that transaction, only after counters and bounded queries show no guest, payment,
+identity, import or migration history. Demo-owned events are excluded because
+seed tooling has legacy seat writers. Existing reserved places or checkout holds
+block changed terms; historical sources require seat reconciliation.
+`reconcilePrivateEventSeats` accepts the same exact journaled admission-settings
+command with no other detail fields. Each request advances at most three bounded
+pages; current manager, account deletion and event ownership are rechecked in
+all transactions. Explicit missing terms remain staged until the verified roster,
+ready ledger/fence and ordinary details receipt commit together. Configured terms,
+guests and issued offers remain unchanged. Cleanup resumes even after the final
+receipt exists. Setup edits and publication wait while the migration fence is
+locked. An initial stale review can release the client journal only with the exact
+server no-commit marker; interrupted or started runs retain the original command.
+The Host automatically advances a bounded number of requests and then offers
+Continue checking guests. An explicit discard is journaled before sending and
+bounded-cleans only scan/plan sources with no frozen plan or applied output. A
+`details` receipt with `outcome: discarded` and `expectedSetupRevision` (never an
+`appliedRevision`) commits before the lock is released; delayed original saves
+cannot revive it. If output application already began, the exact typed denial
+restores the original save intent. A previously committed change returns its
+saved receipt and finishes cleanup. No existing guest or offer is removed.
+Reopening retains the command. Both privacy and seat-writer production gates stay closed pending rollout and Cross Paths integration.
 The manager read includes `eventDetails` for reopening those actual values;
 event preferences remain separate recommendations. Hosts can add or edit venue
 and duration after creating offers or importing a roster. Changing format still
@@ -1778,16 +1853,47 @@ Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.
 
+`setEventPublication` is the separate revision-fenced visibility command for
+progressive events. Publishing validates the complete rich event contract,
+future active schedule, current manager and visible organizer, rebuilds discovery
+fields and claims the organizer schedule in the same transaction as the receipt.
+Unpublishing closes registration and advances its revision; republishing leaves
+registration closed. Neither transition rewrites origin, guests, offers or money.
+The first-publication timestamp survives unpublishing, preventing old schedule
+commitments from becoming an editable new draft. Receipts report the original
+transition on replay and never repeat it after a later transition. Search and
+organizer next-event projections retry from canonical state. Static website
+exports require removal/redeployment as a separate release step; a successful
+publication receipt is not proof that cached public copies have disappeared.
+The command remains behind the same private-persistence rollout gate.
+
 The manager read response is a whitelist projection with civil date/time,
 resolved city/timezone, revision and setup provenance. It does not parse a
 minimal event through the rich Event model or invent venue, end time, capacity
 or price. Its event-local preferences are read from manager-only storage. Organizer management and deleted-user
-checks occur in the same transaction as the current event read. Published
-events use the published event editor instead.
+checks occur in the same transaction as the current event read. Valid published
+progressive events can reopen this projection for visibility management; basics
+and detail edits remain unavailable there. The manager projection includes
+publication readiness derived from the same candidate contract used by publish.
+Readiness is advisory: commit rechecks the current schedule, revision and authority.
+Host journals the exact publication request before sending it. An uncertain
+result retries that request; only an exact server rejection proving that the
+request did not commit can discard it. A replayed receipt is followed by a fresh
+read, so an older publish receipt cannot overwrite a later unpublish in the UI.
+Rich edits use the published editor. Progressive events require the loaded
+`expectedSetupRevision`; successful edits increment it and preserve the stored
+IANA timezone while deriving matching local date/time for schedule changes.
+Unchanged schedule/policy values in a complete form save do not count as a
+reschedule or policy change. Actual changes retain guest/offer/seat fences;
+private drafts cannot use this rich edit path. Published progressive events also
+use the shared cancellation/refund lifecycle and invalidate older setup edits.
+A retry after an uncertain rich edit must reload current state rather than
+blindly repeat a stale revision.
 
 The private event picker reads at most 51 event documents for a 50-row page,
-with a composite index on organizer, private publication state, active status,
-start time and document ID. Its cursor keeps the first page's time cutoff and
+with composite indexes on organizer, private publication state, status,
+start time and document ID. Upcoming pages ascend; past and cancelled history
+pages descend. Its cursor keeps the first page's time cutoff and
 expires after 24 hours; every page rechecks current manager and deleted-account
 authority. It cannot expose private payment settings. Basic date/city edits
 check roster, import, participation, waitlist, offer and payment commitments
@@ -1799,25 +1905,24 @@ duration and the venue/format snapshot. Clear the venue through Details before
 changing city. A dependent event plan or guest/offer/payment history still blocks
 basics edits. These UI affordances never replace the transaction's final checks.
 
-The compatibility stage retains legacy public event list queries because
-installed clients do not constrain `publicationState`, and the legacy
-publication backfill is not yet complete. The current `/events` list rule is
-therefore permissive. **No private event document may be stored in `/events`
-while this rule is deployed.** The production private-create callable has a
-server-owned, immutable false migration gate, and the Host private-create route
-is disabled. The latest full migration dry run, live writer inventory, and
-these source gates must remain release checks; client-side filtering is not a
-privacy boundary. A privileged out-of-band Admin write of a private document
-would be readable by old list clients and is prohibited in this stage.
+The source privacy cutover now constrains consumer discovery, organizer
+published-event timelines, recommendations, saved events and participation
+lookups to `publicationState == published` before rich decoding or pagination.
+Matching composite indexes are checked by the query-index parity scanner.
+The `/events` list rule requires the same publication constraint even for
+organizer managers; private inventory uses the separate authorized callable.
+Unrestricted, organizer-only and private-state list queries are denied.
 
-The later privacy cutover must backfill or reconcile every legacy event, deploy
-and verify the published-query indexes, release compatible clients, and retire
-old list readers before changing `/events` list rules to require
-`publicationState == published` (with a separate manager read path). The
-role-scoped Remote Config build minimum is helpful but is not a sufficient
-barrier by itself: old clients may start offline or use bundled nonblocking
-defaults when the fetch fails. Only after the restrictive rules are live and
-tested may the production private-create gate and Host route be enabled.
+**This source cutover is not deployed or activated.** The previously deployed
+compatibility rule permitted unrestricted lists. No private event document may
+be stored in `/events` while that rule remains deployed. Production private
+create/mutate callables and the Host entry retain their immutable closed gates.
+Before deploying this source, reconcile every legacy event, complete the
+publication backfill, deploy and verify indexes, and release compatible clients.
+The required role-scoped Remote Config build minimum must use the actual
+released build numbers. It is not a privacy barrier: old clients can start
+offline or use bundled nonblocking defaults when the fetch fails. Restrictive
+rules must be live and tested before either private-setup gate is enabled.
 Individual legacy document reads remain compatible only when neither
 `publicationState` nor `setupRevision` exists.
 Direct private event reads require a current organizer manager or active viewRoster
@@ -1848,6 +1953,22 @@ the selected event and suggests expiry from the server clock and event policy.
 The read includes the private preference revision and resolved intent provenance
 so editing preserves inherit/set/clear decisions. Missing configuration remains
 null with revision zero, never an invented free price or expiry.
+`previewEventOfferPreferences` authorizes the same manager and resolves the
+complete candidate against the event, saved preferences and organizer defaults
+in one read-only transaction. Its before/after projection includes inherited
+admission preferences that are absent from the organizer suggestion DTO. The
+shared private/published editor stages edits, previews all changed fields, and
+requires explicit Apply. Reload or later edits invalidate review. Each original
+write command still verifies its own event/setup revision, preferences revision
+and reviewed defaults hash; preview grants no write authority. Issued offers and
+shared payment links retain their original terms and require separate review.
+New editor requests carry the captured manager UID; a changed authenticated UID
+cannot execute that command. Private editor auth changes invalidate its review.
+A request-scoped stale-rejection marker is emitted only after receipt absence and
+failed revision/default validation; the client may retire that exact command and
+reload. Generic aborts, permissions failures and uncertain transport outcomes
+retain their frozen journal for recovery.
+
 `configureEventOfferPreferences` writes the same private preferences for owned
 published, legacy or private events. The transaction rechecks manager/deleted-user
 authority, event source revision, preference revision and reviewed organizer
@@ -2642,7 +2763,151 @@ and export worker currently rescans; this diagnostic does not prove deployed
 latency. Production percentiles and representative response sizes must be
 measured before changing batching or the actor/organizer rate ceilings.
 
+### OTP offer recipients
+
+`organizerEventOfferRecipients` is private, server-owned invitation/claim
+state. Its document ID hashes a random 256-bit link token. Stored bindings
+freeze the organizer, event, offer generation/revision, response, CRM origin,
+contact, phone hash and offer expiry. Issuance requires the current manager;
+claim requires Catch phone OTP and a matching current Admin Auth phone. A
+successful claim attaches one UID and never changes the form response identity.
+Repeated claims by that UID preserve the original claim time.
+
+Issuance, claim and consumption reread the current offer and its frozen terms,
+submitted response/version, native application approval or completed CRM
+conversion, current contact/origin and account-deletion tombstone. Withdrawal,
+reissue, expiry, contact merge, changed phone/UID or revoked source invalidates
+the old grant. The seat identity resolver accepts this narrow verified-recipient
+path alongside the existing verified-form-respondent path; it retains the
+canonical seat and rejects conflicting aliases. Raw token/phone data is absent
+from the grant, and all direct client access is denied.
+
+`organizerEventOfferPayments` is a separate server-only payment ledger. Its
+deterministic attempt freezes the grant/UID, source offer revisions, payment
+terms, route, merchant configuration, transfer allocation, canonical seat and
+15-minute hold deadline. Reservation and hold creation commit together.
+Verified capture converts the hold and writes the common roster, admission
+ownership and receipt plus payment completion atomically. The receipt includes
+provider IDs, recipient proof and the frozen route; it never fabricates manual
+payment evidence. Historical receipt replay cannot renew the hold or roster.
+
+Order retries use the saved receipt after an uncertain POST. The common signed
+webhook inbox routes verified provider orders by ledger receipt and exact
+merchant binding. The bounded offer recovery sweep releases expired inventory
+before attempting provider work, retains manual-review anomalies and retries
+full refunds using a stable payment-specific key. Route refunds require full
+transfer reversal. Recipient callables require App Check and phone-authenticated
+UID ownership. A returning payer can recover the saved payment from the original
+invitation even after source expiry; this grants no new admission authority.
+Event OAuth selection requires one ready organizer connection in the selected
+mode and rechecks that set inside the new reservation transaction. Existing
+attempts retain their binding. The public screen and provider acceptance remain
+required before event-offer checkout activation; admission does not release
+Route settlement during admission.
+
+A separate settlement due queue has no payment-age cutoff. For Route admissions,
+completion and the scheduled end must both be in the past. A host may complete
+an event early, but release still waits for its scheduled end. Current event and
+attendee state plus the immutable paid admission receipt must agree. The worker
+persists release authorization before provider I/O and uses a renewable lease to
+fence stale workers. A lost response is recovered from the exact frozen transfer;
+current cancellation prevents a new release, while a prior uncertain release is
+still observed. Provider `released` and `settled` remain distinct states. An
+externally released hold without Catch authorization requires review. Corrupt
+proofs leave the automatic queue instead of starving later payments.
+
+The adapter uses Razorpay's [settlement hold API](https://razorpay.com/docs/api/payments/route/modify-settlement-hold/)
+and validates the frozen merchant, destination, full capture, receipt, allocation
+and zero reversal before release. This implementation does not establish bank
+receipt. Host event cancellation atomically cancels the paid roster entry,
+releases its canonical seat (or retains an independent Catch booking's seat), and
+persists a full-refund intent without deleting the admission receipt. A retryable
+event trigger pages all remaining admissions, regardless of payment age. The
+payment recovery worker also checks current event cancellation when reconciling
+an admitted payment. Explicit authority failures require review; transport errors
+retain retryable work. Refund and settlement leases exclude each other's provider
+I/O. Refund completion requires the original merchant's verified refund, including
+full Route transfer reversal; `reversed` is terminal for the settlement queue.
+Recipient history distinguishes host cancellation from failed initial admission.
+Guest checkout freezes the event's cash-refund deadline and start time before
+reservation. Paid offers without a paid canonical event policy use the standard
+24-hour cash cutoff, including minimal private and external-companion events;
+this does not rewrite their base price or provenance. The recipient reviews these exact terms before paying; a changed
+policy requires reopening the invitation. Phone-authenticated, UID-owned
+`cancelAdmission` confirms the server-quoted refund amount, checks current event
+and attendee state, and atomically cancels the admission and releases its seat.
+The cash deadline is inclusive. After it, cancellation has no refund; online
+cancellation closes at the earlier of the frozen and current event start.
+Checked-in admissions and legacy payments without frozen terms need host help.
+Catch credits are explicitly deferred and are not promised by this checkout.
+
+A full cash refund enters the durable refund queue. A zero-refund cancellation
+remains `cancelled`, retains its immutable paid receipt, and can settle only after
+the event completes. Provider callbacks cannot re-admit that guest. An unexpected
+provider refund requires review. A later host cancellation upgrades a prior
+zero-refund guest cancellation to a full refund without releasing its seat again.
+Exact cancellation retries replay the saved decision. Recipient history survives
+invitation expiry and disabled new-checkout gates. Provider test-mode acceptance
+remains required before activation.
+
+### Public paid event registration
+
+`configureEventRegistration` is the manager-owned, revision-checked opt-in for
+`closed`, `free` or `paid` public registration. Its immutable
+`eventRegistrationReceipts` make exact retries safe. It preserves event origin
+and native-booking provenance. A legacy enabled boolean authorizes free signup
+only. Paid enablement requires an open, published, future event, canonical paid
+price, reconciled seats and a ready event-admission payment route. Public phone
+OTP never substitutes for invitation, application approval, membership, cohort
+or pair eligibility. The legacy boolean editor cannot change paid mode.
+
+`managePublicEventCheckout` quotes, prepares, finds, reconciles and cancels a
+UID-owned public checkout. It requires App Check, rate limits and current phone
+Auth; deletion and disabled-account checks do not require a Consumer profile.
+The quote freezes the reviewed amount, registration revision, event start and
+cash-refund deadline. `publicEventPayments` owns the attempt and its 15-minute
+seat hold; `publicEventAdmissionReceipts` proves its captured admission. Both
+collections deny client access. They never create a form approval, reviewed
+offer, conversion receipt or Consumer participation edge.
+
+The public adapter shares provider recovery, signed webhook dispatch, refund,
+cancellation and Route settlement machinery with reviewed offers. Admission
+atomically confirms its own hold, updates the canonical roster and count, writes
+its immutable receipt and marks payment completion. Imported guest identity and
+source are retained. An existing active native booking returns its admission
+without charging again. Closing new registration honors an existing hold;
+unpublication, cancellation, changed start, identity loss or hold expiry causes
+a captured attempt to release inventory and enter refund recovery. A retry never
+renews a hold or reselects a merchant. Guest cancellation follows the frozen
+cash/no-refund terms; Catch credits remain deferred. Re-registration may reuse
+the roster row, while the old cancelled charge remains independent historical
+financial evidence. A no-refund charge can settle only after event completion
+and the scheduled end, even when a subsequent registration replaced that row.
+
 ### Organizer-connected form payments
+
+`paymentRoutingPolicies/app` owns application defaults; organizer overrides use
+`org_` plus the SHA-256 of the exact organizer ID. Both purposes (`formFee` and
+`eventAdmission`) are independent. A null organizer choice inherits; a null app
+choice or explicit `disabled` blocks that purpose. Policies cannot contain
+credentials, account IDs or webhook URLs. Direct client access is denied.
+`managePaymentRoutingPolicy` is restricted to Finance/Admin Owner and validates
+the organizer, expected revision and full replacement. The transaction writes
+the policy and existing admin audit log together. Only the most recent exact
+actor/payload retry replays; an intervening edit requires fresh review.
+
+The shared payment routing snapshot freezes the selected adapter, mode,
+currency, merchant country, policy revisions, merchant/destination accounts,
+fee amount, transfer allocation, settlement hold and immutable provider
+configuration reference. Its contract is provider-neutral;
+checkout public keys are optional for providers that do not require them.
+The routing registry resumes only the recorded adapter and never reselects an
+account from current defaults. An absent adapter fails explicitly. Configuration
+alone does not establish provider or country eligibility. New form-fee attempts persist this snapshot before provider order creation.
+Legacy OAuth-only ledgers remain recoverable. Route ledgers have a null
+`connectionId` and use the platform account as `accountId`; OAuth ledgers retain
+the merchant connection. The configuration command alone does not activate
+provider setup or establish live payment acceptance.
 
 `organizerPaymentConnections` binds one organizer to one Razorpay merchant,
 mode, verified merchant webhook and pinned Secret Manager credential version.
@@ -2661,8 +2926,14 @@ A late capture after release, or a missing/changed frozen submission, enters
 idempotent refund processing rather than creating an application.
 
 `organizerFormPaymentWebhooks` stores minimal signed-event receipts. Raw bytes
-are verified against the bound merchant secret and account before persistence;
-provider state is then re-read by a retrying worker or recovery sweep. Only a
+are verified against the bound merchant or platform secret and account before
+persistence; provider state is then re-read by a retrying worker or recovery
+sweep. Platform receipts have null `connectionId` and a pinned
+`platformConfigurationVersion`; OAuth receipts retain a connection ID. A
+platform callback can trigger only a matching Route form ledger, whose own
+saved profile governs financial mutations. Public callers cannot select
+arbitrary historic platform secret versions. Receipt retries and payment
+recovery remain independent of current routing defaults and OAuth readiness. Only a
 persisted response yields completion/redirect data. Checkout callbacks, fees,
 CRM conversion, review, event admission and room membership are separate.
 All four collections deny direct client reads and writes. The source and

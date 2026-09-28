@@ -3,17 +3,41 @@
 
 import {createRequire} from "node:module";
 import {
+  legacyPaymentRefundIntentSchema,
+  setEventPublicationCallablePayloadSchema,
+  eventPublicationCallableResponseSchema,
+  publicEventPaymentDocumentSchema,
+  publicEventAdmissionReceiptDocumentSchema,
+  eventRegistrationReceiptDocumentSchema,
+  managePublicEventCheckoutCallablePayloadSchema,
+  managePublicEventCheckoutCallableResponseSchema,
+  configureEventRegistrationCallablePayloadSchema,
+  configureEventRegistrationCallableResponseSchema,
+  organizerEventOfferPaymentDocumentSchema,
+  organizerEventOfferRecipientDocumentSchema,
+  paymentRoutingSnapshotSchema,
+  managePaymentRoutingPolicyCallablePayloadSchema,
+  managePaymentRoutingPolicyCallableResponseSchema,
+  manageEventOfferCheckoutCallablePayloadSchema,
+  prepareEventOfferInvitationCallablePayloadSchema,
+  prepareEventOfferInvitationCallableResponseSchema,
+  manageEventOfferCheckoutCallableResponseSchema,
+  previewOrganizerFormAdmissionCallablePayloadSchema,
+  previewOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionDocumentSchema,
   commitOrganizerFormAdmissionCallablePayloadSchema,
   commitOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionReceiptDocumentSchema,
   configureEventOfferPreferencesCallablePayloadSchema,
   configureEventOfferPreferencesCallableResponseSchema,
+  previewEventOfferPreferencesCallableResponseSchema,
   eventOfferConfigurationReceiptDocumentSchema,
   listOfferEventTargetsCallablePayloadSchema,
   offerEventTargetListCallableResponseSchema,
   getEventOfferConfigurationCallablePayloadSchema,
   eventOfferConfigurationCallableResponseSchema,
+  reconcilePrivateEventSeatsCallablePayloadSchema,
+  privateSeatReconciliationCallableResponseSchema,
   updatePrivateEventDetailsCallablePayloadSchema,
   prepareEventOfferHandoffCallablePayloadSchema,
   eventOfferHandoffCallableResponseSchema,
@@ -299,6 +323,7 @@ import {
   organizerFormDomainDocumentSchema,
   organizerPaymentConnectionDocumentSchema,
   organizerPaymentOauthStateDocumentSchema,
+  paymentRoutingPolicyDocumentSchema,
   organizerFormPaymentDocumentSchema,
   organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
@@ -946,17 +971,41 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateLegacyPaymentRefundIntent = ajv.compile(legacyPaymentRefundIntentSchema);
+export const validateSetEventPublicationCallablePayload = ajv.compile(setEventPublicationCallablePayloadSchema);
+export const validateEventPublicationCallableResponse = ajv.compile(eventPublicationCallableResponseSchema);
+export const validatePublicEventPaymentDocument = ajv.compile(publicEventPaymentDocumentSchema);
+export const validatePublicEventAdmissionReceiptDocument = ajv.compile(publicEventAdmissionReceiptDocumentSchema);
+export const validateEventRegistrationReceiptDocument = ajv.compile(eventRegistrationReceiptDocumentSchema);
+export const validateManagePublicEventCheckoutCallablePayload = ajv.compile(managePublicEventCheckoutCallablePayloadSchema);
+export const validateManagePublicEventCheckoutCallableResponse = ajv.compile(managePublicEventCheckoutCallableResponseSchema);
+export const validateConfigureEventRegistrationCallablePayload = ajv.compile(configureEventRegistrationCallablePayloadSchema);
+export const validateConfigureEventRegistrationCallableResponse = ajv.compile(configureEventRegistrationCallableResponseSchema);
+export const validateOrganizerEventOfferPaymentDocument = ajv.compile(organizerEventOfferPaymentDocumentSchema);
+export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organizerEventOfferRecipientDocumentSchema);
+export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
+export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
+export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallablePayload = ajv.compile(prepareEventOfferInvitationCallablePayloadSchema);
+export const validatePrepareEventOfferInvitationCallableResponse = ajv.compile(prepareEventOfferInvitationCallableResponseSchema);
+export const validateManageEventOfferCheckoutCallableResponse = ajv.compile(manageEventOfferCheckoutCallableResponseSchema);
+export const validatePreviewOrganizerFormAdmissionCallablePayload = ajv.compile(previewOrganizerFormAdmissionCallablePayloadSchema);
+export const validatePreviewOrganizerFormAdmissionCallableResponse = ajv.compile(previewOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionDocument = ajv.compile(organizerFormAdmissionDocumentSchema);
 export const validateCommitOrganizerFormAdmissionCallablePayload = ajv.compile(commitOrganizerFormAdmissionCallablePayloadSchema);
 export const validateCommitOrganizerFormAdmissionCallableResponse = ajv.compile(commitOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionReceiptDocument = ajv.compile(organizerFormAdmissionReceiptDocumentSchema);
 export const validateConfigureEventOfferPreferencesCallablePayload = ajv.compile(configureEventOfferPreferencesCallablePayloadSchema);
 export const validateConfigureEventOfferPreferencesCallableResponse = ajv.compile(configureEventOfferPreferencesCallableResponseSchema);
+export const validatePreviewEventOfferPreferencesCallableResponse = ajv.compile(previewEventOfferPreferencesCallableResponseSchema);
 export const validateEventOfferConfigurationReceiptDocument = ajv.compile(eventOfferConfigurationReceiptDocumentSchema);
 export const validateListOfferEventTargetsCallablePayload = ajv.compile(listOfferEventTargetsCallablePayloadSchema);
 export const validateOfferEventTargetListCallableResponse = ajv.compile(offerEventTargetListCallableResponseSchema);
 export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);
 export const validateEventOfferConfigurationCallableResponse = ajv.compile(eventOfferConfigurationCallableResponseSchema);
+export const validateReconcilePrivateEventSeatsCallablePayload = ajv.compile(reconcilePrivateEventSeatsCallablePayloadSchema);
+export const validatePrivateSeatReconciliationCallableResponse = ajv.compile(privateSeatReconciliationCallableResponseSchema);
 export const validateUpdatePrivateEventDetailsCallablePayload = ajv.compile(updatePrivateEventDetailsCallablePayloadSchema);
 export const validatePrepareEventOfferHandoffCallablePayload = ajv.compile(prepareEventOfferHandoffCallablePayloadSchema);
 export const validateEventOfferHandoffCallableResponse = ajv.compile(eventOfferHandoffCallableResponseSchema);
@@ -1242,6 +1291,7 @@ export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSc
 export const validateOrganizerFormDomainDocument = ajv.compile(organizerFormDomainDocumentSchema);
 export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
 export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
+export const validatePaymentRoutingPolicyDocument = ajv.compile(paymentRoutingPolicyDocumentSchema);
 export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
 export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);

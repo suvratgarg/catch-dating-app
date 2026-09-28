@@ -18,7 +18,7 @@ export interface PrivateEventSetupListCallableResponse {
     timezone: string;
     startTimeMillis: number;
     setupRevision: number;
-    status: "active";
+    status: "active" | "cancelled";
     detailsConfigured: boolean;
   }[];
   nextCursor: null | string;

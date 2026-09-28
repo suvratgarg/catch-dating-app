@@ -82,6 +82,8 @@ export async function buildEventMeetingLocationBackfillPlan(firestore) {
         path: doc.ref.path,
         eventId: doc.id,
         source: result.source,
+        sourceVersion: doc.updateTime ? {seconds: doc.updateTime.seconds,
+          nanoseconds: doc.updateTime.nanoseconds} : null,
         patch,
       });
     }
@@ -221,10 +223,24 @@ export async function applyEventMeetingLocationBackfillPlan(firestore, plan) {
       `Refusing to apply with ${plan.blockers.length} unresolved blocker(s).`
     );
   }
-  for (let index = 0; index < plan.repairs.length; index += 450) {
+  // Validate every planned precondition before the first batch. A missing
+  // version cannot silently downgrade this reviewed repair to a blind write.
+  const reviewed = plan.repairs.map((repair) => {
+    const version = repair.sourceVersion;
+    if (!version || !Number.isSafeInteger(version.seconds) ||
+        version.seconds < -62135596800 || version.seconds > 253402300799 ||
+        !Number.isInteger(version.nanoseconds) || version.nanoseconds < 0 ||
+        version.nanoseconds > 999999999) {
+      throw new Error(`Missing or invalid source version for ${repair.path}.`);
+    }
+    return {...repair, lastUpdateTime: new admin.firestore.Timestamp(
+      version.seconds, version.nanoseconds)};
+  });
+  for (let index = 0; index < reviewed.length; index += 450) {
     const batch = firestore.batch();
-    for (const repair of plan.repairs.slice(index, index + 450)) {
-      batch.update(firestore.doc(repair.path), repair.patch);
+    for (const repair of reviewed.slice(index, index + 450)) {
+      batch.update(firestore.doc(repair.path), repair.patch,
+        {lastUpdateTime: repair.lastUpdateTime});
     }
     await batch.commit();
   }

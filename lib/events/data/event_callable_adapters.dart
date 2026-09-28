@@ -92,7 +92,11 @@ UpdateEventCallableRequest updateEventCallableRequestFromEvent(
       'privateAccess': ?_privateAccessJson(inviteCode),
     });
   }
-  return UpdateEventCallableRequest(eventId: event.id, fields: fields);
+  return UpdateEventCallableRequest(
+    eventId: event.id,
+    fields: fields,
+    expectedSetupRevision: event.setupRevision,
+  );
 }
 
 CreateEventPrivateAccess? _privateAccessJson(String? inviteCode) {

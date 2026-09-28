@@ -85,7 +85,7 @@ const schemaPrepareOrganizerFormPaymentCallableResponseSchema = <String, Object?
               'properties': <String, Object?>{
                 'publicToken': <String, Object?>{
                   'type': 'string',
-                  'pattern': '^rzp_(test|live)_oauth_[A-Za-z0-9]+\$',
+                  'pattern': '^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+\$',
                 },
                 'orderId': <String, Object?>{
                   'type': 'string',

@@ -2,7 +2,7 @@ import {type FormEvent, useCallback, useMemo} from "react";
 import {useSearchParams} from "react-router";
 import {trackMarketingEvent} from "../../analytics";
 import {trackOrganizerSearchAppearance} from "./analytics";
-import {hostListings} from "./data";
+import {usePublicHostListings} from "./usePublicEventListingsController";
 import {
   compareListings,
   defaultOrganizerDirectoryFilters,
@@ -27,12 +27,14 @@ import {organizerPolicyForListing} from "./organizerPolicy";
 type FieldUpdater<T> = T | ((current: T) => T);
 
 export function useOrganizerDirectoryController(
-  sourceListings: readonly HostListing[] = hostListings
+  sourceListings?: readonly HostListing[]
 ) {
+  const live = usePublicHostListings();
+  const effectiveListings = sourceListings ?? live.listings;
   const [searchParams, setSearchParams] = useSearchParams();
   const publicListings = useMemo(
-    () => sourceListings.filter(isPubliclyReadableListing),
-    [sourceListings]
+    () => effectiveListings.filter(isPubliclyReadableListing),
+    [effectiveListings]
   );
   const cityOptions = useMemo(
     () => [...new Set(publicListings.map((listing) => listing.city))].sort(),

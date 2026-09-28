@@ -91,7 +91,10 @@ export const privateEventSetupCallableResponseSchema: Record<string, unknown> = 
     },
     "publicationState": {
       "type": "string",
-      "const": "private"
+      "enum": [
+        "private",
+        "published"
+      ]
     },
     "status": {
       "type": "string",
@@ -1266,6 +1269,167 @@ export const privateEventSetupCallableResponseSchema: Record<string, unknown> = 
               }
             }
           ]
+        },
+        "meetingLocation": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+              "required": [
+                "name",
+                "latitude",
+                "longitude"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "address": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "placeId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "latitude": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "longitude": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
+            }
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "admissionTerms": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capacityLimit",
+                "priceInPaise",
+                "currency",
+                "cancellationPolicyId"
+              ],
+              "properties": {
+                "capacityLimit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "priceInPaise": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "cancellationPolicyId": {
+                  "type": "string",
+                  "enum": [
+                    "notApplicable",
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "distanceKm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "easy",
+                "moderate",
+                "fast",
+                "competitive"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "publicationReadiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canPublish",
+        "missing"
+      ],
+      "properties": {
+        "canPublish": {
+          "type": "boolean"
+        },
+        "missing": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 9,
+          "items": {
+            "type": "string",
+            "enum": [
+              "futureActive",
+              "organizerVisibility",
+              "duration",
+              "venue",
+              "format",
+              "description",
+              "admissionTerms",
+              "distancePace",
+              "contract"
+            ]
+          }
         }
       }
     }

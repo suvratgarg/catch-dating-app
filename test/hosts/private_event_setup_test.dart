@@ -197,6 +197,10 @@ void main() {
     expect(summary.eventPreferences, isNull);
     expect(summary.eventDetails.endTimeMillis, isNull);
     expect(summary.eventDetails.venueName, isNull);
+    expect(PrivateEventBasicSummary.fromResponse({
+      ...response, 'publicationState': 'published',
+      'canEditBasics': false, 'canChangeCity': false,
+    }).publicationState, 'published');
     expect(
       () => PrivateEventBasicSummary.fromResponse({
         ...response,

@@ -5,7 +5,6 @@ import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
-  incrementInviteLinkCounterBestEffort,
   InviteAttribution,
 } from "../events/inviteLinks";
 import {
@@ -17,6 +16,7 @@ import {
   stripeWebhookSecret,
   verifyStripeWebhookSignature,
 } from "./stripe";
+import {NativePaidBooking, stageRejectedNativeBooking} from "./nativeBooking";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import {
   syncHostPaymentAccountByStripeAccountId,
@@ -122,11 +122,25 @@ async function fulfillStripeCheckoutSession({
   const existingStatus = paymentSnap.exists ?
     paymentSnap.data()?.status :
     null;
-  const createdAt = paymentSnap.data()?.createdAt ?? deps.serverTimestamp();
-  if (existingStatus === "completed" || existingStatus === "refunded") {
+  if (["completed", "refunded", "refundFailed"].includes(existingStatus)) {
     return;
   }
 
+  const original = paymentSnap.data();
+  const paidBooking: NativePaidBooking = {
+    orderId: session.id, paymentId, eventId, userId, amount: amountMinor,
+    amountMinor, currency, provider: "stripe",
+    providerPaymentId: paymentIntentId, checkoutSessionId: session.id,
+    ...(original?.stripeAccountId ?
+      {stripeAccountId: original.stripeAccountId} : {}),
+    ...(original?.applicationFeeAmount != null ?
+      {applicationFeeAmount: original.applicationFeeAmount} : {}),
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
+    ...(inviteAttribution?.inviteLinkId ?
+      {inviteLinkId: inviteAttribution.inviteLinkId} : {}),
+    ...(inviteAttribution?.inviteSource ?
+      {inviteSource: inviteAttribution.inviteSource} : {}),
+  };
   try {
     const participationSnap = await db
       .collection("eventParticipations")
@@ -135,55 +149,16 @@ async function fulfillStripeCheckoutSession({
     const hasHostApproval =
       hasHostApprovedJoinRequest(participationSnap.data());
     await deps.signUpForEvent(db, eventId, userId, paymentId, {
+      paidBooking,
       hasValidInvite: metadata.inviteVerified === "true",
       ...(hasHostApproval ? {hasHostApproval} : {}),
       ...(inviteAttribution ? {inviteAttribution} : {}),
       ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     });
   } catch (signUpError) {
-    let refundSucceeded = false;
-    if (paymentIntentId !== null) {
-      try {
-        await deps.stripe().createRefund({paymentIntentId, amountMinor});
-        refundSucceeded = true;
-      } catch (refundError) {
-        // Charged, booking failed, refund failed -> stuck charge. Record a
-        // distinct non-recoverable state and alert for reconciliation.
-        logger.error(
-          "ALERT manual refund required: Stripe refund failed",
-          {paymentId, sessionId: session.id, userId, eventId},
-          refundError
-        );
-      }
-    } else {
-      logger.error(
-        "ALERT manual refund required: no Stripe paymentIntent to refund",
-        {paymentId, sessionId: session.id, userId, eventId}
-      );
-    }
-    await paymentRef.set({
-      orderId: session.id,
-      paymentId,
-      eventId,
-      userId,
-      amount: amountMinor,
-      amountMinor,
-      currency,
-      provider: "stripe",
-      providerPaymentId: paymentIntentId,
-      checkoutSessionId: session.id,
-      status: refundSucceeded ? "refunded" : "refundFailed",
-      signUpFailed: true,
-      ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
-      ...(inviteAttribution?.inviteLinkId ?
-        {inviteLinkId: inviteAttribution.inviteLinkId} :
-        {}),
-      ...(inviteAttribution?.inviteSource ?
-        {inviteSource: inviteAttribution.inviteSource} :
-        {}),
-      updatedAt: deps.serverTimestamp(),
-      createdAt,
-    }, {merge: true});
+    const outcome = await stageRejectedNativeBooking({db,
+      booking: paidBooking});
+    if (outcome === "admitted") return;
     if (crossPathsPairHoldId) {
       await releaseCrossPathsPairHold({
         db,
@@ -193,39 +168,6 @@ async function fulfillStripeCheckoutSession({
     }
     throw signUpError;
   }
-
-  if (inviteAttribution) {
-    await incrementInviteLinkCounterBestEffort({
-      db,
-      inviteLinkId: inviteAttribution.inviteLinkId,
-      field: "paidCount",
-    });
-  }
-
-  await paymentRef.set({
-    orderId: session.id,
-    paymentId,
-    eventId,
-    userId,
-    amount: amountMinor,
-    amountMinor,
-    currency,
-    provider: "stripe",
-    providerPaymentId: paymentIntentId,
-    checkoutSessionId: session.id,
-    status: "completed",
-    signUpFailed: false,
-    completedAt: deps.serverTimestamp(),
-    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
-    ...(inviteAttribution?.inviteLinkId ?
-      {inviteLinkId: inviteAttribution.inviteLinkId} :
-      {}),
-    ...(inviteAttribution?.inviteSource ?
-      {inviteSource: inviteAttribution.inviteSource} :
-      {}),
-    updatedAt: deps.serverTimestamp(),
-    createdAt,
-  }, {merge: true});
 }
 
 function inviteAttributionFromMetadata(
@@ -254,10 +196,15 @@ async function markStripeCheckoutFailed({
     .limit(1)
     .get();
   if (snap.empty) return;
-  await snap.docs[0].ref.set({
-    status: "failed",
-    updatedAt: serverTimestamp,
-  }, {merge: true});
+  const ref = snap.docs[0].ref;
+  await db.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data();
+    // A delayed failure cannot undo captured money, admission or a refund.
+    if (current?.status !== "pending" ||
+        current.checkoutSessionId !== sessionId ||
+        current.provider && current.provider !== "stripe") return;
+    tx.set(ref, {status: "failed", updatedAt: serverTimestamp}, {merge: true});
+  });
 }
 
 interface StripeWebhookEvent {

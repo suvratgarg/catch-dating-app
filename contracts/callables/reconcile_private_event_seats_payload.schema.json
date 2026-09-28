@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/reconcile_private_event_seats_payload.schema.json",
+  "title": "ReconcilePrivateEventSeatsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "expectedSetupRevision",
+    "reviewedDefaultsHash",
+    "details"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "update_private_event_details_payload.schema.json#/properties/organizerId"
+    },
+    "eventId": {
+      "$ref": "update_private_event_details_payload.schema.json#/properties/eventId"
+    },
+    "requestId": {
+      "$ref": "update_private_event_details_payload.schema.json#/properties/requestId"
+    },
+    "expectedSetupRevision": {
+      "$ref": "update_private_event_details_payload.schema.json#/properties/expectedSetupRevision"
+    },
+    "reviewedDefaultsHash": {
+      "$ref": "update_private_event_details_payload.schema.json#/properties/reviewedDefaultsHash"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admissionTerms"
+      ],
+      "properties": {
+        "admissionTerms": {
+          "$ref": "update_private_event_details_payload.schema.json#/properties/details/properties/admissionTerms"
+        }
+      }
+    },
+    "discard": {
+      "type": "boolean"
+    }
+  }
+}

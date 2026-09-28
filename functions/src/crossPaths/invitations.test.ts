@@ -1,3 +1,5 @@
+import {deriveEventSeatPolicy} from "../events/seatAuthority/firestoreAdapter";
+import {releaseCrossPathsPairHold} from "./pairHolds";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -91,6 +93,7 @@ class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
   async get(ref: FakeDocRef | FakeQuery) {
+    assert.equal(this.writes.length, 0, "transaction read after first write");
     return ref.get();
   }
   create(ref: FakeDocRef, value: FakeData) {
@@ -174,6 +177,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     deps: {
       firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
       now: () => timestamp(nowMillis),
+      loadCurrentAuthPhone: async () => "+919999999999",
       checkRateLimit: async (
         _db: FirebaseFirestore.Firestore,
         uid: string,
@@ -590,3 +594,110 @@ function hasCode(code: string) {
 function timestamp(millis: number): FirebaseFirestore.Timestamp {
   return admin.firestore.Timestamp.fromMillis(millis);
 }
+
+
+function readyPairHarness() {
+  const source = event();
+  const policy = deriveEventSeatPolicy(source);
+  return harness({
+    "eventParticipations/event-1_sender": undefined,
+    "eventCrossPathsConsents/event-1_sender": undefined,
+    "eventSeatMigrationFences/event-1": {eventId: "event-1",
+      migrationRevision: 1, state: "ready"},
+    "eventSeatLedgers/event-1": {eventId: "event-1", capacity: policy.capacity,
+      occupied: policy.capacity - 1, revision: 1, capacityRevision: 1,
+      migrationRevision: 1, state: "ready", policyHash: policy.policyHash,
+      policyVersion: policy.policyVersion},
+  });
+}
+
+async function acceptPair(h: ReturnType<typeof harness>) {
+  const sent = await sendCrossPathsInvitationHandler(
+    request("sender", sendPayload()), h.deps);
+  return respondCrossPathsInvitationHandler(request("recipient", {
+    invitationId: sent.invitationId, decision: "accept"}), h.deps);
+}
+
+test("ready pair acceptance and repeated cancellation update one held seat",
+  async () => {
+    const h = readyPairHarness();
+    const accepted = await acceptPair(h);
+    const ledger = () => h.firestore.read("eventSeatLedgers/event-1")!;
+    assert.equal(ledger().occupied, 19);
+    assert.equal(ledger().temporaryHeld, 1);
+    const reservations = h.firestore.collectionRows("eventSeatReservations");
+    assert.equal(reservations.length, 1);
+    assert.equal(reservations[0].value.active, false);
+    assert.equal((reservations[0].value.temporaryHold as FakeData).ownerId,
+      accepted.pairHoldId);
+    const repeated = await respondCrossPathsInvitationHandler(
+      request("recipient", {invitationId: accepted.invitationId,
+        decision: "accept"}), h.deps);
+    assert.deepEqual(repeated, accepted);
+    assert.equal(ledger().revision, 2);
+    for (let i = 0; i < 2; i++) {
+      await cancelCrossPathsInvitationOrPlanHandler(request("sender", {
+        invitationId: accepted.invitationId}), h.deps);
+    }
+    assert.equal(ledger().temporaryHeld, 0);
+    assert.equal(ledger().occupied, 19);
+    assert.equal(ledger().revision, 3);
+  });
+
+test("pair acceptance respects checkout inventory and locked migration",
+  async () => {
+    for (const locked of [false, true]) {
+      const h = readyPairHarness();
+      if (locked) {
+        h.firestore.write("eventSeatMigrationFences/event-1",
+          {eventId: "event-1", migrationRevision: 1, state: "locked"});
+      } else {
+        h.firestore.write("eventSeatLedgers/event-1", {
+          ...h.firestore.read("eventSeatLedgers/event-1"), checkoutHeld: 1});
+      }
+      await assert.rejects(acceptPair(h), locked ? /locked/u : /full/u);
+      assert.equal(h.firestore.collectionRows("crossPathsPairHolds").length, 0);
+      assert.equal(h.firestore.collectionRows("eventSeatReservations").length,
+        0);
+    }
+  });
+
+test("pair expiry releases inventory and cannot undo confirmed bookings",
+  async () => {
+    for (const confirmed of [false, true]) {
+      const h = readyPairHarness();
+      const accepted = await acceptPair(h);
+      const holdId = accepted.pairHoldId!;
+      const path = `crossPathsPairHolds/${holdId}`;
+      if (confirmed) {
+        h.firestore.write(path, {...h.firestore.read(path),
+          status: "confirmed", requesterBookingStatus: "confirmed"});
+      }
+      const before = h.firestore.read("eventSeatLedgers/event-1");
+      await releaseCrossPathsPairHold({db: h.deps.firestore(), holdId,
+        reason: "expired", now: timestamp(nowMillis + 16 * 60 * 1000)});
+      if (confirmed) {
+        assert.deepEqual(h.firestore.read("eventSeatLedgers/event-1"),
+          before);
+        assert.equal(h.firestore.read(path)?.status, "confirmed");
+      } else {
+        const ledger = h.firestore.read("eventSeatLedgers/event-1");
+        assert.equal(ledger?.temporaryHeld, 0);
+        assert.equal(h.firestore.read(
+          `crossPathsInvitations/${accepted.invitationId}`)?.status,
+        "invalidated");
+        assert.equal(h.firestore.read(path)?.status, "expired");
+      }
+    }
+  });
+
+test("account deletion prevents a new pair hold while cleanup is running",
+  async () => {
+    for (const uid of ["sender", "recipient"]) {
+      const h = readyPairHarness();
+      h.firestore.write(`deletedUsers/${uid}`, {uid, status: "processing"});
+      await assert.rejects(acceptPair(h), hasCode("failed-precondition"));
+      assert.equal(h.firestore.collectionRows("crossPathsPairHolds").length, 0);
+      assert.equal(h.firestore.read("eventSeatLedgers/event-1")?.revision, 1);
+    }
+  });

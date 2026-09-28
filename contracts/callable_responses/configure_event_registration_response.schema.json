@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/configure_event_registration_response.schema.json",
+  "title": "ConfigureEventRegistrationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "registrationRevision",
+    "mode",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "registrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ]
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+}

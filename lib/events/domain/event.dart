@@ -37,6 +37,8 @@ enum PaceLevel implements Labelled {
 
 enum EventLifecycleStatus { active, cancelled }
 
+enum EventPublicRegistrationMode { closed, free, paid }
+
 enum EventOriginMode { catchNative, externalCompanion }
 
 enum EventBookingAuthority { catchPlatform, external }
@@ -241,7 +243,14 @@ abstract class Event with _$Event {
     @Default(EventLifecycleStatus.active) EventLifecycleStatus status,
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,
+    @JsonKey(includeIfNull: false) int? setupRevision,
     @Default(false) bool publicRegistrationEnabled,
+    @JsonKey(
+      includeIfNull: false,
+      unknownEnumValue: EventPublicRegistrationMode.closed,
+    )
+    EventPublicRegistrationMode? publicRegistrationMode,
+    @Default(0) int publicRegistrationRevision,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,

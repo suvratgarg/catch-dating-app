@@ -1,3 +1,4 @@
+import {publicRegistrationMode} from "./publicRegistration/policy";
 import {eventTitleLabel} from "../shared/eventLabels";
 import * as crypto from "crypto";
 import * as admin from "firebase-admin";
@@ -737,11 +738,6 @@ export async function resolveEventInviteLandingHandler(
         "Invitation event details are incomplete.");
     }
     const destinationKind = link.destinationKind ?? "catchEvent";
-    if (destinationKind === "catchEvent" &&
-        event.publicRegistrationEnabled !== true) {
-      throw new HttpsError("failed-precondition",
-        "Website registration is not enabled.");
-    }
     const destinationUrl = inviteDestinationUrl({
       event, eventId: resolved.link.eventId!, destinationKind,
       inviteToken: payload.inviteToken, inviteLinkId: resolved.inviteLinkId,
@@ -776,6 +772,12 @@ export async function resolveEventInviteLandingHandler(
       endTimeMillis: endTime.toMillis(),
       locationName,
       destinationKind, destinationUrl,
+      ...(destinationKind === "catchEvent" ? {
+        paidBookingAvailable: Number.isSafeInteger(event.priceInPaise) &&
+          (event.priceInPaise ?? 0) >= 100,
+        registrationMode: event.startTime.toMillis() > now.toMillis() ?
+          publicRegistrationMode(event) : "closed" as const,
+      } : {}),
       sourceLabel: inviteSourceLabel(event, destinationKind),
     };
   });

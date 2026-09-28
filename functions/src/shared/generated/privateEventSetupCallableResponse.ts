@@ -21,7 +21,7 @@ export interface PrivateEventSetupCallableResponse {
   localStartTime: string;
   timezone: string;
   startTimeMillis: number;
-  publicationState: "private";
+  publicationState: "private" | "published";
   status: "active" | "cancelled";
   setupDefaults: EventSetupDefaults;
   detailsConfigured: boolean;
@@ -162,5 +162,43 @@ export interface PrivateEventSetupCallableResponse {
         [k: string]: unknown;
       };
     };
+    meetingLocation?: null | {
+      name: string;
+      address?: string | null;
+      placeId?: string | null;
+      latitude: number;
+      longitude: number;
+      notes?: string | null;
+    };
+    description?: string | null;
+    admissionTerms?: null | {
+      capacityLimit: number;
+      priceInPaise: number;
+      currency: string;
+      cancellationPolicyId:
+        | "notApplicable"
+        | "flexible"
+        | "standard"
+        | "strict";
+    };
+    distanceKm?: number | null;
+    pace?: ("easy" | "moderate" | "fast" | "competitive") | null;
+  };
+  publicationReadiness?: {
+    canPublish: boolean;
+    /**
+     * @maxItems 9
+     */
+    missing: (
+      | "futureActive"
+      | "organizerVisibility"
+      | "duration"
+      | "venue"
+      | "format"
+      | "description"
+      | "admissionTerms"
+      | "distancePace"
+      | "contract"
+    )[];
   };
 }
