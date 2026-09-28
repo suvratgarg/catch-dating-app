@@ -205,6 +205,14 @@ function assertCandidate(candidate, market) {
     nonemptyStrings(candidate.inputRefs),
   "INVALID_DISCOVERY_CANDIDATE",
   "Candidate needs a segment, disposition, revision, rules and input references.");
+  invariant(candidate.candidateInputHash === undefined ||
+    typeof candidate.candidateId === "string" && candidate.candidateId.length > 0 &&
+    /^[a-f0-9]{64}$/u.test(candidate.candidateInputHash) &&
+    typeof candidate.reviewedBy === "string" && candidate.reviewedBy.length > 0 &&
+    typeof candidate.reviewedAt === "string" &&
+      !Number.isNaN(Date.parse(candidate.reviewedAt)),
+  "INVALID_DISCOVERY_CANDIDATE",
+  "A source-bound candidate needs its input hash and reviewed provenance.");
   const fingerprint = discoveryFingerprint({
     market, segment: candidate.segment, identityKey: candidate.identityKey,
   });
@@ -226,6 +234,12 @@ function assertCandidate(candidate, market) {
     permanent: candidate.permanent === true,
     ruleIds: [...candidate.ruleIds],
     inputRefs: [...candidate.inputRefs],
+    ...(candidate.candidateInputHash === undefined ? {} : {
+      candidateId: candidate.candidateId,
+      candidateInputHash: candidate.candidateInputHash,
+      reviewedBy: candidate.reviewedBy,
+      reviewedAt: candidate.reviewedAt,
+    }),
   };
   invariant(candidate.disposition !== "rejected" ||
     typeof decision.reasonCode === "string" && decision.reasonCode.length > 0,

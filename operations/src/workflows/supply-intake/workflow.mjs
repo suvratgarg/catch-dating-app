@@ -13,6 +13,7 @@ import {
 import {planDiscoveryQueries} from "./discovery-planner.mjs";
 import {
   continueDiscoveryAfterReview,
+  discoveryFingerprint,
   readDiscoveryKnowledge,
   recordDiscoveryCandidates,
   recordDiscoveryCellReview,
@@ -59,6 +60,7 @@ export class SupplyIntakeWorkflow {
     store = null,
     inputSnapshotLoader = null,
     discoveryPlanner = planDiscoveryQueries,
+    discoveryGatePolicyLoader = async () => ({enabled: false}),
     acquisitionPolicyLoader = loadSupplyAcquisitionPolicy,
     acquisitionPort = null,
     sourceProfilesLoader = loadSourceProfiles,
@@ -76,6 +78,7 @@ export class SupplyIntakeWorkflow {
     this.store = store;
     this.inputSnapshotLoader = inputSnapshotLoader;
     this.discoveryPlanner = discoveryPlanner;
+    this.discoveryGatePolicyLoader = discoveryGatePolicyLoader;
     this.acquisitionPolicyLoader = acquisitionPolicyLoader;
     this.acquisitionPort = acquisitionPort;
     this.sourceProfilesLoader = sourceProfilesLoader;
@@ -120,6 +123,35 @@ export class SupplyIntakeWorkflow {
     return recordDiscoveryCellReview({store: this.store, ...options});
   }
 
+  async beforeProjectItem(plan, item, {store, now}) {
+    if (!plan.discoveryGate ||
+      item.adminProjection?.recordType !== "organizer_search_candidate") {
+      return {persist: true, pause: false};
+    }
+    const decision = plan.discoveryGate.decisions[item.sourceEntity.id];
+    invariant(decision && decision.candidateInputHash === hashValue(item.raw),
+      "DISCOVERY_DECISION_MISMATCH",
+      "A projected organizer candidate does not match its frozen reviewed discovery decision.");
+    const result = await recordDiscoveryCandidates({
+      store,
+      market: plan.market,
+      candidates: [decision],
+      reviewEvery: plan.discoveryGate.reviewEvery,
+      now,
+    });
+    if (result.processed === 0) return {persist: false, pause: true};
+    const fingerprint = discoveryFingerprint({
+      market: plan.market,
+      segment: decision.segment,
+      identityKey: decision.identityKey,
+    });
+    return {
+      persist: decision.disposition === "retained",
+      pause: result.paused &&
+        result.state.pause.candidateFingerprint === fingerprint,
+    };
+  }
+
   async createPlan({
     market = "mumbai",
     through,
@@ -128,6 +160,7 @@ export class SupplyIntakeWorkflow {
     freshnessHistory = {runs: [], workItems: []},
     inputSnapshot = null,
     discoveryKnowledge = null,
+    discoveryGatePolicy = null,
   }) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
@@ -143,6 +176,11 @@ export class SupplyIntakeWorkflow {
         await this.inputSnapshotLoader?.({market}) ??
         emptySupplyInputSnapshot(market),
       {market}
+    );
+    const discoveryGate = freezeDiscoveryGate(
+      discoveryGatePolicy ?? await this.discoveryGatePolicyLoader({market}),
+      loadedInput,
+      market
     );
     const [
       profiles,
@@ -203,6 +241,7 @@ export class SupplyIntakeWorkflow {
       acquisitionPolicy,
       modelPolicy,
       sourceProfiles,
+      ...(discoveryGate ? {discoveryGate} : {}),
     });
     const basis = {
       schemaVersion: 1,
@@ -224,6 +263,7 @@ export class SupplyIntakeWorkflow {
       inputSnapshot: loadedInput,
       inputSummary,
       discoveryPlan,
+      ...(discoveryGate ? {discoveryGate} : {}),
       organizerReviewPolicy,
       sourceProfiles,
       policy,
@@ -348,6 +388,7 @@ export class SupplyIntakeWorkflow {
         acquisitionPolicy: plan.acquisitionPolicy,
         modelPolicy: plan.modelPolicy,
         sourceProfiles: plan.sourceProfiles,
+        ...(plan.discoveryGate ? {discoveryGate: plan.discoveryGate} : {}),
       }),
       "INVALID_PLAN",
       "Plan promotion policy snapshot is stale or invalid."
@@ -428,6 +469,12 @@ export class SupplyIntakeWorkflow {
       plan.inputSnapshot,
       {market: plan.market}
     );
+    if (plan.discoveryGate) {
+      invariant(hashValue(plan.discoveryGate) === hashValue(
+        freezeDiscoveryGate(plan.discoveryGate, inputSnapshot, plan.market)),
+      "INVALID_DISCOVERY_GATE",
+      "Frozen discovery decisions no longer match the reviewed input snapshot.");
+    }
     invariant(
       hashValue(plan.inputSummary) ===
         hashValue(plannedInputSummary(inputSnapshot, plan.market)) &&
@@ -589,7 +636,16 @@ export class SupplyIntakeWorkflow {
         artifact,
       }));
     }
-    return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
+    return dedupeItems(items).sort((left, right) => {
+      if (!plan.discoveryGate) return left.workItemId.localeCompare(right.workItemId);
+      const leftCandidate = left.adminProjection?.recordType === "organizer_search_candidate";
+      const rightCandidate = right.adminProjection?.recordType === "organizer_search_candidate";
+      if (leftCandidate && rightCandidate) {
+        return left.sourceEntity.id.localeCompare(right.sourceEntity.id);
+      }
+      if (leftCandidate !== rightCandidate) return leftCandidate ? 1 : -1;
+      return left.workItemId.localeCompare(right.workItemId);
+    });
   }
 
   async acquire(plan, {runKey, input = {}} = {}) {
@@ -730,6 +786,98 @@ export class SupplyIntakeWorkflow {
       reasons,
     };
   }
+}
+
+function freezeDiscoveryGate(policy, inputSnapshot, market) {
+  if (!policy?.enabled) return null;
+  invariant(policy.schemaVersion === 1 &&
+    Number.isSafeInteger(policy.reviewEvery) && policy.reviewEvery > 0,
+  "INVALID_DISCOVERY_GATE",
+  "Enabled discovery requires a positive private review interval.");
+  const candidates = inputSnapshot.organizerSearchCandidates.filter((candidate) =>
+    candidate?.queryIntent?.marketSlug === market);
+  const candidateById = new Map();
+  for (const candidate of candidates) {
+    invariant(typeof candidate.candidateId === "string" &&
+      candidate.candidateId.length > 0 &&
+      !candidateById.has(candidate.candidateId),
+    "INVALID_DISCOVERY_GATE",
+    "Enabled discovery requires unique source candidate ids.");
+    candidateById.set(candidate.candidateId, candidate);
+  }
+  invariant(Array.isArray(policy.decisions) ||
+    policy.decisions && typeof policy.decisions === "object" &&
+      !Array.isArray(policy.decisions),
+  "INVALID_DISCOVERY_GATE", "Reviewed discovery decisions are required.");
+  const supplied = Array.isArray(policy.decisions) ? policy.decisions :
+    Object.values(policy.decisions);
+  invariant(supplied.length === candidateById.size,
+    "INVALID_DISCOVERY_GATE",
+    "Every in-market organizer candidate needs one explicit reviewed discovery decision.");
+  const decisions = new Map();
+  const retainedFingerprints = new Set();
+  for (const decision of supplied) {
+    const source = candidateById.get(decision?.candidateId);
+    invariant(source && !decisions.has(decision.candidateId) &&
+      decision.candidateInputHash === hashValue(source) &&
+      ["retained", "rejected", "probable_duplicate", "review"]
+        .includes(decision.disposition) &&
+      Number.isSafeInteger(decision.decisionRevision) &&
+      decision.decisionRevision > 0 &&
+      typeof decision.reviewedBy === "string" &&
+      decision.reviewedBy.length > 0 &&
+      typeof decision.reviewedAt === "string" &&
+      !Number.isNaN(Date.parse(decision.reviewedAt)) &&
+      Array.isArray(decision.ruleIds) && decision.ruleIds.length > 0 &&
+      decision.ruleIds.every((value) =>
+        typeof value === "string" && value.length > 0) &&
+      Array.isArray(decision.inputRefs) && decision.inputRefs.length > 0 &&
+      decision.inputRefs.every((value) =>
+        typeof value === "string" && value.length > 0) &&
+      (decision.observationRefs === undefined ||
+        Array.isArray(decision.observationRefs) &&
+        decision.observationRefs.every((value) =>
+          typeof value === "string" && value.length > 0)) &&
+      (decision.disposition !== "rejected" ||
+        typeof decision.reasonCode === "string" &&
+        decision.reasonCode.length > 0),
+    "INVALID_DISCOVERY_GATE",
+    "Discovery decision must bind a source candidate and reviewed provenance.");
+    const fingerprint = discoveryFingerprint({
+      market,
+      segment: decision.segment,
+      identityKey: decision.identityKey,
+    });
+    if (decision.disposition === "retained") {
+      invariant(!retainedFingerprints.has(fingerprint),
+        "INVALID_DISCOVERY_GATE",
+        "One canonical identity cannot be retained by multiple source candidates.");
+      retainedFingerprints.add(fingerprint);
+    }
+    decisions.set(decision.candidateId, {
+      candidateId: decision.candidateId,
+      candidateInputHash: decision.candidateInputHash,
+      identityKey: decision.identityKey,
+      segment: decision.segment,
+      disposition: decision.disposition,
+      decisionRevision: decision.decisionRevision,
+      reviewedBy: decision.reviewedBy,
+      reviewedAt: decision.reviewedAt,
+      reasonCode: decision.reasonCode ?? null,
+      permanent: decision.permanent === true,
+      ruleIds: [...decision.ruleIds],
+      inputRefs: [...decision.inputRefs],
+      observationRefs: [...(decision.observationRefs ?? [])],
+      reviewedChange: decision.reviewedChange ?? null,
+    });
+  }
+  return {
+    schemaVersion: 1,
+    enabled: true,
+    reviewEvery: policy.reviewEvery,
+    decisions: Object.fromEntries([...decisions.entries()].sort((left, right) =>
+      left[0].localeCompare(right[0]))),
+  };
 }
 
 function copyLifecycleSemantics(semantics) {

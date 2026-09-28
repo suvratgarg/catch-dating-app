@@ -150,27 +150,60 @@ export class OperationsEngine {
       if (!importCheckpoint?.completed) {
         const candidates = await this.workflow.project(plan, {runId, now: run.startedAt});
         const persistedIds = new Set(persistedItems.map((item) => item.workItemId));
-        for (const candidate of candidates) {
+        for (const [index, candidate] of candidates.entries()) {
           this.workflow.assertWorkItem(candidate);
-          if (!persistedIds.has(candidate.workItemId)) {
-            budget.consume({workItems: 1}, {reason: "project legacy candidate"});
+          const gate = await this.workflow.beforeProjectItem?.(plan, candidate, {
+            store: this.store,
+            now: run.startedAt,
+          }) ?? {persist: true, pause: false};
+          invariant(typeof gate.persist === "boolean" &&
+            typeof gate.pause === "boolean", "INVALID_PROJECT_GATE",
+          "Workflow projection gate must return persist and pause decisions.");
+          invariant(gate.persist || !persistedIds.has(candidate.workItemId),
+            "PROJECT_GATE_CONFLICT",
+            "A gated candidate was already persisted with a non-retained decision.");
+          if (!gate.persist && !gate.pause) continue;
+          if (gate.persist) {
+            if (!persistedIds.has(candidate.workItemId)) {
+              budget.consume({workItems: 1}, {reason: "project legacy candidate"});
+            }
+            const result = await this.store.putWorkItem(candidate, {
+              ifAbsent: true,
+              ...await leaseSession.writeOptions(),
+            });
+            if (result.created) persistedIds.add(candidate.workItemId);
+            await this.recordAction(runId, result.created ? "work_item.created" : "work_item.reused", {
+              workItemId: candidate.workItemId,
+              entityKind: candidate.entityKind,
+              primaryStage: candidate.primaryStage,
+              sourceEntityId: candidate.sourceEntity.id,
+            }, leaseSession);
           }
-          const result = await this.store.putWorkItem(candidate, {
-            ifAbsent: true,
-            ...await leaseSession.writeOptions(),
-          });
-          if (result.created) persistedIds.add(candidate.workItemId);
-          await this.recordAction(runId, result.created ? "work_item.created" : "work_item.reused", {
-            workItemId: candidate.workItemId,
-            entityKind: candidate.entityKind,
-            primaryStage: candidate.primaryStage,
-            sourceEntityId: candidate.sourceEntity.id,
-          }, leaseSession);
+          if (gate.pause) {
+            await this.store.putCheckpoint(runId, "project-artifacts", {
+              completed: false,
+              nextIndex: index + (gate.persist ? 1 : 0),
+              itemCount: persistedIds.size,
+              outputHash: hashValue(candidates),
+            }, await leaseSession.writeOptions());
+            await this.recordAction(runId, "run.paused", {
+              reason: "discovery_review",
+              sourceEntityId: candidate.sourceEntity.id,
+            }, leaseSession);
+            const actions = await this.store.listActions(runId);
+            return this.store.updateRun(runId, (current) => ({
+              ...current,
+              status: "paused",
+              updatedAt: this.now(),
+              budget: budget.snapshot(),
+              counters: {workItems: persistedIds.size, actions: actions.length},
+            }), await leaseSession.writeOptions());
+          }
         }
         await this.store.putCheckpoint(runId, "project-artifacts", {
           completed: true,
           completedAt: this.now(),
-          itemCount: candidates.length,
+          itemCount: persistedIds.size,
           outputHash: hashValue(candidates),
         }, await leaseSession.writeOptions());
       }
