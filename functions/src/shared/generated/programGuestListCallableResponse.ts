@@ -14,6 +14,10 @@ export interface ProgramGuestListCallableResponse {
     guestId: string;
     displayName: string;
     householdId: string | null;
+    /**
+     * Optional link to organizerContacts. Lets program-scoped surfaces (the host inbox scope chip) attribute contact-linked threads to this program's guests.
+     */
+    contactId: string | null;
     phoneE164: string | null;
     email: string | null;
     externalReference: string | null;

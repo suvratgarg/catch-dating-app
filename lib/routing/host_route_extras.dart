@@ -93,6 +93,12 @@ GoRouter goRouter(Ref ref) {
 OrganizerMomentScope _eventMomentScope(GoRouterState state) =>
     OrganizerMomentScope.event(state.pathParameters['eventId']!);
 
+OrganizerMomentScope _programMomentScope(GoRouterState state) =>
+    OrganizerMomentScope.program(state.pathParameters['programId']!);
+
+String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) =>
+    hostOrganizerAudienceRedirect(state.uri);
+
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
 }

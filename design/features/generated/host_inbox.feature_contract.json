@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:f6ebec2b713559acad7bf8242e0e322f99e841611f52c83604a99b5e2fef2518",
-  "resolvedDigest": "sha256:f3c2e603c0d7703870fe6a6cbb2739c451e641fc641e5c0ed99fc70c23a34ac5",
+  "sourceDigest": "sha256:0811f129d3e9eded41b81933de8bdcbf3f9d539a33e76c673287653e500ae6ff",
+  "resolvedDigest": "sha256:33526b379c729d15af892de5efe90cbabb0ce8ecfa7882eb051b0aebc0d1547e",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -14,14 +14,14 @@
   },
   "coverage": {
     "surfaces": 1,
-    "states": 42,
-    "scenarios": 42,
-    "actionCases": 46,
+    "states": 43,
+    "scenarios": 43,
+    "actionCases": 47,
     "actions": 21,
     "captures": 20,
     "previews": 3,
     "testFiles": 15,
-    "evidenceExceptions": 44
+    "evidenceExceptions": 46
   },
   "surfaces": [
     {
@@ -231,14 +231,14 @@
         }
       },
       "coverage": {
-        "states": 42,
-        "scenarios": 42,
-        "actionCases": 46,
+        "states": 43,
+        "scenarios": 43,
+        "actionCases": 47,
         "actions": 21,
         "captures": 20,
         "previews": 3,
         "testFiles": 15,
-        "evidenceExceptions": 44
+        "evidenceExceptions": 46
       },
       "dimensions": {
         "workspace": {
@@ -261,7 +261,8 @@
           "default": "event",
           "values": [
             "event",
-            "general"
+            "general",
+            "program"
           ]
         },
         "segment": {
@@ -471,7 +472,8 @@
           "scopeKeys": [
             "viewerUid",
             "routeInstanceId",
-            "eventId"
+            "eventId",
+            "programId"
           ],
           "outcomes": [
             {
@@ -480,12 +482,13 @@
                 "populated_queries",
                 "prospective_queries",
                 "general_queries",
+                "program_queries",
                 "roster_without_threads",
                 "empty_host_queries"
               ]
             }
           ],
-          "description": "Selects an event-scoped inbox or the explicit General inquiry scope and synchronizes it to the route.",
+          "description": "Selects an event-scoped inbox, a program-scoped guest inbox, or the explicit General inquiry scope and synchronizes it to the route.",
           "implementationStatus": "implemented"
         },
         {
@@ -1001,6 +1004,17 @@
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
           "reason": "Existing campaign previews cover ready sender and draft states; deep-linked, connecting, and previewed variants remain explicit preview debt."
+        },
+        {
+          "stateIds": [
+            "program_queries"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "HOST-PROGRAM-INBOX-EVIDENCE-001",
+          "reason": "Program-scope audience filtering, contactId/linkedUid linkage, and scope resolution have focused tests; dedicated deterministic Inbox variants remain follow-up evidence."
         }
       ],
       "scenarios": [
@@ -1721,6 +1735,86 @@
                 "workspace": "inbox",
                 "load": "ready",
                 "scope": "general",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_intent": "history",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "open_conversation"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "select_audience_segment",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_event_announcement_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
+                  "send_follower_update",
+                  "manage_whatsapp_sender",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "program_queries",
+          "stateId": "program_queries",
+          "kind": "populated",
+          "status": "implemented",
+          "dimensions": {
+            "workspace": "inbox",
+            "load": "ready",
+            "scope": "program",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_intent": "history",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_inbox_view_model_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "program",
+              "dimensions": {
+                "workspace": "inbox",
+                "load": "ready",
+                "scope": "program",
                 "segment": "booked",
                 "content": "populated",
                 "channel": "catch",

@@ -8,6 +8,7 @@
 export interface OrganizerProgramCallableResponse {
   program: {
     programId: string;
+    organizerId: string;
     kind: "wedding" | "corporate" | "social" | "other";
     title: string;
     timezone: string;

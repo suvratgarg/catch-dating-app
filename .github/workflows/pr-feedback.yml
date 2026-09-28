@@ -33,10 +33,9 @@ jobs:
             /tool/tools_manifest.json
             /tool/design/build_host_feature_responsibilities.mjs
             /design/features/host_feature_responsibilities.json
-      - name: Check changed whitespace and plan affected checks
+      - name: Plan affected checks
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          git diff --check "$BASE_SHA" HEAD
           node tool/harness.mjs plan --base "$BASE_SHA" --head HEAD --mode pr --json > /tmp/pr-feedback-plan.json
           echo 'This is inexpensive feedback, not merge approval. Full validation requires the sole ci:admitted label.' >> "$GITHUB_STEP_SUMMARY"

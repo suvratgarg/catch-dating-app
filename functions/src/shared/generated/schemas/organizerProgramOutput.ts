@@ -22,6 +22,7 @@ export const organizerProgramCallableResponseSchema: Record<string, unknown> = {
       "additionalProperties": false,
       "required": [
         "programId",
+        "organizerId",
         "kind",
         "title",
         "timezone",
@@ -34,6 +35,11 @@ export const organizerProgramCallableResponseSchema: Record<string, unknown> = {
       ],
       "properties": {
         "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180

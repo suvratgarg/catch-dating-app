@@ -118,4 +118,85 @@ void main() {
       );
     },
   );
+
+  group('program scope', () {
+    const audience = HostInboxProgramAudience(
+      contactIds: {'contact-a', 'contact-b'},
+      linkedUids: {'guest-uid'},
+    );
+    const scope = HostInboxScope.program('program-1');
+
+    HostInboxPeople programCompose({
+      List<ChatThreadPreview> catches = const [],
+      List<HostWhatsappThreadSummary> whatsapp = const [],
+      HostInboxProgramAudience? audience = audience,
+      String query = '',
+    }) => composeHostInboxPeople(
+      organizerId: 'org',
+      scope: scope,
+      segment: HostInboxAudienceSegment.booked,
+      catchThreads: catches,
+      whatsappThreads: whatsapp,
+      participations: null,
+      query: query,
+      programAudience: audience,
+    );
+
+    test('filters whatsapp by guest contactId and catch by linked uid', () {
+      final result = programCompose(
+        catches: [preview('c1', 'guest-uid'), preview('c2', 'not-a-guest')],
+        whatsapp: [
+          wa('w1', 'contact-a', uid: 'guest-uid'),
+          wa('w2', 'contact-b'),
+          wa('w3', 'contact-z', uid: 'guest-uid'),
+        ],
+      );
+      expect(result.people, hasLength(2));
+      final guest = result.people.singleWhere(
+        (p) => p.personId == 'uid:guest-uid',
+      );
+      expect(guest.catchThreads.single.matchId, 'c1');
+      expect(guest.whatsappThreads.single.threadId, 'w1');
+      final unlinked = result.people.singleWhere(
+        (p) => p.personId == 'contact:contact-b',
+      );
+      expect(unlinked.whatsappThreads.single.threadId, 'w2');
+      expect(unlinked.booked, isNull);
+      expect(result.unclassifiedCount, 0);
+      expect(
+        result.people.expand((p) => p.whatsappThreads).map((t) => t.threadId),
+        isNot(contains('w3')),
+      );
+    });
+
+    test('missing audience yields an empty inbox, never all threads', () {
+      final result = programCompose(
+        catches: [preview('c1', 'guest-uid')],
+        whatsapp: [wa('w1', 'contact-a', uid: 'guest-uid')],
+        audience: null,
+      );
+      expect(result.people, isEmpty);
+    });
+
+    test('search still applies inside a program audience', () {
+      final result = programCompose(
+        whatsapp: [wa('w1', 'contact-a'), wa('w2', 'contact-b')],
+        query: 'nothing matches',
+      );
+      expect(result.people, isEmpty);
+    });
+  });
+
+  test('audience derives linked uids only from guest contacts', () {
+    final audience = hostInboxProgramAudience(
+      guestContactIds: ['contact-a', null],
+      whatsappThreads: [
+        wa('w1', 'contact-a', uid: 'guest-uid'),
+        wa('w2', 'contact-z', uid: 'stranger'),
+        wa('w3', 'contact-b'),
+      ],
+    );
+    expect(audience.contactIds, {'contact-a'});
+    expect(audience.linkedUids, {'guest-uid'});
+  });
 }
