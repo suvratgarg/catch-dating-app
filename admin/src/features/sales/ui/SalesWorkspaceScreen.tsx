@@ -144,7 +144,7 @@ export function SalesWorkspaceScreen({
       ) : area === "pilots" ? (
         <PilotsView controller={controller} onOpenHost={onOpenHost} />
       ) : (
-        <SettingsView controller={controller} />
+        <SettingsView controller={controller} isAdminOwner={isAdminOwner} />
       )}
     </AdminDirectoryScreenStack>
   );
@@ -485,7 +485,9 @@ function customFieldId(label: string): string {
   return slug ? `sales.${slug}` : "";
 }
 
-function SettingsView({controller}: {controller: SalesWorkspaceController}) {
+function SettingsView({controller, isAdminOwner}: {
+  controller: SalesWorkspaceController; isAdminOwner: boolean;
+}) {
   const [label, setLabel] = useState("");
   const [type, setType] = useState<SalesCustomFieldType>("string");
   const [helpText, setHelpText] = useState("");
@@ -548,7 +550,7 @@ function SettingsView({controller}: {controller: SalesWorkspaceController}) {
         Add private field
       </AdminButton>
     </AdminForm>
-  </Panel><SalesImportWorkspace controller={controller} /></>;
+  </Panel><SalesImportWorkspace controller={controller} isAdminOwner={isAdminOwner} /></>;
 }
 
 function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}: {
