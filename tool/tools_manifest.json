@@ -2367,7 +2367,7 @@
         "tool/architecture/check_flutter_source_size.test.mjs",
         "tool/test/check_flutter_test_size.mjs"
       ],
-      "description": "Keeps new and split handwritten Dart sources within 800 lines, ratchets legacy debt against Git history, and bounds the exact CatchField facade exception at 1,150 lines.",
+      "description": "Keeps new and split handwritten Dart sources within 800 lines, ratchets legacy debt against Git history, and bounds the exact CatchField facade exception at 1,150 lines. lib/routing/go_router.dart is exempt because route inventory requires every GoRoute there, so its length tracks route count.",
       "checks": [
         "node --check tool/architecture/check_flutter_source_size.mjs",
         "node --test tool/architecture/check_flutter_source_size.test.mjs",

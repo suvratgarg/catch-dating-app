@@ -18,10 +18,6 @@
       "maxLines": 1298
     },
     {
-      "path": "lib/routing/go_router.dart",
-      "maxLines": 1043
-    },
-    {
       "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
       "maxLines": 807
     },
