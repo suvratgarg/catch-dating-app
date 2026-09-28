@@ -360,18 +360,24 @@ async function runDiscovery(subcommand, flags, {run, workflow, store, now}) {
       "The run has no incomplete discovery projection checkpoint.", {exitCode: 2});
   }
   const state = await readDiscoveryKnowledge({store, market: run.plan.market});
-  const pausedDecision = Object.values(run.plan.discoveryGate.decisions).find(
-    (decision) => decision.disposition === "retained" &&
-      discoveryFingerprint({market: run.plan.market,
-        segment: decision.segment, identityKey: decision.identityKey}) ===
-      state.pause?.candidateFingerprint);
-  if (!pausedDecision || state.reviewEvery !== run.plan.discoveryGate.reviewEvery) {
+  if (state.reviewEvery !== run.plan.discoveryGate.reviewEvery) {
     throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
       "The current discovery pause does not belong to this frozen run policy.",
       {exitCode: 2});
   }
-  const binding = discoveryReviewBinding(state);
+  const matchesFrozenRetainedDecision = (fingerprint) =>
+    Object.values(run.plan.discoveryGate.decisions).some((decision) =>
+      decision.disposition === "retained" &&
+        discoveryFingerprint({market: run.plan.market,
+          segment: decision.segment, identityKey: decision.identityKey}) ===
+          fingerprint);
   if (subcommand === "preview") {
+    if (!state.pause ||
+        !matchesFrozenRetainedDecision(state.pause.candidateFingerprint)) {
+      throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
+        "The current discovery pause does not belong to this frozen run policy.",
+        {exitCode: 2});
+    }
     return {
       runId: run.runId,
       market: run.plan.market,
@@ -380,7 +386,7 @@ async function runDiscovery(subcommand, flags, {run, workflow, store, now}) {
         candidateFingerprint: state.pause.candidateFingerprint,
         retainedCount: state.pause.retainedCount,
       },
-      binding,
+      binding: discoveryReviewBinding(state),
       retainedCount: state.retainedCount,
       batchRetained: state.batchRetained,
       nextProjectionIndex: checkpoint.nextIndex,
@@ -388,6 +394,14 @@ async function runDiscovery(subcommand, flags, {run, workflow, store, now}) {
   }
   requireFlag(flags, "receipt");
   const receipt = await readBoundedPrivateJson(flags.receipt, 512 * 1024);
+  const currentOrReviewedPause = state.pause?.candidateFingerprint ??
+    (state.lastReview?.reviewRevision === receipt.reviewRevision ?
+      receipt.candidateFingerprint : null);
+  if (!matchesFrozenRetainedDecision(currentOrReviewedPause)) {
+    throw new OperationsError("DISCOVERY_PAUSE_MISMATCH",
+      "The review receipt does not match this run's frozen discovery policy.",
+      {exitCode: 2});
+  }
   if (typeof workflow.continueDiscoveryAfterReview !== "function") {
     throw new OperationsError("WORKFLOW_NOT_EXECUTABLE",
       "Supply Intake cannot accept a discovery review receipt.");
