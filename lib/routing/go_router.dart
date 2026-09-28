@@ -103,6 +103,36 @@ part 'host_inbox_route.dart';
 part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
+@visibleForTesting
+HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
+  initialClubId: uri.queryParameters['clubId'],
+  initialExpandedEditField: uri.queryParameters['editField'],
+  initialTab: HostClubTab.values.firstWhere(
+    (tab) => tab.name == uri.queryParameters['tab'],
+    orElse: () => HostClubTab.edit,
+  ),
+);
+
+@visibleForTesting
+Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
+  final view = hostAudienceViewFromName(uri.queryParameters['view']);
+  return switch (view) {
+    HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialResponses: view == HostAudienceView.responses,
+      initialFormId: uri.queryParameters['formId'],
+      initialContactId: uri.queryParameters['contactId'],
+    ),
+    HostAudienceView.people ||
+    HostAudienceView.audiences => HostCustomersScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialView: view,
+      initialContactId: uri.queryParameters['contactId'],
+      initialContactDisplayName: initialContactDisplayName,
+    ),
+  };
+}
+
 GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   final notifier = _RouterRefreshNotifier();
   final analytics = ref.read(appAnalyticsProvider);
@@ -439,10 +469,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostOperatorEventScreen.path,
       name: Routes.hostOperatorEventScreen.name,
-      redirect: (context, state) => hostOperatorEventLegacyRedirect(
-        state.uri,
-        eventId: state.pathParameters['eventId']!,
-      ),
+      redirect: _operatorEventUriRedirect,
     ),
     GoRoute(
       path: Routes.hostWorkScreen.path,
@@ -850,32 +877,17 @@ GoRoute _hostCustomersLegacyRoute() {
   return GoRoute(
     path: Routes.hostCustomersLegacyScreen.path,
     name: Routes.hostCustomersLegacyScreen.name,
-    redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+    redirect: _customersUriRedirect,
     routes: [
-      GoRoute(
-        path: 'new',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'audiences/new',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'audiences/:audienceId',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'applications',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-      ),
+      GoRoute(path: 'new', redirect: _customersUriRedirect),
+      GoRoute(path: 'audiences/new', redirect: _customersUriRedirect),
+      GoRoute(path: 'audiences/:audienceId', redirect: _customersUriRedirect),
+      GoRoute(path: 'applications', redirect: _customersUriRedirect),
       GoRoute(
         path: 'applications/:applicationId',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+        redirect: _customersUriRedirect,
       ),
-      GoRoute(
-        path: ':contactId',
-        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-      ),
+      GoRoute(path: ':contactId', redirect: _customersUriRedirect),
     ],
   );
 }
@@ -884,44 +896,17 @@ GoRoute _hostFormsLegacyRoute() {
   return GoRoute(
     path: Routes.hostFormsLegacyScreen.path,
     name: Routes.hostFormsLegacyScreen.name,
-    redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+    redirect: _formsUriRedirect,
     routes: [
-      GoRoute(
-        path: 'new',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'responses/:responseId',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'applications',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'applications/:applicationId',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: ':formId/preview',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: ':formId/share',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: ':formId/analytics',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: ':formId/automations',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: ':formId',
-        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-      ),
+      GoRoute(path: 'new', redirect: _formsUriRedirect),
+      GoRoute(path: 'responses/:responseId', redirect: _formsUriRedirect),
+      GoRoute(path: 'applications', redirect: _formsUriRedirect),
+      GoRoute(path: 'applications/:applicationId', redirect: _formsUriRedirect),
+      GoRoute(path: ':formId/preview', redirect: _formsUriRedirect),
+      GoRoute(path: ':formId/share', redirect: _formsUriRedirect),
+      GoRoute(path: ':formId/analytics', redirect: _formsUriRedirect),
+      GoRoute(path: ':formId/automations', redirect: _formsUriRedirect),
+      GoRoute(path: ':formId', redirect: _formsUriRedirect),
     ],
   );
 }
@@ -1021,6 +1006,20 @@ StatefulShellRoute _hostShellRoute(
       ),
     ],
   );
+}
+
+class _RouteLoadingScreen extends StatelessWidget {
+  const _RouteLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchScaffold.standalone(
+      backgroundColor: t.bg,
+      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
+    );
+  }
 }
 
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
