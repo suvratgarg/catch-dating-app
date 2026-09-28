@@ -2562,6 +2562,15 @@ const schemaSpecs = [
       "programFunctionDoorViewCallableResponse.ts",
   },
   {
+    name: "ProgramStaffAttentionCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_staff_attention_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programStaffAttentionCallableResponse.ts",
+  },
+  {
     name: "ProgramManifestImportCallableResponse",
     source: "callable_responses/program_manifest_import_response.schema.json",
     typeOutput:

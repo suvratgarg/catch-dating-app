@@ -176,6 +176,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` / `getProgramHotelInbound` / `listProgramTrips` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, trip lifecycle, hotel-scoped inbound projection, and the reconciliation trip ledger |
 | `refreshProgramTravelLeg` / `refreshProgramFlightStatuses` | `src/transport/programFlightRefresh.ts` | Manual leg refresh plus a scheduled proximity-tiered sweep that enriches flight legs from AeroDataBox without overwriting observed arrivals |
 | `flightAlertWebhook` | `src/transport/flightAlerts.ts` | Receive AeroDataBox flight-alert pushes against a URL-secret-gated endpoint; applies updates through the same write-back guards as polling and never un-lands a leg |
+| `listProgramStaffAttention` | `src/programs/programStaffAttention.ts` | Function-lead attention feed: program-scoped staffAttention moment sends filtered to the caller's active duties, deduplicated per run and duty |
 | `setEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Perform revision-safe, replay-safe operational attendance changes |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |

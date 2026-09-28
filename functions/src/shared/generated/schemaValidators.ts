@@ -627,6 +627,7 @@ export {validateProgramTransportPlanCallableResponse} from "./validators/program
 export {validateProgramHotelInboundCallableResponse} from "./validators/programHotelInboundOutput";
 export {validateRecordProgramDoorJournalCallableResponse} from "./validators/recordProgramDoorJournalOutput";
 export {validateProgramFunctionDoorViewCallableResponse} from "./validators/programFunctionDoorViewOutput";
+export {validateProgramStaffAttentionCallableResponse} from "./validators/programStaffAttentionOutput";
 export {validateProgramManifestImportCallableResponse} from "./validators/programManifestImportOutput";
 export {validateDispatchProgramTripCallableResponse} from "./validators/dispatchProgramTripOutput";
 export {validateTransportVendorListCallableResponse} from "./validators/transportVendorListOutput";

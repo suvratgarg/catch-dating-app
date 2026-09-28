@@ -120345,6 +120345,82 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programStaffAttentionCallableResponseItems = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsDuty = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.duty',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsItemId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.itemId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsMomentId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsRunId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.runId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsSeverity = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsTitle = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.title',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseTruncated = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const programStaffGrantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.createdAt._nanoseconds',
     required: true,
@@ -165906,6 +165982,16 @@ abstract final class CatchContractConstraints {
     'programRoomBlockDocument.totalRooms': programRoomBlockDocumentTotalRooms,
     'programRoomBlockDocument.updatedAt._nanoseconds': programRoomBlockDocumentUpdatedAtNanoseconds,
     'programRoomBlockDocument.updatedAt._seconds': programRoomBlockDocumentUpdatedAtSeconds,
+    'programStaffAttentionCallableResponse.items': programStaffAttentionCallableResponseItems,
+    'programStaffAttentionCallableResponse.items.items.createdAtMillis': programStaffAttentionCallableResponseItemsItemsCreatedAtMillis,
+    'programStaffAttentionCallableResponse.items.items.duty': programStaffAttentionCallableResponseItemsItemsDuty,
+    'programStaffAttentionCallableResponse.items.items.itemId': programStaffAttentionCallableResponseItemsItemsItemId,
+    'programStaffAttentionCallableResponse.items.items.momentId': programStaffAttentionCallableResponseItemsItemsMomentId,
+    'programStaffAttentionCallableResponse.items.items.runId': programStaffAttentionCallableResponseItemsItemsRunId,
+    'programStaffAttentionCallableResponse.items.items.severity': programStaffAttentionCallableResponseItemsItemsSeverity,
+    'programStaffAttentionCallableResponse.items.items.title': programStaffAttentionCallableResponseItemsItemsTitle,
+    'programStaffAttentionCallableResponse.programId': programStaffAttentionCallableResponseProgramId,
+    'programStaffAttentionCallableResponse.truncated': programStaffAttentionCallableResponseTruncated,
     'programStaffGrantDocument.createdAt._nanoseconds': programStaffGrantDocumentCreatedAtNanoseconds,
     'programStaffGrantDocument.createdAt._seconds': programStaffGrantDocumentCreatedAtSeconds,
     'programStaffGrantDocument.createdBy': programStaffGrantDocumentCreatedBy,
