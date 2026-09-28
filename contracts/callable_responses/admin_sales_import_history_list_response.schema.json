@@ -38,7 +38,9 @@
           "providerConfirmed",
           "currentFitAuthority",
           "contactAuthority",
-          "sendAuthority"
+          "sendAuthority",
+          "relativeChronology",
+          "dateCertainty"
         ],
         "properties": {
           "schemaVersion": {
@@ -166,6 +168,19 @@
           },
           "sendAuthority": {
             "const": false
+          },
+          "relativeChronology": {
+            "enum": [
+              "first_touch",
+              "last_touch",
+              "unspecified"
+            ]
+          },
+          "dateCertainty": {
+            "enum": [
+              "source_exact",
+              "unknown"
+            ]
           }
         }
       }

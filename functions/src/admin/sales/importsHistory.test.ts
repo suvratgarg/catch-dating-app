@@ -166,6 +166,9 @@ test("reviewed history is private, immutable and never current send or fit",
     const observation = records.find((item) => item.kind === "observation");
     assert.equal(observation?.occurredAt,
       null);
+    assert.equal(observation?.dateCertainty, "unknown");
+    assert.equal(records.find((item) => item.kind === "activity")
+      ?.relativeChronology, "first_touch");
     assert.equal(db.docs.get("organizerSalesAccounts/org-a")?.revision, 1);
     assert.equal([...db.docs.keys()].some((path) =>
       path.startsWith("salesActivities/")), false);

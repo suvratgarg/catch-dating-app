@@ -196,10 +196,15 @@ async function evaluate(db: FirebaseFirestore.Firestore, packet: HistoryPacket,
       recordIds.push(recordId);
       const ref = db.collection("salesImportHistoryRecords").doc(recordId);
       const existing = await read(ref);
+      const relativeChronology = entry.sourceColumn === "First touch" ?
+        "first_touch" : entry.sourceColumn === "Last touch" ?
+          "last_touch" : "unspecified";
       const material = {sourceId: packet.sourceId, sourceRowId: row.sourceRowId,
         sourceContentHash: packet.contentHash, importId: row.importId,
         organizerId: row.organizerId, kind: entry.kind,
         sourceColumn: entry.sourceColumn, sourceValue: entry.sourceValue,
+        relativeChronology,
+        dateCertainty: entry.occurredAt === null ? "unknown" : "source_exact",
         occurredAt: entry.occurredAt,
         dateSourceColumn: entry.dateSourceColumn,
         dateSourceValue: entry.dateSourceValue};

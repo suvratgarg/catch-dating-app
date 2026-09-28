@@ -8,6 +8,9 @@ import {identityDecisionTemplate, prepareIdentityReview} from "./identity-review
 import {planMigrationCompensation} from "./compensation-plan.mjs";
 import {applyReviewedCompensation, previewReviewedCompensation} from
   "./compensation.mjs";
+import {historyDecisionTemplate, freezeHistoryPromotion,
+  reviewHistoryPromotion, applyReviewedHistoryPromotion} from
+  "./history-promotion.mjs";
 
 const [command, ...args] = process.argv.slice(2);
 const usage = "identity-template <mapped-source.json> <private-decisions.json> | " +
@@ -17,17 +20,24 @@ const usage = "identity-template <mapped-source.json> <private-decisions.json> |
   "apply <manifest.json> <review.json> <approved-review-hash> <private-state-dir> <private-result.json> | " +
   "compensation-plan <manifest.json> <review.json> <receipts.json> <accounts.json> <related-records.json> <private-plan.json> | " +
   "compensation-preview <import-id> <organizer-id> <private-plan.json> | " +
-  "compensation-apply <private-plan.json> <approved-preview-hash> <private-reason.json> <private-state-dir> <private-result.json>";
+  "compensation-apply <private-plan.json> <approved-preview-hash> <private-reason.json> <private-state-dir> <private-result.json> | " +
+  "history-template <mapped-source.json> <private-decisions.json> | " +
+  "history-freeze <mapped-source.json> <private-decisions.json> <private-plan.json> | " +
+  "history-review <private-plan.json> <private-review.json> | " +
+  "history-apply <private-plan.json> <private-review.json> <approved-review-hash> <private-state-dir> <private-result.json>";
 try {
   if (!command || command === "--help") {
     console.log(usage);
   } else {
     const expected = {"identity-template": 2, "identity-review": 3,
       freeze: 2, review: 2, apply: 5, "compensation-plan": 6,
-      "compensation-preview": 3, "compensation-apply": 5}[command];
+      "compensation-preview": 3, "compensation-apply": 5,
+      "history-template": 2, "history-freeze": 3,
+      "history-review": 2, "history-apply": 5}[command];
     if (!expected || args.length !== expected) throw new Error(usage);
-    if (command === "compensation-preview" ||
-      command === "compensation-apply") {
+    if (["compensation-preview", "compensation-apply",
+      "history-template", "history-freeze", "history-review",
+      "history-apply"].includes(command)) {
       const destination = path.resolve(args.at(-1));
       try {
         await fs.lstat(destination);
@@ -40,7 +50,30 @@ try {
       await readPrivateJson(args[0]);
     let result;
     let output;
-    if (command === "compensation-preview" ||
+    if (command === "history-template") {
+      result = historyDecisionTemplate(input);
+      output = args[1];
+    } else if (command === "history-freeze") {
+      result = freezeHistoryPromotion(input, await readPrivateJson(args[1]));
+      output = args[2];
+    } else if (command === "history-review" || command === "history-apply") {
+      const client = new FirebaseAdminCallableClient({
+        baseUrl: callableBaseUrl({project: process.env.CATCH_ADMIN_FIREBASE_PROJECT,
+          baseUrl: process.env.CATCH_ADMIN_CALLABLE_BASE_URL}),
+        idToken: process.env.CATCH_ADMIN_ID_TOKEN,
+        appCheckToken: process.env.CATCH_ADMIN_APP_CHECK_TOKEN,
+      });
+      if (command === "history-review") {
+        result = await reviewHistoryPromotion(input, client);
+        output = args[1];
+      } else {
+        const store = await new FileOperationsStore(args[3]).initialize();
+        result = await applyReviewedHistoryPromotion({plan: input,
+          review: await readPrivateJson(args[1]), approvedReviewHash: args[2],
+          client, store});
+        output = args[4];
+      }
+    } else if (command === "compensation-preview" ||
       command === "compensation-apply") {
       const client = new FirebaseAdminCallableClient({
         baseUrl: callableBaseUrl({project: process.env.CATCH_ADMIN_FIREBASE_PROJECT,
