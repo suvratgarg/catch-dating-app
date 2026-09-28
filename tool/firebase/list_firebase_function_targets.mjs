@@ -74,6 +74,37 @@ export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {
   return names.map((name) => `functions:${name}`);
 }
 
+// Reads a source checkout's dormant list without evaluating it. Verification
+// replays deliveries against a historical source root whose tool files may be
+// older than the control plane's; extracting the frozen string array keeps
+// that read static instead of executing arbitrary historical module code.
+export function readDormantFirebaseFunctionTargets(
+  sourceRoot = defaultRepoRoot,
+) {
+  const toolPath = path.join(
+    path.resolve(sourceRoot),
+    "tool/firebase/list_firebase_function_targets.mjs",
+  );
+  const stat = fs.lstatSync(toolPath);
+  if (!stat.isFile() || stat.isSymbolicLink()) {
+    throw new Error(
+      `Dormant function target list must be a regular file: ${toolPath}`,
+    );
+  }
+  const source = fs.readFileSync(toolPath, "utf8");
+  const block = source.match(
+    /dormantFirebaseFunctionTargets\s*=\s*Object\.freeze\(\s*\[([\s\S]*?)\]\s*\)/,
+  );
+  if (!block) {
+    throw new Error(
+      `Dormant function target list is missing its frozen array literal: ${toolPath}`,
+    );
+  }
+  return [...block[1].matchAll(/"([^"\n]*)"|'([^'\n]*)'/g)].map(
+    (entry) => entry[1] ?? entry[2],
+  );
+}
+
 export function listFirebaseFunctionTargets(sourceRoot = defaultRepoRoot) {
   const dormantTargets = new Set(dormantFirebaseFunctionTargets);
   return listFirebaseFunctionExports(sourceRoot)
