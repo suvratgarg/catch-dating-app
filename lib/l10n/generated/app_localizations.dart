@@ -37719,6 +37719,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue discarding change'**
   String get hostsPrivateEventContinueDiscarding;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled'**
+  String get paymentsCancellationLabel;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund needs review'**
+  String get paymentsCancellationRefundReview;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Partially refunded'**
+  String get paymentsCancellationPartialRefund;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking is cancelled. No refund applies under its cancellation policy.'**
+  String get paymentsCancellationNoRefund;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking is cancelled. View payment history for the refund status.'**
+  String get paymentsCancellationCheckoutMessage;
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking is cancelled. A refund of {amount} is being processed.'**
+  String paymentsCancellationRefundPending({required String amount});
+
+  /// Native booking cancellation and cash refund status.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} returned. Your booking is cancelled.'**
+  String paymentsCancellationRefundReturned({required String amount});
 }
 
 class _AppLocalizationsDelegate

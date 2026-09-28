@@ -30009,14 +30009,54 @@
   "hostEventOfferRecipient": "Recipient",
   "hostEventOfferAmount": "Admission price",
   "hostEventOfferFree": "Free admission",
-  "@hostResponseOfferEvent": {"description": "Response-to-event offer flow: hostResponseOfferEvent"},
-  "@hostResponseReviewDecision": {"description": "Response-to-event offer flow: hostResponseReviewDecision"},
-  "@hostResponseContactDetails": {"description": "Response-to-event offer flow: hostResponseContactDetails"},
-  "@hostEventOfferChangeEvent": {"description": "Response-to-event offer flow: hostEventOfferChangeEvent"},
-  "@hostEventOfferUnavailable": {"description": "Response-to-event offer flow: hostEventOfferUnavailable"},
-  "@hostEventOfferRecipient": {"description": "Response-to-event offer flow: hostEventOfferRecipient"},
-  "@hostEventOfferAmount": {"description": "Response-to-event offer flow: hostEventOfferAmount"},
-  "@hostEventOfferFree": {"description": "Response-to-event offer flow: hostEventOfferFree"},
+  "@hostResponseOfferEvent": {
+    "description": "Response-to-event offer flow: hostResponseOfferEvent",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostResponseReviewDecision": {
+    "description": "Response-to-event offer flow: hostResponseReviewDecision",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostResponseContactDetails": {
+    "description": "Response-to-event offer flow: hostResponseContactDetails",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostEventOfferChangeEvent": {
+    "description": "Response-to-event offer flow: hostEventOfferChangeEvent",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostEventOfferUnavailable": {
+    "description": "Response-to-event offer flow: hostEventOfferUnavailable",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostEventOfferRecipient": {
+    "description": "Response-to-event offer flow: hostEventOfferRecipient",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostEventOfferAmount": {
+    "description": "Response-to-event offer flow: hostEventOfferAmount",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "@hostEventOfferFree": {
+    "description": "Response-to-event offer flow: hostEventOfferFree",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
   "hostResponseContinueOffer": "Continue to offer",
   "@hostResponseContinueOffer": {"description": "Return to the preserved offer selection after response review.", "x-audience":"host", "x-owner":"product", "x-surface":"hosts.presentation.forms", "x-max-chars":80},
   "hostEventOfferExpiry":"Valid until",
@@ -30028,61 +30068,230 @@
   "hostsPrivateEventDetailPickLocation": "Choose meeting place on map",
   "hostsPrivateEventDetailLocationNeeded": "A map location is required before publishing. A name alone is fine while planning.",
   "hostsPrivateEventDetailLocationReady": "Meeting place is ready for directions and the public listing.",
-  "@hostsPrivateEventDetailPickLocation": {"description": "Private event meeting location setup copy."},
-  "@hostsPrivateEventDetailLocationNeeded": {"description": "Private event meeting location setup copy."},
-  "@hostsPrivateEventDetailLocationReady": {"description": "Private event meeting location setup copy."},
+  "@hostsPrivateEventDetailPickLocation": {
+    "description": "Private event meeting location setup copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
+  "@hostsPrivateEventDetailLocationNeeded": {
+    "description": "Private event meeting location setup copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
+  "@hostsPrivateEventDetailLocationReady": {
+    "description": "Private event meeting location setup copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventAdmissionTerms": "Capacity and price",
-  "@hostsPrivateEventAdmissionTerms": {"description": "Private event admission terms section"},
+  "@hostsPrivateEventAdmissionTerms": {
+    "description": "Private event admission terms section",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventAdmissionTermsHint": "Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.",
-  "@hostsPrivateEventAdmissionTermsHint": {"description": "Explains explicit event terms without enabling registration"},
+  "@hostsPrivateEventAdmissionTermsHint": {
+    "description": "Explains explicit event terms without enabling registration",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventSaveTerms": "Save capacity and price",
-  "@hostsPrivateEventSaveTerms": {"description": "Saves the reviewed admission terms together"},
+  "@hostsPrivateEventSaveTerms": {
+    "description": "Saves the reviewed admission terms together",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventRefundCutoff": "Full refund until {hours} hours before; no refund after",
-  "@hostsPrivateEventRefundCutoff": {"description": "Cash refund choice without credits", "placeholders": {"hours": {"type": "int"}}},
+  "@hostsPrivateEventRefundCutoff": {
+    "description": "Cash refund choice without credits",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationNeedsFuture": "Choose a future date for an active event",
-  "@hostsPublicationNeedsFuture": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationNeedsFuture": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationNeedsOrganizer": "Make the organizer visible in Catch",
-  "@hostsPublicationNeedsOrganizer": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationNeedsOrganizer": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationNeedsDistance": "Set the distance and pace",
-  "@hostsPublicationNeedsDistance": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationNeedsDistance": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationNeedsReview": "Review the event details before publishing",
-  "@hostsPublicationNeedsReview": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationNeedsReview": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationPublishExplanation": "Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.",
-  "@hostsPublicationPublishExplanation": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationPublishExplanation": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationUnpublishExplanation": "Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.",
-  "@hostsPublicationUnpublishExplanation": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationUnpublishExplanation": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationPending": "Visibility change awaiting confirmation",
-  "@hostsPublicationPending": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationPending": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationPendingBody": "The result has not been confirmed. Retry the same change to recover its result before making another change.",
-  "@hostsPublicationPendingBody": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationPendingBody": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationSaved": "Visibility change saved",
-  "@hostsPublicationSaved": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationSaved": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationRegistrationSeparate": "Registration remains closed after a visibility change. Configure registration separately when you are ready.",
-  "@hostsPublicationRegistrationSeparate": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationRegistrationSeparate": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationRefresh": "Refresh readiness",
-  "@hostsPublicationRefresh": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationRefresh": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationRetry": "Recover visibility change",
-  "@hostsPublicationRetry": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationRetry": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationUnpublish": "Make event private",
-  "@hostsPublicationUnpublish": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationUnpublish": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationPublish": "Publish event",
-  "@hostsPublicationPublish": {"description": "Host event publication and readiness copy"},
+  "@hostsPublicationPublish": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPublicationPublishedBody": "This event is published. Visibility and registration are managed separately.",
-  "@hostsPublicationPublishedBody": {"description": "Host event publication and readiness copy"},
-  "@hostsPrivateEventCheckingGuests": {"description": "Title while reconciling existing guests before admission settings save"},
+  "@hostsPublicationPublishedBody": {
+    "description": "Host event publication and readiness copy",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
+  "@hostsPrivateEventCheckingGuests": {
+    "description": "Title while reconciling existing guests before admission settings save",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventCheckingGuests": "Checking existing guests",
-  "@hostsPrivateEventCheckingGuestsBody": {"description": "Explains resumable checking without exposing ledger mechanics"},
+  "@hostsPrivateEventCheckingGuestsBody": {
+    "description": "Explains resumable checking without exposing ledger mechanics",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventCheckingGuestsBody": "Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.",
-  "@hostsPrivateEventContinueCheckingGuests": {"description": "Continue the exact pending guest reconciliation command"},
+  "@hostsPrivateEventContinueCheckingGuests": {
+    "description": "Continue the exact pending guest reconciliation command",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventContinueCheckingGuests": "Continue checking guests",
   "hostsPrivateEventDiscardPending": "Discard change and review settings",
-  "@hostsPrivateEventDiscardPending": {"description": "Explicitly discard unapplied admission settings and unlock review"},
+  "@hostsPrivateEventDiscardPending": {
+    "description": "Explicitly discard unapplied admission settings and unlock review",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventDiscardPendingBody": "Discard changes that have not begun. If the settings have already saved, we will show the saved result.",
-  "@hostsPrivateEventDiscardPendingBody": {"description": "Explains the pre-apply discard boundary"},
+  "@hostsPrivateEventDiscardPendingBody": {
+    "description": "Explains the pre-apply discard boundary",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventDiscarding": "Discarding pending change",
-  "@hostsPrivateEventDiscarding": {"description": "Pending discard progress title"},
+  "@hostsPrivateEventDiscarding": {
+    "description": "Pending discard progress title",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventDiscardingBody": "Returning to your settings. If the change already saved, we will retrieve its result.",
-  "@hostsPrivateEventDiscardingBody": {"description": "Pending discard explanation"},
+  "@hostsPrivateEventDiscardingBody": {
+    "description": "Pending discard explanation",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
   "hostsPrivateEventContinueDiscarding": "Continue discarding change",
-  "@hostsPrivateEventContinueDiscarding": {"description": "Resume journaled discard request"}
+  "@hostsPrivateEventContinueDiscarding": {
+    "description": "Resume journaled discard request",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.events"
+  },
+  "paymentsCancellationLabel": "Booking cancelled",
+  "@paymentsCancellationLabel": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation"},
+  "paymentsCancellationRefundReview": "Refund needs review",
+  "@paymentsCancellationRefundReview": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation"},
+  "paymentsCancellationPartialRefund": "Partially refunded",
+  "@paymentsCancellationPartialRefund": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation"},
+  "paymentsCancellationNoRefund": "Your booking is cancelled. No refund applies under its cancellation policy.",
+  "@paymentsCancellationNoRefund": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation"},
+  "paymentsCancellationCheckoutMessage": "Your booking is cancelled. View payment history for the refund status.",
+  "@paymentsCancellationCheckoutMessage": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation"},
+  "paymentsCancellationRefundPending": "Your booking is cancelled. A refund of {amount} is being processed.",
+  "@paymentsCancellationRefundPending": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation", "placeholders": {"amount": {"type": "String"}}},
+  "paymentsCancellationRefundReturned": "{amount} returned. Your booking is cancelled.",
+  "@paymentsCancellationRefundReturned": {"description": "Native booking cancellation and cash refund status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation", "placeholders": {"amount": {"type": "String"}}}
 }

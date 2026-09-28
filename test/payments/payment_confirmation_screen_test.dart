@@ -136,6 +136,49 @@ void main() {
       expect(find.text('₹600'), findsOneWidget);
     });
 
+    testWidgets('cancelled paid checkout cannot celebrate or reopen payment', (
+      tester,
+    ) async {
+      final event = buildEvent(priceInPaise: 60000);
+      final data = PaymentConfirmationData(
+        paymentId: 'pay_cancelled',
+        orderId: 'order_cancelled',
+        amountInPaise: 60000,
+        currency: 'INR',
+        eventId: event.id,
+        provider: 'stripe',
+        status: PaymentStatus.pending,
+        checkoutUrl: Uri.parse('https://checkout.stripe.test/session'),
+      );
+      final payment = Payment(
+        id: data.paymentId,
+        userId: 'user-1',
+        orderId: data.orderId,
+        paymentId: data.paymentId,
+        eventId: event.id,
+        amount: 60000,
+        status: PaymentStatus.completed,
+        createdAt: DateTime(2026, 5),
+        cancellationRefund: const PaymentCancellationRefund(
+          state: PaymentCancellationRefundState.pending,
+          targetAmountMinor: 60000,
+          confirmedAmountMinor: 0,
+        ),
+      );
+      await _pumpPaymentConfirmation(
+        tester,
+        data: data,
+        event: event,
+        club: buildClub(),
+        payment: payment,
+      );
+      expect(find.text('Booking cancelled'), findsWidgets);
+      expect(find.text("You're in."), findsNothing);
+      expect(find.text('Open Stripe checkout'), findsNothing);
+      expect(find.text('View payment history'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('invite and referral surfaces open rich event share cards', (
       tester,
     ) async {
