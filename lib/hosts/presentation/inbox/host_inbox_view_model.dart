@@ -2,32 +2,45 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostInboxAudienceSegment { booked, prospective }
 
-enum HostInboxScopeKind { event, general }
+enum HostInboxScopeKind { event, general, program }
 
 @immutable
 class HostInboxScope {
   const HostInboxScope.general()
     : kind = HostInboxScopeKind.general,
-      eventId = null;
+      eventId = null,
+      programId = null;
 
   const HostInboxScope.event(String this.eventId)
-    : kind = HostInboxScopeKind.event;
+    : kind = HostInboxScopeKind.event,
+      programId = null;
+
+  const HostInboxScope.program(String this.programId)
+    : kind = HostInboxScopeKind.program,
+      eventId = null;
 
   final HostInboxScopeKind kind;
   final String? eventId;
+  final String? programId;
 
   bool get isGeneral => kind == HostInboxScopeKind.general;
+  bool get isProgram => kind == HostInboxScopeKind.program;
 
   @override
   bool operator ==(Object other) =>
-      other is HostInboxScope && other.kind == kind && other.eventId == eventId;
+      other is HostInboxScope &&
+      other.kind == kind &&
+      other.eventId == eventId &&
+      other.programId == programId;
 
   @override
-  int get hashCode => Object.hash(kind, eventId);
+  int get hashCode => Object.hash(kind, eventId, programId);
 }
 
 @immutable
@@ -43,13 +56,44 @@ class HostInboxThreadRowData {
   String get supportingText => '$statusLabel · ${preview.previewText}';
 }
 
+/// The audience a program scope can prove belongs to it: guest contactIds
+/// from `listProgramGuests` plus the app uids those contacts are linked to on
+/// WhatsApp thread summaries. Nothing is inferred from phone numbers.
+@immutable
+class HostInboxProgramAudience {
+  const HostInboxProgramAudience({
+    required this.contactIds,
+    required this.linkedUids,
+  });
+
+  final Set<String> contactIds;
+  final Set<String> linkedUids;
+}
+
+HostInboxProgramAudience hostInboxProgramAudience({
+  required Iterable<String?> guestContactIds,
+  required List<HostWhatsappThreadSummary> whatsappThreads,
+}) {
+  final contactIds = guestContactIds.nonNulls.toSet();
+  return HostInboxProgramAudience(
+    contactIds: contactIds,
+    linkedUids: {
+      for (final thread in whatsappThreads)
+        if (thread.linkedUid != null && contactIds.contains(thread.contactId))
+          thread.linkedUid!,
+    },
+  );
+}
+
 @immutable
 class HostInboxViewModel {
   const HostInboxViewModel({
     required this.events,
+    required this.programs,
     required this.scopeOptions,
     required this.selectedScope,
     required this.selectedEvent,
+    required this.selectedProgram,
     required this.selectedSegment,
     required this.threads,
     required this.bookedThreadCount,
@@ -70,22 +114,65 @@ class HostInboxViewModel {
     required HostInboxAudienceSegment selectedSegment,
     required String query,
     required DateTime now,
+    List<OrganizerProgramSummary> programs = const [],
+    HostInboxProgramAudience? programAudience,
   }) {
     final orderedEvents = orderHostInboxEvents(events, now: now);
     final eventsById = {for (final event in orderedEvents) event.id: event};
+    final programsById = {
+      for (final program in programs) program.programId: program,
+    };
     final selectedEvent = selectedScope.eventId == null
         ? null
         : eventsById[selectedScope.eventId];
-    final effectiveScope = selectedEvent == null
-        ? const HostInboxScope.general()
-        : selectedScope;
+    final selectedProgram = selectedScope.programId == null
+        ? null
+        : programsById[selectedScope.programId];
+    final effectiveScope = switch (selectedScope.kind) {
+      HostInboxScopeKind.event when selectedEvent != null => selectedScope,
+      HostInboxScopeKind.program when selectedProgram != null => selectedScope,
+      HostInboxScopeKind.general => selectedScope,
+      _ => const HostInboxScope.general(),
+    };
     final scopeOptions = <HostInboxScope>[
       for (final event in orderedEvents) HostInboxScope.event(event.id),
+      for (final program in programs) HostInboxScope.program(program.programId),
       const HostInboxScope.general(),
     ];
     final allThreads = [...inbox.newMatches, ...inbox.conversations]
         .where((preview) => preview.match.clubId == selectedOrganizerId)
         .toList(growable: false);
+
+    if (selectedProgram != null) {
+      final linkedUids = programAudience?.linkedUids ?? const <String>{};
+      final programThreads = allThreads
+          .where((preview) => linkedUids.contains(preview.otherUid))
+          .map(
+            (preview) => HostInboxThreadRowData(
+              preview: preview,
+              statusLabel: 'Program guest',
+            ),
+          )
+          .toList(growable: false);
+      final filtered = _filterRows(programThreads, query);
+      return HostInboxViewModel(
+        events: orderedEvents,
+        programs: List.unmodifiable(programs),
+        scopeOptions: List.unmodifiable(scopeOptions),
+        selectedScope: effectiveScope,
+        selectedEvent: null,
+        selectedProgram: selectedProgram,
+        selectedSegment: selectedSegment,
+        threads: List.unmodifiable(filtered),
+        bookedThreadCount: 0,
+        prospectiveThreadCount: 0,
+        bookedAudienceCount: 0,
+        prospectiveAudienceCount: 0,
+        unfilteredSelectedThreadCount: programThreads.length,
+        query: query.trim(),
+        broadcastLifecycleAvailable: false,
+      );
+    }
 
     if (selectedEvent == null) {
       final generalThreads = allThreads
@@ -100,9 +187,11 @@ class HostInboxViewModel {
       final filtered = _filterRows(generalThreads, query);
       return HostInboxViewModel(
         events: orderedEvents,
+        programs: List.unmodifiable(programs),
         scopeOptions: List.unmodifiable(scopeOptions),
         selectedScope: effectiveScope,
         selectedEvent: null,
+        selectedProgram: null,
         selectedSegment: selectedSegment,
         threads: List.unmodifiable(filtered),
         bookedThreadCount: 0,
@@ -152,9 +241,11 @@ class HostInboxViewModel {
 
     return HostInboxViewModel(
       events: orderedEvents,
+      programs: List.unmodifiable(programs),
       scopeOptions: List.unmodifiable(scopeOptions),
       selectedScope: effectiveScope,
       selectedEvent: selectedEvent,
+      selectedProgram: null,
       selectedSegment: selectedSegment,
       threads: List.unmodifiable(_filterRows(rows, query)),
       bookedThreadCount: bookedThreads.length,
@@ -169,9 +260,11 @@ class HostInboxViewModel {
   }
 
   final List<Event> events;
+  final List<OrganizerProgramSummary> programs;
   final List<HostInboxScope> scopeOptions;
   final HostInboxScope selectedScope;
   final Event? selectedEvent;
+  final OrganizerProgramSummary? selectedProgram;
   final HostInboxAudienceSegment selectedSegment;
   final List<HostInboxThreadRowData> threads;
   final int bookedThreadCount;
@@ -182,7 +275,8 @@ class HostInboxViewModel {
   final String query;
   final bool broadcastLifecycleAvailable;
 
-  bool get isGeneral => selectedEvent == null;
+  bool get isGeneral => selectedScope.isGeneral;
+  bool get isProgram => selectedScope.isProgram;
   bool get hasSearchResults => threads.isNotEmpty;
   bool get hasUnfilteredThreads => unfilteredSelectedThreadCount > 0;
   int get selectedAudienceCount =>
@@ -199,7 +293,14 @@ HostInboxScope resolveHostInboxScope({
   HostInboxScope? requestedScope,
   String? initialEventId,
   bool preferGeneral = false,
+  List<OrganizerProgramSummary> programs = const [],
 }) {
+  final requestedProgramId = requestedScope?.programId;
+  if (requestedProgramId != null) {
+    return programs.any((program) => program.programId == requestedProgramId)
+        ? HostInboxScope.program(requestedProgramId)
+        : const HostInboxScope.general();
+  }
   final byId = {for (final event in events) event.id: event};
   final requestedEventId = requestedScope?.eventId ?? initialEventId;
   if (requestedEventId != null && byId.containsKey(requestedEventId)) {

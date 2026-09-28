@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pa
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +37,9 @@ class HostInboxPersonPageBody extends ConsumerWidget {
     final events = catchAsyncStateFromAsyncValue(
       ref.watch(watchEventsForClubProvider(organizerId)),
     );
+    final programs = catchAsyncStateFromAsyncValue(
+      ref.watch(organizerProgramListProvider(organizerId)),
+    );
     final waitingForScope = this.scope == null && !events.hasData;
     final scope = events.value == null
         ? this.scope ?? const HostInboxScope.general()
@@ -43,6 +47,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
             events: events.value!,
             now: now,
             requestedScope: this.scope,
+            programs: programs.value ?? const [],
           );
     final inbox = catchAsyncStateFromAsyncValue(
       ref.watch(hostInboxCatchViewModelProvider),
@@ -55,6 +60,20 @@ class HostInboxPersonPageBody extends ConsumerWidget {
         : catchAsyncStateFromAsyncValue(
             ref.watch(watchEventParticipationsForEventProvider(scope.eventId!)),
           ).value;
+    final whatsappThreads = whatsapp.value?.threads ?? const [];
+    final programGuests = scope.programId == null
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(programGuestListProvider(scope.programId!)),
+          ).value;
+    final programAudience = scope.programId == null
+        ? null
+        : hostInboxProgramAudience(
+            guestContactIds:
+                programGuests?.guests.map((guest) => guest.contactId) ??
+                const [],
+            whatsappThreads: whatsappThreads,
+          );
     final people = composeHostInboxPeople(
       organizerId: organizerId,
       scope: scope,
@@ -63,21 +82,29 @@ class HostInboxPersonPageBody extends ConsumerWidget {
         ...?inbox.value?.newMatches,
         ...?inbox.value?.conversations,
       ],
-      whatsappThreads: whatsapp.value?.threads ?? const [],
+      whatsappThreads: whatsappThreads,
       participations: participations,
+      programAudience: programAudience,
     );
     final person = people.people
         .where((p) => p.containsEndpoint(selection))
         .firstOrNull;
     if (person != null && !waitingForScope) {
       return HostPersonConversationPageBody(
-        key: ValueKey('${person.key}/${scope.eventId ?? 'general'}'),
+        key: ValueKey(
+          '${person.key}/${scope.eventId ?? scope.programId ?? 'general'}',
+        ),
         person: person,
         scope: scope,
-        scopeLabel: events.value
-            ?.where((event) => event.id == scope.eventId)
-            .firstOrNull
-            ?.title,
+        scopeLabel:
+            events.value
+                ?.where((event) => event.id == scope.eventId)
+                .firstOrNull
+                ?.title ??
+            programs.value
+                ?.where((program) => program.programId == scope.programId)
+                .firstOrNull
+                ?.title,
         drafts: drafts,
         onBack: onBack,
       );

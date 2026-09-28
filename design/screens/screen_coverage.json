@@ -501,6 +501,13 @@
       "reason": "Covered by screen.programs.import as the manifest mapping and import result surface."
     },
     {
+      "routeId": "hostProgramMomentsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.moments",
+      "reason": "Covered by screen.programs.moments as the program-scoped organizer moments workspace."
+    },
+    {
       "routeId": "hostOrganizerScreen",
       "status": "contracted",
       "priority": "P1",

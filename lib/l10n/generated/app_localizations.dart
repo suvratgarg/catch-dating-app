@@ -6035,6 +6035,12 @@ abstract class AppLocalizations {
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
 
+  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'No guest conversations for this program yet'**
+  String get hostsHostInboxScreenTitleNoProgramConversations;
+
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -14895,6 +14901,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event inquiry'**
   String get hostsHostInboxScreenVisiblecopyEventInquiry;
+
+  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
+  ///
+  /// In en, this message translates to:
+  /// **'Program guests'**
+  String get hostsHostInboxScreenVisiblecopyProgramGuests;
 
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
   ///
@@ -33723,6 +33735,30 @@ abstract class AppLocalizations {
   /// **'Open trip ledger'**
   String get programsWorkLedgerOpen;
 
+  /// Program operations copy: programsWorkCommsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Communications'**
+  String get programsWorkCommsTitle;
+
+  /// Program operations copy: programsWorkCommsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program announcements and guest conversations.'**
+  String get programsWorkCommsSubtitle;
+
+  /// Program operations copy: programsWorkCommsMomentsRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get programsWorkCommsMomentsRow;
+
+  /// Program operations copy: programsWorkCommsInboxRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest inbox'**
+  String get programsWorkCommsInboxRow;
+
   /// Program operations copy: programsWorkShellEmptyTitle.
   ///
   /// In en, this message translates to:
@@ -36795,6 +36831,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manifest import'**
   String get programsWorkspaceImportTitle;
+
+  /// Program workspace copy: programsWorkspaceCommunicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Communications'**
+  String get programsWorkspaceCommunicationsTitle;
+
+  /// Program workspace copy: programsWorkspaceMomentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get programsWorkspaceMomentsTitle;
+
+  /// Program workspace copy: programsWorkspaceInboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest inbox'**
+  String get programsWorkspaceInboxTitle;
 
   /// Program workspace copy: programsGuestsTitle.
   ///

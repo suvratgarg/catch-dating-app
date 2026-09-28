@@ -6870,6 +6870,13 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
+  "hostsHostInboxScreenTitleNoProgramConversations": "No guest conversations for this program yet",
+  "@hostsHostInboxScreenTitleNoProgramConversations": {
+    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
+  },
   "hostsHostPaymentAccountCardTitlePayouts": "Payouts",
   "@hostsHostPaymentAccountCardTitlePayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -17225,6 +17232,13 @@
   },
   "hostsHostInboxScreenVisiblecopyEventInquiry": "Event inquiry",
   "@hostsHostInboxScreenVisiblecopyEventInquiry": {
+    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
+  },
+  "hostsHostInboxScreenVisiblecopyProgramGuests": "Program guests",
+  "@hostsHostInboxScreenVisiblecopyProgramGuests": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
@@ -28763,6 +28777,14 @@
   "@programsWorkLedgerSubtitle": {"description": "Program operations copy: programsWorkLedgerSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
   "programsWorkLedgerOpen": "Open trip ledger",
   "@programsWorkLedgerOpen": {"description": "Program operations copy: programsWorkLedgerOpen.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkCommsTitle": "Communications",
+  "@programsWorkCommsTitle": {"description": "Program operations copy: programsWorkCommsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkCommsSubtitle": "Program announcements and guest conversations.",
+  "@programsWorkCommsSubtitle": {"description": "Program operations copy: programsWorkCommsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkCommsMomentsRow": "Moments",
+  "@programsWorkCommsMomentsRow": {"description": "Program operations copy: programsWorkCommsMomentsRow.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkCommsInboxRow": "Guest inbox",
+  "@programsWorkCommsInboxRow": {"description": "Program operations copy: programsWorkCommsInboxRow.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
   "programsWorkShellEmptyTitle": "No duties assigned",
   "@programsWorkShellEmptyTitle": {"description": "Program operations copy: programsWorkShellEmptyTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
   "programsWorkShellEmptyMessage": "Ask the organizer to grant you an airport, hotel or dispatch duty for this program.",
@@ -29779,6 +29801,12 @@
   "@programsWorkspaceTeamTitle": {"description": "Program workspace copy: programsWorkspaceTeamTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsWorkspaceImportTitle": "Manifest import",
   "@programsWorkspaceImportTitle": {"description": "Program workspace copy: programsWorkspaceImportTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsWorkspaceCommunicationsTitle": "Communications",
+  "@programsWorkspaceCommunicationsTitle": {"description": "Program workspace copy: programsWorkspaceCommunicationsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsWorkspaceMomentsTitle": "Moments",
+  "@programsWorkspaceMomentsTitle": {"description": "Program workspace copy: programsWorkspaceMomentsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
+  "programsWorkspaceInboxTitle": "Guest inbox",
+  "@programsWorkspaceInboxTitle": {"description": "Program workspace copy: programsWorkspaceInboxTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsTitle": "Guests & RSVP",
   "@programsGuestsTitle": {"description": "Program workspace copy: programsGuestsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsGridTitle": "Households × functions",

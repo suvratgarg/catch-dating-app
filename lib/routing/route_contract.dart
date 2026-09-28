@@ -157,6 +157,10 @@ enum Routes {
     '/host/programs/:programId/import',
     AppRouteAudience.host,
   ),
+  hostProgramMomentsScreen(
+    '/host/programs/:programId/moments',
+    AppRouteAudience.host,
+  ),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostOrganizerMessagingScreen(
     '/host/organizer/:clubId/messaging',

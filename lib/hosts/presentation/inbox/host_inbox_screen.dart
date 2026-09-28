@@ -26,6 +26,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_scree
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -285,6 +286,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     if (_requestedScope?.eventId case final eventId?) {
       ref.invalidate(watchEventParticipationsForEventProvider(eventId));
     }
+    if (_requestedScope?.programId case final programId?) {
+      ref.invalidate(programGuestListProvider(programId));
+    }
     if (organizerId != null) {
       ref.invalidate(watchEventsForClubProvider(organizerId));
       ref.invalidate(hostMessagingSetupProvider(organizerId));
@@ -382,6 +386,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       if (effectiveScope?.isGeneral == true) 'scope': 'general',
       'segment': _segment.name,
       'eventId': ?effectiveScope?.eventId,
+      'programId': ?effectiveScope?.programId,
       if (organizerId != null && organizerId.isNotEmpty)
         'organizerId': organizerId,
       if (threadId != null && threadId.isNotEmpty) 'threadId': threadId,

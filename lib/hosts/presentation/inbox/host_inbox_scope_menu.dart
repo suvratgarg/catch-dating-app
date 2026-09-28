@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +34,19 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
     final eventsById = {
       for (final event in widget.workspace.events) event.id: event,
     };
+    final programsById = {
+      for (final program in widget.workspace.programs)
+        program.programId: program,
+    };
     final selectedScope = widget.workspace.selectedScope;
     final selectedEvent = selectedScope.eventId == null
         ? null
         : eventsById[selectedScope.eventId];
-    final selectedLabel = _scopeTriggerLabel(selectedScope, selectedEvent);
+    final selectedLabel = _scopeTriggerLabel(
+      selectedScope,
+      selectedEvent,
+      programsById[selectedScope.programId],
+    );
     final labelColor = selectedEvent == null
         ? t.ink2
         : ActivityPalette.resolve(context, selectedEvent.activityKind).deep;
@@ -52,7 +61,7 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
             for (final scope in widget.workspace.scopeOptions)
               CatchMenuItem<HostInboxScope>(
                 value: scope,
-                label: _scopeMenuLabel(scope, eventsById),
+                label: _scopeMenuLabel(scope, eventsById, programsById),
                 selected: scope == selectedScope,
                 variant: CatchMenuItemVariant.choice,
               ),
@@ -106,9 +115,17 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
     );
   }
 
-  String _scopeTriggerLabel(HostInboxScope scope, Event? event) {
+  String _scopeTriggerLabel(
+    HostInboxScope scope,
+    Event? event,
+    OrganizerProgramSummary? program,
+  ) {
     if (scope.isGeneral) {
       return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
+    }
+    if (scope.isProgram) {
+      return program?.title ??
+          context.l10n.hostsHostInboxScreenVisiblecopyProgramGuests;
     }
     if (event == null) {
       return context.l10n.hostsHostInboxScreenVisiblecopyEventInquiry;
@@ -132,9 +149,17 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
     );
   }
 
-  String _scopeMenuLabel(HostInboxScope scope, Map<String, Event> eventsById) {
+  String _scopeMenuLabel(
+    HostInboxScope scope,
+    Map<String, Event> eventsById,
+    Map<String, OrganizerProgramSummary> programsById,
+  ) {
     if (scope.isGeneral) {
       return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
+    }
+    if (scope.isProgram) {
+      return programsById[scope.programId]?.title ??
+          context.l10n.hostsHostInboxScreenVisiblecopyProgramGuests;
     }
     final event = eventsById[scope.eventId];
     if (event == null) {

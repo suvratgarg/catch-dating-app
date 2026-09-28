@@ -80,6 +80,21 @@ GoRouter goRouter(Ref ref) {
 OrganizerMomentScope _eventMomentScope(GoRouterState state) =>
     OrganizerMomentScope.event(state.pathParameters['eventId']!);
 
+ProgramGuestsScreen _programGuestsScreen(GoRouterState state) =>
+    ProgramGuestsScreen(programId: state.pathParameters['programId']!);
+
+ProgramTeamScreen _programTeamScreen(GoRouterState state) =>
+    ProgramTeamScreen(programId: state.pathParameters['programId']!);
+
+ProgramImportScreen _programImportScreen(GoRouterState state) =>
+    ProgramImportScreen(programId: state.pathParameters['programId']!);
+
+OrganizerMomentsScreen _programMomentsScreen(GoRouterState state) =>
+    OrganizerMomentsScreen(
+      scope: OrganizerMomentScope.program(state.pathParameters['programId']!),
+      scopeTitle: state.uri.queryParameters['title'],
+    );
+
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
 }
