@@ -1,7 +1,7 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.0.0
-updated: 2026-09-26
+version: 1.1.0
+updated: 2026-09-28
 owner: product
 status: active
 ---
@@ -11,12 +11,14 @@ status: active
 Status: living tracking spec for allocating the remaining wedding/conference
 program-platform work. Companion: `wedding_planner_platform_plan.md` owns the
 product/architecture rationale; this document owns *what exists, what does
-not, and what needs a decision*. Measured against `main` at `ad37379905b5`
-(deployed to dev, staging, prod — 449 function exports, deploy parity green).
+not, and what needs a decision*. Measured against `main` at `b1b20b3c5a`
+(2026-09-28). "In review" marks an open PR — code exists on a branch, not
+yet on main.
 
 Legend: **built** = code exists on main and is deployable · **partial** =
 backend or model exists, surface/consumer missing · **missing** = nothing on
-main · **decision** = needs product-owner input before schema/UI work.
+main · **in review** = open PR, not merged · **decision** = needs
+product-owner input before schema/UI work.
 
 ---
 
@@ -71,7 +73,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | Program staff | `/host/work/:programId` (+ `?invite=` token claim) → `getProgramWorkAccess` resolves duty-scoped destinations → `/arrivals/:pickupPointId`, `/dispatch/:pickupPointId`, `/hotel/:hotelId`, `/trips` |
 | Program staff (unified) | `listMyHostAssignments` callable deployed — **no Flutter assignment-picker shell yet** |
 | Guest (RSVP) | Web `/rsvp/:householdToken` (HMAC link via `issueProgramHouseholdRsvpLink`); `.ics` feed via `programHouseholdItineraryIcs` (`onRequest`) |
-| Organizer program workspace | **Does not exist** — no Flutter route/screen for program schedule/guests/team |
+| Organizer program workspace | Host shell → `/host/programs` → `/host/programs/:programId` (schedule/guests/team/import, W1 #452) |
 
 ---
 
@@ -86,9 +88,9 @@ never CRM, saved audiences, sender connections, or payouts.
 | Household link RSVP page | **built** | `website/src/features/householdRsvp/` — per-member × per-function drafts, party size, notes, explicit messaging consent |
 | Guest identity + households | **built** | `programGuests` (contact link optional — CRM never auto-created), `programHouseholds` |
 | Side tagging (partnerA/partnerB/mutual, configurable labels) | **partial** | `programHouseholds.side` only — household level, three-value enum |
-| **Guest groups/tags — arbitrary dimensions** | **missing + decision** | Nothing for groom's-dad-side / friends-vs-family / company / country / delegation. Needs a group model (§5.1) |
+| Guest groups/tags — arbitrary dimensions | **built** | `programGuestGroups` + `programGuests.groupIds[]` (#450); nullable `hotelId` link in review (#456) |
 | Guest notes | **partial** | `responseNote` on function-guest responses only; no free-form note on `programGuests` |
-| Import with household mapping | **partial** | `importProgramManifest` callable exists; no Flutter import UI or column-mapping surface |
+| Import with household mapping | **built** | `importProgramManifest` callable + workspace import surface with column mapping (#452) |
 | Travel details collected on RSVP page | **missing** | `submitProgramHouseholdRsvp` contract = rsvp/partySize/note/consent only; legs come via `upsertProgramTravelLeg` or manifest import |
 
 ### 3.2 Staff surfaces (duty → destination client side)
@@ -101,11 +103,11 @@ never CRM, saved audiences, sender connections, or payouts.
 | `functionCheckIn` → Door · Walk-ins | **missing UI** — `recordProgramDoorJournal` durable journal is deployed; no door screen |
 | `functionLead` → Now/Next · Door · Attention | **missing UI** — staff-attention projection into `organizerAttentionItems` is deployed |
 | `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
-| `communications` → program Inbox · Moments | **partial** — program-scope moments accepted server-side; program Moments screen route not wired (needs program workspace); program Inbox not built |
+| `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
 | `stakeholderViewer` → counts-only overview | **missing** — no API or screen |
-| `programCoordinator` → program workspace | **missing** — no organizer program workspace exists |
-| Unified `HostWorkShell` + assignment picker | **missing** — `listMyHostAssignments` deployed, no Flutter consumer; `/host/operator/:eventId` redirect pending |
+| `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
+| Unified `HostWorkShell` + assignment picker | **partial** — unified shell + assignment picker built (#447); `/host/operator/:eventId` redirect still pending |
 
 ### 3.3 Logistics
 
@@ -117,15 +119,15 @@ never CRM, saved audiences, sender connections, or payouts.
 | Room allocation | **missing** | no stays/room-block model, no allocation UI, no group-aware assignment |
 | Taxi/transport tracking | **built backend + staff UI** | `transportTrips` (vehicle class, vendor, plate, parties/legs, depart/arrive, rate snapshot), dispatch + hotel-inbound + trips-ledger screens. **How it's exposed:** dispatcher creates trip at `/dispatch/:pickupPointId`; hotel desk sees inbound at `/hotel/:hotelId`; ledger at `/trips`. No guest-facing tracking. |
 | Vendors / rate cards | **partial** | `transportVendors` + `rateSnapshot` on trips; no rate-card management UI |
-| Distance-aware reminder lead times | **missing + decision** | Moments use fixed `offsetMinutes`. Hotels and functions both carry coordinates — a planner-side Routes call could compute per-recipient offsets (hotel→venue travel time). Not built. |
+| Distance-aware reminder lead times | **in review** | `travelTimeLead` flag on `functionGuests` audiences; planner wakes runs early by the farthest hotel→venue lead and defers nearer recipients individually (pure haversine seam, Routes API replaceable) — #456 |
 
 ### 3.4 Messaging / Moments
 
 | Feature | State |
 |---|---|
 | Unified Moments engine (6 callables, sweep, travel-leg trigger, send journal, staff-attention projection) | **built + deployed** |
-| Organizer Moments Flutter surface (list/editor/lifecycle/run, event scope) | **PR #443** — program scope in the shared model; route not wired until a program workspace exists |
-| Campaign `recipientSource: programSelection` | **partial** — schema exists; campaign upsert cannot set it, `organizerCampaigns` dispatcher does not materialize program recipients |
+| Organizer Moments Flutter surface (list/editor/lifecycle/run, event scope) | **built** (#443); program-scope Moments route wired in review (#454) |
+| Campaign `recipientSource: programSelection` | **built** — upsert validates/normalizes it (programId required, savedAudienceId null) and the dispatcher materializes program recipients via `programRsvp/programSelection.ts` |
 | `organizerFormAutomations` → `triggered` moments migration | **missing** — decision 9 approved; form automations still own pipeline |
 | WhatsApp program templates | **runbook, not code** — `program_function_starting`, `program_get_ready`, `program_transport_ready`, `program_rsvp_deadline_reminder` each need an approved Meta template per sender connection |
 
@@ -134,76 +136,76 @@ never CRM, saved audiences, sender connections, or payouts.
 | Feature | State |
 |---|---|
 | Program CRUD + wedding preset + function upsert + staff grant/invite + guest/household upsert + manifest import | **callables built + deployed** |
-| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **PR #452** — `/host/programs` list/workspace/guests/team/import (W1) |
+| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **built** (#452) — `/host/programs` list/workspace/guests/team/import (W1) |
 | Programs under Events tab + Organizer → Plan screen | **missing** (W5) |
-| Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **unmerged branch** `codex/organizer-entitlements-20260922` — needs re-verify + merge |
+| Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **in review** — rebased onto current main and re-verified (#455) |
 | Attendance report / export per function | **missing** |
 | Retention / anonymization on archive | **missing** |
 
 ---
 
-## 4. Known platform defect (from this deploy cycle)
+## 4. Known platform defect (from this deploy cycle) — resolved
 
-`tool/ci/package_firebase_delivery.mjs`: `verifyFirebaseDelivery` recomputes
+`tool/ci/package_firebase_delivery.mjs`: `verifyFirebaseDelivery` recomputed
 the delivery target set with the **control plane's** dormant-functions list
-instead of the **source SHA's**. Any dormant-list change while a packaged
-delivery is pending makes it permanently unverifiable → ordered-queue
-head-of-line deadlock (observed with `sendEventReminders` removal, source
-`99ba008d1`). Escaped via `backend-rebaseline.yml`. Fix: replay the source
-SHA's dormant list at verify time.
+instead of the **source SHA's**. Fixed by replaying the source SHA's dormant
+list at verify time (#453); the prod delivery cursor is caught up through
+`b1b20b3c5a`.
 
 ---
 
-## 5. Open decisions (block schema/UI work)
+## 5. Decisions
 
-1. **Guest group model.** Single concept feeding room allocation, headcount
-   cuts, and group-targeted moments ("groom's side staying at the Trident").
-   Options: (a) `groupIds[]` on `programGuests` + a `programGuestGroups`
-   collection with configurable dimensions (side/lineage/relation for
-   weddings; company/delegation/country for conferences) — dimensions
-   declared per program kind, labels organizer-defined; (b) flat `tags[]`
-   strings — cheaper, no structure. Recommend (a): queryable, importable,
-   and audience-selectable.
-2. **Distance-aware reminders.** New initiation or planner option? Suggest:
-   moment keeps `anchored`/`scheduled` initiation; planner computes
-   per-recipient `dueAt` from hotel→function travel time (Routes API,
-   cached) when a `travelTimeLead` flag is set on the audience.
-3. **Organizer-level role split.** Do we need seats inside the Organizer tab
+**Resolved:**
+
+1. ~~**Guest group model.**~~ Resolved as (a): `programGuests.groupIds[]` +
+   `programGuestGroups` with configurable dimensions — shipped #450.
+2. ~~**Distance-aware reminders.**~~ Resolved as suggested: `anchored`/
+   `scheduled` initiation retained; `travelTimeLead` audience flag makes the
+   planner compute per-recipient `dueAt` from hotel→function travel time —
+   in review #456. Estimator is a pure haversine seam; a Routes provider can
+   replace it without contract changes.
+
+**Open (block schema/UI work):**
+1. **Organizer-level role split.** Do we need seats inside the Organizer tab
    (e.g., finance-viewer, settings-editor) before v1, or does
    program-scoped staffing cover it? Recommend deferring unless a pilot
    asks for it.
-4. **Travel capture on household RSVP page.** Extend
+2. **Travel capture on household RSVP page.** Extend
    `submitProgramHouseholdRsvp` with optional per-member travel blocks, or
    keep legs planner/import-only for v1? Collecting at RSVP is the planner
    UX win; it widens the web surface's write surface.
-5. **Staff identity.** Phone-auth account required today — correct for temp
+3. **Staff identity.** Phone-auth account required today — correct for temp
    wedding staff? A claimable invite without a pre-existing account is
    smoother; confirm acceptable friction.
-6. **`stakeholderViewer` shape.** Counts-only overview: which numbers are
+4. **`stakeholderViewer` shape.** Counts-only overview: which numbers are
    "safe" (headcounts yes, per-hotel occupancy yes?, names never). Needs a
    field-level contract before the API exists.
-7. **Room blocks schema.** Confirm `programStays`/`programRoomBlocks` from
+5. **Room blocks schema.** Confirm `programStays`/`programRoomBlocks` from
    the airport branch's deferred slice still match hotel-desk reality before
-   pulling them onto main.
+   pulling them onto main. Note: no stays/room-block code exists on the
+   `backup/airport-arrivals-before-main-20260923` ref — the A7 slice was a
+   review artifact, so the schema may need to be authored rather than
+   pulled.
 
 ---
 
-## 6. Suggested sequencing
+## 6. Suggested sequencing — status at 2026-09-28
 
-| # | Slice | Unblocks | Depends on |
+| # | Slice | State | Remaining |
 |---|---|---|---|
-| R1 | Program workspace UI (schedule, guests grid, team & duties, import mapping) | everything organizer-facing; program-scope Moments route; communications/guestRelations surfaces | callables already deployed |
-| R2 | Guest groups schema decision + contract correction | room allocation, grouped moments, headcount cuts | decision 5.1 |
-| R3 | `HostWorkShell` + assignment picker + door check-in screen on the durable journal | venue staff get live runtime modules; `/host/operator` migration | `listMyHostAssignments` deployed |
-| R4 | Program-scope Moments route + program Inbox scope chip | communications duty surface; anchored program moments | R1 |
-| R5 | Stays/room blocks + group-informed allocation | hotelDesk "Rooms" destination | R2, airport-branch A7 review |
-| R6 | Travel capture on household RSVP | planner leg-entry toil | decision 5.4 |
-| R7 | Distance-aware moment lead times | venue-distance reminders | R2 (hotel per group), coords already present |
-| R8 | `stakeholderViewer` counts API + read surface | family view | decision 5.6 |
-| R9 | Entitlements merge + Plan screen + limits in callables | billing gate for pilot | unmerged branch re-verify |
-| R10 | `recipientSource: programSelection` dispatcher wiring + form-automation → triggered-moment migration | campaign engine consolidation | W0 schema (done) |
-| R11 | Reconciliation/export, per-function attendance report, retention | close-out | R5 trips data |
-| R12 | `verifyFirebaseDelivery` dormant-list fix | future deploy lane safety | — |
+| R1 | Program workspace UI (schedule, guests grid, team & duties, import mapping) | **merged #452** | — |
+| R2 | Guest groups schema decision + contract correction | **merged #450** | — |
+| R3 | `HostWorkShell` + assignment picker + door check-in screen on the durable journal | **partial** — shell/picker #447, journal runtime #448 | door check-in screen, `/host/operator` redirect |
+| R4 | Program-scope Moments route + program Inbox scope chip | **in review #454** | merge |
+| R5 | Stays/room blocks + group-informed allocation | **blocked** — decision 5.5; no A7 code exists to pull | schema + allocation |
+| R6 | Travel capture on household RSVP | **blocked** — decision 5.2 (write-surface widening) | RSVP-side capture |
+| R7 | Distance-aware moment lead times | **in review #456** | merge; optional Routes provider swap |
+| R8 | `stakeholderViewer` counts API + read surface | **blocked** — decision 5.4 (field-safety contract) | API + surface |
+| R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
+| R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
+| R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |
+| R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
-Merge-ready now (no ordering dependency): R9's entitlements branch.
+Merge-ready now (no ordering dependency): R9's entitlements PR (#455).
 ```
