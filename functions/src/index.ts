@@ -755,3 +755,6 @@ export {configureEventRegistration, managePublicEventCheckout} from
   "./events/publicRegistration/callables";
 export {reconcilePublicEventPayments, onCancelledPublicEventPayments} from
   "./events/publicRegistration/recovery";
+
+export {onCancelledNativeEventRefunds, onNativeCancellationRefund,
+  recoverNativeCancellationRefunds} from "./payments/legacyRefunds/recovery";

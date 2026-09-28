@@ -3,6 +3,7 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
 import {Store} from "../../organizerFormAdmission/admissionTestFixture";
+import {LegacyRefundReviewRequired} from "./errors";
 import {planLegacyCancellationRefund, type LegacyRefundIntent} from "./intent";
 import {processLegacyCancellationRefund, type LegacyRefundProvider,
   type LegacyRefundObservation} from "./processor";
@@ -197,3 +198,16 @@ test("failed refunds keep liability explicit without claiming success",
     assert.equal(intent.confirmedAmountMinor, 0);
     assert.equal(h.payment().status, "completed");
   });
+
+
+test("a definite provider rejection exits automatic recovery", async () => {
+  const h = setup();
+  h.api.verifyPayment = async () => {
+    throw new LegacyRefundReviewRequired("Wrong provider authority");
+  };
+  await assert.rejects(h.run(), LegacyRefundReviewRequired);
+  assert.equal(h.readIntent().state, "reviewRequired");
+  h.advance(); await h.run();
+  assert.equal(h.refundCalls.length, 0);
+  assert.equal(h.payment().status, "completed");
+});

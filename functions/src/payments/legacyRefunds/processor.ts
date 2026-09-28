@@ -1,4 +1,5 @@
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
+import {LegacyRefundReviewRequired} from "./errors";
 import {requireDoc} from "../../shared/validation";
 import {assertLegacyRefundAuthority, legacyRefundAttemptKey,
   type LegacyRefundAttempt, type LegacyRefundIntent} from "./intent";
@@ -77,9 +78,11 @@ export async function processLegacyCancellationRefund(input: {
     if (observation.paymentId !== claim.intent.providerPaymentId ||
         observation.amountMinor !== attempt.amountMinor ||
         observation.currency !== claim.intent.currency || !observation.id ||
+        !["pending", "processed", "failed"].includes(observation.state) ||
         attempt.providerRefundId &&
           observation.id !== attempt.providerRefundId) {
-      throw new Error("Refund differs from its frozen payment authority.");
+      throw new LegacyRefundReviewRequired(
+        "Refund differs from its frozen payment authority.");
     }
     await db.runTransaction(async (tx) => {
       const payment = requireDoc<PaymentDocument>(await tx.get(ref),
@@ -117,7 +120,10 @@ export async function processLegacyCancellationRefund(input: {
       if (current?.leaseUntilMillis === claim.intent.leaseUntilMillis) {
         tx.update(ref, {cancellationRefund: {...current, leaseUntilMillis: 0,
           nextAttemptAtMillis: clock() + 120_000,
-          lastErrorCode: "refundNeedsRetry"}});
+          state: error instanceof LegacyRefundReviewRequired ?
+            "reviewRequired" : current.state,
+          lastErrorCode: error instanceof LegacyRefundReviewRequired ?
+            "providerAuthorityMismatch" : "refundNeedsRetry"}});
       }
     });
     throw error;

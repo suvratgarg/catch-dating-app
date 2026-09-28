@@ -1911,3 +1911,23 @@ test("free website registration preserves external booking provenance",
       (error) => assertHttpsCode(error, "failed-precondition"));
     }
   });
+
+
+test("host cancellation replay retries staging without false refund success",
+  async () => {
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": event(),
+      "payments/payment-1": {status: "completed", eventId: "event-1"}});
+    let calls = 0;
+    const deps = {...h.deps, prepareCancellationRefunds: async () => {
+      calls++;
+      if (calls === 1) throw new Error("Interrupted staging");
+    }};
+    const command = request("host-1", {eventId: "event-1"});
+    await cancelEventHandler(command, deps);
+    assert.equal(h.firestore.get("events/event-1")?.status, "cancelled");
+    assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
+    await cancelEventHandler(command, deps);
+    assert.equal(calls, 2);
+    assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
+  });

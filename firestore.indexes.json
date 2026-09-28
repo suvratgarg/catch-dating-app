@@ -5141,6 +5141,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "payments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "cancellationRefund.state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "cancellationRefund.nextAttemptAtMillis",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

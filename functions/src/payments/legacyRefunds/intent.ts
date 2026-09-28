@@ -58,8 +58,8 @@ export function planLegacyCancellationRefund(input: {
         old.confirmedAmountMinor >= targetAmountMinor ? "complete" : "pending",
       nextAttemptAtMillis: Math.min(old.nextAttemptAtMillis, nowMillis)};
   }
-  // An old refunded record has no reliable partial/full amount evidence.
-  if (payment.status === "refunded") unavailable();
+  // Old refunded records lack reliable partial/full amount evidence.
+  const historicalRefund = payment.status === "refunded";
   const provider = payment.provider ?? "razorpay";
   const providerPaymentId = provider === "stripe" ?
     payment.providerPaymentId : payment.paymentId;
@@ -71,7 +71,8 @@ export function planLegacyCancellationRefund(input: {
     unavailable();
   }
   return {version: 1, reason,
-    state: targetAmountMinor > 0 ? "pending" : "complete",
+    state: historicalRefund ? "reviewRequired" :
+      targetAmountMinor > 0 ? "pending" : "complete",
     targetAmountMinor, confirmedAmountMinor: 0,
     paymentFingerprint: legacyPaymentFingerprint(payment),
     provider, providerPaymentId, orderId: payment.orderId,
@@ -79,7 +80,8 @@ export function planLegacyCancellationRefund(input: {
     stripeAccountId: payment.stripeAccountId ?? null,
     refundApplicationFee: (payment.applicationFeeAmount ?? 0) > 0,
     requestedAtMillis: nowMillis, nextAttemptAtMillis: nowMillis,
-    leaseUntilMillis: 0, attempts: [], lastErrorCode: null};
+    leaseUntilMillis: 0, attempts: [], lastErrorCode: historicalRefund ?
+      "historicalRefundAmountUnknown" : null};
 }
 
 export function assertLegacyRefundAuthority(payment: PaymentDocument,

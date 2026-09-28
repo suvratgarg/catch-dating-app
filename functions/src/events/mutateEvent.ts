@@ -9,11 +9,9 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
   appCheckCallableOptions,
-  appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import type {
-  PaymentDocument,
   OrganizerDocument,
   EventDocument,
   EventPlanChangeDocument,
@@ -105,10 +103,8 @@ import {
   assertOrganizerEventVenueSource,
   organizerEventVenueDocumentId,
 } from "./organizerEventVenues";
-import {
-  createRazorpayClient,
-  razorpayKeySecret,
-} from "../payments/razorpay";
+import {stageCancelledEventRefunds} from
+  "../payments/legacyRefunds/recovery";
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
@@ -134,7 +130,7 @@ interface EventMutationDeps {
       nowTimestamp: () => FirebaseFirestore.Timestamp;
     }
   ) => Promise<void>;
-  refundPayment?: (paymentId: string, amount: number) => Promise<void>;
+  prepareCancellationRefunds?: typeof stageCancelledEventRefunds;
   runtimePublicId?: () => string;
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
@@ -215,9 +211,7 @@ const defaultDeps: EventMutationDeps = {
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
   refreshOrganizerNextEvent: defaultRefreshOrganizerNextEvent,
-  refundPayment: async (paymentId, amount) => {
-    await createRazorpayClient().payments.refund(paymentId, {amount});
-  },
+  prepareCancellationRefunds: stageCancelledEventRefunds,
   runtimePublicId: () => randomBytes(24).toString("base64url"),
   deleteStoragePaths: deleteMediaStoragePaths,
 };
@@ -671,11 +665,7 @@ export async function cancelEventHandler(
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
-  let cancelledEvent: EventDocument | null = null;
-  let affectedClubId: string | null = null;
-  let shouldNotifyParticipants = false;
-
-  await db.runTransaction(async (tx) => {
+  const committed = await db.runTransaction(async (tx) => {
     const [eventSnap, deletedUserSnap] = await Promise.all([
       tx.get(eventRef),
       tx.get(deletedUserRef),
@@ -706,9 +696,7 @@ export async function cancelEventHandler(
     await readSeatMigrationWriterFence({db, tx, eventId: data.eventId});
 
     if (event.status === "cancelled") {
-      cancelledEvent = event;
-      affectedClubId = organizerId;
-      return;
+      return {event, organizerId, notifyParticipants: false};
     }
 
     const cancelledAt = deps.serverTimestamp?.() ??
@@ -741,73 +729,31 @@ export async function cancelEventHandler(
         endTimeMillis: requiredEventEndTime(event).toMillis(),
       });
     }
-    cancelledEvent = {
+    return {organizerId, notifyParticipants: true, event: {
       ...event,
-      status: "cancelled",
+      status: "cancelled" as const,
       cancelledAt: event.cancelledAt,
       cancellationReason: data.reason ?? null,
-    };
-    affectedClubId = organizerId;
-    shouldNotifyParticipants = true;
+    }};
   });
 
-  if (cancelledEvent && shouldNotifyParticipants) {
-    await refundCompletedPaymentsForCancelledEvent(db, deps, data.eventId);
-    await notifyEventParticipants({
-      db,
-      deps,
-      eventId: data.eventId,
-      event: cancelledEvent,
-      type: "eventCancelled",
-    });
+  // Replays resume staging even if the first call committed cancellation and
+  // then stopped. The event trigger independently retries the same authority.
+  try {
+    await deps.prepareCancellationRefunds?.({db, eventId: data.eventId});
+  } catch {
+    logger.error("Cancelled event refund staging needs recovery", {
+      eventId: data.eventId});
   }
-  if (affectedClubId) {
-    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
-      firestore: deps.firestore,
-      nowTimestamp: () => admin.firestore.Timestamp.now(),
-    });
+  if (committed.notifyParticipants) {
+    await notifyEventParticipants({db, deps, eventId: data.eventId,
+      event: committed.event, type: "eventCancelled"});
   }
-
+  await deps.refreshOrganizerNextEvent?.(committed.organizerId, {
+    firestore: deps.firestore,
+    nowTimestamp: () => admin.firestore.Timestamp.now(),
+  });
   return {cancelled: true};
-}
-
-/**
- * Refunds completed attendee payments after a host/platform cancellation.
- *
- * Host payout is not modeled as a remitted transfer in this codebase yet; the
- * important invariant here is that attendee money is returned before any future
- * host-settlement process can consider the event payable.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {EventMutationDeps} deps Injectable dependencies.
- * @param {string} eventId Cancelled event id.
- */
-async function refundCompletedPaymentsForCancelledEvent(
-  db: FirebaseFirestore.Firestore,
-  deps: EventMutationDeps,
-  eventId: string
-) {
-  const payments = await db
-    .collection("payments")
-    .where("eventId", "==", eventId)
-    .where("status", "==", "completed")
-    .get();
-
-  await Promise.all(payments.docs.map(async (paymentDoc) => {
-    const payment = requireDoc<PaymentDocument>(
-      paymentDoc,
-      "PaymentDocument"
-    );
-    try {
-      await deps.refundPayment?.(payment.paymentId, payment.amount);
-      await paymentDoc.ref.update({status: "refunded"});
-    } catch (error) {
-      logger.error("Host cancellation refund failed", {
-        eventId,
-        paymentId: payment.paymentId,
-        error,
-      });
-    }
-  }));
 }
 
 /**
@@ -2297,7 +2243,7 @@ export const updateEvent = onCall(
   (request) => updateEventHandler(request)
 );
 export const cancelEvent = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
+  appCheckCallableOptions,
   (request) => cancelEventHandler(request)
 );
 export const deleteEvent = onCall(

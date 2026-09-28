@@ -1748,7 +1748,12 @@
       "write": "server only",
       "exportedFunctions": [
         "createRazorpayOrder",
-        "verifyRazorpayPayment"
+        "verifyRazorpayPayment",
+        "cancelEventSignUp",
+        "cancelEvent",
+        "onCancelledNativeEventRefunds",
+        "onNativeCancellationRefund",
+        "recoverNativeCancellationRefunds"
       ]
     },
     {
