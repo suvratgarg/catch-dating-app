@@ -139,5 +139,9 @@
         }
       }
     }
-  }
+  },
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_funnel_report.schema.json",
+  "x-callable-aliases": [
+    "adminGetSalesFunnelReport"
+  ]
 }

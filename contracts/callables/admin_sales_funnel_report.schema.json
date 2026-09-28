@@ -14,5 +14,6 @@
       "type": "string",
       "format": "date-time"
     }
-  }
+  },
+  "$id": "https://catch.app/contracts/callables/admin_sales_funnel_report.schema.json"
 }
