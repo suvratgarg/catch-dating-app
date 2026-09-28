@@ -11,6 +11,7 @@ void main() {
         ..response = {
           'program': {
             'programId': 'program',
+            'organizerId': 'org-1',
             'kind': 'wedding',
             'title': 'Mehta–Shah wedding',
             'timezone': 'Asia/Kolkata',
@@ -57,6 +58,7 @@ void main() {
       ).getProgram('program');
       expect(functions.calls, ['getOrganizerProgram']);
       expect(functions.payload, {'programId': 'program'});
+      expect(detail.program.organizerId, 'org-1');
       expect(detail.program.kind, ProgramKind.wedding);
       expect(detail.program.status, ProgramStatus.active);
       expect(detail.program.timezone, 'Asia/Kolkata');
@@ -78,6 +80,7 @@ void main() {
         () => OrganizerProgramDetail.fromCallableData({
           'program': {
             'programId': 'p',
+            'organizerId': 'org-1',
             'kind': 'wedding',
             'title': 't',
             'timezone': 'UTC',
@@ -110,6 +113,7 @@ void main() {
               'guestId': 'g-1',
               'displayName': 'Asha Mehta',
               'householdId': 'hh-1',
+              'contactId': 'contact-9',
               'phoneE164': '+919900000001',
               'email': 'asha@example.com',
               'externalReference': 'crm-7',
@@ -161,6 +165,7 @@ void main() {
       final guest = page.guests.single;
       expect(guest.groupIds, ['grp-1', 'grp-2']);
       expect(guest.householdId, 'hh-1');
+      expect(guest.contactId, 'contact-9');
       expect(page.households.single.label, 'Mehta household');
       expect(page.functionGuests.single.partySize, 3);
       expect(page.groups.single.dimension, 'side');

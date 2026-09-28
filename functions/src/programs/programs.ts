@@ -279,6 +279,7 @@ export async function getOrganizerProgramHandler(
   return {
     program: {
       programId: data.programId,
+      organizerId: program.organizerId,
       kind: program.kind,
       title: program.title,
       timezone: program.timezone,

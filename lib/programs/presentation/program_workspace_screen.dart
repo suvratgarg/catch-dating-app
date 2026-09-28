@@ -264,6 +264,43 @@ class _ProgramWorkspacePageBodyState
               ),
             ),
           ),
+          CatchSectionListItem(
+            child: CatchSection.contained(
+              title: context.l10n.programsWorkspaceCommunicationsTitle,
+              child: Column(
+                children: [
+                  CatchFieldRow.standard(
+                    leading: Icon(CatchIcons.autoAwesomeOutlined),
+                    body: Text(
+                      context.l10n.programsWorkspaceMomentsTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    trailing: Icon(CatchIcons.chevronRightRounded),
+                    onTap: () => context.pushNamed(
+                      Routes.hostProgramMomentsScreen.name,
+                      pathParameters: {'programId': program.programId},
+                      queryParameters: {'title': program.title},
+                    ),
+                  ),
+                  CatchFieldRow.standard(
+                    leading: Icon(CatchIcons.forumOutlined),
+                    body: Text(
+                      context.l10n.programsWorkspaceInboxTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    trailing: Icon(CatchIcons.chevronRightRounded),
+                    onTap: () => context.pushNamed(
+                      Routes.hostInboxScreen.name,
+                      queryParameters: {
+                        'programId': program.programId,
+                        'organizerId': program.organizerId,
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

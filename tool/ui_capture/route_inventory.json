@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "45f7f28eece794cc7eb986fe7382914266bcda66562986d4f84402acec5fe027",
-    "routeContractSha256": "777a2f3e26593073c9dee8d67679f35bc62ad1c5289f257e9aa82ee51290fbd6",
-    "goRouteCount": 107,
+    "normalizedFileSha256": "09f09977fa7a638985694a9766ce41ee411f10a43dfd2f9063a4f4521f94e62d",
+    "routeContractSha256": "7c05ad78beb49f82fc299af60b58ffe42240699ee9e53a619322d2faf8497051",
+    "goRouteCount": 109,
     "shellBranchCount": 9,
-    "enumRouteCount": 92,
-    "referencedRouteCount": 92,
-    "runtimeRouteCount": 92,
+    "enumRouteCount": 94,
+    "referencedRouteCount": 94,
+    "runtimeRouteCount": 94,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -628,7 +628,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.paymentConfirmationScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final data=state.extra!as PaymentConfirmationData;return PaymentConfirmationScreen(data:data);}",
+      "presentationExpression": "(context,state)=>PaymentConfirmationScreen(data:state.extra!as PaymentConfirmationData)",
       "presentationTarget": "PaymentConfirmationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -977,9 +977,9 @@
       "runtimePath": "/host/operator/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOperatorEventScreen.path",
-      "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventOperatorScreen(eventId:state.pathParameters['eventId']!)",
-      "presentationTarget": "HostEventOperatorScreen",
+      "renderKind": "redirect",
+      "presentationExpression": "_operatorEventUriRedirect",
+      "presentationTarget": "_operatorEventUriRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -995,6 +995,23 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>const HostWorkScreen()",
       "presentationTarget": "HostWorkScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkEventScreen",
+      "path": "/host/work/event/:eventId",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/event/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkEventScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventOperatorScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "HostEventOperatorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1184,6 +1201,23 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>ProgramImportScreen(programId:state.pathParameters['programId']!)",
       "presentationTarget": "ProgramImportScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramMomentsScreen",
+      "path": "/host/programs/:programId/moments",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/moments",
+      "runtimeParentId": "hostProgramWorkspaceScreen",
+      "runtimePathExpression": "'moments'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:_programMomentScope(state),scopeTitle:state.uri.queryParameters['title'])",
+      "presentationTarget": "OrganizerMomentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1658,7 +1692,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/inbox/host_inbox_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 350,
+      "line": 362,
       "ordinal": 1,
       "presentationExpression": "(_)=>HostNewMessageScreen(organizerId:organizerId)",
       "presentationTarget": "HostNewMessageScreen",
@@ -1746,6 +1780,7 @@
     "hostOrganizerScreen",
     "hostProgramGuestsScreen",
     "hostProgramImportScreen",
+    "hostProgramMomentsScreen",
     "hostProgramsScreen",
     "hostProgramTeamScreen",
     "hostProgramWorkspaceScreen",
@@ -1755,6 +1790,7 @@
     "hostWorkArrivalsScreen",
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",
+    "hostWorkEventScreen",
     "hostWorkHotelScreen",
     "hostWorkProgramScreen",
     "hostWorkScreen",

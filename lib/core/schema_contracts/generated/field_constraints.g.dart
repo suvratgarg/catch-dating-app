@@ -109688,6 +109688,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['wedding', 'corporate', 'social', 'other'],
   );
 
+  static const organizerProgramCallableResponseProgramOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.program.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerProgramCallableResponseProgramProgramId = CatchContractFieldConstraints(
     path: 'organizerProgramCallableResponse.program.programId',
     maxLength: 180,
@@ -119715,6 +119723,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 200,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsContactId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const programGuestListCallableResponseGuestsItemsDisplayName = CatchContractFieldConstraints(
@@ -164556,6 +164571,7 @@ abstract final class CatchContractConstraints {
     'organizerProgramCallableResponse.program.capabilities.items': organizerProgramCallableResponseProgramCapabilitiesItems,
     'organizerProgramCallableResponse.program.endsAtMillis': organizerProgramCallableResponseProgramEndsAtMillis,
     'organizerProgramCallableResponse.program.kind': organizerProgramCallableResponseProgramKind,
+    'organizerProgramCallableResponse.program.organizerId': organizerProgramCallableResponseProgramOrganizerId,
     'organizerProgramCallableResponse.program.programId': organizerProgramCallableResponseProgramProgramId,
     'organizerProgramCallableResponse.program.revision': organizerProgramCallableResponseProgramRevision,
     'organizerProgramCallableResponse.program.startsAtMillis': organizerProgramCallableResponseProgramStartsAtMillis,
@@ -165934,6 +165950,7 @@ abstract final class CatchContractConstraints {
     'programGuestListCallableResponse.groups.items.revision': programGuestListCallableResponseGroupsItemsRevision,
     'programGuestListCallableResponse.groups.items.sortOrder': programGuestListCallableResponseGroupsItemsSortOrder,
     'programGuestListCallableResponse.guests': programGuestListCallableResponseGuests,
+    'programGuestListCallableResponse.guests.items.contactId': programGuestListCallableResponseGuestsItemsContactId,
     'programGuestListCallableResponse.guests.items.displayName': programGuestListCallableResponseGuestsItemsDisplayName,
     'programGuestListCallableResponse.guests.items.email': programGuestListCallableResponseGuestsItemsEmail,
     'programGuestListCallableResponse.guests.items.externalReference': programGuestListCallableResponseGuestsItemsExternalReference,
