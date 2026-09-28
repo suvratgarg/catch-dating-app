@@ -1304,6 +1304,38 @@
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
+    "screen.programs.now_next": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkNowScreen"
+          ],
+          "file": "lib/programs/presentation/program_now_next_screen.dart",
+          "symbol": "ProgramNowNextScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The screen renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.attention": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkAttentionScreen"
+          ],
+          "file": "lib/programs/presentation/program_attention_screen.dart",
+          "symbol": "ProgramAttentionScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The screen renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
     "screen.host.event.moments": {
       "owners": [
         {
@@ -29616,6 +29648,287 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-TRIPS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.now_next",
+      "name": "Program Now & next",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkNowScreen",
+          "path": "/host/work/:programId/now",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_now_next_screen.dart",
+        "symbol": "ProgramNowNextScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading"
+        ],
+        "owner": "programWorkEntryProvider and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programWorkEntryProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_now_next_screen.dart",
+            "symbol": "ProgramNowNextScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programWorkEntry"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "Now/Next is a pure client projection over the staff work-access payload \u2014 functions bucketed in-progress, upcoming and earlier with door counts, no dedicated read."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "now_next_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the work-access payload resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramNowNextScreen/Screen states"
+          ]
+        },
+        {
+          "id": "now_next_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Access failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramNowNextScreen/Screen states"
+          ]
+        },
+        {
+          "id": "now_next_buckets",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Functions bucketed in-progress, upcoming and earlier with expected/checked-in counts; rows open the door roster.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramNowNextScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramNowNextScreen buckets the program's functions by in-progress, upcoming and finished with check-in counts and door navigation.",
+        "targetLayout": "Now/Next stays a read projection; leads drill into door rosters for writes.",
+        "sections": [
+          {
+            "id": "section.programs_now_next.adapter",
+            "name": "Now & next route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramNowNextScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_now_next_screen.dart",
+              "symbol": "ProgramNowNextScreen"
+            },
+            "currentOwner": "ProgramNowNextScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free function rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field",
+              "catch.meta_row",
+              "catch.empty_state"
+            ],
+            "states": [
+              "now_next_loading",
+              "now_next_error",
+              "now_next_buckets"
+            ],
+            "migration": "Keep rows provider-free; bucketing stays a client projection.",
+            "previewIds": [
+              "ProgramNowNextScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-NOWNEXT-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.attention",
+      "name": "Program staff attention",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkAttentionScreen",
+          "path": "/host/work/:programId/attention",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_attention_screen.dart",
+        "symbol": "ProgramAttentionScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading"
+        ],
+        "owner": "programStaffAttentionProvider and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programStaffAttentionProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_attention_screen.dart",
+            "symbol": "ProgramAttentionScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programStaffAttention"
+          },
+          {
+            "file": "functions/src/programs/programStaffAttention.ts",
+            "symbol": "listProgramStaffAttentionHandler"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "The feed is program-scoped staffAttention moment sends filtered server-side to the caller's active duties, deduplicated per run and duty."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "attention_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the attention feed resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttentionScreen/Screen states"
+          ]
+        },
+        {
+          "id": "attention_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Feed failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttentionScreen/Screen states"
+          ]
+        },
+        {
+          "id": "attention_feed",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Each alert renders severity, duty and recency; the feed empties when no duties carry open alerts.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttentionScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramAttentionScreen renders deduplicated staff attention alerts newest-first with severity-toned duty badges and recency labels.",
+        "targetLayout": "Attention stays read-focused; alert lifecycle lives in the Moments engine.",
+        "sections": [
+          {
+            "id": "section.programs_attention.adapter",
+            "name": "Attention route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramAttentionScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_attention_screen.dart",
+              "symbol": "ProgramAttentionScreen"
+            },
+            "currentOwner": "ProgramAttentionScreen + programStaffAttentionProvider",
+            "targetOwner": "provider-free alert rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field",
+              "catch.empty_state"
+            ],
+            "states": [
+              "attention_loading",
+              "attention_error",
+              "attention_feed"
+            ],
+            "migration": "Keep alert rows provider-free; severity styling stays badge-driven.",
+            "previewIds": [
+              "ProgramAttentionScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-ATTENTION-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }

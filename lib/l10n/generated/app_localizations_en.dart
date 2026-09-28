@@ -21047,6 +21047,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkCommsInboxRow => 'Guest inbox';
 
   @override
+  String get programsWorkLeadTitle => 'Function lead';
+
+  @override
+  String get programsWorkLeadSubtitle =>
+      'Timeline and alerts for your functions.';
+
+  @override
+  String get programsWorkLeadNowNextRow => 'Now & next';
+
+  @override
+  String get programsWorkLeadAttentionRow => 'Attention';
+
+  @override
+  String get programsNowNextTitle => 'Now & next';
+
+  @override
+  String get programsNowNextSubtitle => 'Your functions across the day.';
+
+  @override
+  String get programsNowNextNowTitle => 'In progress';
+
+  @override
+  String get programsNowNextNowSubtitle => 'Functions on the clock right now.';
+
+  @override
+  String get programsNowNextUpcomingTitle => 'Up next';
+
+  @override
+  String get programsNowNextUpcomingSubtitle =>
+      'Scheduled later, earliest first.';
+
+  @override
+  String get programsNowNextEarlierTitle => 'Earlier';
+
+  @override
+  String get programsNowNextEarlierSubtitle => 'Functions already wrapped.';
+
+  @override
+  String get programsNowNextBucketEmpty => 'Nothing in this window.';
+
+  @override
+  String get programsNowNextEmptyTitle => 'No functions yet';
+
+  @override
+  String get programsNowNextEmptyMessage =>
+      'The planner has not scheduled any functions you can see.';
+
+  @override
+  String get programsAttentionTitle => 'Attention';
+
+  @override
+  String get programsAttentionSubtitle => 'Alerts raised for your duties.';
+
+  @override
+  String get programsAttentionFeedTitle => 'Program alerts';
+
+  @override
+  String get programsAttentionFeedSubtitle => 'Newest alerts first.';
+
+  @override
+  String get programsAttentionFeedSubtitleTruncated =>
+      'Newest alerts first — older alerts may be cut off.';
+
+  @override
+  String get programsAttentionEmpty =>
+      'Nothing needs your attention right now.';
+
+  @override
   String get programsWorkShellEmptyTitle => 'No duties assigned';
 
   @override

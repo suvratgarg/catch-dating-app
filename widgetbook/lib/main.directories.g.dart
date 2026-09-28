@@ -12456,6 +12456,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program attention',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramAttentionScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programAttentionScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program dispatch',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -12645,6 +12660,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programImportScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program now next',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramNowNextScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programNowNextScreenStates,
               ),
             ],
           ),

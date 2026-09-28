@@ -101,7 +101,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `transportDispatcher` → Arrivals · Dispatch | **built** — dispatch screen on same prefix |
 | `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
 | `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
-| `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
+| `functionLead` → Now/Next · Door · Attention | **built** — Door destination shared with `functionCheckIn` (#448); Now/Next board (client projection over the work-access payload) + Attention feed (`listProgramStaffAttention`: program-scoped staffAttention sends filtered to caller duties, coordinator/manager see all) |
 | `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |

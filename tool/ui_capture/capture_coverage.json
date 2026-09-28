@@ -881,6 +881,18 @@
       "reason": "Door check-in lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
+      "routeId": "hostWorkNowScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Now & next lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkAttentionScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Staff attention feed lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
       "routeId": "hostWorkTripsScreen",
       "status": "planned",
       "priority": "P1",

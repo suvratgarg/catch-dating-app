@@ -200,6 +200,7 @@ class ProgramWorkPageBody extends StatelessWidget {
       ProgramStaffDuty.communications,
       now: now,
     );
+    final canSeeLead = access.hasDuty(ProgramStaffDuty.functionLead, now: now);
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -402,6 +403,41 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (canSeeLead)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkLeadTitle,
+                subtitle: context.l10n.programsWorkLeadSubtitle,
+                child: Column(
+                  children: [
+                    CatchFieldRow.standard(
+                      leading: Icon(CatchIcons.playCircleOutlineRounded),
+                      body: Text(
+                        context.l10n.programsWorkLeadNowNextRow,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      onTap: () => context.pushNamed(
+                        Routes.hostWorkNowScreen.name,
+                        pathParameters: {'programId': access.programId},
+                      ),
+                    ),
+                    CatchFieldRow.standard(
+                      leading: Icon(CatchIcons.notificationsOutlined),
+                      body: Text(
+                        context.l10n.programsWorkLeadAttentionRow,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      onTap: () => context.pushNamed(
+                        Routes.hostWorkAttentionScreen.name,
+                        pathParameters: {'programId': access.programId},
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (canSeeLedger)
             CatchSectionListItem(
               child: CatchSection.contained(
@@ -425,6 +461,7 @@ class ProgramWorkPageBody extends StatelessWidget {
               dispatchStations.isEmpty &&
               hotels.isEmpty &&
               functions.isEmpty &&
+              !canSeeLead &&
               !canSeeLedger &&
               !canSeeCommunications)
             CatchSectionListItem(

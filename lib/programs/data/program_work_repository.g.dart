@@ -769,6 +769,93 @@ final class ProgramTransportVendorsFamily extends $Family
   String toString() => r'programTransportVendorsProvider';
 }
 
+/// Function-lead attention feed scoped to the caller's duties.
+
+@ProviderFor(programStaffAttention)
+final programStaffAttentionProvider = ProgramStaffAttentionFamily._();
+
+/// Function-lead attention feed scoped to the caller's duties.
+
+final class ProgramStaffAttentionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramStaffAttention>,
+          ProgramStaffAttention,
+          FutureOr<ProgramStaffAttention>
+        >
+    with
+        $FutureModifier<ProgramStaffAttention>,
+        $FutureProvider<ProgramStaffAttention> {
+  /// Function-lead attention feed scoped to the caller's duties.
+  ProgramStaffAttentionProvider._({
+    required ProgramStaffAttentionFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programStaffAttentionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programStaffAttentionHash();
+
+  @override
+  String toString() {
+    return r'programStaffAttentionProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramStaffAttention> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramStaffAttention> create(Ref ref) {
+    final argument = this.argument as String;
+    return programStaffAttention(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramStaffAttentionProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programStaffAttentionHash() =>
+    r'7b6333c2e24450f40ddaa2abcd82b496ffda4b13';
+
+/// Function-lead attention feed scoped to the caller's duties.
+
+final class ProgramStaffAttentionFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProgramStaffAttention>, String> {
+  ProgramStaffAttentionFamily._()
+    : super(
+        retry: null,
+        name: r'programStaffAttentionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Function-lead attention feed scoped to the caller's duties.
+
+  ProgramStaffAttentionProvider call(String programId) =>
+      ProgramStaffAttentionProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programStaffAttentionProvider';
+}
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
 
