@@ -463,6 +463,7 @@ export {programTransportPlanCallableResponseSchema} from "./schemas/programTrans
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
+export {programAttendanceReportCallableResponseSchema} from "./schemas/programAttendanceReportOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";
 export {transportVendorListCallableResponseSchema} from "./schemas/transportVendorListOutput";

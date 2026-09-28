@@ -710,6 +710,7 @@ export 'profile_photo.g.dart';
 export 'profile_prompt_answer.g.dart';
 export 'program_access_callable_response.g.dart';
 export 'program_arrivals_roster_callable_response.g.dart';
+export 'program_attendance_report_callable_response.g.dart';
 export 'program_door_journal_document.g.dart';
 export 'program_function_document.g.dart';
 export 'program_function_door_view_callable_response.g.dart';

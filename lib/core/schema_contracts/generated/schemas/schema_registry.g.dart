@@ -2307,6 +2307,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaProgramFunctionDoorViewCallableResponseSchema,
   ),
   SchemaContractDefinition(
+    name: 'ProgramAttendanceReportCallableResponse',
+    source: 'callable_responses/program_attendance_report_response.schema.json',
+    schema: schemaProgramAttendanceReportCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProgramManifestImportCallableResponse',
     source: 'callable_responses/program_manifest_import_response.schema.json',
     schema: schemaProgramManifestImportCallableResponseSchema,
@@ -5197,6 +5202,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ProgramHotelInboundCallableResponse': schemaProgramHotelInboundCallableResponseSchema,
   'RecordProgramDoorJournalCallableResponse': schemaRecordProgramDoorJournalCallableResponseSchema,
   'ProgramFunctionDoorViewCallableResponse': schemaProgramFunctionDoorViewCallableResponseSchema,
+  'ProgramAttendanceReportCallableResponse': schemaProgramAttendanceReportCallableResponseSchema,
   'ProgramManifestImportCallableResponse': schemaProgramManifestImportCallableResponseSchema,
   'DispatchProgramTripCallableResponse': schemaDispatchProgramTripCallableResponseSchema,
   'TransportVendorListCallableResponse': schemaTransportVendorListCallableResponseSchema,
@@ -6144,6 +6150,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/program_hotel_inbound_response.schema.json': schemaProgramHotelInboundCallableResponseSchema,
   'callable_responses/record_program_door_journal_response.schema.json': schemaRecordProgramDoorJournalCallableResponseSchema,
   'callable_responses/program_function_door_view_response.schema.json': schemaProgramFunctionDoorViewCallableResponseSchema,
+  'callable_responses/program_attendance_report_response.schema.json': schemaProgramAttendanceReportCallableResponseSchema,
   'callable_responses/program_manifest_import_response.schema.json': schemaProgramManifestImportCallableResponseSchema,
   'callable_responses/dispatch_program_trip_response.schema.json': schemaDispatchProgramTripCallableResponseSchema,
   'callable_responses/transport_vendor_list_response.schema.json': schemaTransportVendorListCallableResponseSchema,
