@@ -11,7 +11,8 @@ const hash = "a".repeat(64);
 function fixture() {
   const policy = {policyId: "policy-one", version: "v1", revision: 1,
     status: "active" as const, factors: ["a", "b", "c", "d", "e", "f", "g"]
-      .map((id) => ({id, weight: 14, claimKeys: ["operation" as const],
+      .map((id, index) => ({id, weight: index === 6 ? 16 : 14,
+        claimKeys: ["operation" as const],
         maxAgeDays: 30})), priorityBands: {high: 80, medium: 50},
     promptVersion: "prompt-v1", playbookVersion: "playbook-v1"};
   const clause = (clauseId: string, kind: "observation" | "capability" |
@@ -48,7 +49,8 @@ function fixture() {
       text: "Approved text", contentHash: hash, sendAuthority: false,
       model: {modelId: "deterministic", usage: {inputTokens: 0,
         outputTokens: 0, costMicros: 0}}, sentences: []}})),
-  job: vi.fn(), assess: vi.fn(), saveClause: vi.fn(), reviewClause: vi.fn(),
+  job: vi.fn(), assess: vi.fn(), savePolicy: vi.fn(),
+  saveClause: vi.fn(), reviewClause: vi.fn(),
   generate: vi.fn(async () => ({status: "completed" as const,
     result: {draftId: "draft-one", contentHash: hash}})),
   review: vi.fn(), copy: vi.fn(async () => ({draftId: "draft-one",
@@ -110,4 +112,69 @@ it("keeps wording approval unavailable to non-owner staff", async () => {
   expect(screen.queryByRole("button", {name: "Save sentence for approval"}))
     .toBeNull();
   expect(api.reviewClause).not.toHaveBeenCalled();
+  expect(screen.queryByRole("button", {name: "Review policy settings"})).toBeNull();
+  expect(api.savePolicy).not.toHaveBeenCalled();
+});
+
+it("lets an owner configure seven factors without seeded strategy", async () => {
+  const {api, view} = fixture();
+  vi.mocked(api.catalog).mockResolvedValue({policy: null,
+    assessments: [], clauses: [], evaluatedAt});
+  vi.mocked(api.savePolicy).mockImplementation(async ({policy}) => ({
+    policy: {...policy, revision: 1}}));
+  view(true);
+  fireEvent.click(await screen.findByRole("button",
+    {name: "Set up private fit policy"}));
+  expect(screen.getByLabelText("Factor 1 name")).toHaveProperty("value", "");
+  for (let number = 1; number <= 7; number++) {
+    fireEvent.change(screen.getByLabelText(`Factor ${number} name`),
+      {target: {value: `Factor ${number}`}});
+    fireEvent.change(screen.getByLabelText(`Factor ${number} weight out of 100`),
+      {target: {value: number === 7 ? "16" : "14"}});
+    fireEvent.change(screen.getByLabelText(
+      `Factor ${number} evidence age limit in days`),
+    {target: {value: "30"}});
+    fireEvent.click(screen.getByLabelText(`Current operations · factor ${number}`));
+  }
+  fireEvent.change(screen.getByLabelText("High priority begins at"),
+    {target: {value: "80"}});
+  fireEvent.change(screen.getByLabelText("Medium priority begins at"),
+    {target: {value: "50"}});
+  fireEvent.click(screen.getByRole("button", {name: "Save reviewed policy"}));
+  await waitFor(() => expect(api.savePolicy).toHaveBeenCalledOnce());
+  const request = vi.mocked(api.savePolicy).mock.calls[0][0];
+  expect(request.expectedRevision).toBe(0);
+  expect(request.policy.status).toBe("paused");
+  expect(request.policy.factors.map((factor) => factor.id)).toEqual(
+    ["factor_1", "factor_2", "factor_3", "factor_4", "factor_5",
+      "factor_6", "factor_7"]);
+  expect(request.policy.factors.reduce((sum, factor) =>
+    sum + factor.weight, 0)).toBe(100);
+});
+
+it("preserves unchanged existing factor IDs when editing an owner policy", async () => {
+  const {api, view} = fixture();
+  vi.mocked(api.catalog).mockImplementation(async () => ({
+    policy: {policyId: "policy-one", version: "v1", revision: 1,
+      status: "paused", factors: ["a.one", "b.two", "c", "d", "e", "f", "g"]
+        .map((id, index) => ({id, weight: index === 6 ? 16 : 14,
+          claimKeys: ["operation"], maxAgeDays: 30})),
+      priorityBands: {high: 80, medium: 50}, promptVersion: "prompt-v1",
+      playbookVersion: "playbook-v1"},
+    assessments: [], clauses: [], evaluatedAt}));
+  vi.mocked(api.savePolicy).mockImplementation(async ({policy}) => ({
+    policy: {...policy, revision: 2}}));
+  view(true);
+  fireEvent.click(await screen.findByRole("button",
+    {name: "Review policy settings"}));
+  await waitFor(() => expect(screen.getByLabelText("Factor 1 name"))
+    .toHaveProperty("value", "A.One"));
+  fireEvent.change(screen.getByLabelText("Factor 1 evidence age limit in days"),
+    {target: {value: "31"}});
+  fireEvent.click(screen.getByRole("button", {name: "Save reviewed policy"}));
+  await waitFor(() => expect(api.savePolicy).toHaveBeenCalledOnce());
+  const request = vi.mocked(api.savePolicy).mock.calls[0][0];
+  expect(request.expectedRevision).toBe(1);
+  expect(request.policy.factors[0].id).toBe("a.one");
+  expect(request.policy.factors[1].id).toBe("b.two");
 });

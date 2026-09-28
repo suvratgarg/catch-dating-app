@@ -87,6 +87,9 @@ export interface IntelligenceApi {
     expectedRevision: number; state: FactorAssessment["state"];
     value: number | null; evidenceIds: string[]; reason: string | null}):
     Promise<{assessment: FactorAssessment}>;
+  savePolicy(input: {requestId: string; expectedRevision: number;
+    policy: Omit<IntelligencePolicy, "revision">}):
+    Promise<{policy: IntelligencePolicy}>;
   saveClause(input: {requestId: string; clauseId: string; organizerId: string;
     expectedRevision: number; kind: ApprovedClause["kind"]; text: string;
     evidenceIds: string[]; validUntil: string;

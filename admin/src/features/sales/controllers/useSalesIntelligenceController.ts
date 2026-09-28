@@ -3,6 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {salesIntelligenceApi} from "../api/salesIntelligenceRepository";
 import type {ApprovedClause, DraftSourceRequest, FactorAssessment,
+  IntelligencePolicy,
   IntelligenceApi} from "../api/salesIntelligenceTypes";
 
 type Pending = {label: string; kind: "generate" | "mutation";
@@ -16,7 +17,7 @@ function codeOf(error: unknown): string {
     String(error.code).replace(/^functions\//u, "") : "";
 }
 
-export function useSalesIntelligence({actorUid, organizerId,
+export function useSalesIntelligenceController({actorUid, organizerId,
   api = salesIntelligenceApi}: {actorUid: string; organizerId: string;
     api?: IntelligenceApi}) {
   const client = useQueryClient();
@@ -34,6 +35,8 @@ export function useSalesIntelligence({actorUid, organizerId,
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [confirmedPolicy, setConfirmedPolicy] = useState<{
+    policyId: string; revision: number} | null>(null);
   useEffect(() => () => {
     client.removeQueries({queryKey: scope});
   }, [client, scope]);
@@ -139,6 +142,18 @@ export function useSalesIntelligence({actorUid, organizerId,
       requestId: frozen.requestId,
       run: () => api.assess(frozen), accept: () => {}});
   }, [api, organizerId, submit]);
+  const savePolicy = useCallback((policy: Omit<IntelligencePolicy, "revision">,
+    expectedRevision: number) => {
+    const frozen = structuredClone({requestId: crypto.randomUUID(),
+      expectedRevision, policy});
+    return submit({label: "Fit policy", kind: "mutation",
+      requestId: frozen.requestId,
+      run: () => api.savePolicy(frozen), accept: (result) => {
+        const saved = result as {policy: IntelligencePolicy};
+        setConfirmedPolicy({policyId: saved.policy.policyId,
+          revision: saved.policy.revision});
+      }});
+  }, [api, submit]);
   const saveClause = useCallback((input: {kind: ApprovedClause["kind"];
     text: string; evidenceIds: string[]; validUntil: string}) => {
     const frozen = structuredClone({...input, organizerId,
@@ -203,7 +218,8 @@ export function useSalesIntelligence({actorUid, organizerId,
   return {catalog, score, account, contacts, evidence, drafts, draft, job,
     selectedDraftId, setSelectedDraftId, jobRequestId,
     pending: retryTicket, busy, error,
-    notice, retry, refresh, assess, saveClause, reviewClause, generate,
+    notice, retry, refresh, assess, savePolicy, confirmedPolicy,
+    saveClause, reviewClause, generate,
     review, copy,
     contactHistory, evidenceHistory, nextContactPage, previousContactPage,
     nextEvidencePage, previousEvidencePage};

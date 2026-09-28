@@ -1,13 +1,15 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ClipboardList, Sparkles} from "lucide-react";
 import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel,
   SelectField, StateRow, TextareaField, TextField} from
   "../../../shared/ui/AdminPrimitives";
 import type {ApprovedClause, IntelligenceApi,
-  IntelligenceFactor} from "../api/salesIntelligenceTypes";
-import {useSalesIntelligence} from "../controllers/useSalesIntelligence";
+  IntelligenceFactor, IntelligencePolicy,
+  EvidenceClaim} from "../api/salesIntelligenceTypes";
+import {useSalesIntelligenceController} from
+  "../controllers/useSalesIntelligenceController";
 
-type Controller = ReturnType<typeof useSalesIntelligence>;
+type Controller = ReturnType<typeof useSalesIntelligenceController>;
 function label(value: string): string {
   return value.replaceAll("_", " ").replace(/\b\w/gu,
     (letter) => letter.toUpperCase());
@@ -27,6 +29,60 @@ function QueryProblem({message, retry}: {message: string; retry: () => void}) {
   return <p role="alert">{message} <AdminButton onClick={retry}>Try again</AdminButton></p>;
 }
 
+const claimOptions: Array<{value: EvidenceClaim; label: string}> = [
+  {value: "identity", label: "Identity"},
+  {value: "recurrence", label: "Repeat activity"},
+  {value: "operation", label: "Current operations"},
+  {value: "stack", label: "Current tools"},
+  {value: "other", label: "Other reviewed evidence"},
+];
+type PolicyForm = {status: IntelligencePolicy["status"];
+  high: string; medium: string; factors: Array<{
+    name: string; weight: string; maxAgeDays: string;
+    claimKeys: EvidenceClaim[]}>};
+function blankPolicyForm(): PolicyForm {
+  return {status: "paused", high: "", medium: "",
+    factors: Array.from({length: 7}, () => ({name: "", weight: "",
+      maxAgeDays: "", claimKeys: []}))};
+}
+function formFromPolicy(policy: IntelligencePolicy): PolicyForm {
+  return {status: policy.status, high: String(policy.priorityBands.high),
+    medium: String(policy.priorityBands.medium), factors: policy.factors.map(
+      (factor) => ({name: label(factor.id), weight: String(factor.weight),
+        maxAgeDays: String(factor.maxAgeDays), claimKeys: [...factor.claimKeys]}))};
+}
+function factorId(name: string): string {
+  return name.normalize("NFKD").replace(/[^A-Za-z0-9]+/gu, "_")
+    .replace(/^_+|_+$/gu, "").toLowerCase().slice(0, 96);
+}
+function resolvedFactorId(name: string, originalId?: string): string {
+  return originalId && name === label(originalId) ? originalId : factorId(name);
+}
+function policyFromForm(form: PolicyForm, existing: IntelligencePolicy | null,
+  newPolicyId: string, expectedRevision: number): Omit<IntelligencePolicy,
+    "revision"> | null {
+  const factors = form.factors.map((row, index) => ({id: resolvedFactorId(
+    row.name, existing?.factors[index]?.id),
+    weight: Number(row.weight), maxAgeDays: Number(row.maxAgeDays),
+    claimKeys: [...row.claimKeys]}));
+  const high = Number(form.high); const medium = Number(form.medium);
+  if (factors.length !== 7 ||
+      new Set(factors.map((row) => row.id)).size !== 7 ||
+      factors.some((row) => !row.id || !Number.isInteger(row.weight) ||
+        row.weight < 1 || row.weight > 100 ||
+        !Number.isInteger(row.maxAgeDays) || row.maxAgeDays < 1 ||
+        row.maxAgeDays > 365 || row.claimKeys.length < 1) ||
+      factors.reduce((sum, row) => sum + row.weight, 0) !== 100 ||
+      !Number.isFinite(high) || !Number.isFinite(medium) ||
+      high > 100 || high <= medium || medium < 0 ||
+      !form.high.trim() || !form.medium.trim()) return null;
+  return {policyId: existing?.policyId ?? newPolicyId,
+    version: `revision_${expectedRevision + 1}`, status: form.status,
+    factors, priorityBands: {high, medium},
+    promptVersion: existing?.promptVersion ?? "zero_model_v1",
+    playbookVersion: existing?.playbookVersion ?? "reviewed_v1"};
+}
+
 /** Mount in a host detail tab; all authority remains in the callable services. */
 export function SalesIntelligenceWorkspace({organizerId, organizerName,
   currentUserUid, isAdminOwner, api}: {organizerId: string;
@@ -40,7 +96,8 @@ export function SalesIntelligenceWorkspace({organizerId, organizerName,
 function IntelligenceBody({organizerId, organizerName, currentUserUid,
   isAdminOwner, api}: {organizerId: string; organizerName: string;
     currentUserUid: string; isAdminOwner: boolean; api?: IntelligenceApi}) {
-  const c = useSalesIntelligence({actorUid: currentUserUid, organizerId, api});
+  const c = useSalesIntelligenceController({actorUid: currentUserUid,
+    organizerId, api});
   return <>
     <Panel title="Fit and private outreach" icon={<Sparkles size={18} />}>
       <p>Evidence, reviewed wording and current contact restrictions decide what
@@ -52,10 +109,112 @@ function IntelligenceBody({organizerId, organizerName, currentUserUid,
       <AdminButton disabled={c.busy || Boolean(c.pending)}
         onClick={() => void c.refresh()}>Refresh current source</AdminButton>
     </Panel>
+    {isAdminOwner ? <PolicyPanel c={c} /> : null}
     <FitPanel c={c} organizerId={organizerId} />
     <WordingPanel c={c} isAdminOwner={isAdminOwner} />
     <DraftPanel c={c} organizerId={organizerId} />
   </>;
+}
+
+function PolicyPanel({c}: {c: Controller}) {
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState<PolicyForm>(blankPolicyForm);
+  const [formRevision, setFormRevision] = useState(0);
+  const [dirty, setDirty] = useState(false);
+  const [newPolicyId] = useState(() =>
+    `policy_${crypto.randomUUID().replaceAll("-", "")}`);
+  const existing = c.catalog.data?.policy ?? null;
+  useEffect(() => {
+    if (!existing || dirty || (c.confirmedPolicy &&
+        existing.revision < c.confirmedPolicy.revision)) return;
+    setForm(formFromPolicy(existing)); setFormRevision(existing.revision);
+  }, [existing, dirty, c.confirmedPolicy]);
+  useEffect(() => {
+    if (!c.confirmedPolicy) return;
+    setFormRevision(c.confirmedPolicy.revision);
+    setDirty(false); setEditing(false);
+  }, [c.confirmedPolicy]);
+  const changeFactor = (index: number,
+    patch: Partial<PolicyForm["factors"][number]>) => {
+    setForm((prior) => ({...prior, factors: prior.factors.map((row, at) =>
+      at === index ? {...row, ...patch} : row)}));
+    setDirty(true);
+  };
+  const update = (patch: Partial<PolicyForm>) => {
+    setForm((prior) => ({...prior, ...patch})); setDirty(true);
+  };
+  const candidate = policyFromForm(form, existing, newPolicyId, formRevision);
+  const stale = Boolean(existing && existing.revision > formRevision);
+  const save = async () => {
+    if (!candidate || stale || c.busy || c.pending) return;
+    await c.savePolicy(candidate, formRevision);
+  };
+  return <Panel title="Private fit policy" icon={<Sparkles size={18} />}>
+    <p>An Admin owner sets the seven reviewed factors, evidence kinds and
+      thresholds. No weights or host strategy are supplied by this page.</p>
+    {existing ? <StateRow label="Current policy"
+      value={`${label(existing.status)} · revision ${existing.revision}`} /> :
+      <p>No private fit policy has been saved yet.</p>}
+    {stale ? <p role="alert">This policy changed since it was opened.
+      Refresh and compare before saving.</p> : null}
+    {!editing ? <AdminButton disabled={c.busy || Boolean(c.pending)}
+      onClick={() => setEditing(true)}>{existing ? "Review policy settings" :
+        "Set up private fit policy"}</AdminButton> : null}
+    {editing ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
+      <h3>Seven factors</h3>
+      {form.factors.map((row, index) => <div key={index}>
+        <h4>Factor {index + 1}</h4>
+        <TextField label={`Factor ${index + 1} name`} value={row.name}
+          onChange={(name) => changeFactor(index, {name})}
+          disabled={c.busy || Boolean(c.pending)} />
+        <TextField label={`Factor ${index + 1} weight out of 100`}
+          type="number" min="1" max="100" value={row.weight}
+          onChange={(weight) => changeFactor(index, {weight})}
+          disabled={c.busy || Boolean(c.pending)} />
+        <TextField label={`Factor ${index + 1} evidence age limit in days`}
+          type="number" min="1" max="365" value={row.maxAgeDays}
+          onChange={(maxAgeDays) => changeFactor(index, {maxAgeDays})}
+          disabled={c.busy || Boolean(c.pending)} />
+        <p>Evidence kinds for factor {index + 1}</p>
+        {claimOptions.map((option) => <CheckboxField
+          key={`${index}-${option.value}`} checked={row.claimKeys.includes(option.value)}
+          disabled={c.busy || Boolean(c.pending)}
+          label={`${option.label} · factor ${index + 1}`}
+          onChange={(checked) => changeFactor(index, {claimKeys: checked ?
+            [...row.claimKeys, option.value] : row.claimKeys.filter((key) =>
+              key !== option.value)})} />)}
+      </div>)}
+      <p>Weights must total 100. Current total: {form.factors.reduce((sum,
+        row) => sum + (Number(row.weight) || 0), 0)}.</p>
+      <TextField label="High priority begins at" type="number" min="0" max="100"
+        value={form.high} onChange={(high) => update({high})}
+        disabled={c.busy || Boolean(c.pending)} />
+      <TextField label="Medium priority begins at" type="number" min="0" max="100"
+        value={form.medium} onChange={(medium) => update({medium})}
+        disabled={c.busy || Boolean(c.pending)} />
+      <SelectField label="Policy availability" value={form.status}
+        onChange={(status) => update({status: status as PolicyForm["status"]})}
+        disabled={c.busy || Boolean(c.pending)} options={[
+          {value: "paused", label: "Paused · no scoring or drafting"},
+          {value: "active", label: "Active after owner review"},
+        ]} />
+      {existing && form.factors.some((row, index) => resolvedFactorId(
+        row.name, existing.factors[index]?.id) !==
+        existing.factors[index]?.id) ? <p role="alert">Changing a factor name
+        creates a new factor. Its previous ratings will not carry over.</p> : null}
+      {!candidate ? <p role="alert">Enter seven distinct factor names,
+        evidence kinds, freshness limits and weights totaling 100. High
+        priority must be above medium priority.</p> : null}
+      <AdminButton type="submit" variant="primary" disabled={!candidate ||
+        stale || c.busy || Boolean(c.pending) || (Boolean(existing) && !dirty)}>
+        Save reviewed policy</AdminButton>
+      <AdminButton disabled={c.busy || Boolean(c.pending)}
+        onClick={() => {setEditing(false); setDirty(false);
+          if (existing) {setForm(formFromPolicy(existing));
+            setFormRevision(existing.revision);} else setForm(blankPolicyForm());}}>
+        Cancel changes</AdminButton>
+    </AdminForm> : null}
+  </Panel>;
 }
 
 function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {

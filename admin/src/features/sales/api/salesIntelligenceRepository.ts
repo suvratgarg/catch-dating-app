@@ -28,6 +28,7 @@ export const salesIntelligenceApi: IntelligenceApi = {
   draft: (draftId) => call("adminGetSalesOutreachDraft", {draftId}),
   job: (requestId) => call("adminGetSalesOutreachDraftJob", {requestId}),
   assess: (input) => call("adminSaveSalesFactorAssessment", input),
+  savePolicy: (input) => call("adminSaveSalesIntelligencePolicy", input),
   saveClause: (input) => call("adminSaveSalesIntelligenceClause", input),
   reviewClause: (input) => call("adminReviewSalesIntelligenceClause", input),
   generate: (input) => call("adminGenerateSalesOutreachDraft", input),
