@@ -109,24 +109,6 @@ export const ADMIN_ACTION_CATALOG = {
       "finance"
     ]
   },
-  "finance.grant-organizer-entitlement": {
-    "callable": "adminGrantOrganizerEntitlement",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "adminOwner",
-      "finance"
-    ]
-  },
-  "finance.revoke-organizer-entitlement-grant": {
-    "callable": "adminRevokeOrganizerEntitlementGrant",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "adminOwner",
-      "finance"
-    ]
-  },
   "cross-paths-showcase.list": {
     "callable": "adminListCrossPathsShowcaseCandidates",
     "controlPlane": false,
@@ -453,6 +435,667 @@ export const ADMIN_ACTION_CATALOG = {
       "support",
       "finance",
       "analyticsViewer"
+    ]
+  },
+  "sales.hosts.search": {
+    "callable": "adminListSalesAccounts",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.hosts.get": {
+    "callable": "adminGetSalesAccount",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.tasks.list": {
+    "callable": "adminListSalesTasks",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.opportunities.list": {
+    "callable": "adminListSalesOpportunities",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fields.list": {
+    "callable": "adminListSalesCustomFields",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.receipts.get": {
+    "callable": "adminGetSalesReceipt",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intents.list": {
+    "callable": "adminListSalesInboundIntents",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.preview": {
+    "callable": "adminPreviewSalesImport",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.contacts.list": {
+    "callable": "adminListSalesContacts",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.evidence.list": {
+    "callable": "adminListSalesEvidence",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.hosts.create": {
+    "callable": "adminCreateSalesAccount",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.hosts.update": {
+    "callable": "adminUpdateSalesAccount",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.tasks.upsert": {
+    "callable": "adminUpsertSalesTask",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.opportunities.upsert": {
+    "callable": "adminUpsertSalesOpportunity",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.activities.log": {
+    "callable": "adminRecordSalesActivity",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fields.create": {
+    "callable": "adminCreateSalesCustomField",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fields.setValue": {
+    "callable": "adminSetSalesCustomFieldValue",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intents.link": {
+    "callable": "adminLinkSalesInboundIntent",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.apply": {
+    "callable": "adminApplySalesImport",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.contacts.upsert": {
+    "callable": "adminUpsertSalesContact",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.evidence.add": {
+    "callable": "adminAddSalesEvidence",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.accounts.setSuppression": {
+    "callable": "adminSetSalesAccountSuppression",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.contacts.setContactability": {
+    "callable": "adminSetSalesContactability",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.evidence.propose": {
+    "callable": "adminProposeSalesEvidence",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.evidence.reviewProposal": {
+    "callable": "adminReviewSalesEvidenceProposal",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.evidenceProposals.list": {
+    "callable": "adminListSalesEvidenceProposals",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.demo.SaveSalesDemoBlueprint": {
+    "callable": "adminSaveSalesDemoBlueprint",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.ReviewSalesDemoBlueprint": {
+    "callable": "adminReviewSalesDemoBlueprint",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.WithdrawSalesDemoBlueprint": {
+    "callable": "adminWithdrawSalesDemoBlueprint",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.IssueSalesDemoInvitation": {
+    "callable": "adminIssueSalesDemoInvitation",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.RevokeSalesDemoInvitation": {
+    "callable": "adminRevokeSalesDemoInvitation",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.GetSalesDemoBlueprint": {
+    "callable": "adminGetSalesDemoBlueprint",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.GetSalesDemoInvitation": {
+    "callable": "adminGetSalesDemoInvitation",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.GetSalesDemoCapability": {
+    "callable": "adminGetSalesDemoCapability",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.ListSalesDemoBlueprints": {
+    "callable": "adminListSalesDemoBlueprints",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.ListSalesDemoInvitations": {
+    "callable": "adminListSalesDemoInvitations",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.detail": {
+    "callable": "adminGetSalesCommercialDetail",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.report": {
+    "callable": "adminListSalesCommercialReport",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.pilots.upsert": {
+    "callable": "adminUpsertSalesPilotPlan",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.quotes.revise": {
+    "callable": "adminReviseSalesQuote",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.quotes.approve": {
+    "callable": "adminApproveSalesQuote",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.quotes.accept": {
+    "callable": "adminAcceptSalesQuote",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesIntelligenceCatalog": {
+    "callable": "adminGetSalesIntelligenceCatalog",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesIntelligenceScore": {
+    "callable": "adminGetSalesIntelligenceScore",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesIntelligencePolicy": {
+    "callable": "adminSaveSalesIntelligencePolicy",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesFactorAssessment": {
+    "callable": "adminSaveSalesFactorAssessment",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesIntelligenceClause": {
+    "callable": "adminSaveSalesIntelligenceClause",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ReviewSalesIntelligenceClause": {
+    "callable": "adminReviewSalesIntelligenceClause",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesScoreSnapshot": {
+    "callable": "adminSaveSalesScoreSnapshot",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.BuildSalesOutreachInput": {
+    "callable": "adminBuildSalesOutreachInput",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GenerateSalesOutreachDraft": {
+    "callable": "adminGenerateSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesOutreachDraftJob": {
+    "callable": "adminGetSalesOutreachDraftJob",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ListSalesOutreachDrafts": {
+    "callable": "adminListSalesOutreachDrafts",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesOutreachDraft": {
+    "callable": "adminGetSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ReviewSalesOutreachDraft": {
+    "callable": "adminReviewSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.CopySalesOutreachDraft": {
+    "callable": "adminCopySalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.finance.attest": {
+    "callable": "adminAttestSalesHostSettlement",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intake.link": {
+    "callable": "adminLinkOrganizerIntakeToSales",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.list": {
+    "callable": "adminListSalesFitQueue",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.refresh": {
+    "callable": "adminRefreshSalesFitQueue",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.refresh_batch": {
+    "callable": "adminRefreshSalesFitQueueBatch",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.compensation.preview": {
+    "callable": "adminPreviewSalesImportCompensation",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.compensation.apply": {
+    "callable": "adminApplySalesImportCompensation",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.preview": {
+    "callable": "adminPreviewSalesImportHistory",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.apply": {
+    "callable": "adminApplySalesImportHistory",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.list": {
+    "callable": "adminListSalesImportHistory",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.history.rows.list": {
+    "callable": "adminListSalesImportHistoryRows",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.reporting.funnel": {
+    "callable": "adminGetSalesFunnelReport",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.policy.review": {
+    "callable": "adminReviewSalesPrivacyPolicy",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.organizer.restrict": {
+    "callable": "adminRestrictSalesOrganizer",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.plan.preview": {
+    "callable": "adminPreviewSalesPrivacyPlan",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.plan.review": {
+    "callable": "adminReviewSalesPrivacyPlan",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.batch.apply": {
+    "callable": "adminApplySalesPrivacyBatch",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.privacy.case.get": {
+    "callable": "adminGetSalesPrivacyCase",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "finance.grant-organizer-entitlement": {
+    "callable": "adminGrantOrganizerEntitlement",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
+  "finance.revoke-organizer-entitlement-grant": {
+    "callable": "adminRevokeOrganizerEntitlementGrant",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
     ]
   }
 } as const;
