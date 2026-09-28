@@ -235,7 +235,8 @@
           "default": "event",
           "values": [
             "event",
-            "general"
+            "general",
+            "program"
           ]
         },
         "segment": {
@@ -441,7 +442,8 @@
           "scopeKeys": [
             "viewerUid",
             "routeInstanceId",
-            "eventId"
+            "eventId",
+            "programId"
           ],
           "outcomes": [
             {
@@ -450,12 +452,13 @@
                 "populated_queries",
                 "prospective_queries",
                 "general_queries",
+                "program_queries",
                 "roster_without_threads",
                 "empty_host_queries"
               ]
             }
           ],
-          "description": "Selects an event-scoped inbox or the explicit General inquiry scope and synchronizes it to the route."
+          "description": "Selects an event-scoped inbox, a program-scoped guest inbox, or the explicit General inquiry scope and synchronizes it to the route."
         },
         {
           "id": "select_audience_segment",
@@ -845,6 +848,7 @@
         "host_header",
         "prospective_queries",
         "general_queries",
+        "program_queries",
         "roster_without_threads",
         "whatsapp_inbound_thread",
         "whatsapp_service_window_open",
@@ -992,6 +996,22 @@
           "actionCases": [
             {
               "id": "general",
+              "enabledActions": [
+                "toggle_search",
+                "search_inquiries",
+                "select_scope",
+                "open_conversation"
+              ]
+            }
+          ]
+        },
+        "program_queries": {
+          "dimensions": {
+            "scope": "program"
+          },
+          "actionCases": [
+            {
+              "id": "program",
               "enabledActions": [
                 "toggle_search",
                 "search_inquiries",
@@ -1583,6 +1603,17 @@
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
           "reason": "Existing campaign previews cover ready sender and draft states; deep-linked, connecting, and previewed variants remain explicit preview debt."
+        },
+        {
+          "stateIds": [
+            "program_queries"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "HOST-PROGRAM-INBOX-EVIDENCE-001",
+          "reason": "Program-scope audience filtering, contactId/linkedUid linkage, and scope resolution have focused tests; dedicated deterministic Inbox variants remain follow-up evidence."
         }
       ]
     }

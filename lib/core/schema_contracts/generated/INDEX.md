@@ -557,6 +557,8 @@ Do not edit it by hand.
 | ProgramStaffInviteDocument | `firestore/program_staff_invites.schema.json` | `functions/src/shared/generated/programStaffInviteDocument.ts` |
 | ProgramPickupPointDocument | `firestore/program_pickup_points.schema.json` | `functions/src/shared/generated/programPickupPointDocument.ts` |
 | ProgramHotelDocument | `firestore/program_hotels.schema.json` | `functions/src/shared/generated/programHotelDocument.ts` |
+| ProgramStayDocument | `firestore/program_stays.schema.json` | `functions/src/shared/generated/programStayDocument.ts` |
+| ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `functions/src/shared/generated/programRoomBlockDocument.ts` |
 | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
 | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
 | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
@@ -1669,6 +1671,8 @@ Do not edit it by hand.
 | `schemaProgramStaffInviteDocumentSchema` | ProgramStaffInviteDocument | `firestore/program_staff_invites.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_invite_document.g.dart` |
 | `schemaProgramPickupPointDocumentSchema` | ProgramPickupPointDocument | `firestore/program_pickup_points.schema.json` | `lib/core/schema_contracts/generated/schemas/program_pickup_point_document.g.dart` |
 | `schemaProgramHotelDocumentSchema` | ProgramHotelDocument | `firestore/program_hotels.schema.json` | `lib/core/schema_contracts/generated/schemas/program_hotel_document.g.dart` |
+| `schemaProgramStayDocumentSchema` | ProgramStayDocument | `firestore/program_stays.schema.json` | `lib/core/schema_contracts/generated/schemas/program_stay_document.g.dart` |
+| `schemaProgramRoomBlockDocumentSchema` | ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `lib/core/schema_contracts/generated/schemas/program_room_block_document.g.dart` |
 | `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
 | `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
 | `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |

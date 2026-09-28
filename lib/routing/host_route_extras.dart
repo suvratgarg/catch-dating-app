@@ -22,6 +22,19 @@ String? _routeOrganizerQueryId(GoRouterState state) =>
     state.uri.queryParameters['organizerId'] ??
     state.uri.queryParameters['clubId'];
 
+/// Tear-off redirects keep the legacy redirect tables to one line per path.
+String? _customersUriRedirect(BuildContext _, GoRouterState state) =>
+    hostCustomersLegacyRedirect(state.uri);
+
+String? _formsUriRedirect(BuildContext _, GoRouterState state) =>
+    hostFormsLegacyRedirect(state.uri);
+
+String? _operatorEventUriRedirect(BuildContext _, GoRouterState state) =>
+    hostOperatorEventLegacyRedirect(
+      state.uri,
+      eventId: state.pathParameters['eventId']!,
+    );
+
 String? _routeContactNameExtra(GoRouterState state) => switch (state.extra) {
   HostCustomerDetailRouteArguments(:final displayName) => displayName,
   _ => null,
@@ -79,6 +92,12 @@ GoRouter goRouter(Ref ref) {
 
 OrganizerMomentScope _eventMomentScope(GoRouterState state) =>
     OrganizerMomentScope.event(state.pathParameters['eventId']!);
+
+OrganizerMomentScope _programMomentScope(GoRouterState state) =>
+    OrganizerMomentScope.program(state.pathParameters['programId']!);
+
+String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) =>
+    hostOrganizerAudienceRedirect(state.uri);
 
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();

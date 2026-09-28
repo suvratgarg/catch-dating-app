@@ -3375,7 +3375,7 @@
         "widgetbook/lib/**/*.dart",
         "tool/architecture/flutter_source_size_baseline.json"
       ],
-      "instruction": "Keep new and split handwritten Dart files at or below 800 lines. Existing oversized files may only shrink against the reviewed Git baseline; the exact CatchField constructor facade has a 1,150-line ceiling with the same decrease-only protection. Generated producer outputs are excluded by identity.",
+      "instruction": "Keep new and split handwritten Dart files at or below 800 lines. Existing oversized files may only shrink against the reviewed Git baseline; the exact CatchField constructor facade has a 1,150-line ceiling with the same decrease-only protection. lib/routing/go_router.dart is exempt because the route inventory mandates every GoRoute construction in that single file, so its length tracks route count rather than debt. Generated producer outputs are excluded by identity.",
       "sunset_when": [
         "A stronger structure-aware maintainability gate replaces source line bounds while preserving decrease-only debt and the exact Field facade ceiling"
       ],
