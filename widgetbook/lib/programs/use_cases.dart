@@ -15,6 +15,7 @@ import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.d
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
+import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:flutter/material.dart';
@@ -252,6 +253,36 @@ final _trips = ProgramTripList(
   trips: [_trip],
 );
 
+final _stakeholderCounts = ProgramStakeholderCounts(
+  programId: _programId,
+  serverTime: _now,
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
+  guestCount: 142,
+  householdCount: 58,
+  functions: [
+    const ProgramFunctionCounts(
+      functionId: 'fn_sangeet',
+      status: ProgramFunctionStatus.scheduled,
+      invitedCount: 80,
+      rsvpPending: 12,
+      rsvpAttending: 50,
+      rsvpDeclined: 14,
+      rsvpMaybe: 4,
+      expectedHeads: 60,
+      checkedInHeads: 12,
+      noShowCount: 3,
+    ),
+  ],
+  hotels: [
+    const ProgramHotelOccupancy(
+      hotelId: 'hotel_taj',
+      routedGuestCount: 40,
+      arrivedGuestCount: 31,
+      legCount: 14,
+    ),
+  ],
+);
+
 ProgramOperationOutboxStore _previewJournal() {
   final storage = MemoryCommandJournalStorage();
   return createProgramOperationJournal(
@@ -353,6 +384,9 @@ List<Override> _programOverrides() {
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
     programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
+    programStakeholderCountsProvider(
+      _programId,
+    ).overrideWithValue(AsyncData(_stakeholderCounts)),
     programTransportVendorsProvider('org_1', _programId).overrideWithValue(
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(
@@ -792,3 +826,64 @@ Widget programJournalRecoverySheetPreview(BuildContext context) =>
         child: const ProgramJournalRecoverySheet(accountId: 'uid_greeter'),
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Screen states',
+  type: ProgramStakeholderScreen,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programStakeholderScreenStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgramStakeholderScreen',
+    contractId: 'screen.programs.counts',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'counts',
+        child: WidgetbookUtilityDeviceFrame(
+          child: ProviderScope(
+            overrides: _programOverrides(),
+            child: const ProgramStakeholderScreen(programId: _programId),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramFunctionCountsRow,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programFunctionCountsRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramFunctionCountsRow',
+    catalogId: 'screen.programs.counts',
+    children: [
+      ProgramFunctionCountsRow(
+        counts: _stakeholderCounts.functions.first,
+        name: 'Sangeet',
+      ),
+      ProgramFunctionCountsRow(counts: _stakeholderCounts.functions.first),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramHotelOccupancyRow,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programHotelOccupancyRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramHotelOccupancyRow',
+    catalogId: 'screen.programs.counts',
+    children: [
+      ProgramHotelOccupancyRow(
+        occupancy: _stakeholderCounts.hotels.first,
+        name: 'Taj Palace',
+      ),
+      ProgramHotelOccupancyRow(occupancy: _stakeholderCounts.hotels.first),
+    ],
+  );
+}
