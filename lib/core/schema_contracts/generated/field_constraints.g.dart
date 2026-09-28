@@ -120935,6 +120935,172 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programStakeholderCountsCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctions = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.checkedInHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.expectedHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsInvitedCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.invitedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsNoShowCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.noShowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpAttending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpPending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpPending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsStatus = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scheduled', 'completed', 'cancelled'],
+  );
+
+  static const programStakeholderCountsCallableResponseGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.guestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotels = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsLegCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.legCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHouseholdCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.householdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programStationScopeCallablePayloadPickupPointId = CatchContractFieldConstraints(
     path: 'programStationScopeCallablePayload.pickupPointId',
     maxLength: 180,
@@ -166044,6 +166210,27 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.uid': programStaffListCallableResponseMembersItemsUid,
     'programStaffListCallableResponse.nextCursor': programStaffListCallableResponseNextCursor,
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.accessExpiresAtMillis': programStakeholderCountsCallableResponseAccessExpiresAtMillis,
+    'programStakeholderCountsCallableResponse.functions': programStakeholderCountsCallableResponseFunctions,
+    'programStakeholderCountsCallableResponse.functions.items.checkedInHeads': programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads,
+    'programStakeholderCountsCallableResponse.functions.items.expectedHeads': programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads,
+    'programStakeholderCountsCallableResponse.functions.items.functionId': programStakeholderCountsCallableResponseFunctionsItemsFunctionId,
+    'programStakeholderCountsCallableResponse.functions.items.invitedCount': programStakeholderCountsCallableResponseFunctionsItemsInvitedCount,
+    'programStakeholderCountsCallableResponse.functions.items.noShowCount': programStakeholderCountsCallableResponseFunctionsItemsNoShowCount,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpAttending': programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined': programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe': programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpPending': programStakeholderCountsCallableResponseFunctionsItemsRsvpPending,
+    'programStakeholderCountsCallableResponse.functions.items.status': programStakeholderCountsCallableResponseFunctionsItemsStatus,
+    'programStakeholderCountsCallableResponse.guestCount': programStakeholderCountsCallableResponseGuestCount,
+    'programStakeholderCountsCallableResponse.hotels': programStakeholderCountsCallableResponseHotels,
+    'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount': programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount,
+    'programStakeholderCountsCallableResponse.hotels.items.hotelId': programStakeholderCountsCallableResponseHotelsItemsHotelId,
+    'programStakeholderCountsCallableResponse.hotels.items.legCount': programStakeholderCountsCallableResponseHotelsItemsLegCount,
+    'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount': programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount,
+    'programStakeholderCountsCallableResponse.householdCount': programStakeholderCountsCallableResponseHouseholdCount,
+    'programStakeholderCountsCallableResponse.programId': programStakeholderCountsCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.serverTimeMillis': programStakeholderCountsCallableResponseServerTimeMillis,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
     'programStayDocument.createdAt._nanoseconds': programStayDocumentCreatedAtNanoseconds,

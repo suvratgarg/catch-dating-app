@@ -200,6 +200,10 @@ class ProgramWorkPageBody extends StatelessWidget {
       ProgramStaffDuty.communications,
       now: now,
     );
+    final canSeeCounts = access.hasDuty(
+      ProgramStaffDuty.stakeholderViewer,
+      now: now,
+    );
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -421,12 +425,32 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (canSeeCounts)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkCountsTitle,
+                subtitle: context.l10n.programsWorkCountsSubtitle,
+                child: CatchFieldRow.standard(
+                  leading: Icon(CatchIcons.factCheckOutlined),
+                  body: Text(
+                    context.l10n.programsWorkCountsOpen,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  onTap: () => context.pushNamed(
+                    Routes.hostWorkCountsScreen.name,
+                    pathParameters: {'programId': access.programId},
+                  ),
+                ),
+              ),
+            ),
           if (arrivalsStations.isEmpty &&
               dispatchStations.isEmpty &&
               hotels.isEmpty &&
               functions.isEmpty &&
               !canSeeLedger &&
-              !canSeeCommunications)
+              !canSeeCommunications &&
+              !canSeeCounts)
             CatchSectionListItem(
               child: CatchEmptyState(
                 icon: CatchIcons.lockOutline,
