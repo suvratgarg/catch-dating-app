@@ -20,6 +20,7 @@ export const programGuestGroupDocumentSchema: Record<string, unknown> = {
     "dimension",
     "sortOrder",
     "memberCount",
+    "hotelId",
     "createdAt",
     "updatedAt",
     "revision"
@@ -58,6 +59,15 @@ export const programGuestGroupDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "maximum": 100000,
       "description": "Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete."
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group."
     },
     "createdAt": {
       "type": "object",

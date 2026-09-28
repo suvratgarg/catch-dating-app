@@ -31,6 +31,7 @@ export const programGuestGroupListCallableResponseSchema: Record<string, unknown
           "dimension",
           "sortOrder",
           "memberCount",
+          "hotelId",
           "revision"
         ],
         "properties": {
@@ -57,6 +58,14 @@ export const programGuestGroupListCallableResponseSchema: Record<string, unknown
           "memberCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           },
           "revision": {
             "type": "integer",

@@ -81,6 +81,9 @@ export interface FunctionGuestMessageOptions extends MessageTemplateOptions {
   rsvp?: ReadonlyArray<"attending" | "maybe">;
   /** Dedupe recipients by household; defaults to true. */
   householdDedupe?: boolean;
+  /** Distance-aware lead: each guest's send moves earlier by their
+   *  hotel→venue travel estimate. Defaults to false. */
+  travelTimeLead?: boolean;
 }
 
 /** Options for the transport departure notice. */
@@ -340,13 +343,14 @@ export function flightDisruptionAlert(
 
 function functionGuestAudience(
   functionId: string,
-  opts: {rsvp?: GuestRsvp; householdDedupe?: boolean},
+  opts: {rsvp?: GuestRsvp; householdDedupe?: boolean; travelTimeLead?: boolean},
 ): MomentAudience {
   return {
     kind: "functionGuests",
     functionId,
     rsvp: opts.rsvp ?? ["attending"],
     householdDedupe: opts.householdDedupe ?? true,
+    travelTimeLead: opts.travelTimeLead ?? false,
   };
 }
 

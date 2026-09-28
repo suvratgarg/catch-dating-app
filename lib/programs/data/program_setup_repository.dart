@@ -300,6 +300,10 @@ class ProgramSetupRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
+  /// `hotelId` pins the group to a `programHotels` doc (feeds
+  /// distance-aware moment lead times). Omitted preserves the link; pass
+  /// `clearHotel: true` to send the explicit null that clears it — the
+  /// generated request's null-aware `toJson` cannot emit it otherwise.
   Future<ProgramMutationResult> upsertGuestGroup({
     required String programId,
     required String label,
@@ -307,19 +311,28 @@ class ProgramSetupRepository {
     String? groupId,
     int? expectedRevision,
     int? sortOrder,
-  }) => _call(
-    name: 'upsertProgramGuestGroup',
-    payload: UpsertProgramGuestGroupCallableRequest(
+    String? hotelId,
+    bool clearHotel = false,
+  }) {
+    final payload = UpsertProgramGuestGroupCallableRequest(
       programId: programId,
       groupId: groupId,
       expectedRevision: expectedRevision,
       label: label,
       dimension: dimension,
       sortOrder: sortOrder,
-    ).toJson(),
-    action: 'save the group',
-    parse: ProgramMutationResult.fromCallableData,
-  );
+      hotelId: hotelId,
+    ).toJson();
+    if (clearHotel) {
+      payload['hotelId'] = null;
+    }
+    return _call(
+      name: 'upsertProgramGuestGroup',
+      payload: payload,
+      action: 'save the group',
+      parse: ProgramMutationResult.fromCallableData,
+    );
+  }
 
   Future<ProgramMutationResult> deleteGuestGroup({
     required String programId,
