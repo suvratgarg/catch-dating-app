@@ -269,6 +269,20 @@ export const organizerSalesAccountDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "cohortMutationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "const": "initial"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "x-document-id-field": "organizerId"

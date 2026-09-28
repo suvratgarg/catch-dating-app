@@ -1,3 +1,4 @@
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateOperationWorkItem} from "../../operations/validation";
@@ -100,6 +101,10 @@ export async function linkOrganizerIntakeToSales(
     const [itemSnap, curationSnap, organizerSnap, accountSnap, linkSnap] =
       await Promise.all([tx.get(workItemRef), tx.get(curationRef),
         tx.get(organizerRef), tx.get(accountRef), tx.get(linkRef)]);
+    if (accountSnap.data()?.researchStatus === "archived") {
+      throw new HttpsError("failed-precondition",
+        "Reopen the archived Sales account before linking Intake.");
+    }
     if (linkSnap.exists) {
       const prior = linkSnap.data() as SalesIntakeLink;
       if (prior.organizerId !== input.organizerId ||
@@ -198,7 +203,10 @@ export async function linkOrganizerIntakeToSales(
       curationReviewedAt: reviewedAt, linkedByUid: principal.uid,
       linkedAt: now,
     };
-    if (!accountSnap.exists) tx.create(accountRef, account);
+    if (!accountSnap.exists) {
+      tx.create(accountRef, account);
+      invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
+    }
     tx.create(linkRef, link);
     tx.create(db.collection("adminAuditLogs").doc(), {
       actorUid: principal.uid, roles: [...principal.roles],

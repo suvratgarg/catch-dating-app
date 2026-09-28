@@ -549,6 +549,10 @@ export async function executeSalesRead(
     const receipt = snap.data() as SalesActionReceipt;
     assertReceiptScope(principal, receipt);
     authorize(principal, receipt.action, receipt.organizerId);
+    assertSalesFinanceAuthority(principal, receipt.action,
+      receipt.action === "opportunities.upsert" ?
+        {fields: {stage: (receipt.result as {opportunity?: {stage?: string}})
+          .opportunity?.stage}} : null);
     const receiptField =
         (receipt.result as { field?: { fieldId?: string }; fieldId?: string })
           .field?.fieldId ??

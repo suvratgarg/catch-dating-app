@@ -53,4 +53,5 @@ export interface OrganizerSalesAccountDocument {
   createdAt: string;
   updatedAt: string;
   updatedBy: string;
+  cohortMutationId?: string | "initial" | null;
 }

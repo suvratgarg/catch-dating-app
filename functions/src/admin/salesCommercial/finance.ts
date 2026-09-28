@@ -135,6 +135,7 @@ export async function attestHostSettlementInTransaction(
   ]);
   if (!accountSnap.exists ||
     accountSnap.data()?.classification !== "sales_private" ||
+    accountSnap.data()?.researchStatus === "archived" ||
     !opportunitySnap.exists ||
     opportunitySnap.data()?.organizerId !== input.organizerId ||
     opportunitySnap.data()?.stage === "closed_lost") {

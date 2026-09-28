@@ -120,6 +120,23 @@ Do not edit it by hand.
 | SalesDemoCapabilitiesDocument | `firestore/sales_demo_capabilities.schema.json` | `functions/src/shared/generated/salesDemoCapabilitiesDocument.ts` |
 | SalesDemoInvitationsDocument | `firestore/sales_demo_invitations.schema.json` | `functions/src/shared/generated/salesDemoInvitationsDocument.ts` |
 | SalesDemoReceiptsDocument | `firestore/sales_demo_receipts.schema.json` | `functions/src/shared/generated/salesDemoReceiptsDocument.ts` |
+| AdminListSalesFitQueuePayload | `callables/admin_sales_fit_queue_list_request.schema.json` | `functions/src/shared/generated/adminListSalesFitQueuePayload.ts` |
+| AdminRefreshSalesFitQueueBatchPayload | `callables/admin_sales_fit_queue_refresh_batch_request.schema.json` | `functions/src/shared/generated/adminRefreshSalesFitQueueBatchPayload.ts` |
+| AdminRefreshSalesFitQueuePayload | `callables/admin_sales_fit_queue_refresh_request.schema.json` | `functions/src/shared/generated/adminRefreshSalesFitQueuePayload.ts` |
+| AdminListSalesFitQueueResponse | `callable_responses/admin_sales_fit_queue_list_response.schema.json` | `functions/src/shared/generated/adminListSalesFitQueueResponse.ts` |
+| AdminRefreshSalesFitQueueBatchResponse | `callable_responses/admin_sales_fit_queue_refresh_batch_response.schema.json` | `functions/src/shared/generated/adminRefreshSalesFitQueueBatchResponse.ts` |
+| AdminRefreshSalesFitQueueResponse | `callable_responses/admin_sales_fit_queue_refresh_response.schema.json` | `functions/src/shared/generated/adminRefreshSalesFitQueueResponse.ts` |
+| SalesFitQueueEntryDocument | `firestore/sales_fit_queue_entries.schema.json` | `functions/src/shared/generated/salesFitQueueEntryDocument.ts` |
+| SalesFitQueueMetaDocument | `firestore/sales_fit_queue_meta.schema.json` | `functions/src/shared/generated/salesFitQueueMetaDocument.ts` |
+| SalesFitQueueReceiptDocument | `firestore/sales_fit_queue_receipts.schema.json` | `functions/src/shared/generated/salesFitQueueReceiptDocument.ts` |
+| AdminApplySalesImportCompensationResponse | `callable_responses/admin_sales_import_compensation_apply_response.schema.json` | `functions/src/shared/generated/adminApplySalesImportCompensationResponse.ts` |
+| AdminPreviewSalesImportCompensationResponse | `callable_responses/admin_sales_import_compensation_preview_response.schema.json` | `functions/src/shared/generated/adminPreviewSalesImportCompensationResponse.ts` |
+| AdminSalesImportCompensationApplyPayload | `callables/admin_sales_import_compensation_apply_payload.schema.json` | `functions/src/shared/generated/adminSalesImportCompensationApplyPayload.ts` |
+| AdminSalesImportCompensationPreviewPayload | `callables/admin_sales_import_compensation_preview_payload.schema.json` | `functions/src/shared/generated/adminSalesImportCompensationPreviewPayload.ts` |
+| SalesImportCompensationDocument | `firestore/sales_import_compensations.schema.json` | `functions/src/shared/generated/salesImportCompensationDocument.ts` |
+| SalesDemoSetupDocument | `firestore/sales_demo_setups.schema.json` | `functions/src/shared/generated/salesDemoSetupDocument.ts` |
+| SalesDemoSetupCallablePayload | `callables/sales_demo_setup.schema.json` | `functions/src/shared/generated/salesDemoSetupCallablePayload.ts` |
+| SalesDemoSetupCallableResponse | `callable_responses/sales_demo_setup_response.schema.json` | `functions/src/shared/generated/salesDemoSetupCallableResponse.ts` |
 | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
 | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
 | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
@@ -1185,6 +1202,23 @@ Do not edit it by hand.
 | `schemaSalesDemoCapabilitiesDocumentSchema` | SalesDemoCapabilitiesDocument | `firestore/sales_demo_capabilities.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_capabilities_document.g.dart` |
 | `schemaSalesDemoInvitationsDocumentSchema` | SalesDemoInvitationsDocument | `firestore/sales_demo_invitations.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_invitations_document.g.dart` |
 | `schemaSalesDemoReceiptsDocumentSchema` | SalesDemoReceiptsDocument | `firestore/sales_demo_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_receipts_document.g.dart` |
+| `schemaAdminListSalesFitQueuePayloadSchema` | AdminListSalesFitQueuePayload | `callables/admin_sales_fit_queue_list_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_fit_queue_payload.g.dart` |
+| `schemaAdminRefreshSalesFitQueueBatchPayloadSchema` | AdminRefreshSalesFitQueueBatchPayload | `callables/admin_sales_fit_queue_refresh_batch_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_refresh_sales_fit_queue_batch_payload.g.dart` |
+| `schemaAdminRefreshSalesFitQueuePayloadSchema` | AdminRefreshSalesFitQueuePayload | `callables/admin_sales_fit_queue_refresh_request.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_refresh_sales_fit_queue_payload.g.dart` |
+| `schemaAdminListSalesFitQueueResponseSchema` | AdminListSalesFitQueueResponse | `callable_responses/admin_sales_fit_queue_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_sales_fit_queue_response.g.dart` |
+| `schemaAdminRefreshSalesFitQueueBatchResponseSchema` | AdminRefreshSalesFitQueueBatchResponse | `callable_responses/admin_sales_fit_queue_refresh_batch_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_refresh_sales_fit_queue_batch_response.g.dart` |
+| `schemaAdminRefreshSalesFitQueueResponseSchema` | AdminRefreshSalesFitQueueResponse | `callable_responses/admin_sales_fit_queue_refresh_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_refresh_sales_fit_queue_response.g.dart` |
+| `schemaSalesFitQueueEntryDocumentSchema` | SalesFitQueueEntryDocument | `firestore/sales_fit_queue_entries.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_fit_queue_entry_document.g.dart` |
+| `schemaSalesFitQueueMetaDocumentSchema` | SalesFitQueueMetaDocument | `firestore/sales_fit_queue_meta.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_fit_queue_meta_document.g.dart` |
+| `schemaSalesFitQueueReceiptDocumentSchema` | SalesFitQueueReceiptDocument | `firestore/sales_fit_queue_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_fit_queue_receipt_document.g.dart` |
+| `schemaAdminApplySalesImportCompensationResponseSchema` | AdminApplySalesImportCompensationResponse | `callable_responses/admin_sales_import_compensation_apply_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_apply_sales_import_compensation_response.g.dart` |
+| `schemaAdminPreviewSalesImportCompensationResponseSchema` | AdminPreviewSalesImportCompensationResponse | `callable_responses/admin_sales_import_compensation_preview_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_preview_sales_import_compensation_response.g.dart` |
+| `schemaAdminSalesImportCompensationApplyPayloadSchema` | AdminSalesImportCompensationApplyPayload | `callables/admin_sales_import_compensation_apply_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_import_compensation_apply_payload.g.dart` |
+| `schemaAdminSalesImportCompensationPreviewPayloadSchema` | AdminSalesImportCompensationPreviewPayload | `callables/admin_sales_import_compensation_preview_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_import_compensation_preview_payload.g.dart` |
+| `schemaSalesImportCompensationDocumentSchema` | SalesImportCompensationDocument | `firestore/sales_import_compensations.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_compensation_document.g.dart` |
+| `schemaSalesDemoSetupDocumentSchema` | SalesDemoSetupDocument | `firestore/sales_demo_setups.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_setup_document.g.dart` |
+| `schemaSalesDemoSetupCallablePayloadSchema` | SalesDemoSetupCallablePayload | `callables/sales_demo_setup.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_setup_callable_payload.g.dart` |
+| `schemaSalesDemoSetupCallableResponseSchema` | SalesDemoSetupCallableResponse | `callable_responses/sales_demo_setup_response.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_setup_callable_response.g.dart` |
 | `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
 | `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
 | `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
@@ -2173,6 +2207,10 @@ Do not edit it by hand.
 | AdminSalesIntelligencePolicyCallableRequest | AdminSalesIntelligencePolicyCallablePayload | `callables/admin_sales_intelligence_policy_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_policy_callable_request.g.dart` |
 | AdminSalesIntelligenceScoreCallableRequest | AdminSalesIntelligenceScoreCallablePayload | `callables/admin_sales_intelligence_score_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_intelligence_score_callable_request.g.dart` |
 | SalesDemoPreviewCallableRequest | SalesDemoPreviewCallablePayload | `callables/sales_demo_preview.schema.json` | `lib/core/schema_contracts/generated/callables/sales_demo_preview_callable_request.g.dart` |
+| AdminRefreshSalesFitQueueBatchRequest | AdminRefreshSalesFitQueueBatchPayload | `callables/admin_sales_fit_queue_refresh_batch_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_refresh_sales_fit_queue_batch_request.g.dart` |
+| AdminRefreshSalesFitQueueRequest | AdminRefreshSalesFitQueuePayload | `callables/admin_sales_fit_queue_refresh_request.schema.json` | `lib/core/schema_contracts/generated/callables/admin_refresh_sales_fit_queue_request.g.dart` |
+| AdminSalesImportCompensationApplyRequest | AdminSalesImportCompensationApplyPayload | `callables/admin_sales_import_compensation_apply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_import_compensation_apply_request.g.dart` |
+| AdminSalesImportCompensationPreviewRequest | AdminSalesImportCompensationPreviewPayload | `callables/admin_sales_import_compensation_preview_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_sales_import_compensation_preview_request.g.dart` |
 | SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
 | PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
@@ -2550,6 +2588,8 @@ Do not edit it by hand.
 | AdminSalesIntelligenceReviewCallablePayload | not an object schema |
 | SalesDemoManagementCallablePayload | not an object schema |
 | SalesDemoTrialCallablePayload | not an object schema |
+| AdminListSalesFitQueuePayload | cannot map field "view" (no type) |
+| SalesDemoSetupCallablePayload | not an object schema |
 | ManagePublicEventCheckoutCallablePayload | not an object schema |
 | ConfigureEventRegistrationCallablePayload | cannot map field "mode" (no type) |
 | ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |

@@ -136,8 +136,21 @@ class MemoryTransaction {
     if (this.db.docs.has(ref.path)) throw new Error("already exists");
     this.writes.push(() => this.db.docs.set(ref.path, value));
   }
+  delete(ref: MemoryRef) {
+    this.writes.push(() => {
+      this.db.docs.delete(ref.path);
+    });
+  }
   set(ref: MemoryRef, value: Record<string, unknown>) {
-    this.writes.push(() => this.db.docs.set(ref.path, value));
+    this.writes.push(() => {
+      const next = {...value};
+      if (next.generation && typeof next.generation === "object" &&
+          "operand" in next.generation) {
+        next.generation = Number(this.db.docs.get(ref.path)?.generation ?? 0) +
+          Number(next.generation.operand);
+      }
+      this.db.docs.set(ref.path, next);
+    });
   }
   update(ref: MemoryRef, patch: Record<string, unknown>) {
     this.writes.push(() => this.db.docs.set(ref.path,

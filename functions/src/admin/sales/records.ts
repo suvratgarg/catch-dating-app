@@ -1,3 +1,4 @@
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -239,6 +240,7 @@ export async function addSalesEvidence(
     createdBy: principal.uid,
   };
   tx.create(db.collection("salesEvidence").doc(evidenceId), evidence);
+  invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   return {evidence};
 }
 

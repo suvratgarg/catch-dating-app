@@ -288,6 +288,80 @@ const schemaSalesDemoBlueprintsDocumentSchema = <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Za-z0-9_-]{3,128}\$',
     },
+    'setupPlan': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'mode',
+            'requirements',
+          ],
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'manual',
+            },
+            'requirements': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'minItems': 1,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'mode',
+            'requirements',
+            'templateId',
+            'title',
+            'templateVersion',
+            'templateHash',
+            'materializerVersion',
+          ],
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'template',
+            },
+            'requirements': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+            },
+            'templateId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+            },
+            'title': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'templateVersion': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+            },
+            'templateHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'materializerVersion': <String, Object?>{
+              'const': 1,
+            },
+          },
+        },
+      ],
+    },
   },
   'definitions': <String, Object?>{
     'id': <String, Object?>{

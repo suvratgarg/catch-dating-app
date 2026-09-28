@@ -1419,6 +1419,337 @@ export const adminActionCatalog = {
       ],
       "summary": "Review private host pilot or quote records with current evidence.",
       "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceCatalog",
+      "callable": "adminGetSalesIntelligenceCatalog",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceScore",
+      "callable": "adminGetSalesIntelligenceScore",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligencePolicy",
+      "callable": "adminSaveSalesIntelligencePolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesFactorAssessment",
+      "callable": "adminSaveSalesFactorAssessment",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligenceClause",
+      "callable": "adminSaveSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesIntelligenceClause",
+      "callable": "adminReviewSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesScoreSnapshot",
+      "callable": "adminSaveSalesScoreSnapshot",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intelligence.BuildSalesOutreachInput",
+      "callable": "adminBuildSalesOutreachInput",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intelligence.GenerateSalesOutreachDraft",
+      "callable": "adminGenerateSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraftJob",
+      "callable": "adminGetSalesOutreachDraftJob",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.ListSalesOutreachDrafts",
+      "callable": "adminListSalesOutreachDrafts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraft",
+      "callable": "adminGetSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesOutreachDraft",
+      "callable": "adminReviewSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intelligence.CopySalesOutreachDraft",
+      "callable": "adminCopySalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.commercial.finance.attest",
+      "callable": "adminAttestSalesHostSettlement",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Attest a reviewed host subscription collection against accepted terms.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.intake.link",
+      "callable": "adminLinkOrganizerIntakeToSales",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/organizer-intake",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Join an explicitly reviewed Intake identity to its private Sales account.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.fitQueue.list",
+      "callable": "adminListSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.fitQueue.refresh",
+      "callable": "adminRefreshSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.fitQueue.refresh_batch",
+      "callable": "adminRefreshSalesFitQueueBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.compensation.preview",
+      "callable": "adminPreviewSalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.compensation.apply",
+      "callable": "adminApplySalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -1656,7 +1987,28 @@ export const adminActionCatalog = {
         "sales.commercial.pilots.upsert",
         "sales.commercial.quotes.revise",
         "sales.commercial.quotes.approve",
-        "sales.commercial.quotes.accept"
+        "sales.commercial.quotes.accept",
+        "sales.intelligence.GetSalesIntelligenceCatalog",
+        "sales.intelligence.GetSalesIntelligenceScore",
+        "sales.intelligence.SaveSalesIntelligencePolicy",
+        "sales.intelligence.SaveSalesFactorAssessment",
+        "sales.intelligence.SaveSalesIntelligenceClause",
+        "sales.intelligence.ReviewSalesIntelligenceClause",
+        "sales.intelligence.SaveSalesScoreSnapshot",
+        "sales.intelligence.BuildSalesOutreachInput",
+        "sales.intelligence.GenerateSalesOutreachDraft",
+        "sales.intelligence.GetSalesOutreachDraftJob",
+        "sales.intelligence.ListSalesOutreachDrafts",
+        "sales.intelligence.GetSalesOutreachDraft",
+        "sales.intelligence.ReviewSalesOutreachDraft",
+        "sales.intelligence.CopySalesOutreachDraft",
+        "sales.commercial.finance.attest",
+        "sales.intake.link",
+        "sales.fitQueue.list",
+        "sales.fitQueue.refresh",
+        "sales.fitQueue.refresh_batch",
+        "sales.imports.compensation.preview",
+        "sales.imports.compensation.apply"
       ]
     }
   ]

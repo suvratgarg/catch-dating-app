@@ -7,7 +7,7 @@ import {evaluateScore, hash, parsePolicy, type Assessment,
   type IntelligencePolicy} from "../salesIntelligence/model";
 import {entryVisible, projectScore, scoreExpiry,
   type FitQueueEntry} from "./model";
-import {listFitQueue, refreshFitQueue, type FitQueueDeps} from "./service";
+import {listFitQueue, refreshFitQueue, refreshFitQueueBatch, type FitQueueDeps} from "./service";
 
 const at = "2026-09-28T10:00:00.000Z";
 const factors = ["a", "b", "c", "d", "e", "f", "g"];
@@ -310,3 +310,67 @@ test("refresh persists current source projection and exact receipt once", async 
     }), employee, payload),
   /employee role revoked/);
 });
+
+function completeQueueSource(db: FakeDb) {
+  seedPolicy(db);
+  db.rows.set("organizerSalesAccounts/org-a", account as unknown as Row);
+  for (const [index, factorId] of factors.entries()) {
+    db.rows.set(`salesIntelligenceAssessments/assess-${hash(["org-a", factorId]).slice(0, 32)}`,
+      assessments[index] as unknown as Row);
+    db.rows.set(`salesEvidence/evidence-${factorId}`, evidence[index]);
+  }
+}
+
+test("qualification proof expires independently of otherwise fresh scored evidence",
+  async () => {
+    const db = new FakeDb(); completeQueueSource(db);
+    const rules = [{ruleId: "identity", claimKey: "identity",
+      sourceTypes: ["first_party"], confidence: ["high"], minimumCount: 1,
+      distinctSignalIds: false, distinctSourceRoots: false, maxAgeDays: 1}];
+    const policyHash = qualificationPolicyHash({policyId: "qual", version: "v1", rules});
+    db.rows.set("salesSettings/qualificationPolicy", {schemaVersion: 1,
+      classification: "sales_private", status: "active", policyId: "qual",
+      version: "v1", rules, policyHash});
+    db.rows.set("organizerSalesAccounts/org-a", {...account,
+      qualificationPolicy: {policyId: "qual", version: "v1", policyHash}});
+    const identityEvidence = {classification: "sales_private",
+      evidenceId: "identity-source", organizerId: "org-a", contactId: null,
+      claimKey: "identity", sourceType: "first_party", confidence: "high",
+      observedAt: "2026-09-26T10:00:00.000Z", validThrough: null};
+    db.rows.set("salesEvidence/identity-source", identityEvidence);
+    const expired = await refreshFitQueue(deps(db), employee,
+      {organizerId: "org-a", requestId: "expired-qual-001"});
+    assert.equal(expired.entry.score, 80);
+    assert.equal(expired.entry.eligibleForOutreachReview, false);
+    assert.equal((await listFitQueue(deps(db), employee,
+      {view: "outreach_review_candidate"})).rows.length, 0);
+    db.rows.set("salesEvidence/identity-source", {...identityEvidence,
+      observedAt: "2026-09-28T09:59:00.000Z",
+      validThrough: "2026-09-28T10:01:00.000Z"});
+    const fresh = await refreshFitQueue(deps(db), employee,
+      {organizerId: "org-a", requestId: "fresh-qual-001"});
+    assert.equal(fresh.entry.eligibleForOutreachReview, true);
+    assert.equal(fresh.entry.qualificationExpiresAt, "2026-09-28T10:01:00.001Z");
+    const later = {...deps(db), now: () => new Date("2026-09-28T10:02:00Z")};
+    assert.equal((await listFitQueue(later, employee,
+      {view: "outreach_review_candidate"})).rows.length, 0);
+    assert.equal((await listFitQueue(later, employee,
+      {view: "ranked"})).rows.length, 1);
+  });
+
+test("batch retry reports invalidated historical refresh as needing review",
+  async () => {
+    const db = new FakeDb(); completeQueueSource(db);
+    const input = {requestId: "batch-refresh-001", limit: 10};
+    const first = await refreshFitQueueBatch(deps(db), employee, input);
+    assert.equal(first.rows[0].result, "refreshed");
+    db.rows.delete("salesFitQueueEntries/org-a");
+    db.rows.set("organizerSalesAccounts/org-a", {...account, revision: 4});
+    const retry = await refreshFitQueueBatch(deps(db), employee, input);
+    assert.equal(retry.rows[0].result, "needs_review");
+    assert.equal(db.rows.has("salesFitQueueEntries/org-a"), false);
+    const renewed = await refreshFitQueueBatch(deps(db), employee,
+      {...input, requestId: "batch-refresh-002"});
+    assert.equal(renewed.rows[0].result, "refreshed");
+    assert.equal(db.rows.get("salesFitQueueEntries/org-a")?.accountRevision, 4);
+  });

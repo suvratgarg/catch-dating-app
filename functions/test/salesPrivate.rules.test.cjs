@@ -41,7 +41,9 @@ const privatePaths = [
   "assistantManagementReceipts/receipt-one",
   "salesDemoBlueprints/blueprint-one", "salesDemoCapabilities/capability-one",
   "salesDemoInvitations/invitation-one", "salesDemoSessions/session-one",
-  "salesDemoReceipts/receipt-one",
+  "salesDemoReceipts/receipt-one", "salesDemoSetups/setup-one", "salesImportCompensations/effect-one",
+  "salesFitQueueEntries/entry-one", "salesFitQueueMeta/current",
+  "salesFitQueueReceipts/receipt-one",
 ];
 let env;
 

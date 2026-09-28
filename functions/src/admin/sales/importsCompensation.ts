@@ -153,7 +153,7 @@ async function decision(
     organizerId: input.organizerId,
     accountRevision: typeof account?.revision === "number" ?
       account.revision : null,
-    cohortIdsRemoved: mode === "remove_cohorts" ?
+    cohortIdsRemoved: mode !== "blocked" ?
       effect.cohortIdsAdded : [],
     alreadyCompensated: compensatedSnap.exists};
   return {...base, previewHash: sha(canonical({base,

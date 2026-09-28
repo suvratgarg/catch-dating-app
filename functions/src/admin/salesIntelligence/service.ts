@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import * as admin from "firebase-admin";
 import {hasCurrentDraftContact} from "../sales/suppression";
 import {salesRelationshipId} from "../sales/records";
@@ -76,7 +77,8 @@ async function mutate<T extends Record<string, unknown>>(
 function accountOk(row: FirebaseFirestore.DocumentData | undefined,
   organizerId: string): boolean {
   return row?.classification === "sales_private" &&
-    row.organizerId === organizerId && Number.isInteger(row.revision);
+    row.organizerId === organizerId && row.researchStatus !== "archived" &&
+    Number.isInteger(row.revision);
 }
 function currentReviewedEvidence(row: FirebaseFirestore.DocumentData | undefined,
   organizerId: string, now: string): boolean {
@@ -188,6 +190,7 @@ export async function saveFactorAssessment(deps: IntelligenceDeps,
         value: value as number | null, evidenceIds, reason,
         reviewedAt: now, reviewerUid: principal.uid};
       tx.set(ref, assessment);
+      invalidateFitQueueInTransaction(tx, deps.db, organizerId, now);
       return {assessment};
     });
 }

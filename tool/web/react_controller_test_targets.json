@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 14,
-  "updated": "2026-09-16",
+  "version": 15,
+  "updated": "2026-09-28",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -95,6 +95,26 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/sales/controllers/useSalesDemoManagementController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesDemoManagementController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesFitQueueController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesFitQueueController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesIntelligenceController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesIntelligenceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
       "test": "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
       "status": "required"
@@ -115,13 +135,53 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/eventRuntime/useEventRuntimeController.ts",
-      "test": "website/src/features/eventRuntime/useEventRuntimeController.test.tsx",
+      "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
+      "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventMessageWithdrawalController.ts",
+      "test": "website/src/features/eventMessaging/useEventMessageWithdrawalController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventRcsPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventRcsPreferencesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
+      "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useSenderPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventOffers/useOfferCheckoutController.ts",
+      "test": "website/src/features/eventOffers/useOfferCheckoutController.test.tsx",
       "status": "required"
     },
     {
       "source": "website/src/features/eventRehearsal/useEventRehearsalController.ts",
       "test": "website/src/features/eventRehearsal/useEventRehearsalController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventRuntime/useEventRuntimeController.ts",
+      "test": "website/src/features/eventRuntime/useEventRuntimeController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/events/usePublicCheckoutController.ts",
+      "test": "website/src/features/events/usePublicCheckoutController.test.tsx",
       "status": "required"
     },
     {
@@ -140,6 +200,11 @@
       "reason": "Compatibility re-export of the application controller."
     },
     {
+      "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
+      "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "website/src/features/organizers/useHostListingPageController.ts",
       "test": "website/src/features/organizers/useHostListingPageController.test.tsx",
       "status": "required"
@@ -155,73 +220,13 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/waitlist/useWaitlistFormController.ts",
-      "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
-      "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
-      "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventMessaging/useEventMessageWithdrawalController.ts",
-      "test": "website/src/features/eventMessaging/useEventMessageWithdrawalController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventMessaging/useEventRcsPreferencesController.ts",
-      "test": "website/src/features/eventMessaging/useEventRcsPreferencesController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventMessaging/useSenderPreferencesController.ts",
-      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.ts",
-      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
-      "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/eventOffers/useOfferCheckoutController.ts",
-      "test": "website/src/features/eventOffers/useOfferCheckoutController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/events/usePublicCheckoutController.ts",
-      "test": "website/src/features/events/usePublicCheckoutController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
-      "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "website/src/features/salesDemo/useSalesDemoController.ts",
       "test": "website/src/features/salesDemo/useSalesDemoController.test.tsx",
       "status": "required"
     },
     {
-      "source": "admin/src/features/sales/controllers/useSalesDemoManagementController.ts",
-      "test": "admin/src/features/sales/controllers/useSalesDemoManagementController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/sales/controllers/useSalesIntelligenceController.ts",
-      "test": "admin/src/features/sales/controllers/useSalesIntelligenceController.test.tsx",
+      "source": "website/src/features/waitlist/useWaitlistFormController.ts",
+      "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
     }
   ]

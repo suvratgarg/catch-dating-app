@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.157.0
+version: 1.157.1
 updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
@@ -4593,3 +4593,40 @@ succeeded without overwriting an existing account or publishing the organizer.
 Imports retain every reviewed cohort/source-row relationship and union cohort IDs
 once per account, fenced by the preview's account revision. Unresolved identities
 remain in offline review; neither import nor an assistant invents canonical IDs.
+
+### Reviewed demo setup
+
+Confirmed private-demo starts and completions project deterministic Sales
+activities only for an existing active Sales account, with opportunity identity
+checked against the same organizer. Preview, resume and assistance requests do
+not imply a conversion.
+
+A reviewed demo may contain a source-owned Forms template plan. Its content hash
+includes materialized defaults; free-text mappings cannot create question logic.
+`getSalesDemoSetup` is a read-only completed-session projection.
+`prepareSalesDemoFormDraft` requires current verified invitation authority,
+canonical claimed organizer state and current Forms manager authority in the
+write transaction. It reuses Forms' transaction-level creation owner and stores
+one durable `salesDemoSetups` receipt per organizer, blueprint revision and setup
+hash. Retrying never overwrites a manager's subsequent edits. Preparation creates
+an unpublished organizer-wide draft only; unsupported requirements remain manual.
+
+### Current fit queue and import corrections
+
+The private `salesFitQueueEntries` projection reuses the canonical seven-factor
+score evaluator and qualification policy evaluator. Qualification-proof expiry
+is separate from score expiry. Unknown factors retain null scores. All account
+writes, accepted evidence and assessments invalidate the projection and advance
+its generation; cursors bind that generation and both policy identities.
+Historical refresh receipts cannot report current success after invalidation.
+Bounded refresh and list actions confer no contact or sending authority.
+
+New imports record exact per-organizer effects, account/cohort revisions and
+immutable lineage. Admin Owners can preview and apply one exact correction:
+remove only import-owned cohorts, or archive an unchanged newly created Sales
+companion when no dependent business work exists. A cohort mutation token fences
+later imports even when their cohort union is unchanged. Original import rows
+and canonical organizers remain intact. Missing legacy proof, ambiguous lineage,
+overflow or later cohort changes block correction. A deterministic effect marker
+prevents cross-request repetition. Archived companions reject dependent writes
+until an employee explicitly reopens them.

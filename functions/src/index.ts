@@ -764,7 +764,8 @@ export {
   adminListSalesCustomFields,
   adminGetSalesReceipt,
   adminListSalesInboundIntents,
-  adminPreviewSalesImport,
+  adminPreviewSalesImport, adminPreviewSalesImportCompensation,
+  adminApplySalesImportCompensation,
   adminListSalesContacts,
   adminListSalesEvidence,
   adminCreateSalesAccount,
@@ -810,7 +811,7 @@ export {
 } from "./admin/salesIntelligence/callables";
 
 export {
-  getSalesDemoPreview,
+  getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,
   startSalesDemo,
   getSalesDemoSession,
   advanceSalesDemo,
@@ -833,3 +834,6 @@ export {
 
 export {adminLinkOrganizerIntakeToSales} from
   "./admin/salesIntakeBridge/callables";
+
+export {adminListSalesFitQueue, adminRefreshSalesFitQueue,
+  adminRefreshSalesFitQueueBatch} from "./admin/salesFitQueue/callables";

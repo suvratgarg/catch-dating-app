@@ -8,7 +8,7 @@ import {Identity} from "./model";
 import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
   adminListBlueprints, adminListInvitations, advanceSession,
   getPreview, getSession, issueInvitation, reviewBlueprint,
-  revokeInvitation, saveBlueprint, startSession,
+  revokeInvitation, saveBlueprint, salesDemoSetup, startSession,
   withdrawBlueprint} from "./service";
 
 const demoGrantKey = defineSecret("SALES_DEMO_GRANT_KEY");
@@ -40,6 +40,14 @@ export const advanceSalesDemo = onCall(
   appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) =>
     advanceSession(deps(), identity(request), request.data));
+export const getSalesDemoSetup = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) =>
+    salesDemoSetup(deps(), identity(request), request.data, false));
+export const prepareSalesDemoFormDraft = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) =>
+    salesDemoSetup(deps(), identity(request), request.data, true));
 export const adminSaveSalesDemoBlueprint = onCall(
   appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => saveBlueprint(deps(), identity(request), request.data));

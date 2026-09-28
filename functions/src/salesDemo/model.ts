@@ -1,3 +1,4 @@
+import type {SetupPlan} from "./setupPlan";
 import {HttpsError} from "firebase-functions/v2/https";
 
 export const DEMO_CAPABILITY = "synthetic_forms_v1";
@@ -44,6 +45,7 @@ export interface Blueprint {
   seedVersion: 1;
   formCapabilityReview: FormCapabilityReview;
   fieldMappings: FieldMappingReview[];
+  setupPlan?: SetupPlan;
   preview: Preview;
   reviewedByUid: string | null;
   reviewedAt: string | null;

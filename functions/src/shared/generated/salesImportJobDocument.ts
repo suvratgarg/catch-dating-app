@@ -24,4 +24,33 @@ export interface SalesImportJobDocument {
   status: "applied";
   createdAt: string;
   createdBy: string;
+  /**
+   * @maxItems 25
+   */
+  accountEffects?: {
+    organizerId: string;
+    /**
+     * @minItems 1
+     * @maxItems 25
+     */
+    sourceRowIds: string[];
+    created: boolean;
+    revisionBefore: number | null;
+    revisionAfter: number;
+    /**
+     * @maxItems 30
+     */
+    cohortIdsBefore: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAfter: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAdded: string[];
+    cohortMutationIdBefore: string | "initial" | null;
+    cohortMutationIdAfter: string | "initial";
+    createdAccountHash: string | null;
+  }[];
 }

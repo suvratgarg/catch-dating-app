@@ -175,8 +175,14 @@ test("pristine imported companion archives with outreach held " +
   db.docs.set("salesFitQueueEntries/org-1", {organizerId: "org-1"});
   const plan = await preview(db, importId);
   assert.equal(plan.mode, "archive_companion");
+  assert.deepEqual(plan.cohortIdsRemoved, ["cohort-a"]);
   const result = await apply(db, importId, plan.previewHash as string);
   assert.equal(result.status, "compensated");
+  assert.deepEqual(result.cohortIdsRemoved, ["cohort-a"]);
+  assert.deepEqual(db.docs.get("organizerSalesAccounts/org-1")?.cohortIds, []);
+  const marker = [...db.docs].find(([path]) =>
+    path.startsWith("salesImportCompensations/"))![1];
+  assert.deepEqual(marker.cohortIdsRemoved, ["cohort-a"]);
   assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.researchStatus,
     "archived");
   assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.suppressionStatus,

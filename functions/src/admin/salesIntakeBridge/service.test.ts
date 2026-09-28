@@ -25,7 +25,7 @@ class Db {
   }
 }
 class Tx {
-  private writes: Array<{ref: Ref; value: Doc}> = [];
+  private writes: Array<{ref: Ref; value: Doc | null; create?: boolean}> = [];
   constructor(readonly db: Db) {}
   async get(ref: Ref) {
     if (this.writes.length) throw new Error("Firestore read after write");
@@ -34,14 +34,31 @@ class Tx {
       data === undefined ? undefined : structuredClone(data)};
   }
   create(ref: Ref, value: Doc) {
+    this.writes.push({ref, value, create: true});
+  }
+  delete(ref: Ref) {
+    this.writes.push({ref, value: null});
+  }
+  set(ref: Ref, value: Doc) {
     this.writes.push({ref, value});
   }
   commit() {
-    for (const {ref} of this.writes) {
-      if (this.db.docs.has(ref.path)) throw new Error("duplicate create");
+    for (const {ref, create} of this.writes) {
+      if (create && this.db.docs.has(ref.path)) {
+        throw new Error("duplicate create");
+      }
     }
     for (const {ref, value} of this.writes) {
-      this.db.docs.set(ref.path, structuredClone(value));
+      if (value === null) {
+        this.db.docs.delete(ref.path); continue;
+      }
+      const next = {...value};
+      if (next.generation && typeof next.generation === "object" &&
+          "operand" in next.generation) {
+        next.generation = Number(this.db.docs.get(ref.path)?.generation ?? 0) +
+          Number(next.generation.operand);
+      }
+      this.db.docs.set(ref.path, structuredClone(next));
     }
   }
 }

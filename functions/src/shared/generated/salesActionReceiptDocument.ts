@@ -30,7 +30,8 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.revise"
     | "commercial.quotes.approve"
     | "commercial.quotes.accept"
-    | "commercial.finance.attest";
+    | "commercial.finance.attest"
+    | "imports.compensation.apply";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;

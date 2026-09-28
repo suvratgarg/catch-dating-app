@@ -1,4 +1,14 @@
-import {createHash, createHmac, timingSafeEqual} from "node:crypto";
+import {organizerFormTemplateCatalog} from
+  "../shared/generated/catalogs/organizerFormTemplateCatalog";
+import {checkDemoSalesLinks, prepareDemoSalesActivity} from "./salesActivity";
+import {HttpsError} from "firebase-functions/v2/https";
+import {Timestamp} from "firebase-admin/firestore";
+import {authorizeFormMutation} from "../organizers/organizerFormTarget";
+import {createOrganizerFormInTransaction} from "../organizers/organizerForms";
+import {currentSetupPlan, reviewedSetupPlan, setupPlanHash} from
+  "./setupPlan";
+import {createHash, createHmac, timingSafeEqual, randomBytes} from
+  "node:crypto";
 import {DEMO_ACTIONS, DEMO_CAPABILITY, Blueprint, ContactBinding,
   CurrentUser, DemoAction, Identity, Invitation, Preview, Session,
   contact, fail, fieldMappings, formReview, grantToken, id, only,
@@ -105,6 +115,16 @@ interface MutationResult {result: Record<string, unknown>;
   beforeRevision: number; afterRevision: number}
 interface CapabilityGate {capability: typeof DEMO_CAPABILITY;
   revision: string; evidenceRevision: string; enabled: boolean}
+async function availableSalesAccount(deps: DemoDeps,
+  organizerId: string | null,
+  tx?: FirebaseFirestore.Transaction): Promise<void> {
+  if (!organizerId) return;
+  const ref = deps.db.collection("organizerSalesAccounts").doc(organizerId);
+  const account = (tx ? await tx.get(ref) : await ref.get()).data();
+  if (account?.researchStatus === "archived") {
+    fail("failed-precondition", "This Sales account is archived.");
+  }
+}
 async function currentCapability(deps: DemoDeps,
   tx?: FirebaseFirestore.Transaction): Promise<CapabilityGate> {
   const ref = deps.db.collection(CAPABILITIES).doc(DEMO_CAPABILITY);
@@ -162,7 +182,7 @@ export async function saveBlueprint(deps: DemoDeps, identity: Identity,
   const body = record(raw);
   only(body, ["requestId", "blueprintId", "expectedRevision",
     "organizerId", "candidateId", "opportunityId", "evidenceRevision",
-    "preview", "formCapabilityReview", "fieldMappings"]);
+    "preview", "formCapabilityReview", "fieldMappings", "setupPlan"]);
   const stableRequestId = requestId(body.requestId);
   const blueprintId = id(body.blueprintId);
   const expected = revision(body.expectedRevision);
@@ -176,6 +196,7 @@ export async function saveBlueprint(deps: DemoDeps, identity: Identity,
   const publicPreview = preview(body.preview);
   const capabilityReview = formReview(body.formCapabilityReview);
   const mappings = fieldMappings(body.fieldMappings);
+  const setupPlan = reviewedSetupPlan(body.setupPlan);
   if (publicPreview.limitations.length === 0) {
     return fail("invalid-argument", "Disclose simulation limitations.");
   }
@@ -183,7 +204,7 @@ export async function saveBlueprint(deps: DemoDeps, identity: Identity,
   return adminMutation(deps, identity, "salesDemo.blueprint.save",
     blueprintId, stableRequestId,
     {expected, organizerId, candidateId, opportunityId, evidenceRevision,
-      publicPreview, capabilityReview, mappings}, async (tx) => {
+      publicPreview, capabilityReview, mappings, setupPlan}, async (tx) => {
       const [old, gate] = await Promise.all([
         tx.get(ref), currentCapability(deps, tx),
       ]);
@@ -195,6 +216,8 @@ export async function saveBlueprint(deps: DemoDeps, identity: Identity,
           evidenceRevision !== gate.evidenceRevision) {
         return fail("failed-precondition", "Current evidence review required.");
       }
+      await availableSalesAccount(deps, organizerId, tx);
+      await checkDemoSalesLinks(tx, deps.db, organizerId, opportunityId);
       const updatedAt = deps.now().toISOString();
       const next: Blueprint = {schemaVersion: 1,
         classification: "sales_private", blueprintId,
@@ -202,7 +225,8 @@ export async function saveBlueprint(deps: DemoDeps, identity: Identity,
         opportunityId, capability: DEMO_CAPABILITY,
         capabilityRevision: gate.revision, evidenceRevision,
         seedVersion: 1, formCapabilityReview: capabilityReview,
-        fieldMappings: mappings, preview: publicPreview, reviewedByUid: null,
+        fieldMappings: mappings, setupPlan, preview: publicPreview,
+        reviewedByUid: null,
         reviewedAt: null, updatedAt, updatedByUid: identity.uid};
       tx.set(ref, next);
       return {result: {blueprintId, revision: next.revision,
@@ -232,6 +256,10 @@ export async function reviewBlueprint(deps: DemoDeps, identity: Identity,
           source.evidenceRevision !== gate.evidenceRevision) {
         return fail("failed-precondition", "Current draft review required.");
       }
+      await availableSalesAccount(deps, source.organizerId, tx);
+      await checkDemoSalesLinks(tx, deps.db, source.organizerId,
+        source.opportunityId);
+      currentSetupPlan(source.setupPlan);
       const reviewedAt = deps.now().toISOString();
       const result = {blueprintId, revision: expected + 1,
         state: "reviewed", reviewedAt};
@@ -312,6 +340,7 @@ export async function issueInvitation(deps: DemoDeps, identity: Identity,
           blueprint.evidenceRevision !== gate.evidenceRevision) {
         return fail("failed-precondition", "Reviewed blueprint required.");
       }
+      await availableSalesAccount(deps, blueprint.organizerId, tx);
       const now = deps.now();
       if (expiresAt <= now.getTime() ||
           expiresAt > now.getTime() + 7 * DAY) {
@@ -381,6 +410,7 @@ async function validInvitation(deps: DemoDeps,
       blueprint.evidenceRevision !== gate.evidenceRevision) {
     return fail("permission-denied", "Invitation is unavailable.");
   }
+  await availableSalesAccount(deps, blueprint.organizerId, tx);
   return invitation;
 }
 
@@ -531,7 +561,11 @@ export async function startSession(deps: DemoDeps, identity: Identity,
       }
       active = initialSession(candidateSessionId, invitation,
         identity.uid, now);
+      const recordStarted = await prepareDemoSalesActivity(tx, deps.db,
+        blueprintSnap.data() as Blueprint, active, "started",
+        now.toISOString());
       tx.create(deps.db.collection(SESSIONS).doc(candidateSessionId), active);
+      recordStarted();
     } else if (active.actorUid !== identity.uid) {
       return fail("permission-denied", "Trial belongs to another account.");
     }
@@ -679,7 +713,13 @@ export async function advanceSession(deps: DemoDeps, identity: Identity,
     }
     const next = reduceSyntheticForms(session, action, body.choice);
     const result = sessionProjection(next);
+    const recordCompleted = session.status === "active" &&
+      next.status === "completed" ?
+      await prepareDemoSalesActivity(tx, deps.db,
+        blueprintSnap.data() as Blueprint, next, "completed",
+        deps.now().toISOString()) : () => {};
     tx.update(sessionRef, next);
+    recordCompleted();
     tx.create(receiptRef, {schemaVersion: 1,
       classification: "sales_private", receiptId: receiptRef.id,
       actorUid: identity.uid, requestId: stableRequestId,
@@ -717,14 +757,17 @@ export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
 }
 
 export async function adminGetCapability(deps: DemoDeps,
-  identity: Identity, raw: unknown): Promise<CapabilityGate> {
+  identity: Identity, raw: unknown): Promise<CapabilityGate & {
+    templateOptions: Array<{templateId: string; title: string}>}> {
   await owner(deps, identity);
   const body = record(raw);
   only(body, []);
   const gate = await currentCapability(deps);
   await owner(deps, identity);
   return {capability: gate.capability, revision: gate.revision,
-    evidenceRevision: gate.evidenceRevision, enabled: true};
+    evidenceRevision: gate.evidenceRevision, enabled: true,
+    templateOptions: organizerFormTemplateCatalog.templates.map((template) =>
+      ({templateId: template.id, title: template.title}))};
 }
 
 function pageInput(raw: unknown, scopeKey: string):
@@ -782,4 +825,102 @@ export async function adminListInvitations(deps: DemoDeps,
   });
   return {rows, nextCursor: snaps.docs.length > limit ?
     snaps.docs[limit - 1].id : null};
+}
+
+/** Host setup requires current organizer authority beyond the sample grant. */
+export async function salesDemoSetup(deps: DemoDeps, identity: Identity,
+  raw: unknown, prepare: boolean): Promise<Record<string, unknown>> {
+  const body = record(raw);
+  only(body, prepare ? ["sessionId", "grantToken", "setupHash"] :
+    ["sessionId", "grantToken"]);
+  const sessionId = id(body.sessionId);
+  const token = grantToken(body.grantToken);
+  const publicFormId = randomBytes(24).toString("base64url");
+  return deps.db.runTransaction(async (tx) => {
+    const session = (await tx.get(deps.db.collection(SESSIONS)
+      .doc(sessionId))).data() as Session | undefined;
+    if (!session || session.actorUid !== identity.uid ||
+        session.status !== "completed" ||
+        Date.parse(session.expiresAt) <= deps.now().getTime()) {
+      return fail("permission-denied", "Complete a current sample first.");
+    }
+    const [inviteSnap, blueprintSnap] = await Promise.all([
+      tx.get(deps.db.collection(INVITATIONS).doc(session.invitationId)),
+      tx.get(deps.db.collection(BLUEPRINTS).doc(session.blueprintId)),
+    ]);
+    const blueprint = blueprintSnap.data() as Blueprint | undefined;
+    const invitation = await grant(deps, identity,
+      inviteSnap.data() as Invitation | undefined, blueprint, token, tx);
+    if (!blueprint || session.blueprintId !== invitation.blueprintId ||
+        session.blueprintRevision !== invitation.blueprintRevision) {
+      return fail("permission-denied", "The reviewed setup changed.");
+    }
+    const plan = currentSetupPlan(blueprint.setupPlan);
+    const setupHash = setupPlanHash(plan);
+    const organizerId = blueprint.organizerId;
+    const base = {schemaVersion: 1, setupHash, plan, organizerId,
+      formId: null, editorPath: null, publicationAuthority: false};
+    if (!organizerId || plan.mode === "manual") {
+      if (prepare) {
+        return fail("failed-precondition",
+          "This setup needs the Catch team's review.");
+      }
+      return {...base, status: "manual_setup"};
+    }
+    const organizer = (await tx.get(deps.db.collection("organizers")
+      .doc(organizerId))).data();
+    if (!organizer || !["claimed", "verified"].includes(
+      organizer.claim?.state)) {
+      if (prepare) {
+        return fail("permission-denied",
+          "Claim this organizer before preparing its draft.");
+      }
+      return {...base, status: "claim_required"};
+    }
+    try {
+      await authorizeFormMutation({db: deps.db, tx, actorUid: identity.uid,
+        organizerId});
+    } catch (error) {
+      if (prepare || !(error instanceof HttpsError) ||
+          !["permission-denied", "not-found"].includes(error.code)) throw error;
+      // Never expose organizer details or a prepared form to a non-manager.
+      return {...base, status: "claim_required"};
+    }
+    if (prepare && body.setupHash !== setupHash) {
+      return fail("failed-precondition", "Review the latest setup first.");
+    }
+    const setupId = hash(`${organizerId}\u0000${blueprint.blueprintId}`+
+      `\u0000${blueprint.revision}\u0000${setupHash}`);
+    const setupRef = deps.db.collection("salesDemoSetups").doc(setupId);
+    const prior = (await tx.get(setupRef)).data();
+    if (prior) {
+      if (prior.organizerId !== organizerId || prior.setupHash !== setupHash ||
+          prior.blueprintId !== blueprint.blueprintId ||
+          prior.blueprintRevision !== blueprint.revision ||
+          prior.formId !== `demo_${setupId.slice(0, 40)}`) {
+        return fail("failed-precondition", "Invalid setup receipt.");
+      }
+      const form = (await tx.get(deps.db.collection("organizerForms")
+        .doc(prior.formId))).data();
+      if (!form || form.organizerId !== organizerId) {
+        return fail("failed-precondition", "Prepared form is unavailable.");
+      }
+      return {...base, status: "prepared", formId: prior.formId,
+        editorPath: `/host/audience/forms/${prior.formId}`};
+    }
+    if (!prepare) return {...base, status: "ready"};
+    const formId = `demo_${setupId.slice(0, 40)}`;
+    // Read every Sales/grant/receipt gate before the Forms owner's first write.
+    await createOrganizerFormInTransaction({db: deps.db, tx,
+      actorUid: identity.uid, organizerId, formId,
+      templateId: plan.templateId, title: plan.title,
+      defaultTargetKind: "organizer", defaultTargetId: null, publicFormId,
+      timestamp: () => Timestamp.fromDate(deps.now())});
+    tx.create(setupRef, {schemaVersion: 1, classification: "sales_private",
+      setupId, organizerId, blueprintId: blueprint.blueprintId,
+      blueprintRevision: blueprint.revision, setupHash, formId,
+      createdByUid: identity.uid, createdAt: deps.now().toISOString()});
+    return {...base, status: "prepared", formId,
+      editorPath: `/host/audience/forms/${formId}`};
+  });
 }

@@ -1,3 +1,4 @@
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {SalesAccount, SalesPrincipal} from "./types";
@@ -108,6 +109,7 @@ export async function setAccountSuppression(
     accountRevision: next.revision,
   };
   tx.set(ref, next);
+  invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   tx.create(
     db.collection("salesSuppressionDecisions").doc(decision.decisionId),
     decision,

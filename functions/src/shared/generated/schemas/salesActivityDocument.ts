@@ -6,12 +6,12 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_activities.schema.json",
   "title": "SalesActivityDocument",
-  "description": "Private timeline. Manual outbound is actor-attested only; claim transitions originate only from canonical server workflows.",
+  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesActivities",
   "x-firestore-path": "salesActivities/{activityId}",
-  "x-owner": "private Sales service and canonical claim projection",
+  "x-owner": "private Sales service, canonical claim projection and confirmed demo projection",
   "required": [
     "schemaVersion",
     "classification",
@@ -70,7 +70,9 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
         "outreach_sent_manual",
         "claim_requested",
         "claim_approved",
-        "claim_rejected"
+        "claim_rejected",
+        "demo_started",
+        "demo_completed"
       ]
     },
     "channel": {
@@ -121,30 +123,72 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
       "maxLength": 180
     },
     "source": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "claimRequestId",
-        "transitionId"
-      ],
-      "properties": {
-        "kind": {
-          "const": "organizer_claim"
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "claimRequestId",
+            "transitionId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "organizer_claim"
+            },
+            "claimRequestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "transitionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
         },
-        "claimRequestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "transitionId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sessionId",
+            "blueprintId",
+            "blueprintRevision",
+            "invitationId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "sales_demo"
+            },
+            "sessionId": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            "blueprintId": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            "blueprintRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "invitationId": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            }
+          }
         }
-      }
+      ]
     }
   },
   "x-document-id-field": "activityId",
@@ -156,7 +200,9 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
             "enum": [
               "claim_requested",
               "claim_approved",
-              "claim_rejected"
+              "claim_rejected",
+              "demo_started",
+              "demo_completed"
             ]
           }
         }
@@ -211,6 +257,53 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
           },
           "outcome": {
             "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "demo_started",
+              "demo_completed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "sales_demo"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "claim_requested",
+              "claim_approved",
+              "claim_rejected"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "organizer_claim"
+              }
+            }
           }
         }
       }

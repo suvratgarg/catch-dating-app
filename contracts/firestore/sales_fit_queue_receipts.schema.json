@@ -9,16 +9,62 @@
   "x-firestore-path": "salesFitQueueReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
   "x-owner": "private Sales fit queue refresh callable",
-  "required": ["schemaVersion", "classification", "receiptId", "actorUid", "requestId", "materialHash", "result", "createdAt"],
+  "required": [
+    "schemaVersion",
+    "classification",
+    "receiptId",
+    "actorUid",
+    "requestId",
+    "materialHash",
+    "result",
+    "createdAt",
+    "qualificationPolicyHash"
+  ],
   "properties": {
-    "schemaVersion": {"const": 1},
-    "classification": {"const": "sales_private"},
-    "receiptId": {"$ref": "#/definitions/id"},
-    "actorUid": {"$ref": "#/definitions/id"},
-    "requestId": {"$ref": "#/definitions/id"},
-    "materialHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-    "result": {"$ref": "../callable_responses/admin_sales_fit_queue_refresh_response.schema.json"},
-    "createdAt": {"type": "string", "format": "date-time"}
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "receiptId": {
+      "$ref": "#/definitions/id"
+    },
+    "actorUid": {
+      "$ref": "#/definitions/id"
+    },
+    "requestId": {
+      "$ref": "#/definitions/id"
+    },
+    "materialHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "result": {
+      "$ref": "../callable_responses/admin_sales_fit_queue_refresh_response.schema.json"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "qualificationPolicyHash": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
   },
-  "definitions": {"id": {"type": "string", "minLength": 1, "maxLength": 96, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}}
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
 }

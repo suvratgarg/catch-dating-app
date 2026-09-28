@@ -285,6 +285,80 @@ export const salesDemoBlueprintsDocumentSchema: Record<string, unknown> = {
     "updatedByUid": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "setupPlan": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "requirements"
+          ],
+          "properties": {
+            "mode": {
+              "const": "manual"
+            },
+            "requirements": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "requirements",
+            "templateId",
+            "title",
+            "templateVersion",
+            "templateHash",
+            "materializerVersion"
+          ],
+          "properties": {
+            "mode": {
+              "const": "template"
+            },
+            "requirements": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "templateId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "templateVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "templateHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "materializerVersion": {
+              "const": 1
+            }
+          }
+        }
+      ]
     }
   },
   "definitions": {

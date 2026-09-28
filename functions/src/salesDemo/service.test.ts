@@ -10,7 +10,7 @@ import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
   adminListBlueprints, adminListInvitations,
   advanceSession, getPreview, getSession,
   issueInvitation, reviewBlueprint, revokeInvitation, saveBlueprint,
-  startSession, withdrawBlueprint} from "./service";
+  salesDemoSetup, startSession, withdrawBlueprint} from "./service";
 
 interface Ref {path: string; id: string}
 class MemoryDb {
@@ -62,6 +62,7 @@ class MemoryDb {
         ref: Ref; value: Record<string, unknown>}> = [];
       const result = await callback({
         get: async (ref) => {
+          assert.equal(writes.length, 0, "transaction reads precede writes");
           reads.set(ref.path, this.versions.get(ref.path) ?? 0);
           return this.snap(ref);
         },
@@ -127,15 +128,16 @@ function fixture() {
     clock = new Date(value);
   }};
 }
-async function blueprint(deps: DemoDeps) {
+async function blueprint(deps: DemoDeps, organizerId: string | null = null,
+  opportunityId: string | null = null, setupPlan?: unknown) {
   await saveBlueprint(deps, owner, {requestId: "save-demo-001",
     blueprintId: "blueprint-001", expectedRevision: 0,
-    organizerId: null, candidateId: "candidate-001",
-    opportunityId: null, evidenceRevision: "evidence-001",
+    organizerId, candidateId: organizerId ? null : "candidate-001",
+    opportunityId, evidenceRevision: "evidence-001",
     formCapabilityReview: {questionTypes: "manual", branching: "unsupported",
       requiredFields: "manual", scoringApproval: "unsupported",
       uploads: "retained"}, fieldMappings: [],
-    preview: samplePreview});
+    preview: samplePreview, ...(setupPlan ? {setupPlan} : {})});
   await reviewBlueprint(deps, owner, {requestId: "review-demo-001",
     blueprintId: "blueprint-001", expectedRevision: 1});
 }
@@ -179,9 +181,12 @@ test("owner management reads are scoped, paginated and omit invitation secrets",
     const issued = await invite(deps);
     const before = db.writes;
     const capability = await adminGetCapability(deps, owner, {});
-    assert.deepEqual(capability, {capability: "synthetic_forms_v1",
-      revision: "revision-001", evidenceRevision: "evidence-001",
-      enabled: true});
+    assert.ok(capability.templateOptions.some((item) =>
+      item.templateId === "blank"));
+    assert.deepEqual({...capability, templateOptions: undefined},
+      {templateOptions: undefined, capability: "synthetic_forms_v1",
+        revision: "revision-001", evidenceRevision: "evidence-001",
+        enabled: true});
     const otherBlueprint = {...db.docs.get("salesDemoBlueprints/blueprint-001"),
       blueprintId: "blueprint-002", organizerId: "organizer-002"};
     db.put("salesDemoBlueprints/blueprint-002", otherBlueprint);
@@ -704,6 +709,8 @@ test("persisted demo records satisfy their strict private contracts",
       expectedRevision: 1, action: "reviewApplication", choice: "approve"});
     const ajv = new Ajv({allErrors: true, strict: false});
     addFormats(ajv);
+    ajv.addSchema(JSON.parse(readFileSync(resolve(__dirname,
+      "../../../contracts/shared/sales_demo_setup_plan.schema.json"), "utf8")));
     const schemas = new Map([
       ["salesDemoCapabilities", "sales_demo_capabilities"],
       ["salesDemoBlueprints", "sales_demo_blueprints"],
@@ -723,4 +730,284 @@ test("persisted demo records satisfy their strict private contracts",
         assert.ok(validate(doc), `${path}: ${JSON.stringify(validate.errors)}`);
       }
     }
+  });
+
+function demoActivities(db: MemoryDb) {
+  return [...db.docs].filter(([path]) => path.startsWith("salesActivities/"))
+    .map(([, value]) => value);
+}
+function salesAccount(db: MemoryDb, researchStatus = "researching") {
+  db.put("organizerSalesAccounts/organizer-001", {
+    classification: "sales_private", organizerId: "organizer-001",
+    researchStatus});
+}
+for (const choice of ["approve", "needs_info"] as const) {
+  test(`confirmed ${choice} demo projects each transition once`, async () => {
+    const {db, deps} = fixture();
+    salesAccount(db);
+    await blueprint(deps, "organizer-001");
+    const issued = await invite(deps);
+    const start = {invitationId: issued.invitationId,
+      grantToken: issued.grantToken, requestId: "start-demo-001"};
+    const started = await startSession(deps, intended, start);
+    await startSession(deps, intended, start);
+    await startSession(deps, intended,
+      {...start, requestId: "start-demo-002"});
+    assert.deepEqual(demoActivities(db).map((row) => row.type),
+      ["demo_started"]);
+    const action = {sessionId: started.sessionId,
+      grantToken: issued.grantToken};
+    await advanceSession(deps, intended, {...action,
+      requestId: "review-step-001", expectedRevision: 1,
+      action: "reviewApplication", choice});
+    const reply = {...action, requestId: "reply-step-001",
+      expectedRevision: 2, action: "prepareReply",
+      choice: choice === "approve" ? "welcome" : "clarify"};
+    let completed = await advanceSession(deps, intended, reply);
+    await advanceSession(deps, intended, reply);
+    if (choice === "approve") {
+      const admit = {...action, requestId: "admit-step-001",
+        expectedRevision: 3, action: "admitGuest"};
+      completed = await advanceSession(deps, intended, admit);
+      await advanceSession(deps, intended, admit);
+    }
+    await advanceSession(deps, intended, {...action,
+      requestId: "assist-step-001", expectedRevision: completed.revision,
+      action: "requestAssistance"});
+    const before = db.writes;
+    await getSession(deps, intended, action);
+    await getPreview(deps, {invitationId: issued.invitationId});
+    assert.equal(db.writes, before);
+    const activities = demoActivities(db);
+    assert.deepEqual(activities.map((row) => row.type),
+      ["demo_started", "demo_completed"]);
+    const ajv = new Ajv({allErrors: true, strict: false});
+    addFormats(ajv);
+    const validate = ajv.compile(JSON.parse(readFileSync(resolve(__dirname,
+      "../../../contracts/firestore/sales_activities.schema.json"), "utf8")));
+    for (const activity of activities) {
+      assert.ok(validate(activity), JSON.stringify(validate.errors));
+      assert.equal(activity.actorUid, intended.uid);
+      assert.deepEqual(activity.source, {kind: "sales_demo",
+        sessionId: started.sessionId, blueprintId: "blueprint-001",
+        blueprintRevision: 2, invitationId: issued.invitationId});
+    }
+    const serialized = JSON.stringify(activities);
+    for (const secret of [String(issued.grantToken), "host@example.invalid",
+      "Sample Applicant", "tokenDigest"]) {
+      assert.equal(serialized.includes(secret), false);
+    }
+    assert.equal(validate({...activities[0], type: "note"}), false);
+    assert.equal(validate({...activities[0], source: {
+      kind: "organizer_claim", claimRequestId: "claim-001",
+      transitionId: "transition-001"}}), false);
+  });
+}
+
+test("candidate, missing and archived accounts never create Sales records",
+  async () => {
+    for (const state of ["candidate", "missing", "archived"]) {
+      const {db, deps} = fixture();
+
+      await blueprint(deps, state === "candidate" ? null : "organizer-001");
+      const issued = await invite(deps);
+      if (state === "archived") {
+        salesAccount(db, "archived");
+        await rejectsCode(startSession(deps, intended, {
+          invitationId: issued.invitationId, grantToken: issued.grantToken,
+          requestId: "start-demo-001"}), "failed-precondition");
+        assert.deepEqual(demoActivities(db), []);
+        continue;
+      }
+      const started = await startSession(deps, intended,
+        {invitationId: issued.invitationId, grantToken: issued.grantToken,
+          requestId: "start-demo-001"});
+      await advanceSession(deps, intended, {sessionId: started.sessionId,
+        grantToken: issued.grantToken, requestId: "review-step-001",
+        expectedRevision: 1, action: "reviewApplication",
+        choice: "needs_info"});
+      await advanceSession(deps, intended, {sessionId: started.sessionId,
+        grantToken: issued.grantToken, requestId: "reply-step-001",
+        expectedRevision: 2, action: "prepareReply", choice: "clarify"});
+      assert.deepEqual(demoActivities(db), []);
+      assert.equal(db.docs.has("organizerSalesAccounts/organizer-001"),
+        state === "archived");
+    }
+  });
+
+test("concurrent starts project only the committed session transition",
+  async () => {
+    const {db, deps} = fixture();
+    salesAccount(db);
+    await blueprint(deps, "organizer-001");
+    const issued = await invite(deps);
+    const results = await Promise.allSettled(Array.from({length: 8},
+      (_, i) => startSession(deps, intended,
+        {invitationId: issued.invitationId, grantToken: issued.grantToken,
+          requestId: `concurrent-demo-${i}`})));
+    assert.ok(results.some((result) => result.status === "fulfilled"));
+    assert.equal(demoActivities(db).length, 1);
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("salesDemoSessions/")).length, 1);
+  });
+
+test("mismatched opportunities fail save, review and start atomically",
+  async () => {
+    const {db, deps} = fixture();
+    salesAccount(db);
+    db.put("salesOpportunities/opportunity-001", {
+      classification: "sales_private", opportunityId: "opportunity-001",
+      organizerId: "organizer-other"});
+    const before = db.writes;
+    await rejectsCode(blueprint(deps, "organizer-001", "opportunity-001"),
+      "failed-precondition");
+    assert.equal(db.writes, before);
+    await blueprint(deps, "organizer-001");
+    const issued = await invite(deps);
+    const path = "salesDemoBlueprints/blueprint-001";
+    db.put(path, {...db.docs.get(path), opportunityId: "opportunity-001"});
+    const invalidBefore = db.writes;
+    await rejectsCode(reviewBlueprint(deps, owner, {
+      requestId: "review-invalid-001", blueprintId: "blueprint-001",
+      expectedRevision: 2}), "failed-precondition");
+    await rejectsCode(startSession(deps, intended, {
+      invitationId: issued.invitationId, grantToken: issued.grantToken,
+      requestId: "start-demo-001"}), "failed-precondition");
+    assert.equal(db.writes, invalidBefore);
+    assert.deepEqual(demoActivities(db), []);
+  });
+
+async function completedSetupFixture() {
+  const context = fixture();
+  const {db, deps} = context;
+  db.put("organizers/organizer-001", {ownerUserId: intended.uid,
+    hostUserIds: [intended.uid], hostProfiles: [], claim: {state: "claimed"}});
+  await blueprint(deps, "organizer-001", null, {mode: "template",
+    templateId: "blank", title: "My first form", requirements: [
+      "Add your questions and review consent before publishing."]});
+  const issued = await invite(deps);
+  const started = await startSession(deps, intended, {
+    invitationId: issued.invitationId, grantToken: issued.grantToken,
+    requestId: "start-demo-001"});
+  const input = {sessionId: started.sessionId, grantToken: issued.grantToken};
+  await advanceSession(deps, intended, {...input,
+    requestId: "review-step-001", expectedRevision: 1,
+    action: "reviewApplication", choice: "needs_info"});
+  await advanceSession(deps, intended, {...input,
+    requestId: "reply-step-001", expectedRevision: 2,
+    action: "prepareReply", choice: "clarify"});
+  return {...context, input};
+}
+
+test("reviewed setup read is inert and preparation preserves subsequent edits",
+  async () => {
+    const {db, deps, input} = await completedSetupFixture();
+    const before = db.writes;
+    const view = await salesDemoSetup(deps, intended, input, false);
+    assert.equal(view.status, "ready");
+    assert.equal(db.writes, before);
+    const prepare = {...input, setupHash: view.setupHash};
+    const result = await salesDemoSetup(deps, intended, prepare, true);
+    assert.equal(result.status, "prepared");
+    const formPath = `organizerForms/${result.formId}`;
+    const draftPath = `organizerFormDrafts/${result.formId}`;
+    const form = db.docs.get(formPath)!;
+    assert.equal(form.status, "draft");
+    assert.equal(form.activeVersionId, null);
+    assert.equal(form.publishedVersion, 0);
+    assert.equal(form.defaultTargetKind, "organizer");
+    db.put(formPath, {...form, title: "Host edited title", draftRevision: 2});
+    db.put(draftPath, {...db.docs.get(draftPath), revision: 2});
+    const writes = db.writes;
+    assert.deepEqual(await salesDemoSetup(deps, intended, prepare, true),
+      result);
+    assert.equal(db.writes, writes);
+    assert.equal(db.docs.get(formPath)?.title, "Host edited title");
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("organizerForms/")).length, 1);
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("salesDemoSetups/")).length, 1);
+    const ajv = new Ajv({strict: false});
+    addFormats(ajv);
+    const validate = ajv.compile(JSON.parse(readFileSync(resolve(__dirname,
+      "../../../contracts/firestore/sales_demo_setups.schema.json"), "utf8")));
+    assert.ok(validate([...db.docs].find(([path]) =>
+      path.startsWith("salesDemoSetups/"))![1]),
+    JSON.stringify(validate.errors));
+  });
+
+test("setup denies stale review, claim and manager loss before replay",
+  async () => {
+    const {db, deps, input} = await completedSetupFixture();
+    const view = await salesDemoSetup(deps, intended, input, false);
+    const prepare = {...input, setupHash: view.setupHash};
+    await rejectsCode(salesDemoSetup(deps, intended,
+      {...prepare, setupHash: "0".repeat(64)}, true), "failed-precondition");
+    await salesDemoSetup(deps, intended, prepare, true);
+    const path = "organizers/organizer-001";
+    const original = db.docs.get(path)!;
+    db.put(path, {...original, claim: {state: "unclaimed"}});
+    assert.equal((await salesDemoSetup(deps, intended, input, false)).status,
+      "claim_required");
+    await rejectsCode(salesDemoSetup(deps, intended, prepare, true),
+      "permission-denied");
+    db.put(path, {...original, ownerUserId: other.uid,
+      hostUserIds: [other.uid]});
+    await rejectsCode(salesDemoSetup(deps, intended, prepare, true),
+      "permission-denied");
+    db.put(path, original);
+    db.put(`salesDemoInvitations/${db.docs.get(
+      `salesDemoSessions/${input.sessionId}`)?.invitationId}`, {revoked: true});
+    await rejectsCode(salesDemoSetup(deps, intended, prepare, true),
+      "permission-denied");
+  });
+
+test("changed template review and revoked Firebase token block setup replay",
+  async () => {
+    const {db, deps, input, users} = await completedSetupFixture();
+    const view = await salesDemoSetup(deps, intended, input, false);
+    const prepare = {...input, setupHash: view.setupHash};
+    await salesDemoSetup(deps, intended, prepare, true);
+    const path = "salesDemoBlueprints/blueprint-001";
+    const original = db.docs.get(path)!;
+    db.put(path, {...original, setupPlan: {
+      ...original.setupPlan as Record<string, unknown>,
+      templateHash: "0".repeat(64)}});
+    await rejectsCode(salesDemoSetup(deps, intended, prepare, true),
+      "failed-precondition");
+    db.put(path, original);
+    users.set(intended.uid, {disabled: false, email: "host@example.invalid",
+      emailVerified: true, tokensValidAfterTime: "2026-09-28T10:00:01.000Z"});
+    await rejectsCode(salesDemoSetup(deps, intended, prepare, true),
+      "permission-denied");
+  });
+
+test("concurrent setup preparation creates one form and one durable receipt",
+  async () => {
+    const {db, deps, input} = await completedSetupFixture();
+    const view = await salesDemoSetup(deps, intended, input, false);
+    const results = await Promise.all(Array.from({length: 4}, () =>
+      salesDemoSetup(deps, intended, {...input, setupHash: view.setupHash},
+        true)));
+    assert.ok(results.every((result) => result.formId === results[0].formId));
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("organizerForms/")).length, 1);
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("salesDemoSetups/")).length, 1);
+  });
+
+test("failed setup transaction leaves neither draft nor setup receipt",
+  async () => {
+    const {db, deps, input} = await completedSetupFixture();
+    const view = await salesDemoSetup(deps, intended, input, false);
+    const original = db.runTransaction.bind(db);
+    db.runTransaction = (callback) => original(async (tx) => {
+      await callback(tx);
+      throw new Error("injected precommit failure");
+    });
+    await assert.rejects(salesDemoSetup(deps, intended,
+      {...input, setupHash: view.setupHash}, true), /precommit failure/u);
+    assert.equal([...db.docs.keys()].some((path) =>
+      /^(organizerForms|organizerFormDrafts|salesDemoSetups)\//u.test(path)),
+    false);
   });

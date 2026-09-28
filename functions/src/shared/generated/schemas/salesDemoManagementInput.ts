@@ -226,6 +226,66 @@ export const salesDemoManagementCallablePayloadSchema: Record<string, unknown> =
               }
             }
           }
+        },
+        "setupPlan": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "requirements"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "manual"
+                },
+                "requirements": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "requirements",
+                "templateId",
+                "title"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "template"
+                },
+                "requirements": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                },
+                "templateId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{3,128}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -639,6 +699,66 @@ export const salesDemoManagementCallablePayloadSchema: Record<string, unknown> =
               }
             }
           }
+        },
+        "setupPlan": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "requirements"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "manual"
+                },
+                "requirements": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "requirements",
+                "templateId",
+                "title"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "template"
+                },
+                "requirements": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                },
+                "templateId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{3,128}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            }
+          ]
         }
       }
     },

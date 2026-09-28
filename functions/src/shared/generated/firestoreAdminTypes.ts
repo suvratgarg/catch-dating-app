@@ -5,6 +5,7 @@
 import type {OutreachDraftingInput} from "./outreachDraftingInput";
 import type {OutreachDraft} from "./outreachDraft";
 import type {AdminBuildSalesOutreachInputPayload} from "./adminSalesIntelligenceDraftCallablePayload";
+import type {AdminRefreshSalesFitQueueResponse} from "./adminRefreshSalesFitQueueResponse";
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
@@ -939,6 +940,7 @@ export interface OrganizerSalesAccountDocument {
   createdAt: string;
   updatedAt: string;
   updatedBy: string;
+  cohortMutationId?: string | "initial" | null;
 }
 
 /**
@@ -1073,7 +1075,7 @@ export interface SalesOpportunityDocument {
 }
 
 /**
- * Private timeline. Manual outbound is actor-attested only; claim transitions originate only from canonical server workflows.
+ * Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.
  */
 export interface SalesActivityDocument {
   schemaVersion: 1;
@@ -1091,7 +1093,9 @@ export interface SalesActivityDocument {
     | "outreach_sent_manual"
     | "claim_requested"
     | "claim_approved"
-    | "claim_rejected";
+    | "claim_rejected"
+    | "demo_started"
+    | "demo_completed";
   channel: ("email" | "whatsapp" | "other") | null;
   outcome: "actor_attested_sent" | null;
   providerConfirmed: false;
@@ -1099,11 +1103,19 @@ export interface SalesActivityDocument {
   recordedAt: string;
   note: string;
   actorUid: string;
-  source?: {
-    kind: "organizer_claim";
-    claimRequestId: string;
-    transitionId: string;
-  };
+  source?:
+    | {
+        kind: "organizer_claim";
+        claimRequestId: string;
+        transitionId: string;
+      }
+    | {
+        kind: "sales_demo";
+        sessionId: string;
+        blueprintId: string;
+        blueprintRevision: number;
+        invitationId: string;
+      };
 }
 
 /**
@@ -1170,7 +1182,8 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.revise"
     | "commercial.quotes.approve"
     | "commercial.quotes.accept"
-    | "commercial.finance.attest";
+    | "commercial.finance.attest"
+    | "imports.compensation.apply";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -1277,6 +1290,35 @@ export interface SalesImportJobDocument {
   status: "applied";
   createdAt: string;
   createdBy: string;
+  /**
+   * @maxItems 25
+   */
+  accountEffects?: {
+    organizerId: string;
+    /**
+     * @minItems 1
+     * @maxItems 25
+     */
+    sourceRowIds: string[];
+    created: boolean;
+    revisionBefore: number | null;
+    revisionAfter: number;
+    /**
+     * @maxItems 30
+     */
+    cohortIdsBefore: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAfter: string[];
+    /**
+     * @maxItems 30
+     */
+    cohortIdsAdded: string[];
+    cohortMutationIdBefore: string | "initial" | null;
+    cohortMutationIdAfter: string | "initial";
+    createdAccountHash: string | null;
+  }[];
 }
 
 /**
@@ -1484,6 +1526,27 @@ export interface SalesDemoBlueprintsDocument {
   reviewedAt: string | null;
   updatedAt: string;
   updatedByUid: string;
+  setupPlan?:
+    | {
+        mode: "manual";
+        /**
+         * @minItems 1
+         * @maxItems 12
+         */
+        requirements: string[];
+      }
+    | {
+        mode: "template";
+        /**
+         * @maxItems 12
+         */
+        requirements: string[];
+        templateId: string;
+        title: string;
+        templateVersion: number;
+        templateHash: string;
+        materializerVersion: 1;
+      };
 }
 
 /**
@@ -1596,6 +1659,109 @@ export interface SalesDemoReceiptsDocument {
   };
   createdAt: string;
   expiresAt?: string;
+}
+
+/**
+ * Private current-fit projection. Only the source-bound, unexpired row may appear in a queue; this is never send authority.
+ */
+export interface SalesFitQueueEntryDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  policyId: string;
+  policyRevision: number;
+  policyVersion: string;
+  sourceHash: string;
+  accountRevision: number;
+  qualificationPolicyHash: string | null;
+  status: "complete" | "needs_research" | "review_required";
+  score: number | null;
+  priority: "high" | "medium" | "low" | "unranked";
+  eligibleForOutreachReview: boolean;
+  suppressionStatus: "clear" | "held" | "suppressed";
+  duplicateReviewRequired: boolean;
+  researchStatus:
+    | "new"
+    | "needs_research"
+    | "ready_for_review"
+    | "qualified"
+    | "benchmark_only"
+    | "no_fit"
+    | "archived";
+  name: string;
+  city: string | null;
+  assignedOwnerUid: string | null;
+  expiresAt: string | null;
+  evaluatedAt: string;
+  qualificationExpiresAt: string | null;
+}
+
+/**
+ * Private generation fence incremented atomically by every fit refresh and source invalidation.
+ */
+export interface SalesFitQueueMetaDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  metaId: "current";
+  generation: number;
+  updatedAt: string;
+}
+
+/**
+ * Private exact-retry receipt for one host fit projection refresh, not a durable claim of current rank.
+ */
+export interface SalesFitQueueReceiptDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  receiptId: string;
+  actorUid: string;
+  requestId: string;
+  materialHash: string;
+  result: AdminRefreshSalesFitQueueResponse;
+  createdAt: string;
+  qualificationPolicyHash: string | null;
+}
+
+/**
+ * Immutable private per-import per-organizer compensating effect; original job and lineage remain intact.
+ */
+export interface SalesImportCompensationDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  effectId: string;
+  importId: string;
+  organizerId: string;
+  mode: "archive_companion" | "remove_cohorts";
+  /**
+   * @minItems 1
+   * @maxItems 25
+   */
+  sourceRowIds: string[];
+  /**
+   * @maxItems 30
+   */
+  cohortIdsRemoved: string[];
+  beforeRevision: number;
+  afterRevision: number;
+  beforeCohortMutationId: string | "initial";
+  afterCohortMutationId: string;
+  reason: string;
+  createdAt: string;
+  createdBy: string;
+  requestId: string;
+}
+
+export interface SalesDemoSetupDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  setupId: string;
+  organizerId: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  setupHash: string;
+  formId: string;
+  createdByUid: string;
+  createdAt: string;
 }
 
 /**

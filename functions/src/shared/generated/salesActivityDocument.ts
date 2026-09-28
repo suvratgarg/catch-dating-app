@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Private timeline. Manual outbound is actor-attested only; claim transitions originate only from canonical server workflows.
+ * Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.
  */
 export type SalesActivityDocument = {
   [k: string]: unknown;
@@ -23,7 +23,9 @@ export type SalesActivityDocument = {
     | "outreach_sent_manual"
     | "claim_requested"
     | "claim_approved"
-    | "claim_rejected";
+    | "claim_rejected"
+    | "demo_started"
+    | "demo_completed";
   channel: ("email" | "whatsapp" | "other") | null;
   outcome: "actor_attested_sent" | null;
   providerConfirmed: false;
@@ -31,9 +33,17 @@ export type SalesActivityDocument = {
   recordedAt: string;
   note: string;
   actorUid: string;
-  source?: {
-    kind: "organizer_claim";
-    claimRequestId: string;
-    transitionId: string;
-  };
+  source?:
+    | {
+        kind: "organizer_claim";
+        claimRequestId: string;
+        transitionId: string;
+      }
+    | {
+        kind: "sales_demo";
+        sessionId: string;
+        blueprintId: string;
+        blueprintRevision: number;
+        invitationId: string;
+      };
 };

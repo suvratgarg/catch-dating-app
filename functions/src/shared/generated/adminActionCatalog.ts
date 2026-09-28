@@ -804,6 +804,190 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner"
     ]
+  },
+  "sales.intelligence.GetSalesIntelligenceCatalog": {
+    "callable": "adminGetSalesIntelligenceCatalog",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesIntelligenceScore": {
+    "callable": "adminGetSalesIntelligenceScore",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesIntelligencePolicy": {
+    "callable": "adminSaveSalesIntelligencePolicy",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesFactorAssessment": {
+    "callable": "adminSaveSalesFactorAssessment",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesIntelligenceClause": {
+    "callable": "adminSaveSalesIntelligenceClause",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ReviewSalesIntelligenceClause": {
+    "callable": "adminReviewSalesIntelligenceClause",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.SaveSalesScoreSnapshot": {
+    "callable": "adminSaveSalesScoreSnapshot",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.BuildSalesOutreachInput": {
+    "callable": "adminBuildSalesOutreachInput",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GenerateSalesOutreachDraft": {
+    "callable": "adminGenerateSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesOutreachDraftJob": {
+    "callable": "adminGetSalesOutreachDraftJob",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ListSalesOutreachDrafts": {
+    "callable": "adminListSalesOutreachDrafts",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.GetSalesOutreachDraft": {
+    "callable": "adminGetSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.ReviewSalesOutreachDraft": {
+    "callable": "adminReviewSalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intelligence.CopySalesOutreachDraft": {
+    "callable": "adminCopySalesOutreachDraft",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.commercial.finance.attest": {
+    "callable": "adminAttestSalesHostSettlement",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.intake.link": {
+    "callable": "adminLinkOrganizerIntakeToSales",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.list": {
+    "callable": "adminListSalesFitQueue",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.refresh": {
+    "callable": "adminRefreshSalesFitQueue",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.fitQueue.refresh_batch": {
+    "callable": "adminRefreshSalesFitQueueBatch",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.imports.compensation.preview": {
+    "callable": "adminPreviewSalesImportCompensation",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.imports.compensation.apply": {
+    "callable": "adminApplySalesImportCompensation",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
   }
 } as const;
 

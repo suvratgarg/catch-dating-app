@@ -123,6 +123,7 @@ async function requiredOpportunity(
   if (
     !account.exists ||
     account.data()?.classification !== "sales_private" ||
+    account.data()?.researchStatus === "archived" ||
     !opportunity.exists ||
     opportunity.data()?.organizerId !== organizerId
   ) {

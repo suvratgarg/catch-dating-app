@@ -117,6 +117,129 @@ const schemaSalesImportJobDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'accountEffects': <String, Object?>{
+      'type': 'array',
+      'maxItems': 25,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'organizerId',
+          'sourceRowIds',
+          'created',
+          'revisionBefore',
+          'revisionAfter',
+          'cohortIdsBefore',
+          'cohortIdsAfter',
+          'cohortIdsAdded',
+          'cohortMutationIdBefore',
+          'cohortMutationIdAfter',
+          'createdAccountHash',
+        ],
+        'properties': <String, Object?>{
+          'organizerId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+          },
+          'sourceRowIds': <String, Object?>{
+            'type': 'array',
+            'minItems': 1,
+            'maxItems': 25,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+          'created': <String, Object?>{
+            'type': 'boolean',
+          },
+          'revisionBefore': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 1,
+          },
+          'revisionAfter': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+          },
+          'cohortIdsBefore': <String, Object?>{
+            'type': 'array',
+            'maxItems': 30,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+          'cohortIdsAfter': <String, Object?>{
+            'type': 'array',
+            'maxItems': 30,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+          'cohortIdsAdded': <String, Object?>{
+            'type': 'array',
+            'maxItems': 30,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+          'cohortMutationIdBefore': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              <String, Object?>{
+                'const': 'initial',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'cohortMutationIdAfter': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              <String, Object?>{
+                'const': 'initial',
+              },
+            ],
+          },
+          'createdAccountHash': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+        },
+      },
+    },
   },
   'x-document-id-field': 'importId',
 };

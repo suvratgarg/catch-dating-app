@@ -2,7 +2,7 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {SalesAccount, SalesPrincipal} from "../sales/types";
-import {qualificationPolicyHash} from "../sales/qualificationPolicy";
+import {evaluateQualification, readQualificationPolicy} from "../sales/qualificationPolicy";
 import {evaluateScore, hash, parsePolicy, type Assessment,
   type IntelligencePolicy} from "../salesIntelligence/model";
 import {boundedLimit, decodeCursor, encodeCursor, entryVisible, exactFields,
@@ -42,16 +42,8 @@ function currentPolicy(raw: FirebaseFirestore.DocumentData | undefined): Intelli
     updatedAt: raw!.updatedAt, updatedBy: raw!.updatedBy, ...parsed};
 }
 function currentQualificationHash(raw: FirebaseFirestore.DocumentData | undefined): string | null {
-  if (raw?.schemaVersion !== 1 || raw.classification !== "sales_private" ||
-      raw.status !== "active" || typeof raw.policyHash !== "string" ||
-      !/^[a-f0-9]{64}$/u.test(raw.policyHash) ||
-      typeof raw.policyId !== "string" || typeof raw.version !== "string" ||
-      !Array.isArray(raw.rules) || raw.rules.length < 1 ||
-      raw.rules.length > 8) return null;
   try {
-    return qualificationPolicyHash({policyId: raw.policyId,
-      version: raw.version, rules: raw.rules}) === raw.policyHash ?
-      raw.policyHash : null;
+    return readQualificationPolicy(raw).policyHash;
   } catch {
     return null;
   }
@@ -68,7 +60,7 @@ function generation(raw: FirebaseFirestore.DocumentData | undefined): number {
 export function invalidateFitQueueInTransaction(tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore, organizerId: string, now: string): void {
   tx.delete(db.collection("salesFitQueueEntries").doc(organizerId));
-  tx.set(db.doc(metaPath), {schemaVersion: 1,
+  tx.set(db.collection("salesFitQueueMeta").doc("current"), {schemaVersion: 1,
     classification: "sales_private", metaId: "current",
     generation: admin.firestore.FieldValue.increment(1), updatedAt: now},
   {merge: true});
@@ -94,15 +86,36 @@ export async function refreshFitQueue(deps: FitQueueDeps,
     .doc(receiptId(principal.uid, requestId));
   return deps.db.runTransaction(async (tx) => {
     await deps.authorize(principal);
+    const accountRef = deps.db.collection("organizerSalesAccounts").doc(organizerId);
+    const currentAccount = (await tx.get(accountRef)).data();
+    if (currentAccount?.researchStatus === "archived") {
+      failed("Reopen this Sales account before refreshing fit.");
+    }
     const prior = (await tx.get(receiptRef)).data();
     if (prior) {
       if (prior.actorUid !== principal.uid || prior.requestId !== requestId ||
           prior.materialHash !== materialHash) {
         throw new HttpsError("already-exists", "Fit refresh request ID has different material.");
       }
+      const [projection, policySnap, qualificationSnap] = await Promise.all([
+        tx.get(deps.db.collection("salesFitQueueEntries").doc(organizerId)),
+        tx.get(deps.db.doc(policyPath)), tx.get(deps.db.doc(qualificationPath)),
+      ]);
+      const entry = projection.data() as FitQueueEntry | undefined;
+      const policy = currentPolicy(policySnap.data());
+      const now = deps.now().toISOString();
+      if (!entry || entry.sourceHash !== prior.result?.entry?.sourceHash ||
+          entry.accountRevision !== currentAccount?.revision ||
+          entry.policyRevision !== policy.revision ||
+          prior.qualificationPolicyHash !==
+            currentQualificationHash(qualificationSnap.data()) ||
+          entry.expiresAt !== null && entry.expiresAt <= now ||
+          entry.eligibleForOutreachReview && entry.qualificationExpiresAt !==
+            null && entry.qualificationExpiresAt <= now) {
+        failed("The earlier refresh is no longer current. Start a new review.");
+      }
       return prior.result as {entry: FitQueueEntry; receipt: {requestId: string; sourceHash: string}};
     }
-    const accountRef = deps.db.collection("organizerSalesAccounts").doc(organizerId);
     const [accountSnap, policySnap, qualificationSnap, metaSnap, evidenceSnap] =
       await Promise.all([
         tx.get(accountRef), tx.get(deps.db.doc(policyPath)),
@@ -134,6 +147,14 @@ export async function refreshFitQueue(deps: FitQueueDeps,
       assessments, evidence, now);
     const entry = projectScore(account, policy, snapshot,
       assessments, evidence, currentQualificationHash(qualificationSnap.data()));
+    const qualificationHash = currentQualificationHash(qualificationSnap.data());
+    if (qualificationHash !== null) {
+      const proof = evaluateQualification(qualificationSnap.data(),
+        organizerId, evidence, now);
+      entry.eligibleForOutreachReview = entry.eligibleForOutreachReview &&
+        proof.qualified;
+      entry.qualificationExpiresAt = proof.qualified ? proof.expiresAt : null;
+    } else entry.eligibleForOutreachReview = false;
     const nextGeneration = generation(metaSnap.data()) + 1;
     tx.set(deps.db.collection("salesFitQueueEntries").doc(organizerId), entry);
     tx.set(deps.db.doc(metaPath), {schemaVersion: 1,
@@ -142,7 +163,8 @@ export async function refreshFitQueue(deps: FitQueueDeps,
     const result = {entry, receipt: {requestId, sourceHash: snapshot.sourceHash}};
     tx.create(receiptRef, {schemaVersion: 1, classification: "sales_private",
       receiptId: receiptRef.id, actorUid: principal.uid, requestId,
-      materialHash, result, createdAt: now});
+      materialHash, qualificationPolicyHash: qualificationHash,
+      result, createdAt: now});
     return result;
   });
 }

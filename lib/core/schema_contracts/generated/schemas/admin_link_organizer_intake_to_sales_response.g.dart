@@ -381,6 +381,20 @@ const schemaAdminLinkOrganizerIntakeToSalesResponseSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
         },
+        'cohortMutationId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            <String, Object?>{
+              'const': 'initial',
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
       },
       'x-document-id-field': 'organizerId',
     },

@@ -9,6 +9,7 @@ export interface FitQueueEntry {
   sourceHash: string;
   accountRevision: number;
   qualificationPolicyHash: string | null;
+  qualificationExpiresAt: string | null;
   status: "complete" | "needs_research" | "review_required";
   score: number | null;
   priority: "high" | "medium" | "low" | "unranked";

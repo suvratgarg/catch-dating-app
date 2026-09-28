@@ -57,4 +57,25 @@ export interface SalesDemoBlueprintsDocument {
   reviewedAt: string | null;
   updatedAt: string;
   updatedByUid: string;
+  setupPlan?:
+    | {
+        mode: "manual";
+        /**
+         * @minItems 1
+         * @maxItems 12
+         */
+        requirements: string[];
+      }
+    | {
+        mode: "template";
+        /**
+         * @maxItems 12
+         */
+        requirements: string[];
+        templateId: string;
+        title: string;
+        templateVersion: number;
+        templateHash: string;
+        materializerVersion: 1;
+      };
 }

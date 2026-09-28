@@ -87,8 +87,17 @@ async function handleRead(
   const deps: SalesServiceDeps = {
     firestore: () => db,
     now: () => new Date(),
-    authorizeRead: async () => {
-      await currentSalesEmployee(request);
+    authorizeRead: async (_db, _principal, readAction) => {
+      const current = await currentSalesEmployee(request);
+      if (readAction === "imports.compensation.preview" &&
+          !current.roles.includes("adminOwner")) {
+        throw new HttpsError("permission-denied",
+          "Current Admin Owner authority is required for compensation.");
+      }
+      if (readAction === "imports.compensation.apply" ||
+          readAction === "commercial.finance.attest") {
+        assertSalesFinanceAuthority(current, readAction, null);
+      }
     },
   };
   return executeSalesRead(principal, action, request.data, deps);

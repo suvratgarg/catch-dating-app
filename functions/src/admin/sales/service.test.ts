@@ -181,6 +181,9 @@ test("compensation rechecks current Owner on apply and receipt replay",
     await assert.rejects(executeSalesAction(owner,
       "imports.compensation.apply", payload, checked),
     /Admin Owner finance authority/);
+    await assert.rejects(executeSalesRead({...owner, roles: ["admin"]},
+      "receipts.get", {requestId: payload.requestId}, deps),
+    /Admin Owner finance authority/);
     assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.researchStatus,
       "archived");
     await assert.rejects(executeSalesAction(employee, "tasks.upsert", {

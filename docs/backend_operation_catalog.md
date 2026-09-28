@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.88.0
+version: 1.88.1
 updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
@@ -581,3 +581,20 @@ model provider or sending capability by default. Stale source facts invalidate
 review/copy. Host settlement attestation and Intake-to-Sales joining are separate
 employee operations with strict request/response contracts; their records have
 no direct browser access. These source APIs do not establish deployed activation.
+
+### Demo-to-Forms setup
+
+`getSalesDemoSetup` and `prepareSalesDemoFormDraft` in `salesDemo/callables.ts`
+project a reviewed setup plan and explicitly prepare its draft. The completed
+session grant authenticates the invited contact; canonical organizer claim and
+Forms manager checks separately authorize product mutation. Preparation uses the
+existing Forms transaction helper and an immutable `salesDemoSetups` receipt.
+It returns the existing Host Forms editor route and grants no publication,
+response, payment or messaging authority.
+
+`adminListSalesFitQueue`, `adminRefreshSalesFitQueue` and
+`adminRefreshSalesFitQueueBatch` own the employee-only bounded current ranking
+projection. `adminPreviewSalesImportCompensation` and
+`adminApplySalesImportCompensation` own read-only owner review and exact-hash
+application of one proven import correction. Each action is registered in the
+Admin action catalog; no assistant delegation exposes these controls.

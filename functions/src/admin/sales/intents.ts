@@ -1,3 +1,4 @@
+import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -76,6 +77,7 @@ export async function linkSalesInboundIntent(
         "needs_research",
       ),
     );
+    invalidateFitQueueInTransaction(tx, db, input.organizerId, now);
   } else if (accountSnap.data()?.classification !== "sales_private") {
     throw new HttpsError(
       "failed-precondition",

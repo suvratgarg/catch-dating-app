@@ -29,7 +29,7 @@ it("shows unknown scores and page-scoped expiry without outreach authority", asy
   mocks.list.mockResolvedValue({rows: [{organizerId: "org-a",
     policyId: "synthetic", policyRevision: 2, policyVersion: "v1",
     sourceHash: "a".repeat(64), accountRevision: 3,
-    qualificationPolicyHash: null, status: "needs_research", score: null,
+    qualificationExpiresAt: null, qualificationPolicyHash: null, status: "needs_research", score: null,
     priority: "unranked", eligibleForOutreachReview: false,
     suppressionStatus: "clear", duplicateReviewRequired: false,
     researchStatus: "needs_research", name: "Sample Harbor",

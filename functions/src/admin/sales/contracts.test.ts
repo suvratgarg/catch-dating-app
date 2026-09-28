@@ -17,7 +17,8 @@ test("Sales catalog requests match the runtime validator authority", () => {
     entry.actionId.startsWith("sales.") &&
     !entry.actionId.startsWith("sales.demo.") &&
     !entry.actionId.startsWith("sales.intelligence.") &&
-    !entry.actionId.startsWith("sales.intake."));
+    !entry.actionId.startsWith("sales.intake.") &&
+    !entry.actionId.startsWith("sales.fitQueue."));
   assert.equal(entries.length, Object.keys(actions).length);
   for (const entry of entries) {
     const action = entry.actionId.slice("sales.".length);
@@ -31,6 +32,7 @@ test("Sales catalog requests match the runtime validator authority", () => {
     delete schema.$id;
     delete schema.title;
     delete schema.description;
+    delete schema["x-callable-aliases"];
     assert.deepEqual(schema, expected, `Contract drift: ${action}`);
   }
 });

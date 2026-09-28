@@ -5443,6 +5443,76 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "salesFitQueueEntries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "policyRevision",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "score",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "salesFitQueueEntries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "policyRevision",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eligibleForOutreachReview",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "qualificationPolicyHash",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "score",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "salesFitQueueEntries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "policyRevision",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "score",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

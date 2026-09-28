@@ -22,7 +22,8 @@ export async function prepareClaimSalesTransition(
     .doc(transition.organizerId));
   const data = account.data();
   if (!account.exists || data?.classification !== "sales_private" ||
-      data.organizerId !== transition.organizerId) return () => {};
+      data.organizerId !== transition.organizerId ||
+      data.researchStatus === "archived") return () => {};
   const activityId = `claim_${createHash("sha256")
     .update(transition.transitionId).digest("hex").slice(0, 40)}`;
   const taskId = `claim_${createHash("sha256")

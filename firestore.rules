@@ -2724,6 +2724,21 @@ service cloud.firestore {
     match /salesDemoInvitations/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /salesFitQueueEntries/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesFitQueueMeta/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesFitQueueReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesImportCompensations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoSetups/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /salesDemoSessions/{privateDocument=**} {
       allow read, write: if false;
     }

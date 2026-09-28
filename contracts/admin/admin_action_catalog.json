@@ -2589,6 +2589,120 @@
         "curationPath": "organizerIntakeCurationDecisions/example-decision",
         "requestId": "request-example-001"
       }
+    },
+    {
+      "actionId": "sales.fitQueue.list",
+      "callable": "adminListSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_list_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_list_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "view": "ranked"
+      }
+    },
+    {
+      "actionId": "sales.fitQueue.refresh",
+      "callable": "adminRefreshSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_refresh_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_refresh_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-example-001"
+      },
+      "confirmation": "action-and-target",
+      "controlPlane": true,
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.fitQueue.refresh_batch",
+      "callable": "adminRefreshSalesFitQueueBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_refresh_batch_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_refresh_batch_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "requestId": "request-example-001",
+        "limit": 10
+      },
+      "confirmation": "action",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.compensation.preview",
+      "callable": "adminPreviewSalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_compensation_preview_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_compensation_preview_response.schema.json",
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "example": {
+        "importId": "import-example",
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.compensation.apply",
+      "callable": "adminApplySalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_compensation_apply_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_compensation_apply_response.schema.json",
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "example": {
+        "importId": "import-example",
+        "organizerId": "org-example",
+        "requestId": "request-example-001",
+        "previewHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reason": "Reverse this reviewed import effect."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
     }
   ],
   "workflows": [
@@ -2842,7 +2956,12 @@
         "sales.intelligence.ReviewSalesOutreachDraft",
         "sales.intelligence.CopySalesOutreachDraft",
         "sales.commercial.finance.attest",
-        "sales.intake.link"
+        "sales.intake.link",
+        "sales.fitQueue.list",
+        "sales.fitQueue.refresh",
+        "sales.fitQueue.refresh_batch",
+        "sales.imports.compensation.preview",
+        "sales.imports.compensation.apply"
       ]
     }
   ]

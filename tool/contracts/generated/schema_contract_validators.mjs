@@ -111,6 +111,23 @@ import {
   salesDemoCapabilitiesDocumentSchema,
   salesDemoInvitationsDocumentSchema,
   salesDemoReceiptsDocumentSchema,
+  adminListSalesFitQueuePayloadSchema,
+  adminRefreshSalesFitQueueBatchPayloadSchema,
+  adminRefreshSalesFitQueuePayloadSchema,
+  adminListSalesFitQueueResponseSchema,
+  adminRefreshSalesFitQueueBatchResponseSchema,
+  adminRefreshSalesFitQueueResponseSchema,
+  salesFitQueueEntryDocumentSchema,
+  salesFitQueueMetaDocumentSchema,
+  salesFitQueueReceiptDocumentSchema,
+  adminApplySalesImportCompensationResponseSchema,
+  adminPreviewSalesImportCompensationResponseSchema,
+  adminSalesImportCompensationApplyPayloadSchema,
+  adminSalesImportCompensationPreviewPayloadSchema,
+  salesImportCompensationDocumentSchema,
+  salesDemoSetupDocumentSchema,
+  salesDemoSetupCallablePayloadSchema,
+  salesDemoSetupCallableResponseSchema,
   salesDemoSessionsDocumentSchema,
   salesEvidenceProposalsDocumentSchema,
   salesInboundIntentsDocumentSchema,
@@ -1195,6 +1212,23 @@ export const validateSalesDemoBlueprintsDocument = ajv.compile(salesDemoBlueprin
 export const validateSalesDemoCapabilitiesDocument = ajv.compile(salesDemoCapabilitiesDocumentSchema);
 export const validateSalesDemoInvitationsDocument = ajv.compile(salesDemoInvitationsDocumentSchema);
 export const validateSalesDemoReceiptsDocument = ajv.compile(salesDemoReceiptsDocumentSchema);
+export const validateAdminListSalesFitQueuePayload = ajv.compile(adminListSalesFitQueuePayloadSchema);
+export const validateAdminRefreshSalesFitQueueBatchPayload = ajv.compile(adminRefreshSalesFitQueueBatchPayloadSchema);
+export const validateAdminRefreshSalesFitQueuePayload = ajv.compile(adminRefreshSalesFitQueuePayloadSchema);
+export const validateAdminListSalesFitQueueResponse = ajv.compile(adminListSalesFitQueueResponseSchema);
+export const validateAdminRefreshSalesFitQueueBatchResponse = ajv.compile(adminRefreshSalesFitQueueBatchResponseSchema);
+export const validateAdminRefreshSalesFitQueueResponse = ajv.compile(adminRefreshSalesFitQueueResponseSchema);
+export const validateSalesFitQueueEntryDocument = ajv.compile(salesFitQueueEntryDocumentSchema);
+export const validateSalesFitQueueMetaDocument = ajv.compile(salesFitQueueMetaDocumentSchema);
+export const validateSalesFitQueueReceiptDocument = ajv.compile(salesFitQueueReceiptDocumentSchema);
+export const validateAdminApplySalesImportCompensationResponse = ajv.compile(adminApplySalesImportCompensationResponseSchema);
+export const validateAdminPreviewSalesImportCompensationResponse = ajv.compile(adminPreviewSalesImportCompensationResponseSchema);
+export const validateAdminSalesImportCompensationApplyPayload = ajv.compile(adminSalesImportCompensationApplyPayloadSchema);
+export const validateAdminSalesImportCompensationPreviewPayload = ajv.compile(adminSalesImportCompensationPreviewPayloadSchema);
+export const validateSalesImportCompensationDocument = ajv.compile(salesImportCompensationDocumentSchema);
+export const validateSalesDemoSetupDocument = ajv.compile(salesDemoSetupDocumentSchema);
+export const validateSalesDemoSetupCallablePayload = ajv.compile(salesDemoSetupCallablePayloadSchema);
+export const validateSalesDemoSetupCallableResponse = ajv.compile(salesDemoSetupCallableResponseSchema);
 export const validateSalesDemoSessionsDocument = ajv.compile(salesDemoSessionsDocumentSchema);
 export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceProposalsDocumentSchema);
 export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);

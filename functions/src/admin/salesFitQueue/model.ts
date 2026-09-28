@@ -16,6 +16,7 @@ export interface FitQueueEntry {
   sourceHash: string;
   accountRevision: number;
   qualificationPolicyHash: string | null;
+  qualificationExpiresAt: string | null;
   status: ScoreSnapshot["status"];
   score: number | null;
   priority: ScoreSnapshot["priority"];
@@ -122,7 +123,8 @@ export function projectScore(account: SalesAccount,
     organizerId: account.organizerId, policyId: policy.policyId,
     policyRevision: policy.revision, policyVersion: policy.version,
     sourceHash: snapshot.sourceHash, accountRevision: account.revision,
-    qualificationPolicyHash, status: snapshot.status,
+    qualificationPolicyHash, qualificationExpiresAt: null,
+    status: snapshot.status,
     score: snapshot.score, priority: snapshot.priority,
     eligibleForOutreachReview: snapshot.status === "complete" &&
       account.researchStatus === "qualified" &&
@@ -142,7 +144,8 @@ export function entryVisible(row: FitQueueEntry, view: FitQueueView,
   policyRevision: number, qualificationHash: string | null,
   now: string): boolean {
   if (row.policyRevision !== policyRevision ||
-      row.classification !== "sales_private") return false;
+      row.classification !== "sales_private" ||
+      row.researchStatus === "archived") return false;
   if (view === "needs_research") {
     return row.score === null &&
     row.status !== "complete";
@@ -151,6 +154,7 @@ export function entryVisible(row: FitQueueEntry, view: FitQueueView,
       row.expiresAt === null || row.expiresAt <= now) return false;
   return view === "ranked" ||
     row.eligibleForOutreachReview && qualificationHash !== null &&
+    (row.qualificationExpiresAt === null || row.qualificationExpiresAt > now) &&
     row.qualificationPolicyHash === qualificationHash &&
     row.suppressionStatus === "clear" &&
     !row.duplicateReviewRequired && row.researchStatus === "qualified";

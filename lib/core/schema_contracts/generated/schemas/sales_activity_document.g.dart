@@ -8,12 +8,12 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/sales_activities.schema.json',
   'title': 'SalesActivityDocument',
-  'description': 'Private timeline. Manual outbound is actor-attested only; claim transitions originate only from canonical server workflows.',
+  'description': 'Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'salesActivities',
   'x-firestore-path': 'salesActivities/{activityId}',
-  'x-owner': 'private Sales service and canonical claim projection',
+  'x-owner': 'private Sales service, canonical claim projection and confirmed demo projection',
   'required': <Object?>[
     'schemaVersion',
     'classification',
@@ -73,6 +73,8 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
         'claim_requested',
         'claim_approved',
         'claim_rejected',
+        'demo_started',
+        'demo_completed',
       ],
     },
     'channel': <String, Object?>{
@@ -123,30 +125,72 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'source': <String, Object?>{
-      'type': 'object',
-      'additionalProperties': false,
-      'required': <Object?>[
-        'kind',
-        'claimRequestId',
-        'transitionId',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'claimRequestId',
+            'transitionId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'organizer_claim',
+            },
+            'claimRequestId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'transitionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'sessionId',
+            'blueprintId',
+            'blueprintRevision',
+            'invitationId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'sales_demo',
+            },
+            'sessionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 3,
+              'maxLength': 128,
+              'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+            },
+            'blueprintId': <String, Object?>{
+              'type': 'string',
+              'minLength': 3,
+              'maxLength': 128,
+              'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+            },
+            'blueprintRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+            },
+            'invitationId': <String, Object?>{
+              'type': 'string',
+              'minLength': 3,
+              'maxLength': 128,
+              'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+            },
+          },
+        },
       ],
-      'properties': <String, Object?>{
-        'kind': <String, Object?>{
-          'const': 'organizer_claim',
-        },
-        'claimRequestId': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 180,
-          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-        },
-        'transitionId': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 180,
-          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-        },
-      },
     },
   },
   'x-document-id-field': 'activityId',
@@ -159,6 +203,8 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
               'claim_requested',
               'claim_approved',
               'claim_rejected',
+              'demo_started',
+              'demo_completed',
             ],
           },
         },
@@ -213,6 +259,53 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
           },
           'outcome': <String, Object?>{
             'type': 'null',
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'type': <String, Object?>{
+            'enum': <Object?>[
+              'demo_started',
+              'demo_completed',
+            ],
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'source': <String, Object?>{
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'sales_demo',
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'type': <String, Object?>{
+            'enum': <Object?>[
+              'claim_requested',
+              'claim_approved',
+              'claim_rejected',
+            ],
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'source': <String, Object?>{
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'organizer_claim',
+              },
+            },
           },
         },
       },
