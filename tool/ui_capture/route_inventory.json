@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "4c077495c67f1ed3470f01c1713f32643e8397a8e477306786fadc5b682c21f5",
-    "routeContractSha256": "4fac5f8712cc16a3e4f7c7e4c3c100f9a55450084f2c4b5022fb778f0b15d503",
+    "normalizedFileSha256": "453a4befd49d8af9a24adc80cccdbb3fd71f82c0152aa687602b79ebb971633a",
+    "routeContractSha256": "7d0047a52ee47d297c33d94522156c409e511a5d90fa87c068ed4887119ecf3e",
     "goRouteCount": 109,
     "shellBranchCount": 9,
     "enumRouteCount": 94,
@@ -33,8 +33,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.loadingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>const _RouteLoadingScreen()",
-      "presentationTarget": "_RouteLoadingScreen",
+      "presentationExpression": "(context,state){final t=CatchTokens.of(context);return CatchScaffold.standalone(backgroundColor:t.bg,body:const CatchStateViewport.loading(accountForBottomOverlay:false));}",
+      "presentationTarget": "CatchScaffold.standalone",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -628,7 +628,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.paymentConfirmationScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final data=state.extra!as PaymentConfirmationData;return PaymentConfirmationScreen(data:data);}",
+      "presentationExpression": "(context,state)=>PaymentConfirmationScreen(data:state.extra!as PaymentConfirmationData)",
       "presentationTarget": "PaymentConfirmationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1216,7 +1216,7 @@
       "runtimeParentId": "hostProgramWorkspaceScreen",
       "runtimePathExpression": "'moments'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:OrganizerMomentScope.program(state.pathParameters['programId']!),scopeTitle:state.uri.queryParameters['title'])",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:_programMomentScope(state),scopeTitle:state.uri.queryParameters['title'])",
       "presentationTarget": "OrganizerMomentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
