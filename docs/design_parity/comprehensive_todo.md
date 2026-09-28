@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.326
-updated: 2026-09-07
+version: 0.2.327
+updated: 2026-09-29
 owner: product_design_parity
 status: active
 ---
@@ -27,9 +27,9 @@ or an independent feature contract. Its domain state and route intents remain te
 
 - Route inventory: 56 app routes.
 - Route coverage decisions: 50 contracted, 4 alias, 0 planned, 2 excluded.
-- Screen contracts: 36 contracted screens.
+- Screen contracts: 37 contracted screens.
 - Feature orchestration coverage: 57 registered authorities, 41 source
-  contracts, 32 contracted Flutter screens, 6 contracted marketing routes, 14
+  contracts, 33 contracted Flutter screens, 6 contracted marketing routes, 14
   contracted Admin routes, and 1 planned Flutter authority. Four static/fallback marketing
   routes remain deliberately excluded and the legacy organizer-listing route
   remains a grouped static-output projection. The social-journey batch compiles all 87
@@ -100,17 +100,17 @@ or an independent feature contract. Its domain state and route intents remain te
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 27 P1, 10 P2, and 5 P3 contracted screens.
-- Contracted screen states: 712.
-- Contracted screen sections: 249.
-- Screen registry migration gaps: 30 open, 24 blocked, and 110 closed. One of
-  the 25 non-blocked gaps is currently marked in progress. These are
+- Screen priority spread: 28 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 716.
+- Contracted screen sections: 250.
+- Screen registry migration gaps: 32 open, 24 blocked, and 110 closed. One of
+  the 26 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,143.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 13 feature groups, 44 screens, 731 matrix states, and
-  60 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 13 feature groups, 45 screens, 735 matrix states, and
+  61 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 562 captured, 71 implemented, 4 planned, and
   77 tested.
@@ -769,7 +769,9 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.programs.guests` | 4 | 1 | 0 | Planned: guest matrix captures land with the program golden pass | `DP-PROGRAMS-GUESTS-001` | `feature.programs_arrivals_ops` binds the household-by-function RSVP matrix with group chips, per-guest edits, function-scoped RSVP writes, and the group ledger driven by `listProgramGuests`. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.team` | 4 | 1 | 0 | Planned: team captures land with the program golden pass | `DP-PROGRAMS-TEAM-001` | `feature.programs_arrivals_ops` binds the staff roster with duty badges, scoped pickup-point/hotel/function chips, expiry copy, and grant, invite, and revoke actions through the shared access dialog. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.import` | 4 | 1 | 0 | Planned: import captures land with the program golden pass | `DP-PROGRAMS-IMPORT-001` | `feature.programs_arrivals_ops` binds manifest import: file pick, per-column field mapping through the client mapper, preview and commit through `importProgramManifest`, and the result section with created/updated counts and row errors. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.counts` | 4 | 1 | 0 | Planned: counts captures land with the program golden pass | `DP-PROGRAMS-COUNTS-001` | `feature.programs_arrivals_ops` binds the counts-only stakeholder overview: guest and household totals, per-function RSVP and door counts, and per-hotel occupancy rows, with names joined client-side so no PII crosses the callable boundary. Route captures remain the explicit follow-up. |
 | P1 | `screen.host.event.moments` | 6 | 1 | 0 | Planned: routed captures land with the organizer moments golden pass | None | The organizer Moments workspace lists scope-bound send rules with approve-the-rule-once lifecycle controls (arm, pause, resume, manual run) and an inline editor covering manual, scheduled, anchored, and triggered initiation against the generated callable constraints. Event scope is routed today through the manage screen; program scope mounts when an organizer program workspace exists. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.moments` | 6 | 1 | 0 | Planned: program Moments route captures land with the program golden pass | `DP-PROGRAMS-MOMENTS-001` | The program route uses the same scoped Moments list and editor for lifecycle review, creation, and edits. Its route and states are implemented; visual captures remain open. |
 | P1 | `screen.host.work` | 5 | 1 | 0 | Planned: routed captures land with the staff work shell golden pass | None | The unified staff work picker lists the caller's live assignments grouped by organizer, forwards a lone workShell assignment straight into its scoped workspace, and renders the grant empty state otherwise. Route captures remain the explicit follow-up. |
 | P2 | `screen.event.recap` | 12 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | `feature.event_recap` compiles all 12 states and five close, route-recovery, profile-recovery, attendee-selection, and Catches-handoff actions. `DS-EVENT-RECAP-005` is closed: profile lookup loading keeps the resolved recap with a grid skeleton, failure shows inline retry for the exact batched query, and Guest is reserved for genuinely missing resolved profiles. Deterministic profile-enrichment loading/error previews and captures are registered; canonical reference export remains blocked. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 0 | None | None | `feature.matching_preferences` compiles all 11 states and six close, recovery, age, gender, reset, and apply actions. `DS-FILTERS-004` is closed under `REG-PENDING-SNAPSHOT-001`, and `DS-FILTERS-005` is closed by branded missing-profile guidance plus retry and focused route proof. Existing Widgetbook, captures, and default reference stay registered. |

@@ -165470,6 +165470,7 @@ export const programGuestGroupDocumentSchema = {
     "dimension",
     "sortOrder",
     "memberCount",
+    "hotelId",
     "createdAt",
     "updatedAt",
     "revision"
@@ -165508,6 +165509,15 @@ export const programGuestGroupDocumentSchema = {
       "minimum": 0,
       "maximum": 100000,
       "description": "Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete."
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group."
     },
     "createdAt": {
       "type": "object",
@@ -166546,6 +166556,440 @@ export const programHotelDocumentSchema = {
   }
 };
 
+export const programStayDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_stays.schema.json",
+  "title": "ProgramStayDocument",
+  "description": "Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStays",
+  "x-firestore-path": "programStays/{stayId}",
+  "x-document-id-field": "stayId",
+  "x-owner": "program accommodation callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "guestId",
+    "hotelId",
+    "roomBlockId",
+    "roomLabel",
+    "startsAt",
+    "endsAt",
+    "status",
+    "roomReadyAt",
+    "hotelArrivedAt",
+    "notes",
+    "source",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Exactly one guest per stay; roommates are separate stays sharing roomLabel."
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "programHotels doc the guest stays at; must belong to the same program."
+    },
+    "roomBlockId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "programRoomBlocks doc this stay draws capacity from; null for ad-hoc assignments outside any block."
+    },
+    "roomLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "Physical room assignment (e.g. '412') set by the hotel desk; null until allocated."
+    },
+    "startsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Planned check-in; null while the stay is requested but undated."
+    },
+    "endsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Planned check-out; null while undated."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "held",
+        "confirmed",
+        "checkedIn",
+        "checkedOut",
+        "cancelled"
+      ],
+      "description": "Stay lifecycle: held (reserved, not confirmed) → confirmed → checkedIn → checkedOut; cancelled releases block capacity."
+    },
+    "roomReadyAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "When the hotel marked the room ready for this guest."
+    },
+    "hotelArrivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "When the guest actually reached the hotel (hotel-desk observed)."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "planner"
+      ],
+      "description": "How the stay row entered the program — mirrors programTravelLegs.source."
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programRoomBlockDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_room_blocks.schema.json",
+  "title": "ProgramRoomBlockDocument",
+  "description": "Server-owned reserved room inventory at a programHotels doc — a labelled block of rooms held for a stay window, optionally earmarked for guest groups. Stays consume capacity through roomBlockId; assignedCount is the server-maintained rollup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programRoomBlocks",
+  "x-firestore-path": "programRoomBlocks/{roomBlockId}",
+  "x-document-id-field": "roomBlockId",
+  "x-owner": "program accommodation callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "hotelId",
+    "label",
+    "roomType",
+    "totalRooms",
+    "assignedCount",
+    "heldForGroupIds",
+    "startsAt",
+    "endsAt",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "programHotels doc this block reserves rooms at; must belong to the same program."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Organizer-facing block name, e.g. 'Bride family — Deluxe'."
+    },
+    "roomType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Optional hotel room class (Deluxe, Suite). Null when the block is type-agnostic."
+    },
+    "totalRooms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500,
+      "description": "Rooms held under this block."
+    },
+    "assignedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "description": "Server-maintained count of live programStays rows bound to this block; never written by clients."
+    },
+    "heldForGroupIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "programGuestGroups this block is earmarked for; allocation prefers matching groups before general inventory."
+    },
+    "startsAt": {
+      "type": "object",
+      "description": "First night of the stay window this block covers.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endsAt": {
+      "type": "object",
+      "description": "Checkout day of the stay window this block covers.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Operational notes visible to organizer and hotel desk (rate contact, holding conditions)."
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const programTravelLegDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_travel_legs.schema.json",
@@ -167489,6 +167933,13 @@ export const organizerMomentDocumentSchema = {
           ],
           "description": "functionGuests: one send per household when true (default)."
         },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+        },
         "rsvpPendingOnly": {
           "type": [
             "boolean",
@@ -167671,7 +168122,7 @@ export const organizerMomentRunDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_moment_runs.schema.json",
   "title": "OrganizerMomentRunDocument",
-  "description": "Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.",
+  "description": "Server-owned planned/fired run for a moment. Time-based runId encodes moment + anchor revision + nominal due time; mutable travel wake and deferrals are separate. Triggered/manual identities retain subject/requestKey.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerMomentRuns",
@@ -167700,6 +168151,21 @@ export const organizerMomentRunDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "occurrenceVersion": {
+      "type": "integer",
+      "enum": [
+        2
+      ]
+    },
+    "plannedWakeAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "travelPlanHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     },
     "anchorRevision": {
       "type": "integer",
@@ -168137,6 +168603,13 @@ export const upsertOrganizerMomentCallablePayloadSchema = {
             "null"
           ],
           "description": "functionGuests: one send per household when true (default)."
+        },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
         },
         "rsvpPendingOnly": {
           "type": [
@@ -168650,6 +169123,13 @@ export const organizerMomentCallableResponseSchema = {
               ],
               "description": "functionGuests: one send per household when true (default)."
             },
+            "travelTimeLead": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+            },
             "rsvpPendingOnly": {
               "type": [
                 "boolean",
@@ -169049,6 +169529,13 @@ export const listOrganizerMomentsCallableResponseSchema = {
                   "null"
                 ],
                 "description": "functionGuests: one send per household when true (default)."
+              },
+              "travelTimeLead": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
               },
               "rsvpPendingOnly": {
                 "type": [
@@ -170179,6 +170666,7 @@ export const programIdCallablePayloadSchema = {
   "additionalProperties": false,
   "x-callable-aliases": [
     "getOrganizerProgram",
+    "getProgramStakeholderCounts",
     "getProgramWorkAccess",
     "listProgramHouseholds"
   ],
@@ -170969,6 +171457,15 @@ export const upsertProgramGuestGroupCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 10000
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link — where this group's members stay; feeds distance-aware moment lead times. Omitted preserves the existing link; explicit null clears it."
     }
   }
 };
@@ -171236,6 +171733,126 @@ export const submitProgramHouseholdRsvpCallablePayloadSchema = {
     "messagingConsent": {
       "type": "boolean",
       "description": "The explicit household messaging-consent checkbox; recorded exactly as ticked."
+    },
+    "travel": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "maxItems": 400,
+      "description": "Optional per-member travel capture. Each block writes one programTravelLegs row keyed deterministically by household, guest, and journey kind, so resubmits update in place. A block is the complete desired state of that leg; absent blocks never delete planner-owned or previously captured journeys.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "kind"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound",
+              "ground"
+            ]
+          },
+          "flightNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "carrierCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 3
+          },
+          "originIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destinationIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scheduledArrivalAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 253402300799999
+          },
+          "pickupPointId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "passengers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Defaults to 1 when omitted."
+          },
+          "luggageUnits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Defaults to 0 when omitted."
+          }
+        }
+      }
     }
   }
 };
@@ -172954,7 +173571,8 @@ export const programHouseholdRsvpViewCallableResponseSchema = {
     "householdId",
     "householdLabel",
     "messagingConsentGranted",
-    "members"
+    "members",
+    "hotels"
   ],
   "properties": {
     "programId": {
@@ -172991,7 +173609,8 @@ export const programHouseholdRsvpViewCallableResponseSchema = {
         "required": [
           "guestId",
           "displayName",
-          "functions"
+          "functions",
+          "travel"
         ],
         "properties": {
           "guestId": {
@@ -173084,6 +173703,122 @@ export const programHouseholdRsvpViewCallableResponseSchema = {
                 }
               }
             }
+          },
+          "travel": {
+            "type": "array",
+            "maxItems": 6,
+            "description": "This member's previously captured travel blocks, one per journey kind, echoed so the form can pre-fill. Only household-submitted (formResponse) legs appear.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "flightNumber",
+                "carrierCode",
+                "originIata",
+                "destinationIata",
+                "scheduledArrivalAtMillis",
+                "destinationHotelId",
+                "destinationLabel",
+                "passengers",
+                "luggageUnits"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "inbound",
+                    "outbound",
+                    "ground"
+                  ]
+                },
+                "flightNumber": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 16
+                },
+                "carrierCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "originIata": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "destinationIata": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 3
+                },
+                "scheduledArrivalAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 253402300799999
+                },
+                "destinationHotelId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "destinationLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "passengers": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "luggageUnits": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "The program's configured hotels for the travel destination picker; names only.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 140
           }
         }
       }
@@ -173105,6 +173840,7 @@ export const submitProgramHouseholdRsvpCallableResponseSchema = {
     "entityId",
     "revision",
     "appliedCount",
+    "travelLegAppliedCount",
     "messagingConsentGranted",
     "alreadyApplied"
   ],
@@ -173124,6 +173860,12 @@ export const submitProgramHouseholdRsvpCallableResponseSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "travelLegAppliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "How many programTravelLegs rows this submit wrote from its travel blocks."
     },
     "messagingConsentGranted": {
       "type": "boolean",
@@ -173814,6 +174556,7 @@ export const organizerProgramCallableResponseSchema = {
       "additionalProperties": false,
       "required": [
         "programId",
+        "organizerId",
         "kind",
         "title",
         "timezone",
@@ -173826,6 +174569,11 @@ export const organizerProgramCallableResponseSchema = {
       ],
       "properties": {
         "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -174426,6 +175174,7 @@ export const programGuestListCallableResponseSchema = {
           "guestId",
           "displayName",
           "householdId",
+          "contactId",
           "phoneE164",
           "email",
           "externalReference",
@@ -174451,6 +175200,15 @@ export const programGuestListCallableResponseSchema = {
               "null"
             ],
             "maxLength": 180
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180,
+            "description": "Optional link to organizerContacts. Lets program-scoped surfaces (the host inbox scope chip) attribute contact-linked threads to this program's guests."
           },
           "phoneE164": {
             "type": [
@@ -174691,6 +175449,7 @@ export const programGuestGroupListCallableResponseSchema = {
           "dimension",
           "sortOrder",
           "memberCount",
+          "hotelId",
           "revision"
         ],
         "properties": {
@@ -174717,6 +175476,14 @@ export const programGuestGroupListCallableResponseSchema = {
           "memberCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           },
           "revision": {
             "type": "integer",
@@ -175871,6 +176638,175 @@ export const programFunctionDoorViewCallableResponseSchema = {
             ],
             "maxLength": 140,
             "description": "Staff display name resolved through programStaffGrants; never a uid."
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programStakeholderCountsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_stakeholder_counts_response.schema.json",
+  "title": "ProgramStakeholderCountsCallableResponse",
+  "description": "Counts-only program overview for stakeholderViewer staff and organizer managers: guest and household headcounts, per-function RSVP/attendance histograms, and per-hotel occupancy. The contract carries no PII — ids and counts only, never names, contacts, or notes.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramStakeholderCounts"
+  ],
+  "required": [
+    "programId",
+    "serverTimeMillis",
+    "accessExpiresAtMillis",
+    "guestCount",
+    "householdCount",
+    "functions",
+    "hotels"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "guestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "householdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "status",
+          "invitedCount",
+          "rsvpPending",
+          "rsvpAttending",
+          "rsvpDeclined",
+          "rsvpMaybe",
+          "expectedHeads",
+          "checkedInHeads",
+          "noShowCount"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "invitedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Guests invited to this function: every program guest for allGuests functions, else invited functionGuests rows."
+          },
+          "rsvpPending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Invited guests with no response (or no join row yet on allGuests functions)."
+          },
+          "rsvpAttending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpDeclined": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpMaybe": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "expectedHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Sum of attending party sizes (null reads as 1)."
+          },
+          "checkedInHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Heads marked checkedIn at the door."
+          },
+          "noShowCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "routedGuestCount",
+          "arrivedGuestCount",
+          "legCount"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "routedGuestCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Distinct guests with at least one leg routed to this hotel."
+          },
+          "arrivedGuestCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Distinct routed guests whose hotel-bound leg already arrived."
+          },
+          "legCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
           }
         }
       }

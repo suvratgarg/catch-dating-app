@@ -163,6 +163,16 @@ export async function upsertOrganizerMomentHandler(
       "invalid-argument",
       "Moment requires scope, name, initiation, audience, and action.");
   }
+  // travelTimeLead is flat on the audience contract but meaningful only
+  // for functionGuests; other kinds reject instead of silently dropping it.
+  const rawAudience = params.payload.audience as
+    Record<string, unknown> | undefined;
+  if (rawAudience?.travelTimeLead === true &&
+      rawAudience.kind !== "functionGuests") {
+    throw new HttpsError(
+      "invalid-argument",
+      "travelTimeLead applies to functionGuests audiences only.");
+  }
   await deps.authorizeManage(db, scope, params.actorUid);
 
   const momentId = typeof params.payload.momentId === "string" &&
@@ -400,6 +410,7 @@ function momentAudienceToWire(
       functionId: audience.functionId,
       rsvp: [...audience.rsvp],
       householdDedupe: audience.householdDedupe,
+      travelTimeLead: audience.travelTimeLead,
     };
   case "households":
     return {kind: "households", rsvpPendingOnly: audience.rsvpPendingOnly};

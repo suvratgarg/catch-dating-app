@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -342,14 +343,42 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                               '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
+                            if (group.hotelId != null)
+                              Text(
+                                context.l10n.programsGuestsGroupHotelSummary(
+                                  hotel:
+                                      widget.programDetail.hotels
+                                          .where(
+                                            (hotel) =>
+                                                hotel.hotelId == group.hotelId,
+                                          )
+                                          .firstOrNull
+                                          ?.name ??
+                                      context
+                                          .l10n
+                                          .programsGuestsHotelUnavailable,
+                                ),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                           ],
                         ),
-                        trailing: CatchIconAction.icon(
-                          icon: CatchIcons.deleteOutline,
-                          variant: CatchIconActionVariant.plain,
-                          accent: CatchTokens.of(context).danger,
-                          tooltip: context.l10n.programsGuestsGroupDelete,
-                          onPressed: () => _deleteGroup(context, group),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CatchIconAction.icon(
+                              icon: CatchIcons.editOutlined,
+                              variant: CatchIconActionVariant.plain,
+                              tooltip: context.l10n.programsGuestsGroupEdit,
+                              onPressed: () => _editGroup(context, group),
+                            ),
+                            CatchIconAction.icon(
+                              icon: CatchIcons.deleteOutline,
+                              variant: CatchIconActionVariant.plain,
+                              accent: CatchTokens.of(context).danger,
+                              tooltip: context.l10n.programsGuestsGroupDelete,
+                              onPressed: () => _deleteGroup(context, group),
+                            ),
+                          ],
                         ),
                       ),
                 ],
@@ -388,11 +417,20 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     }
   }
 
-  Future<void> _addGroup(BuildContext context) async {
-    final draft = await showDialog<({String label, String dimension})>(
-      context: context,
-      builder: (_) => const ProgramGuestGroupEditDialog(),
-    );
+  Future<void> _addGroup(BuildContext context) => _editGroup(context, null);
+
+  Future<void> _editGroup(
+    BuildContext context,
+    ProgramGuestGroupRow? group,
+  ) async {
+    final draft =
+        await showDialog<({String label, String dimension, String? hotelId})>(
+          context: context,
+          builder: (_) => ProgramGuestGroupEditDialog(
+            hotels: widget.programDetail.hotels,
+            group: group,
+          ),
+        );
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
     try {
@@ -402,6 +440,10 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
             programId: widget.programId,
             label: draft.label,
             dimension: draft.dimension,
+            groupId: group?.groupId,
+            expectedRevision: group?.revision,
+            hotelId: draft.hotelId == group?.hotelId ? null : draft.hotelId,
+            clearHotel: group?.hotelId != null && draft.hotelId == null,
           );
       _refresh();
     } catch (error) {
@@ -694,68 +736,6 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
               ),
             ),
         ],
-      ],
-    ),
-  );
-}
-
-class ProgramGuestGroupEditDialog extends StatefulWidget {
-  const ProgramGuestGroupEditDialog({super.key});
-
-  @override
-  State<ProgramGuestGroupEditDialog> createState() =>
-      _ProgramGuestGroupEditDialogState();
-}
-
-class _ProgramGuestGroupEditDialogState
-    extends State<ProgramGuestGroupEditDialog> {
-  final _labelController = TextEditingController();
-  final _dimensionController = TextEditingController();
-
-  @override
-  void dispose() {
-    _labelController.dispose();
-    _dimensionController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => CatchDialog<void>(
-    title: context.l10n.programsGuestsGroupNew,
-    actions: [
-      CatchButton(
-        label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-        variant: CatchButtonVariant.secondary,
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      CatchButton(
-        label: context.l10n.programsWorkspaceFunctionSave,
-        onPressed: () {
-          final label = _labelController.text.trim();
-          final dimension = _dimensionController.text.trim();
-          if (label.isEmpty || dimension.isEmpty) return;
-          Navigator.of(context).pop((label: label, dimension: dimension));
-        },
-      ),
-    ],
-    child: CatchSection.containedFieldRows(
-      children: [
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsGuestsGroupLabel,
-          controller: _labelController,
-          contract: CatchContractConstraints
-              .upsertProgramGuestGroupCallablePayloadLabel,
-          textCapitalization: TextCapitalization.words,
-        ),
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsGuestsGroupDimension,
-          controller: _dimensionController,
-          contract: CatchContractConstraints
-              .upsertProgramGuestGroupCallablePayloadDimension,
-          inputHint: context.l10n.programsGuestsGroupDimensionHint,
-        ),
       ],
     ),
   );

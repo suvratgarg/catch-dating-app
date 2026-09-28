@@ -552,6 +552,8 @@ export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocume
 export {programStaffInviteDocumentSchema} from "./schemas/programStaffInviteDocument";
 export {programPickupPointDocumentSchema} from "./schemas/programPickupPointDocument";
 export {programHotelDocumentSchema} from "./schemas/programHotelDocument";
+export {programStayDocumentSchema} from "./schemas/programStayDocument";
+export {programRoomBlockDocumentSchema} from "./schemas/programRoomBlockDocument";
 export {programTravelLegDocumentSchema} from "./schemas/programTravelLegDocument";
 export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocument";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";
@@ -627,6 +629,7 @@ export {programTransportPlanCallableResponseSchema} from "./schemas/programTrans
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
+export {programStakeholderCountsCallableResponseSchema} from "./schemas/programStakeholderCountsOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";
 export {transportVendorListCallableResponseSchema} from "./schemas/transportVendorListOutput";

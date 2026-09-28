@@ -13,6 +13,10 @@ export interface SubmitProgramHouseholdRsvpCallableResponse {
   revision: number;
   appliedCount: number;
   /**
+   * How many programTravelLegs rows this submit wrote from its travel blocks.
+   */
+  travelLegAppliedCount: number;
+  /**
    * The consent state now recorded on the household.
    */
   messagingConsentGranted: boolean;

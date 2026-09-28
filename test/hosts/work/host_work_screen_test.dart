@@ -73,8 +73,8 @@ Future<GoRouter> _pumpShell(WidgetTester tester, _Repository repository) async {
             _stub('program ${state.pathParameters['programId']}'),
       ),
       GoRoute(
-        path: Routes.hostOperatorEventScreen.path,
-        name: Routes.hostOperatorEventScreen.name,
+        path: Routes.hostWorkEventScreen.path,
+        name: Routes.hostWorkEventScreen.name,
         builder: (_, state) =>
             _stub('event ${state.pathParameters['eventId']}'),
       ),
@@ -150,7 +150,7 @@ void main() {
     await pumpUntilFound(tester, find.text('event event-9'));
     expect(
       router.routeInformationProvider.value.uri.path,
-      '/host/operator/event-9',
+      '/host/work/event/event-9',
     );
   });
 

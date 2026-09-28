@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
@@ -35,6 +36,7 @@ final _club = Club(
 );
 
 final _program = OrganizerProgramSettings(
+  organizerId: _organizerId,
   programId: _programId,
   kind: ProgramKind.wedding,
   title: 'Kapoor–Shah Wedding',
@@ -549,7 +551,11 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'new group',
-        child: _DialogFrame(child: ProgramGuestGroupEditDialog()),
+        child: _DialogFrame(
+          child: ProgramGuestGroupEditDialog(
+            hotels: [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+          ),
+        ),
       ),
     ],
   );

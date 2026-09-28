@@ -224,6 +224,13 @@ const schemaUpsertOrganizerMomentCallablePayloadSchema = <String, Object?>{
           ],
           'description': 'functionGuests: one send per household when true (default).',
         },
+        'travelTimeLead': <String, Object?>{
+          'type': <Object?>[
+            'boolean',
+            'null',
+          ],
+          'description': 'functionGuests: shift each recipient\'s due time earlier by their hotel→function travel estimate (hotel comes from the guest\'s hotel-linked group). Legal only on program scopes.',
+        },
         'rsvpPendingOnly': <String, Object?>{
           'type': <Object?>[
             'boolean',

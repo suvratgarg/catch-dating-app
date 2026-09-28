@@ -1,0 +1,30 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "guestId": "g-1",
+  "hotelId": "hotel-1",
+  "roomBlockId": "block-1",
+  "roomLabel": "412",
+  "startsAt": {
+    "_seconds": 1786723200,
+    "_nanoseconds": 0
+  },
+  "endsAt": {
+    "_seconds": 1786982400,
+    "_nanoseconds": 0
+  },
+  "status": "confirmed",
+  "roomReadyAt": null,
+  "hotelArrivedAt": null,
+  "notes": null,
+  "source": "planner",
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1
+}

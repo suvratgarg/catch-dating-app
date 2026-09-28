@@ -3324,12 +3324,17 @@ prevents a baseline refresh from admitting new oversized files or raising an
 existing ceiling. Refresh after a reduction with
 `node tool/architecture/check_flutter_source_size.mjs --write-baseline`.
 
-The only exception is the `CatchField` constructor facade at
-`packages/catch_ui/lib/src/components/catch_field.dart`: at most 1,150 lines,
-with decrease-only protection. Configuration, resolution, state, and rendering
-files remain within 800 lines. Known generated suffixes, configured localization
-outputs, and exact vendored icon-generator outputs are excluded; a directory
-named `generated` or a generated-file comment alone grants no exemption.
+The `CatchField` constructor facade at
+`packages/catch_ui/lib/src/components/catch_field.dart` has an approved ceiling
+of at most 1,150 lines, with decrease-only protection. Configuration,
+resolution, state, and rendering files remain within 800 lines.
+`lib/routing/go_router.dart` is exempt from the line budget entirely: the route
+inventory requires every `GoRoute` construction to live in that single file, so
+its length tracks route count and is bounded by the route and widget
+inventories rather than a line ratchet. Known generated suffixes, configured
+localization outputs, and exact vendored icon-generator outputs are excluded; a
+directory named `generated` or a generated-file comment alone grants no
+exemption.
 
 ## Enforcement And Overrides
 

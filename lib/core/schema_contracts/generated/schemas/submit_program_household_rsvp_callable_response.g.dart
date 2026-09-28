@@ -18,6 +18,7 @@ const schemaSubmitProgramHouseholdRsvpCallableResponseSchema = <String, Object?>
     'entityId',
     'revision',
     'appliedCount',
+    'travelLegAppliedCount',
     'messagingConsentGranted',
     'alreadyApplied',
   ],
@@ -37,6 +38,12 @@ const schemaSubmitProgramHouseholdRsvpCallableResponseSchema = <String, Object?>
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'travelLegAppliedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'How many programTravelLegs rows this submit wrote from its travel blocks.',
     },
     'messagingConsentGranted': <String, Object?>{
       'type': 'boolean',

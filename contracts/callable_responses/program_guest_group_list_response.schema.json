@@ -27,6 +27,7 @@
           "dimension",
           "sortOrder",
           "memberCount",
+          "hotelId",
           "revision"
         ],
         "properties": {
@@ -53,6 +54,14 @@
           "memberCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           },
           "revision": {
             "type": "integer",
