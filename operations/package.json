@@ -16,6 +16,7 @@
     "ajv-formats": "^3.0.1"
   },
   "scripts": {
+    "revenue:preflight": "node src/domains/host-revenue/preflight-cli.mjs",
     "boundaries": "node scripts/check-boundaries.mjs",
     "admin:check": "node scripts/check-admin-action-catalog.mjs",
     "admin:loop": "node src/admin-cli/main.mjs loop --all --pretty",

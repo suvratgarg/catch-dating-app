@@ -661,6 +661,121 @@
           ]
         }
       }
+    },
+    {
+      "id": "event_offer",
+      "kind": "static",
+      "path": "/offer/",
+      "pageKey": "event_offer",
+      "source": "website/src/features/eventOffers/EventOfferPage.tsx",
+      "metaKey": "event_offer",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Private phone-verified event invitation and checkout. Token exists only in the cleared URL fragment and page memory. Marketing analytics excluded.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "phone",
+          "otp",
+          "ready",
+          "pending",
+          "admitted",
+          "refund",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "phone",
+            "otp",
+            "ready",
+            "pending",
+            "admitted",
+            "refund",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "event_booking",
+      "kind": "clientDynamic",
+      "pathPattern": "/booking/:eventId/",
+      "pageKey": "event_booking",
+      "source": "website/src/features/events/PublicBookingPage.tsx",
+      "metaKey": "event_booking",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Phone-authorized payment/admission history independent of public event listing availability. No marketing analytics or new registration.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "phone",
+          "pending",
+          "cancel-review",
+          "refunded"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "phone",
+            "pending",
+            "cancel-review",
+            "refunded"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "sales_demo",
+      "kind": "clientDynamic",
+      "pathPattern": "/demo/:invitationId/",
+      "pageKey": "sales_demo",
+      "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
+      "metaKey": "sales_demo",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Private synthetic workflow invitation; fragment grant, verified contact and explicit start. No marketing analytics.",
+      "review": {
+        "priority": "p0",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "preview",
+          "verify-contact",
+          "active",
+          "completed",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "loading",
+            "preview",
+            "verify-contact",
+            "active",
+            "completed",
+            "unavailable"
+          ]
+        }
+      }
     }
   ],
   "redirects": [

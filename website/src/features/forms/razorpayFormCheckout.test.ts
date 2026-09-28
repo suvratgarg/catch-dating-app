@@ -1,4 +1,4 @@
-import {afterEach, describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {openFormCheckout} from "./razorpayFormCheckout";
 import {publicFormsCopy} from "../../content/forms";
 
@@ -6,7 +6,7 @@ const checkout = {publicToken: "rzp_test_oauth_public", orderId: "order_one",
   amountPaise: 20000, currency: "INR" as const,
   description: publicFormsCopy.paymentKicker,
   expiresAtMillis: 9e12};
-afterEach(() => {delete window.Razorpay;});
+afterEach(() => {delete window.Razorpay; vi.restoreAllMocks();});
 
 describe("Razorpay checkout adapter", () => {
   it("uses the server order and forwards only a matching signed callback", async () => {
@@ -46,4 +46,14 @@ describe("Razorpay checkout adapter", () => {
     await expect(openFormCheckout({...checkout, expiresAtMillis: 1}, "RSVP",
       new AbortController().signal)).rejects.toThrow("expired");
   });
+  it("does not open a checkout whose hold expires while loading the provider", async () => {
+    const open = vi.fn();
+    window.Razorpay = class {open = open; close() {}};
+    vi.spyOn(Date, "now").mockReturnValueOnce(checkout.expiresAtMillis - 1)
+      .mockReturnValue(checkout.expiresAtMillis);
+    await expect(openFormCheckout(checkout, "RSVP", new AbortController().signal))
+      .rejects.toThrow("expired");
+    expect(open).not.toHaveBeenCalled();
+  });
+
 });

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {adminCallableNames, readAdminCallableSources} from
+  "../../tool/admin/callable_inventory.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -31,10 +33,7 @@ export async function checkAdminActionCatalog({
   } catch (error) {
     return failure("catalog-load-failed", error);
   }
-  const apiSource = adminApiSource ?? await fs.readFile(
-    path.join(repoRoot, "admin", "src", "shared", "api", "adminApi.ts"),
-    "utf8"
-  );
+  const apiSource = adminApiSource ?? readAdminCallableSources(repoRoot);
   const indexSource = functionsIndexSource ?? await fs.readFile(
     path.join(repoRoot, "functions", "src", "index.ts"),
     "utf8"
@@ -51,8 +50,12 @@ export async function checkAdminActionCatalog({
     "utf8"
   );
   const actionIds = resolvedCatalog.actions.map((action) => action.actionId);
+  const guiCallables = callableNames(apiSource);
+  // Control-plane authority is independent of presentation: an Owner-only
+  // action can have an Admin UI without becoming an assistant capability.
+  const guiSet = new Set(guiCallables);
   const catalogCallables = resolvedCatalog.actions
-    .filter((action) => !action.controlPlane)
+    .filter((action) => !action.controlPlane || guiSet.has(action.callable))
     .map((action) => action.callable);
   const allCatalogCallables = resolvedCatalog.actions.map((action) =>
     action.callable);
@@ -61,7 +64,7 @@ export async function checkAdminActionCatalog({
   compareSets(
     findings,
     "gui-callable-catalog-drift",
-    callableNames(apiSource),
+    guiCallables,
     catalogCallables
   );
   const exported = new Set(indexSource.match(/\badmin[A-Z][A-Za-z0-9]+\b/gu) ?? []);
@@ -165,10 +168,7 @@ export async function checkAdminActionCatalog({
 }
 
 function callableNames(source) {
-  return [...new Set(
-    [...source.matchAll(/\(\s*functions,\s*"(admin[A-Z][A-Za-z0-9]+)"\s*\)/gu)]
-      .map((match) => match[1])
-  )].sort();
+  return adminCallableNames(source);
 }
 
 function generatedStrictRequests(source) {

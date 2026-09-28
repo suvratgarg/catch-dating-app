@@ -85,8 +85,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       ).notifier,
     );
     final editorState = catchAsyncStateFromAsyncValue(editor);
-    final editorValue = editorState.isSettledData &&
-            notifier.editorBoundTo(responseAccountId)
+    final editorValue =
+        editorState.isSettledData && notifier.editorBoundTo(responseAccountId)
         ? editorState.value
         : null;
     // CatchAsyncBoundary may retain a previous account's AsyncData on refresh.
@@ -94,11 +94,11 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final safeEditor = editorValue != null
         ? AsyncData<HostFormEditorState>(editorValue)
         : editorState.isTerminalError
-            ? AsyncError<HostFormEditorState>(
-                editorState.error!,
-                editorState.stackTrace ?? StackTrace.current,
-              )
-            : const AsyncLoading<HostFormEditorState>();
+        ? AsyncError<HostFormEditorState>(
+            editorState.error!,
+            editorState.stackTrace ?? StackTrace.current,
+          )
+        : const AsyncLoading<HostFormEditorState>();
     final compact =
         MediaQuery.sizeOf(context).width <
         CatchFormWorkspaceTokens.formBuilderExpandedBreakpoint;
@@ -280,18 +280,24 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   }),
                 ),
                 HostFormWorkspaceView.responses => HostFormResponsesPanel(
-                  key: ValueKey('form-responses-${widget.organizerId}-'
-                      '${widget.formId}-$responseAccountId'),
+                  key: ValueKey(
+                    'form-responses-${widget.organizerId}-'
+                    '${widget.formId}-$responseAccountId',
+                  ),
                   organizerId: widget.organizerId,
                   accountId: responseAccountId,
                   requireAccount: true,
                   formId: widget.formId,
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
-                  queryCapability: privateEventSetupAvailable() &&
-                          value.editor.form.activeVersionId != null
-                      ? hostResponseQueryCapability(context.l10n,
-                          versionId: value.editor.form.activeVersionId!)
+                  queryCapability: value.editor.form.activeVersionId != null
+                      ? hostResponseQueryCapability(
+                          context.l10n,
+                          versionId: value.editor.form.activeVersionId!,
+                          offersEnabled: ref.watch(
+                            privateEventSetupAvailableProvider,
+                          ),
+                        )
                       : null,
                 ),
                 HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
@@ -307,7 +313,9 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       definition: value.editor.definition,
                       notifier: notifier,
                       accountId: responseAccountId,
-                      enableEventTargetSettings: privateEventSetupAvailable(),
+                      enableEventTargetSettings: ref.watch(
+                        privateEventSetupAvailableProvider,
+                      ),
                       hasPublishedVersion:
                           value.editor.form.activeVersionId != null,
                     ),

@@ -120,6 +120,49 @@ export const manageOrganizerFormPaymentConnectionCallableResponseSchema: Record<
           }
         }
       }
+    },
+    "collection": {
+      "description": "Selected server-owned collection route. Null preserves legacy OAuth account selection.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "ready"
+          ],
+          "properties": {
+            "route": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "test",
+                "live",
+                null
+              ]
+            },
+            "ready": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
     }
   }
 } as const;

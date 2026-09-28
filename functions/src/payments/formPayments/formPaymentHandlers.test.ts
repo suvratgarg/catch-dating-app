@@ -17,6 +17,13 @@ function harness() {
   const deps: NonNullable<Parameters<
     typeof getOrganizerFormPaymentHandler>[1]> = {
       db: () => h.db, configured: () => false,
+      collectionSetup: async () => null,
+      prepareRouting: async () => {
+        runtimeCalls++; throw new Error("Provider not configured");
+      },
+      executionFor: async () => {
+        runtimeCalls++; throw new Error("Provider not configured");
+      },
       runtime: async () => {
         runtimeCalls++; throw new Error("Provider not configured");
       }, rateLimit: async () => undefined,

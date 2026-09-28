@@ -46,6 +46,8 @@ export interface ReviewedOfferHandoff {
   };
   /** Optional event-authored intro or complete four-placeholder template. */
   messageTemplate: string | null;
+  /** Generated only by the server after issuing a phone-bound grant. */
+  recipientCheckoutUrl?: string;
   nowMillis: number;
 }
 
@@ -126,17 +128,22 @@ function publicPaymentLink(value: string | null): string | null {
 function renderMessage(
   template: string | null,
   values: Record<Placeholder, string>,
-  mode: "reusablePage" | "manualInstructions" | "free",
+  mode: "reusablePage" | "manualInstructions" | "catchCheckout" | "free",
 ): string | null {
   const authored = nonblank(template ?? "");
   if (authored.length > 1000) return null;
-  const requiredTokens = [...commonTokens, ...(mode === "reusablePage" ?
+  const requiredTokens = [...commonTokens, ...((mode === "reusablePage" ||
+    mode === "catchCheckout") ?
     ["paymentLink"] : mode === "manualInstructions" ?
       ["paymentInstructions"] : [])];
-  const paymentLine = mode === "reusablePage" ?
-    "Payment link: {paymentLink}" : mode === "manualInstructions" ?
-      "Payment instructions: {paymentInstructions}" :
-      "No payment is required for this offer.";
+  const paymentLine = mode === "catchCheckout" ?
+    "Verify your phone and pay securely: {paymentLink}\n" +
+      "Your seat is held for 15 minutes when checkout starts. " +
+      "Admission is confirmed after payment verification." :
+    mode === "reusablePage" ?
+      "Payment link: {paymentLink}" : mode === "manualInstructions" ?
+        "Payment instructions: {paymentInstructions}" :
+        "No payment is required for this offer.";
   const defaultTemplate = `${defaultIntro}\n${paymentLine}`;
   const tokens = [...authored.matchAll(/\{([^{}]+)\}/gu)]
     .map((match) => match[1]);
@@ -196,7 +203,8 @@ export function prepareOfferHandoff(
   }
   if (Number.isSafeInteger(event.startsAtMillis) &&
       event.startsAtMillis <= input.nowMillis) blockers.push("eventStarted");
-  let mode: "reusablePage" | "manualInstructions" | "free" | null = null;
+  let mode: "reusablePage" | "manualInstructions" |
+    "catchCheckout" | "free" | null = null;
   let link: string | null = null;
   let instructions = "";
   if (!Number.isSafeInteger(payment.expectedAmountMinor) ||
@@ -231,7 +239,17 @@ export function prepareOfferHandoff(
       if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
     }
   } else if (payment.collectionMode === "catchCheckout") {
-    blockers.push("paymentModeUnsupported");
+    if (payment.currency !== "INR" || payment.expectedAmountMinor < 100 ||
+        !input.recipientCheckoutUrl) {
+      blockers.push("paymentModeUnsupported");
+    } else if (!/^https:\/\/catchdates\.com\/offer#[A-Za-z0-9_-]{43}$/u
+      .test(input.recipientCheckoutUrl)) {
+      blockers.push("paymentLinkInvalid");
+    } else {
+      mode = "catchCheckout";
+      link = input.recipientCheckoutUrl;
+    }
+    if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
   } else {
     blockers.push("paymentPolicyMissing");
   }

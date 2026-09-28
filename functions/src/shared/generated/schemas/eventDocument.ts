@@ -2030,6 +2030,43 @@ export const eventDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ],
+      "description": "Explicit registration capability. Older enabled events without this field support free OTP registration only.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstPublishedAt": {
+      "type": "object",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [
@@ -2123,6 +2160,60 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "eventTimezone",
           "setupDefaults"
         ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicRegistrationRevision",
+          "publicRegistrationEnabled"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "const": "closed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "enum": [
+              "free",
+              "paid"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": true
+          }
+        }
       }
     }
   ]

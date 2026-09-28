@@ -1,3 +1,4 @@
+import {prepareNativePaidBooking} from "./nativeBooking";
 import assert from "node:assert/strict";
 import test from "node:test";
 import Razorpay from "razorpay";
@@ -35,8 +36,12 @@ test("reconcileRazorpayOrdersHandler fulfills a stale captured order",
       timestampFromDate: (date) =>
         ts(date.getTime()) as unknown as FirebaseFirestore.Timestamp,
       serverTimestamp: () => "server-now",
-      signUpForEvent: async (_db, eventId, userId) => {
+      signUpForEvent: async (_db, eventId, userId, paymentId, options) => {
         signUps.push({eventId, userId});
+        await _db.runTransaction(async (tx) => {
+          (await prepareNativePaidBooking({db: _db, tx, eventId, userId,
+            paymentId, booking: options!.paidBooking!}))();
+        });
       },
       graceMs: 15 * 60 * 1000,
       batchLimit: 25,
@@ -137,8 +142,12 @@ test(
       timestampFromDate: (date) =>
         ts(date.getTime()) as unknown as FirebaseFirestore.Timestamp,
       serverTimestamp: () => "server-now",
-      signUpForEvent: async (_db, eventId, userId) => {
+      signUpForEvent: async (_db, eventId, userId, paymentId, options) => {
         signUps.push({eventId, userId});
+        await _db.runTransaction(async (tx) => {
+          (await prepareNativePaidBooking({db: _db, tx, eventId, userId,
+            paymentId, booking: options!.paidBooking!}))();
+        });
       },
       graceMs: 15 * 60 * 1000,
       batchLimit: 25,

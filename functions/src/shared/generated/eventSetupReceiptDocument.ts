@@ -2,13 +2,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-export interface EventSetupReceiptDocument {
-  operation: "create" | "update" | "preferences" | "details";
+export type EventSetupReceiptDocument = {
+  operation:
+    | "create"
+    | "update"
+    | "preferences"
+    | "details"
+    | "publish"
+    | "unpublish";
   actorUid: string;
   organizerId: string;
   requestHash: string;
   eventId: string;
-  appliedRevision: number;
+  appliedRevision?: number;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
@@ -16,4 +22,14 @@ export interface EventSetupReceiptDocument {
     _seconds: number;
     _nanoseconds: number;
   };
-}
+  outcome?: "discarded";
+  expectedSetupRevision?: number;
+} & (
+  | {
+      [k: string]: unknown;
+    }
+  | {
+      operation?: "details";
+      [k: string]: unknown;
+    }
+);

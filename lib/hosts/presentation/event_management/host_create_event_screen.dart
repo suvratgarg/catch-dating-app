@@ -203,7 +203,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.ready when privateEventSetupAvailable() =>
+      HostCreateEventRouteStatus.ready when ref.watch(privateEventSetupAvailableProvider) =>
         PrivateEventCreateScreen(
         club: state.club!,
         initialDraft: initialDraft,

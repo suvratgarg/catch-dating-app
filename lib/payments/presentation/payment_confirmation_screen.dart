@@ -84,7 +84,8 @@ class PaymentPendingCheckoutController extends ConsumerWidget {
     final payment = catchAsyncStateFromAsyncValue(paymentAsync).value;
     if (payment != null &&
         payment.status == PaymentStatus.completed &&
-        !payment.signUpFailed) {
+        !payment.signUpFailed &&
+        payment.cancellationRefund == null) {
       return PaymentConfirmationBodyController(
         data: PaymentConfirmationData(
           paymentId: payment.paymentId,
@@ -99,6 +100,9 @@ class PaymentPendingCheckoutController extends ConsumerWidget {
       );
     }
 
+    final cancelled =
+        payment?.cancellationRefund != null ||
+        payment?.status == PaymentStatus.refunded;
     final failed =
         payment?.status == PaymentStatus.failed ||
         payment?.signUpFailed == true;
@@ -107,8 +111,9 @@ class PaymentPendingCheckoutController extends ConsumerWidget {
       data: data,
       event: event,
       failed: failed,
+      cancelled: cancelled,
       providerLabel: _providerLabel(data.provider),
-      onOpenCheckout: data.checkoutUrl == null
+      onOpenCheckout: cancelled || data.checkoutUrl == null
           ? null
           : () => unawaited(controller.openCheckout(data.checkoutUrl!)),
       onViewPaymentHistory: () =>
@@ -128,6 +133,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
     required this.data,
     required this.event,
     required this.failed,
+    this.cancelled = false,
     required this.providerLabel,
     required this.onViewPaymentHistory,
     required this.onBackToEvent,
@@ -137,6 +143,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   final PaymentConfirmationData data;
   final Event event;
   final bool failed;
+  final bool cancelled;
   final String providerLabel;
   final VoidCallback? onOpenCheckout;
   final VoidCallback onViewPaymentHistory;
@@ -166,6 +173,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
                   data: data,
                   event: event,
                   failed: failed,
+                  cancelled: cancelled,
                   providerLabel: providerLabel,
                   onOpenCheckout: onOpenCheckout,
                   onViewPaymentHistory: onViewPaymentHistory,
@@ -249,6 +257,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
     required this.data,
     required this.event,
     required this.failed,
+    this.cancelled = false,
     required this.providerLabel,
     required this.onViewPaymentHistory,
     required this.onBackToEvent,
@@ -258,6 +267,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
   final PaymentConfirmationData data;
   final Event event;
   final bool failed;
+  final bool cancelled;
   final String providerLabel;
   final VoidCallback? onOpenCheckout;
   final VoidCallback onViewPaymentHistory;
@@ -271,10 +281,14 @@ class PaymentCheckoutSheet extends StatelessWidget {
     final medallionFill = failed
         ? t.danger.withValues(alpha: CatchOpacity.dangerFill)
         : t.primarySoft;
-    final title = failed
+    final title = cancelled
+        ? context.l10n.paymentsCancellationLabel
+        : failed
         ? context.l10n.paymentsPaymentConfirmationScreenTitlePaymentNotCompleted
         : context.l10n.paymentsPaymentConfirmationScreenTitleCheckoutIsWaiting;
-    final message = failed
+    final message = cancelled
+        ? context.l10n.paymentsCancellationCheckoutMessage
+        : failed
         ? context.l10n
               .paymentsPaymentConfirmationScreenMessageProviderlabelDidNotComplete(
                 providerLabel: providerLabel,
@@ -367,7 +381,9 @@ class PaymentCheckoutSheet extends StatelessWidget {
                   ),
                   gapW12,
                   CatchBadge(
-                    label: failed
+                    label: cancelled
+                        ? context.l10n.paymentsCancellationLabel
+                        : failed
                         ? context
                               .l10n
                               .paymentsPaymentConfirmationScreenLabelFailed
@@ -380,7 +396,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               ),
             ),
             gapH18,
-            if (onOpenCheckout != null) ...[
+            if (!cancelled && onOpenCheckout != null) ...[
               CatchButton(
                 label: failed
                     ? context.l10n

@@ -151,18 +151,20 @@ ExploreEventRecommendation _scoreRecommendation({
   var score = 0.0;
   var reason = 'From organizers you follow';
 
-  final distanceReason = _distancePreferenceReason(viewer, event);
-  if (distanceReason != null) {
-    score += 28;
-    reason = distanceReason;
-  } else if (_hasNearbyPreferredDistance(viewer, event)) {
-    score += 12;
-  }
+  if (event.eventFormat.isDistanceBased) {
+    final distanceReason = _distancePreferenceReason(viewer, event);
+    if (distanceReason != null) {
+      score += 28;
+      reason = distanceReason;
+    } else if (_hasNearbyPreferredDistance(viewer, event)) {
+      score += 12;
+    }
 
-  final paceScore = _paceFitScore(viewer, event);
-  score += paceScore;
-  if (reason == 'From organizers you follow' && paceScore >= 18) {
-    reason = 'Fits your pace';
+    final paceScore = _paceFitScore(viewer, event);
+    score += paceScore;
+    if (reason == 'From organizers you follow' && paceScore >= 18) {
+      reason = 'Fits your pace';
+    }
   }
 
   final eventTimeBucket = _EventTimeBucket.fromHour(event.startTime.hour);

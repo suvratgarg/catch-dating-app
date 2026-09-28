@@ -13,6 +13,7 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -348,7 +349,10 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
       minimumFetchInterval: AppConfig.remoteConfigMinimumFetchInterval,
     ),
   );
-  await remoteConfig.setDefaults({...kAppVersionConfigDefaults});
+  await remoteConfig.setDefaults({
+    ...kAppVersionConfigDefaults,
+    ...hostReleaseConfigDefaults,
+  });
   if (AppConfig.useFirebaseEmulators) return null;
   try {
     await remoteConfig.fetchAndActivate();

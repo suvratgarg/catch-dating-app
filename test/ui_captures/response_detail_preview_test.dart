@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
@@ -32,9 +33,16 @@ void main() {
           builder: entry.builder,
           drive: id.endsWith('_notes')
               ? (tester) async {
-                  final note = find.text('Save review note');
+                  final note = find.byWidgetPredicate(
+                    (widget) =>
+                        widget is CatchField &&
+                        widget.title == 'Private review note',
+                  );
+                  expect(find.text('Save review note'), findsNothing);
                   await tester.ensureVisible(note);
+                  await tester.tap(note);
                   await pumpFeatureUi(tester);
+                  expect(find.text('Save review note'), findsOneWidget);
                 }
               : null,
           providerOverrides: entry.providerOverrides,

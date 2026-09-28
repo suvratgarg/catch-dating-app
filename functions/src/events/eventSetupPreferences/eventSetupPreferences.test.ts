@@ -211,3 +211,19 @@ test("resolved payment snapshots do not retain mutable defaults references",
     assert.throws(() => resolved(input),
       (error) => isError(error, "invalid"));
   });
+
+test("integrated checkout freezes terms without activating a provider", () => {
+  const input = intents();
+  input.collectionPreference = {mode: "set", value: "catchCheckout"};
+  input.expectedAmountMinor = {mode: "set", value: 25000};
+  const terms = payment(input);
+  const snapshot = snapshotOfferPaymentTerms({terms, nowMillis: 1_000_000,
+    eventStartsAtMillis: 9_000_000, allowCatchCheckout: true});
+  assert.equal(snapshot.expectedAmountMinor, 25000);
+  assert.equal(snapshot.reusablePaymentPageUrl, null);
+  assert.equal(Object.hasOwn(snapshot, "provider"), false);
+  assert.throws(() => snapshotOfferPaymentTerms({
+    terms: {...terms, currency: "USD"},
+    nowMillis: 1_000_000, eventStartsAtMillis: 9_000_000,
+    allowCatchCheckout: true}), (error) => isError(error, "incomplete"));
+});

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {adminCallableNames, readAdminCallableSources} from
+  "../../tool/admin/callable_inventory.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -7,7 +9,6 @@ import {fileURLToPath} from "node:url";
 const adminRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(adminRoot, "..");
 const contractsRoot = path.join(repoRoot, "contracts");
-const apiPath = path.join(adminRoot, "src/shared/api/adminApi.ts");
 const outputPath = path.join(
   adminRoot,
   "src/generated/validators/adminCallableValidators.ts"
@@ -29,11 +30,7 @@ function snakeToCamel(value) {
 }
 
 function callableNames() {
-  const source = fs.readFileSync(apiPath, "utf8");
-  return [...new Set(
-    [...source.matchAll(/\(\s*functions,\s*"(admin[A-Z][A-Za-z0-9]+)"\s*\)/gu)]
-      .map((match) => match[1])
-  )].sort();
+  return adminCallableNames(readAdminCallableSources(repoRoot));
 }
 
 function referencedSchemaFiles(filePath, schema) {
@@ -162,15 +159,53 @@ function buildModel() {
   };
 }
 
+// Share identical immutable schema fragments without weakening validation or
+// loading a second validator system. Dependencies are emitted before parents.
+function renderSchemaPool(schemas) {
+  const counts = new Map();
+  const visit = value => {
+    if (!value || !["object", "string"].includes(typeof value)) return;
+    const key = JSON.stringify(value);
+    const threshold = typeof value === "string" ? 32 : 80;
+    if (key.length >= threshold) counts.set(key, (counts.get(key) ?? 0) + 1);
+    if (typeof value === "object") Object.values(value).forEach(visit);
+  };
+  schemas.forEach(visit);
+  const emitted = new Map();
+  const declarations = [];
+  const literal = value => {
+    if (!value || !["object", "string"].includes(typeof value)) {
+      return JSON.stringify(value);
+    }
+    const key = JSON.stringify(value);
+    const pooled = (counts.get(key) ?? 0) > 1;
+    if (pooled && emitted.has(key)) return emitted.get(key);
+    const source = typeof value === "string" ? key : Array.isArray(value) ?
+      `[${value.map(literal).join(",")}]` :
+      `{${Object.entries(value).map(([name, child]) =>
+        `${JSON.stringify(name)}:${literal(child)}`).join(",")}}`;
+    if (!pooled) return source;
+    const name = `schemaPart${emitted.size}`;
+    emitted.set(key, name);
+    declarations.push(`const ${name} = ${source};`);
+    return name;
+  };
+  const expression = `[${schemas.map(literal).join(",\n")}]`;
+  return {declarations: declarations.join("\n"), expression};
+}
+
 function render(model) {
-  const data = JSON.stringify(model, null, 2);
+  const {schemas, ...metadata} = model;
+  const data = JSON.stringify(metadata, null, 2);
+  const pool = renderSchemaPool(schemas);
   return `// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators\n` +
 `import Ajv, {type ErrorObject, type ValidateFunction} from "ajv";\n` +
 `import addFormats from "ajv-formats";\n\n` +
 `const model = ${data} as const;\n` +
+`${pool.declarations}\nconst schemas = ${pool.expression};\n` +
 `const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});\n` +
 `addFormats(ajv);\n` +
-`for (const schema of model.schemas) ajv.addSchema(schema);\n\n` +
+`for (const schema of schemas) ajv.addSchema(schema);\n\n` +
 `function validators(ids: Record<string, string>): Record<string, ValidateFunction> {\n` +
 `  return Object.fromEntries(Object.entries(ids).map(([name, id]) => {\n` +
 `    const validate = ajv.getSchema(id);\n` +
@@ -224,6 +259,13 @@ function render(model) {
 const model = buildModel();
 const output = render(model);
 if (selfTest) {
+  const pool = renderSchemaPool(model.schemas);
+  const reconstructed = Function(`${pool.declarations}\nreturn ${pool.expression};`)();
+  assert.deepEqual(reconstructed, model.schemas,
+    "Pooling must preserve every schema keyword and value.");
+  assert.ok(pool.declarations.length + pool.expression.length <
+    JSON.stringify(model.schemas).length,
+  "Repeated schema fragments must reduce the generated payload.");
   const changed = structuredClone(model);
   changed.schemas[0] = {...changed.schemas[0], title: "simulated schema drift"};
   assert.notEqual(render(changed), output);

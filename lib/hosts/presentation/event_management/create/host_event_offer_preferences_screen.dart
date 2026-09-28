@@ -31,8 +31,10 @@ class HostEventOfferPreferencesScreen extends ConsumerStatefulWidget {
   final String eventId;
   final String? eventName;
   final VoidCallback onBack;
+
   /// Injectable so previews and focused rendering need no live Firebase call.
   final EventOfferPreferencesController? initialController;
+
   /// Allows the auth transition to be rendered without a live callable.
   final EventOfferPreferencesController Function(String uid)? controllerForUser;
 
@@ -102,6 +104,9 @@ class _HostEventOfferPreferencesScreenState
           readConfiguration: offers.get,
           readDefaults: defaults.get,
           write: offers.configure,
+          readPreview: offers.preview,
+          currentUserId: () =>
+              mounted ? ref.read(uidProvider).asData?.value : null,
         );
       }
       _controller = controller;
@@ -151,9 +156,11 @@ class _HostEventOfferPreferencesScreenState
     return CatchScaffold.stepFlow(
       body: CatchErrorState(
         title: context.l10n.hostsEventPreferenceError,
-        message: appErrorMessage(_error ??
-            const FormatException('Offer settings unavailable'),
-            l10n: context.l10n, context: AppErrorContext.event),
+        message: appErrorMessage(
+          _error ?? const FormatException('Offer settings unavailable'),
+          l10n: context.l10n,
+          context: AppErrorContext.event,
+        ),
         retryLabel: context.l10n.hostsPrivateEventRetryDefaultsRead,
         onRetry: () {
           _controller?.dispose();
@@ -165,9 +172,7 @@ class _HostEventOfferPreferencesScreenState
           ref.invalidate(uidProvider);
           setState(() {});
         },
-        actions: [
-          CatchErrorBackButton(onPressed: widget.onBack),
-        ],
+        actions: [CatchErrorBackButton(onPressed: widget.onBack)],
       ),
     );
   }

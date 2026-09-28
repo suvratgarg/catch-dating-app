@@ -84,7 +84,7 @@
         "refunded",
         "refundFailed"
       ],
-      "description": "refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.",
+      "description": "refundFailed marks rejected admission with an unresolved refund. New records use cancellationRefund.state for pending versus reviewRequired; historical records without that intent need manual reconciliation. Only an observed full refund becomes refunded.",
       "x-catch-ownership": "callable-owned"
     },
     "providerPaymentId": {
@@ -142,7 +142,10 @@
       "x-catch-ownership": "callable-owned"
     },
     "crossPathsPairHoldId": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
       "maxLength": 180,
       "description": "Pair hold consumed by this booking, when present.",
@@ -178,6 +181,14 @@
     },
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    },
+    "cancellationRefund": {
+      "$ref": "../embedded/legacy_payment_refund.schema.json",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

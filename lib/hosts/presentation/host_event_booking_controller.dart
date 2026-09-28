@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -26,6 +28,8 @@ class HostEventBookingController extends _$HostEventBookingController {
   static final publicRegistrationMutation = Mutation<void>();
 
   Future<void>? _updateHostedEventInFlight;
+  final _registrationRequests =
+      <(String, String, int, EventPublicRegistrationMode), String>{};
 
   static Object waitlistOfferSelectionMutationKey(
     String eventId,
@@ -134,10 +138,27 @@ class HostEventBookingController extends _$HostEventBookingController {
     required Event event,
     required bool enabled,
   }) async {
-    _requireSignedIn(action: 'change website registration');
+    final uid = _requireSignedIn(action: 'change website registration');
+    final mode = !enabled
+        ? EventPublicRegistrationMode.closed
+        : event.priceInPaise == 0
+        ? EventPublicRegistrationMode.free
+        : EventPublicRegistrationMode.paid;
+    final key = (uid, event.id, event.publicRegistrationRevision, mode);
+    final requestId = _registrationRequests.putIfAbsent(key, () {
+      final random = Random.secure();
+      return List.generate(
+        24,
+        (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+      ).join();
+    });
     await ref
         .read(eventRepositoryProvider)
-        .setPublicRegistration(eventId: event.id, enabled: enabled);
+        .configurePublicRegistration(
+          event: event,
+          mode: mode,
+          requestId: requestId,
+        );
   }
 
   /// Offers one waitlisted person an expiring spot.

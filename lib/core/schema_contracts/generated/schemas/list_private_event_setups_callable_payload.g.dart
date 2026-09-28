@@ -30,5 +30,13 @@ const schemaListPrivateEventSetupsCallablePayloadSchema = <String, Object?>{
       'maxLength': 1024,
       'pattern': '^[A-Za-z0-9_-]+\$',
     },
+    'scope': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'upcoming',
+        'past',
+        'cancelled',
+      ],
+    },
   },
 };

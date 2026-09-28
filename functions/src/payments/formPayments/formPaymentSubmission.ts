@@ -18,6 +18,9 @@ import {availabilityFor, persistOrganizerFormSubmission, requireReadyAssets,
   "../../organizers/organizerFormResponses";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
 import {formPaymentId} from "./formPaymentIdentity";
+import {assertPaymentRouteCurrent, assertPaymentRouteSnapshot,
+  type PaymentRoutingSnapshot} from "../paymentRouting";
+import type {FormPaymentAuthority} from "./formPaymentProcessor";
 
 /** Reserves capacity and freezes the draft before any provider side effect. */
 export async function reserveFormPayment(params: {
@@ -25,6 +28,8 @@ export async function reserveFormPayment(params: {
   request: CallableRequest<unknown>;
   data: SubmitOrganizerFormResponseCallablePayload;
   now: Timestamp;
+  routing?: PaymentRoutingSnapshot;
+  authority?: FormPaymentAuthority;
 }): Promise<{paymentId: string; payment: Payment}> {
   const {db, request, data, now} = params;
   const identity = requireResponseIdentity(request, "phoneVerified");
@@ -101,12 +106,38 @@ export async function reserveFormPayment(params: {
     validateAnswerShape(version.definition, answers, true);
     const assets = await requireReadyAssets({tx, db, draftId: data.draftId,
       draft, definition: version.definition, answers});
-    const connectionSnap = await tx.get(
-      db.collection("organizerPaymentConnections").doc(fee.connectionId));
-    const connection = requireReadyFormPaymentConnection(connectionSnap.exists ?
-      requireDoc<Connection>(connectionSnap,
-        "OrganizerPaymentConnectionDocument") : null,
-    draft.organizerId, now.toMillis());
+    const routing = params.routing;
+    let connection: Connection | null = null;
+    if (routing) {
+      assertPaymentRouteSnapshot(routing, {organizerId: draft.organizerId,
+        purpose: "formFee", currency: fee.currency,
+        amountMinor: fee.amountPaise});
+      await assertPaymentRouteCurrent({db, tx, snapshot: routing});
+      if (!["razorpayRoute", "razorpayOAuth"]
+        .includes(routing.selection.route)) {
+        throw new HttpsError("failed-precondition",
+          "Payment route unavailable.");
+      }
+    }
+    const platform = routing?.selection.route === "razorpayRoute";
+    if (!platform) {
+      if (!fee.connectionId) {
+        throw new HttpsError("failed-precondition",
+          "Connect a payment account.");
+      }
+      const connectionSnap = await tx.get(
+        db.collection("organizerPaymentConnections").doc(fee.connectionId));
+      connection = requireReadyFormPaymentConnection(connectionSnap.exists ?
+        requireDoc<Connection>(connectionSnap,
+          "OrganizerPaymentConnectionDocument") : null,
+      draft.organizerId, now.toMillis());
+      if (routing && (routing.bindingId !== fee.connectionId ||
+          routing.merchantAccountId !== connection.accountId ||
+          routing.selection.mode !== connection.mode ||
+          routing.checkoutKey !== connection.publicToken)) {
+        throw new HttpsError("aborted", "Payment account changed.");
+      }
+    }
     const frozenIdentity = responseIdentitySnapshot(version.definition,
       answers, request);
     if (!frozenIdentity.phoneE164 ||
@@ -117,8 +148,10 @@ export async function reserveFormPayment(params: {
     const payment: Payment = {
       organizerId: draft.organizerId, formId: draft.formId,
       versionId: draft.versionId, draftId: data.draftId, respondentUid: uid,
-      connectionId: fee.connectionId, accountId: connection.accountId!,
-      mode: connection.mode, draftRevision: draft.revision,
+      connectionId: platform ? null : fee.connectionId,
+      accountId: routing?.merchantAccountId ?? connection!.accountId!,
+      mode: routing?.selection.mode ?? connection!.mode,
+      ...(routing ? {routing} : {}), draftRevision: draft.revision,
       answersHash: frozenFormContentHash(draft, version),
       identity: frozenIdentity, amountPaise: fee.amountPaise, currency: "INR",
       description: fee.description, refundPolicy: fee.refundPolicy,
@@ -130,6 +163,14 @@ export async function reserveFormPayment(params: {
       checkoutExpiresAt: Timestamp.fromMillis(now.toMillis() + 30 * 60_000),
       capturedAt: null, submittedAt: null, lastErrorCode: null,
     };
+    if (platform) {
+      if (!params.authority) {
+        throw new HttpsError("failed-precondition",
+          "Payment authority required.");
+      }
+      const merchant = await params.authority.resolve(payment);
+      await params.authority.assertReady(tx, payment, merchant);
+    }
     // Keep uploads and the frozen draft through the reconciliation window.
     const expiresAt = Timestamp.fromMillis(now.toMillis() + 30 * 86400_000);
     tx.create(paymentRef, payment);
@@ -264,7 +305,9 @@ export function canFinalizeFrozenForm(params: {
     version.organizerId === payment.organizerId &&
     form.organizerId === payment.organizerId &&
     (form.pendingPaymentCount ?? 0) > 0 &&
-    fee.connectionId === payment.connectionId &&
+    (payment.routing?.selection.route === "razorpayRoute" ?
+      payment.connectionId === null :
+      fee.connectionId === payment.connectionId) &&
     fee.amountPaise === payment.amountPaise &&
     fee.currency === payment.currency &&
     frozenFormContentHash(draft, version) === payment.answersHash;

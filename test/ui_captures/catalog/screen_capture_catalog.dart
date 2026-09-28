@@ -94,6 +94,7 @@ import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -4032,6 +4033,17 @@ class _CaptureHostAttendanceOutboxStore extends Fake
     String? scope,
     DateTime? now,
   }) async => List.of(entries);
+
+  @override
+  Future<void> flush(
+    String accountId,
+    String scope,
+    Future<void> Function(HostAttendanceOutboxEntry) execute,
+  ) async {
+    if (entries.isNotEmpty) {
+      throw StateError('Seed an explicit replay result for pending attendance.');
+    }
+  }
 }
 
 final class _CaptureFirebaseFunctions extends Fake
@@ -13499,6 +13511,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchEventAttendeesProvider(
         _hostEvent.id,
       ).overrideWith((ref) => Stream.value(_hostOperationalAttendees)),
+      watchPendingEventRuntimeClaimsProvider(
+        _hostEvent.id,
+      ).overrideWith((ref) => Stream.value(const [])),
       hostEventRosterInsightsProvider(_hostEvent.id).overrideWith(
         (ref) async => HostEventRosterInsights(
           eventId: _hostEvent.id,

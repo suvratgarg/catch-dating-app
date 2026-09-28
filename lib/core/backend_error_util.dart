@@ -11,6 +11,22 @@ typedef BackendErrorMapper =
       BackendErrorContext context,
     );
 
+/// Returns structured callable details for internal recovery classification.
+/// Callers must match their complete domain identity before treating a request
+/// as rejected. These provider details must never be rendered as UI copy.
+Map<Object?, Object?>? backendCallableErrorDetails(
+  Object error, {
+  required String code,
+}) {
+  Object? cause = error;
+  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
+    cause = cause.cause;
+  }
+  if (cause is! FirebaseFunctionsException || cause.code != code) return null;
+  final details = cause.details;
+  return details is Map ? Map<Object?, Object?>.from(details) : null;
+}
+
 /// Reclassifies the generic 404 returned when a callable endpoint has not been
 /// deployed yet. Domain callables can also intentionally throw `not-found`, so
 /// only the transport's generic messages are treated as capability failures.

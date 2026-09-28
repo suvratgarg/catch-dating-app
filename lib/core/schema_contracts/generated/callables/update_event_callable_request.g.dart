@@ -9,14 +9,17 @@
 final class UpdateEventCallableRequest {
   const UpdateEventCallableRequest({
     required this.eventId,
+    this.expectedSetupRevision,
     required this.fields,
   });
 
   final String eventId;
+  final int? expectedSetupRevision;
   final Map<String, Object?> fields;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
+    'expectedSetupRevision': ?expectedSetupRevision,
     'fields': fields,
   };
 }

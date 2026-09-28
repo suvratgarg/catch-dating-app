@@ -175,6 +175,53 @@ test("unbackfilled legacy records remain in organizer projection",
       "Legacy gate");
   });
 
+test("private drafts do not mask the next published or legacy public event",
+  async () => {
+    for (const legacy of [false, true]) {
+      const start = timestamp("2026-05-13T10:00:00.000Z");
+      const initial: Record<string, Record<string, unknown>> = {
+        "organizers/organizer-1": {nextEventLabel: "Previously visible"},
+        "events/z-public": legacy ?
+          legacyEvent("organizer-1", start, "Public gate") :
+          event("organizer-1", start, "Public gate"),
+      };
+      // More than one continuation page, with every start time tied.
+      for (let index = 0; index < 65; index++) {
+        initial[`events/a-private-${String(index).padStart(3, "0")}`] = {
+          ...event("organizer-1", start, "Private location"),
+          publicationState: "private", setupRevision: 2,
+        };
+      }
+      const firestore = fakeFirestore(initial);
+      await refreshOrganizerNextEvent("organizer-1", {
+        firestore: () => firestore as never,
+        nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+      });
+      assert.deepEqual(firestore.get("organizers/organizer-1"), {
+        nextEventAt: start, nextEventLabel: "Public gate",
+      });
+      assert.equal(firestore.queryReads(), 3);
+    }
+  });
+
+test("invalid progressive publication does not hide a later public row",
+  async () => {
+    const start = timestamp("2026-05-13T10:00:00.000Z");
+    const invalid = legacyEvent("organizer-1", start, "Private location");
+    invalid.setupRevision = 2;
+    const firestore = fakeFirestore({
+      "organizers/organizer-1": {},
+      "events/a-unpublished": invalid,
+      "events/z-public": event("organizer-1", start, "Public gate"),
+    });
+    await refreshOrganizerNextEvent("organizer-1", {
+      firestore: () => firestore as never,
+      nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+    });
+    assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+      "Public gate");
+  });
+
 function event(
   organizerId: string,
   startTime: FirebaseFirestore.Timestamp,

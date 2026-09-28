@@ -14,7 +14,6 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
     "organizerId",
     "requestHash",
     "eventId",
-    "appliedRevision",
     "createdAt"
   ],
   "properties": {
@@ -24,7 +23,9 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
         "create",
         "update",
         "preferences",
-        "details"
+        "details",
+        "publish",
+        "unpublish"
       ]
     },
     "actorUid": {
@@ -69,10 +70,56 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
           "maximum": 999999999
         }
       }
+    },
+    "outcome": {
+      "type": "string",
+      "const": "discarded"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999999
     }
   },
   "x-firestore-collection": "eventSetupReceipts",
   "x-firestore-path": "eventSetupReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "private event setup operations"
+  "x-owner": "private event setup operations",
+  "oneOf": [
+    {
+      "required": [
+        "appliedRevision"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "required": [
+        "outcome",
+        "expectedSetupRevision"
+      ],
+      "properties": {
+        "operation": {
+          "const": "details"
+        }
+      },
+      "not": {
+        "required": [
+          "appliedRevision"
+        ]
+      }
+    }
+  ]
 } as const;
