@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_fields_list_payload.schema.json",
+  "title": "Sales fields.list callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {}
+}

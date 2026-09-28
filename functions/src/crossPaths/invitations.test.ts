@@ -211,7 +211,9 @@ test("invitation and event-plan ids are deterministic and pair-stable", () => {
 });
 
 test("sends one durable invitation for two eligible attendees", async () => {
-  const h = harness();
+  const h = harness({
+    "events/event-1": {...event(), publicationState: "published"},
+  });
   const response = await sendCrossPathsInvitationHandler(
     request("sender", sendPayload()),
     h.deps
@@ -238,6 +240,19 @@ test("sends one durable invitation for two eligible attendees", async () => {
     sendCrossPathsInvitationHandler(request("sender", sendPayload()), h.deps),
     hasCode("failed-precondition")
   );
+});
+
+test("a signed suggestion cannot invite to an unpublished event", async () => {
+  const h = harness({
+    "events/event-1": {...event(), publicationState: "private"},
+  });
+  await assert.rejects(
+    sendCrossPathsInvitationHandler(request("sender", sendPayload()), h.deps),
+    hasCode("failed-precondition")
+  );
+  assert.equal(h.firestore.collectionRows("crossPathsInvitations").length, 0);
+  assert.equal(h.firestore.collectionRows("notifications/recipient/items")
+    .length, 0);
 });
 
 test("unscheduled event cannot create a Cross Paths invitation", async () => {
@@ -348,6 +363,34 @@ test("recipient acceptance creates one scoped plan and invalidates rivals",
       "invalidated"
     );
   });
+
+test("pending invitation cannot be accepted after unpublication", async () => {
+  const h = harness({
+    "events/event-1": {...event(), publicationState: "published"},
+  });
+  const sent = await sendCrossPathsInvitationHandler(
+    request("sender", sendPayload()), h.deps
+  );
+  h.firestore.write("events/event-1", {
+    ...event(), publicationState: "private",
+  });
+
+  await assert.rejects(
+    respondCrossPathsInvitationHandler(request("recipient", {
+      invitationId: sent.invitationId,
+      decision: "accept",
+    }), h.deps),
+    hasCode("failed-precondition")
+  );
+  assert.equal(h.firestore.read(`crossPathsInvitations/${sent.invitationId}`)
+    ?.status, "pending");
+  assert.equal(h.firestore.collectionRows("crossPathsPairHolds").length, 0);
+  assert.equal(h.firestore.collectionRows("matches").length, 0);
+  assert.equal(h.firestore.collectionRows("notifications/recipient/items")
+    .length, 1);
+  assert.equal(h.firestore.collectionRows("notifications/sender/items")
+    .length, 0);
+});
 
 test("accepting an unbooked request reserves a companion spot without booking",
   async () => {

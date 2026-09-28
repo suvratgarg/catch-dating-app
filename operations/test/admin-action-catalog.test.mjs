@@ -63,3 +63,22 @@ test("catalog checker rejects mutations without explicit confirmation",
       finding.id === "mutation-confirmation-missing" &&
       finding.actionId === mutation.actionId));
   });
+
+
+test("Owner control-plane GUI actions remain catalogued and strictly validated", async () => {
+  const result = await checkAdminActionCatalog();
+  assert.deepEqual(result.findings, []);
+  const current = await loadAdminActionCatalog();
+  const action = current.actions.find((entry) =>
+    entry.callable === "adminApplySalesPrivacyBatch");
+  assert.equal(action.controlPlane, true);
+  const callables = current.actions.map((entry) => entry.callable);
+  const missingValidator = await checkAdminActionCatalog({
+    adminApiSource: callables.map((name) => `(functions, "${name}")`).join("\n"),
+    validatorSource: `"strictRequests": ${JSON.stringify(
+      callables.filter((name) => name !== action.callable))}`,
+  });
+  assert.ok(missingValidator.findings.some((finding) =>
+    finding.id === "strict-request-validation-drift" &&
+    finding.missing.includes(action.callable)));
+});

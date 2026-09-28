@@ -83,6 +83,8 @@ function OrganizerIntakeDiagnostics({
     setLocationResolutionForms,
     setManualReportAcknowledgements,
     setPolicyDecisionNotes,
+    selectedMatchByCandidate,
+    setSelectedMatchByCandidate,
   } = controller;
   return (
     <>
@@ -174,6 +176,10 @@ function OrganizerIntakeDiagnostics({
             curationInFlight={curationInFlight}
             localCuration={localCuration}
             onAttachCandidate={(candidate) => void handleAttachCandidate(candidate)}
+            onSelectMatch={(candidateId, organizerId) =>
+              setSelectedMatchByCandidate((current) => ({...current,
+                [candidateId]: organizerId}))}
+            selectedMatchByCandidate={selectedMatchByCandidate}
             queue={bridge.searchCandidates}
           />
         </Panel>

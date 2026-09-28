@@ -1203,6 +1203,15 @@ export async function managePublicEventCheckout(payload: ManagePublicEventChecko
   return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
 }
 
+export async function invokeSalesDemoCallable<Request, Response>(
+  name: "getSalesDemoPreview" | "startSalesDemo" |
+    "getSalesDemoSession" | "advanceSalesDemo" |
+    "getSalesDemoSetup" | "prepareSalesDemoFormDraft",
+  payload: Request
+): Promise<Response> {
+  return invokeWebsiteCallable<Request, Response>(name, payload,
+    claimFirebaseConfigured, "Private demo");
+}
 
 /** Published-only live feed. Never deliver Firestore's local cache as authority. */
 export async function subscribePublicCatchEvents(
@@ -1219,4 +1228,5 @@ export async function subscribePublicCatchEvents(
   const source = query(collection(getFirestore(runtime.app), "events"),
     where("publicationState", "==", "published"), limit(401));
   return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
+
 }

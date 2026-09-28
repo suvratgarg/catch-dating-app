@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import * as admin from "firebase-admin";
 import {
+  joinWaitlist,
   normalizeHostApplication,
   normalizeMarketingAnalytics,
   normalizeMarketingAttribution,
@@ -235,4 +237,92 @@ test("normalizeHostApplication keeps bounded operating fields", () => {
 test("normalizeHostApplication drops empty payloads", () => {
   assert.equal(normalizeHostApplication({formats: []}), null);
   assert.equal(normalizeHostApplication(null), null);
+});
+
+
+test("host intents preserve changes and exact retries", async (context) => {
+  if (!admin.apps.length) admin.initializeApp({projectId: "demo-sales-intent"});
+  const database = admin.firestore();
+  const records = new Map<string, Record<string, unknown>>();
+  let committedWrites = 0;
+  type TransactionRunner = (tx: unknown) => Promise<unknown>;
+  context.mock.method(database,
+    "runTransaction",
+    async (run: TransactionRunner) => {
+      const writes: Array<{path: string; value: Record<string, unknown>}> = [];
+      const tx = {
+        get: async (ref: {path: string}) => ({
+          exists: records.has(ref.path), data: () => records.get(ref.path),
+        }),
+        create: (ref: {path: string}, value: Record<string, unknown>) => {
+          assert.equal(records.has(ref.path), false);
+          writes.push({path: ref.path, value});
+        },
+        update: (ref: {path: string}, value: Record<string, unknown>) => {
+          assert.equal(records.has(ref.path), true);
+          writes.push({path: ref.path,
+            value: {...records.get(ref.path),
+              ...value}});
+        },
+        set: (ref: {path: string}, value: Record<string, unknown>) => {
+          writes.push({path: ref.path, value});
+        },
+      };
+      await run(tx);
+      for (const write of writes) records.set(write.path, write.value);
+      committedWrites += writes.length;
+    });
+  const body = readFixture("fixtures/valid/join_waitlist_request_host.json") as
+    Record<string, unknown>;
+  body.email = "synthetic-intent@example.test";
+  const analytics = body.analytics as Record<string, unknown>;
+  let attempt = 0;
+  const submit = async (payload: unknown) => {
+    let status = 0;
+    let result: unknown;
+    const response = {
+      set: () => undefined,
+      status: (value: number) => {
+        status = value; return response;
+      },
+      json: (value: unknown) => {
+        result = value; return response;
+      },
+      send: () => undefined,
+    };
+    await joinWaitlist({method: "POST",
+      body: payload,
+      ip: `synthetic-intent-test-${++attempt}`,
+      get: () => undefined} as never, response as never);
+    return {status, result};
+  };
+  const first = await submit(body);
+  assert.deepEqual(
+    first, {status: 200, result: {ok: true, alreadyJoined: false}});
+  const count = committedWrites;
+  assert.deepEqual(await submit(body), first);
+  assert.equal(committedWrites, count);
+  const changed = {...body, city: "Different City"};
+  assert.equal((await submit(changed)).status, 409);
+  assert.equal(committedWrites, count);
+  const next = {...changed,
+    analytics: {...analytics,
+      eventId: "distinct-submission"}};
+  assert.deepEqual(
+    await submit(next), {status: 200, result: {ok: true, alreadyJoined: true}});
+  assert.equal(
+    [...records.keys()].filter(
+      (key) => key.startsWith("salesInboundIntents/")).length,
+    2);
+  assert.equal(
+    [...records.keys()].filter(
+      (key) => key.startsWith("launchWaitlist/")).length,
+    1);
+  assert.equal(
+    [...records.keys()].some((key) => key.startsWith("organizers/")), false);
+  const captured =
+    [...records.values()].filter(
+      (row) => row.classification === "sales_private");
+  assert.deepEqual(
+    captured.map((row) => row.city), [body.city, "Different City"]);
 });

@@ -385,6 +385,7 @@ const organizerIntakeController: OrganizerIntakeController = {
   handleOpenOrganizerDraft: (_organizerId) => {
     noop();
   },
+  handleRetrySalesLink: async (_candidate) => false,
   handlePendingInputDecision: async (_input, _decision) => {
     noop();
   },
@@ -396,6 +397,7 @@ const organizerIntakeController: OrganizerIntakeController = {
   localEventDecisions: {},
   localLocationResolutions: {},
   localOrganizerDrafts: {},
+  localSalesLinks: {},
   localPolicyDecisions: {},
   locationResolutionForms: {},
   locationResolutionInFlight: {},
@@ -428,6 +430,8 @@ const organizerIntakeController: OrganizerIntakeController = {
   ],
   organizerDraftForms: {},
   organizerDraftInFlight: {},
+  salesLinkInFlight: {},
+  selectedMatchByCandidate: {},
   policyDecisionInFlight: {},
   policyDecisionNotes: {},
   publicationPacketByEntity: new Map(
@@ -454,6 +458,9 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
   },
   setOrganizerDraftForms: (_value) => {
+    noop();
+  },
+  setSelectedMatchByCandidate: (_value) => {
     noop();
   },
   setPolicyDecisionNotes: (_value) => {

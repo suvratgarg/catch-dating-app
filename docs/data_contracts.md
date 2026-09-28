@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.157.0
+version: 1.157.1
 updated: 2026-09-28
 owner: recursive_audit_loop
 status: active
@@ -4591,3 +4591,113 @@ are assigned only to the restricted safety owner, other categories to the event
 lead. No SDK client, including an administrator, can access any of these four
 collections directly. Host projections and case-resolution commands require
 separate authorized boundaries before this feature can be enabled.
+
+## Private host Sales records
+
+The canonical organizer remains the identity owner. `organizerSalesAccounts`
+is its private Sales companion; contacts, relationships, reviewed evidence,
+assistant proposals, tasks, opportunities, stage history, import lineage,
+commercial records, and outreach intelligence use separate server-only
+collections. Neither `appVisibility: hidden` nor an unclaimed organizer makes
+an organizer document private. Strategy, prospect research, scores, contact
+endpoints and commercial terms must never be written into public organizer
+projections.
+
+The Sales service checks current employee or explicitly delegated authority,
+organizer scope, exact request material and record revision. Its transaction
+writes the effect and immutable receipt together. Assistant fact proposals
+require employee review before becoming qualification evidence. Opportunity
+pilot stages require the matching reviewed or active plan. Quote acceptance
+records reviewed terms; it does not prove host subscription revenue. Guest
+checkout payment records cannot satisfy a host commercial close.
+
+Synthetic demo blueprints, digest-only invitations, sessions and receipts are
+private records. Anonymous preview is read-only; verified invited contact plus
+an explicit start is required to materialize synthetic state. A demo never
+grants organizer ownership, publishes a listing, admits a real guest or charges
+a payment. Source contracts and rules tests live with the Sales feature; generated
+types and validators follow the existing schema generator.
+
+Sales commercial closing uses owner-attested host collection, bound to the exact
+accepted terms, current reviewed payment evidence and a normalized external
+settlement reference plus receiving account scope. The unique settlement identity
+prevents the same confirmation being counted through multiple evidence records.
+Attestation remains provider-unconfirmed and separate from guest payments.
+The generic opportunity mutation requires fresh Admin Owner authority before
+receipt replay and at transaction execution; stage history retains its finance
+proof. Loss and reopening require a reason, and reopening needs a dated next step.
+
+`salesIntakeLinks` joins the exact reviewed Supply Intake candidate generation and
+curation decision to its private organizer Sales companion. Explicit identity
+selection precedes linking; retry can complete the private join after Intake
+succeeded without overwriting an existing account or publishing the organizer.
+Imports retain every reviewed cohort/source-row relationship and union cohort IDs
+once per account, fenced by the preview's account revision. Unresolved identities
+remain in offline review; neither import nor an assistant invents canonical IDs.
+
+### Reviewed demo setup
+
+Confirmed private-demo starts and completions project deterministic Sales
+activities only for an existing active Sales account, with opportunity identity
+checked against the same organizer. Preview, resume and assistance requests do
+not imply a conversion.
+
+A reviewed demo may contain a source-owned Forms template plan. Its content hash
+includes materialized defaults; free-text mappings cannot create question logic.
+`getSalesDemoSetup` is a read-only completed-session projection.
+`prepareSalesDemoFormDraft` requires current verified invitation authority,
+canonical claimed organizer state and current Forms manager authority in the
+write transaction. It reuses Forms' transaction-level creation owner and stores
+one durable `salesDemoSetups` receipt per organizer, blueprint revision and setup
+hash. Retrying never overwrites a manager's subsequent edits. Preparation creates
+an unpublished organizer-wide draft only; unsupported requirements remain manual.
+
+### Current fit queue and import corrections
+
+The private `salesFitQueueEntries` projection reuses the canonical seven-factor
+score evaluator and qualification policy evaluator. Qualification-proof expiry
+is separate from score expiry. Unknown factors retain null scores. All account
+writes, accepted evidence and assessments invalidate the projection and advance
+its generation; cursors bind that generation and both policy identities.
+Historical refresh receipts cannot report current success after invalidation.
+Bounded refresh and list actions confer no contact or sending authority.
+
+New imports record exact per-organizer effects, account/cohort revisions and
+immutable lineage. Admin Owners can preview and apply one exact correction:
+remove only import-owned cohorts, or archive an unchanged newly created Sales
+companion when no dependent business work exists. A cohort mutation token fences
+later imports even when their cohort union is unchanged. Original import rows
+and canonical organizers remain intact. Missing legacy proof, ambiguous lineage,
+overflow or later cohort changes block correction. A deterministic effect marker
+prevents cross-request repetition. Archived companions reject dependent writes
+until an employee explicitly reopens them.
+
+
+### Private Sales source history, reporting and privacy
+
+`salesImportHistoryRows` accounts for reviewed source-row dispositions and
+`salesImportHistoryRecords` preserves exact original cells with accepted import
+lineage. History has nullable occurrence dates and explicit date certainty;
+it is not a current activity, score, contact permission or provider receipt.
+Preview/apply bind source hashes and current private accounts. Owner authority,
+archive/hold state and the permanent restriction are rechecked before replay.
+The history collections also prevent import compensation from archiving a
+companion with later business work.
+
+`salesPrivacyRestrictions/{organizerId}` is a permanent private processing
+fence. Owner-reviewed `salesPrivacyPolicies`, `salesPrivacyPlans` and
+`salesPrivacyBatchReceipts` govern bounded cleanup. Inventory keeps explicit
+retained finance/audit records and unresolved external/shared records. Each
+batch reads its source hashes and current policy/plan before atomically deleting
+at most 20 reviewed records and recording the new cursor. Dependencies are
+processed before their attribution parents, and explicit replacement plans
+bind the prior active-plan ID. Product organizers, Forms and users remain
+outside this owner. A completed internal plan never reports complete erasure.
+These six collections deny every direct client read/write, including Admin
+clients; only their current-role server operations expose private projections.
+
+The company funnel callable reads accounts, opportunities, tasks, recent stage
+history and privacy restrictions in one bounded read-only snapshot. It returns
+separate distinct-host and opportunity totals, stage entries and obligations.
+Overflow fails without partial totals. It does not infer conversion rates,
+provider-confirmed revenue or contact authority.
