@@ -130,6 +130,18 @@ async function availableSalesAccount(deps: DemoDeps,
     fail("failed-precondition", "This Sales account is archived.");
   }
 }
+async function invitationPrivacy(deps: DemoDeps, blueprintId: unknown,
+  tx?: FirebaseFirestore.Transaction): Promise<void> {
+  if (typeof blueprintId !== "string") {
+    fail("failed-precondition", "Invitation scope is unavailable.");
+  }
+  const ref = deps.db.collection(BLUEPRINTS).doc(id(blueprintId));
+  const blueprint = (tx ? await tx.get(ref) : await ref.get()).data();
+  if (!blueprint) {
+    fail("failed-precondition", "Invitation scope is unavailable.");
+  }
+  await assertSalesMaterialPrivacyOpen(deps.db, blueprint, tx);
+}
 async function currentCapability(deps: DemoDeps,
   tx?: FirebaseFirestore.Transaction): Promise<CapabilityGate> {
   const ref = deps.db.collection(CAPABILITIES).doc(DEMO_CAPABILITY);
@@ -162,6 +174,10 @@ async function adminMutation(deps: DemoDeps, identity: Identity,
     const scopedTarget = (await tx.get(deps.db.collection(targetCollection)
       .doc(target))).data();
     await assertSalesMaterialPrivacyOpen(deps.db, scopedTarget, tx);
+    if (action.includes("invitation")) {
+      await invitationPrivacy(deps,
+        scopedTarget?.blueprintId ?? input.blueprintId, tx);
+    }
     const receipt = await tx.get(receiptRef);
     if (receipt.exists) {
       const saved = receipt.data();
@@ -766,6 +782,7 @@ export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
   const {tokenDigest, contactBinding, ...safe} = snap.data() as Invitation;
   void tokenDigest;
   void contactBinding;
+  await invitationPrivacy(deps, safe.blueprintId);
   await assertSalesMaterialPrivacyOpen(deps.db, safe);
   return safe;
 }
@@ -838,9 +855,8 @@ export async function adminListInvitations(deps: DemoDeps,
     void contactBinding;
     return safe;
   });
-  const blueprint = (await deps.db.collection(BLUEPRINTS)
-    .doc(target).get()).data();
-  await assertSalesMaterialPrivacyOpen(deps.db, [blueprint, rows]);
+  await invitationPrivacy(deps, target);
+  await assertSalesMaterialPrivacyOpen(deps.db, rows);
   return {rows, nextCursor: snaps.docs.length > limit ?
     snaps.docs[limit - 1].id : null};
 }

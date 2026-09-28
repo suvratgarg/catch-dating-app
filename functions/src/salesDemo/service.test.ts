@@ -1011,3 +1011,16 @@ test("failed setup transaction leaves neither draft nor setup receipt",
       /^(organizerForms|organizerFormDrafts|salesDemoSetups)\//u.test(path)),
     false);
   });
+
+test("privacy restriction follows invitation scope before reads and replay",
+  async () => {
+    const {db, deps} = fixture();
+    await blueprint(deps, "org-private");
+    const issued = await invite(deps);
+    db.put("salesPrivacyRestrictions/org-private", {status: "restricted"});
+    await rejectsCode(invite(deps), "failed-precondition");
+    await rejectsCode(adminGetInvitation(deps, owner,
+      {invitationId: issued.invitationId}), "failed-precondition");
+    await rejectsCode(getPreview(deps,
+      {invitationId: issued.invitationId}), "failed-precondition");
+  });
