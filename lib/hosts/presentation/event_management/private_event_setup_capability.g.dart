@@ -57,7 +57,7 @@ final class PrivateEventSetupCapabilityProvider
 }
 
 String _$privateEventSetupCapabilityHash() =>
-    r'ec043c2ae294c07083f91a7b934b1fc09bea3041';
+    r'5b48b89aeb0bd58c381fac87db45153e8c278246';
 
 @ProviderFor(progressiveEventDefaultsCapability)
 final progressiveEventDefaultsAvailableProvider =
@@ -101,4 +101,4 @@ final class ProgressiveEventDefaultsCapabilityProvider
 }
 
 String _$progressiveEventDefaultsCapabilityHash() =>
-    r'318f85254b4f7274c440658e070fb45bf36f7b5c';
+    r'7dcb6b4e49e84381487219c81db9ff3ea52a567c';
