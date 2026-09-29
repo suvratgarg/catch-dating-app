@@ -14,7 +14,6 @@ import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.d
 
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
-
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
@@ -286,7 +285,6 @@ final _stakeholderCounts = ProgramStakeholderCounts(
     ),
   ],
 );
-
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ProgramWorkScreen,
