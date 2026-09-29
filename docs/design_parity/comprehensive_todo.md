@@ -41,7 +41,7 @@ or an independent feature contract. Its domain state and route intents remain te
   Dashboard Home and Event Success add 45 exact Flutter states and 24 actions;
   Event Success preserves its missing compatibility-save route callback as a
   compiler-enforced known gap rather than falsely enabling it.
-  Host Home and Host Organizers add 67 exact Flutter states and 41 actions
+  Host Home and Host Organizers add 68 exact Flutter states and 42 actions
   across Today, Events, Edit, Insights, Preview, settings spokes, payouts,
   team, host identity, and sign out. Their 61 missing evidence obligations are
   explicit compiler debt rather than implied coverage.

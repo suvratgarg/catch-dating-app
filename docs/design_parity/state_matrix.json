@@ -4783,6 +4783,19 @@
               ]
             },
             {
+              "id": "open_programs_action",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_events_layout_test.dart"
+              ],
+              "notes": "HostEventsClubSection owns the typed Programs header action and pushes hostProgramsScreen with the selected club organizer id so host teams can jump from the Events list to the program index.",
+              "previewIds": [
+                "hostHomeRouteStates",
+                "hostHomeEventSectionStates"
+              ]
+            },
+            {
               "id": "offline",
               "kind": "offline",
               "status": "captured",

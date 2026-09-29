@@ -1067,13 +1067,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:269</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:402</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:148</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:632</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:1171</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:989</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:518</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:898</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:71</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceStationTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:810</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:520</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:73</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:24</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:563</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:381</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:290</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceStationTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:202</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:226</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:330</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportSheet</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:268</code> | — | — | No class documentation or registry summary. |
@@ -1303,7 +1303,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTeamScreen</code> | <code>lib/programs/presentation/program_team_screen.dart:20</code> | — | — | Program team roster — active staff grants with their duty scopes, plus grant/invite/revoke actions. Duty sets are program-wide in W1 (empty resource scopes); per-station/hotel/function scoping lands with the assignment picker surfaces. |
 | <code>ProgramTripsScreen</code> | <code>lib/programs/presentation/program_trips_screen.dart:18</code> | — | — | The trip ledger: every dispatch as a reconciliation record — plate, vendor, class, manifest and outcome. Voided trips keep their row so the vendor invoice can be checked line by line. Rows that are not yet arrived surface in the needs-review strip for reconciliation viewers, and the whole ledger exports to CSV. |
 | <code>ProgramWorkScreen</code> | <code>lib/programs/presentation/program_work_screen.dart:23</code> | — | — | Scoped entry point for private program staff. |
-| <code>ProgramWorkspaceScreen</code> | <code>lib/programs/presentation/program_workspace_screen.dart:21</code> | — | — | Organizer program workspace — program header, schedule day rail and function management. Guests/team/import live on pushed sibling routes so the schedule stays the focus here. |
+| <code>ProgramWorkspaceScreen</code> | <code>lib/programs/presentation/program_workspace_screen.dart:23</code> | — | — | Organizer program workspace — program header, schedule day rail and function management. Guests/team/import live on pushed sibling routes so the schedule stays the focus here. |
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>MessagingPermissionsScreen</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:11</code> | — | — | No class documentation or registry summary. |
