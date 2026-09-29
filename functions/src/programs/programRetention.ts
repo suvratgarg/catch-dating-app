@@ -61,6 +61,8 @@ export interface RetentionDeps {
   loadFlightApiKey: () => Promise<string | null>;
   deleteFlightSubscription: typeof deleteFlightSubscription;
   fetchImpl?: FetchImpl;
+  /** Test hook: shrink page size to exercise chunked resume. */
+  pageLimit?: number;
 }
 
 const defaultRetentionDeps: RetentionDeps = {
@@ -368,12 +370,13 @@ export async function anonymizeProgram(
       const entry = runDoc.phases.find(
         (phase) => phase.collection === collection)!;
       if (entry.completedAtMillis) continue;
+      const pageLimit = deps.pageLimit ?? retentionPageLimit;
       let cursor: string | null = entry.cursor;
       for (;;) {
         let query: FirebaseFirestore.Query = db.collection(collection)
           .where("programId", "==", programId)
           .orderBy(FieldPath.documentId())
-          .limit(retentionPageLimit);
+          .limit(pageLimit);
         if (cursor) query = query.startAfter(cursor);
         const snap = await query.get();
         if (snap.empty) break;
@@ -416,8 +419,11 @@ export async function anonymizeProgram(
         batch.set(runRef, {...runDoc, updatedAt: deps.now()},
           {merge: false});
         await batch.commit();
-        if (snap.size < retentionPageLimit) break;
+        if (snap.size < pageLimit) break;
         if (deps.now().toMillis() >= deadlineMillis) {
+          runDoc.leaseUntil = null;
+          runDoc.leaseToken = null;
+          await persistRun();
           return "running";
         }
       }
@@ -445,6 +451,8 @@ export async function anonymizeProgram(
   } catch (error) {
     runDoc.status = "failed";
     runDoc.error = error instanceof Error ? error.message : String(error);
+    runDoc.leaseUntil = null;
+    runDoc.leaseToken = null;
     try {
       await persistRun();
     } catch (persistError) {
@@ -483,9 +491,7 @@ export async function anonymizeDuePrograms(
           summary.skipped);
       break;
     }
-    const outcome = await anonymizeProgram(
-      db, doc.id, deps, Math.min(deadline,
-        deps.now().toMillis() + sweepDeadlineMillis));
+    const outcome = await anonymizeProgram(db, doc.id, deps, deadline);
     if (outcome === "completed") summary.completed += 1;
     else if (outcome === "running") summary.running += 1;
     else if (outcome === "failed") summary.failed += 1;

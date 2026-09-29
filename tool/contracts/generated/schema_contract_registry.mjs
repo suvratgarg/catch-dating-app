@@ -168224,6 +168224,7 @@ export const programTravelPartyDocumentSchema = {
 
 export const programRetentionRunDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_retention_runs.schema.json",
   "title": "ProgramRetentionRunDocument",
   "description": "Durable journal for one program's archive-anonymization run. Document id equals the program id (a program anonymizes at most once). Phases record per-collection progress so a crashed or chunked run resumes idempotently.",
   "type": "object",
