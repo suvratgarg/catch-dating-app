@@ -229,11 +229,20 @@ const AUDIENCE_SCOPES: Readonly<Record<MomentAudienceKind,
     staffDuty: ["event", "program"],
   };
 
+/**
+ * Audiences that resolve phone endpoints — all program-scoped. A
+ * sendTemplate action needs one; any other pairing could never reach a
+ * WhatsApp recipient and previously died at fire time.
+ */
+const PHONE_AUDIENCES: ReadonlySet<MomentAudienceKind> = new Set([
+  "subject", "functionGuests", "households",
+]);
+
 export type MomentInvariantViolation =
   "subjectRequiresTriggered" | "triggeredRequiresProgramScope" |
     "anchorNotLegalForScope" | "audienceNotLegalForScope" |
     "audienceSenseMismatch" | "armedRequiresApproval" |
-    "manualRequiresAudienceSense";
+    "manualRequiresAudienceSense" | "sendTemplateRequiresPhoneAudience";
 
 /**
  * Returns every axis invariant the definition violates. Empty means valid.
@@ -243,9 +252,13 @@ export function validateMomentDefinition(
   moment: MomentDefinition,
 ): MomentInvariantViolation[] {
   const violations: MomentInvariantViolation[] = [];
-  const {initiation, audience, scope, sense} = moment;
+  const {initiation, audience, scope, sense, action} = moment;
   if (audience.kind === "subject" && initiation.kind !== "triggered") {
     violations.push("subjectRequiresTriggered");
+  }
+  if (action.kind === "sendTemplate" &&
+      !PHONE_AUDIENCES.has(audience.kind)) {
+    violations.push("sendTemplateRequiresPhoneAudience");
   }
   if (initiation.kind === "triggered" && scope.kind !== "program") {
     violations.push("triggeredRequiresProgramScope");

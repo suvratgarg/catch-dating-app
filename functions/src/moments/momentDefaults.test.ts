@@ -36,7 +36,6 @@ function runnerDeps(db: FakeFirestore): MomentRunnerDeps {
     quietHoursFor: () => null,
     dailyCapFor: () => 0,
     pushCopyFor: async () => ({title: "t", body: "b"}),
-    sendTemplateToPhone: async () => {},
     deliverProgramReminder: async () => ({kind: "sent" as const}),
     sendPushToUid: async () => {},
     writeStaffAttention: async () => {},

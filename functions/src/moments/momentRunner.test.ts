@@ -93,10 +93,6 @@ function makeDeps(db: FakeFirestore, now: number) {
     quietHoursFor: () => null,
     dailyCapFor: () => 0,
     pushCopyFor: async () => ({title: "Soon", body: "Soon"}),
-    sendTemplateToPhone: async (p) => {
-      sent.push({e164: p.e164, runId: p.runId,
-        recipientKey: p.recipientKey});
-    },
     // Program-scope template sends route through the durable delivery
     // core; the stub records the same observable send the provider seam
     // used to, so routing assertions stay valid.

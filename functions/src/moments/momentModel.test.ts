@@ -94,6 +94,15 @@ test("axis invariants catch illegal combinations", () => {
         sense: "individual"}, "manualRequiresAudienceSense"],
       [{...programMoment, status: "armed", approval: null},
         "armedRequiresApproval"],
+      // sendTemplate needs a phone-producing audience — eventParticipants
+      // resolves uid endpoints only, so this could never deliver.
+      [{...eventMoment, action: {
+        kind: "sendTemplate" as const, connectionId: "c", templateId: "t",
+        variables: {},
+      }}, "sendTemplateRequiresPhoneAudience"],
+      [{...programMoment, audience: {
+        kind: "staffDuty" as const, duty: "gate", scopeIds: null,
+      }}, "sendTemplateRequiresPhoneAudience"],
     ];
   for (const [moment, expected] of subjects) {
     const violations = validateMomentDefinition(moment);

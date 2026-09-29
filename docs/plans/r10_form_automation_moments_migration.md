@@ -1,6 +1,6 @@
 ---
 doc_id: r10_form_automation_moments_migration
-version: 0.3.0
+version: 0.4.0
 updated: 2026-09-29
 owner: program_operations
 status: approved-spec
@@ -146,6 +146,46 @@ bridge is acceptable; sharing only a journal and a quiet-hours helper is
 5. **Retire superseded execution paths.** Compatibility adapters may
    remain temporarily with explicit removal criteria; historic records
    stay readable without remaining executable.
+
+## Retirement ledger (phase 5 state)
+
+Removed execution paths and the evidence of each removal:
+
+- **Moments direct WhatsApp path** (`sendTemplateToPhone`/`sendTemplate`
+  in `momentWiring.ts`, and its `moment:{runId}:{key}` callback tag):
+  deleted. Every phone-endpoint audience is program-scoped, so the only
+  reachable sendTemplate sends dispatch through `deliverProgramReminder`
+  into the core; the tag never had a webhook consumer. Fail-closed
+  replacement: unroutable action×endpoint pairs journal `suppressed` /
+  `hostReview` instead of aborting the run.
+- **Campaign claim/deliver internals** (`claimRecipient`,
+  `deliverRecipient`, `recordDeliveryFailure` in
+  `organizerCampaignDispatcher.ts`): replaced by
+  `CampaignDeliveryWorker` over the shared outbox. The dispatcher keeps
+  lease/queue orchestration only.
+- **`sendEventReminders` cron**: already absent before this work;
+  `eventStartReminder`/`eventFeedbackPrompt` moments are its replacement.
+
+Retained compatibility surfaces — readable, with explicit removal
+criteria (none may produce a send):
+
+- `organizerMomentSends` journal rows: evidence for run rollups,
+  per-day caps, and the staffAttention attention projection. Remove the
+  send-row write only when reporting reads shared delivery evidence.
+- `processStatus` CRM projection in `whatsappWebhookProcessing.ts`:
+  keeps campaign reports/contact channel state current by
+  `providerMessageId`. Remove when campaign reporting reads
+  `campaignDeliveryMessages` evidence directly.
+- `organizerWhatsappThreads` reply operations and the setup test send:
+  conversational/session sends and a synchronous verification ping —
+  different primitives, not scheduled delivery. Out of core scope.
+- `deliverProgramReminder`'s `retry` outcomes (withheld claims, expired
+  permits, in-flight reconciliation) keep re-firing the run; the durable
+  attempt owns the evidence trail until expiry.
+- Campaign scheduling stays in `dispatchScheduledCampaigns` (fixed
+  dates need no Moments per the decision above); the scheduler now also
+  re-drives stalled `resolving`/`sending` leases and `blocked`
+  campaigns.
 
 ## Acceptance demonstration
 

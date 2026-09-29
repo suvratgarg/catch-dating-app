@@ -96,14 +96,6 @@ export interface MomentRunnerDeps {
     moment: MomentDefinition,
     facts: AnchorFacts,
   ) => Promise<{title: string; body: string}>;
-  sendTemplateToPhone: (params: {
-    e164: string;
-    connectionId: string;
-    templateId: string;
-    variables: Readonly<Record<string, string>>;
-    runId: string;
-    recipientKey: string;
-  }) => Promise<void>;
   sendPushToUid: (params: {
     uid: string;
     title: string;
@@ -690,22 +682,18 @@ async function deliver(
       recipient.endpoint.kind === "phone") {
     // Program-scoped template sends produce a durable intent and dispatch
     // through the shared delivery core; the worker owns provider I/O and
-    // unknown-outcome reconciliation.
+    // unknown-outcome reconciliation. Every phone-endpoint producer is
+    // program-scoped (guest:/household: keys) — validation rejects other
+    // sendTemplate configurations at authoring time.
     if (moment.scope.kind === "program" &&
         (recipient.recipientKey.startsWith("guest:") ||
          recipient.recipientKey.startsWith("household:"))) {
       return deps.deliverProgramReminder({moment, run, facts, recipient,
         action});
     }
-    await deps.sendTemplateToPhone({
-      e164: recipient.endpoint.e164,
-      connectionId: action.connectionId,
-      templateId: action.templateId,
-      variables: action.variables,
-      runId: run.runId,
-      recipientKey: recipient.recipientKey,
-    });
-    return {kind: "sent"};
+    // Stored data predating the authoring invariant fails closed for
+    // review; the retired direct provider path is never a fallback.
+    return {kind: "suppressed", reason: "hostReview"};
   }
   if (action.kind === "push" && recipient.endpoint.kind === "uid") {
     // Copy is resolved from the scope at fire time by the wiring layer.
@@ -736,9 +724,9 @@ async function deliver(
     });
     return {kind: "sent"};
   }
-  throw new RangeError(
-    `No delivery path for action ${action.kind} ` +
-    `to ${recipient.endpoint.kind}`);
+  // No durable route exists for this action×endpoint pair; suppress for
+  // host review rather than aborting the run's remaining recipients.
+  return {kind: "suppressed", reason: "hostReview"};
 }
 
 async function countSendsToday(
