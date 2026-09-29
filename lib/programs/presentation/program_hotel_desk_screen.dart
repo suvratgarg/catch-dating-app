@@ -6,9 +6,11 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_trip_actions_controller.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// The hotel welcome team's inbound view: vehicles on the way with their
 /// manifest names and plates, plus parties still expected at the airport.
@@ -123,6 +125,23 @@ class _ProgramHotelDeskScreenState
     ProgramHotelInbound inbound,
   ) {
     return [
+      CatchSectionListItem(
+        child: CatchFieldRow.standard(
+          leading: Icon(CatchIcons.keyOutlined),
+          body: Text(
+            context.l10n.programsHotelRoomsOpen,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          trailing: Icon(CatchIcons.chevronRightRounded),
+          onTap: () => context.pushNamed(
+            Routes.hostWorkHotelRoomsScreen.name,
+            pathParameters: {
+              'programId': inbound.programId,
+              'hotelId': inbound.hotelId,
+            },
+          ),
+        ),
+      ),
       if (_tripCursors.isNotEmpty || inbound.nextTripCursor != null)
         CatchSectionListItem(
           child: Wrap(
