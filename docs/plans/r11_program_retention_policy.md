@@ -39,10 +39,12 @@ the lifecycle hook exists.
 3. Schedules anonymization: a daily sweep runs `anonymizeProgram` on
    programs where `status == "archived"` and `anonymizeAt <= now`.
 
-`unarchiveProgram(programId)` (same authority) restores `active` while
-`anonymizedAt == null` — archive is reversible inside the grace window;
-anonymization is not. Only `archived` starts the clock — `completed`
-never anonymizes and stays the natural post-event review state.
+`unarchiveProgram(programId)` (same authority) restores the pre-archive
+status while `anonymizeAt > now` — archive is reversible inside the
+grace window; anonymization is not. An in-flight sweep lease also blocks
+unarchive so a restore can never race a partial scrub. Only `archived`
+starts the clock — `completed` never anonymizes and stays the natural
+post-event review state.
 
 Archive does not gate on export: attendance and trip-reconciliation CSV
 exports already exist and remain valid post-anonymization (counts
@@ -56,13 +58,19 @@ requiring it.
 | Collection | Fields scrubbed | Replacement |
 |---|---|---|
 | `programGuests` | `displayName`, `phoneE164`, `email`, `externalReference` | `displayName: "Guest <shortId>"`, others null; `anonymizedAt` set; `contactId` is **kept** (approved) so post-event CRM follow-up stays linked |
-| `programHouseholds` | `primaryContactName`, `primaryPhoneE164`, `primaryEmail` | null; `anonymizedAt` set |
+| `programHouseholds` | `label`, `primaryContactName`, `primaryPhoneE164`, `primaryEmail` | `label: "Household <shortId>"`, contact fields null; `anonymizedAt` set. *(label added in implementation — family names like "The Sharma family" are the household's identity)* |
 | `programStaffInvites` | `displayName`, `phoneE164` | null; `anonymizedAt` set |
 | `programStaffGrants` | `displayName`, `phoneLastFour` | null; `anonymizedAt` set |
 | `programFunctionGuests` | `responseNote` | null (free text, may carry PII) |
 | `programStays` | `notes`, `roomLabel` | `notes` null; `roomLabel` scrubbed (room numbers tied to identities are a soft identifier) |
 | `programDoorJournal` | `note` | null; action/partySize/functionId survive |
 | `programTravelLegs` | `arrivalTerminal` detail stays — no PII fields; `manualCurbNote` | scrub free-text note fields only |
+| `programTravelParties` | `label` | `label: "Party <shortId>"` *(added — family names ride party labels)* |
+| `programGuestGroups` | `label` | `label: "Group <shortId>"` *(added — group labels often carry family names)* |
+| `programRoomBlocks` | `label`, `notes` | `label: "Block <shortId>"`, `notes` null *(added — same surname/free-text class)* |
+| `programHotels` | `receptionContact`, `notes` | null *(added — reception contact is a named person's details)* |
+| `programFunctions` | `venueNotes` | null *(added — free-text ops notes; name/venue/dressCode/instructions survive as program content)* |
+| `transportTrips` | `notes` | null *(added — free-text; voidReason/vendorNameSnapshot/plates stay operational)* |
 
 ### Keep (operational truth)
 
@@ -82,9 +90,10 @@ requiring it.
 
 ### Delete (documents whose only value was live operation)
 
-- `programStaffInvites` with `status == "pending"`/`"expired"` —
-  unclaimed invites carry a phone number for no live purpose. Proposed:
-  delete outright at archive rather than scrub.
+- `programStaffInvites` with `status == "pending"` — unclaimed invites
+  carry a phone number for no live purpose ("expired" is a timestamp
+  state, not a status; all `pending` rows delete). Claimed/revoked
+  invites keep the row for audit with identity fields nulled.
 - Flight-alert leases/subscriptions on `programTravelLegs`
   (`flightAlertSubscriptionId`, `flightAlertLease`) — cancel provider
   subscriptions at archive; scrub the lease fields.
