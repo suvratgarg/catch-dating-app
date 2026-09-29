@@ -45,6 +45,7 @@ class _HostOfferPaymentSetupBodyState
   static const _customValiditySentinel = -1;
 
   HostOfferPaymentMode? _mode;
+  bool _pickerExpanded = false;
   bool _hydrated = false;
   bool _reuseAttested = false;
   bool _validityCustom = false;
@@ -402,39 +403,75 @@ class _HostOfferPaymentSetupBodyState
                                     ),
                                 ],
                               ),
-                            CatchSection.choiceGroup(
-                              first: !controller.hasPending &&
-                                  controller.error == null,
-                              title: l10n.hostOfferPaymentModeHeading,
-                              child: Column(
-                                children: [
-                                  for (final mode
-                                      in HostOfferPaymentMode.values) ...[
-                                    HostOfferPaymentModeTile(
-                                      mode: mode,
-                                      selected: _mode == mode,
-                                      editable: editable,
-                                      checkoutAvailable:
-                                          widget.catchCheckoutAvailable,
-                                      onSelected: (mode) {
-                                        setState(() {
-                                          _mode = mode;
-                                          _openEditor = null;
-                                          _instructionsError = null;
-                                        });
-                                        _stage();
-                                      },
-                                    ),
-                                    if (mode !=
-                                        HostOfferPaymentMode
-                                            .manualInstructions)
-                                      const SizedBox(
-                                        height: CatchSpacing.s3,
+                            if (_mode == null || _pickerExpanded)
+                              CatchSection.choiceGroup(
+                                first: !controller.hasPending &&
+                                    controller.error == null,
+                                title: l10n.hostOfferPaymentModeHeading,
+                                child: Column(
+                                  children: [
+                                    for (final mode
+                                        in HostOfferPaymentMode.values) ...[
+                                      HostOfferPaymentModeTile(
+                                        mode: mode,
+                                        selected: _mode == mode,
+                                        editable: editable,
+                                        checkoutAvailable:
+                                            widget.catchCheckoutAvailable,
+                                        onSelected: (mode) {
+                                          setState(() {
+                                            _mode = mode;
+                                            _pickerExpanded = false;
+                                            _openEditor = null;
+                                            _instructionsError = null;
+                                          });
+                                          _stage();
+                                        },
                                       ),
+                                      if (mode !=
+                                          HostOfferPaymentMode
+                                              .manualInstructions)
+                                        const SizedBox(
+                                          height: CatchSpacing.s3,
+                                        ),
+                                    ],
                                   ],
-                                ],
+                                ),
+                              )
+                            else
+                              CatchSection.fieldRows(
+                                first: !controller.hasPending &&
+                                    controller.error == null,
+                                title: l10n.hostOfferPaymentModeHeading,
+                                trailing: editable
+                                    ? CatchButton.text(
+                                        key: const ValueKey(
+                                          'offer-payment-mode-change',
+                                        ),
+                                        label:
+                                            l10n.hostOfferPaymentModeChange,
+                                        onPressed: () => setState(
+                                          () => _pickerExpanded = true,
+                                        ),
+                                      )
+                                    : null,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: CatchFieldTokens.rowVerticalPadding,
+                                  ),
+                                  child: HostOfferPaymentModeTile(
+                                    mode: _mode!,
+                                    selected: true,
+                                    editable: editable,
+                                    checkoutAvailable:
+                                        widget.catchCheckoutAvailable,
+                                    onSelected: (_) => setState(
+                                      () => _pickerExpanded = true,
+                                    ),
+                                    summary: true,
+                                  ),
+                                ),
                               ),
-                            ),
                             if (_mode != null) _detailsSection(l10n, copy),
                             if (_mode ==
                                 HostOfferPaymentMode.personalRequest)

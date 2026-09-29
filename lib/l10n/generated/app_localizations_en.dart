@@ -24004,6 +24004,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostOfferPaymentModeHeading => 'How guests pay';
 
   @override
+  String get hostOfferPaymentModeChange => 'Change';
+
+  @override
   String get hostOfferPaymentDetailsHeading => 'Payment details';
 
   @override
@@ -24093,10 +24096,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostOfferPaymentMessageHint =>
       'Shown above the payment details in the offer.';
-
-  @override
-  String get hostOfferPaymentFreeBody =>
-      'No payment to collect — guests just accept the offer.';
 
   @override
   String get hostOfferPaymentConfirmAutoTitle => 'Confirmed automatically';

@@ -38707,6 +38707,12 @@ abstract class AppLocalizations {
   /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
   ///
   /// In en, this message translates to:
+  /// **'Change'**
+  String get hostOfferPaymentModeChange;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
   /// **'Payment details'**
   String get hostOfferPaymentDetailsHeading;
 
@@ -38853,12 +38859,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shown above the payment details in the offer.'**
   String get hostOfferPaymentMessageHint;
-
-  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
-  ///
-  /// In en, this message translates to:
-  /// **'No payment to collect — guests just accept the offer.'**
-  String get hostOfferPaymentFreeBody;
 
   /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
   ///

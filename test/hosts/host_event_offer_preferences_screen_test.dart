@@ -292,10 +292,16 @@ void main() {
       initialController: controller, onBack: () => backed = true,
     )));
     await pumpFeatureUi(tester);
-    // Organizer suggestions preselect manual collection on this event.
+    // Organizer suggestions preselect manual collection on this event; the
+    // mode picker collapses to the selected summary until "Change" re-opens it.
     expect(find.byKey(const ValueKey('offer-payment-instructions')),
         findsOneWidget);
+    expect(find.byKey(const ValueKey('offer-payment-mode-free')),
+        findsNothing);
 
+    await tester.tap(
+        find.byKey(const ValueKey('offer-payment-mode-change')));
+    await pumpFeatureUi(tester);
     await tester.tap(
         find.byKey(const ValueKey('offer-payment-mode-free')));
     await pumpFeatureUi(tester);

@@ -51,6 +51,7 @@ class HostOfferPaymentModeTile extends StatelessWidget {
     required this.editable,
     required this.checkoutAvailable,
     required this.onSelected,
+    this.summary = false,
   });
 
   final HostOfferPaymentMode mode;
@@ -58,6 +59,10 @@ class HostOfferPaymentModeTile extends StatelessWidget {
   final bool editable;
   final bool checkoutAvailable;
   final ValueChanged<HostOfferPaymentMode> onSelected;
+
+  /// Collapsed summary of the selected mode; a tap re-opens the picker rather
+  /// than re-selecting, so the checkout gate does not apply.
+  final bool summary;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +81,9 @@ class HostOfferPaymentModeTile extends StatelessWidget {
         subtitle: hostOfferPaymentModeBody(l10n, mode),
         selected: selected,
         contractExemption: 'Offer collection mode, staged locally.',
-        onTap: editable && !gated ? () => onSelected(mode) : null,
+        onTap: editable && (summary || !gated)
+            ? () => onSelected(mode)
+            : null,
       ),
     );
   }
