@@ -609,6 +609,9 @@ export {importProgramManifestCallablePayloadSchema} from "./schemas/importProgra
 export {refreshProgramTravelLegCallablePayloadSchema} from "./schemas/refreshProgramTravelLegInput";
 export {programStationScopeCallablePayloadSchema} from "./schemas/programStationScopeInput";
 export {getProgramHotelInboundCallablePayloadSchema} from "./schemas/getProgramHotelInboundInput";
+export {getProgramHotelRoomsCallablePayloadSchema} from "./schemas/getProgramHotelRoomsInput";
+export {upsertProgramStayCallablePayloadSchema} from "./schemas/upsertProgramStayInput";
+export {upsertProgramRoomBlockCallablePayloadSchema} from "./schemas/upsertProgramRoomBlockInput";
 export {listTransportVendorsCallablePayloadSchema} from "./schemas/listTransportVendorsInput";
 export {programMutationCallableResponseSchema} from "./schemas/programMutationOutput";
 export {programFunctionInvitationsCallableResponseSchema} from "./schemas/programFunctionInvitationsOutput";
@@ -627,6 +630,7 @@ export {programGuestGroupListCallableResponseSchema} from "./schemas/programGues
 export {programArrivalsRosterCallableResponseSchema} from "./schemas/programArrivalsRosterOutput";
 export {programTransportPlanCallableResponseSchema} from "./schemas/programTransportPlanOutput";
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
+export {programHotelRoomsCallableResponseSchema} from "./schemas/programHotelRoomsOutput";
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
 export {programAttendanceReportCallableResponseSchema} from "./schemas/programAttendanceReportOutput";

@@ -100,19 +100,19 @@ or an independent feature contract. Its domain state and route intents remain te
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 31 P1, 10 P2, and 5 P3 contracted screens.
-- Contracted screen states: 726.
-- Contracted screen sections: 253.
-- Screen registry migration gaps: 35 open, 24 blocked, and 110 closed. One of
+- Screen priority spread: 32 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 733.
+- Contracted screen sections: 254.
+- Screen registry migration gaps: 36 open, 24 blocked, and 110 closed. One of
   the 26 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
-- Contracted section states: 1,149.
+- Contracted section states: 1,156.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 13 feature groups, 48 screens, 745 matrix states, and
-  64 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 13 feature groups, 49 screens, 752 matrix states, and
+  65 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 562 captured, 77 implemented, 4 planned, and
+- Matrix state status spread: 562 captured, 84 implemented, 4 planned, and
   77 tested.
 - Capture coverage registry: 671 capture ids across 54 captured route entries,
   10 alias route entries, 16 planned route entries, and 2 excluded route entries.
@@ -773,6 +773,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.programs.attendance_report` | 4 | 1 | 0 | Planned: attendance captures land with the program golden pass | `DP-PROGRAMS-ATTENDANCE-001` | `feature.programs_arrivals_ops` binds the counts-and-ids attendance report: program totals, per-function invited/responded/attending/checked-in breakdowns with exception chips, and a CSV export scoped to exactly what the viewer can read. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.now_next` | 3 | 1 | 0 | Planned: Now/Next captures land with the program golden pass | `DP-PROGRAMS-NOWNEXT-001` | `feature.programs_arrivals_ops` binds the function-lead Now/Next board: a pure client projection over the staff work-access payload bucketing functions in-progress, upcoming and earlier with expected/checked-in counts and door-roster navigation. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.attention` | 3 | 1 | 0 | Planned: attention captures land with the program golden pass | `DP-PROGRAMS-ATTENTION-001` | `feature.programs_arrivals_ops` binds the duty-filtered staff attention feed: program-scoped staffAttention sends filtered server-side to the caller's active duties, deduplicated per run and duty, rendered with severity, duty and recency. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.hotel_rooms` | 7 | 1 | 0 | Planned: room-board captures land with the program golden pass | `DP-PROGRAMS-HOTEL-ROOMS-001` | `feature.programs_arrivals_ops` binds the hotel-scoped room board: stay rows with lifecycle marks, live block capacity, unplaced-guest rows opening the assign sheet, and `upsertProgramStay`/`upsertProgramRoomBlock` mutations through the desk's authority. Route captures remain the explicit follow-up. |
 | P1 | `screen.host.event.moments` | 6 | 1 | 0 | Planned: routed captures land with the organizer moments golden pass | None | The organizer Moments workspace lists scope-bound send rules with approve-the-rule-once lifecycle controls (arm, pause, resume, manual run) and an inline editor covering manual, scheduled, anchored, and triggered initiation against the generated callable constraints. Event scope is routed today through the manage screen; program scope mounts when an organizer program workspace exists. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.moments` | 6 | 1 | 0 | Planned: program Moments route captures land with the program golden pass | `DP-PROGRAMS-MOMENTS-001` | The program route uses the same scoped Moments list and editor for lifecycle review, creation, and edits. Its route and states are implemented; visual captures remain open. |
 | P1 | `screen.host.work` | 5 | 1 | 0 | Planned: routed captures land with the staff work shell golden pass | None | The unified staff work picker lists the caller's live assignments grouped by organizer, forwards a lone workShell assignment straight into its scoped workspace, and renders the grant empty state otherwise. Route captures remain the explicit follow-up. |

@@ -99,7 +99,7 @@ never CRM, saved audiences, sender connections, or payouts.
 |---|---|
 | `airportGreeter` → Arrivals | **built** — `/host/work/:programId/arrivals/:pickupPointId` |
 | `transportDispatcher` → Arrivals · Dispatch | **built** — dispatch screen on same prefix |
-| `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
+| `hotelDesk` → Inbound · Rooms | **built** — `/hotel/:hotelId` inbound desk + `/hotel/:hotelId/rooms` room board (unplaced queue, stays, block capacity, assign/manage via `upsertProgramStay`); coordinator block CRUD via `upsertProgramRoomBlock` |
 | `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
 | `functionLead` → Now/Next · Door · Attention | **built** — Door destination shared with `functionCheckIn` (#448); Now/Next board (client projection over the work-access payload) + Attention feed (`listProgramStaffAttention`: program-scoped staffAttention sends filtered to caller duties, coordinator/manager see all) (#470) |
 | `guestRelations` → Guests · RSVP inbox · Imports | **built** — `/host/work/:programId/guests` + `/host/work/:programId/import` on the shared grid/import surfaces with coordinator-only mutations hidden; `listProgramGuests`, `listProgramHouseholds`, `importProgramManifest` and work-access `functions` widened to the duty (#469) |
@@ -115,8 +115,8 @@ never CRM, saved audiences, sender connections, or payouts.
 |---|---|---|
 | Flight details + enrichment | **built** | `programTravelLegs` (number, carrier, IATA, sched/est/actual, status, alert subscription via `flightAlertWebhook`, terminal, readiness, pax/luggage, party, destination hotel) |
 | Venue details | **built** | `programFunctions.venueName/venueNotes/venueLocation` (coords); `programPickupPoints` carry airport/terminal/station kind |
-| Hotels | **partial** | `programHotels` (name/address/lat/lng/reception contact); `programStays` + `programRoomBlocks` schemas **not on main** (airport branch A7) |
-| Room allocation | **missing** | no stays/room-block model, no allocation UI, no group-aware assignment |
+| Hotels | **built** | `programHotels` (name/address/lat/lng/reception contact) + `programStays` + `programRoomBlocks` schemas and callables (`getProgramHotelRooms`, `upsertProgramStay`, `upsertProgramRoomBlock`) with hotel-scoped `hotelDesk` authority |
+| Room allocation | **built** | stays/room-block model with transactional capacity rollups; group-aware `suggestStayBlock` prefers group-held blocks; desk room board assigns block + room label, marks ready/arrived, and runs lifecycle status |
 | Taxi/transport tracking | **built backend + staff UI** | `transportTrips` (vehicle class, vendor, plate, parties/legs, depart/arrive, rate snapshot), dispatch + hotel-inbound + trips-ledger screens. **How it's exposed:** dispatcher creates trip at `/dispatch/:pickupPointId`; hotel desk sees inbound at `/hotel/:hotelId`; ledger at `/trips`. No guest-facing tracking. |
 | Vendors / rate cards | **partial** | `transportVendors` + `rateSnapshot` on trips; no rate-card management UI |
 | Distance-aware reminder lead times | **in review** | `travelTimeLead` flag on `functionGuests` audiences; planner wakes runs early by the farthest hotel→venue lead and defers nearer recipients individually (pure haversine seam, Routes API replaceable) — #456 |

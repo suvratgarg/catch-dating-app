@@ -79661,6 +79661,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[^/]+\$',
   );
 
+  static const getProgramHotelRoomsCallablePayloadHotelId = CatchContractFieldConstraints(
+    path: 'getProgramHotelRoomsCallablePayload.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getProgramHotelRoomsCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'getProgramHotelRoomsCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getProgramHouseholdRsvpViewCallablePayloadToken = CatchContractFieldConstraints(
     path: 'getProgramHouseholdRsvpViewCallablePayload.token',
     maxLength: 1024,
@@ -120470,6 +120486,252 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHotelRoomsCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseGeneratedAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.generatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseHotelId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseHotelName = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.hotelName',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocks = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsAssignedCount = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.assignedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsEndsAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.endsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIds = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIdsItems = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsLabel = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsRemainingRooms = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.remainingRooms',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsRoomBlockId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.roomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsRoomType = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.roomType',
+    maxLength: 140,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsStartsAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.startsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseRoomBlocksItemsTotalRooms = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.totalRooms',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const programHotelRoomsCallableResponseStays = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2000,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsEndsAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.endsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsGuestDisplayName = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.guestDisplayName',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsGuestId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsHotelArrivedAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.hotelArrivedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsRevision = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsRoomBlockId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.roomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsRoomLabel = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.roomLabel',
+    maxLength: 40,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsRoomReadyAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.roomReadyAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsStartsAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.startsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsStatus = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['held', 'confirmed', 'checkedIn', 'checkedOut', 'cancelled'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsStayId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.stayId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseUnplacedGuests = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.unplacedGuests',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2000,
+  );
+
+  static const programHotelRoomsCallableResponseUnplacedGuestsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.unplacedGuests.items.displayName',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseUnplacedGuestsItemsGuestId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.unplacedGuests.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseUnplacedGuestsItemsSuggestedRoomBlockId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.unplacedGuests.items.suggestedRoomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programHouseholdDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programHouseholdDocument.createdAt._nanoseconds',
     required: true,
@@ -147380,6 +147642,186 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertProgramRoomBlockCallablePayloadEndsAtMillis = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.endsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadHeldForGroupIds = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.heldForGroupIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+    uniqueItems: true,
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadHeldForGroupIdsItems = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.heldForGroupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadHotelId = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadNotes = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.notes',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadRoomBlockId = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.roomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadRoomType = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.roomType',
+    maxLength: 140,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadStartsAtMillis = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.startsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const upsertProgramRoomBlockCallablePayloadTotalRooms = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.totalRooms',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const upsertProgramStayCallablePayloadEndsAtMillis = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.endsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const upsertProgramStayCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertProgramStayCallablePayloadGuestId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadHotelId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadMarkHotelArrived = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.markHotelArrived',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertProgramStayCallablePayloadMarkRoomReady = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.markRoomReady',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertProgramStayCallablePayloadNotes = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.notes',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadRoomBlockId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.roomBlockId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadRoomLabel = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.roomLabel',
+    maxLength: 40,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadStartsAtMillis = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.startsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
+  );
+
+  static const upsertProgramStayCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.status',
+    valueTypes: <String>['string'],
+    enumValues: <String>['held', 'confirmed', 'checkedIn', 'checkedOut', 'cancelled'],
+  );
+
+  static const upsertProgramStayCallablePayloadStayId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.stayId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const upsertProgramTravelLegCallablePayloadCarrierCode = CatchContractFieldConstraints(
     path: 'upsertProgramTravelLegCallablePayload.carrierCode',
     maxLength: 3,
@@ -161448,6 +161890,8 @@ abstract final class CatchContractConstraints {
     'getProgramHotelInboundCallablePayload.limit': getProgramHotelInboundCallablePayloadLimit,
     'getProgramHotelInboundCallablePayload.programId': getProgramHotelInboundCallablePayloadProgramId,
     'getProgramHotelInboundCallablePayload.tripCursor': getProgramHotelInboundCallablePayloadTripCursor,
+    'getProgramHotelRoomsCallablePayload.hotelId': getProgramHotelRoomsCallablePayloadHotelId,
+    'getProgramHotelRoomsCallablePayload.programId': getProgramHotelRoomsCallablePayloadProgramId,
     'getProgramHouseholdRsvpViewCallablePayload.token': getProgramHouseholdRsvpViewCallablePayloadToken,
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
@@ -167092,6 +167536,38 @@ abstract final class CatchContractConstraints {
     'programHotelInboundCallableResponse.trips.items.vehicleClassId': programHotelInboundCallableResponseTripsItemsVehicleClassId,
     'programHotelInboundCallableResponse.trips.items.vehicleClassLabel': programHotelInboundCallableResponseTripsItemsVehicleClassLabel,
     'programHotelInboundCallableResponse.trips.items.vendorName': programHotelInboundCallableResponseTripsItemsVendorName,
+    'programHotelRoomsCallableResponse.accessExpiresAtMillis': programHotelRoomsCallableResponseAccessExpiresAtMillis,
+    'programHotelRoomsCallableResponse.generatedAtMillis': programHotelRoomsCallableResponseGeneratedAtMillis,
+    'programHotelRoomsCallableResponse.hotelId': programHotelRoomsCallableResponseHotelId,
+    'programHotelRoomsCallableResponse.hotelName': programHotelRoomsCallableResponseHotelName,
+    'programHotelRoomsCallableResponse.programId': programHotelRoomsCallableResponseProgramId,
+    'programHotelRoomsCallableResponse.roomBlocks': programHotelRoomsCallableResponseRoomBlocks,
+    'programHotelRoomsCallableResponse.roomBlocks.items.assignedCount': programHotelRoomsCallableResponseRoomBlocksItemsAssignedCount,
+    'programHotelRoomsCallableResponse.roomBlocks.items.endsAtMillis': programHotelRoomsCallableResponseRoomBlocksItemsEndsAtMillis,
+    'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds': programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIds,
+    'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds.items': programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIdsItems,
+    'programHotelRoomsCallableResponse.roomBlocks.items.label': programHotelRoomsCallableResponseRoomBlocksItemsLabel,
+    'programHotelRoomsCallableResponse.roomBlocks.items.remainingRooms': programHotelRoomsCallableResponseRoomBlocksItemsRemainingRooms,
+    'programHotelRoomsCallableResponse.roomBlocks.items.roomBlockId': programHotelRoomsCallableResponseRoomBlocksItemsRoomBlockId,
+    'programHotelRoomsCallableResponse.roomBlocks.items.roomType': programHotelRoomsCallableResponseRoomBlocksItemsRoomType,
+    'programHotelRoomsCallableResponse.roomBlocks.items.startsAtMillis': programHotelRoomsCallableResponseRoomBlocksItemsStartsAtMillis,
+    'programHotelRoomsCallableResponse.roomBlocks.items.totalRooms': programHotelRoomsCallableResponseRoomBlocksItemsTotalRooms,
+    'programHotelRoomsCallableResponse.stays': programHotelRoomsCallableResponseStays,
+    'programHotelRoomsCallableResponse.stays.items.endsAtMillis': programHotelRoomsCallableResponseStaysItemsEndsAtMillis,
+    'programHotelRoomsCallableResponse.stays.items.guestDisplayName': programHotelRoomsCallableResponseStaysItemsGuestDisplayName,
+    'programHotelRoomsCallableResponse.stays.items.guestId': programHotelRoomsCallableResponseStaysItemsGuestId,
+    'programHotelRoomsCallableResponse.stays.items.hotelArrivedAtMillis': programHotelRoomsCallableResponseStaysItemsHotelArrivedAtMillis,
+    'programHotelRoomsCallableResponse.stays.items.revision': programHotelRoomsCallableResponseStaysItemsRevision,
+    'programHotelRoomsCallableResponse.stays.items.roomBlockId': programHotelRoomsCallableResponseStaysItemsRoomBlockId,
+    'programHotelRoomsCallableResponse.stays.items.roomLabel': programHotelRoomsCallableResponseStaysItemsRoomLabel,
+    'programHotelRoomsCallableResponse.stays.items.roomReadyAtMillis': programHotelRoomsCallableResponseStaysItemsRoomReadyAtMillis,
+    'programHotelRoomsCallableResponse.stays.items.startsAtMillis': programHotelRoomsCallableResponseStaysItemsStartsAtMillis,
+    'programHotelRoomsCallableResponse.stays.items.status': programHotelRoomsCallableResponseStaysItemsStatus,
+    'programHotelRoomsCallableResponse.stays.items.stayId': programHotelRoomsCallableResponseStaysItemsStayId,
+    'programHotelRoomsCallableResponse.unplacedGuests': programHotelRoomsCallableResponseUnplacedGuests,
+    'programHotelRoomsCallableResponse.unplacedGuests.items.displayName': programHotelRoomsCallableResponseUnplacedGuestsItemsDisplayName,
+    'programHotelRoomsCallableResponse.unplacedGuests.items.guestId': programHotelRoomsCallableResponseUnplacedGuestsItemsGuestId,
+    'programHotelRoomsCallableResponse.unplacedGuests.items.suggestedRoomBlockId': programHotelRoomsCallableResponseUnplacedGuestsItemsSuggestedRoomBlockId,
     'programHouseholdDocument.createdAt._nanoseconds': programHouseholdDocumentCreatedAtNanoseconds,
     'programHouseholdDocument.createdAt._seconds': programHouseholdDocumentCreatedAtSeconds,
     'programHouseholdDocument.deliveryPreference': programHouseholdDocumentDeliveryPreference,
@@ -170803,6 +171279,31 @@ abstract final class CatchContractConstraints {
     'upsertProgramPickupPointCallablePayload.pickupPointId': upsertProgramPickupPointCallablePayloadPickupPointId,
     'upsertProgramPickupPointCallablePayload.programId': upsertProgramPickupPointCallablePayloadProgramId,
     'upsertProgramPickupPointCallablePayload.terminal': upsertProgramPickupPointCallablePayloadTerminal,
+    'upsertProgramRoomBlockCallablePayload.endsAtMillis': upsertProgramRoomBlockCallablePayloadEndsAtMillis,
+    'upsertProgramRoomBlockCallablePayload.expectedRevision': upsertProgramRoomBlockCallablePayloadExpectedRevision,
+    'upsertProgramRoomBlockCallablePayload.heldForGroupIds': upsertProgramRoomBlockCallablePayloadHeldForGroupIds,
+    'upsertProgramRoomBlockCallablePayload.heldForGroupIds.items': upsertProgramRoomBlockCallablePayloadHeldForGroupIdsItems,
+    'upsertProgramRoomBlockCallablePayload.hotelId': upsertProgramRoomBlockCallablePayloadHotelId,
+    'upsertProgramRoomBlockCallablePayload.label': upsertProgramRoomBlockCallablePayloadLabel,
+    'upsertProgramRoomBlockCallablePayload.notes': upsertProgramRoomBlockCallablePayloadNotes,
+    'upsertProgramRoomBlockCallablePayload.programId': upsertProgramRoomBlockCallablePayloadProgramId,
+    'upsertProgramRoomBlockCallablePayload.roomBlockId': upsertProgramRoomBlockCallablePayloadRoomBlockId,
+    'upsertProgramRoomBlockCallablePayload.roomType': upsertProgramRoomBlockCallablePayloadRoomType,
+    'upsertProgramRoomBlockCallablePayload.startsAtMillis': upsertProgramRoomBlockCallablePayloadStartsAtMillis,
+    'upsertProgramRoomBlockCallablePayload.totalRooms': upsertProgramRoomBlockCallablePayloadTotalRooms,
+    'upsertProgramStayCallablePayload.endsAtMillis': upsertProgramStayCallablePayloadEndsAtMillis,
+    'upsertProgramStayCallablePayload.expectedRevision': upsertProgramStayCallablePayloadExpectedRevision,
+    'upsertProgramStayCallablePayload.guestId': upsertProgramStayCallablePayloadGuestId,
+    'upsertProgramStayCallablePayload.hotelId': upsertProgramStayCallablePayloadHotelId,
+    'upsertProgramStayCallablePayload.markHotelArrived': upsertProgramStayCallablePayloadMarkHotelArrived,
+    'upsertProgramStayCallablePayload.markRoomReady': upsertProgramStayCallablePayloadMarkRoomReady,
+    'upsertProgramStayCallablePayload.notes': upsertProgramStayCallablePayloadNotes,
+    'upsertProgramStayCallablePayload.programId': upsertProgramStayCallablePayloadProgramId,
+    'upsertProgramStayCallablePayload.roomBlockId': upsertProgramStayCallablePayloadRoomBlockId,
+    'upsertProgramStayCallablePayload.roomLabel': upsertProgramStayCallablePayloadRoomLabel,
+    'upsertProgramStayCallablePayload.startsAtMillis': upsertProgramStayCallablePayloadStartsAtMillis,
+    'upsertProgramStayCallablePayload.status': upsertProgramStayCallablePayloadStatus,
+    'upsertProgramStayCallablePayload.stayId': upsertProgramStayCallablePayloadStayId,
     'upsertProgramTravelLegCallablePayload.carrierCode': upsertProgramTravelLegCallablePayloadCarrierCode,
     'upsertProgramTravelLegCallablePayload.dedicatedVehicle': upsertProgramTravelLegCallablePayloadDedicatedVehicle,
     'upsertProgramTravelLegCallablePayload.destinationHotelId': upsertProgramTravelLegCallablePayloadDestinationHotelId,

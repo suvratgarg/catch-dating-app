@@ -609,6 +609,9 @@ export {validateImportProgramManifestCallablePayload} from "./validators/importP
 export {validateRefreshProgramTravelLegCallablePayload} from "./validators/refreshProgramTravelLegInput";
 export {validateProgramStationScopeCallablePayload} from "./validators/programStationScopeInput";
 export {validateGetProgramHotelInboundCallablePayload} from "./validators/getProgramHotelInboundInput";
+export {validateGetProgramHotelRoomsCallablePayload} from "./validators/getProgramHotelRoomsInput";
+export {validateUpsertProgramStayCallablePayload} from "./validators/upsertProgramStayInput";
+export {validateUpsertProgramRoomBlockCallablePayload} from "./validators/upsertProgramRoomBlockInput";
 export {validateListTransportVendorsCallablePayload} from "./validators/listTransportVendorsInput";
 export {validateProgramMutationCallableResponse} from "./validators/programMutationOutput";
 export {validateProgramFunctionInvitationsCallableResponse} from "./validators/programFunctionInvitationsOutput";
@@ -627,6 +630,7 @@ export {validateProgramGuestGroupListCallableResponse} from "./validators/progra
 export {validateProgramArrivalsRosterCallableResponse} from "./validators/programArrivalsRosterOutput";
 export {validateProgramTransportPlanCallableResponse} from "./validators/programTransportPlanOutput";
 export {validateProgramHotelInboundCallableResponse} from "./validators/programHotelInboundOutput";
+export {validateProgramHotelRoomsCallableResponse} from "./validators/programHotelRoomsOutput";
 export {validateRecordProgramDoorJournalCallableResponse} from "./validators/recordProgramDoorJournalOutput";
 export {validateProgramFunctionDoorViewCallableResponse} from "./validators/programFunctionDoorViewOutput";
 export {validateProgramAttendanceReportCallableResponse} from "./validators/programAttendanceReportOutput";

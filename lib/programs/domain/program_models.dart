@@ -9,6 +9,7 @@ part 'program_access_models.dart';
 part 'program_door_models.dart';
 part 'program_workspace_models.dart';
 part 'program_attendance_models.dart';
+part 'program_room_models.dart';
 
 enum TravelLegReadiness {
   expected,
@@ -18,6 +19,8 @@ enum TravelLegReadiness {
   arrived,
   noShow,
 }
+
+enum ProgramStayStatus { held, confirmed, checkedIn, checkedOut, cancelled }
 
 enum TravelLegFlightStatus {
   scheduled,

@@ -539,6 +539,8 @@ import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
     as _widgetbook_workspace_programs_use_cases_attendance;
 import 'package:widgetbook_workspace/programs/use_cases_function_lead.dart'
     as _widgetbook_workspace_programs_use_cases_function_lead;
+import 'package:widgetbook_workspace/programs/use_cases_rooms.dart'
+    as _widgetbook_workspace_programs_use_cases_rooms;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12719,6 +12721,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Tile states',
                 builder: _widgetbook_workspace_programs_use_cases
                     .programHotelInboundTripTileStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program hotel rooms',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelRoomsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases_rooms
+                    .programHotelRoomsScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramRoomBlockRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_rooms
+                    .programRoomBlockRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStayRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_rooms
+                    .programStayRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStaySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases_rooms
+                    .programStaySheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramUnplacedGuestRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_rooms
+                    .programUnplacedGuestRowStates,
               ),
             ],
           ),

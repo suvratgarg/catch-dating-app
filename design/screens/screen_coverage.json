@@ -459,6 +459,13 @@
       "reason": "Covered by screen.programs.hotel_desk as the hotel-scoped inbound view."
     },
     {
+      "routeId": "hostWorkHotelRoomsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.hotel_rooms",
+      "reason": "Covered by screen.programs.hotel_rooms as the hotel-scoped room board."
+    },
+    {
       "routeId": "hostWorkDoorScreen",
       "status": "contracted",
       "priority": "P1",
