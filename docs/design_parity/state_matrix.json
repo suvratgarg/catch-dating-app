@@ -12676,6 +12676,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_dispatch_screen.dart",
             "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_reports.dart",
             "lib/programs/data/program_operations_outbox.dart"
           ],
           "componentIds": [
@@ -12744,6 +12745,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_hotel_desk_screen.dart",
             "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_rooms.dart",
             "lib/programs/presentation/program_trip_actions_controller.dart"
           ],
           "componentIds": [
@@ -13294,7 +13296,8 @@
           "routeId": "hostWorkCountsScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_stakeholder_screen.dart",
-            "lib/programs/data/program_work_repository.dart"
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_reports.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13352,7 +13355,8 @@
           "implementationPaths": [
             "lib/programs/presentation/program_attendance_report_screen.dart",
             "lib/programs/presentation/program_attendance_actions_controller.dart",
-            "lib/programs/data/program_work_repository.dart"
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_reports.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13463,6 +13467,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_attention_screen.dart",
             "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_reports.dart",
             "functions/src/programs/programStaffAttention.ts"
           ],
           "componentIds": [
@@ -13517,6 +13522,7 @@
             "lib/programs/presentation/program_hotel_rooms_screen.dart",
             "lib/programs/presentation/program_stay_actions_controller.dart",
             "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_work_repository_rooms.dart",
             "functions/src/programs/programRooms.ts"
           ],
           "componentIds": [
