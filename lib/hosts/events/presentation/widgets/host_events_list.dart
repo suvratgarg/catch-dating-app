@@ -12,9 +12,11 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HostEventsClubCard extends ConsumerWidget {
   const HostEventsClubCard({
@@ -148,6 +150,12 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [
           CatchTopBarPrimaryButton(
+            key: const ValueKey<String>('host-events-view-programs'),
+            label: context.l10n.programsListTitle,
+            icon: CatchIcons.calendarMonthOutlined,
+            onPressed: _openPrograms,
+          ),
+          CatchTopBarPrimaryButton(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
             icon: CatchIcons.addRounded,
@@ -195,6 +203,11 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
       ),
     );
   }
+
+  void _openPrograms() => context.pushNamed(
+    Routes.hostProgramsScreen.name,
+    queryParameters: {'organizerId': widget.club.id},
+  );
 
   Future<void> _showEventEntrySheet() async {
     final intent = await showHostEventEntrySheet(

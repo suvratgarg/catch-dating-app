@@ -3,10 +3,12 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_stat
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../clubs/clubs_test_helpers.dart';
@@ -109,40 +111,41 @@ void main() {
     }
   }
 
-  testWidgets('retrying empty Past shows derived rows, not a false empty state', (
-    tester,
-  ) async {
-    await _pump(
-      tester,
-      state: HostEventsWorkspaceState.fromEvents(
-        events: const [],
-        now: _now,
-        pastError: StateError('offline'),
-      ),
-    );
-    await tester.tap(find.text('Past'));
-    await pumpFeatureUi(tester);
-    await _pump(
-      tester,
-      state: HostEventsWorkspaceState.fromEvents(
-        events: const [],
-        now: _now,
-        loadingMorePast: true,
-      ),
-    );
-    await tester.tap(find.text('Past').hitTestable());
-    await pumpFeatureUi(tester);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSkeleton &&
-            widget.variant == CatchSkeletonVariant.content,
-      ),
-      findsNWidgets(4),
-    );
-    expect(find.text('No past events yet'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'retrying empty Past shows derived rows, not a false empty state',
+    (tester) async {
+      await _pump(
+        tester,
+        state: HostEventsWorkspaceState.fromEvents(
+          events: const [],
+          now: _now,
+          pastError: StateError('offline'),
+        ),
+      );
+      await tester.tap(find.text('Past'));
+      await pumpFeatureUi(tester);
+      await _pump(
+        tester,
+        state: HostEventsWorkspaceState.fromEvents(
+          events: const [],
+          now: _now,
+          loadingMorePast: true,
+        ),
+      );
+      await tester.tap(find.text('Past').hitTestable());
+      await pumpFeatureUi(tester);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchSkeleton &&
+              widget.variant == CatchSkeletonVariant.content,
+        ),
+        findsNWidgets(4),
+      );
+      expect(find.text('No past events yet'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('Past keeps date and attendance in the shared record row', (
     tester,
@@ -185,6 +188,51 @@ void main() {
     );
     await tester.tapAt(Offset(1, bounds.center.dy));
     expect(opened, 'past');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Programs header action opens the program index', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => HostEventsClubSection(
+            club: _club,
+            state: HostEventsWorkspaceState.fromEvents(
+              events: const [],
+              now: _now,
+            ),
+            entryState: HostEventEntryState.resolve(organizerId: _club.id),
+            onLoadMoreActive: () {},
+            onLoadMorePast: () {},
+            onRetryPast: () {},
+            onEventEntrySelected: (_, _, _) {},
+            onManageEvent: (_, _) {},
+          ),
+        ),
+        GoRoute(
+          path: Routes.hostProgramsScreen.path,
+          name: Routes.hostProgramsScreen.name,
+          builder: (_, _) => const Scaffold(body: Text('Programs index')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: AppTheme.light,
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pump();
+    final action = find.byKey(const ValueKey('host-events-view-programs'));
+    expect(action, findsOneWidget);
+    await tester.tap(action);
+    await pumpFeatureUi(tester);
+    expect(router.state.uri.path, '/host/programs');
+    expect(router.state.uri.queryParameters['organizerId'], 'club-1');
     expect(tester.takeException(), isNull);
   });
 }
