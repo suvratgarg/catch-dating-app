@@ -558,6 +558,10 @@ import {
   programWhatsappDispatchDocumentSchema,
   programDeliveryMessageIntentSchema,
   programDeliveryAttemptSchema,
+  campaignDeliveryMessageDocumentSchema,
+  campaignWhatsappDispatchDocumentSchema,
+  campaignDeliveryMessageIntentSchema,
+  campaignDeliveryAttemptSchema,
   organizerMomentDocumentSchema,
   organizerMomentRunDocumentSchema,
   organizerMomentSendDocumentSchema,
@@ -1709,6 +1713,10 @@ export const validateProgramDeliveryMessageDocument = ajv.compile(programDeliver
 export const validateProgramWhatsappDispatchDocument = ajv.compile(programWhatsappDispatchDocumentSchema);
 export const validateProgramDeliveryMessageIntent = ajv.compile(programDeliveryMessageIntentSchema);
 export const validateProgramDeliveryAttempt = ajv.compile(programDeliveryAttemptSchema);
+export const validateCampaignDeliveryMessageDocument = ajv.compile(campaignDeliveryMessageDocumentSchema);
+export const validateCampaignWhatsappDispatchDocument = ajv.compile(campaignWhatsappDispatchDocumentSchema);
+export const validateCampaignDeliveryMessageIntent = ajv.compile(campaignDeliveryMessageIntentSchema);
+export const validateCampaignDeliveryAttempt = ajv.compile(campaignDeliveryAttemptSchema);
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);
 export const validateOrganizerMomentRunDocument = ajv.compile(organizerMomentRunDocumentSchema);
 export const validateOrganizerMomentSendDocument = ajv.compile(organizerMomentSendDocumentSchema);

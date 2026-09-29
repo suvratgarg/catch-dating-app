@@ -14,6 +14,10 @@ import {ProgramWhatsappDeliveryStore} from
   "../../programs/programWhatsappDeliveryStore";
 import {PROGRAM_WHATSAPP_DISPATCHES} from
   "../../programs/programDeliveryWorker";
+import {CampaignWhatsappDeliveryStore} from
+  "../../organizers/campaignWhatsappDeliveryStore";
+import {CAMPAIGN_WHATSAPP_DISPATCHES} from
+  "../../organizers/campaignDeliveryWorker";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {whatsappAttemptFromReplyId} from "./whatsappReplyProtocol";
 import {whatsappAttemptFromStatus} from "./whatsappDeliveryProtocol";
@@ -33,10 +37,12 @@ class RoutedWhatsappDeliveryStore
 implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
   private readonly eventStore: WhatsappDeliveryStore;
   private readonly programStore: ProgramWhatsappDeliveryStore;
+  private readonly campaignStore: CampaignWhatsappDeliveryStore;
 
   constructor(private readonly db: Firestore, clock: () => number) {
     this.eventStore = new WhatsappDeliveryStore(db, clock);
     this.programStore = new ProgramWhatsappDeliveryStore(db, clock);
+    this.campaignStore = new CampaignWhatsappDeliveryStore(db, clock);
   }
 
   async consumeQueued(eventId: string) {
@@ -44,9 +50,17 @@ implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
       .data();
     const attemptId = validateOrganizerMessagingWebhookEventDocument(queued) ?
       whatsappAttemptFromStatus(queued.callbackData) : null;
-    if (attemptId && (await this.db.collection(PROGRAM_WHATSAPP_DISPATCHES)
-      .doc(attemptId).get()).exists) {
-      return this.programStore.consumeQueued(eventId);
+    if (attemptId) {
+      const [programDispatch, campaignDispatch] = await Promise.all([
+        this.db.collection(PROGRAM_WHATSAPP_DISPATCHES).doc(attemptId).get(),
+        this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId).get(),
+      ]);
+      if (programDispatch.exists) {
+        return this.programStore.consumeQueued(eventId);
+      }
+      if (campaignDispatch.exists) {
+        return this.campaignStore.consumeQueued(eventId);
+      }
     }
     return this.eventStore.consumeQueued(eventId);
   }

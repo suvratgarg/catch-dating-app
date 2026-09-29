@@ -2089,6 +2089,29 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programDeliveryAttempt.ts",
   },
   {
+    name: "CampaignDeliveryMessageDocument",
+    source: "firestore/campaign_delivery_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignDeliveryMessageDocument.ts",
+  },
+  {
+    name: "CampaignWhatsappDispatchDocument",
+    source: "firestore/campaign_whatsapp_dispatches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "CampaignDeliveryMessageIntent",
+    source: "operations/campaign_delivery_message_intent.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignDeliveryMessageIntent.ts",
+  },
+  {
+    name: "CampaignDeliveryAttempt",
+    source: "operations/campaign_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/campaignDeliveryAttempt.ts",
+  },
+  {
     name: "OrganizerMomentDocument",
     source: "firestore/organizer_moments.schema.json",
     typeOutput: "functions/src/shared/generated/organizerMomentDocument.ts",

@@ -3085,6 +3085,20 @@
       ]
     },
     {
+      "collectionGroup": "organizerCampaigns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "leaseExpiresAt",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizerSavedAudiences",
       "queryScope": "COLLECTION",
       "fields": [

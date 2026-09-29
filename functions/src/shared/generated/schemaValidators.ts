@@ -560,6 +560,10 @@ export {validateProgramDeliveryMessageDocument} from "./validators/programDelive
 export {validateProgramWhatsappDispatchDocument} from "./validators/programWhatsappDispatchDocument";
 export {validateProgramDeliveryMessageIntent} from "./validators/programDeliveryMessageIntent";
 export {validateProgramDeliveryAttempt} from "./validators/programDeliveryAttempt";
+export {validateCampaignDeliveryMessageDocument} from "./validators/campaignDeliveryMessageDocument";
+export {validateCampaignWhatsappDispatchDocument} from "./validators/campaignWhatsappDispatchDocument";
+export {validateCampaignDeliveryMessageIntent} from "./validators/campaignDeliveryMessageIntent";
+export {validateCampaignDeliveryAttempt} from "./validators/campaignDeliveryAttempt";
 export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";
 export {validateOrganizerMomentRunDocument} from "./validators/organizerMomentRunDocument";
 export {validateOrganizerMomentSendDocument} from "./validators/organizerMomentSendDocument";

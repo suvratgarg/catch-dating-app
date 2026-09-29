@@ -1492,6 +1492,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /campaignDeliveryMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /campaignWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
     match /organizerMessagingWebhookEvents/{eventId} {
       allow read, write: if false;
     }

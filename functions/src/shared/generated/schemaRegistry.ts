@@ -560,6 +560,10 @@ export {programDeliveryMessageDocumentSchema} from "./schemas/programDeliveryMes
 export {programWhatsappDispatchDocumentSchema} from "./schemas/programWhatsappDispatchDocument";
 export {programDeliveryMessageIntentSchema} from "./schemas/programDeliveryMessageIntent";
 export {programDeliveryAttemptSchema} from "./schemas/programDeliveryAttempt";
+export {campaignDeliveryMessageDocumentSchema} from "./schemas/campaignDeliveryMessageDocument";
+export {campaignWhatsappDispatchDocumentSchema} from "./schemas/campaignWhatsappDispatchDocument";
+export {campaignDeliveryMessageIntentSchema} from "./schemas/campaignDeliveryMessageIntent";
+export {campaignDeliveryAttemptSchema} from "./schemas/campaignDeliveryAttempt";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";
 export {organizerMomentRunDocumentSchema} from "./schemas/organizerMomentRunDocument";
 export {organizerMomentSendDocumentSchema} from "./schemas/organizerMomentSendDocument";

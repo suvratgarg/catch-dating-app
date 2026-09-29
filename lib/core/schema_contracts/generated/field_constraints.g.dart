@@ -14946,6 +14946,1056 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const campaignDeliveryAttemptAttemptId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const campaignDeliveryAttemptBindingProvider = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const campaignDeliveryAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptBindingRouteId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptBindingSenderId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptBindingTransport = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptContextCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.context.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptContextMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptContextOrganizerId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptContextRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.context.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptIntentId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryAttemptIntentRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const campaignDeliveryAttemptMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptOrdinal = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryAttemptSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const campaignDeliveryAttemptStateAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryAttemptStateClassification = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const campaignDeliveryAttemptStateEvidenceId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptStateKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryAttemptStateReason = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const campaignDeliveryAttemptStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'campaignDeliveryAttempt.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttempts = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsAttemptId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingProvider = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingRouteId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingSenderId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsBindingTransport = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsContextCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.context.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsContextMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsContextOrganizerId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsContextRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.context.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsIntentId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsIntentRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsOrdinal = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateClassification = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateEvidenceId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateReason = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const campaignDeliveryMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.attempts.items.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentDeliveryConflict = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.deliveryConflict',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentContextCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.context.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentContextMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentContextRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.context.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentIntentId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerWhatsappCampaign'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerWhatsappCampaign'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['campaignRecipient'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const campaignDeliveryMessageDocumentIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWorkflowCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.workflow.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageDocumentIntentWorkflowRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.intent.workflow.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.lifecycle',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const campaignDeliveryMessageDocumentMessageId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const campaignDeliveryMessageDocumentRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.schemaVersion',
+    required: true,
+  );
+
+  static const campaignDeliveryMessageDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageIntentCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentContextCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.context.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentContextMode = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageIntentContextRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.context.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const campaignDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const campaignDeliveryMessageIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignDeliveryMessageIntentIntentId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerWhatsappCampaign'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const campaignDeliveryMessageIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerWhatsappCampaign'],
+  );
+
+  static const campaignDeliveryMessageIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['campaignRecipient'],
+  );
+
+  static const campaignDeliveryMessageIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageIntentRevision = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const campaignDeliveryMessageIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const campaignDeliveryMessageIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const campaignDeliveryMessageIntentWorkflowCampaignId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.workflow.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignDeliveryMessageIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignDeliveryMessageIntentWorkflowRecipientId = CatchContractFieldConstraints(
+    path: 'campaignDeliveryMessageIntent.workflow.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignWhatsappDispatchDocumentContextCampaignId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.context.campaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignWhatsappDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const campaignWhatsappDispatchDocumentContextRecipientId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.context.recipientId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const campaignWhatsappDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.providerAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.providerPhoneNumberId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const campaignWhatsappDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const campaignWhatsappDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'campaignWhatsappDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const cancelCrossPathsInvitationOrPlanCallablePayloadInvitationId = CatchContractFieldConstraints(
     path: 'cancelCrossPathsInvitationOrPlanCallablePayload.invitationId',
     maxLength: 180,
@@ -154349,6 +155399,142 @@ abstract final class CatchContractConstraints {
     'blockUserCallablePayload.reasonCode': blockUserCallablePayloadReasonCode,
     'blockUserCallablePayload.source': blockUserCallablePayloadSource,
     'blockUserCallablePayload.targetUserId': blockUserCallablePayloadTargetUserId,
+    'campaignDeliveryAttempt.attemptId': campaignDeliveryAttemptAttemptId,
+    'campaignDeliveryAttempt.authorization.checkedAt': campaignDeliveryAttemptAuthorizationCheckedAt,
+    'campaignDeliveryAttempt.authorization.instructionRevision': campaignDeliveryAttemptAuthorizationInstructionRevision,
+    'campaignDeliveryAttempt.authorization.permissionRevision': campaignDeliveryAttemptAuthorizationPermissionRevision,
+    'campaignDeliveryAttempt.authorization.validUntil': campaignDeliveryAttemptAuthorizationValidUntil,
+    'campaignDeliveryAttempt.binding.bindingRevision': campaignDeliveryAttemptBindingBindingRevision,
+    'campaignDeliveryAttempt.binding.fallbackOwner': campaignDeliveryAttemptBindingFallbackOwner,
+    'campaignDeliveryAttempt.binding.provider': campaignDeliveryAttemptBindingProvider,
+    'campaignDeliveryAttempt.binding.recipientEndpointId': campaignDeliveryAttemptBindingRecipientEndpointId,
+    'campaignDeliveryAttempt.binding.routeId': campaignDeliveryAttemptBindingRouteId,
+    'campaignDeliveryAttempt.binding.senderId': campaignDeliveryAttemptBindingSenderId,
+    'campaignDeliveryAttempt.binding.senderIdentity': campaignDeliveryAttemptBindingSenderIdentity,
+    'campaignDeliveryAttempt.binding.transport': campaignDeliveryAttemptBindingTransport,
+    'campaignDeliveryAttempt.context.campaignId': campaignDeliveryAttemptContextCampaignId,
+    'campaignDeliveryAttempt.context.mode': campaignDeliveryAttemptContextMode,
+    'campaignDeliveryAttempt.context.organizerId': campaignDeliveryAttemptContextOrganizerId,
+    'campaignDeliveryAttempt.context.recipientId': campaignDeliveryAttemptContextRecipientId,
+    'campaignDeliveryAttempt.createdAt': campaignDeliveryAttemptCreatedAt,
+    'campaignDeliveryAttempt.intentId': campaignDeliveryAttemptIntentId,
+    'campaignDeliveryAttempt.intentRevision': campaignDeliveryAttemptIntentRevision,
+    'campaignDeliveryAttempt.mode': campaignDeliveryAttemptMode,
+    'campaignDeliveryAttempt.ordinal': campaignDeliveryAttemptOrdinal,
+    'campaignDeliveryAttempt.schemaVersion': campaignDeliveryAttemptSchemaVersion,
+    'campaignDeliveryAttempt.state.at': campaignDeliveryAttemptStateAt,
+    'campaignDeliveryAttempt.state.classification': campaignDeliveryAttemptStateClassification,
+    'campaignDeliveryAttempt.state.evidenceId': campaignDeliveryAttemptStateEvidenceId,
+    'campaignDeliveryAttempt.state.kind': campaignDeliveryAttemptStateKind,
+    'campaignDeliveryAttempt.state.providerMessageId': campaignDeliveryAttemptStateProviderMessageId,
+    'campaignDeliveryAttempt.state.reason': campaignDeliveryAttemptStateReason,
+    'campaignDeliveryAttempt.state.reconcileAfter': campaignDeliveryAttemptStateReconcileAfter,
+    'campaignDeliveryMessageDocument.attempts': campaignDeliveryMessageDocumentAttempts,
+    'campaignDeliveryMessageDocument.attempts.items.attemptId': campaignDeliveryMessageDocumentAttemptsItemsAttemptId,
+    'campaignDeliveryMessageDocument.attempts.items.authorization.checkedAt': campaignDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt,
+    'campaignDeliveryMessageDocument.attempts.items.authorization.instructionRevision': campaignDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision,
+    'campaignDeliveryMessageDocument.attempts.items.authorization.permissionRevision': campaignDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision,
+    'campaignDeliveryMessageDocument.attempts.items.authorization.validUntil': campaignDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil,
+    'campaignDeliveryMessageDocument.attempts.items.binding.bindingRevision': campaignDeliveryMessageDocumentAttemptsItemsBindingBindingRevision,
+    'campaignDeliveryMessageDocument.attempts.items.binding.fallbackOwner': campaignDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner,
+    'campaignDeliveryMessageDocument.attempts.items.binding.provider': campaignDeliveryMessageDocumentAttemptsItemsBindingProvider,
+    'campaignDeliveryMessageDocument.attempts.items.binding.recipientEndpointId': campaignDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId,
+    'campaignDeliveryMessageDocument.attempts.items.binding.routeId': campaignDeliveryMessageDocumentAttemptsItemsBindingRouteId,
+    'campaignDeliveryMessageDocument.attempts.items.binding.senderId': campaignDeliveryMessageDocumentAttemptsItemsBindingSenderId,
+    'campaignDeliveryMessageDocument.attempts.items.binding.senderIdentity': campaignDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity,
+    'campaignDeliveryMessageDocument.attempts.items.binding.transport': campaignDeliveryMessageDocumentAttemptsItemsBindingTransport,
+    'campaignDeliveryMessageDocument.attempts.items.context.campaignId': campaignDeliveryMessageDocumentAttemptsItemsContextCampaignId,
+    'campaignDeliveryMessageDocument.attempts.items.context.mode': campaignDeliveryMessageDocumentAttemptsItemsContextMode,
+    'campaignDeliveryMessageDocument.attempts.items.context.organizerId': campaignDeliveryMessageDocumentAttemptsItemsContextOrganizerId,
+    'campaignDeliveryMessageDocument.attempts.items.context.recipientId': campaignDeliveryMessageDocumentAttemptsItemsContextRecipientId,
+    'campaignDeliveryMessageDocument.attempts.items.createdAt': campaignDeliveryMessageDocumentAttemptsItemsCreatedAt,
+    'campaignDeliveryMessageDocument.attempts.items.intentId': campaignDeliveryMessageDocumentAttemptsItemsIntentId,
+    'campaignDeliveryMessageDocument.attempts.items.intentRevision': campaignDeliveryMessageDocumentAttemptsItemsIntentRevision,
+    'campaignDeliveryMessageDocument.attempts.items.mode': campaignDeliveryMessageDocumentAttemptsItemsMode,
+    'campaignDeliveryMessageDocument.attempts.items.ordinal': campaignDeliveryMessageDocumentAttemptsItemsOrdinal,
+    'campaignDeliveryMessageDocument.attempts.items.schemaVersion': campaignDeliveryMessageDocumentAttemptsItemsSchemaVersion,
+    'campaignDeliveryMessageDocument.attempts.items.state.at': campaignDeliveryMessageDocumentAttemptsItemsStateAt,
+    'campaignDeliveryMessageDocument.attempts.items.state.classification': campaignDeliveryMessageDocumentAttemptsItemsStateClassification,
+    'campaignDeliveryMessageDocument.attempts.items.state.evidenceId': campaignDeliveryMessageDocumentAttemptsItemsStateEvidenceId,
+    'campaignDeliveryMessageDocument.attempts.items.state.kind': campaignDeliveryMessageDocumentAttemptsItemsStateKind,
+    'campaignDeliveryMessageDocument.attempts.items.state.providerMessageId': campaignDeliveryMessageDocumentAttemptsItemsStateProviderMessageId,
+    'campaignDeliveryMessageDocument.attempts.items.state.reason': campaignDeliveryMessageDocumentAttemptsItemsStateReason,
+    'campaignDeliveryMessageDocument.attempts.items.state.reconcileAfter': campaignDeliveryMessageDocumentAttemptsItemsStateReconcileAfter,
+    'campaignDeliveryMessageDocument.createdAt': campaignDeliveryMessageDocumentCreatedAt,
+    'campaignDeliveryMessageDocument.deliveryConflict': campaignDeliveryMessageDocumentDeliveryConflict,
+    'campaignDeliveryMessageDocument.intent.campaignId': campaignDeliveryMessageDocumentIntentCampaignId,
+    'campaignDeliveryMessageDocument.intent.context.campaignId': campaignDeliveryMessageDocumentIntentContextCampaignId,
+    'campaignDeliveryMessageDocument.intent.context.mode': campaignDeliveryMessageDocumentIntentContextMode,
+    'campaignDeliveryMessageDocument.intent.context.organizerId': campaignDeliveryMessageDocumentIntentContextOrganizerId,
+    'campaignDeliveryMessageDocument.intent.context.recipientId': campaignDeliveryMessageDocumentIntentContextRecipientId,
+    'campaignDeliveryMessageDocument.intent.createdAt': campaignDeliveryMessageDocumentIntentCreatedAt,
+    'campaignDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts': campaignDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts,
+    'campaignDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute': campaignDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'campaignDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds': campaignDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds,
+    'campaignDeliveryMessageDocument.intent.expiresAt': campaignDeliveryMessageDocumentIntentExpiresAt,
+    'campaignDeliveryMessageDocument.intent.instructionRevision': campaignDeliveryMessageDocumentIntentInstructionRevision,
+    'campaignDeliveryMessageDocument.intent.intentId': campaignDeliveryMessageDocumentIntentIntentId,
+    'campaignDeliveryMessageDocument.intent.kind': campaignDeliveryMessageDocumentIntentKind,
+    'campaignDeliveryMessageDocument.intent.permittedRoutes': campaignDeliveryMessageDocumentIntentPermittedRoutes,
+    'campaignDeliveryMessageDocument.intent.permittedRoutes.items': campaignDeliveryMessageDocumentIntentPermittedRoutesItems,
+    'campaignDeliveryMessageDocument.intent.recipient.kind': campaignDeliveryMessageDocumentIntentRecipientKind,
+    'campaignDeliveryMessageDocument.intent.recipient.recipientKey': campaignDeliveryMessageDocumentIntentRecipientRecipientKey,
+    'campaignDeliveryMessageDocument.intent.revision': campaignDeliveryMessageDocumentIntentRevision,
+    'campaignDeliveryMessageDocument.intent.schemaVersion': campaignDeliveryMessageDocumentIntentSchemaVersion,
+    'campaignDeliveryMessageDocument.intent.whatsapp.connectionId': campaignDeliveryMessageDocumentIntentWhatsappConnectionId,
+    'campaignDeliveryMessageDocument.intent.whatsapp.templateId': campaignDeliveryMessageDocumentIntentWhatsappTemplateId,
+    'campaignDeliveryMessageDocument.intent.whatsapp.variables': campaignDeliveryMessageDocumentIntentWhatsappVariables,
+    'campaignDeliveryMessageDocument.intent.workflow.campaignId': campaignDeliveryMessageDocumentIntentWorkflowCampaignId,
+    'campaignDeliveryMessageDocument.intent.workflow.kind': campaignDeliveryMessageDocumentIntentWorkflowKind,
+    'campaignDeliveryMessageDocument.intent.workflow.recipientId': campaignDeliveryMessageDocumentIntentWorkflowRecipientId,
+    'campaignDeliveryMessageDocument.lifecycle': campaignDeliveryMessageDocumentLifecycle,
+    'campaignDeliveryMessageDocument.messageId': campaignDeliveryMessageDocumentMessageId,
+    'campaignDeliveryMessageDocument.revision': campaignDeliveryMessageDocumentRevision,
+    'campaignDeliveryMessageDocument.schemaVersion': campaignDeliveryMessageDocumentSchemaVersion,
+    'campaignDeliveryMessageDocument.updatedAt': campaignDeliveryMessageDocumentUpdatedAt,
+    'campaignDeliveryMessageIntent.campaignId': campaignDeliveryMessageIntentCampaignId,
+    'campaignDeliveryMessageIntent.context.campaignId': campaignDeliveryMessageIntentContextCampaignId,
+    'campaignDeliveryMessageIntent.context.mode': campaignDeliveryMessageIntentContextMode,
+    'campaignDeliveryMessageIntent.context.organizerId': campaignDeliveryMessageIntentContextOrganizerId,
+    'campaignDeliveryMessageIntent.context.recipientId': campaignDeliveryMessageIntentContextRecipientId,
+    'campaignDeliveryMessageIntent.createdAt': campaignDeliveryMessageIntentCreatedAt,
+    'campaignDeliveryMessageIntent.deliveryPolicy.maxAttempts': campaignDeliveryMessageIntentDeliveryPolicyMaxAttempts,
+    'campaignDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute': campaignDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'campaignDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds': campaignDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds,
+    'campaignDeliveryMessageIntent.expiresAt': campaignDeliveryMessageIntentExpiresAt,
+    'campaignDeliveryMessageIntent.instructionRevision': campaignDeliveryMessageIntentInstructionRevision,
+    'campaignDeliveryMessageIntent.intentId': campaignDeliveryMessageIntentIntentId,
+    'campaignDeliveryMessageIntent.kind': campaignDeliveryMessageIntentKind,
+    'campaignDeliveryMessageIntent.permittedRoutes': campaignDeliveryMessageIntentPermittedRoutes,
+    'campaignDeliveryMessageIntent.permittedRoutes.items': campaignDeliveryMessageIntentPermittedRoutesItems,
+    'campaignDeliveryMessageIntent.recipient.kind': campaignDeliveryMessageIntentRecipientKind,
+    'campaignDeliveryMessageIntent.recipient.recipientKey': campaignDeliveryMessageIntentRecipientRecipientKey,
+    'campaignDeliveryMessageIntent.revision': campaignDeliveryMessageIntentRevision,
+    'campaignDeliveryMessageIntent.schemaVersion': campaignDeliveryMessageIntentSchemaVersion,
+    'campaignDeliveryMessageIntent.whatsapp.connectionId': campaignDeliveryMessageIntentWhatsappConnectionId,
+    'campaignDeliveryMessageIntent.whatsapp.templateId': campaignDeliveryMessageIntentWhatsappTemplateId,
+    'campaignDeliveryMessageIntent.whatsapp.variables': campaignDeliveryMessageIntentWhatsappVariables,
+    'campaignDeliveryMessageIntent.workflow.campaignId': campaignDeliveryMessageIntentWorkflowCampaignId,
+    'campaignDeliveryMessageIntent.workflow.kind': campaignDeliveryMessageIntentWorkflowKind,
+    'campaignDeliveryMessageIntent.workflow.recipientId': campaignDeliveryMessageIntentWorkflowRecipientId,
+    'campaignWhatsappDispatchDocument.attemptId': campaignWhatsappDispatchDocumentAttemptId,
+    'campaignWhatsappDispatchDocument.bindingRevision': campaignWhatsappDispatchDocumentBindingRevision,
+    'campaignWhatsappDispatchDocument.context.campaignId': campaignWhatsappDispatchDocumentContextCampaignId,
+    'campaignWhatsappDispatchDocument.context.mode': campaignWhatsappDispatchDocumentContextMode,
+    'campaignWhatsappDispatchDocument.context.organizerId': campaignWhatsappDispatchDocumentContextOrganizerId,
+    'campaignWhatsappDispatchDocument.context.recipientId': campaignWhatsappDispatchDocumentContextRecipientId,
+    'campaignWhatsappDispatchDocument.createdAt': campaignWhatsappDispatchDocumentCreatedAt,
+    'campaignWhatsappDispatchDocument.endpointHash': campaignWhatsappDispatchDocumentEndpointHash,
+    'campaignWhatsappDispatchDocument.messageId': campaignWhatsappDispatchDocumentMessageId,
+    'campaignWhatsappDispatchDocument.payloadHash': campaignWhatsappDispatchDocumentPayloadHash,
+    'campaignWhatsappDispatchDocument.providerAccountId': campaignWhatsappDispatchDocumentProviderAccountId,
+    'campaignWhatsappDispatchDocument.providerPhoneNumberId': campaignWhatsappDispatchDocumentProviderPhoneNumberId,
+    'campaignWhatsappDispatchDocument.recipientEndpointId': campaignWhatsappDispatchDocumentRecipientEndpointId,
+    'campaignWhatsappDispatchDocument.schemaVersion': campaignWhatsappDispatchDocumentSchemaVersion,
+    'campaignWhatsappDispatchDocument.senderHash': campaignWhatsappDispatchDocumentSenderHash,
+    'campaignWhatsappDispatchDocument.senderId': campaignWhatsappDispatchDocumentSenderId,
+    'campaignWhatsappDispatchDocument.templateDocumentId': campaignWhatsappDispatchDocumentTemplateDocumentId,
+    'campaignWhatsappDispatchDocument.templateHash': campaignWhatsappDispatchDocumentTemplateHash,
     'cancelCrossPathsInvitationOrPlanCallablePayload.invitationId': cancelCrossPathsInvitationOrPlanCallablePayloadInvitationId,
     'cancelCrossPathsInvitationOrPlanCallableResponse.invitationId': cancelCrossPathsInvitationOrPlanCallableResponseInvitationId,
     'cancelCrossPathsInvitationOrPlanCallableResponse.status': cancelCrossPathsInvitationOrPlanCallableResponseStatus,
