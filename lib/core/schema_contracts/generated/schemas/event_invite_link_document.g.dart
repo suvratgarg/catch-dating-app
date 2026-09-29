@@ -142,6 +142,7 @@ const schemaEventInviteLinkDocumentSchema = <String, Object?>{
         'runtimeWeb',
         'campaign',
         'api',
+        'formAutomation',
       ],
       'x-catch-ownership': 'callable-owned',
     },

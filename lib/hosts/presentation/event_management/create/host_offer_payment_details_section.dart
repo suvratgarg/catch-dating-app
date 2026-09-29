@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_tile.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -84,6 +85,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-amount'),
             title: l10n.hostOfferPaymentAmount,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsExpectedAmountMinorValue,
             controller: amountController,
             inputHint: '1200',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -104,6 +107,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-currency'),
             title: l10n.hostsEventDefaultsCurrency,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsCurrencyValue,
             controller: currencyController,
             inputHint: 'INR',
             maxLength: 3,
@@ -120,7 +125,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
         CatchField<int>.choices(
           copy: copy,
           title: l10n.hostOfferPaymentValidity,
-          disclosureMode: CatchFieldMode.localExpanded,
+          contract: CatchContractConstraints
+              .configureEventOfferPreferencesCallablePayloadIntentsOfferValidityMinutesValue,
           helperText: l10n.hostOfferPaymentValidityHint,
           values: const [
             ...offerPaymentValidityChips,
@@ -154,6 +160,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-validity-minutes'),
             title: l10n.hostOfferPaymentValidityMinutes,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsOfferValidityMinutesValue,
             controller: customValidityController,
             inputHint: '5–10080',
             maxLength: 5,
@@ -184,6 +192,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-page-url'),
             title: l10n.hostOfferPaymentPageLink,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsReusablePaymentPageValueUrl,
             controller: pageUrlController,
             inputHint: l10n.hostsEventDefaultsReusablePageHint,
             keyboardType: TextInputType.url,
@@ -201,6 +211,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-page-reuse'),
             title: l10n.hostOfferPaymentPageReuse,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsReusablePaymentPageValueReusableForEvents,
             body: l10n.hostOfferPaymentPageReuseBody,
             value: reuseAttested,
             onChanged: editable ? onReuseAttestedChanged : null,
@@ -211,6 +223,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             copy: copy,
             key: const ValueKey('offer-payment-instructions'),
             title: l10n.hostsEventDefaultsPaymentInstructions,
+            contract: CatchContractConstraints
+                .configureEventOfferPreferencesCallablePayloadIntentsPaymentInstructionsValue,
             controller: instructionsController,
             open: openEditor == 'instructions',
             onOpenChanged: onInstructionsOpenChanged,
@@ -234,6 +248,8 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
           copy: copy,
           key: const ValueKey('offer-payment-message'),
           title: l10n.hostOfferPaymentMessage,
+          contractExemption:
+              'Optional offer message template; submitting empty clears the saved template rather than writing an intent value.',
           controller: messageController,
           open: openEditor == 'message',
           onOpenChanged: onMessageOpenChanged,

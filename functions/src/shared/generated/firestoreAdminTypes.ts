@@ -11020,7 +11020,8 @@ export interface EventInviteLinkDocument {
     | "consumerApp"
     | "runtimeWeb"
     | "campaign"
-    | "api";
+    | "api"
+    | "formAutomation";
   destinationKind?:
     | "catchEvent"
     | "eventRuntime"
@@ -12459,12 +12460,293 @@ export interface CampaignWhatsappDispatchDocument {
 }
 
 /**
- * Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).
+ * Private durable form-automation delivery outbox. The immutable intent and bounded attempt history survive dispatch interruption and delayed provider callbacks. The companion organizerMomentRuns row remains the organizer-visible journal; this record is the execution authority. Recipient endpoints are references; transport credentials stay in their own private stores.
+ */
+export interface AutomationDeliveryMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent: {
+    schemaVersion: 1;
+    intentId: string;
+    revision: number;
+    context: {
+      mode: "live";
+      organizerId: string;
+      ruleId: string;
+      /**
+       * Approved rule revision the intent was authorized under. Claim re-reads the live rule; a changed revision stops the intent as superseded.
+       */
+      ruleRevision: number;
+      actionId: string;
+      eventKind:
+        | "submitted"
+        | "withdrawn"
+        | "applicationAccepted"
+        | "eventAttended";
+      sourceId: string;
+      /**
+       * Source-event occurrence time; part of the durable occurrence identity alongside ruleId/actionId/eventKind/sourceId.
+       */
+      occurredAtMillis: number;
+      /**
+       * The business delay horizon the automation engine computed (max(occurredAt, eventEndAt) + delayMinutes). Claim re-derives it from the live event and rule.
+       */
+      dueAtMillis: number;
+      /**
+       * Contact identity resolved from the source event at handoff. Claim re-derives the current identity from the live source event, so a merge follows the send to the surviving contact.
+       */
+      contactId: string;
+      /**
+       * organizerCampaigns document id of the recipe the action pinned.
+       */
+      recipeCampaignId: string;
+      recipeRevision: number;
+    };
+    ruleId: string;
+    recipient: {
+      kind: "organizerContact";
+      /**
+       * organizerContacts document id resolved at handoff. Endpoint and consent facts resolve at claim time, never in the intent.
+       */
+      recipientKey: string;
+    };
+    workflow: {
+      kind: "automationSend";
+      /**
+       * The rule's server-managed companion moment.
+       */
+      momentId: string;
+      /**
+       * The occurrence-keyed moment run journaling this send.
+       */
+      runId: string;
+    };
+    createdAt: number;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    permittedRoutes: "organizerWhatsappAutomation"[];
+    deliveryPolicy: {
+      maxAttempts: number;
+      maxAttemptsPerRoute: number;
+      minimumRetrySeconds: number;
+    };
+    kind: "automationMessage";
+    /**
+     * The companion moment's revision at handoff. Reservation authority expires when the synced rule projection changes.
+     */
+    instructionRevision: number;
+    /**
+     * Approved WhatsApp template content frozen at handoff, including the rendered invite variables; sender credentials never appear here.
+     */
+    whatsapp: {
+      connectionId: string;
+      templateId: string;
+      variables: {
+        [k: string]: string;
+      };
+      /**
+       * Event destination pinned by the recipe; claim re-verifies the event is still active and owned.
+       */
+      eventId: string | null;
+      /**
+       * Per-occurrence invitation link minted at handoff; claim re-reads its secret so a rotated or revoked link fails closed.
+       */
+      inviteLinkId: string | null;
+    };
+  };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: {
+    schemaVersion: 1;
+    attemptId: string;
+    intentId: string;
+    intentRevision: number;
+    ordinal: number;
+    createdAt: number;
+    state:
+      | {
+          kind: "reserved";
+          at: number;
+          reconcileAfter: number;
+        }
+      | {
+          kind: "unknown";
+          at: number;
+          providerMessageId: string | null;
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reconcileAfter: number;
+        }
+      | {
+          kind: "accepted" | "delivered" | "read";
+          at: number;
+          providerMessageId: string | null;
+        }
+      | {
+          kind: "failed";
+          at: number;
+          providerMessageId: string | null;
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+          evidenceId: string | null;
+        }
+      | {
+          kind: "revoked";
+          at: number;
+          providerMessageId: string | null;
+          evidenceId: string | null;
+        }
+      | {
+          kind: "notDispatched";
+          at: number;
+          reason:
+            | "superseded"
+            | "expired"
+            | "permissionRevoked"
+            | "reservationExpired"
+            | "permitExpired"
+            | "campaignEnded"
+            | "recipientWithdrawn";
+        };
+    mode: "live";
+    context: {
+      mode: "live";
+      organizerId: string;
+      ruleId: string;
+      /**
+       * Approved rule revision the intent was authorized under. Claim re-reads the live rule; a changed revision stops the intent as superseded.
+       */
+      ruleRevision: number;
+      actionId: string;
+      eventKind:
+        | "submitted"
+        | "withdrawn"
+        | "applicationAccepted"
+        | "eventAttended";
+      sourceId: string;
+      /**
+       * Source-event occurrence time; part of the durable occurrence identity alongside ruleId/actionId/eventKind/sourceId.
+       */
+      occurredAtMillis: number;
+      /**
+       * The business delay horizon the automation engine computed (max(occurredAt, eventEndAt) + delayMinutes). Claim re-derives it from the live event and rule.
+       */
+      dueAtMillis: number;
+      /**
+       * Contact identity resolved from the source event at handoff. Claim re-derives the current identity from the live source event, so a merge follows the send to the surviving contact.
+       */
+      contactId: string;
+      /**
+       * organizerCampaigns document id of the recipe the action pinned.
+       */
+      recipeCampaignId: string;
+      recipeRevision: number;
+    };
+    binding: {
+      routeId: "organizerWhatsappAutomation";
+      transport: "whatsapp";
+      senderIdentity: "organizerManaged";
+      provider: "meta";
+      /**
+       * organizerSenderConnections document id that owns the send.
+       */
+      senderId: string;
+      bindingRevision: number;
+      recipientEndpointId: string;
+      fallbackOwner: "catch";
+    };
+    authorization: {
+      permissionRevision: string;
+      checkedAt: number;
+      validUntil: number;
+      instructionRevision: number;
+    };
+  }[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Private claim-time binding between one automation delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the automation delivery outbox.
+ */
+export interface AutomationWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    ruleId: string;
+    /**
+     * Approved rule revision the intent was authorized under. Claim re-reads the live rule; a changed revision stops the intent as superseded.
+     */
+    ruleRevision: number;
+    actionId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    sourceId: string;
+    /**
+     * Source-event occurrence time; part of the durable occurrence identity alongside ruleId/actionId/eventKind/sourceId.
+     */
+    occurredAtMillis: number;
+    /**
+     * The business delay horizon the automation engine computed (max(occurredAt, eventEndAt) + delayMinutes). Claim re-derives it from the live event and rule.
+     */
+    dueAtMillis: number;
+    /**
+     * Contact identity resolved from the source event at handoff. Claim re-derives the current identity from the live source event, so a merge follows the send to the surviving contact.
+     */
+    contactId: string;
+    /**
+     * organizerCampaigns document id of the recipe the action pinned.
+     */
+    recipeCampaignId: string;
+    recipeRevision: number;
+  };
+  /**
+   * organizerSenderConnections document id that owned the send.
+   */
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  /**
+   * Content hash of the sender connection snapshot authorized at claim.
+   */
+  senderHash: string;
+  recipientEndpointId: string;
+  /**
+   * Hash of the E.164 destination; the raw number never appears here.
+   */
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  /**
+   * Content hash of the rendered template + variables; the status callback must carry the matching correlation.
+   */
+  payloadHash: string;
+  createdAt: number;
+}
+
+/**
+ * Unified send definition: initiation x sense x action over an event, program, or organizer scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once). Organizer-scope moments are the server-managed projections of form automation rules — they are never authored directly.
  */
 export interface OrganizerMomentDocument {
   momentId: string;
   scope: {
-    kind: "event" | "program";
+    kind: "event" | "program" | "organizer";
     /**
      * Required when kind=event; must be null otherwise.
      */
@@ -12473,13 +12755,17 @@ export interface OrganizerMomentDocument {
      * Required when kind=program; must be null otherwise.
      */
     programId?: string | null;
+    /**
+     * Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.
+     */
+    organizerId?: string | null;
   };
   /**
    * Denormalized scope.kind for list queries.
    */
-  scopeKind: "event" | "program";
+  scopeKind: "event" | "program" | "organizer";
   /**
-   * Denormalized scope id (eventId or programId) for list queries.
+   * Denormalized scope id (eventId, programId, or organizerId) for list queries.
    */
   scopeId: string;
   name: string;
@@ -12521,11 +12807,23 @@ export interface OrganizerMomentDocument {
     /**
      * Required when kind=triggered.
      */
-    triggerKind?: ("lateArrivalAtHotel" | "flightDisrupted") | null;
+    triggerKind?:
+      | ("lateArrivalAtHotel" | "flightDisrupted" | "formAutomation")
+      | null;
     /**
      * Optional function scope for triggered moments.
      */
     functionId?: string | null;
+    /**
+     * Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.
+     */
+    automation?: {
+      ruleId: string;
+      ruleRevision: number;
+      actionId: string;
+      recipeCampaignId: string;
+      recipeRevision: number;
+    } | null;
   };
   sense: "individual" | "audience";
   audience: {
@@ -12620,9 +12918,9 @@ export interface OrganizerMomentDocument {
     approvedAtMillis: number;
   } | null;
   /**
-   * systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted.
+   * systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted. formAutomation moments are server-managed projections of automation rules — arm/pause state mirrors rule.enabled.
    */
-  origin: "organizer" | "systemDefault";
+  origin: "organizer" | "systemDefault" | "formAutomation";
   revision: number;
   createdAtMillis: number;
   updatedAtMillis: number;
@@ -12672,6 +12970,33 @@ export interface OrganizerMomentRunDocument {
     [k: string]: number;
   } | null;
   suppressedNoEndpoint?: number | null;
+  /**
+   * Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages.
+   */
+  automation?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    sourceId: string;
+    occurredAtMillis: number;
+    /**
+     * Business-delay horizon computed by the automation engine at handoff; the delivery claim re-derives it from live facts.
+     */
+    dueAtMillis: number;
+    /**
+     * Contact identity resolved at handoff; claim re-derives the live identity so merges follow the send.
+     */
+    contactId: string;
+    /**
+     * Durable intent record this run executes; the outbox owns the actual attempt history.
+     */
+    deliveryMessageId: string;
+  } | null;
 }
 
 /**
@@ -12700,6 +13025,7 @@ export interface OrganizerMomentSendDocument {
     | "programEnded"
     | "recipientWithdrawn"
     | "permissionRevoked"
+    | "frequencyCapped"
     | "hostReview"
     | null;
   /**
@@ -12719,7 +13045,7 @@ export interface OrganizerMomentSendDocument {
    * Owning organizer for attention projection queries.
    */
   organizerId?: string | null;
-  scopeKind?: "event" | "program" | null;
+  scopeKind?: "event" | "program" | "organizer" | null;
   scopeId?: string | null;
   /**
    * staffAttention: duty the alert targeted.
@@ -12733,6 +13059,21 @@ export interface OrganizerMomentSendDocument {
    * staffAttention: rendered alert title.
    */
   title?: string | null;
+  /**
+   * Durable intent record that executed this send (automation/program durable deliveries); the outbox owns the attempt history this row projects.
+   */
+  deliveryMessageId?: string | null;
+  /**
+   * Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery.
+   */
+  deliveryState?:
+    | "accepted"
+    | "unknown"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "revoked"
+    | null;
 }
 
 /**

@@ -7,7 +7,7 @@
  */
 export interface UpsertOrganizerMomentCallablePayload {
   scope: {
-    kind: "event" | "program";
+    kind: "event" | "program" | "organizer";
     /**
      * Required when kind=event; must be null otherwise.
      */
@@ -16,6 +16,10 @@ export interface UpsertOrganizerMomentCallablePayload {
      * Required when kind=program; must be null otherwise.
      */
     programId?: string | null;
+    /**
+     * Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.
+     */
+    organizerId?: string | null;
   };
   /**
    * Existing moment to revise; null/omitted creates a new moment.
@@ -60,11 +64,23 @@ export interface UpsertOrganizerMomentCallablePayload {
     /**
      * Required when kind=triggered.
      */
-    triggerKind?: ("lateArrivalAtHotel" | "flightDisrupted") | null;
+    triggerKind?:
+      | ("lateArrivalAtHotel" | "flightDisrupted" | "formAutomation")
+      | null;
     /**
      * Optional function scope for triggered moments.
      */
     functionId?: string | null;
+    /**
+     * Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.
+     */
+    automation?: {
+      ruleId: string;
+      ruleRevision: number;
+      actionId: string;
+      recipeCampaignId: string;
+      recipeRevision: number;
+    } | null;
   };
   sense: "individual" | "audience";
   audience: {

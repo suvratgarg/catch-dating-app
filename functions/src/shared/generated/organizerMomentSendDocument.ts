@@ -28,6 +28,7 @@ export interface OrganizerMomentSendDocument {
     | "programEnded"
     | "recipientWithdrawn"
     | "permissionRevoked"
+    | "frequencyCapped"
     | "hostReview"
     | null;
   /**
@@ -47,7 +48,7 @@ export interface OrganizerMomentSendDocument {
    * Owning organizer for attention projection queries.
    */
   organizerId?: string | null;
-  scopeKind?: "event" | "program" | null;
+  scopeKind?: "event" | "program" | "organizer" | null;
   scopeId?: string | null;
   /**
    * staffAttention: duty the alert targeted.
@@ -61,4 +62,19 @@ export interface OrganizerMomentSendDocument {
    * staffAttention: rendered alert title.
    */
   title?: string | null;
+  /**
+   * Durable intent record that executed this send (automation/program durable deliveries); the outbox owns the attempt history this row projects.
+   */
+  deliveryMessageId?: string | null;
+  /**
+   * Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery.
+   */
+  deliveryState?:
+    | "accepted"
+    | "unknown"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "revoked"
+    | null;
 }

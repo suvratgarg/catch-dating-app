@@ -110,7 +110,14 @@
     },
     "issuanceChannel": {
       "type": "string",
-      "enum": ["hostApp", "consumerApp", "runtimeWeb", "campaign", "api"],
+      "enum": [
+        "hostApp",
+        "consumerApp",
+        "runtimeWeb",
+        "campaign",
+        "api",
+        "formAutomation"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "destinationKind": {

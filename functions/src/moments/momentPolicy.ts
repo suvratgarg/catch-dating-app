@@ -54,7 +54,9 @@ export type SuppressionReason =
     "endpointSuppressed" | "dailyCap" |
     // Shared delivery core outcomes for durable-intent sends.
     "deliveryConflict" | "superseded" | "expired" | "programEnded" |
-    "recipientWithdrawn" | "permissionRevoked" | "hostReview";
+    "recipientWithdrawn" | "permissionRevoked" | "hostReview" |
+    // CRM frequency ledger cap (distinct from the per-day send cap).
+    "frequencyCapped";
 
 export type PolicyDecision = {
   kind: "send";

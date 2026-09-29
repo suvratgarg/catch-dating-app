@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/automation_delivery_message_intent.schema.json",
+  "title": "AutomationDeliveryMessageIntent",
+  "$ref": "../shared/automation_delivery_messaging.schema.json#/definitions/MessageIntent"
+}

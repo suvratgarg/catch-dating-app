@@ -571,6 +571,10 @@ Do not edit it by hand.
 | CampaignWhatsappDispatchDocument | `firestore/campaign_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/campaignWhatsappDispatchDocument.ts` |
 | CampaignDeliveryMessageIntent | `operations/campaign_delivery_message_intent.schema.json` | `functions/src/shared/generated/campaignDeliveryMessageIntent.ts` |
 | CampaignDeliveryAttempt | `operations/campaign_delivery_attempt.schema.json` | `functions/src/shared/generated/campaignDeliveryAttempt.ts` |
+| AutomationDeliveryMessageDocument | `firestore/automation_delivery_messages.schema.json` | `functions/src/shared/generated/automationDeliveryMessageDocument.ts` |
+| AutomationWhatsappDispatchDocument | `firestore/automation_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/automationWhatsappDispatchDocument.ts` |
+| AutomationDeliveryMessageIntent | `operations/automation_delivery_message_intent.schema.json` | `functions/src/shared/generated/automationDeliveryMessageIntent.ts` |
+| AutomationDeliveryAttempt | `operations/automation_delivery_attempt.schema.json` | `functions/src/shared/generated/automationDeliveryAttempt.ts` |
 | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
 | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `functions/src/shared/generated/organizerMomentRunDocument.ts` |
 | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `functions/src/shared/generated/organizerMomentSendDocument.ts` |
@@ -1707,6 +1711,10 @@ Do not edit it by hand.
 | `schemaCampaignWhatsappDispatchDocumentSchema` | CampaignWhatsappDispatchDocument | `firestore/campaign_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/campaign_whatsapp_dispatch_document.g.dart` |
 | `schemaCampaignDeliveryMessageIntentSchema` | CampaignDeliveryMessageIntent | `operations/campaign_delivery_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/campaign_delivery_message_intent.g.dart` |
 | `schemaCampaignDeliveryAttemptSchema` | CampaignDeliveryAttempt | `operations/campaign_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/campaign_delivery_attempt.g.dart` |
+| `schemaAutomationDeliveryMessageDocumentSchema` | AutomationDeliveryMessageDocument | `firestore/automation_delivery_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/automation_delivery_message_document.g.dart` |
+| `schemaAutomationWhatsappDispatchDocumentSchema` | AutomationWhatsappDispatchDocument | `firestore/automation_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/automation_whatsapp_dispatch_document.g.dart` |
+| `schemaAutomationDeliveryMessageIntentSchema` | AutomationDeliveryMessageIntent | `operations/automation_delivery_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/automation_delivery_message_intent.g.dart` |
+| `schemaAutomationDeliveryAttemptSchema` | AutomationDeliveryAttempt | `operations/automation_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/automation_delivery_attempt.g.dart` |
 | `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |
 | `schemaOrganizerMomentRunDocumentSchema` | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_run_document.g.dart` |
 | `schemaOrganizerMomentSendDocumentSchema` | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_send_document.g.dart` |

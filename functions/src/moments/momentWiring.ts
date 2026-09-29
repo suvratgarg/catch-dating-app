@@ -20,6 +20,9 @@ import {
   type NotificationPreference,
 } from "../shared/notifications";
 import type {
+  OrganizerCommunicationPreferenceDocument,
+  OrganizerContactChannelStateDocument,
+  OrganizerContactDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {
@@ -30,6 +33,14 @@ import type {ResolvedRecipient} from "./momentDocuments";
 import type {ConsentFacts, QuietHours} from "./momentPolicy";
 import type {MomentRunnerDeps} from "./momentRunner";
 import {deliverProgramReminder} from "../programs/programReminderDelivery";
+import {deliverAutomationMessage} from
+  "../organizers/automationMomentDelivery";
+import {
+  effectiveOrganizerWhatsappPurposeStatus,
+  organizerCommunicationPreferenceId,
+} from "../shared/organizerCommunicationPreferences";
+import {organizerContactChannelStateId} from
+  "../organizers/organizerCampaignModel";
 
 /**
  * Production seams for the moment runner. The runner decides who/whether;
@@ -102,6 +113,13 @@ export function buildMomentRunnerDeps(
       now: () => Date.now(),
       ...params,
     }),
+    deliverAutomationMessage: (params) => deliverAutomationMessage({
+      db: firestore(),
+      provider: provider(),
+      credentials: tokenStore,
+      now: () => Date.now(),
+      ...params,
+    }),
     sendPushToUid: (params) => sendPush(firestore(), params),
     writeStaffAttention: (params) => staffAttention(firestore(), params),
     loadConsentFacts: (recipient) =>
@@ -114,13 +132,16 @@ export function buildMomentRunnerDeps(
 // --- Scope facts -----------------------------------------------------------
 
 function scopeIdOf(scope: MomentScope): string {
-  return scope.kind === "event" ? scope.eventId : scope.programId;
+  return scope.kind === "event" ? scope.eventId :
+    scope.kind === "program" ? scope.programId : scope.organizerId;
 }
 
 function scopeDocRef(db: Firestore, scope: MomentScope) {
   return scope.kind === "event" ?
     db.collection("events").doc(scope.eventId) :
-    db.collection("organizerPrograms").doc(scope.programId);
+    scope.kind === "program" ?
+      db.collection("organizerPrograms").doc(scope.programId) :
+      db.collection("organizers").doc(scope.organizerId);
 }
 
 async function loadScopeTimezone(
@@ -327,6 +348,41 @@ async function consentFacts(
   recipient: ResolvedRecipient,
 ): Promise<ConsentFacts> {
   const facts: ConsentFacts = {};
+  // CRM contacts carry permission + suppression state on organizer docs —
+  // the same facts the delivery claim re-reads transactionally.
+  if (recipient.recipientKey.startsWith("contact:")) {
+    const contactId = recipient.recipientKey.slice("contact:".length);
+    const contactSnap = await db.collection("organizerContacts")
+      .doc(contactId).get();
+    const contact = contactSnap.data() as
+      | OrganizerContactDocument
+      | undefined;
+    if (!contact) return {communicationPermission: "unknown"};
+    const [preferenceSnap, channelSnap] = await Promise.all([
+      contact.linkedUid ?
+        db.collection("organizerCommunicationPreferences")
+          .doc(organizerCommunicationPreferenceId(
+            contact.organizerId, contact.linkedUid)).get() :
+        Promise.resolve(null),
+      db.collection("organizerContactChannelStates")
+        .doc(organizerContactChannelStateId(
+          contact.organizerId, contactId)).get(),
+    ]);
+    const preference = preferenceSnap?.data() as
+      | OrganizerCommunicationPreferenceDocument
+      | undefined;
+    const channel = channelSnap.data() as
+      | OrganizerContactChannelStateDocument
+      | undefined;
+    facts.communicationPermission = !contact.phoneE164 || !preference ?
+      "unknown" :
+      effectiveOrganizerWhatsappPurposeStatus(
+        preference, "marketing", contact.phoneE164);
+    facts.endpointSuppressed = channel?.adminSuppressed === true ||
+      (channel?.suppressionStatus !== undefined &&
+        channel.suppressionStatus !== "none");
+    return facts;
+  }
   if (recipient.householdId !== null) {
     const snap = await db.collection("programHouseholds")
       .doc(recipient.householdId).get();
