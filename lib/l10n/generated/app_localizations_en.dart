@@ -23996,4 +23996,181 @@ class AppLocalizationsEn extends AppLocalizations {
   String paymentsCancellationRefundReturned({required String amount}) {
     return '$amount returned. Your booking is cancelled.';
   }
+
+  @override
+  String get hostOfferPaymentTitle => 'Offer payments';
+
+  @override
+  String get hostOfferPaymentModeHeading => 'How guests pay';
+
+  @override
+  String get hostOfferPaymentModeChange => 'Change';
+
+  @override
+  String get hostOfferPaymentDetailsHeading => 'Payment details';
+
+  @override
+  String get hostOfferPaymentConfirmationHeading => 'How confirmation works';
+
+  @override
+  String get hostOfferPaymentModeFreeBody =>
+      'No payment — guests just accept the offer.';
+
+  @override
+  String get hostOfferPaymentModeCheckoutBody =>
+      'Guests pay through Catch — confirmed automatically.';
+
+  @override
+  String get hostOfferPaymentModePage => 'Payment page link';
+
+  @override
+  String get hostOfferPaymentModePageBody =>
+      'One shared payment link for every guest — you confirm each payment.';
+
+  @override
+  String get hostOfferPaymentModeRequestBody =>
+      'A separate payment link per guest, added while reviewing each offer — you confirm each payment.';
+
+  @override
+  String get hostOfferPaymentModeManualBody =>
+      'UPI, bank transfer or cash instructions — you confirm each payment.';
+
+  @override
+  String get hostOfferPaymentComingSoon => 'Coming soon';
+
+  @override
+  String get hostOfferPaymentAmount => 'Ticket price';
+
+  @override
+  String get hostOfferPaymentAmountHint =>
+      'The amount each guest pays for this event.';
+
+  @override
+  String get hostOfferPaymentValidity => 'Offer valid for';
+
+  @override
+  String hostOfferPaymentValidityHours({required int hours}) {
+    return '$hours h';
+  }
+
+  @override
+  String get hostOfferPaymentValidityCustom => 'Custom';
+
+  @override
+  String get hostOfferPaymentValidityMinutes => 'Validity in minutes';
+
+  @override
+  String get hostOfferPaymentValidityHint =>
+      'New offers expire this long after they\'re recorded — or at the event start, whichever is sooner.';
+
+  @override
+  String get hostOfferPaymentPageLink => 'Payment page link';
+
+  @override
+  String get hostOfferPaymentPageLinkHint =>
+      'A public https page — Razorpay, Stripe or similar.';
+
+  @override
+  String get hostOfferPaymentPageReuse =>
+      'This page can be reused for every guest';
+
+  @override
+  String get hostOfferPaymentPageReuseBody =>
+      'The same link appears in every offer message.';
+
+  @override
+  String get hostOfferPaymentRequestLinksBody =>
+      'You\'ll add each guest\'s payment link when reviewing their offer.';
+
+  @override
+  String get hostOfferPaymentInstructionsHint =>
+      'UPI to name@bank, or cash at the door.';
+
+  @override
+  String get hostOfferPaymentInstructionsHelper =>
+      'Every guest sees this text in their offer.';
+
+  @override
+  String get hostOfferPaymentMessage => 'Message to guests';
+
+  @override
+  String get hostOfferPaymentMessageHint =>
+      'Shown above the payment details in the offer.';
+
+  @override
+  String get hostOfferPaymentConfirmAutoTitle => 'Confirmed automatically';
+
+  @override
+  String get hostOfferPaymentConfirmAutoBody =>
+      'The guest checks out through Catch. The offer shows paid the moment the payment verifies — nothing to check, no references to paste.';
+
+  @override
+  String get hostOfferPaymentConfirmManualTitle => 'You confirm each payment';
+
+  @override
+  String get hostOfferPaymentConfirmPageBody =>
+      'Guests pay on your page — Catch can\'t see it. Each guest sends you a payment reference; you check your account and confirm it in the offer list.';
+
+  @override
+  String get hostOfferPaymentConfirmRequestBody =>
+      'Guests pay through their own link — Catch can\'t see it. Each guest sends you a payment reference; you check your account and confirm it in the offer list.';
+
+  @override
+  String get hostOfferPaymentExpires => 'New offers expire';
+
+  @override
+  String get hostOfferPaymentConfirmManualBody =>
+      'Check your UPI app or bank. When the money arrives, confirm the guest\'s payment reference in the offer list. Cash has no signal — you attest that you\'ve received it.';
+
+  @override
+  String get hostOfferPaymentConfirmFreeTitle => 'Nothing to confirm';
+
+  @override
+  String get hostOfferPaymentConfirmFreeBody =>
+      'Free offers carry no payment — the guest accepts the offer and a place is held separately.';
+
+  @override
+  String get hostOfferPaymentChooseMode => 'Choose how guests pay';
+
+  @override
+  String get hostOfferPaymentSetAmount => 'Set a ticket price';
+
+  @override
+  String get hostOfferPaymentSetCurrency => 'Set a three-letter currency code';
+
+  @override
+  String get hostOfferPaymentSetPage => 'Add the payment page link';
+
+  @override
+  String get hostOfferPaymentConfirmReuse => 'Confirm the page can be reused';
+
+  @override
+  String get hostOfferPaymentSetInstructions => 'Add payment instructions';
+
+  @override
+  String get hostOfferPaymentSetValidity => 'Set offer validity';
+
+  @override
+  String get hostOfferPaymentCheckoutUnavailable =>
+      'Catch checkout needs separate activation — choose another way to collect';
+
+  @override
+  String get hostOfferPaymentSave => 'Save payment settings';
+
+  @override
+  String get hostOfferPaymentReadyFree => 'Ready — free admission';
+
+  @override
+  String hostOfferPaymentReadyPaid({
+    required String amount,
+    required String collection,
+  }) {
+    return 'Ready — $amount via $collection';
+  }
+
+  @override
+  String get hostOfferPaymentReviewTitle => 'Review payment terms';
+
+  @override
+  String get hostOfferPaymentReviewBody => 'New offers will use these terms';
 }
