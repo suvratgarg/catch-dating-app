@@ -34947,6 +34947,12 @@ abstract class AppLocalizations {
   /// **'Exporting…'**
   String get programsTripsExporting;
 
+  /// Program operations copy: programsTripsExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} trip ledger'**
+  String programsTripsExportSubject({required String title});
+
   /// Program operations copy: programsTripsReviewTitle.
   ///
   /// In en, this message translates to:

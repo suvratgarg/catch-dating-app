@@ -149,7 +149,6 @@ void main() {
       exportedAt: exported,
     );
     expect(export.fileName, 'reunion-gala-trip-ledger-2026-10-04.csv');
-    expect(export.subject, 'Reunion Gala trip ledger');
     expect(
       export.csv,
       startsWith('program_id,program_title,trip_id,pickup_point_id,'),

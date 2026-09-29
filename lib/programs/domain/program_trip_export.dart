@@ -1,14 +1,9 @@
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 
 class ProgramTripLedgerExport {
-  const ProgramTripLedgerExport({
-    required this.fileName,
-    required this.subject,
-    required this.csv,
-  });
+  const ProgramTripLedgerExport({required this.fileName, required this.csv});
 
   final String fileName;
-  final String subject;
   final String csv;
 }
 
@@ -79,7 +74,6 @@ ProgramTripLedgerExport buildProgramTripLedgerExport({
   final date = exportedAt.toUtc().toIso8601String().split('T').first;
   return ProgramTripLedgerExport(
     fileName: '${slug.isEmpty ? 'program' : slug}-trip-ledger-$date.csv',
-    subject: '$programTitle trip ledger',
     csv: _csv(rows),
   );
 }

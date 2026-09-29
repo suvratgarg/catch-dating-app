@@ -51,6 +51,9 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
           .exportLedger(
             programId: widget.programId,
             programTitle: programTitle,
+            subject: context.l10n.programsTripsExportSubject(
+              title: programTitle,
+            ),
           );
     } finally {
       if (mounted) setState(() => _exporting = false);
@@ -173,11 +176,10 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                         children: [
                           for (final status in TransportTripStatus.values)
                             if (status != TransportTripStatus.arrived)
-                              _StatusCountBadge(
-                                status: status,
-                                count: list.trips
-                                    .where((t) => t.status == status)
-                                    .length,
+                              CatchBadge.functional(
+                                label:
+                                    '${_statusLabel(context, status)} · ${list.trips.where((t) => t.status == status).length}',
+                                tone: _statusTone(status),
                               ),
                         ],
                       ),
@@ -244,19 +246,6 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
       ),
     );
   }
-}
-
-class _StatusCountBadge extends StatelessWidget {
-  const _StatusCountBadge({required this.status, required this.count});
-
-  final TransportTripStatus status;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) => CatchBadge.functional(
-    label: '${_statusLabel(context, status)} · $count',
-    tone: _statusTone(status),
-  );
 }
 
 String _statusLabel(BuildContext context, TransportTripStatus status) {

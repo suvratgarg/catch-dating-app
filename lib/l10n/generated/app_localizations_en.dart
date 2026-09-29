@@ -21781,6 +21781,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsTripsExporting => 'Exporting…';
 
   @override
+  String programsTripsExportSubject({required String title}) {
+    return '$title trip ledger';
+  }
+
+  @override
   String get programsTripsReviewTitle => 'Needs review';
 
   @override

@@ -29190,6 +29190,8 @@
   "@programsTripsExport": {"description": "Program operations copy: programsTripsExport.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
   "programsTripsExporting": "Exporting…",
   "@programsTripsExporting": {"description": "Program operations copy: programsTripsExporting.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsExportSubject": "{title} trip ledger",
+  "@programsTripsExportSubject": {"description": "Program operations copy: programsTripsExportSubject.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"title": {"type": "String"}}},
   "programsTripsReviewTitle": "Needs review",
   "@programsTripsReviewTitle": {"description": "Program operations copy: programsTripsReviewTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
   "programsTripsReviewSubtitle": "Open, cancelled and voided trips to reconcile before the vendor invoice clears",

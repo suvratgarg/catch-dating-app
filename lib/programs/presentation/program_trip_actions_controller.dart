@@ -48,6 +48,7 @@ class ProgramTripActions extends _$ProgramTripActions {
   Future<void> exportLedger({
     required String programId,
     required String programTitle,
+    required String subject,
     int pageLimit = 20,
   }) async {
     final repository = ref.read(programWorkRepositoryProvider);
@@ -69,8 +70,8 @@ class ProgramTripActions extends _$ProgramTripActions {
     await share.shareCsvFile(
       csv: export.csv,
       fileName: export.fileName,
-      subject: export.subject,
-      text: export.subject,
+      subject: subject,
+      text: subject,
     );
   }
 }
