@@ -1,6 +1,6 @@
 ---
 doc_id: r10_form_automation_moments_migration
-version: 0.4.0
+version: 0.5.0
 updated: 2026-09-29
 owner: program_operations
 status: approved-spec
@@ -197,10 +197,95 @@ interruption after provider acceptance (reconciles as `unknown`, no
 automatic duplicate); and process delayed receipts (truthful delivery
 reporting to the shared history).
 
+## Phase 6 — form-automation messaging → triggered Moments
+
+Approved design decisions (product owner, 2026-09-29). This phase retires
+`campaignHandoff`'s self-dispatching campaign mint; the automation engine
+keeps owning triggers and business actions while the messaging consequence
+executes through Moments + the shared delivery core.
+
+1. **The automation rule stays the single authored object.** The existing
+   editor owns trigger, conditions, delay, business actions, and approval.
+   Companion `organizerMoments` docs are server-managed projections — one
+   per messaging action — never independently edited, armed, or approved.
+   Two configurations must never disagree about whether a message sends.
+2. **Layer responsibilities.** Automation engine: trigger matching, answer
+   conditions, business delay, action ordering, business-action retries.
+   Moments: durable messaging occurrence, recipient resolution, scheduling
+   and deferral, organizer-visible run history. Delivery core: atomic
+   reservation/claim, current permission checks, provider submission,
+   uncertain outcomes, receipt reconciliation. Channel adapter: provider
+   payload, credentials, transport constraints, callbacks. `notifyTeam`,
+   tags, conversions, queues, and signed webhooks stay automation actions.
+   The integration is a typed messaging handoff — the automation engine is
+   not moving into Moments.
+3. **Organizer scope, narrowly.** `MomentScope = event | program |
+   organizer`. Organizer scope initially supports only the system-managed
+   case: triggered initiation, individual contact subject, approved
+   messaging action. No general organizer-triggered editor and no
+   organizer date anchors in this phase.
+4. **One durable occurrence identity.** Derive the messaging occurrence
+   from organizer + rule + action + source event kind + source occurrence
+   (`sourceId` + `occurredAtMillis`). Rule and recipe revisions ride as
+   authorization bindings, not identity. Delay, retry, or quiet-hours
+   changes preserve identity; editing a rule invalidates a pending
+   execution without minting a second send for the same historical
+   occurrence. A withdrawal followed by resubmission is a distinct
+   occurrence (`occurredAt` moves), so it may send again — a replayed
+   write may not.
+5. **Business delay stays in the automation engine.**
+   `eligibleAt = max(sourceOccurredAt, eventEndAt) + delayMinutes`; the
+   action reaches Moments only when the engine's ordering semantics say
+   so — an earlier business action may have created the contact this send
+   needs. Moments owns deferrals *after* the handoff (quiet hours etc.).
+   The delivery claim still rechecks current due-ness (e.g. a moved
+   `eventEndAt`).
+6. **Preserve complete recipe semantics.** The action's recipe carries a
+   revision-pinned saved audience (eligibility filter for the one
+   contact), sender + template requirements, an event destination, a
+   personalized invitation link, and rendered variables. Consent and
+   reachability evaluate at send eligibility. Invitation creation becomes
+   a reusable capability with truthful automation provenance — never
+   fabricate a campaign or campaign-recipient row to obtain a link or
+   satisfy an adapter contract.
+7. **Transactional delivery authorization.** The claim transaction reads:
+   rule enabled + approved revision, recipe revision + permitted config,
+   source-event validity + current contact identity, due-ness, contact
+   permission/suppression, sender/template readiness, and
+   frequency/budget. Calling `requireAutomationCampaignAuthority` before
+   provider I/O is insufficient — its reads sit outside the outbox claim.
+   Authority and contact-policy readers are extracted and shared by the
+   campaign and automation delivery paths.
+8. **Shared policy execution.** The delivery boundary enforces the same
+   policy definitions Moments previews. Frequency accounting is shared
+   (`organizerContactChannelStates.lastCampaignAcceptedAt` /
+   `campaignAcceptedCount`) so campaigns and automation sends count
+   against one per-contact window — separate counters would let each
+   producer stay "within limit" while collectively over-messaging.
+   Concurrent claims fence on the outbox lease; an `unknown` outcome does
+   not release the occurrence for a competing executor.
+9. **Evidence authoritative; journal a projection.** The outbox owns the
+   attempt and outcome; the Moment journal references it. States:
+   `planned → claimed → submitted/unknown → accepted → delivered/read`,
+   plus `failed`. A journal row never labels an `unknown` provider outcome
+   as sent. Receipts reconcile after run completion; repairing a missing
+   journal row never requires another provider submission.
+10. **Cutover enforces one executor.** An occurrence already represented
+    by a legacy `automationOrigin` campaign belongs to that campaign until
+    it drains; new occurrences belong to Moments + the core. Ownership is
+    an explicit decision that survives retries and deploy overlap: the
+    legacy campaign id is deterministic
+    (`autocampaign_<hash(runId, actionId)>`), so the handoff checks for it
+    inside the run-creation transaction — whoever wrote first owns the
+    occurrence. The retirement-ledger note documents removal criteria; it
+    is not the enforcement mechanism.
+
 ## Explicit non-goals
 
 - Moving CRM/action kinds into Moments (Option B — rejected).
 - Converting `notifyTeam` into a channel send.
 - Unifying Catch conversations into Moments.
+- Organizer-authored triggered moments (organizer-scope authoring in the
+  Moments editor) — a later, additive capability gated on UI.
 - Any new service boundary — this is module ownership inside
   `functions/`.
