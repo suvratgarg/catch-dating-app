@@ -14,6 +14,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_work_repository.g.dart';
 part 'program_work_repository_door.dart';
+part 'program_work_repository_reports.dart';
+part 'program_work_repository_rooms.dart';
 
 /// Operational program surface: work access, arrivals roster, transport
 /// plan, readiness claims, dispatch, trip lifecycle and hotel inbound.
@@ -765,51 +767,6 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
 }
 
 @riverpod
-Future<ProgramHotelInbound> programHotelInbound(
-  Ref ref,
-  String programId,
-  String hotelId, {
-  String? tripCursor,
-  String? expectedCursor,
-}) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getHotelInbound(
-          programId: programId,
-          hotelId: hotelId,
-          tripCursor: tripCursor,
-          expectedCursor: expectedCursor,
-        ),
-  );
-  retainProgramProjection(ref, result.accessExpiresAt);
-  return result;
-}
-
-@riverpod
-Future<ProgramHotelRooms> programHotelRooms(
-  Ref ref,
-  String programId,
-  String hotelId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getHotelRooms(programId: programId, hotelId: hotelId),
-  );
-  retainProgramProjection(ref, result.accessExpiresAt);
-  return result;
-}
-
-@riverpod
 Future<ProgramTripList> programTripList(
   Ref ref,
   String programId, {
@@ -828,65 +785,5 @@ Future<ProgramTripList> programTripList(
   return result;
 }
 
-@riverpod
-Future<ProgramAttendanceReport> programAttendanceReport(
-  Ref ref,
-  String programId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () =>
-        ref.read(programWorkRepositoryProvider).getAttendanceReport(programId),
-  );
-  retainProgramProjection(ref, result.accessExpiresAt);
-  return result;
-}
 
-@riverpod
-Future<ProgramStakeholderCounts> programStakeholderCounts(
-  Ref ref,
-  String programId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () =>
-        ref.read(programWorkRepositoryProvider).getStakeholderCounts(programId),
-  );
-  retainProgramProjection(ref, result.accessExpiresAt);
-  return result;
-}
 
-@riverpod
-Future<List<ProgramVendorOption>> programTransportVendors(
-  Ref ref,
-  String organizerId,
-  String programId,
-) {
-  final accountId = _watchWorkAccount(ref);
-  return readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .listVendors(organizerId: organizerId, programId: programId),
-  );
-}
-
-/// Function-lead attention feed scoped to the caller's duties.
-@riverpod
-Future<ProgramStaffAttention> programStaffAttention(Ref ref, String programId) {
-  final accountId = _watchWorkAccount(ref);
-  return readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () => ref.read(programWorkRepositoryProvider).listStaffAttention(programId),
-  );
-}
