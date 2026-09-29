@@ -49,6 +49,12 @@ class _HostOfferPaymentSetupBodyState
   bool _reuseAttested = false;
   bool _validityCustom = false;
   int? _validityMinutes;
+  // Explicit-save drawers commit on Done; the committed strings are what
+  // _stage() sees, so Cancel restores them rather than the drawer text.
+  String? _openEditor;
+  String _committedMessage = '';
+  String _committedInstructions = '';
+  String? _instructionsError;
   final _amount = TextEditingController();
   final _currency = TextEditingController();
   final _pageUrl = TextEditingController();
@@ -133,7 +139,9 @@ class _HostOfferPaymentSetupBodyState
       _reuseAttested = true;
     }
     _instructions.text = resolved['paymentInstructions'] as String? ?? '';
+    _committedInstructions = _instructions.text;
     _message.text = resolved['offerMessageTemplate'] as String? ?? '';
+    _committedMessage = _message.text;
     _hydrated = true;
   }
 
@@ -153,8 +161,8 @@ class _HostOfferPaymentSetupBodyState
     final current = widget.controller.editorIntents;
     final amount = _amountMinor;
     final currency = _currency.text.trim().toUpperCase();
-    final message = _message.text.trim();
-    final instructions = _instructions.text.trim();
+    final message = _committedMessage;
+    final instructions = _committedInstructions;
     final pageUrl = _pageUrl.text.trim();
     widget.controller.stage(
       PrivateEventPreferenceIntents(
@@ -245,7 +253,7 @@ class _HostOfferPaymentSetupBodyState
         }
       }
       if (_mode == HostOfferPaymentMode.manualInstructions &&
-          _instructions.text.trim().isEmpty) {
+          _committedInstructions.trim().isEmpty) {
         blockers.add(l10n.hostOfferPaymentSetInstructions);
       }
     }
@@ -356,39 +364,41 @@ class _HostOfferPaymentSetupBodyState
                           children: [
                             if (controller.hasPending ||
                                 controller.error != null)
-                              CatchSection.fieldRows(
-                                first: true,
+                              Column(
                                 children: [
                                   if (controller.hasPending)
-                                    CatchField.read(
-                                      copy: copy,
+                                    CatchBanner(
                                       title:
                                           l10n.hostsEventPreferencePending,
-                                      body: l10n
+                                      message: l10n
                                           .hostsEventPreferencePendingBody,
                                       icon: CatchIcons.scheduleOutlined,
+                                      tone: CatchBannerTone.neutral,
+                                      actions: [
+                                        CatchButton(
+                                          label: l10n
+                                              .hostsEventPreferenceRetry,
+                                          variant: CatchButtonVariant
+                                              .secondary,
+                                          size: CatchButtonSize.sm,
+                                          onPressed: controller.saving
+                                              ? null
+                                              : () => unawaited(
+                                                  controller.retryPending(),
+                                                ),
+                                        ),
+                                      ],
                                     ),
-                                  if (controller.hasPending)
-                                    CatchField.action(
-                                      copy: copy,
-                                      title:
-                                          l10n.hostsEventPreferenceRetry,
-                                      onTap: controller.saving
-                                          ? null
-                                          : () => unawaited(
-                                              controller.retryPending(),
-                                            ),
-                                    ),
+                                  if (controller.hasPending &&
+                                      controller.error != null)
+                                    gapH8,
                                   if (controller.error != null)
-                                    CatchField.read(
-                                      copy: copy,
-                                      title: l10n.hostsEventPreferenceError,
-                                      body: appErrorMessage(
+                                    CatchBanner.error(
+                                      message: appErrorMessage(
                                         controller.error!,
                                         l10n: l10n,
                                         context: AppErrorContext.event,
                                       ),
-                                      icon: CatchIcons.errorOutlineRounded,
                                     ),
                                 ],
                               ),
@@ -407,7 +417,11 @@ class _HostOfferPaymentSetupBodyState
                                       checkoutAvailable:
                                           widget.catchCheckoutAvailable,
                                       onSelected: (mode) {
-                                        setState(() => _mode = mode);
+                                        setState(() {
+                                          _mode = mode;
+                                          _openEditor = null;
+                                          _instructionsError = null;
+                                        });
                                         _stage();
                                       },
                                     ),
@@ -422,7 +436,23 @@ class _HostOfferPaymentSetupBodyState
                               ),
                             ),
                             if (_mode != null) _detailsSection(l10n, copy),
-                            if (_mode != null) _confirmationSection(l10n, copy),
+                            if (_mode ==
+                                HostOfferPaymentMode.personalRequest)
+                              CatchNotice(
+                                dismissLabel: l10n
+                                    .coreCatchNoticeTooltipDismiss,
+                                notice: CatchNoticeData(
+                                  id: 'offer-payment-request-links',
+                                  title: l10n
+                                      .hostsEventDefaultsPersonalRequest,
+                                  message:
+                                      l10n.hostOfferPaymentRequestLinksBody,
+                                  icon: CatchIcons.linkOutlined,
+                                  duration: null,
+                                  dismissible: false,
+                                ),
+                              ),
+                            if (_mode != null) _confirmationSection(l10n),
                           ],
                         ),
                         if (_mode != null) ...[
@@ -462,14 +492,7 @@ class _HostOfferPaymentSetupBodyState
     return CatchSection.fieldRows(
       title: l10n.hostOfferPaymentDetailsHeading,
       children: [
-        if (_mode == HostOfferPaymentMode.free)
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostEventOfferFree,
-            body: l10n.hostOfferPaymentFreeBody,
-            icon: CatchIcons.confirmationNumberOutlined,
-          )
-        else ...[
+        if (_mode != HostOfferPaymentMode.free) ...[
           CatchField.input(
             copy: copy,
             key: const ValueKey('offer-payment-amount'),
@@ -605,92 +628,131 @@ class _HostOfferPaymentSetupBodyState
                 : null,
           ),
         ],
-        if (_mode == HostOfferPaymentMode.personalRequest)
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostsEventDefaultsPersonalRequest,
-            body: l10n.hostOfferPaymentRequestLinksBody,
-            icon: CatchIcons.linkOutlined,
-          ),
         if (_mode == HostOfferPaymentMode.manualInstructions)
-          CatchField.input(
+          CatchField.inputActions(
             copy: copy,
             key: const ValueKey('offer-payment-instructions'),
             title: l10n.hostsEventDefaultsPaymentInstructions,
             controller: _instructions,
+            open: _openEditor == 'instructions',
+            onOpenChanged: (open) {
+              if (!editable) return;
+              setState(() =>
+                  _openEditor = open ? 'instructions' : null);
+            },
+            onCancel: () => setState(() {
+              _instructions.text = _committedInstructions;
+              _instructionsError = null;
+              _openEditor = null;
+            }),
+            onSubmit: () {
+              if (_instructions.text.trim().isEmpty) {
+                setState(() => _instructionsError =
+                    l10n.hostsEventPreferenceInvalidValue);
+                return;
+              }
+              setState(() {
+                _committedInstructions = _instructions.text.trim();
+                _instructionsError = null;
+                _openEditor = null;
+              });
+              _stage();
+            },
             inputHint: l10n.hostOfferPaymentInstructionsHint,
             maxLength: 1000,
-            maxLines: 3,
-            inputMode: editable
-                ? CatchTextInputMode.editable
-                : CatchTextInputMode.inactive,
-            onChanged: editable ? (_) => _stage() : null,
-            onValidate: (text) => (text?.trim().isEmpty ?? true)
-                ? l10n.hostsEventPreferenceInvalidValue
-                : null,
-            helperText: l10n.hostOfferPaymentInstructionsHelper,
+            minLines: 3,
+            maxLines: 5,
+            error: _instructionsError,
+            onChanged: (_) {
+              if (_instructionsError != null) {
+                setState(() => _instructionsError = null);
+              }
+            },
+            meta: Text(
+              l10n.hostOfferPaymentInstructionsHelper,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
+            ),
           ),
-        CatchField.input(
+        CatchField.inputActions(
           copy: copy,
           key: const ValueKey('offer-payment-message'),
           title: l10n.hostOfferPaymentMessage,
-          labelMode: CatchFieldLabelTextMode.optional,
           controller: _message,
+          open: _openEditor == 'message',
+          onOpenChanged: (open) {
+            if (!editable) return;
+            setState(() => _openEditor = open ? 'message' : null);
+          },
+          onCancel: () => setState(() {
+            _message.text = _committedMessage;
+            _openEditor = null;
+          }),
+          onSubmit: () {
+            setState(() {
+              _committedMessage = _message.text.trim();
+              _openEditor = null;
+            });
+            _stage();
+          },
           inputHint: l10n.hostOfferPaymentMessageHint,
           maxLength: 1000,
-          maxLines: 3,
-          inputMode: editable
-              ? CatchTextInputMode.editable
-              : CatchTextInputMode.inactive,
-          onChanged: editable ? (_) => _stage() : null,
+          minLines: 3,
+          maxLines: 5,
         ),
       ],
     );
   }
 
-  CatchSection _confirmationSection(
-    AppLocalizations l10n,
-    CatchFieldCopy copy,
-  ) {
-    final (title, body, icon) = switch (_mode) {
+  CatchSection _confirmationSection(AppLocalizations l10n) {
+    final (title, body, icon, tone) = switch (_mode) {
       HostOfferPaymentMode.free => (
         l10n.hostOfferPaymentConfirmFreeTitle,
         l10n.hostOfferPaymentConfirmFreeBody,
         CatchIcons.confirmationNumberOutlined,
+        CatchNoticeTone.success,
       ),
       HostOfferPaymentMode.catchCheckout => (
         l10n.hostOfferPaymentConfirmAutoTitle,
         l10n.hostOfferPaymentConfirmAutoBody,
         CatchIcons.verifiedUserOutlined,
+        CatchNoticeTone.success,
       ),
       HostOfferPaymentMode.reusablePage => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmPageBody,
         CatchIcons.assignmentTurnedInOutlined,
+        CatchNoticeTone.warning,
       ),
       HostOfferPaymentMode.personalRequest => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmRequestBody,
         CatchIcons.assignmentTurnedInOutlined,
+        CatchNoticeTone.warning,
       ),
       _ => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmManualBody,
         CatchIcons.assignmentTurnedInOutlined,
+        CatchNoticeTone.warning,
       ),
     };
-    return CatchSection.fieldRows(
+    return CatchSection.content(
       title: l10n.hostOfferPaymentConfirmationHeading,
-      children: [
-        CatchField.read(
-          copy: copy,
+      child: CatchNotice(
+        dismissLabel: l10n.coreCatchNoticeTooltipDismiss,
+        notice: CatchNoticeData(
+          id: 'offer-payment-confirmation',
           title: title,
-          body: body,
-          titleMaxLines: 2,
-          bodyMaxLines: 8,
+          message: body,
           icon: icon,
+          tone: tone,
+          duration: null,
+          dismissible: false,
         ),
-      ],
+      ),
     );
   }
 }

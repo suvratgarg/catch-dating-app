@@ -122,40 +122,50 @@ class HostOfferPaymentReviewSheet extends StatelessWidget {
           ),
         ],
       ),
-      child: CatchSection.fieldRows(
+      child: Column(
         children: [
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostOfferPaymentReviewBody,
-            body: l10n.hostsEventPreferencePublishedHint,
-            icon: CatchIcons.infoOutlineRounded,
+          CatchNotice(
+            dismissLabel: l10n.coreCatchNoticeTooltipDismiss,
+            notice: CatchNoticeData(
+              id: 'offer-payment-review-note',
+              title: l10n.hostOfferPaymentReviewBody,
+              message: l10n.hostsEventPreferencePublishedHint,
+              icon: CatchIcons.infoOutlineRounded,
+              duration: null,
+              dismissible: false,
+            ),
           ),
-          if (changed.isEmpty)
-            CatchField.read(
-              copy: copy,
-              title: l10n.hostsEventPreferenceNoChanges,
-            )
-          else
-            for (final key in changed)
-              CatchField.read(
-                copy: copy,
-                title: _offerFieldTitle(l10n, key),
-                body: l10n.hostsEventPreferenceBeforeAfter(
-                  before: _resolvedValuePreview(
-                    l10n,
-                    key,
-                    review.current?.resolvedValues[key],
-                    review,
+          const SizedBox(height: CatchSpacing.s3),
+          CatchSection.fieldRows(
+            children: [
+              if (changed.isEmpty)
+                CatchField.read(
+                  copy: copy,
+                  title: l10n.hostsEventPreferenceNoChanges,
+                )
+              else
+                for (final key in changed)
+                  CatchField.read(
+                    copy: copy,
+                    title: _offerFieldTitle(l10n, key),
+                    body: l10n.hostsEventPreferenceBeforeAfter(
+                      before: _resolvedValuePreview(
+                        l10n,
+                        key,
+                        review.current?.resolvedValues[key],
+                        review,
+                      ),
+                      after: _resolvedValuePreview(
+                        l10n,
+                        key,
+                        review.candidate.resolvedValues[key],
+                        review,
+                      ),
+                    ),
+                    bodyMaxLines: 6,
                   ),
-                  after: _resolvedValuePreview(
-                    l10n,
-                    key,
-                    review.candidate.resolvedValues[key],
-                    review,
-                  ),
-                ),
-                bodyMaxLines: 6,
-              ),
+            ],
+          ),
         ],
       ),
     );
