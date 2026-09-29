@@ -98,7 +98,7 @@ class HostOfferPaymentReviewSheet extends StatelessWidget {
                 review.current!.resolvedValues[key],
                 review.candidate.resolvedValues[key],
               ))
-            key,
+          key,
     ];
     return CatchSheet.standard(
       title: l10n.hostOfferPaymentReviewTitle,
@@ -107,15 +107,16 @@ class HostOfferPaymentReviewSheet extends StatelessWidget {
       footer: Row(
         children: [
           Expanded(
-            child: CatchButton(
+            child: CatchButton.sheet(
+              role: CatchButtonEmphasis.dismiss,
               label: l10n.coreCatchFieldLabelCancel,
-              variant: CatchButtonVariant.secondary,
               onPressed: () => Navigator.of(context).pop(false),
             ),
           ),
           const SizedBox(width: CatchSpacing.s3),
           Expanded(
-            child: CatchButton(
+            child: CatchButton.sheet(
+              role: CatchButtonEmphasis.commit,
               label: l10n.hostsEventPreferenceApply,
               onPressed: () => Navigator.of(context).pop(true),
             ),

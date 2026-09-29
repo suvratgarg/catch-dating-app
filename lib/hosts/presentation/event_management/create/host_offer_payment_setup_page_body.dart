@@ -7,6 +7,9 @@ import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_confirmation_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_details_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_review_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -19,8 +22,8 @@ import 'package:intl/intl.dart';
 /// sees only the fields that mode needs, and reads how payment confirmation
 /// works before saving. Draft edits stage on the controller; Save runs the
 /// server preview and an explicit confirm keeps the reviewed commit.
-class HostOfferPaymentSetupBody extends StatefulWidget {
-  const HostOfferPaymentSetupBody({
+class HostOfferPaymentSetupPageBody extends StatefulWidget {
+  const HostOfferPaymentSetupPageBody({
     super.key,
     required this.controller,
     required this.onBack,
@@ -35,14 +38,13 @@ class HostOfferPaymentSetupBody extends StatefulWidget {
   final bool catchCheckoutAvailable;
 
   @override
-  State<HostOfferPaymentSetupBody> createState() =>
-      _HostOfferPaymentSetupBodyState();
+  State<HostOfferPaymentSetupPageBody> createState() =>
+      _HostOfferPaymentSetupPageBodyState();
 }
 
-class _HostOfferPaymentSetupBodyState
-    extends State<HostOfferPaymentSetupBody> {
-  static const _validityChips = <int>[1440, 2880, 4320];
-  static const _customValiditySentinel = -1;
+class _HostOfferPaymentSetupPageBodyState
+    extends State<HostOfferPaymentSetupPageBody> {
+  static const _validityChips = offerPaymentValidityChips;
 
   HostOfferPaymentMode? _mode;
   bool _pickerExpanded = false;
@@ -85,8 +87,7 @@ class _HostOfferPaymentSetupBodyState
       _mode == HostOfferPaymentMode.manualInstructions;
 
   EventCollectionPreference? get _collection => switch (_mode) {
-    HostOfferPaymentMode.reusablePage =>
-      EventCollectionPreference.reusablePage,
+    HostOfferPaymentMode.reusablePage => EventCollectionPreference.reusablePage,
     HostOfferPaymentMode.personalRequest =>
       EventCollectionPreference.personalRequest,
     HostOfferPaymentMode.manualInstructions =>
@@ -147,8 +148,7 @@ class _HostOfferPaymentSetupBodyState
   }
 
   String _majorText(int minor, String currency) {
-    final digits =
-        NumberFormat.currency(name: currency).decimalDigits ?? 2;
+    final digits = NumberFormat.currency(name: currency).decimalDigits ?? 2;
     final factor = math.pow(10, digits).toInt();
     if (minor % factor == 0) return '${minor ~/ factor}';
     return (minor / factor).toStringAsFixed(digits);
@@ -179,9 +179,10 @@ class _HostOfferPaymentSetupBodyState
         expectedAmountMinor: switch (_mode) {
           HostOfferPaymentMode.free => const EventSetupValue.set(0),
           null => current.expectedAmountMinor,
-          _ => amount != null
-              ? EventSetupValue.set(amount)
-              : const EventSetupValue.clear(),
+          _ =>
+            amount != null
+                ? EventSetupValue.set(amount)
+                : const EventSetupValue.clear(),
         },
         currency: !_isPaid
             ? current.currency
@@ -240,7 +241,9 @@ class _HostOfferPaymentSetupBodyState
       if (amount == null || amount <= 0 || amount > 100000000) {
         blockers.add(l10n.hostOfferPaymentSetAmount);
       }
-      if (!RegExp(r'^[A-Z]{3}$').hasMatch(_currency.text.trim().toUpperCase())) {
+      if (!RegExp(
+        r'^[A-Z]{3}$',
+      ).hasMatch(_currency.text.trim().toUpperCase())) {
         blockers.add(l10n.hostOfferPaymentSetCurrency);
       }
       if (_mode == HostOfferPaymentMode.reusablePage) {
@@ -276,8 +279,9 @@ class _HostOfferPaymentSetupBodyState
         : offerAmountDisplay(amount, currency.isEmpty ? 'INR' : currency);
     return l10n.hostOfferPaymentReadyPaid(
       amount: amountText,
-      collection:
-          _mode == null ? '' : hostOfferPaymentModeTitle(l10n, _mode!).toLowerCase(),
+      collection: _mode == null
+          ? ''
+          : hostOfferPaymentModeTitle(l10n, _mode!).toLowerCase(),
     );
   }
 
@@ -311,12 +315,9 @@ class _HostOfferPaymentSetupBodyState
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final copy = catchFieldCopy(l10n);
     final tokens = CatchTokens.of(context);
     return AnimatedBuilder(
       animation: widget.controller,
@@ -342,11 +343,12 @@ class _HostOfferPaymentSetupBodyState
             children: [
               CatchStepHeader(
                 title: l10n.hostOfferPaymentTitle,
-                subtitle: controller.eventName ??
-                    l10n.hostsPrivateEventPayments,
+                subtitle:
+                    controller.eventName ?? l10n.hostsPrivateEventPayments,
                 stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
-                compactStepLabelBuilder:
-                    catchStepHeaderCompactLabelBuilder(l10n),
+                compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                  l10n,
+                ),
                 onBack: widget.onBack,
                 leadingType: CatchTopBarNavigationMode.back,
               ),
@@ -369,18 +371,15 @@ class _HostOfferPaymentSetupBodyState
                                 children: [
                                   if (controller.hasPending)
                                     CatchBanner(
-                                      title:
-                                          l10n.hostsEventPreferencePending,
-                                      message: l10n
-                                          .hostsEventPreferencePendingBody,
+                                      title: l10n.hostsEventPreferencePending,
+                                      message:
+                                          l10n.hostsEventPreferencePendingBody,
                                       icon: CatchIcons.scheduleOutlined,
                                       tone: CatchBannerTone.neutral,
                                       actions: [
                                         CatchButton(
-                                          label: l10n
-                                              .hostsEventPreferenceRetry,
-                                          variant: CatchButtonVariant
-                                              .secondary,
+                                          label: l10n.hostsEventPreferenceRetry,
+                                          variant: CatchButtonVariant.secondary,
                                           size: CatchButtonSize.sm,
                                           onPressed: controller.saving
                                               ? null
@@ -403,85 +402,122 @@ class _HostOfferPaymentSetupBodyState
                                     ),
                                 ],
                               ),
-                            if (_mode == null || _pickerExpanded)
-                              CatchSection.choiceGroup(
-                                first: !controller.hasPending &&
-                                    controller.error == null,
-                                title: l10n.hostOfferPaymentModeHeading,
-                                child: Column(
-                                  children: [
-                                    for (final mode
-                                        in HostOfferPaymentMode.values) ...[
-                                      HostOfferPaymentModeTile(
-                                        mode: mode,
-                                        selected: _mode == mode,
-                                        editable: editable,
-                                        checkoutAvailable:
-                                            widget.catchCheckoutAvailable,
-                                        onSelected: (mode) {
-                                          setState(() {
-                                            _mode = mode;
-                                            _pickerExpanded = false;
-                                            _openEditor = null;
-                                            _instructionsError = null;
-                                          });
-                                          _stage();
-                                        },
-                                      ),
-                                      if (mode !=
-                                          HostOfferPaymentMode
-                                              .manualInstructions)
-                                        const SizedBox(
-                                          height: CatchSpacing.s3,
-                                        ),
-                                    ],
-                                  ],
-                                ),
-                              )
-                            else
-                              CatchSection.fieldRows(
-                                first: !controller.hasPending &&
-                                    controller.error == null,
-                                title: l10n.hostOfferPaymentModeHeading,
-                                trailing: editable
-                                    ? CatchButton.text(
-                                        key: const ValueKey(
-                                          'offer-payment-mode-change',
-                                        ),
-                                        label:
-                                            l10n.hostOfferPaymentModeChange,
-                                        onPressed: () => setState(
-                                          () => _pickerExpanded = true,
-                                        ),
-                                      )
-                                    : null,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: CatchFieldTokens.rowVerticalPadding,
-                                  ),
-                                  child: HostOfferPaymentModeTile(
-                                    mode: _mode!,
-                                    selected: true,
-                                    editable: editable,
-                                    checkoutAvailable:
-                                        widget.catchCheckoutAvailable,
-                                    onSelected: (_) => setState(
-                                      () => _pickerExpanded = true,
-                                    ),
-                                    summary: true,
-                                  ),
-                                ),
+                            HostOfferPaymentModeSection(
+                              mode: _mode,
+                              pickerExpanded: _pickerExpanded,
+                              editable: editable,
+                              checkoutAvailable: widget.catchCheckoutAvailable,
+                              first:
+                                  !controller.hasPending &&
+                                  controller.error == null,
+                              onSelected: (mode) {
+                                setState(() {
+                                  _mode = mode;
+                                  _pickerExpanded = false;
+                                  _openEditor = null;
+                                  _instructionsError = null;
+                                });
+                                _stage();
+                              },
+                              onExpandPicker: () =>
+                                  setState(() => _pickerExpanded = true),
+                            ),
+                            if (_mode != null)
+                              HostOfferPaymentDetailsSection(
+                                mode: _mode!,
+                                editable: editable,
+                                amountController: _amount,
+                                currencyController: _currency,
+                                customValidityController: _customValidity,
+                                pageUrlController: _pageUrl,
+                                instructionsController: _instructions,
+                                messageController: _message,
+                                validityCustom: _validityCustom,
+                                validityMinutes: _validityMinutes,
+                                reuseAttested: _reuseAttested,
+                                resolvedExpiryMillis: _resolvedExpiryMillis,
+                                openEditor: _openEditor,
+                                instructionsError: _instructionsError,
+                                onFieldChanged: _stage,
+                                onValiditySelected:
+                                    ({required custom, minutes}) {
+                                      setState(() {
+                                        _validityCustom = custom;
+                                        _validityMinutes = custom
+                                            ? int.tryParse(
+                                                _customValidity.text.trim(),
+                                              )
+                                            : minutes;
+                                      });
+                                      _stage();
+                                    },
+                                onValidityMinutesChanged: (text) {
+                                  _validityMinutes = int.tryParse(text.trim());
+                                  _stage();
+                                },
+                                onReuseAttestedChanged: (value) {
+                                  setState(() => _reuseAttested = value);
+                                  _stage();
+                                },
+                                onInstructionsOpenChanged: (open) {
+                                  if (!editable) return;
+                                  setState(
+                                    () => _openEditor = open
+                                        ? 'instructions'
+                                        : null,
+                                  );
+                                },
+                                onInstructionsCancel: () => setState(() {
+                                  _instructions.text = _committedInstructions;
+                                  _instructionsError = null;
+                                  _openEditor = null;
+                                }),
+                                onInstructionsSubmit: () {
+                                  if (_instructions.text.trim().isEmpty) {
+                                    setState(
+                                      () => _instructionsError =
+                                          l10n.hostsEventPreferenceInvalidValue,
+                                    );
+                                    return;
+                                  }
+                                  setState(() {
+                                    _committedInstructions = _instructions.text
+                                        .trim();
+                                    _instructionsError = null;
+                                    _openEditor = null;
+                                  });
+                                  _stage();
+                                },
+                                onInstructionsChanged: (_) {
+                                  if (_instructionsError != null) {
+                                    setState(() => _instructionsError = null);
+                                  }
+                                },
+                                onMessageOpenChanged: (open) {
+                                  if (!editable) return;
+                                  setState(
+                                    () => _openEditor = open ? 'message' : null,
+                                  );
+                                },
+                                onMessageCancel: () => setState(() {
+                                  _message.text = _committedMessage;
+                                  _openEditor = null;
+                                }),
+                                onMessageSubmit: () {
+                                  setState(() {
+                                    _committedMessage = _message.text.trim();
+                                    _openEditor = null;
+                                  });
+                                  _stage();
+                                },
                               ),
-                            if (_mode != null) _detailsSection(l10n, copy),
-                            if (_mode ==
-                                HostOfferPaymentMode.personalRequest)
+                            if (_mode == HostOfferPaymentMode.personalRequest)
                               CatchNotice(
-                                dismissLabel: l10n
-                                    .coreCatchNoticeTooltipDismiss,
+                                dismissLabel:
+                                    l10n.coreCatchNoticeTooltipDismiss,
                                 notice: CatchNoticeData(
                                   id: 'offer-payment-request-links',
-                                  title: l10n
-                                      .hostsEventDefaultsPersonalRequest,
+                                  title: l10n.hostsEventDefaultsPersonalRequest,
                                   message:
                                       l10n.hostOfferPaymentRequestLinksBody,
                                   icon: CatchIcons.linkOutlined,
@@ -489,16 +525,15 @@ class _HostOfferPaymentSetupBodyState
                                   dismissible: false,
                                 ),
                               ),
-                            if (_mode != null) _confirmationSection(l10n),
+                            if (_mode != null)
+                              HostOfferPaymentConfirmationSection(mode: _mode!),
                           ],
                         ),
                         if (_mode != null) ...[
                           gapH4,
                           Text(
                             l10n.hostsEventPreferenceProviderHint,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(color: tokens.ink2),
                           ),
                         ],
@@ -521,275 +556,6 @@ class _HostOfferPaymentSetupBodyState
           ),
         );
       },
-    );
-  }
-
-  CatchSection _detailsSection(AppLocalizations l10n, CatchFieldCopy copy) {
-    final editable = widget.controller.canEdit;
-    return CatchSection.fieldRows(
-      title: l10n.hostOfferPaymentDetailsHeading,
-      children: [
-        if (_mode != HostOfferPaymentMode.free) ...[
-          CatchField.input(
-            copy: copy,
-            key: const ValueKey('offer-payment-amount'),
-            title: l10n.hostOfferPaymentAmount,
-            controller: _amount,
-            inputHint: '1200',
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
-            inputMode: editable
-                ? CatchTextInputMode.editable
-                : CatchTextInputMode.inactive,
-            onChanged: editable ? (_) => _stage() : null,
-            onValidate: (text) {
-              final parsed = double.tryParse(text?.trim() ?? '');
-              if (parsed == null || parsed <= 0) {
-                return l10n.hostsEventPreferenceInvalidValue;
-              }
-              return null;
-            },
-            helperText: l10n.hostOfferPaymentAmountHint,
-          ),
-          CatchField.input(
-            copy: copy,
-            key: const ValueKey('offer-payment-currency'),
-            title: l10n.hostsEventDefaultsCurrency,
-            controller: _currency,
-            inputHint: 'INR',
-            maxLength: 3,
-            inputMode: editable
-                ? CatchTextInputMode.editable
-                : CatchTextInputMode.inactive,
-            onChanged: editable ? (_) => _stage() : null,
-            onValidate: (text) =>
-                RegExp(r'^[A-Za-z]{3}$').hasMatch(text?.trim() ?? '')
-                ? null
-                : l10n.hostsEventDefaultsInvalidCurrency,
-          ),
-        ],
-        CatchField<int>.choices(
-          copy: copy,
-          title: l10n.hostOfferPaymentValidity,
-          disclosureMode: CatchFieldMode.localExpanded,
-          helperText: l10n.hostOfferPaymentValidityHint,
-          values: const [..._validityChips, _customValiditySentinel],
-          itemLabelBuilder: (minutes) => minutes == _customValiditySentinel
-              ? l10n.hostOfferPaymentValidityCustom
-              : l10n.hostOfferPaymentValidityHours(hours: minutes ~/ 60),
-          selected: {
-            if (_validityCustom)
-              _customValiditySentinel
-            else
-              ?_validityMinutes,
-          },
-          allowEmptySelection: true,
-          onSelectionChanged: editable
-              ? (selection) {
-                  final minutes = selection.isEmpty ? null : selection.first;
-                  setState(() {
-                    _validityCustom = minutes == _customValiditySentinel;
-                    _validityMinutes = minutes == _customValiditySentinel
-                        ? int.tryParse(_customValidity.text.trim())
-                        : minutes;
-                  });
-                  _stage();
-                }
-              : null,
-        ),
-        if (_validityCustom)
-          CatchField.input(
-            copy: copy,
-            key: const ValueKey('offer-payment-validity-minutes'),
-            title: l10n.hostOfferPaymentValidityMinutes,
-            controller: _customValidity,
-            inputHint: '5–10080',
-            maxLength: 5,
-            keyboardType: TextInputType.number,
-            inputMode: editable
-                ? CatchTextInputMode.editable
-                : CatchTextInputMode.inactive,
-            onChanged: editable
-                ? (text) {
-                    _validityMinutes = int.tryParse(text.trim());
-                    _stage();
-                  }
-                : null,
-            onValidate: (text) {
-              final value = int.tryParse(text?.trim() ?? '');
-              if (value == null || value < 5 || value > 10080) {
-                return l10n.hostsEventPreferenceInvalidValue;
-              }
-              return null;
-            },
-          ),
-        if (_resolvedExpiryMillis case final millis?)
-          CatchField.read(
-            copy: copy,
-            title: l10n.hostOfferPaymentExpires,
-            body: DateFormat.yMMMd().add_jm().format(
-              DateTime.fromMillisecondsSinceEpoch(millis),
-            ),
-            icon: CatchIcons.scheduleOutlined,
-          ),
-        if (_mode == HostOfferPaymentMode.reusablePage) ...[
-          CatchField.input(
-            copy: copy,
-            key: const ValueKey('offer-payment-page-url'),
-            title: l10n.hostOfferPaymentPageLink,
-            controller: _pageUrl,
-            inputHint: l10n.hostsEventDefaultsReusablePageHint,
-            keyboardType: TextInputType.url,
-            inputMode: editable
-                ? CatchTextInputMode.editable
-                : CatchTextInputMode.inactive,
-            onChanged: editable ? (_) => _stage() : null,
-            onValidate: (text) =>
-                isCanonicalPublicPaymentPageUrl(text?.trim() ?? '')
-                ? null
-                : l10n.hostsEventDefaultsInvalidReusablePage,
-            helperText: l10n.hostOfferPaymentPageLinkHint,
-          ),
-          CatchField.toggle(
-            copy: copy,
-            key: const ValueKey('offer-payment-page-reuse'),
-            title: l10n.hostOfferPaymentPageReuse,
-            body: l10n.hostOfferPaymentPageReuseBody,
-            value: _reuseAttested,
-            onChanged: editable
-                ? (value) {
-                    setState(() => _reuseAttested = value);
-                    _stage();
-                  }
-                : null,
-          ),
-        ],
-        if (_mode == HostOfferPaymentMode.manualInstructions)
-          CatchField.inputActions(
-            copy: copy,
-            key: const ValueKey('offer-payment-instructions'),
-            title: l10n.hostsEventDefaultsPaymentInstructions,
-            controller: _instructions,
-            open: _openEditor == 'instructions',
-            onOpenChanged: (open) {
-              if (!editable) return;
-              setState(() =>
-                  _openEditor = open ? 'instructions' : null);
-            },
-            onCancel: () => setState(() {
-              _instructions.text = _committedInstructions;
-              _instructionsError = null;
-              _openEditor = null;
-            }),
-            onSubmit: () {
-              if (_instructions.text.trim().isEmpty) {
-                setState(() => _instructionsError =
-                    l10n.hostsEventPreferenceInvalidValue);
-                return;
-              }
-              setState(() {
-                _committedInstructions = _instructions.text.trim();
-                _instructionsError = null;
-                _openEditor = null;
-              });
-              _stage();
-            },
-            inputHint: l10n.hostOfferPaymentInstructionsHint,
-            maxLength: 1000,
-            minLines: 3,
-            maxLines: 5,
-            error: _instructionsError,
-            onChanged: (_) {
-              if (_instructionsError != null) {
-                setState(() => _instructionsError = null);
-              }
-            },
-            meta: Text(
-              l10n.hostOfferPaymentInstructionsHelper,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
-            ),
-          ),
-        CatchField.inputActions(
-          copy: copy,
-          key: const ValueKey('offer-payment-message'),
-          title: l10n.hostOfferPaymentMessage,
-          controller: _message,
-          open: _openEditor == 'message',
-          onOpenChanged: (open) {
-            if (!editable) return;
-            setState(() => _openEditor = open ? 'message' : null);
-          },
-          onCancel: () => setState(() {
-            _message.text = _committedMessage;
-            _openEditor = null;
-          }),
-          onSubmit: () {
-            setState(() {
-              _committedMessage = _message.text.trim();
-              _openEditor = null;
-            });
-            _stage();
-          },
-          inputHint: l10n.hostOfferPaymentMessageHint,
-          maxLength: 1000,
-          minLines: 3,
-          maxLines: 5,
-        ),
-      ],
-    );
-  }
-
-  CatchSection _confirmationSection(AppLocalizations l10n) {
-    final (title, body, icon, tone) = switch (_mode) {
-      HostOfferPaymentMode.free => (
-        l10n.hostOfferPaymentConfirmFreeTitle,
-        l10n.hostOfferPaymentConfirmFreeBody,
-        CatchIcons.confirmationNumberOutlined,
-        CatchNoticeTone.success,
-      ),
-      HostOfferPaymentMode.catchCheckout => (
-        l10n.hostOfferPaymentConfirmAutoTitle,
-        l10n.hostOfferPaymentConfirmAutoBody,
-        CatchIcons.verifiedUserOutlined,
-        CatchNoticeTone.success,
-      ),
-      HostOfferPaymentMode.reusablePage => (
-        l10n.hostOfferPaymentConfirmManualTitle,
-        l10n.hostOfferPaymentConfirmPageBody,
-        CatchIcons.assignmentTurnedInOutlined,
-        CatchNoticeTone.warning,
-      ),
-      HostOfferPaymentMode.personalRequest => (
-        l10n.hostOfferPaymentConfirmManualTitle,
-        l10n.hostOfferPaymentConfirmRequestBody,
-        CatchIcons.assignmentTurnedInOutlined,
-        CatchNoticeTone.warning,
-      ),
-      _ => (
-        l10n.hostOfferPaymentConfirmManualTitle,
-        l10n.hostOfferPaymentConfirmManualBody,
-        CatchIcons.assignmentTurnedInOutlined,
-        CatchNoticeTone.warning,
-      ),
-    };
-    return CatchSection.content(
-      title: l10n.hostOfferPaymentConfirmationHeading,
-      child: CatchNotice(
-        dismissLabel: l10n.coreCatchNoticeTooltipDismiss,
-        notice: CatchNoticeData(
-          id: 'offer-payment-confirmation',
-          title: title,
-          message: body,
-          icon: icon,
-          tone: tone,
-          duration: null,
-          dismissible: false,
-        ),
-      ),
     );
   }
 }
