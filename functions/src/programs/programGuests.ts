@@ -167,7 +167,9 @@ export async function listProgramGuestsHandler(
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
-  requireProgramDuty(access, "programCoordinator");
+  // Guest desk duty opens the read surface; programCoordinator tuples satisfy
+  // it implicitly through dutyAssignments.
+  requireProgramDuty(access, "guestRelations");
   const limit = data.limit ?? guestPageCap;
   let query = db.collection("programGuests")
     .where("programId", "==", data.programId)
@@ -429,7 +431,7 @@ export async function listProgramHouseholdsHandler(
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
-  requireProgramDuty(access, "programCoordinator");
+  requireProgramDuty(access, "guestRelations");
   const snap = await db.collection("programHouseholds")
     .where("programId", "==", data.programId)
     .limit(501)

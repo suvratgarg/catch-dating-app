@@ -899,10 +899,28 @@
       "reason": "Trip ledger lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
+      "routeId": "hostWorkGuestsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Guest desk lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkImportScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Staff manifest import lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
       "routeId": "hostWorkCountsScreen",
       "status": "planned",
       "priority": "P1",
       "reason": "Stakeholder counts overview lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkAttendanceReportScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Attendance report lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
       "routeId": "hostProgramsScreen",

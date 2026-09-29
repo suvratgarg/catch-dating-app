@@ -535,6 +535,8 @@ import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
+import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
+    as _widgetbook_workspace_programs_use_cases_attendance;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12456,15 +12458,25 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'Program attention',
+        name: 'Program attendance',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramAttentionScreen',
+            name: 'ProgramAttendanceReportScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_programs_use_cases
-                    .programAttentionScreenStates,
+                builder: _widgetbook_workspace_programs_use_cases_attendance
+                    .programAttendanceReportScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionAttendanceRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_attendance
+                    .programFunctionAttendanceRowStates,
               ),
             ],
           ),
@@ -12599,6 +12611,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program guests',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestDeskScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestDeskScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramGuestEditDialog',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -12695,21 +12717,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programImportScreenStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'Program now next',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramNowNextScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
-                builder: _widgetbook_workspace_programs_use_cases
-                    .programNowNextScreenStates,
               ),
             ],
           ),

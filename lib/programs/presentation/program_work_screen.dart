@@ -196,6 +196,9 @@ class ProgramWorkPageBody extends StatelessWidget {
         access.isManager ||
         access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) ||
         access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
+    final canSeeAttendance =
+        access.isManager ||
+        access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
     final canSeeCommunications = access.hasDuty(
       ProgramStaffDuty.communications,
       now: now,
@@ -407,6 +410,41 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (access.hasDuty(ProgramStaffDuty.guestRelations, now: now))
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkGuestsTitle,
+                subtitle: context.l10n.programsWorkGuestsSubtitle,
+                child: Column(
+                  children: [
+                    CatchFieldRow.standard(
+                      leading: Icon(CatchIcons.groupsOutlined),
+                      body: Text(
+                        context.l10n.programsGuestsTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      onTap: () => context.pushNamed(
+                        Routes.hostWorkGuestsScreen.name,
+                        pathParameters: {'programId': access.programId},
+                      ),
+                    ),
+                    CatchFieldRow.standard(
+                      leading: Icon(CatchIcons.cloudUploadOutlined),
+                      body: Text(
+                        context.l10n.programsImportTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      onTap: () => context.pushNamed(
+                        Routes.hostWorkImportScreen.name,
+                        pathParameters: {'programId': access.programId},
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (canSeeLead)
             CatchSectionListItem(
               child: CatchSection.contained(
@@ -480,14 +518,35 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (canSeeAttendance)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkAttendanceTitle,
+                subtitle: context.l10n.programsWorkAttendanceSubtitle,
+                child: CatchFieldRow.standard(
+                  leading: Icon(CatchIcons.factCheckOutlined),
+                  body: Text(
+                    context.l10n.programsWorkAttendanceOpen,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  onTap: () => context.pushNamed(
+                    Routes.hostWorkAttendanceReportScreen.name,
+                    pathParameters: {'programId': access.programId},
+                  ),
+                ),
+              ),
+            ),
           if (arrivalsStations.isEmpty &&
               dispatchStations.isEmpty &&
               hotels.isEmpty &&
               functions.isEmpty &&
               !canSeeLead &&
               !canSeeLedger &&
+              !canSeeCounts &&
+              !canSeeAttendance &&
               !canSeeCommunications &&
-              !canSeeCounts)
+              !access.hasDuty(ProgramStaffDuty.guestRelations, now: now))
             CatchSectionListItem(
               child: CatchEmptyState(
                 icon: CatchIcons.lockOutline,
