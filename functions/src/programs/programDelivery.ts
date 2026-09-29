@@ -17,7 +17,7 @@ import type {
 } from "../delivery/deliveryCore";
 import {evaluateDelivery} from "../delivery/deliveryCore";
 
-export type {MessageRecord};
+export type {DeliveryAttempt, MessageRecord};
 export type ProgramDeliveryFacts = DeliveryCoreFacts<ProviderBinding>;
 export type ProviderBinding = DeliveryAttempt["binding"];
 export type LiveAttempt = DeliveryAttempt; // live is the only attempt mode

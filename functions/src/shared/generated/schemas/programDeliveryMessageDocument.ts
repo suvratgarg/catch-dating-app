@@ -226,6 +226,38 @@ export const programDeliveryMessageDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 9007199254740991,
           "description": "The program/moment fact revision this intent was issued under. Reservation authority expires with it."
+        },
+        "whatsapp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "connectionId",
+            "templateId",
+            "variables"
+          ],
+          "properties": {
+            "connectionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "variables": {
+              "type": "object",
+              "maxProperties": 20,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            }
+          },
+          "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
         }
       },
       "x-catch-ownership": "server-only"

@@ -229,6 +229,38 @@ const schemaProgramDeliveryMessageDocumentSchema = <String, Object?>{
           'maximum': 9007199254740991,
           'description': 'The program/moment fact revision this intent was issued under. Reservation authority expires with it.',
         },
+        'whatsapp': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'connectionId',
+            'templateId',
+            'variables',
+          ],
+          'properties': <String, Object?>{
+            'connectionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+            },
+            'templateId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+            },
+            'variables': <String, Object?>{
+              'type': 'object',
+              'maxProperties': 20,
+              'additionalProperties': <String, Object?>{
+                'type': 'string',
+                'maxLength': 1000,
+              },
+            },
+          },
+          'description': 'Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here.',
+        },
       },
       'x-catch-ownership': 'server-only',
     },

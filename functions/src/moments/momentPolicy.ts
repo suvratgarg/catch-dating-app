@@ -51,13 +51,16 @@ export interface PolicyInput {
 
 export type SuppressionReason =
   "noEndpoint" | "preferenceOff" | "noConsent" | "optedOut" |
-    "endpointSuppressed" | "dailyCap";
+    "endpointSuppressed" | "dailyCap" |
+    // Shared delivery core outcomes for durable-intent sends.
+    "deliveryConflict" | "superseded" | "expired" | "programEnded" |
+    "recipientWithdrawn" | "permissionRevoked" | "hostReview";
 
 export type PolicyDecision = {
   kind: "send";
 } | {
   kind: "defer";
-  reason: "quietHours" | "travelLead";
+  reason: "quietHours" | "travelLead" | "delivery";
 } | {
   kind: "suppress";
   reason: SuppressionReason;

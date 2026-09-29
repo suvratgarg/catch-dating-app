@@ -209,6 +209,7 @@ test("runOrganizerMomentHandler requires armed + requestKey, fires once",
       quietHoursFor: () => null, dailyCapFor: () => 0,
       pushCopyFor: async () => ({title: "t", body: "b"}),
       sendTemplateToPhone: async () => {},
+      deliverProgramReminder: async () => ({kind: "sent" as const}),
       sendPushToUid: async () => {}, writeStaffAttention: async () => {},
       loadConsentFacts: async () => ({}),
     };

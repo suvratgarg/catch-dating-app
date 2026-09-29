@@ -42,9 +42,9 @@ export type DeliveryPermit<I, A> = {
   validUntil: number;
 };
 
-export type DeliveryClaimResult<T, R, A> =
+export type DeliveryClaimResult<T, R, A, I = DeliveryCoreIntent> =
   | {kind: "claimed"; record: R; resource: T;
-    permit: DeliveryPermit<DeliveryCoreIntent, A>}
+    permit: DeliveryPermit<I, A>}
   | {kind: "withheld"; record: R; reason: "notReserved" | "rehearsal" |
     "authorityChanged" | "authorizationExpired" | "deliveryConflict" |
     "resourceUnavailable"};
@@ -154,7 +154,7 @@ export class FirestoreDeliveryOutbox<
           {kind: "hostDecision", reason: "conflictingDeliveryEvidence"} :
           evaluateDelivery({...facts, intent: current.intent,
             lifecycle: current.lifecycle, attempts: current.attempts, now},
-            this.adapter);
+          this.adapter);
       if (decision.kind !== "dispatch") {
         return {record: released ?
           this.write(transaction, record, current, now) : record, decision};
@@ -173,7 +173,7 @@ export class FirestoreDeliveryOutbox<
   async claimLiveDispatch<T = undefined>(
     messageId: string, attemptId: string,
     prepareResource?: PrepareDispatchResource<T, R, A>
-  ): Promise<DeliveryClaimResult<T, R, A>> {
+  ): Promise<DeliveryClaimResult<T, R, A, I>> {
     return runDeliveryTransaction(this.db, async (transaction) => {
       const record = await this.read(transaction, messageId);
       const facts = await this.readFacts(transaction, record.intent,
@@ -268,7 +268,7 @@ export class FirestoreDeliveryOutbox<
           a.attemptId === attempt.attemptId ? merged.attempt as A : a)),
         conflict);
       return {record: this.write(transaction, record, changed, now),
-      disposition: merged.disposition};
+        disposition: merged.disposition};
     });
   }
 

@@ -51,6 +51,13 @@ export const organizerMomentSendDocumentSchema: Record<string, unknown> = {
         "optedOut",
         "endpointSuppressed",
         "dailyCap",
+        "deliveryConflict",
+        "superseded",
+        "expired",
+        "programEnded",
+        "recipientWithdrawn",
+        "permissionRevoked",
+        "hostReview",
         null
       ],
       "description": "Suppression reason; null on sent."

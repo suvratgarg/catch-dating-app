@@ -46,6 +46,8 @@ import type {
   TravelFacts,
 } from "./momentModel";
 import {scopeId} from "./momentModel";
+import type {ProgramReminderOutcome}
+  from "../programs/programReminderDelivery";
 
 /**
  * Server runner for the unified moments engine. Three entry points:
@@ -105,6 +107,15 @@ export interface MomentRunnerDeps {
     runId: string;
     recipientKey: string;
   }) => Promise<void>;
+  /** Program-scoped template sends own a durable intent + shared-core
+   *  dispatch — the runner never calls a provider on this path. */
+  deliverProgramReminder: (params: {
+    moment: MomentDefinition;
+    run: RunRecord;
+    facts: AnchorFacts;
+    recipient: ResolvedRecipient;
+    action: Extract<MomentAction, {kind: "sendTemplate"}>;
+  }) => Promise<ProgramReminderOutcome>;
   writeStaffAttention: (params: {
     /** The resolved staff member being notified. */
     uid: string;
@@ -488,11 +499,22 @@ async function dispatchRun(
       });
       continue;
     }
-    await deliver(deps, moment, run, facts, recipient);
+    const outcome = await deliver(deps, moment, run, facts, recipient);
+    if (outcome.kind === "retry") {
+      // Durable-delivery withholding (revoked consent mid-claim, expired
+      // permit, provider ambiguity under arbitration) re-fires the run;
+      // the recipient is never journaled "sent".
+      decisions.push({kind: "defer", reason: "delivery"});
+      continue;
+    }
+    if (outcome.kind === "suppressed") {
+      decisions.push({kind: "suppress", reason: outcome.reason});
+    }
     await sendRef.set({
       momentId: moment.momentId,
       recipientKey: recipient.recipientKey,
-      decision: "sent",
+      decision: outcome.kind === "suppressed" ? "suppressed" : "sent",
+      ...(outcome.kind === "suppressed" ? {reason: outcome.reason} : {}),
       dayKey,
       createdAtMillis: now,
       // staffAttention sends double as the attention-projection source:
@@ -532,16 +554,27 @@ async function dispatchRun(
   return "fired";
 }
 
+type DeliverOutcome = ProgramReminderOutcome;
+
 async function deliver(
   deps: MomentRunnerDeps,
   moment: MomentDefinition,
   run: RunRecord,
   facts: AnchorFacts,
   recipient: ResolvedRecipient,
-): Promise<void> {
+): Promise<DeliverOutcome> {
   const action: MomentAction = moment.action;
   if (action.kind === "sendTemplate" &&
       recipient.endpoint.kind === "phone") {
+    // Program-scoped template sends produce a durable intent and dispatch
+    // through the shared delivery core; the worker owns provider I/O and
+    // unknown-outcome reconciliation.
+    if (moment.scope.kind === "program" &&
+        (recipient.recipientKey.startsWith("guest:") ||
+         recipient.recipientKey.startsWith("household:"))) {
+      return deps.deliverProgramReminder({moment, run, facts, recipient,
+        action});
+    }
     await deps.sendTemplateToPhone({
       e164: recipient.endpoint.e164,
       connectionId: action.connectionId,
@@ -550,7 +583,7 @@ async function deliver(
       runId: run.runId,
       recipientKey: recipient.recipientKey,
     });
-    return;
+    return {kind: "sent"};
   }
   if (action.kind === "push" && recipient.endpoint.kind === "uid") {
     // Copy is resolved from the scope at fire time by the wiring layer.
@@ -565,7 +598,7 @@ async function deliver(
       runId: run.runId,
       recipientKey: recipient.recipientKey,
     });
-    return;
+    return {kind: "sent"};
   }
   if (action.kind === "staffAttention" &&
       moment.audience.kind === "staffDuty" &&
@@ -579,7 +612,7 @@ async function deliver(
       scope: moment.scope,
       runId: run.runId,
     });
-    return;
+    return {kind: "sent"};
   }
   throw new RangeError(
     `No delivery path for action ${action.kind} ` +

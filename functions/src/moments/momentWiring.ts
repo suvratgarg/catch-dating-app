@@ -32,6 +32,7 @@ import type {
 import type {ResolvedRecipient} from "./momentDocuments";
 import type {ConsentFacts, QuietHours} from "./momentPolicy";
 import type {MomentRunnerDeps} from "./momentRunner";
+import {deliverProgramReminder} from "../programs/programReminderDelivery";
 
 /**
  * Production seams for the moment runner. The runner decides who/whether;
@@ -99,6 +100,13 @@ export function buildMomentRunnerDeps(
     pushCopyFor: (moment) => pushCopy(firestore(), moment),
     sendTemplateToPhone: (params) =>
       sendTemplate(firestore(), tokenStore, provider(), params),
+    deliverProgramReminder: (params) => deliverProgramReminder({
+      db: firestore(),
+      provider: provider(),
+      credentials: tokenStore,
+      now: () => Date.now(),
+      ...params,
+    }),
     sendPushToUid: (params) => sendPush(firestore(), params),
     writeStaffAttention: (params) => staffAttention(firestore(), params),
     loadConsentFacts: (recipient) =>

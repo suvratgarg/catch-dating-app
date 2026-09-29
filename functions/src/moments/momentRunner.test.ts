@@ -97,6 +97,18 @@ function makeDeps(db: FakeFirestore, now: number) {
       sent.push({e164: p.e164, runId: p.runId,
         recipientKey: p.recipientKey});
     },
+    // Program-scope template sends route through the durable delivery
+    // core; the stub records the same observable send the provider seam
+    // used to, so routing assertions stay valid.
+    deliverProgramReminder: async (p) => {
+      sent.push({
+        e164: p.recipient.endpoint.kind === "phone" ?
+          p.recipient.endpoint.e164 : "",
+        runId: p.run.runId,
+        recipientKey: p.recipient.recipientKey,
+      });
+      return {kind: "sent"};
+    },
     sendPushToUid: async () => {},
     writeStaffAttention: async () => {},
     loadConsentFacts: async (recipient) => {

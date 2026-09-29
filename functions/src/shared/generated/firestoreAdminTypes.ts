@@ -12121,6 +12121,16 @@ export interface ProgramDeliveryMessageDocument {
      * The program/moment fact revision this intent was issued under. Reservation authority expires with it.
      */
     instructionRevision: number;
+    /**
+     * Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here.
+     */
+    whatsapp?: {
+      connectionId: string;
+      templateId: string;
+      variables: {
+        [k: string]: string;
+      };
+    };
   };
   lifecycle: "active" | "cancelled" | "superseded" | "responded";
   /**
@@ -12441,6 +12451,13 @@ export interface OrganizerMomentSendDocument {
     | "optedOut"
     | "endpointSuppressed"
     | "dailyCap"
+    | "deliveryConflict"
+    | "superseded"
+    | "expired"
+    | "programEnded"
+    | "recipientWithdrawn"
+    | "permissionRevoked"
+    | "hostReview"
     | null;
   /**
    * Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps.

@@ -108706,7 +108706,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentSendDocumentReason = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.reason',
     valueTypes: <String>['string'],
-    enumValues: <String>['noEndpoint', 'preferenceOff', 'noConsent', 'optedOut', 'endpointSuppressed', 'dailyCap'],
+    enumValues: <String>['noEndpoint', 'preferenceOff', 'noConsent', 'optedOut', 'endpointSuppressed', 'dailyCap', 'deliveryConflict', 'superseded', 'expired', 'programEnded', 'recipientWithdrawn', 'permissionRevoked', 'hostReview'],
   );
 
   static const organizerMomentSendDocumentRecipientKey = CatchContractFieldConstraints(
@@ -119466,6 +119466,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programDeliveryMessageDocumentIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
   static const programDeliveryMessageDocumentIntentWorkflowKind = CatchContractFieldConstraints(
     path: 'programDeliveryMessageDocument.intent.workflow.kind',
     required: true,
@@ -119679,6 +119703,30 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
   );
 
   static const programDeliveryMessageIntentWorkflowKind = CatchContractFieldConstraints(
@@ -168244,6 +168292,9 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageDocument.intent.revision': programDeliveryMessageDocumentIntentRevision,
     'programDeliveryMessageDocument.intent.schemaVersion': programDeliveryMessageDocumentIntentSchemaVersion,
     'programDeliveryMessageDocument.intent.title': programDeliveryMessageDocumentIntentTitle,
+    'programDeliveryMessageDocument.intent.whatsapp.connectionId': programDeliveryMessageDocumentIntentWhatsappConnectionId,
+    'programDeliveryMessageDocument.intent.whatsapp.templateId': programDeliveryMessageDocumentIntentWhatsappTemplateId,
+    'programDeliveryMessageDocument.intent.whatsapp.variables': programDeliveryMessageDocumentIntentWhatsappVariables,
     'programDeliveryMessageDocument.intent.workflow.kind': programDeliveryMessageDocumentIntentWorkflowKind,
     'programDeliveryMessageDocument.intent.workflow.momentId': programDeliveryMessageDocumentIntentWorkflowMomentId,
     'programDeliveryMessageDocument.intent.workflow.runId': programDeliveryMessageDocumentIntentWorkflowRunId,
@@ -168272,6 +168323,9 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageIntent.revision': programDeliveryMessageIntentRevision,
     'programDeliveryMessageIntent.schemaVersion': programDeliveryMessageIntentSchemaVersion,
     'programDeliveryMessageIntent.title': programDeliveryMessageIntentTitle,
+    'programDeliveryMessageIntent.whatsapp.connectionId': programDeliveryMessageIntentWhatsappConnectionId,
+    'programDeliveryMessageIntent.whatsapp.templateId': programDeliveryMessageIntentWhatsappTemplateId,
+    'programDeliveryMessageIntent.whatsapp.variables': programDeliveryMessageIntentWhatsappVariables,
     'programDeliveryMessageIntent.workflow.kind': programDeliveryMessageIntentWorkflowKind,
     'programDeliveryMessageIntent.workflow.momentId': programDeliveryMessageIntentWorkflowMomentId,
     'programDeliveryMessageIntent.workflow.runId': programDeliveryMessageIntentWorkflowRunId,

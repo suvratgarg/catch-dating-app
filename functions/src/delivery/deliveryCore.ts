@@ -108,7 +108,7 @@ export interface DeliveryCoreRecord<
   updatedAt: number;
 }
 
-// --- Facts and decisions ------------------------------------------------------
+// --- Facts and decisions
 
 export type DeliveryDispatchGate =
   | {kind: "allow"; checkedAt: number; validUntil: number;
@@ -158,7 +158,7 @@ export interface DeliveryEvaluationInput<
   now: number;
 }
 
-// --- Source adapter -------------------------------------------------------------
+// --- Source adapter
 
 /**
  * What a messaging producer must supply to ride the shared lifecycle.
@@ -207,7 +207,7 @@ export interface DeliverySourceAdapter<
   withDeliveryConflict(record: R, conflict: boolean): R;
 }
 
-// --- Policy evaluation ---------------------------------------------------------
+// --- Policy evaluation
 
 export function attemptStateDisposition(state: DeliveryAttemptState):
   "delivered" | "pending" | "nonDelivery" | "notDispatched" {
@@ -244,6 +244,11 @@ function fresh(value: {checkedAt: number; validUntil: number}, now: number) {
     value.checkedAt <= now && value.validUntil > now;
 }
 
+type DeliveryEvaluationAdapter<C, B extends LiveDeliveryBinding,
+  I extends DeliveryCoreIntent<C>, A extends DeliveryCoreAttempt<C, B>> =
+  Pick<DeliverySourceAdapter<C, B, I, A, DeliveryCoreRecord<I, A>>,
+    "instructionRevisionOf" | "sameContext" | "assertDispatchCandidate">;
+
 /**
  * Pure route/authority selection — ported verbatim from Event Assistance's
  * `evaluateMessageDelivery`. Source semantics enter only through the adapter
@@ -256,8 +261,7 @@ export function evaluateDelivery<
   A extends DeliveryCoreAttempt<C, B>,
 >(
   input: DeliveryEvaluationInput<C, B> & {intent: I; attempts: readonly A[]},
-  adapter: Pick<DeliverySourceAdapter<C, B, I, A,
-    DeliveryCoreRecord<I, A>>, "instructionRevisionOf" | "sameContext" | "assertDispatchCandidate">,
+  adapter: DeliveryEvaluationAdapter<C, B, I, A>,
 ): DeliveryDecision<B> {
   const {intent, lifecycle, gate, now} = input;
   assertDeliveryHistory(input, adapter);
@@ -366,8 +370,7 @@ export function evaluateDelivery<
 function assertDeliveryHistory<C, B extends LiveDeliveryBinding,
   I extends DeliveryCoreIntent<C>, A extends DeliveryCoreAttempt<C, B>>(
   input: DeliveryEvaluationInput<C, B> & {intent: I; attempts: readonly A[]},
-  adapter: Pick<DeliverySourceAdapter<C, B, I, A,
-    DeliveryCoreRecord<I, A>>, "instructionRevisionOf" | "sameContext" | "assertDispatchCandidate">,
+  adapter: DeliveryEvaluationAdapter<C, B, I, A>,
 ): void {
   const {intent, attempts, routes, now} = input;
   if (!Number.isSafeInteger(now) || now < intent.createdAt) {
@@ -427,8 +430,7 @@ export function prepareCoreDeliveryAttempt<
   A extends DeliveryCoreAttempt<C, B>,
 >(
   input: DeliveryEvaluationInput<C, B> & {intent: I; attempts: readonly A[]},
-  adapter: Pick<DeliverySourceAdapter<C, B, I, A,
-    DeliveryCoreRecord<I, A>>, "instructionRevisionOf" | "sameContext" | "assertDispatchCandidate">,
+  adapter: DeliveryEvaluationAdapter<C, B, I, A>,
 ): A | null {
   const decision = evaluateDelivery(input, adapter);
   if (decision.kind !== "dispatch") return null;
@@ -501,7 +503,7 @@ export function canClaimCoreAttempt<
   const decision = evaluateDelivery({...facts,
     intent: record.intent, lifecycle: record.lifecycle, now,
     attempts: record.attempts.filter((a) => a.attemptId !== attemptId)},
-    adapter);
+  adapter);
   const candidate: DeliveryDispatchCandidate<B> =
     {mode: "live", binding: attempt.binding};
   if (decision.kind !== "dispatch" || decision.ordinal !== attempt.ordinal ||
@@ -523,7 +525,7 @@ function unhandled(value: never): never {
   throw new Error("Unhandled delivery variant");
 }
 
-// --- Provider receipts ---------------------------------------------------------
+// --- Provider receipts
 
 /** Confirmed provider evidence — never a raw HTTP body. */
 export type ConfirmedDeliveryState = Extract<DeliveryAttemptState,
