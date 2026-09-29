@@ -46,6 +46,15 @@ const schemaUpdateOrganizerProgramCallablePayloadSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'rsvpDeadlineAtMillis': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'RSVP deadline anchor for Moments; null clears it.',
+    },
     'status': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

@@ -561,6 +561,7 @@ import {
   organizerMomentDocumentSchema,
   organizerMomentRunDocumentSchema,
   organizerMomentSendDocumentSchema,
+  organizerMomentSweepStateDocumentSchema,
   upsertOrganizerMomentCallablePayloadSchema,
   organizerMomentActionCallablePayloadSchema,
   runOrganizerMomentCallablePayloadSchema,
@@ -1711,6 +1712,7 @@ export const validateProgramDeliveryAttempt = ajv.compile(programDeliveryAttempt
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);
 export const validateOrganizerMomentRunDocument = ajv.compile(organizerMomentRunDocumentSchema);
 export const validateOrganizerMomentSendDocument = ajv.compile(organizerMomentSendDocumentSchema);
+export const validateOrganizerMomentSweepStateDocument = ajv.compile(organizerMomentSweepStateDocumentSchema);
 export const validateUpsertOrganizerMomentCallablePayload = ajv.compile(upsertOrganizerMomentCallablePayloadSchema);
 export const validateOrganizerMomentActionCallablePayload = ajv.compile(organizerMomentActionCallablePayloadSchema);
 export const validateRunOrganizerMomentCallablePayload = ajv.compile(runOrganizerMomentCallablePayloadSchema);

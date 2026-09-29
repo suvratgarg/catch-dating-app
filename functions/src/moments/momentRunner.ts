@@ -1,5 +1,15 @@
+/* firestore-index: organizerMoments (
+  scopeKind:ASCENDING,
+  scopeId:ASCENDING,
+  status:ASCENDING
+) */
+/* firestore-index: organizerMomentRuns (
+  status:ASCENDING,
+  dueAtMillis:ASCENDING
+) */
 import {createHash} from "node:crypto";
-import type {Firestore} from "firebase-admin/firestore";
+import {FieldPath, type Firestore, type Query} from
+  "firebase-admin/firestore";
 import {logger} from "firebase-functions";
 import {
   evaluateCondition,
@@ -29,7 +39,6 @@ import {
   planManualRun,
   replan,
   resolveFireDisposition,
-  selectDueRuns,
 } from "./momentPlanning";
 import {
   buildTravelContext,
@@ -148,9 +157,208 @@ export interface SweepSummary {
 const MAX_DUE_RUNS_PER_SWEEP = 200;
 const MOMENT_SWEEP_LIMIT = 500;
 
+/** Durable pagination state for the armed-moment scan. */
+export const MOMENT_SWEEP_STATE = "organizerMomentSweepState";
+
+/** Per-pass fact caches shared across the moments on one page. */
+interface SweepCaches {
+  facts: Map<string, AnchorFacts | null>;
+  travel: Map<string, TravelFacts>;
+}
+
+function scopeFactsKey(scope: MomentScope): string {
+  return `${scope.kind}:${scopeId(scope)}`;
+}
+
 /**
- * Replans every armed moment and fires due planned runs. Each moment is
- * handled independently — one bad document cannot stall the sweep.
+ * Replans one anchored/scheduled moment against current facts — shared by
+ * the sweep (which pages armed moments and shares fact caches across the
+ * page) and by the lifecycle callables (which replan a single moment the
+ * instant its arm state changes, so a fresh arm never waits for the
+ * cursor to reach it). Returns the counts it applied.
+ */
+export async function replanMoment(
+  db: Firestore,
+  moment: MomentDefinition,
+  now: number,
+  options?: {
+    estimateTravelMinutes?: TravelEstimator;
+    caches?: SweepCaches;
+  },
+): Promise<{created: number; superseded: number; skipped: number;
+  rescheduled: number}> {
+  const counts = {created: 0, superseded: 0, skipped: 0, rescheduled: 0};
+  if (moment.initiation.kind !== "anchored" &&
+      moment.initiation.kind !== "scheduled") {
+    return counts;
+  }
+  const caches = options?.caches ?? {facts: new Map(), travel: new Map()};
+  const facts = await cachedFacts(db, caches, moment.scope);
+  if (facts === null) return counts;
+  const travel = await cachedTravel(db, caches,
+    options?.estimateTravelMinutes ?? haversineTravelMinutes,
+    moment, facts);
+
+  const existing = await db.collection(MOMENT_RUNS_COLLECTION)
+    .where("momentId", "==", moment.momentId)
+    .get();
+  const runs = existing.docs.map((doc) => runFromDocument(doc.data()));
+  const nominal = planRun(moment, facts, now);
+  const recipients = travel && nominal.kind === "planned" ?
+    (await resolveMomentRecipients(db, moment, nominal.run,
+      travel)).recipients : null;
+  const travelLeadMinutes = recipients ? recipients.reduce((max,
+    recipient) => Math.max(max, recipient.travelLeadMinutes ?? 0), 0) :
+    undefined;
+  const preview = planRun(moment, facts, now,
+    {travel, travelLeadMinutes});
+  if (preview.kind === "planned") {
+    // Earlier run IDs may encode a mutable travel wake. They cannot be
+    // mapped to a nominal occurrence after lead or setting changes; this
+    // remains true when travelTimeLead has since been switched off.
+    const legacy = runs.filter((run) =>
+      run.anchorRevision === preview.run.anchorRevision &&
+      run.runId !== preview.run.runId &&
+      run.occurrenceVersion !== 2 &&
+      run.travelPlanHash === undefined);
+    if (legacy.length > 0) {
+      let held = false;
+      for (const run of legacy.filter((entry) =>
+        entry.status === "planned")) {
+        await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
+          .update({status: "failed",
+            reason: "legacyOccurrenceUnresolved"});
+        held = true;
+      }
+      const nominalRun = runs.find((run) =>
+        run.runId === preview.run.runId);
+      if (nominalRun?.status === "planned") {
+        await db.collection(MOMENT_RUNS_COLLECTION)
+          .doc(nominalRun.runId).update({status: "failed",
+            reason: "legacyOccurrenceUnresolved"});
+        held = true;
+      } else if (!nominalRun) {
+        await db.collection(MOMENT_RUNS_COLLECTION)
+          .doc(preview.run.runId).set({...preview.run,
+            status: "failed", reason: "legacyOccurrenceUnresolved"});
+        held = true;
+      }
+      if (held) {
+        logger.warn("Moment occurrence requires legacy reconciliation", {
+          reason: "legacyOccurrenceUnresolved",
+          momentId: moment.momentId,
+          nominalRunId: preview.run.runId,
+          legacyRunIds: legacy.map((run) => run.runId),
+        });
+        counts.skipped += 1;
+      }
+      return counts;
+    }
+  }
+  const travelPlanHash = recipients ?
+    hashTravelPlan(recipients) : undefined;
+  const plan = replan(moment, facts, runs, now,
+    {travel, travelLeadMinutes, travelPlanHash});
+  for (const runId of plan.supersede) {
+    await db.collection(MOMENT_RUNS_COLLECTION).doc(runId)
+      .update({status: "superseded"});
+    counts.superseded += 1;
+  }
+  if (plan.create !== null) {
+    // Create-only: a deterministic run id may already exist as a
+    // completed (dispatched/skipped/superseded) journal entry and must
+    // never be resurrected into a second fire.
+    const runRef =
+      db.collection(MOMENT_RUNS_COLLECTION).doc(plan.create.runId);
+    if (!(await runRef.get()).exists) {
+      await runRef.set({...plan.create});
+      counts.created += 1;
+    }
+  }
+  for (const change of plan.reschedule) {
+    await db.collection(MOMENT_RUNS_COLLECTION).doc(change.runId)
+      .update({dueAtMillis: change.dueAtMillis,
+        plannedWakeAtMillis: change.plannedWakeAtMillis,
+        travelPlanHash: change.travelPlanHash});
+    counts.rescheduled += 1;
+  }
+  return counts;
+}
+
+/**
+ * Inline replan for a program's armed moments after an anchor-bearing
+ * write (program/function times, deadline, status). Bounded — the sweep
+ * converges anything past the cap. Best-effort callers only.
+ */
+export async function replanProgramMoments(
+  db: Firestore,
+  programId: string,
+  now: number,
+  options?: {estimateTravelMinutes?: TravelEstimator},
+): Promise<{replanned: number; capped: boolean}> {
+  // (scopeKind, scopeId, status) composite index carries the lookup, so
+  // the cap bounds armed moments directly rather than a mixed page.
+  const armed = await db.collection(MOMENTS_COLLECTION)
+    .where("scopeKind", "==", "program")
+    .where("scopeId", "==", programId)
+    .where("status", "==", "armed")
+    .limit(200).get();
+  const caches: SweepCaches = {facts: new Map(), travel: new Map()};
+  let replanned = 0;
+  for (const doc of armed.docs) {
+    const moment = momentFromDocument(doc.data());
+    if (moment === null) continue;
+    await replanMoment(db, moment, now, {
+      estimateTravelMinutes: options?.estimateTravelMinutes, caches});
+    replanned += 1;
+  }
+  return {replanned, capped: armed.size === 200};
+}
+
+async function cachedFacts(
+  db: Firestore,
+  caches: SweepCaches,
+  scope: MomentScope,
+): Promise<AnchorFacts | null> {
+  const key = scopeFactsKey(scope);
+  if (!caches.facts.has(key)) {
+    caches.facts.set(key, await loadAnchorFacts(db, scope));
+  }
+  return caches.facts.get(key) ?? null;
+}
+
+/**
+ * Travel geography loads once per program and only when an armed moment
+ * actually asks for distance-aware leads.
+ */
+async function cachedTravel(
+  db: Firestore,
+  caches: SweepCaches,
+  estimator: TravelEstimator,
+  moment: MomentDefinition,
+  facts: AnchorFacts,
+): Promise<TravelEstimateContext | null> {
+  if (moment.scope.kind !== "program" ||
+      moment.audience.kind !== "functionGuests" ||
+      moment.audience.travelTimeLead !== true) {
+    return null;
+  }
+  if (facts.travel === undefined) {
+    const programId = moment.scope.programId;
+    if (!caches.travel.has(programId)) {
+      caches.travel.set(programId, await loadTravelFacts(db, programId));
+    }
+    facts.travel = caches.travel.get(programId)!;
+  }
+  return buildTravelContext(moment, facts, estimator);
+}
+
+/**
+ * Pages armed moments with a durable cursor, replans them against current
+ * anchor facts (superseding stale runs when a function's time moved), and
+ * fires whatever is due. Each moment is handled independently — one bad
+ * document cannot stall the sweep, and the cursor keeps discovery bounded
+ * no matter how many armed moments exist.
  */
 export async function runMomentSweep(
   deps: MomentRunnerDeps,
@@ -166,152 +374,52 @@ export async function runMomentSweep(
     runsSkipped: 0,
   };
 
-  const momentsSnap = await db.collection(MOMENTS_COLLECTION)
+  // Pass 1: one page of armed moments resuming at the durable cursor. A
+  // full page advances it; a short page wraps to the start so the next
+  // sweep covers the front of the range again.
+  const sweepRef = db.collection(MOMENT_SWEEP_STATE).doc("armed");
+  const state = (await sweepRef.get()).data() as
+    {afterMomentId?: string | null} | undefined;
+  const afterId = typeof state?.afterMomentId === "string" ?
+    state.afterMomentId : null;
+  let armedQuery: Query = db.collection(MOMENTS_COLLECTION)
     .where("status", "==", "armed")
-    .limit(MOMENT_SWEEP_LIMIT)
-    .get();
-  const factsCache = new Map<string, AnchorFacts | null>();
+    .orderBy(FieldPath.documentId());
+  if (afterId !== null) armedQuery = armedQuery.startAfter(afterId);
+  const momentsSnap = await armedQuery.limit(MOMENT_SWEEP_LIMIT).get();
+  await sweepRef.set({
+    sweepId: "armed",
+    afterMomentId: momentsSnap.size === MOMENT_SWEEP_LIMIT ?
+      momentsSnap.docs[momentsSnap.docs.length - 1].id : null,
+    updatedAtMillis: now,
+  }, {merge: true});
+
+  const caches: SweepCaches = {facts: new Map(), travel: new Map()};
+  const estimator = deps.estimateTravelMinutes ?? haversineTravelMinutes;
   const moments: MomentDefinition[] = [];
   for (const doc of momentsSnap.docs) {
     const moment = momentFromDocument(doc.data());
-    if (moment !== null) moments.push(moment);
-  }
-
-  const factsFor = async (scope: MomentScope) => {
-    const key = `${scope.kind}:${scope.kind === "event" ?
-      scope.eventId : scope.programId}`;
-    if (!factsCache.has(key)) {
-      factsCache.set(key, await loadAnchorFacts(db, scope));
-    }
-    return factsCache.get(key) ?? null;
-  };
-
-  // Travel geography loads once per program and only when an armed moment
-  // actually asks for distance-aware leads.
-  const estimator = deps.estimateTravelMinutes ?? haversineTravelMinutes;
-  const travelCache = new Map<string, TravelFacts>();
-  const travelFor = async (
-    moment: MomentDefinition,
-    facts: AnchorFacts,
-  ): Promise<TravelEstimateContext | null> => {
-    if (moment.scope.kind !== "program" ||
-        moment.audience.kind !== "functionGuests" ||
-        moment.audience.travelTimeLead !== true) {
-      return null;
-    }
-    if (facts.travel === undefined) {
-      const programId = moment.scope.programId;
-      if (!travelCache.has(programId)) {
-        travelCache.set(programId, await loadTravelFacts(db, programId));
-      }
-      facts.travel = travelCache.get(programId)!;
-    }
-    return buildTravelContext(moment, facts, estimator);
-  };
-
-  // Pass 1: (re)plan anchored/scheduled runs against current facts.
-  for (const moment of moments) {
-    if (moment.initiation.kind !== "anchored" &&
-        moment.initiation.kind !== "scheduled") continue;
-    const facts = await factsFor(moment.scope);
-    if (facts === null) continue;
-    const existing = await db.collection(MOMENT_RUNS_COLLECTION)
-      .where("momentId", "==", moment.momentId)
-      .get();
-    const runs = existing.docs.map((doc) =>
-      runFromDocument(doc.data()));
-    const travel = await travelFor(moment, facts);
-    const nominal = planRun(moment, facts, now);
-    const recipients = travel && nominal.kind === "planned" ?
-      (await resolveMomentRecipients(db, moment, nominal.run,
-        travel)).recipients : null;
-    const travelLeadMinutes = recipients ? recipients.reduce((max,
-      recipient) => Math.max(max, recipient.travelLeadMinutes ?? 0), 0) :
-      undefined;
-    const preview = planRun(moment, facts, now,
-      {travel, travelLeadMinutes});
-    if (preview.kind === "planned") {
-      // Earlier run IDs may encode a mutable travel wake. They cannot be
-      // mapped to a nominal occurrence after lead or setting changes; this
-      // remains true when travelTimeLead has since been switched off.
-      const legacy = runs.filter((run) =>
-        run.anchorRevision === preview.run.anchorRevision &&
-        run.runId !== preview.run.runId &&
-        run.occurrenceVersion !== 2 &&
-        run.travelPlanHash === undefined);
-      if (legacy.length > 0) {
-        let held = false;
-        for (const run of legacy.filter((entry) =>
-          entry.status === "planned")) {
-          await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
-            .update({status: "failed",
-              reason: "legacyOccurrenceUnresolved"});
-          held = true;
-        }
-        const nominalRun = runs.find((run) =>
-          run.runId === preview.run.runId);
-        if (nominalRun?.status === "planned") {
-          await db.collection(MOMENT_RUNS_COLLECTION)
-            .doc(nominalRun.runId).update({status: "failed",
-              reason: "legacyOccurrenceUnresolved"});
-          held = true;
-        } else if (!nominalRun) {
-          await db.collection(MOMENT_RUNS_COLLECTION)
-            .doc(preview.run.runId).set({...preview.run,
-              status: "failed", reason: "legacyOccurrenceUnresolved"});
-          held = true;
-        }
-        if (held) {
-          logger.warn("Moment occurrence requires legacy reconciliation", {
-            reason: "legacyOccurrenceUnresolved",
-            momentId: moment.momentId,
-            nominalRunId: preview.run.runId,
-            legacyRunIds: legacy.map((run) => run.runId),
-          });
-          summary.runsSkipped += 1;
-        }
-        continue;
-      }
-    }
-    const travelPlanHash = recipients ?
-      hashTravelPlan(recipients) : undefined;
-    const plan = replan(moment, facts, runs, now,
-      {travel, travelLeadMinutes, travelPlanHash});
-    for (const runId of plan.supersede) {
-      await db.collection(MOMENT_RUNS_COLLECTION).doc(runId)
-        .update({status: "superseded"});
-      summary.runsSuperseded += 1;
-    }
-    if (plan.create !== null) {
-      // Create-only: a deterministic run id may already exist as a
-      // completed (dispatched/skipped/superseded) journal entry and must
-      // never be resurrected into a second fire.
-      const runRef =
-        db.collection(MOMENT_RUNS_COLLECTION).doc(plan.create.runId);
-      if (!(await runRef.get()).exists) {
-        await runRef.set({...plan.create});
-        summary.runsCreated += 1;
-      }
-    }
-    for (const change of plan.reschedule) {
-      await db.collection(MOMENT_RUNS_COLLECTION).doc(change.runId)
-        .update({dueAtMillis: change.dueAtMillis,
-          plannedWakeAtMillis: change.plannedWakeAtMillis,
-          travelPlanHash: change.travelPlanHash});
-    }
-    if (plan.supersede.length > 0 || plan.create !== null ||
-        plan.reschedule.length > 0) {
+    if (moment === null) continue;
+    moments.push(moment);
+    const counts = await replanMoment(db, moment, now,
+      {estimateTravelMinutes: estimator, caches});
+    summary.runsCreated += counts.created;
+    summary.runsSuperseded += counts.superseded;
+    summary.runsSkipped += counts.skipped;
+    if (counts.created + counts.superseded + counts.rescheduled > 0) {
       summary.momentsReplanned += 1;
     }
   }
 
-  // Pass 2: fire due planned runs in order.
+  // Pass 2: fire due planned runs in order through the composite
+  // (status, dueAtMillis) index — no full-collection read.
   const dueSnap = await db.collection(MOMENT_RUNS_COLLECTION)
     .where("status", "==", "planned")
+    .where("dueAtMillis", "<=", now)
+    .orderBy("dueAtMillis")
+    .limit(MAX_DUE_RUNS_PER_SWEEP)
     .get();
-  const due = selectDueRuns(
-    dueSnap.docs.map((doc) => runFromDocument(doc.data())),
-    now, MAX_DUE_RUNS_PER_SWEEP);
+  const due = dueSnap.docs.map((doc) => runFromDocument(doc.data()));
   const byId = new Map(moments.map((moment) => [moment.momentId, moment]));
   for (const run of due) {
     const moment = byId.get(run.momentId) ??
@@ -321,14 +429,14 @@ export async function runMomentSweep(
       summary.runsSkipped += 1;
       continue;
     }
-    const facts = await factsFor(moment.scope);
+    const facts = await cachedFacts(db, caches, moment.scope);
     if (facts === null) {
       await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
       summary.runsSkipped += 1;
       continue;
     }
     const outcome = await dispatchRun(db, deps, moment, run, facts, now,
-      await travelFor(moment, facts));
+      await cachedTravel(db, caches, estimator, moment, facts));
     if (outcome === "deferred") summary.runsDeferred += 1;
     else if (outcome === "fired") summary.runsFired += 1;
     else summary.runsSkipped += 1;
@@ -434,6 +542,13 @@ async function dispatchRun(
   }
   const quietEnd = await deps.quietEndMillis(moment.scope, now);
   if (quietEnd !== null) {
+    // A deferral that would land past expiry never fires — record the
+    // honest terminal state instead of parking the run.
+    if (run.expiresAtMillis !== undefined &&
+        quietEnd > run.expiresAtMillis) {
+      await markRun(db, run, "skipped", {reason: "expired"});
+      return "skipped";
+    }
     await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
       .update({dueAtMillis: quietEnd});
     return "deferred";
@@ -540,6 +655,13 @@ async function dispatchRun(
       .filter((v): v is number => v !== null);
     const retry = candidates.length > 0 ?
       Math.min(...candidates) : now + 60_000;
+    if (run.expiresAtMillis !== undefined && retry > run.expiresAtMillis) {
+      // Withheld/deferred recipients outlive the send window: the run
+      // expires; the durable delivery records stay reconcilable on their
+      // own evidence trail.
+      await markRun(db, run, "skipped", {reason: "expired"});
+      return "skipped";
+    }
     await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
       .update({dueAtMillis: retry});
     return "deferred";

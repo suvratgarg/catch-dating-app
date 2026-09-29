@@ -13,6 +13,7 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {logger} from "firebase-functions";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -24,6 +25,7 @@ import {
   loadProgramBundle,
   nextRevision,
 } from "../shared/programAuthority";
+import {replanProgramMoments} from "../moments/momentRunner";
 import type {
   OrganizerProgramDocument,
   ProgramFunctionDocument,
@@ -119,6 +121,8 @@ export async function createOrganizerProgramHandler(
       timezone: data.timezone,
       startsAt: admin.firestore.Timestamp.fromMillis(data.startsAtMillis),
       endsAt: admin.firestore.Timestamp.fromMillis(data.endsAtMillis),
+      rsvpDeadlineAt: data.rsvpDeadlineAtMillis == null ? null :
+        admin.firestore.Timestamp.fromMillis(data.rsvpDeadlineAtMillis),
       status: "draft",
       capabilities: data.capabilities,
       transportSettings: settings,
@@ -188,9 +192,33 @@ export async function updateOrganizerProgramHandler(
       update.endsAt =
         admin.firestore.Timestamp.fromMillis(data.endsAtMillis);
     }
+    if (data.rsvpDeadlineAtMillis !== undefined) {
+      update.rsvpDeadlineAt = data.rsvpDeadlineAtMillis === null ? null :
+        admin.firestore.Timestamp.fromMillis(data.rsvpDeadlineAtMillis);
+    }
     committedRevision = update.revision as number;
     tx.update(ref, update);
   });
+  // Anchor-bearing edits (dates, deadline, timezone, status) move every
+  // scope-anchored occurrence; replan the program's armed moments inline
+  // rather than leaving stale plans until the sweep cursor reaches them.
+  // Bounded and best-effort — the sweep converges whatever is missed.
+  if (data.startsAtMillis !== undefined || data.endsAtMillis !== undefined ||
+      data.timezone !== undefined || data.status !== undefined ||
+      data.rsvpDeadlineAtMillis !== undefined) {
+    try {
+      const {capped} = await replanProgramMoments(
+        db, data.programId, deps.now().toMillis());
+      if (capped) {
+        logger.warn(
+          "Program replan hit the inline bound; sweep covers the rest",
+          {programId: data.programId});
+      }
+    } catch (error) {
+      logger.warn("Program-update replan deferred to sweep",
+        {programId: data.programId, error});
+    }
+  }
   return {
     entityId: data.programId,
     revision: committedRevision,

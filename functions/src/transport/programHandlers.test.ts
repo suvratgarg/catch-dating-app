@@ -91,6 +91,56 @@ test("updateOrganizerProgram fences on revision and stores settings",
     assert.equal(updated.revision, stored?.revision);
   });
 
+test("rsvpDeadlineAt stores and clears; date moves replan anchored runs",
+  async () => {
+    const firestore = new FakeFirestore(baseSeed());
+    // An armed scopeStart-anchored moment — the update must replan it now,
+    // not when the sweep cursor next reaches it. scopeKind/scopeId are the
+    // denormalized lookup fields momentToDocument writes.
+    firestore.setDoc("organizerMoments/m_start", {
+      momentId: "m_start",
+      scope: {kind: "program", programId: "program-1"},
+      scopeKind: "program", scopeId: "program-1",
+      name: "Program starts soon",
+      initiation: {kind: "anchored", anchorKind: "scopeStart",
+        anchorId: null, offsetMinutes: -15},
+      sense: "audience",
+      audience: {kind: "households", rsvpPendingOnly: false},
+      action: {kind: "sendTemplate", connectionId: "conn-1",
+        templateId: "tpl-1", variables: {}},
+      status: "armed",
+      approval: {approvedByUid: "manager-1", approvedAtMillis: 1},
+      origin: "organizer", revision: 1,
+    });
+    const updated = await updateOrganizerProgramHandler(request({
+      programId: "program-1",
+      expectedRevision: 3,
+      startsAtMillis: 1_800_100_000_000,
+      rsvpDeadlineAtMillis: 1_700_000_000_000,
+    }, "manager-1"), deps(firestore));
+    const stored = firestore.getDoc("organizerPrograms/program-1");
+    assert.equal(
+      (stored?.rsvpDeadlineAt as {toMillis(): number}).toMillis(),
+      1_700_000_000_000);
+    // due = 1_800_100_000_000 - 15m = 1_800_099_100_000 under the new
+    // anchor revision — the occurrence identity moved with the anchor.
+    const run = firestore.getDoc(
+      `organizerMomentRuns/m_start_${updated.revision}_1800099100000`);
+    assert.equal(run?.status, "planned");
+    assert.equal(run?.nominalDueAtMillis, 1_800_099_100_000);
+    // A before-the-anchor reminder dies at the anchor, not on retries.
+    assert.equal(run?.expiresAtMillis, 1_800_100_000_000);
+    // Clearing the deadline is an explicit null write.
+    await updateOrganizerProgramHandler(request({
+      programId: "program-1",
+      expectedRevision: updated.revision,
+      rsvpDeadlineAtMillis: null,
+    }, "manager-1"), deps(firestore));
+    assert.equal(
+      firestore.getDoc("organizerPrograms/program-1")?.rsvpDeadlineAt,
+      null);
+  });
+
 test("staff grants are duty-scoped, expiring, and station-checked",
   async () => {
     const firestore = new FakeFirestore(baseSeed());

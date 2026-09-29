@@ -9,6 +9,14 @@ export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  /**
+   * Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals.
+   */
+  nominalDueAtMillis?: number;
+  /**
+   * Hard stop on firing this run; a deferred run past expiry skips instead of sending late.
+   */
+  expiresAtMillis?: number;
   occurrenceVersion?: 2;
   plannedWakeAtMillis?: number;
   travelPlanHash?: string;

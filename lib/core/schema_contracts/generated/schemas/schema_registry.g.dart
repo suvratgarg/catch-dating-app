@@ -2807,6 +2807,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOrganizerMomentSendDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'OrganizerMomentSweepStateDocument',
+    source: 'firestore/organizer_moment_sweep_state.schema.json',
+    schema: schemaOrganizerMomentSweepStateDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'UpsertOrganizerMomentCallablePayload',
     source: 'callables/upsert_organizer_moment_payload.schema.json',
     schema: schemaUpsertOrganizerMomentCallablePayloadSchema,
@@ -6207,6 +6212,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerMomentDocument': schemaOrganizerMomentDocumentSchema,
   'OrganizerMomentRunDocument': schemaOrganizerMomentRunDocumentSchema,
   'OrganizerMomentSendDocument': schemaOrganizerMomentSendDocumentSchema,
+  'OrganizerMomentSweepStateDocument': schemaOrganizerMomentSweepStateDocumentSchema,
   'UpsertOrganizerMomentCallablePayload': schemaUpsertOrganizerMomentCallablePayloadSchema,
   'OrganizerMomentActionCallablePayload': schemaOrganizerMomentActionCallablePayloadSchema,
   'RunOrganizerMomentCallablePayload': schemaRunOrganizerMomentCallablePayloadSchema,
@@ -7336,6 +7342,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_moments.schema.json': schemaOrganizerMomentDocumentSchema,
   'firestore/organizer_moment_runs.schema.json': schemaOrganizerMomentRunDocumentSchema,
   'firestore/organizer_moment_sends.schema.json': schemaOrganizerMomentSendDocumentSchema,
+  'firestore/organizer_moment_sweep_state.schema.json': schemaOrganizerMomentSweepStateDocumentSchema,
   'callables/upsert_organizer_moment_payload.schema.json': schemaUpsertOrganizerMomentCallablePayloadSchema,
   'callables/organizer_moment_action_payload.schema.json': schemaOrganizerMomentActionCallablePayloadSchema,
   'callables/run_organizer_moment_payload.schema.json': schemaRunOrganizerMomentCallablePayloadSchema,

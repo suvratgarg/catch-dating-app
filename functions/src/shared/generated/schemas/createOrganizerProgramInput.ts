@@ -53,6 +53,15 @@ export const createOrganizerProgramCallablePayloadSchema: Record<string, unknown
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Optional RSVP deadline anchor for Moments scheduling."
+    },
     "capabilities": {
       "type": "array",
       "maxItems": 8,

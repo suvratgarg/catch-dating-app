@@ -96,6 +96,34 @@ const schemaOrganizerProgramDocumentSchema = <String, Object?>{
         },
       },
     },
+    'rsvpDeadlineAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'RSVP deadline anchor for Moments scheduling; absent until the organizer sets one.',
+    },
     'status': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

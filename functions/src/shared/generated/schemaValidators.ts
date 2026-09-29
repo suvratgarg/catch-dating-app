@@ -563,6 +563,7 @@ export {validateProgramDeliveryAttempt} from "./validators/programDeliveryAttemp
 export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";
 export {validateOrganizerMomentRunDocument} from "./validators/organizerMomentRunDocument";
 export {validateOrganizerMomentSendDocument} from "./validators/organizerMomentSendDocument";
+export {validateOrganizerMomentSweepStateDocument} from "./validators/organizerMomentSweepStateDocument";
 export {validateUpsertOrganizerMomentCallablePayload} from "./validators/upsertOrganizerMomentInput";
 export {validateOrganizerMomentActionCallablePayload} from "./validators/organizerMomentActionInput";
 export {validateRunOrganizerMomentCallablePayload} from "./validators/runOrganizerMomentInput";

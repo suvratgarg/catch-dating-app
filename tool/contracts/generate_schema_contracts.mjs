@@ -2104,6 +2104,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerMomentSendDocument.ts",
   },
   {
+    name: "OrganizerMomentSweepStateDocument",
+    source: "firestore/organizer_moment_sweep_state.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMomentSweepStateDocument.ts",
+  },
+  {
     name: "UpsertOrganizerMomentCallablePayload",
     source: "callables/upsert_organizer_moment_payload.schema.json",
     typeOutput: "functions/src/shared/generated/upsertOrganizerMomentCallablePayload.ts",

@@ -563,6 +563,7 @@ export {programDeliveryAttemptSchema} from "./schemas/programDeliveryAttempt";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";
 export {organizerMomentRunDocumentSchema} from "./schemas/organizerMomentRunDocument";
 export {organizerMomentSendDocumentSchema} from "./schemas/organizerMomentSendDocument";
+export {organizerMomentSweepStateDocumentSchema} from "./schemas/organizerMomentSweepStateDocument";
 export {upsertOrganizerMomentCallablePayloadSchema} from "./schemas/upsertOrganizerMomentInput";
 export {organizerMomentActionCallablePayloadSchema} from "./schemas/organizerMomentActionInput";
 export {runOrganizerMomentCallablePayloadSchema} from "./schemas/runOrganizerMomentInput";

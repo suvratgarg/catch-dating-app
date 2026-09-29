@@ -164425,6 +164425,34 @@ export const organizerProgramDocumentSchema = {
         }
       }
     },
+    "rsvpDeadlineAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "RSVP deadline anchor for Moments scheduling; absent until the organizer sets one."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -169445,7 +169473,25 @@ export const organizerMomentDocumentSchema = {
           ],
           "minimum": -43200,
           "maximum": 43200,
-          "description": "Minutes relative to the anchor; negative is before."
+          "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+        },
+        "offsetDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -731,
+          "maximum": 731,
+          "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+        },
+        "offsetMonths": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -24,
+          "maximum": 24,
+          "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
         },
         "triggerKind": {
           "anyOf": [
@@ -169761,6 +169807,18 @@ export const organizerMomentRunDocumentSchema = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "nominalDueAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals."
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Hard stop on firing this run; a deferred run past expiry skips instead of sending late."
+    },
     "occurrenceVersion": {
       "type": "integer",
       "enum": [
@@ -170000,6 +170058,44 @@ export const organizerMomentSendDocumentSchema = {
   }
 };
 
+export const organizerMomentSweepStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_sweep_state.schema.json",
+  "title": "OrganizerMomentSweepStateDocument",
+  "description": "Server-owned pagination state for the moment sweep. The armed-moments scan advances a durable cursor so discovery stays bounded at any armed-moment count.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentSweepState",
+  "x-firestore-path": "organizerMomentSweepState/{sweepId}",
+  "x-document-id-field": "sweepId",
+  "x-owner": "moment runner",
+  "required": [
+    "sweepId",
+    "afterMomentId",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "sweepId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "afterMomentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "Last armed-moment doc id scanned; null restarts the scan."
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const upsertOrganizerMomentCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_organizer_moment_payload.schema.json",
@@ -170123,7 +170219,25 @@ export const upsertOrganizerMomentCallablePayloadSchema = {
           ],
           "minimum": -43200,
           "maximum": 43200,
-          "description": "Minutes relative to the anchor; negative is before."
+          "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+        },
+        "offsetDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -731,
+          "maximum": 731,
+          "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+        },
+        "offsetMonths": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -24,
+          "maximum": 24,
+          "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
         },
         "triggerKind": {
           "anyOf": [
@@ -170642,7 +170756,25 @@ export const organizerMomentCallableResponseSchema = {
               ],
               "minimum": -43200,
               "maximum": 43200,
-              "description": "Minutes relative to the anchor; negative is before."
+              "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+            },
+            "offsetDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -731,
+              "maximum": 731,
+              "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+            },
+            "offsetMonths": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -24,
+              "maximum": 24,
+              "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
             },
             "triggerKind": {
               "anyOf": [
@@ -171049,7 +171181,25 @@ export const listOrganizerMomentsCallableResponseSchema = {
                 ],
                 "minimum": -43200,
                 "maximum": 43200,
-                "description": "Minutes relative to the anchor; negative is before."
+                "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+              },
+              "offsetDays": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -731,
+                "maximum": 731,
+                "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+              },
+              "offsetMonths": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -24,
+                "maximum": 24,
+                "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
               },
               "triggerKind": {
                 "anyOf": [
@@ -172389,6 +172539,15 @@ export const createOrganizerProgramCallablePayloadSchema = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Optional RSVP deadline anchor for Moments scheduling."
+    },
     "capabilities": {
       "type": "array",
       "maxItems": 8,
@@ -172542,6 +172701,15 @@ export const updateOrganizerProgramCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "RSVP deadline anchor for Moments; null clears it."
     },
     "status": {
       "type": "string",

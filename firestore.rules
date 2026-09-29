@@ -1476,6 +1476,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerMomentSweepState/{sweepId} {
+      allow read, write: if false;
+    }
+
     match /organizerBroadcastSummaries/{broadcastId} {
       allow read, write: if false;
     }

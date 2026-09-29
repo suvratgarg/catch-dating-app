@@ -4863,6 +4863,24 @@
       ]
     },
     {
+      "collectionGroup": "organizerMoments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "scopeKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scopeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizerMomentRuns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -4872,6 +4890,20 @@
         },
         {
           "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerMomentRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueAtMillis",
           "order": "ASCENDING"
         }
       ]

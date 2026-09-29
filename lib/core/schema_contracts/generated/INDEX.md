@@ -570,6 +570,7 @@ Do not edit it by hand.
 | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
 | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `functions/src/shared/generated/organizerMomentRunDocument.ts` |
 | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `functions/src/shared/generated/organizerMomentSendDocument.ts` |
+| OrganizerMomentSweepStateDocument | `firestore/organizer_moment_sweep_state.schema.json` | `functions/src/shared/generated/organizerMomentSweepStateDocument.ts` |
 | UpsertOrganizerMomentCallablePayload | `callables/upsert_organizer_moment_payload.schema.json` | `functions/src/shared/generated/upsertOrganizerMomentCallablePayload.ts` |
 | OrganizerMomentActionCallablePayload | `callables/organizer_moment_action_payload.schema.json` | `functions/src/shared/generated/organizerMomentActionCallablePayload.ts` |
 | RunOrganizerMomentCallablePayload | `callables/run_organizer_moment_payload.schema.json` | `functions/src/shared/generated/runOrganizerMomentCallablePayload.ts` |
@@ -1701,6 +1702,7 @@ Do not edit it by hand.
 | `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |
 | `schemaOrganizerMomentRunDocumentSchema` | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_run_document.g.dart` |
 | `schemaOrganizerMomentSendDocumentSchema` | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_send_document.g.dart` |
+| `schemaOrganizerMomentSweepStateDocumentSchema` | OrganizerMomentSweepStateDocument | `firestore/organizer_moment_sweep_state.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_sweep_state_document.g.dart` |
 | `schemaUpsertOrganizerMomentCallablePayloadSchema` | UpsertOrganizerMomentCallablePayload | `callables/upsert_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_organizer_moment_callable_payload.g.dart` |
 | `schemaOrganizerMomentActionCallablePayloadSchema` | OrganizerMomentActionCallablePayload | `callables/organizer_moment_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_action_callable_payload.g.dart` |
 | `schemaRunOrganizerMomentCallablePayloadSchema` | RunOrganizerMomentCallablePayload | `callables/run_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/run_organizer_moment_callable_payload.g.dart` |

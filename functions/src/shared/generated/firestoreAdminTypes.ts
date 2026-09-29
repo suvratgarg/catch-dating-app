@@ -11342,6 +11342,10 @@ export interface OrganizerProgramDocument {
   timezone: string;
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
+  /**
+   * RSVP deadline anchor for Moments scheduling; absent until the organizer sets one.
+   */
+  rsvpDeadlineAt?: FirebaseFirestore.Timestamp | null;
   status: "draft" | "active" | "completed" | "archived";
   /**
    * @maxItems 8
@@ -12317,9 +12321,17 @@ export interface OrganizerMomentDocument {
      */
     anchorId?: string | null;
     /**
-     * Minutes relative to the anchor; negative is before.
+     * Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset.
      */
     offsetMinutes?: number | null;
+    /**
+     * Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes.
+     */
+    offsetDays?: number | null;
+    /**
+     * Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first.
+     */
+    offsetMonths?: number | null;
     /**
      * Required when kind=triggered.
      */
@@ -12437,6 +12449,14 @@ export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  /**
+   * Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals.
+   */
+  nominalDueAtMillis?: number;
+  /**
+   * Hard stop on firing this run; a deferred run past expiry skips instead of sending late.
+   */
+  expiresAtMillis?: number;
   occurrenceVersion?: 2;
   plannedWakeAtMillis?: number;
   travelPlanHash?: string;
@@ -12527,6 +12547,18 @@ export interface OrganizerMomentSendDocument {
    * staffAttention: rendered alert title.
    */
   title?: string | null;
+}
+
+/**
+ * Server-owned pagination state for the moment sweep. The armed-moments scan advances a durable cursor so discovery stays bounded at any armed-moment count.
+ */
+export interface OrganizerMomentSweepStateDocument {
+  sweepId: string;
+  /**
+   * Last armed-moment doc id scanned; null restarts the scan.
+   */
+  afterMomentId: string | null;
+  updatedAtMillis: number;
 }
 
 /**

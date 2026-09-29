@@ -27,6 +27,13 @@ export interface OrganizerProgramDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * RSVP deadline anchor for Moments scheduling; absent until the organizer sets one.
+   */
+  rsvpDeadlineAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   status: "draft" | "active" | "completed" | "archived";
   /**
    * @maxItems 8

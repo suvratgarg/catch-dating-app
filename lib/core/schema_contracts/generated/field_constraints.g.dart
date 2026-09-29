@@ -24148,6 +24148,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerProgramCallablePayloadRsvpDeadlineAtMillis = CatchContractFieldConstraints(
+    path: 'createOrganizerProgramCallablePayload.rsvpDeadlineAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const createOrganizerProgramCallablePayloadStartsAtMillis = CatchContractFieldConstraints(
     path: 'createOrganizerProgramCallablePayload.startsAtMillis',
     required: true,
@@ -87363,11 +87370,25 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
   );
 
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetDays = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetDays',
+    valueTypes: <String>['integer'],
+    minimum: -731,
+    maximum: 731,
+  );
+
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMinutes = CatchContractFieldConstraints(
     path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMinutes',
     valueTypes: <String>['integer'],
     minimum: -43200,
     maximum: 43200,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMonths = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMonths',
+    valueTypes: <String>['integer'],
+    minimum: -24,
+    maximum: 24,
   );
 
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationTriggerKind = CatchContractFieldConstraints(
@@ -108184,11 +108205,25 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
   );
 
+  static const organizerMomentCallableResponseMomentInitiationOffsetDays = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.offsetDays',
+    valueTypes: <String>['integer'],
+    minimum: -731,
+    maximum: 731,
+  );
+
   static const organizerMomentCallableResponseMomentInitiationOffsetMinutes = CatchContractFieldConstraints(
     path: 'organizerMomentCallableResponse.moment.initiation.offsetMinutes',
     valueTypes: <String>['integer'],
     minimum: -43200,
     maximum: 43200,
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationOffsetMonths = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.offsetMonths',
+    valueTypes: <String>['integer'],
+    minimum: -24,
+    maximum: 24,
   );
 
   static const organizerMomentCallableResponseMomentInitiationTriggerKind = CatchContractFieldConstraints(
@@ -108454,11 +108489,25 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
   );
 
+  static const organizerMomentDocumentInitiationOffsetDays = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.offsetDays',
+    valueTypes: <String>['integer'],
+    minimum: -731,
+    maximum: 731,
+  );
+
   static const organizerMomentDocumentInitiationOffsetMinutes = CatchContractFieldConstraints(
     path: 'organizerMomentDocument.initiation.offsetMinutes',
     valueTypes: <String>['integer'],
     minimum: -43200,
     maximum: 43200,
+  );
+
+  static const organizerMomentDocumentInitiationOffsetMonths = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.offsetMonths',
+    valueTypes: <String>['integer'],
+    minimum: -24,
+    maximum: 24,
   );
 
   static const organizerMomentDocumentInitiationTriggerKind = CatchContractFieldConstraints(
@@ -108572,12 +108621,26 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerMomentRunDocumentExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.expiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerMomentRunDocumentMomentId = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.momentId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentNominalDueAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.nominalDueAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const organizerMomentRunDocumentOccurrenceVersion = CatchContractFieldConstraints(
@@ -108745,6 +108808,28 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentSendDocument.title',
     maxLength: 240,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSweepStateDocumentAfterMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentSweepStateDocument.afterMomentId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSweepStateDocumentSweepId = CatchContractFieldConstraints(
+    path: 'organizerMomentSweepStateDocument.sweepId',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSweepStateDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentSweepStateDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const organizerPaymentConnectionDocumentAccountId = CatchContractFieldConstraints(
@@ -110049,6 +110134,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const organizerProgramDocumentRsvpDeadlineAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.rsvpDeadlineAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProgramDocumentRsvpDeadlineAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.rsvpDeadlineAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const organizerProgramDocumentStartsAtNanoseconds = CatchContractFieldConstraints(
@@ -145952,6 +146051,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerProgramCallablePayloadRsvpDeadlineAtMillis = CatchContractFieldConstraints(
+    path: 'updateOrganizerProgramCallablePayload.rsvpDeadlineAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const updateOrganizerProgramCallablePayloadStartsAtMillis = CatchContractFieldConstraints(
     path: 'updateOrganizerProgramCallablePayload.startsAtMillis',
     valueTypes: <String>['integer'],
@@ -147971,11 +148077,25 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
   );
 
+  static const upsertOrganizerMomentCallablePayloadInitiationOffsetDays = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.offsetDays',
+    valueTypes: <String>['integer'],
+    minimum: -731,
+    maximum: 731,
+  );
+
   static const upsertOrganizerMomentCallablePayloadInitiationOffsetMinutes = CatchContractFieldConstraints(
     path: 'upsertOrganizerMomentCallablePayload.initiation.offsetMinutes',
     valueTypes: <String>['integer'],
     minimum: -43200,
     maximum: 43200,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationOffsetMonths = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.offsetMonths',
+    valueTypes: <String>['integer'],
+    minimum: -24,
+    maximum: 24,
   );
 
   static const upsertOrganizerMomentCallablePayloadInitiationTriggerKind = CatchContractFieldConstraints(
@@ -155496,6 +155616,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerProgramCallablePayload.endsAtMillis': createOrganizerProgramCallablePayloadEndsAtMillis,
     'createOrganizerProgramCallablePayload.kind': createOrganizerProgramCallablePayloadKind,
     'createOrganizerProgramCallablePayload.organizerId': createOrganizerProgramCallablePayloadOrganizerId,
+    'createOrganizerProgramCallablePayload.rsvpDeadlineAtMillis': createOrganizerProgramCallablePayloadRsvpDeadlineAtMillis,
     'createOrganizerProgramCallablePayload.startsAtMillis': createOrganizerProgramCallablePayloadStartsAtMillis,
     'createOrganizerProgramCallablePayload.timezone': createOrganizerProgramCallablePayloadTimezone,
     'createOrganizerProgramCallablePayload.title': createOrganizerProgramCallablePayloadTitle,
@@ -163994,7 +164115,9 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis': listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.functionId': listOrganizerMomentsCallableResponseMomentsItemsInitiationFunctionId,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.kind': listOrganizerMomentsCallableResponseMomentsItemsInitiationKind,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetDays': listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetDays,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMinutes': listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMinutes,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMonths': listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMonths,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.triggerKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationTriggerKind,
     'listOrganizerMomentsCallableResponse.moments.items.momentId': listOrganizerMomentsCallableResponseMomentsItemsMomentId,
     'listOrganizerMomentsCallableResponse.moments.items.name': listOrganizerMomentsCallableResponseMomentsItemsName,
@@ -166874,7 +166997,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentCallableResponse.moment.initiation.atMillis': organizerMomentCallableResponseMomentInitiationAtMillis,
     'organizerMomentCallableResponse.moment.initiation.functionId': organizerMomentCallableResponseMomentInitiationFunctionId,
     'organizerMomentCallableResponse.moment.initiation.kind': organizerMomentCallableResponseMomentInitiationKind,
+    'organizerMomentCallableResponse.moment.initiation.offsetDays': organizerMomentCallableResponseMomentInitiationOffsetDays,
     'organizerMomentCallableResponse.moment.initiation.offsetMinutes': organizerMomentCallableResponseMomentInitiationOffsetMinutes,
+    'organizerMomentCallableResponse.moment.initiation.offsetMonths': organizerMomentCallableResponseMomentInitiationOffsetMonths,
     'organizerMomentCallableResponse.moment.initiation.triggerKind': organizerMomentCallableResponseMomentInitiationTriggerKind,
     'organizerMomentCallableResponse.moment.momentId': organizerMomentCallableResponseMomentMomentId,
     'organizerMomentCallableResponse.moment.name': organizerMomentCallableResponseMomentName,
@@ -166914,7 +167039,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.initiation.atMillis': organizerMomentDocumentInitiationAtMillis,
     'organizerMomentDocument.initiation.functionId': organizerMomentDocumentInitiationFunctionId,
     'organizerMomentDocument.initiation.kind': organizerMomentDocumentInitiationKind,
+    'organizerMomentDocument.initiation.offsetDays': organizerMomentDocumentInitiationOffsetDays,
     'organizerMomentDocument.initiation.offsetMinutes': organizerMomentDocumentInitiationOffsetMinutes,
+    'organizerMomentDocument.initiation.offsetMonths': organizerMomentDocumentInitiationOffsetMonths,
     'organizerMomentDocument.initiation.triggerKind': organizerMomentDocumentInitiationTriggerKind,
     'organizerMomentDocument.momentId': organizerMomentDocumentMomentId,
     'organizerMomentDocument.name': organizerMomentDocumentName,
@@ -166930,7 +167057,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.updatedAtMillis': organizerMomentDocumentUpdatedAtMillis,
     'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
     'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
+    'organizerMomentRunDocument.expiresAtMillis': organizerMomentRunDocumentExpiresAtMillis,
     'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
+    'organizerMomentRunDocument.nominalDueAtMillis': organizerMomentRunDocumentNominalDueAtMillis,
     'organizerMomentRunDocument.occurrenceVersion': organizerMomentRunDocumentOccurrenceVersion,
     'organizerMomentRunDocument.plannedWakeAtMillis': organizerMomentRunDocumentPlannedWakeAtMillis,
     'organizerMomentRunDocument.reason': organizerMomentRunDocumentReason,
@@ -166957,6 +167086,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentSendDocument.scopeKind': organizerMomentSendDocumentScopeKind,
     'organizerMomentSendDocument.severity': organizerMomentSendDocumentSeverity,
     'organizerMomentSendDocument.title': organizerMomentSendDocumentTitle,
+    'organizerMomentSweepStateDocument.afterMomentId': organizerMomentSweepStateDocumentAfterMomentId,
+    'organizerMomentSweepStateDocument.sweepId': organizerMomentSweepStateDocumentSweepId,
+    'organizerMomentSweepStateDocument.updatedAtMillis': organizerMomentSweepStateDocumentUpdatedAtMillis,
     'organizerPaymentConnectionDocument.accountId': organizerPaymentConnectionDocumentAccountId,
     'organizerPaymentConnectionDocument.connectedByUid': organizerPaymentConnectionDocumentConnectedByUid,
     'organizerPaymentConnectionDocument.createdAt._nanoseconds': organizerPaymentConnectionDocumentCreatedAtNanoseconds,
@@ -167137,6 +167269,8 @@ abstract final class CatchContractConstraints {
     'organizerProgramDocument.kind': organizerProgramDocumentKind,
     'organizerProgramDocument.organizerId': organizerProgramDocumentOrganizerId,
     'organizerProgramDocument.revision': organizerProgramDocumentRevision,
+    'organizerProgramDocument.rsvpDeadlineAt._nanoseconds': organizerProgramDocumentRsvpDeadlineAtNanoseconds,
+    'organizerProgramDocument.rsvpDeadlineAt._seconds': organizerProgramDocumentRsvpDeadlineAtSeconds,
     'organizerProgramDocument.startsAt._nanoseconds': organizerProgramDocumentStartsAtNanoseconds,
     'organizerProgramDocument.startsAt._seconds': organizerProgramDocumentStartsAtSeconds,
     'organizerProgramDocument.status': organizerProgramDocumentStatus,
@@ -172070,6 +172204,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerProgramCallablePayload.endsAtMillis': updateOrganizerProgramCallablePayloadEndsAtMillis,
     'updateOrganizerProgramCallablePayload.expectedRevision': updateOrganizerProgramCallablePayloadExpectedRevision,
     'updateOrganizerProgramCallablePayload.programId': updateOrganizerProgramCallablePayloadProgramId,
+    'updateOrganizerProgramCallablePayload.rsvpDeadlineAtMillis': updateOrganizerProgramCallablePayloadRsvpDeadlineAtMillis,
     'updateOrganizerProgramCallablePayload.startsAtMillis': updateOrganizerProgramCallablePayloadStartsAtMillis,
     'updateOrganizerProgramCallablePayload.status': updateOrganizerProgramCallablePayloadStatus,
     'updateOrganizerProgramCallablePayload.timezone': updateOrganizerProgramCallablePayloadTimezone,
@@ -172352,7 +172487,9 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerMomentCallablePayload.initiation.atMillis': upsertOrganizerMomentCallablePayloadInitiationAtMillis,
     'upsertOrganizerMomentCallablePayload.initiation.functionId': upsertOrganizerMomentCallablePayloadInitiationFunctionId,
     'upsertOrganizerMomentCallablePayload.initiation.kind': upsertOrganizerMomentCallablePayloadInitiationKind,
+    'upsertOrganizerMomentCallablePayload.initiation.offsetDays': upsertOrganizerMomentCallablePayloadInitiationOffsetDays,
     'upsertOrganizerMomentCallablePayload.initiation.offsetMinutes': upsertOrganizerMomentCallablePayloadInitiationOffsetMinutes,
+    'upsertOrganizerMomentCallablePayload.initiation.offsetMonths': upsertOrganizerMomentCallablePayloadInitiationOffsetMonths,
     'upsertOrganizerMomentCallablePayload.initiation.triggerKind': upsertOrganizerMomentCallablePayloadInitiationTriggerKind,
     'upsertOrganizerMomentCallablePayload.momentId': upsertOrganizerMomentCallablePayloadMomentId,
     'upsertOrganizerMomentCallablePayload.name': upsertOrganizerMomentCallablePayloadName,
