@@ -627,6 +627,7 @@ import {
   programHotelInboundCallableResponseSchema,
   recordProgramDoorJournalCallableResponseSchema,
   programFunctionDoorViewCallableResponseSchema,
+  programAttendanceReportCallableResponseSchema,
   programStakeholderCountsCallableResponseSchema,
   programManifestImportCallableResponseSchema,
   dispatchProgramTripCallableResponseSchema,
@@ -1767,6 +1768,7 @@ export const validateProgramTransportPlanCallableResponse = ajv.compile(programT
 export const validateProgramHotelInboundCallableResponse = ajv.compile(programHotelInboundCallableResponseSchema);
 export const validateRecordProgramDoorJournalCallableResponse = ajv.compile(recordProgramDoorJournalCallableResponseSchema);
 export const validateProgramFunctionDoorViewCallableResponse = ajv.compile(programFunctionDoorViewCallableResponseSchema);
+export const validateProgramAttendanceReportCallableResponse = ajv.compile(programAttendanceReportCallableResponseSchema);
 export const validateProgramStakeholderCountsCallableResponse = ajv.compile(programStakeholderCountsCallableResponseSchema);
 export const validateProgramManifestImportCallableResponse = ajv.compile(programManifestImportCallableResponseSchema);
 export const validateDispatchProgramTripCallableResponse = ajv.compile(dispatchProgramTripCallableResponseSchema);

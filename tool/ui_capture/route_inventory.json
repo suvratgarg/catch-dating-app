@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "cf0b7cdbcb02fee6b1748d14e398c59f8b31391adf43f83681675ad8348cd8e5",
-    "routeContractSha256": "583da49cd198ec6001ae57a5aad5edd46e08efb3d50f2ea8589a017f060ebaf8",
-    "goRouteCount": 110,
+    "normalizedFileSha256": "9593b846e008ec539505bfa6e8d48540ab70f84478634a5ce67b51c795b00a99",
+    "routeContractSha256": "60dd27d0b1c09c26c2269cde95f8bcf6578fafeae1a7e0867db29b4adf045da6",
+    "goRouteCount": 111,
     "shellBranchCount": 9,
-    "enumRouteCount": 95,
-    "referencedRouteCount": 95,
-    "runtimeRouteCount": 95,
+    "enumRouteCount": 96,
+    "referencedRouteCount": 96,
+    "runtimeRouteCount": 96,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1122,6 +1122,23 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkAttendanceReportScreen",
+      "path": "/host/work/:programId/attendance",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/attendance",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkAttendanceReportScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramAttendanceReportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramAttendanceReportScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkCountsScreen",
       "path": "/host/work/:programId/counts",
       "pathParameters": [
@@ -1805,6 +1822,7 @@
     "hostTodayFocusScreen",
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
+    "hostWorkAttendanceReportScreen",
     "hostWorkCountsScreen",
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",

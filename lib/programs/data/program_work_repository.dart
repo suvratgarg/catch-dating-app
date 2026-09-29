@@ -267,6 +267,17 @@ class ProgramWorkRepository {
         parse: ProgramTripList.fromCallableData,
       );
 
+  /// The reconciliationViewer's program-wide attendance report — per-function
+  /// RSVP-vs-door counts plus the exception guest-id lists.
+  Future<ProgramAttendanceReport> getAttendanceReport(String programId) =>
+      _call(
+        name: 'getProgramAttendanceReport',
+        authorityScopedRead: true,
+        payload: ProgramIdCallableRequest(programId: programId).toJson(),
+        action: 'load the attendance report',
+        parse: ProgramAttendanceReport.fromCallableData,
+      );
+
   /// Counts-only overview for stakeholderViewer staff: ids + headcounts,
   /// no guest names or contacts cross the wire.
   Future<ProgramStakeholderCounts> getStakeholderCounts(String programId) =>
@@ -696,6 +707,23 @@ Future<ProgramTripList> programTripList(
     () => ref
         .read(programWorkRepositoryProvider)
         .listTrips(programId, cursor: cursor),
+  );
+  retainProgramProjection(ref, result.accessExpiresAt);
+  return result;
+}
+
+@riverpod
+Future<ProgramAttendanceReport> programAttendanceReport(
+  Ref ref,
+  String programId,
+) async {
+  final accountId = _watchWorkAccount(ref);
+  final result = await readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () =>
+        ref.read(programWorkRepositoryProvider).getAttendanceReport(programId),
   );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;
