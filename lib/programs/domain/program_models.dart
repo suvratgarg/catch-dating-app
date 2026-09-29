@@ -8,6 +8,7 @@ library;
 part 'program_access_models.dart';
 part 'program_door_models.dart';
 part 'program_workspace_models.dart';
+part 'program_attendance_models.dart';
 
 enum TravelLegReadiness {
   expected,
@@ -471,9 +472,8 @@ class ProgramHotelInbound {
   final String? nextExpectedCursor;
 }
 
-/// Counts-only overview rows for stakeholderViewer staff — ids and
-/// headcounts, never names. Function rows key on functionId so the screen
-/// joins names from the work-access payload.
+/// Guest-id exception sets for one function — the lists a
+/// reconciliationViewer works through by hand. Guest ids only, no PII.
 class ProgramFunctionCounts {
   const ProgramFunctionCounts({
     required this.functionId,

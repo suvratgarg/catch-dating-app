@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "organizer-1",
+  "catalogVersion": 1,
+  "revision": 3,
+  "grants": [
+    {
+      "grantId": "grant-1",
+      "sku": "wedding_pro",
+      "skuLabel": "Wedding Pro",
+      "unit": "program",
+      "quantityTotal": 1,
+      "quantityConsumed": 0,
+      "quantityRemaining": 1,
+      "validFromMillis": 1760000000000,
+      "validUntilMillis": 1800000000000,
+      "source": "manualInvoice",
+      "active": true,
+      "revoked": false
+    }
+  ],
+  "meters": {
+    "flightDaysUsed": 88,
+    "waConversationsUsed": 1240
+  }
+}

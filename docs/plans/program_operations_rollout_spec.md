@@ -218,7 +218,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
-| R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |
+| R11 | Reconciliation/export, per-function attendance report, retention | **in review #460** — callable + report screen + CSV export | retention policy |
 | R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
 Merge-ready now (no ordering dependency): R9's entitlements PR (#455).

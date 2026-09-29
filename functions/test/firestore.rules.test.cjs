@@ -1112,6 +1112,70 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps organizer entitlement state server-only", async () => {
+      await seed(["organizerTeamMemberships", "organizer-1_manager-1"], {
+        organizerId: "organizer-1",
+        uid: "manager-1",
+        role: "manager",
+        status: "active",
+        createdAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+        removedAt: null,
+      });
+      await seed(["organizerEntitlements", "organizer-1"], {
+        schemaVersion: 1,
+        organizerId: "organizer-1",
+        grants: [],
+        meters: {
+          flightDaysUsed: 0,
+          waConversationsUsed: 0,
+          periodStartsAt:
+            Timestamp.fromDate(new Date("2026-09-01T00:00:00.000Z")),
+        },
+        revision: 1,
+        createdAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+        updatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+      });
+      await seed(["organizerEntitlementReceipts", "organizer-1_op-1"], {
+        schemaVersion: 1,
+        receiptId: "organizer-1_op-1",
+        operationId: "op-1",
+        organizerId: "organizer-1",
+        actorUid: "admin-1",
+        action: "grant",
+        contentHash: "sha256:abc123",
+        resultRevision: 1,
+        grantId: "grant-1",
+        createdAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+        expiresAt: Timestamp.fromDate(new Date("2026-10-01T10:00:00.000Z")),
+      });
+
+      const clients = [
+        testEnv.unauthenticatedContext().firestore(),
+        authedDb("guest-1"),
+        authedDb("manager-1"),
+      ];
+      for (const db of clients) {
+        await assertFails(getDoc(doc(
+          db, "organizerEntitlements", "organizer-1")));
+        await assertFails(getDocs(query(
+          collection(db, "organizerEntitlements"),
+          where("organizerId", "==", "organizer-1"),
+        )));
+        await assertFails(setDoc(doc(
+          db, "organizerEntitlements", "organizer-1"), {
+          organizerId: "organizer-1",
+          grants: [],
+        }));
+        await assertFails(getDoc(doc(
+          db, "organizerEntitlementReceipts", "organizer-1_op-1")));
+        await assertFails(setDoc(doc(
+          db, "organizerEntitlementReceipts", "organizer-1_op-2"), {
+          organizerId: "organizer-1",
+          action: "grant",
+        }));
+      }
+    });
+
     it("keeps organizer form state server-only", async () => {
       await seed(["organizerForms", "form-1"], {
         organizerId: "organizer-1",

@@ -196,6 +196,9 @@ class ProgramWorkPageBody extends StatelessWidget {
         access.isManager ||
         access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) ||
         access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
+    final canSeeAttendance =
+        access.isManager ||
+        access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
     final canSeeCommunications = access.hasDuty(
       ProgramStaffDuty.communications,
       now: now,
@@ -444,13 +447,33 @@ class ProgramWorkPageBody extends StatelessWidget {
                 ),
               ),
             ),
+          if (canSeeAttendance)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkAttendanceTitle,
+                subtitle: context.l10n.programsWorkAttendanceSubtitle,
+                child: CatchFieldRow.standard(
+                  leading: Icon(CatchIcons.factCheckOutlined),
+                  body: Text(
+                    context.l10n.programsWorkAttendanceOpen,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  onTap: () => context.pushNamed(
+                    Routes.hostWorkAttendanceReportScreen.name,
+                    pathParameters: {'programId': access.programId},
+                  ),
+                ),
+              ),
+            ),
           if (arrivalsStations.isEmpty &&
               dispatchStations.isEmpty &&
               hotels.isEmpty &&
               functions.isEmpty &&
               !canSeeLedger &&
-              !canSeeCommunications &&
-              !canSeeCounts)
+              !canSeeCounts &&
+              !canSeeAttendance &&
+              !canSeeCommunications)
             CatchSectionListItem(
               child: CatchEmptyState(
                 icon: CatchIcons.lockOutline,

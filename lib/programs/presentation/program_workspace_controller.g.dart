@@ -49,7 +49,7 @@ final class ProgramWorkspaceControllerProvider
 }
 
 String _$programWorkspaceControllerHash() =>
-    r'ee8a44d126e3e2ef247cf2ce18840b52911b1899';
+    r'bd18acc265523b506acbbae6b50807dafd20ab58';
 
 /// Organizer workspace mutations for the program screens. Widgets go through
 /// this controller rather than reaching into repository providers directly.

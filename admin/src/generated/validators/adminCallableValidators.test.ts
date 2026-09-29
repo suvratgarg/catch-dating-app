@@ -32,6 +32,8 @@ describe("generated admin callable validators", () => {
         "adminReviewEventMessagingBudget",
         "adminDecideEventMessagingBudget",
         "adminApplyEventMessagingBudget",
+        "adminGrantOrganizerEntitlement",
+        "adminRevokeOrganizerEntitlementGrant",
       ])
     );
     expect(adminCallableValidationCoverage.strictResponses).toEqual(
@@ -123,6 +125,22 @@ describe("generated admin callable validators", () => {
         noCatchHostingImplied: true,
       },
     }],
+    ["entitlement grant", "adminGrantOrganizerEntitlement", {
+      organizerId: "example-organizer",
+      operationId: "example-grant-operation-0001",
+      sku: "wedding_pro",
+      unit: "program",
+      quantityTotal: 1,
+      source: "manualInvoice",
+      receiptRef: "invoice-2026-0042",
+      note: "Manual invoice INV-2026-0042 reconciled.",
+    }],
+    ["entitlement revoke", "adminRevokeOrganizerEntitlementGrant", {
+      organizerId: "example-organizer",
+      operationId: "example-revoke-operation-0001",
+      grantId: "grant_example-grant-operation-0001",
+      reason: "Invoice INV-2026-0042 was reversed before activation.",
+    }],
   ])("accepts a strict high-risk %s request", (_family, callable, payload) => {
     expect(() => validateAdminCallableRequest(callable, payload)).not.toThrow();
   });
@@ -145,6 +163,13 @@ describe("generated admin callable validators", () => {
     }],
     ["unknown marketing draft", "adminCreateMarketingContentDraft", {
       draftType: "publish_now",
+    }],
+    ["entitlement grant without operation id", "adminGrantOrganizerEntitlement", {
+      organizerId: "example-organizer",
+      sku: "wedding_pro",
+      unit: "program",
+      quantityTotal: 1,
+      source: "manualInvoice",
     }],
   ])("rejects a strict high-risk %s request", (_family, callable, payload) => {
     expect(() => validateAdminCallableRequest(callable, payload)).toThrow(

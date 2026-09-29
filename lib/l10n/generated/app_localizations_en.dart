@@ -21047,6 +21047,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkCountsOpen => 'Open counts overview';
 
   @override
+  String get programsWorkAttendanceTitle => 'Attendance report';
+
+  @override
+  String get programsWorkAttendanceSubtitle =>
+      'RSVP truth vs door truth per function, with exception queues.';
+
+  @override
+  String get programsWorkAttendanceOpen => 'Open attendance report';
+
+  @override
   String get programsWorkCommsTitle => 'Communications';
 
   @override
@@ -21549,6 +21559,93 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsTripCurrentNames =>
       'Guest names reflect current records; no dispatch snapshot was saved.';
+
+  @override
+  String get programsAttendanceTitle => 'Attendance report';
+
+  @override
+  String get programsAttendanceSubtitle => 'RSVP vs door per function';
+
+  @override
+  String get programsAttendanceRefresh => 'Refresh report';
+
+  @override
+  String get programsAttendanceExport => 'Export CSV';
+
+  @override
+  String get programsAttendanceExporting => 'Exporting…';
+
+  @override
+  String get programsAttendanceProgramTitle => 'Program totals';
+
+  @override
+  String programsAttendanceProgramSubtitle({required String time}) {
+    return 'As of $time';
+  }
+
+  @override
+  String get programsAttendanceFunctionsTitle => 'Per function';
+
+  @override
+  String get programsAttendanceFunctionsSubtitle =>
+      'Invited vs attended vs checked in, with exception queues.';
+
+  @override
+  String get programsAttendanceEmpty => 'No functions on this program yet.';
+
+  @override
+  String programsAttendanceInvited({required int count}) {
+    return '$count invited';
+  }
+
+  @override
+  String programsAttendanceAttending({required int count}) {
+    return '$count attending';
+  }
+
+  @override
+  String programsAttendanceCheckedIn({required int count}) {
+    return '$count checked in';
+  }
+
+  @override
+  String programsAttendanceNoShow({required int count}) {
+    return '$count no-show';
+  }
+
+  @override
+  String programsAttendanceRowCounts({
+    required int invited,
+    required int attending,
+    required int checkedIn,
+  }) {
+    return '$invited invited · $attending attending · $checkedIn checked in';
+  }
+
+  @override
+  String programsAttendanceWalkIns({required int count}) {
+    return '$count walk-in not on the invite list';
+  }
+
+  @override
+  String programsAttendanceNoResponseException({required int count}) {
+    return '$count invited, no response';
+  }
+
+  @override
+  String programsAttendanceDeclinedCheckedIn({required int count}) {
+    return '$count declined but arrived';
+  }
+
+  @override
+  String programsAttendanceWalkInException({required int count}) {
+    return '$count walk-in to reconcile';
+  }
+
+  @override
+  String programsAttendanceShareSubject({required String title}) {
+    return '$title attendance report';
+  }
 
   @override
   String get programsStakeholderTitle => 'Program counts';

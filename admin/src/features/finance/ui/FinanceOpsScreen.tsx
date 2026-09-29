@@ -46,7 +46,12 @@ import {
   type MessagingBudgetController,
   useMessagingBudgetController,
 } from "../controllers/useMessagingBudgetController";
+import {
+  type OrganizerEntitlementController,
+  useOrganizerEntitlementController,
+} from "../controllers/useOrganizerEntitlementController";
 import {renderMessagingBudgetPanel} from "./messagingBudgetPanel";
+import {renderOrganizerEntitlementPanel} from "./organizerEntitlementPanel";
 
 const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
   {label: "All issues", value: "all"},
@@ -56,6 +61,7 @@ const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
 ];
 
 export function FinanceOpsScreen({
+  actorUid,
   adminRoles,
   onBackToList,
   onError,
@@ -63,6 +69,7 @@ export function FinanceOpsScreen({
   onSelectIssueId,
   selectedIssueId = null,
 }: {
+  actorUid: string;
   adminRoles: string[];
   onBackToList?: () => void;
   onError: (message: string | null) => void;
@@ -80,11 +87,17 @@ export function FinanceOpsScreen({
     onError,
     onNotice,
   });
+  const organizerEntitlementController = useOrganizerEntitlementController({
+    actorUid,
+    onError,
+    onNotice,
+  });
   return (
     <FinanceOpsWorkspace
       controller={controller}
       messagingBudgetController={messagingBudgetController}
       onBackToList={onBackToList}
+      organizerEntitlementController={organizerEntitlementController}
     />
   );
 }
@@ -93,10 +106,12 @@ export function FinanceOpsWorkspace({
   controller,
   messagingBudgetController,
   onBackToList,
+  organizerEntitlementController,
 }: {
   controller: FinanceOpsController;
   messagingBudgetController?: MessagingBudgetController;
   onBackToList?: () => void;
+  organizerEntitlementController?: OrganizerEntitlementController;
 }) {
   if (controller.selectedIssueId) {
     return (
@@ -111,6 +126,8 @@ export function FinanceOpsWorkspace({
       <FinanceSourceAlerts controller={controller} />
       {messagingBudgetController ?
         renderMessagingBudgetPanel(messagingBudgetController) : null}
+      {organizerEntitlementController ?
+        renderOrganizerEntitlementPanel(organizerEntitlementController) : null}
       <AdminMetricGrid ariaLabel="Finance state">
         <AdminMetricCard
           caption="Current capped overview preview"

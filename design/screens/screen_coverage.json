@@ -473,6 +473,13 @@
       "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
     },
     {
+      "routeId": "hostWorkAttendanceReportScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.attendance_report",
+      "reason": "Covered by screen.programs.attendance_report as the attendance reconciliation surface."
+    },
+    {
       "routeId": "hostWorkCountsScreen",
       "status": "contracted",
       "priority": "P1",
