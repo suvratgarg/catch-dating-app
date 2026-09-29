@@ -90,6 +90,10 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
     runId: requireString(data.runId, "runId"),
     momentId: requireString(data.momentId, "momentId"),
     dueAtMillis: readInt(data.dueAtMillis, 0),
+    ...(typeof data.nominalDueAtMillis === "number" ?
+      {nominalDueAtMillis: readInt(data.nominalDueAtMillis, 0)} : {}),
+    ...(typeof data.expiresAtMillis === "number" ?
+      {expiresAtMillis: readInt(data.expiresAtMillis, 0)} : {}),
     ...(data.occurrenceVersion === 2 ? {occurrenceVersion: 2 as const} : {}),
     ...(typeof data.plannedWakeAtMillis === "number" ?
       {plannedWakeAtMillis: readInt(data.plannedWakeAtMillis, 0)} : {}),
@@ -126,10 +130,12 @@ export async function loadAnchorFacts(
       scope: {
         startsAtMillis: start,
         endsAtMillis: readTimestamp(data.endTime),
+        // Events have no RSVP deadline; the anchor stays program-only.
         rsvpDeadlineAtMillis: null,
         revision: readInt(data.revision, 0),
         messagingEnabled: true,
         cancelled: data.status !== "active",
+        timeZone: readString(data.timezone) ?? undefined,
         organizerId: readString(data.organizerId) ??
           readString(data.clubId),
       },
@@ -153,12 +159,11 @@ export async function loadAnchorFacts(
     scope: {
       startsAtMillis: startsAt,
       endsAtMillis: readTimestamp(pdata.endsAt),
-      // RSVP deadlines are not a program field yet; the anchor stays
-      // unresolved (missingAnchor) until the contract adds one.
-      rsvpDeadlineAtMillis: null,
+      rsvpDeadlineAtMillis: readTimestamp(pdata.rsvpDeadlineAt),
       revision: readInt(pdata.revision, 0),
       messagingEnabled: capabilities.includes("messaging"),
       cancelled: pdata.status !== "active",
+      timeZone: readString(pdata.timezone) ?? undefined,
       organizerId: readString(pdata.organizerId),
     },
     functions: Object.fromEntries(functions.docs.map((doc) => {
@@ -553,6 +558,8 @@ export function readInitiation(
       anchorKind: data.anchorKind as never,
       anchorId: typeof data.anchorId === "string" ? data.anchorId : null,
       offsetMinutes: readInt(data.offsetMinutes, 0),
+      offsetDays: readInt(data.offsetDays, 0),
+      offsetMonths: readInt(data.offsetMonths, 0),
     };
   case "triggered":
     return {

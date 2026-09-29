@@ -10,7 +10,9 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {logger} from "firebase-functions";
 import {requireAuth} from "../shared/auth";
+import {replanProgramMoments} from "../moments/momentRunner";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -108,6 +110,19 @@ export async function upsertProgramFunctionHandler(
       };
       return document;
     });
+  // Function times/status move every anchored occurrence — replan the
+  // program's armed moments inline. Bounded; the sweep converges the rest.
+  try {
+    const {capped} = await replanProgramMoments(
+      db, data.programId, deps.now().toMillis());
+    if (capped) {
+      logger.warn("Function-upsert replan hit the inline bound",
+        {programId: data.programId, functionId: ref.id});
+    }
+  } catch (error) {
+    logger.warn("Function-upsert replan deferred to sweep",
+      {programId: data.programId, functionId: ref.id, error});
+  }
   return {entityId: ref.id, revision, alreadyApplied: false};
 }
 

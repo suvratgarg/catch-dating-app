@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
@@ -75,7 +76,11 @@ import {
   type MomentDefinition,
   type MomentScope,
 } from "./momentModel";
-import {runManualMoment, type MomentRunnerDeps} from "./momentRunner";
+import {
+  replanMoment,
+  runManualMoment,
+  type MomentRunnerDeps,
+} from "./momentRunner";
 import {buildMomentRunnerDeps} from "./momentWiring";
 
 /**
@@ -295,6 +300,17 @@ async function lifecycleWrite(
   await ref.set(
     momentToDocument(result.moment, deps.nowMillis(), false),
     {merge: true});
+  // Lifecycle transitions replan immediately — a fresh arm never waits
+  // for the sweep cursor, and pause/revise supersede pending runs now
+  // rather than leaving them planned until the scan reaches the moment.
+  // Best-effort: the sweep converges whatever this call misses.
+  try {
+    await replanMoment(db, result.moment, deps.nowMillis());
+  } catch (error) {
+    logger.warn("Moment lifecycle replan deferred to sweep", {
+      momentId: result.moment.momentId, error,
+    });
+  }
   return {moment: result.moment};
 }
 
@@ -381,6 +397,10 @@ function momentToWire(
       anchorId: initiation.kind === "anchored" ? initiation.anchorId : null,
       offsetMinutes: initiation.kind === "anchored" ?
         initiation.offsetMinutes : null,
+      offsetDays: initiation.kind === "anchored" ?
+        (initiation.offsetDays ?? 0) : null,
+      offsetMonths: initiation.kind === "anchored" ?
+        (initiation.offsetMonths ?? 0) : null,
       triggerKind: initiation.kind === "triggered" ?
         initiation.triggerKind : null,
       functionId: initiation.kind === "triggered" ?

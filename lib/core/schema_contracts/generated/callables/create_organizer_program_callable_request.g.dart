@@ -14,6 +14,7 @@ final class CreateOrganizerProgramCallableRequest {
     required this.timezone,
     required this.startsAtMillis,
     required this.endsAtMillis,
+    this.rsvpDeadlineAtMillis,
     required this.capabilities,
     this.transportSettings,
   });
@@ -24,6 +25,7 @@ final class CreateOrganizerProgramCallableRequest {
   final String timezone;
   final int startsAtMillis;
   final int endsAtMillis;
+  final int? rsvpDeadlineAtMillis;
   final List<String> capabilities;
   final Map<String, Object?>? transportSettings;
 
@@ -34,6 +36,7 @@ final class CreateOrganizerProgramCallableRequest {
     'timezone': timezone,
     'startsAtMillis': startsAtMillis,
     'endsAtMillis': endsAtMillis,
+    'rsvpDeadlineAtMillis': ?rsvpDeadlineAtMillis,
     'capabilities': capabilities,
     'transportSettings': ?transportSettings,
   };

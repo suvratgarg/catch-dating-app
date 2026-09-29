@@ -36,6 +36,18 @@ export const organizerMomentRunDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "nominalDueAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals."
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Hard stop on firing this run; a deferred run past expiry skips instead of sending late."
+    },
     "occurrenceVersion": {
       "type": "integer",
       "enum": [

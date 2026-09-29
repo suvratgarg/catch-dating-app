@@ -12,6 +12,10 @@ export interface UpdateOrganizerProgramCallablePayload {
   timezone?: string;
   startsAtMillis?: number;
   endsAtMillis?: number;
+  /**
+   * RSVP deadline anchor for Moments; null clears it.
+   */
+  rsvpDeadlineAtMillis?: number | null;
   status?: "draft" | "active" | "completed" | "archived";
   /**
    * @maxItems 8

@@ -40,6 +40,11 @@ export type MomentInitiation = {
   anchorKind: MomentAnchorKind;
   anchorId: string | null;
   offsetMinutes: number;
+  /** Calendar-month shift applied first, in the scope's timezone; the local
+   *  wall-clock time is preserved and the day clamps to the target month. */
+  offsetMonths?: number;
+  /** Calendar-day shift applied after months, same wall-clock semantics. */
+  offsetDays?: number;
 } | {
   kind: "triggered";
   triggerKind: MomentTriggerKind;
@@ -142,6 +147,9 @@ export interface AnchorFacts {
     revision: number;
     messagingEnabled: boolean;
     cancelled: boolean;
+    /** IANA zone for calendar offsets (offsetDays/offsetMonths). Optional;
+     *  the planner falls back to the product default zone when absent. */
+    timeZone?: string;
     /** Owning organizer; staffAttention sends stamp it for the
      *  attention-projection source query. Optional so program docs that
      *  predate the field still load. */
@@ -171,7 +179,15 @@ export type RunStatus =
 export interface RunRecord {
   runId: string;
   momentId: string;
+  /** Next wake/attempt time; mutable — quiet-hours, travel leads, and
+   *  delivery retries move it without changing occurrence identity. */
   dueAtMillis: number;
+  /** Immutable scheduled occurrence time (anchor plus offsets); the same
+   *  instant runId encodes, kept inspectable rather than string-decoded. */
+  nominalDueAtMillis?: number;
+  /** Hard stop: a run whose wake lands past expiry skips instead of
+   *  sending late. Absent on runs planned before the field existed. */
+  expiresAtMillis?: number;
   /** New time-based identity: runId uses nominal due, not mutable wake. */
   occurrenceVersion?: 2;
   /** Initial cohort wake, separate from mutable quiet/recipient deferral. */
@@ -213,11 +229,20 @@ const AUDIENCE_SCOPES: Readonly<Record<MomentAudienceKind,
     staffDuty: ["event", "program"],
   };
 
+/**
+ * Audiences that resolve phone endpoints — all program-scoped. A
+ * sendTemplate action needs one; any other pairing could never reach a
+ * WhatsApp recipient and previously died at fire time.
+ */
+const PHONE_AUDIENCES: ReadonlySet<MomentAudienceKind> = new Set([
+  "subject", "functionGuests", "households",
+]);
+
 export type MomentInvariantViolation =
   "subjectRequiresTriggered" | "triggeredRequiresProgramScope" |
     "anchorNotLegalForScope" | "audienceNotLegalForScope" |
     "audienceSenseMismatch" | "armedRequiresApproval" |
-    "manualRequiresAudienceSense";
+    "manualRequiresAudienceSense" | "sendTemplateRequiresPhoneAudience";
 
 /**
  * Returns every axis invariant the definition violates. Empty means valid.
@@ -227,9 +252,13 @@ export function validateMomentDefinition(
   moment: MomentDefinition,
 ): MomentInvariantViolation[] {
   const violations: MomentInvariantViolation[] = [];
-  const {initiation, audience, scope, sense} = moment;
+  const {initiation, audience, scope, sense, action} = moment;
   if (audience.kind === "subject" && initiation.kind !== "triggered") {
     violations.push("subjectRequiresTriggered");
+  }
+  if (action.kind === "sendTemplate" &&
+      !PHONE_AUDIENCES.has(audience.kind)) {
+    violations.push("sendTemplateRequiresPhoneAudience");
   }
   if (initiation.kind === "triggered" && scope.kind !== "program") {
     violations.push("triggeredRequiresProgramScope");

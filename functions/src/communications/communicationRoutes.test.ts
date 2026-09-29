@@ -8,9 +8,11 @@ test("the route registry covers every supported communication route", () => {
     "catchEventAnnouncement",
     "catchEventRcs",
     "catchEventSms",
+    "catchProgramActivity",
     "catchWhatsapp",
     "organizerEventWhatsapp",
     "organizerFollowerUpdate",
+    "organizerProgramWhatsapp",
     "organizerWhatsappCampaign",
     "personalEmailHandoff",
     "personalWhatsappHandoff",
@@ -57,6 +59,8 @@ test("every route declares audience, reply, and scheduling semantics", () => {
       "eventRoster",
       "eventRoster",
       "eventRoster",
+      "programGuests",
+      "programGuests",
     ],
   );
   assert.equal(communicationRoutes.catchChat.supportsReplies, true);
@@ -89,3 +93,21 @@ test("automated event routes preserve service and sender boundaries", () => {
   assert.equal(communicationRoutes.catchEventSms.senderIdentity,
     "catchPlatform");
 });
+
+test("program routes keep separate authority from event and campaign routes",
+  () => {
+    const program = communicationRoutes.organizerProgramWhatsapp;
+    const event = communicationRoutes.organizerEventWhatsapp;
+    const campaign = communicationRoutes.organizerWhatsappCampaign;
+    assert.equal(program.transport, "whatsapp");
+    assert.equal(program.senderIdentity, "organizerManaged");
+    assert.equal(program.deliveryMode, "programService");
+    assert.equal(program.audienceScope, "programGuests");
+    assert.equal(program.consentScope, "programService");
+    assert.notEqual(program.consentScope, event.consentScope);
+    assert.notEqual(program.consentScope, campaign.consentScope);
+    assert.equal(communicationRoutes.catchProgramActivity.transport,
+      "catchApp");
+    assert.equal(communicationRoutes.catchProgramActivity.observability,
+      "catchActivity");
+  });

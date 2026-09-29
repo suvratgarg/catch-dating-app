@@ -132,6 +132,63 @@ test("arm records approval once; re-arm is rejected", async () => {
     /notArmable/);
 });
 
+test("calendar offsets round-trip through upsert and wire", async () => {
+  const db = new FakeFirestore({});
+  const {deps} = makeDeps(db);
+  const created = await upsertOrganizerMomentHandler(deps, {
+    actorUid: "mgr",
+    payload: {...validPayload, initiation: {
+      kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+      offsetMinutes: -30, offsetDays: -2, offsetMonths: 0,
+    }},
+  });
+  const initiation = created.moment.initiation;
+  assert.equal(initiation.kind, "anchored");
+  if (initiation.kind === "anchored") {
+    assert.equal(initiation.offsetDays, -2);
+    assert.equal(initiation.offsetMonths, 0);
+    assert.equal(initiation.offsetMinutes, -30);
+  }
+});
+
+test("arming replans inline; pausing supersedes without a sweep",
+  async () => {
+    const db = new FakeFirestore({});
+    db.setDoc("organizerPrograms/prog", {
+      organizerId: "org-1", kind: "wedding", title: "P",
+      timezone: "Asia/Kolkata",
+      startsAt: ts(1_000_000), endsAt: ts(9_000_000),
+      status: "active", capabilities: ["messaging"],
+      createdBy: "mgr", createdAt: ts(0), updatedAt: ts(0), revision: 3,
+    });
+    db.setDoc("programFunctions/sangeet", {
+      programId: "prog", organizerId: "org-1", status: "scheduled",
+      startsAt: ts(2_000_000), endsAt: ts(2_400_000), revision: 7,
+    });
+    const {deps} = makeDeps(db);
+    const created = await upsertOrganizerMomentHandler(deps, {
+      actorUid: "mgr", payload: {...validPayload},
+    });
+    const armed = await armOrganizerMomentHandler(deps, {
+      actorUid: "mgr", scope: programScope,
+      momentId: created.moment.momentId,
+    });
+    // No sweep ran — the lifecycle write planned the occurrence itself.
+    const run = await db.doc(
+      `organizerMomentRuns/${armed.moment.momentId}_7_1100000`).get();
+    assert.equal((run.data() as Record<string, unknown>).status,
+      "planned");
+    // Pausing supersedes the pending run in the same write path.
+    await pauseOrganizerMomentHandler(deps, {
+      actorUid: "mgr", scope: programScope,
+      momentId: armed.moment.momentId,
+    });
+    const paused = await db.doc(
+      `organizerMomentRuns/${armed.moment.momentId}_7_1100000`).get();
+    assert.equal((paused.data() as Record<string, unknown>).status,
+      "superseded");
+  });
+
 test("editing an armed moment drops it back to draft", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);
@@ -208,7 +265,7 @@ test("runOrganizerMomentHandler requires armed + requestKey, fires once",
       localDayKey: () => "d", localMinuteOfDay: () => 720,
       quietHoursFor: () => null, dailyCapFor: () => 0,
       pushCopyFor: async () => ({title: "t", body: "b"}),
-      sendTemplateToPhone: async () => {},
+      deliverProgramReminder: async () => ({kind: "sent" as const}),
       sendPushToUid: async () => {}, writeStaffAttention: async () => {},
       loadConsentFacts: async () => ({}),
     };

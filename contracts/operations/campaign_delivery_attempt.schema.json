@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/campaign_delivery_attempt.schema.json",
+  "title": "CampaignDeliveryAttempt",
+  "$ref": "../shared/campaign_delivery_messaging.schema.json#/definitions/DeliveryAttempt"
+}

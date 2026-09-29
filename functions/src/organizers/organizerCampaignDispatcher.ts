@@ -2,10 +2,13 @@
   organizerId:ASCENDING,
   endpointHash:ASCENDING,
   acceptedAt:DESCENDING
+)
+  firestore-index: organizerCampaigns (
+  status:ASCENDING,
+  leaseExpiresAt:ASCENDING
 ) */
-import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
-import * as crypto from "node:crypto";
 import * as admin from "firebase-admin";
+import * as crypto from "node:crypto";
 import * as logger from "firebase-functions/logger";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
@@ -16,16 +19,8 @@ import {
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import type {
-  EventDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
-  OrganizerCommunicationPreferenceDocument,
-  OrganizerContactChannelStateDocument,
-  OrganizerContactDocument,
-  OrganizerMessageTemplateDocument,
-  OrganizerSenderConnectionDocument,
-  ProgramGuestDocument,
-  ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerCampaignActionCallablePayload} from
   "../shared/generated/organizerCampaignActionCallablePayload";
@@ -34,27 +29,17 @@ import type {OrganizerCampaignCallableResponse} from
 import {
   validateOrganizerCampaignActionCallablePayload,
 } from "../shared/generated/validators/organizerCampaignActionInput";
-import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from
-  "../shared/organizerCommunicationPreferences";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
-  campaignVariables,
   getOrganizerCampaignReportHandler,
 } from "./organizerCampaigns";
 import {
-  classifyMetaError,
-  hashCanonical,
-  hashEndpoint,
-  organizerCampaignFrequencyCapMillis,
-  organizerContactChannelStateId,
-} from "./organizerCampaignModel";
-import {organizerWhatsappCampaignRoute} from
-  "../communications/communicationRoutes";
+  CampaignDeliveryWorker,
+  campaignMessageIdFor,
+  markRecipientFailed,
+} from "./campaignDeliveryWorker";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import {
@@ -65,14 +50,13 @@ import {
   organizerWhatsappAccessTokens,
 } from "./organizerMessagingSetup";
 import {
-  MetaProviderError,
   MetaWhatsappProvider,
   OrganizerTokenStore,
-  metaTemplateFromDocument,
 } from "./organizerWhatsappProvider";
 
 const campaignLeaseMillis = 3 * 60 * 1000;
-const recipientLeaseMillis = 60 * 1000;
+const dispatchPageSize = 100;
+const recoveryPageSize = 100;
 
 interface DispatcherDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -95,17 +79,6 @@ const defaultDeps: DispatcherDeps = {
     }),
   now: () => admin.firestore.Timestamp.now(),
 };
-
-interface ClaimedRecipient {
-  recipientId: string;
-  recipient: OrganizerCampaignRecipientDocument;
-  campaign: OrganizerCampaignDocument;
-  connection: OrganizerSenderConnectionDocument;
-  template: OrganizerMessageTemplateDocument;
-  event: EventDocument | null;
-  inviteToken: string | null;
-  variables: Record<string, string>;
-}
 
 export async function dispatchOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
@@ -134,6 +107,13 @@ export async function dispatchOrganizerCampaignHandler(
   return getOrganizerCampaignReportHandler(request, deps);
 }
 
+/**
+ * Campaign orchestration: claim the campaign lease, then drive each frozen
+ * recipient row through the shared delivery core. Per-recipient authority
+ * rechecks, single-executor claims, provider ambiguity, and receipt
+ * reconciliation all live in `CampaignDeliveryWorker` / the outbox — this
+ * function only owns campaign-level scheduling and report finalization.
+ */
 export async function dispatchCampaign(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
@@ -165,8 +145,11 @@ export async function dispatchCampaign(params: {
         "Campaign changed. Refresh before sending.",
       );
     }
+    // "blocked" re-enters here deliberately: it is the state a campaign
+    // lands in when rows are still pending/sending after a pass, and a
+    // re-run is exactly how interrupted or unknown-outcome rows converge.
     if (
-      !["approved", "scheduled", "resolving", "sending"].includes(
+      !["approved", "scheduled", "resolving", "sending", "blocked"].includes(
         campaign.status,
       )
     ) {
@@ -201,32 +184,81 @@ export async function dispatchCampaign(params: {
       revision: campaign.revision + 1,
     });
   });
-  const recipients = await params.db
-    .collection("organizerCampaignRecipients")
-    .where("campaignId", "==", params.campaignId)
-    .where("status", "==", "pending")
-    .orderBy(admin.firestore.FieldPath.documentId())
-    .limit(100)
-    .get();
-  for (const recipientDoc of recipients.docs) {
-    const claimed = await claimRecipient({
-      db: params.db,
-      organizerId: params.organizerId,
-      campaignId: params.campaignId,
-      recipientId: recipientDoc.id,
-      campaignLeaseOwner: leaseOwner,
-      deps: params.deps,
-    });
-    if (!claimed) continue;
-    await deliverRecipient(claimed, params.deps).catch((error) =>
-      recordDeliveryFailure(params.db, claimed, error, params.deps.now()),
-    );
-    await campaignRef.update({
+  const campaignSnap = await campaignRef.get();
+  const campaign = campaignSnap.data() as
+    | OrganizerCampaignDocument
+    | undefined;
+  if (!campaign || campaign.leaseOwner !== leaseOwner) return;
+  const worker = new CampaignDeliveryWorker(
+    params.db,
+    params.deps.provider(),
+    params.deps.tokenStore,
+    () => params.deps.now().toMillis(),
+  );
+  const refreshLease = () =>
+    campaignRef.update({
       leaseExpiresAt: admin.firestore.Timestamp.fromMillis(
         params.deps.now().toMillis() + campaignLeaseMillis,
       ),
       updatedAt: params.deps.now(),
     });
+  const recipients = await params.db
+    .collection("organizerCampaignRecipients")
+    .where("campaignId", "==", params.campaignId)
+    .where("status", "==", "pending")
+    .orderBy(admin.firestore.FieldPath.documentId())
+    .limit(dispatchPageSize)
+    .get();
+  for (const recipientDoc of recipients.docs) {
+    await enqueueAndDispatch(worker, campaign,
+      params.campaignId, recipientDoc.id)
+      .catch((error) => {
+        logger.error("Organizer campaign recipient dispatch failed", {
+          organizerId: params.organizerId,
+          campaignId: params.campaignId,
+          recipientId: recipientDoc.id,
+          error,
+        });
+      });
+    await refreshLease();
+  }
+  // Recovery: rows claimed by an interrupted executor sit `sending` with an
+  // expired lease. The outbox record decides whether evidence, a retry, or
+  // a terminal failure applies — never a blind resend.
+  const stalled = await params.db
+    .collection("organizerCampaignRecipients")
+    .where("campaignId", "==", params.campaignId)
+    .where("status", "==", "sending")
+    .orderBy(admin.firestore.FieldPath.documentId())
+    .limit(recoveryPageSize)
+    .get();
+  for (const recipientDoc of stalled.docs) {
+    const recipient = recipientDoc.data() as
+      OrganizerCampaignRecipientDocument;
+    if (
+      recipient.leaseExpiresAt &&
+      recipient.leaseExpiresAt.toMillis() > params.deps.now().toMillis()
+    ) {
+      continue;
+    }
+    const messageId = campaignMessageIdFor(
+      params.organizerId, params.campaignId, recipientDoc.id);
+    const record = await worker.get(messageId);
+    if (!record) {
+      // A `sending` row with no outbox record predates the durable path;
+      // nothing can prove whether the provider was reached — fail closed.
+      await markRecipientFailed(params.db, params.campaignId,
+        recipientDoc.id, null, "unknown", params.deps.now().toMillis());
+      continue;
+    }
+    await worker.dispatch(messageId).catch((error) =>
+      logger.error("Organizer campaign recovery dispatch failed", {
+        organizerId: params.organizerId,
+        campaignId: params.campaignId,
+        recipientId: recipientDoc.id,
+        error,
+      }));
+    await refreshLease();
   }
   await finishDispatch(
     params.db,
@@ -236,377 +268,16 @@ export async function dispatchCampaign(params: {
   );
 }
 
-async function claimRecipient(params: {
-  db: FirebaseFirestore.Firestore;
-  organizerId: string;
-  campaignId: string;
-  recipientId: string;
-  campaignLeaseOwner: string;
-  deps: DispatcherDeps;
-}): Promise<ClaimedRecipient | null> {
-  const now = params.deps.now();
-  const recipientLeaseOwner = `recipient-${crypto.randomUUID()}`;
-  let claimed: ClaimedRecipient | null = null;
-  await params.db.runTransaction(async (tx) => {
-    const campaignRef = params.db
-      .collection("organizerCampaigns")
-      .doc(params.campaignId);
-    const recipientRef = params.db
-      .collection("organizerCampaignRecipients")
-      .doc(params.recipientId);
-    const [campaignSnap, recipientSnap] = await Promise.all([
-      tx.get(campaignRef),
-      tx.get(recipientRef),
-    ]);
-    const campaign = campaignSnap.data() as
-      | OrganizerCampaignDocument
-      | undefined;
-    const recipient = recipientSnap.data() as
-      | OrganizerCampaignRecipientDocument
-      | undefined;
-    if (
-      !campaign ||
-      !recipient ||
-      campaign.organizerId !== params.organizerId ||
-      recipient.campaignId !== params.campaignId ||
-      recipient.organizerId !== params.organizerId ||
-      recipient.status !== "pending" ||
-      campaign.leaseOwner !== params.campaignLeaseOwner ||
-      !campaign.leaseExpiresAt ||
-      campaign.leaseExpiresAt.toMillis() <= now.toMillis()
-    ) {
-      return;
-    }
-    const program = recipient.programRecipient ?? null;
-    const contactRef = recipient.contactId ?
-      params.db.collection("organizerContacts").doc(recipient.contactId) :
-      null;
-    const contactSnap = contactRef ? await tx.get(contactRef) : null;
-    const contact = contactSnap?.data() as
-      | OrganizerContactDocument
-      | undefined;
-    const preferenceRef = contact?.linkedUid ?
-      params.db
-        .collection("organizerCommunicationPreferences")
-        .doc(
-          organizerCommunicationPreferenceId(
-            params.organizerId,
-            contact.linkedUid,
-          ),
-        ) :
-      null;
-    const channelRef = recipient.contactId ?
-      params.db
-        .collection("organizerContactChannelStates")
-        .doc(
-          organizerContactChannelStateId(
-            params.organizerId,
-            recipient.contactId,
-          ),
-        ) :
-      null;
-    const connectionRef = params.db
-      .collection("organizerSenderConnections")
-      .doc(campaign.connectionId);
-    const templateRef = params.db
-      .collection("organizerMessageTemplates")
-      .doc(campaign.templateId);
-    const eventRef = campaign.eventId ?
-      params.db.collection("events").doc(campaign.eventId) :
-      null;
-    const inviteSecretRef = recipient.inviteLinkId ?
-      params.db
-        .collection("eventInviteLinkSecrets")
-        .doc(recipient.inviteLinkId) :
-      null;
-    // Program recipients re-check the endpoint guest, the household's
-    // live messaging consent, and recent sends to the same endpoint —
-    // the program analog of CRM preference/channel state.
-    const endpointGuestRef = program ?
-      params.db.collection("programGuests").doc(program.endpointGuestId) :
-      null;
-    const householdRef = program?.householdId ?
-      params.db.collection("programHouseholds").doc(program.householdId) :
-      null;
-    const endpointHistoryQuery = program && recipient.endpointHash ?
-      params.db.collection("organizerCampaignRecipients")
-        .where("organizerId", "==", params.organizerId)
-        .where("endpointHash", "==", recipient.endpointHash)
-        .orderBy("acceptedAt", "desc")
-        .limit(10) :
-      null;
-    const related = await Promise.all([
-      preferenceRef ? tx.get(preferenceRef) : null,
-      channelRef ? tx.get(channelRef) : null,
-      tx.get(connectionRef),
-      tx.get(templateRef),
-      eventRef ? tx.get(eventRef) : null,
-      inviteSecretRef ? tx.get(inviteSecretRef) : null,
-      endpointGuestRef ? tx.get(endpointGuestRef) : null,
-      householdRef ? tx.get(householdRef) : null,
-      endpointHistoryQuery ? tx.get(endpointHistoryQuery) : null,
-    ]);
-    const preference = related[0]?.data() as
-      | OrganizerCommunicationPreferenceDocument
-      | undefined;
-    const channelState = related[1]?.data() as
-      | OrganizerContactChannelStateDocument
-      | undefined;
-    const connection = related[2].data() as
-      | OrganizerSenderConnectionDocument
-      | undefined;
-    const template = related[3].data() as
-      | OrganizerMessageTemplateDocument
-      | undefined;
-    const event = related[4]?.data() as EventDocument | undefined;
-    const inviteToken =
-      typeof related[5]?.data()?.token === "string" ?
-        (related[5]!.data()!.token as string) :
-        null;
-    const endpointGuest = related[6]?.data() as
-      | ProgramGuestDocument
-      | undefined;
-    const household = related[7]?.data() as
-      | ProgramHouseholdDocument
-      | undefined;
-    const endpointHistory = related[8] ?
-      (related[8] as FirebaseFirestore.QuerySnapshot).docs.map((doc) =>
-        doc.data() as OrganizerCampaignRecipientDocument
-      ) :
-      [];
-    const suppression = program ?
-      programSuppressionReason({
-        organizerId: params.organizerId,
-        campaign,
-        recipient,
-        endpointGuest,
-        household,
-        endpointHistory,
-        connection,
-        template,
-        now,
-      }) :
-      finalSuppressionReason({
-        organizerId: params.organizerId,
-        campaign,
-        recipient,
-        contact,
-        preference,
-        channelState,
-        connection,
-        template,
-        event,
-        inviteToken,
-        now,
-      });
-    if (suppression) {
-      tx.update(recipientRef, {
-        status: "suppressed",
-        exclusionReason: suppression,
-        retryEligible: false,
-        updatedAt: now,
-      });
-      tx.update(campaignRef, {
-        "deliveryCounts.pending": admin.firestore.FieldValue.increment(-1),
-        "deliveryCounts.suppressed": admin.firestore.FieldValue.increment(1),
-        "updatedAt": now,
-      });
-      return;
-    }
-    const variables = campaignVariables(
-      campaign,
-      inviteToken,
-      event ?? null,
-      template?.variableNames ?? [],
-    );
-    if (hashCanonical(variables) !== recipient.renderedVariablesHash) {
-      tx.update(recipientRef, {
-        status: "suppressed",
-        exclusionReason: "providerBlocked",
-        retryEligible: false,
-        updatedAt: now,
-      });
-      tx.update(campaignRef, {
-        "deliveryCounts.pending": admin.firestore.FieldValue.increment(-1),
-        "deliveryCounts.suppressed": admin.firestore.FieldValue.increment(1),
-        "updatedAt": now,
-      });
-      return;
-    }
-    tx.update(recipientRef, {
-      status: "sending",
-      leaseOwner: recipientLeaseOwner,
-      leaseExpiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + recipientLeaseMillis,
-      ),
-      attemptCount: recipient.attemptCount + 1,
-      retryEligible: false,
-      updatedAt: now,
-    });
-    tx.update(campaignRef, {status: "sending", updatedAt: now});
-    claimed = {
-      recipientId: params.recipientId,
-      recipient: {
-        ...recipient,
-        status: "sending",
-        leaseOwner: recipientLeaseOwner,
-      },
-      campaign,
-      connection: connection!,
-      template: template!,
-      event: event ?? null,
-      inviteToken,
-      variables,
-    };
+async function enqueueAndDispatch(
+  worker: CampaignDeliveryWorker,
+  campaign: OrganizerCampaignDocument,
+  campaignId: string,
+  recipientId: string,
+) {
+  const messageId = await worker.enqueueRecipient({
+    campaign, campaignId, recipientId,
   });
-  return claimed;
-}
-
-async function deliverRecipient(
-  claimed: ClaimedRecipient,
-  deps: DispatcherDeps,
-): Promise<void> {
-  const credential = claimed.connection.secretVersionResource;
-  const phoneNumberId = claimed.connection.phoneNumberId;
-  if (!credential || !phoneNumberId || !claimed.recipient.endpointE164) {
-    throw new Error("Sender or recipient endpoint is incomplete.");
-  }
-  await requireAutomationCampaignAuthority(
-    deps.firestore(), claimed.campaign, deps.now().toMillis());
-  const accessToken = await deps.tokenStore.access(credential);
-  const result = await deps.provider().sendTemplate({
-    accessToken,
-    phoneNumberId,
-    toE164: claimed.recipient.endpointE164,
-    template: metaTemplateFromDocument(claimed.template),
-    variables: claimed.variables,
-  });
-  const db = deps.firestore();
-  const now = deps.now();
-  await db.runTransaction(async (tx) => {
-    const recipientRef = db
-      .collection("organizerCampaignRecipients")
-      .doc(claimed.recipientId);
-    const campaignRef = db
-      .collection("organizerCampaigns")
-      .doc(claimed.recipient.campaignId);
-    // Program recipients have no CRM channel-state doc; the send-time
-    // endpoint-history read is their frequency-cap record.
-    const stateRef = claimed.recipient.contactId ?
-      db
-        .collection("organizerContactChannelStates")
-        .doc(
-          organizerContactChannelStateId(
-            claimed.recipient.organizerId,
-            claimed.recipient.contactId,
-          ),
-        ) :
-      null;
-    const [recipientSnap, stateSnap] = await Promise.all([
-      tx.get(recipientRef),
-      stateRef ? tx.get(stateRef) : null,
-    ]);
-    const recipient = recipientSnap.data() as
-      | OrganizerCampaignRecipientDocument
-      | undefined;
-    if (
-      !recipient ||
-      recipient.status !== "sending" ||
-      recipient.leaseOwner !== claimed.recipient.leaseOwner
-    ) {
-      return;
-    }
-    const existingState = stateSnap?.data() as
-      | OrganizerContactChannelStateDocument
-      | undefined;
-    tx.update(recipientRef, {
-      status: "accepted",
-      providerMessageId: result.providerMessageId,
-      acceptedAt: now,
-      leaseOwner: null,
-      leaseExpiresAt: null,
-      updatedAt: now,
-    });
-    if (stateRef && recipient.contactId) {
-      tx.set(
-        stateRef,
-        {
-          organizerId: recipient.organizerId,
-          contactId: recipient.contactId,
-          channel: organizerWhatsappCampaignRoute.transport,
-          endpointHash: recipient.endpointHash,
-          suppressionStatus: existingState?.suppressionStatus ?? "none",
-          suppressionSource: existingState?.suppressionSource ?? null,
-          adminSuppressed: existingState?.adminSuppressed ?? false,
-          campaignAcceptedCount:
-            (existingState?.campaignAcceptedCount ?? 0) + 1,
-          lastCampaignAcceptedAt: now,
-          lastInboundAt: existingState?.lastInboundAt ?? null,
-          lastReplyAt: existingState?.lastReplyAt ?? null,
-          createdAt: existingState?.createdAt ?? now,
-          updatedAt: now,
-        },
-        {merge: false},
-      );
-    }
-    tx.update(campaignRef, {
-      "deliveryCounts.pending": admin.firestore.FieldValue.increment(-1),
-      "deliveryCounts.accepted": admin.firestore.FieldValue.increment(1),
-      "updatedAt": now,
-    });
-  });
-}
-
-async function recordDeliveryFailure(
-  db: FirebaseFirestore.Firestore,
-  claimed: ClaimedRecipient,
-  error: unknown,
-  now: FirebaseFirestore.Timestamp,
-): Promise<void> {
-  const category = classifyMetaError(
-    error instanceof MetaProviderError ? error.providerCode : null,
-  );
-  logger.error("Organizer campaign delivery failed", {
-    organizerId: claimed.recipient.organizerId,
-    campaignId: claimed.recipient.campaignId,
-    recipientId: claimed.recipientId,
-    category,
-    providerCode:
-      error instanceof MetaProviderError ? error.providerCode : null,
-  });
-  await db.runTransaction(async (tx) => {
-    const recipientRef = db
-      .collection("organizerCampaignRecipients")
-      .doc(claimed.recipientId);
-    const campaignRef = db
-      .collection("organizerCampaigns")
-      .doc(claimed.recipient.campaignId);
-    const snap = await tx.get(recipientRef);
-    const recipient = snap.data() as
-      | OrganizerCampaignRecipientDocument
-      | undefined;
-    if (
-      !recipient ||
-      recipient.status !== "sending" ||
-      recipient.leaseOwner !== claimed.recipient.leaseOwner
-    ) {
-      return;
-    }
-    tx.update(recipientRef, {
-      status: "failed",
-      providerErrorCategory: category,
-      retryEligible: false,
-      failedAt: now,
-      leaseOwner: null,
-      leaseExpiresAt: null,
-      updatedAt: now,
-    });
-    tx.update(campaignRef, {
-      "deliveryCounts.pending": admin.firestore.FieldValue.increment(-1),
-      "deliveryCounts.failed": admin.firestore.FieldValue.increment(1),
-      "updatedAt": now,
-    });
-  });
+  return worker.dispatch(messageId);
 }
 
 async function finishDispatch(
@@ -651,160 +322,6 @@ async function finishDispatch(
   });
 }
 
-function finalSuppressionReason(params: {
-  organizerId: string;
-  campaign: OrganizerCampaignDocument;
-  recipient: OrganizerCampaignRecipientDocument;
-  contact: OrganizerContactDocument | undefined;
-  preference: OrganizerCommunicationPreferenceDocument | undefined;
-  channelState: OrganizerContactChannelStateDocument | undefined;
-  connection: OrganizerSenderConnectionDocument | undefined;
-  template: OrganizerMessageTemplateDocument | undefined;
-  event: EventDocument | undefined;
-  inviteToken: string | null;
-  now: FirebaseFirestore.Timestamp;
-}): OrganizerCampaignRecipientDocument["exclusionReason"] {
-  if (!params.contact || params.contact.deletedAt !== null ||
-      params.contact.hiddenAt != null) return "deleted";
-  if (
-    params.contact.identityState !== "verified" ||
-    params.contact.identityConfidence !== "verified" ||
-    !params.contact.linkedUid
-  ) {
-    return "identityUnresolved";
-  }
-  if (
-    !params.contact.phoneE164 ||
-    hashEndpoint(params.contact.phoneE164) !== params.recipient.endpointHash
-  ) {
-    return "invalidEndpoint";
-  }
-  if (!params.preference ||
-      params.preference.organizerId !== params.organizerId ||
-      params.preference.uid !== params.contact.linkedUid) {
-    return "unknownPermission";
-  }
-  const permissionStatus = effectiveOrganizerWhatsappPurposeStatus(
-    params.preference,
-    "marketing",
-    params.contact.phoneE164
-  );
-  if (permissionStatus === "unknown") return "unknownPermission";
-  if (permissionStatus === "optedOut") return "optedOut";
-  if (
-    params.channelState?.adminSuppressed === true
-  ) {
-    return "providerBlocked";
-  }
-  if (
-    params.channelState?.suppressionStatus !== undefined &&
-    params.channelState.suppressionStatus !== "none"
-  ) {
-    return params.channelState.suppressionStatus === "invalidEndpoint" ?
-      "invalidEndpoint" :
-      params.channelState.suppressionStatus === "optedOut" ?
-        "optedOut" :
-        "providerBlocked";
-  }
-  if (
-    params.channelState?.lastCampaignAcceptedAt &&
-    params.now.toMillis() -
-      params.channelState.lastCampaignAcceptedAt.toMillis() <
-      organizerCampaignFrequencyCapMillis
-  ) {
-    return "frequencyCapped";
-  }
-  return senderGateReason(params);
-}
-
-// The send-time gate shared by CRM and program recipients: the sender
-// connection, template, and event invite checks are identity-agnostic.
-function senderGateReason(params: {
-  organizerId: string;
-  campaign: OrganizerCampaignDocument;
-  connection: OrganizerSenderConnectionDocument | undefined;
-  template: OrganizerMessageTemplateDocument | undefined;
-  event: EventDocument | undefined;
-  inviteToken: string | null;
-}): OrganizerCampaignRecipientDocument["exclusionReason"] {
-  if (
-    !params.connection ||
-    params.connection.organizerId !== params.organizerId ||
-    params.connection.status !== "active" ||
-    !params.connection.secretVersionResource ||
-    !params.connection.phoneNumberId
-  ) {
-    return "providerBlocked";
-  }
-  if (
-    !params.template ||
-    params.template.organizerId !== params.organizerId ||
-    (params.template.connectionId !== params.connection.phoneNumberId &&
-      params.template.connectionId !== params.campaign.connectionId) ||
-    params.template.status !== "APPROVED"
-  ) {
-    return "providerBlocked";
-  }
-  if (
-    params.campaign.eventId &&
-    (!params.event ||
-      (params.event.organizerId ?? params.event.clubId) !==
-        params.organizerId ||
-      params.event.status !== "active" ||
-      !params.inviteToken)
-  ) {
-    return "providerBlocked";
-  }
-  return null;
-}
-
-// Program recipients carry no CRM identity: the gate is the endpoint
-// guest still resolving to the snapshotted phone, the household's live
-// explicit consent (granted:false suppresses; absent consent does not —
-// save-the-date precedes the consent tick), recent sends to the same
-// endpoint for the frequency cap, then the shared sender gate.
-function programSuppressionReason(params: {
-  organizerId: string;
-  campaign: OrganizerCampaignDocument;
-  recipient: OrganizerCampaignRecipientDocument;
-  endpointGuest: ProgramGuestDocument | undefined;
-  household: ProgramHouseholdDocument | undefined;
-  endpointHistory: OrganizerCampaignRecipientDocument[];
-  connection: OrganizerSenderConnectionDocument | undefined;
-  template: OrganizerMessageTemplateDocument | undefined;
-  now: FirebaseFirestore.Timestamp;
-}): OrganizerCampaignRecipientDocument["exclusionReason"] {
-  if (
-    !params.endpointGuest ||
-    !params.endpointGuest.phoneE164 ||
-    hashEndpoint(params.endpointGuest.phoneE164) !==
-      params.recipient.endpointHash
-  ) {
-    return "invalidEndpoint";
-  }
-  if (params.household?.messagingConsent?.granted === false) {
-    return "optedOut";
-  }
-  for (const prior of params.endpointHistory) {
-    if (prior.optedOutAt) return "optedOut";
-    if (
-      prior.acceptedAt &&
-      params.now.toMillis() - prior.acceptedAt.toMillis() <
-        organizerCampaignFrequencyCapMillis
-    ) {
-      return "frequencyCapped";
-    }
-  }
-  return senderGateReason({
-    organizerId: params.organizerId,
-    campaign: params.campaign,
-    connection: params.connection,
-    template: params.template,
-    event: undefined,
-    inviteToken: null,
-  });
-}
-
 function normalizePayload(data: unknown): unknown {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return data;
@@ -842,14 +359,48 @@ export const dispatchScheduledOrganizerCampaigns = onSchedule(
   async () => {
     const db = defaultDeps.firestore();
     const now = defaultDeps.now();
-    const snapshot = await db
-      .collection("organizerCampaigns")
-      .where("status", "==", "scheduled")
-      .where("scheduledAt", "<=", now)
-      .orderBy("scheduledAt")
-      .limit(10)
-      .get();
-    for (const doc of snapshot.docs) {
+    const [scheduled, stalled, blocked] = await Promise.all([
+      db
+        .collection("organizerCampaigns")
+        .where("status", "==", "scheduled")
+        .where("scheduledAt", "<=", now)
+        .orderBy("scheduledAt")
+        .limit(10)
+        .get(),
+      // Interrupted passes leave resolving/sending campaigns behind an
+      // expired lease; re-running them is how stalled recipients and
+      // pending rows converge.
+      db
+        .collection("organizerCampaigns")
+        .where("status", "in", ["resolving", "sending"])
+        .where("leaseExpiresAt", "<=", now)
+        .orderBy("leaseExpiresAt")
+        .limit(10)
+        .get(),
+      // "blocked" clears its lease at finishDispatch; rows still pending or
+      // sending (including unknown provider outcomes awaiting evidence)
+      // get re-driven here instead of parking forever.
+      db
+        .collection("organizerCampaigns")
+        .where("status", "==", "blocked")
+        .limit(10)
+        .get(),
+    ]);
+    const retryableBlocked = [];
+    for (const doc of blocked.docs) {
+      const remaining = await db
+        .collection("organizerCampaignRecipients")
+        .where("campaignId", "==", doc.id)
+        .where("status", "in", ["pending", "sending"])
+        .count()
+        .get();
+      if (remaining.data().count > 0) retryableBlocked.push(doc);
+    }
+    for (const doc of [
+      ...scheduled.docs,
+      ...stalled.docs,
+      ...retryableBlocked,
+    ]) {
       const campaign = doc.data() as OrganizerCampaignDocument;
       await dispatchCampaign({
         db,

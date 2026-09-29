@@ -1,16 +1,30 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import type {CallableRequest} from "firebase-functions/v2/https";
+import type {Firestore} from "firebase-admin/firestore";
 import type {
   OrganizerCampaignRecipientDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import type {CampaignWhatsappDispatchDocument}
+  from "../shared/generated/campaignWhatsappDispatchDocument";
 import {
   approveOrganizerCampaignHandler,
   previewOrganizerCampaignHandler,
   upsertOrganizerCampaignHandler,
 } from "./organizerCampaigns";
 import {dispatchCampaign} from "./organizerCampaignDispatcher";
+import {
+  CAMPAIGN_WHATSAPP_DISPATCHES,
+} from "./campaignDeliveryWorker";
+import {CampaignWhatsappDeliveryStore} from
+  "./campaignWhatsappDeliveryStore";
+import {whatsappStatusCorrelation} from
+  "../eventSuccess/operations/whatsappDeliveryProtocol";
+import {whatsappEndpointHash} from
+  "../eventSuccess/operations/whatsappReplyProtocol";
+import {MetaProviderError} from "./organizerWhatsappProvider";
 import {
   hashEndpoint,
   organizerCampaignFrequencyCapMillis,
@@ -151,9 +165,12 @@ function seedBase(): Record<string, FakeData> {
     },
     "organizerSenderConnections/conn-1": {
       organizerId: "org-1",
+      provider: "metaCloudApi",
       status: "active",
       secretVersionResource: "projects/p/secrets/s/versions/1",
-      phoneNumberId: "pn-1",
+      phoneNumberId: "110000000000001",
+      wabaId: "110000000000002",
+      revision: 1,
     },
     "organizerMessageTemplates/tpl-1": {
       organizerId: "org-1",
@@ -313,7 +330,7 @@ function dispatcherDeps(db: FakeFirestore) {
   return {
     firestore: () => db as unknown as FirebaseFirestore.Firestore,
     checkRateLimit: async () => undefined,
-    tokenStore: {access: async () => "test-token"} as never,
+    tokenStore: {accessBound: async () => "test-token"} as never,
     provider: () => ({
       sendTemplate: async () => ({providerMessageId: "wamid-test-1"}),
     }) as never,
@@ -426,5 +443,131 @@ test(
     assert.equal(
       byKey.get("guest:g-3")!.exclusionReason, "frequencyCapped");
     assert.equal(byKey.get("household:hh-1")!.status, "accepted");
+  },
+);
+
+const ts = (millis: number) => ({_seconds: Math.floor(millis / 1000),
+  _nanoseconds: (millis % 1000) * 1_000_000});
+
+test(
+  "a crash between claim and submit never resends and reconciles on evidence",
+  async () => {
+    const db = new FakeFirestore(seedBase());
+    const campaignId = await materialize(db);
+    const recipientId = recipients(db)
+      .map(([path]) => path.split("/")[1])
+      .find((id) =>
+        (db.getDoc(`organizerCampaignRecipients/${id}`) as
+          unknown as OrganizerCampaignRecipientDocument)
+          .programRecipient?.recipientKey === "guest:g-3")!;
+    let sends = 0;
+    const deps = (now: FirebaseFirestore.Timestamp) => ({
+      firestore: () => db as unknown as FirebaseFirestore.Firestore,
+      checkRateLimit: async () => undefined,
+      tokenStore: {accessBound: async () => "test-token"} as never,
+      provider: () => ({
+        sendTemplate: async (args: {toE164: string}) => {
+          sends += 1;
+          if (args.toE164 === "+919800000003") {
+            throw new MetaProviderError("timeout", null, null,
+              "outcomeUnknown");
+          }
+          return {providerMessageId: "wamid-hh"};
+        },
+      }) as never,
+      now: () => now,
+    });
+    const dispatch = () => dispatchCampaign({
+      db: db as unknown as FirebaseFirestore.Firestore,
+      organizerId: "org-1",
+      campaignId,
+      expectedRevision: null,
+      deps: deps(admin.firestore.Timestamp.fromMillis(NOW.toMillis())),
+    });
+    // First pass: hh-1 delivers; g-3's send outcome is ambiguous — the old
+    // code would have reclaimed its expired lease and resent.
+    await dispatch();
+    assert.equal(sends, 2);
+    const recipient = () => db.getDoc(
+      `organizerCampaignRecipients/${recipientId}`) as unknown as
+      OrganizerCampaignRecipientDocument;
+    assert.equal(recipient().status, "sending");
+    const campaign = () => db.getDoc(`organizerCampaigns/${campaignId}`)!;
+    assert.equal(campaign().status, "blocked");
+    // Re-dispatch at a later clock: recovery reconciles, never resends.
+    const later = admin.firestore.Timestamp.fromMillis(
+      NOW.toMillis() + 10 * 60 * 1000);
+    await dispatchCampaign({
+      db: db as unknown as FirebaseFirestore.Firestore,
+      organizerId: "org-1",
+      campaignId,
+      expectedRevision: null,
+      deps: deps(later),
+    });
+    assert.equal(sends, 2, "unknown outcome must reconcile, not resend");
+    assert.equal(recipient().status, "sending");
+    // Evidence arrives through the signed webhook corridor.
+    const evidence = [...db.docs.entries()]
+      .filter(([path]) =>
+        path.startsWith(CAMPAIGN_WHATSAPP_DISPATCHES + "/"))
+      .map(([, doc]) => doc as unknown as CampaignWhatsappDispatchDocument)
+      .find((doc) => doc.context.recipientId === recipientId)!;
+    assert.ok(evidence, "claim must have committed dispatch evidence");
+    const providerEventId = `status:wamid-g3:failed:${NOW.toMillis() +
+      60_000}`;
+    const eventId = "omwe_" + createHash("sha256")
+      .update(providerEventId).digest("hex").slice(0, 48);
+    db.setDoc(`organizerMessagingWebhookEvents/${eventId}`, {
+      provider: "metaCloudApi",
+      providerEventId,
+      organizerId: "org-1",
+      connectionId: "conn-1",
+      eventKind: "status",
+      providerMessageId: "wamid-g3",
+      contextProviderMessageId: null,
+      providerAccountId: "110000000000002",
+      providerPhoneNumberId: "110000000000001",
+      callbackData: whatsappStatusCorrelation(evidence.attemptId,
+        evidence.payloadHash),
+      inboundReply: null,
+      deliveryStatus: "failed",
+      endpointHash: whatsappEndpointHash("+919800000003"),
+      isStop: false,
+      hasReply: false,
+      inboundBody: null,
+      providerErrorCode: 131016,
+      providerErrorEvidence: {kind: "codes", codes: [131016]},
+      providerOccurredAt: ts(NOW.toMillis() + 60_000),
+      processingStatus: "pending",
+      attemptCount: 0,
+      createdAt: ts(NOW.toMillis() + 60_000),
+      processedAt: null,
+      expiresAt: ts(NOW.toMillis() + 3_600_000),
+    });
+    db.setDoc(`organizerCampaignWebhookReceipts/${eventId}`, {
+      provider: "metaCloudApi",
+      providerEventId,
+      organizerId: "org-1",
+      connectionId: "conn-1",
+      eventKind: "status",
+      payloadHash: "f".repeat(64),
+      createdAt: ts(NOW.toMillis() + 60_000),
+      expiresAt: ts(NOW.toMillis() + 3_600_000),
+    });
+    const store = new CampaignWhatsappDeliveryStore(
+      db as unknown as Firestore, () => NOW.toMillis() + 60_000);
+    assert.equal((await store.consumeQueued(eventId)).kind, "recorded");
+    // The next pass mirrors the confirmed failure; the campaign settles.
+    await dispatchCampaign({
+      db: db as unknown as FirebaseFirestore.Firestore,
+      organizerId: "org-1",
+      campaignId,
+      expectedRevision: null,
+      deps: deps(admin.firestore.Timestamp.fromMillis(
+        NOW.toMillis() + 20 * 60 * 1000)),
+    });
+    assert.equal(recipient().status, "failed");
+    assert.equal(campaign().status, "partiallyFailed");
+    assert.equal(sends, 2);
   },
 );

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/program_delivery_message_intent.schema.json",
+  "title": "ProgramDeliveryMessageIntent",
+  "$ref": "../shared/program_delivery_messaging.schema.json#/definitions/MessageIntent"
+}

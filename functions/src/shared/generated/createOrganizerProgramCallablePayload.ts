@@ -13,6 +13,10 @@ export interface CreateOrganizerProgramCallablePayload {
   startsAtMillis: number;
   endsAtMillis: number;
   /**
+   * Optional RSVP deadline anchor for Moments scheduling.
+   */
+  rsvpDeadlineAtMillis?: number | null;
+  /**
    * @maxItems 8
    */
   capabilities: (

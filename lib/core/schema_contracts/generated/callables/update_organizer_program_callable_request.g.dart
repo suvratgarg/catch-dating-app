@@ -14,6 +14,7 @@ final class UpdateOrganizerProgramCallableRequest {
     this.timezone,
     this.startsAtMillis,
     this.endsAtMillis,
+    this.rsvpDeadlineAtMillis,
     this.status,
     this.capabilities,
     this.transportSettings,
@@ -25,6 +26,7 @@ final class UpdateOrganizerProgramCallableRequest {
   final String? timezone;
   final int? startsAtMillis;
   final int? endsAtMillis;
+  final int? rsvpDeadlineAtMillis;
   final String? status;
   final List<String>? capabilities;
   final Map<String, Object?>? transportSettings;
@@ -36,6 +38,7 @@ final class UpdateOrganizerProgramCallableRequest {
     'timezone': ?timezone,
     'startsAtMillis': ?startsAtMillis,
     'endsAtMillis': ?endsAtMillis,
+    'rsvpDeadlineAtMillis': ?rsvpDeadlineAtMillis,
     'status': ?status,
     'capabilities': ?capabilities,
     'transportSettings': ?transportSettings,

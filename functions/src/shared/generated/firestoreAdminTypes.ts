@@ -11342,6 +11342,10 @@ export interface OrganizerProgramDocument {
   timezone: string;
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
+  /**
+   * RSVP deadline anchor for Moments scheduling; absent until the organizer sets one.
+   */
+  rsvpDeadlineAt?: FirebaseFirestore.Timestamp | null;
   status: "draft" | "active" | "completed" | "archived";
   /**
    * @maxItems 8
@@ -12071,6 +12075,390 @@ export interface ProgramTravelPartyDocument {
 }
 
 /**
+ * Private durable program delivery outbox. The immutable intent and bounded attempt history survive moment-run completion and delayed provider callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.
+ */
+export interface ProgramDeliveryMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent: {
+    schemaVersion: 1;
+    intentId: string;
+    revision: number;
+    context: {
+      mode: "live";
+      programId: string;
+      organizerId: string;
+    };
+    programId: string;
+    recipient: {
+      kind: "guest" | "household" | "staff";
+      /**
+       * Stable recipient identity inside the program (guest id, household id, or staff uid). Endpoint resolution lives in the facts reader, never in the intent.
+       */
+      recipientKey: string;
+    };
+    workflow: {
+      kind: "programMoment";
+      momentId: string;
+      /**
+       * Moment-run occurrence identity. Phase 3 refines this into an explicit occurrence key once anchor revisions exist.
+       */
+      runId: string;
+    };
+    createdAt: number;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 3
+     */
+    permittedRoutes: ("organizerProgramWhatsapp" | "catchProgramActivity")[];
+    deliveryPolicy: {
+      maxAttempts: number;
+      maxAttemptsPerRoute: number;
+      minimumRetrySeconds: number;
+    };
+    kind: "programReminder";
+    title: string;
+    body: string;
+    /**
+     * The program/moment fact revision this intent was issued under. Reservation authority expires with it.
+     */
+    instructionRevision: number;
+    /**
+     * Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here.
+     */
+    whatsapp?: {
+      connectionId: string;
+      templateId: string;
+      variables: {
+        [k: string]: string;
+      };
+    };
+  };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: {
+    schemaVersion: 1;
+    attemptId: string;
+    intentId: string;
+    intentRevision: number;
+    ordinal: number;
+    createdAt: number;
+    state:
+      | {
+          kind: "reserved";
+          at: number;
+          reconcileAfter: number;
+        }
+      | {
+          kind: "unknown";
+          at: number;
+          providerMessageId: string | null;
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reconcileAfter: number;
+        }
+      | {
+          kind: "accepted" | "delivered" | "read";
+          at: number;
+          providerMessageId: string | null;
+        }
+      | {
+          kind: "failed";
+          at: number;
+          providerMessageId: string | null;
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+          evidenceId: string | null;
+        }
+      | {
+          kind: "revoked";
+          at: number;
+          providerMessageId: string | null;
+          evidenceId: string | null;
+        }
+      | {
+          kind: "notDispatched";
+          at: number;
+          reason:
+            | "superseded"
+            | "responded"
+            | "expired"
+            | "permissionRevoked"
+            | "reservationExpired"
+            | "permitExpired"
+            | "programEnded"
+            | "rsvpChanged"
+            | "recipientWithdrawn";
+        };
+    mode: "live";
+    context: {
+      mode: "live";
+      programId: string;
+      organizerId: string;
+    };
+    binding:
+      | {
+          routeId: "organizerProgramWhatsapp";
+          transport: "whatsapp";
+          senderIdentity: "organizerManaged";
+          provider: "meta" | "gupshup" | "twilio";
+          senderId: string;
+          bindingRevision: number;
+          recipientEndpointId: string;
+          fallbackOwner: "catch" | "provider";
+        }
+      | {
+          routeId: "catchProgramActivity";
+          transport: "catchApp";
+          senderIdentity: "catchPlatform";
+          provider: "catchActivity" | "fcm";
+          senderId: string;
+          bindingRevision: number;
+          recipientEndpointId: string;
+          fallbackOwner: "catch";
+        };
+    authorization: {
+      permissionRevision: string;
+      checkedAt: number;
+      validUntil: number;
+      instructionRevision: number;
+    };
+  }[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Private claim-time binding between one program delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the program delivery outbox.
+ */
+export interface ProgramWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    programId: string;
+    organizerId: string;
+  };
+  /**
+   * organizerSenderConnections document id that owned the send.
+   */
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  /**
+   * Content hash of the sender connection snapshot authorized at claim.
+   */
+  senderHash: string;
+  recipientEndpointId: string;
+  /**
+   * Hash of the E.164 destination; the raw number never appears here.
+   */
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  /**
+   * Content hash of the rendered template + variables; the status callback must carry the matching correlation.
+   */
+  payloadHash: string;
+  createdAt: number;
+}
+
+/**
+ * Private durable campaign delivery outbox. The immutable intent and bounded attempt history survive dispatch interruption and delayed provider callbacks. The organizerCampaignRecipients row remains the CRM/report mirror; this record is the execution authority. Recipient endpoints are references; transport credentials stay in their own private stores.
+ */
+export interface CampaignDeliveryMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent: {
+    schemaVersion: 1;
+    intentId: string;
+    revision: number;
+    context: {
+      mode: "live";
+      organizerId: string;
+      campaignId: string;
+      recipientId: string;
+    };
+    campaignId: string;
+    recipient: {
+      kind: "campaignRecipient";
+      /**
+       * organizerCampaignRecipients document id — the frozen per-recipient campaign row. Endpoint and consent facts resolve at claim time, never in the intent.
+       */
+      recipientKey: string;
+    };
+    workflow: {
+      kind: "campaignDispatch";
+      campaignId: string;
+      recipientId: string;
+    };
+    createdAt: number;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    permittedRoutes: "organizerWhatsappCampaign"[];
+    deliveryPolicy: {
+      maxAttempts: number;
+      maxAttemptsPerRoute: number;
+      minimumRetrySeconds: number;
+    };
+    kind: "campaignMessage";
+    /**
+     * The campaign dispatch epoch (dispatchedAt millis) this intent was issued under. Reservation authority expires when the campaign's dispatch epoch changes.
+     */
+    instructionRevision: number;
+    /**
+     * Approved WhatsApp template content frozen from the campaign/recipient snapshot; sender credentials never appear here.
+     */
+    whatsapp: {
+      connectionId: string;
+      templateId: string;
+      variables: {
+        [k: string]: string;
+      };
+    };
+  };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: {
+    schemaVersion: 1;
+    attemptId: string;
+    intentId: string;
+    intentRevision: number;
+    ordinal: number;
+    createdAt: number;
+    state:
+      | {
+          kind: "reserved";
+          at: number;
+          reconcileAfter: number;
+        }
+      | {
+          kind: "unknown";
+          at: number;
+          providerMessageId: string | null;
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reconcileAfter: number;
+        }
+      | {
+          kind: "accepted" | "delivered" | "read";
+          at: number;
+          providerMessageId: string | null;
+        }
+      | {
+          kind: "failed";
+          at: number;
+          providerMessageId: string | null;
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+          evidenceId: string | null;
+        }
+      | {
+          kind: "revoked";
+          at: number;
+          providerMessageId: string | null;
+          evidenceId: string | null;
+        }
+      | {
+          kind: "notDispatched";
+          at: number;
+          reason:
+            | "superseded"
+            | "expired"
+            | "permissionRevoked"
+            | "reservationExpired"
+            | "permitExpired"
+            | "campaignEnded"
+            | "recipientWithdrawn";
+        };
+    mode: "live";
+    context: {
+      mode: "live";
+      organizerId: string;
+      campaignId: string;
+      recipientId: string;
+    };
+    binding: {
+      routeId: "organizerWhatsappCampaign";
+      transport: "whatsapp";
+      senderIdentity: "organizerManaged";
+      provider: "meta";
+      /**
+       * organizerSenderConnections document id that owns the send.
+       */
+      senderId: string;
+      bindingRevision: number;
+      recipientEndpointId: string;
+      fallbackOwner: "catch";
+    };
+    authorization: {
+      permissionRevision: string;
+      checkedAt: number;
+      validUntil: number;
+      instructionRevision: number;
+    };
+  }[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Private claim-time binding between one campaign delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the campaign delivery outbox.
+ */
+export interface CampaignWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    campaignId: string;
+    recipientId: string;
+  };
+  /**
+   * organizerSenderConnections document id that owned the send.
+   */
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  /**
+   * Content hash of the sender connection snapshot authorized at claim.
+   */
+  senderHash: string;
+  recipientEndpointId: string;
+  /**
+   * Hash of the E.164 destination; the raw number never appears here.
+   */
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  /**
+   * Content hash of the rendered template + variables; the status callback must carry the matching correlation.
+   */
+  payloadHash: string;
+  createdAt: number;
+}
+
+/**
  * Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).
  */
 export interface OrganizerMomentDocument {
@@ -12119,9 +12507,17 @@ export interface OrganizerMomentDocument {
      */
     anchorId?: string | null;
     /**
-     * Minutes relative to the anchor; negative is before.
+     * Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset.
      */
     offsetMinutes?: number | null;
+    /**
+     * Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes.
+     */
+    offsetDays?: number | null;
+    /**
+     * Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first.
+     */
+    offsetMonths?: number | null;
     /**
      * Required when kind=triggered.
      */
@@ -12239,6 +12635,14 @@ export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  /**
+   * Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals.
+   */
+  nominalDueAtMillis?: number;
+  /**
+   * Hard stop on firing this run; a deferred run past expiry skips instead of sending late.
+   */
+  expiresAtMillis?: number;
   occurrenceVersion?: 2;
   plannedWakeAtMillis?: number;
   travelPlanHash?: string;
@@ -12290,6 +12694,13 @@ export interface OrganizerMomentSendDocument {
     | "optedOut"
     | "endpointSuppressed"
     | "dailyCap"
+    | "deliveryConflict"
+    | "superseded"
+    | "expired"
+    | "programEnded"
+    | "recipientWithdrawn"
+    | "permissionRevoked"
+    | "hostReview"
     | null;
   /**
    * Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps.
@@ -12322,6 +12733,18 @@ export interface OrganizerMomentSendDocument {
    * staffAttention: rendered alert title.
    */
   title?: string | null;
+}
+
+/**
+ * Server-owned pagination state for the moment sweep. The armed-moments scan advances a durable cursor so discovery stays bounded at any armed-moment count.
+ */
+export interface OrganizerMomentSweepStateDocument {
+  sweepId: string;
+  /**
+   * Last armed-moment doc id scanned; null restarts the scan.
+   */
+  afterMomentId: string | null;
+  updatedAtMillis: number;
 }
 
 /**

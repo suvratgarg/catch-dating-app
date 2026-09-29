@@ -6,6 +6,7 @@ import {
   resolveAnchor,
   resolveFireDisposition,
   selectDueRuns,
+  shiftLocalCalendar,
 } from "./momentPlanning";
 import {buildTravelContext} from "./momentTravel";
 import type {
@@ -78,6 +79,10 @@ test("functionStart minus 15 minutes plans a deterministic run", () => {
     runId: "m1_7_1100000",
     momentId: "m1",
     dueAtMillis: 1_100_000,
+    // Scheduled occurrence time and the anchor-bound expiry are separate
+    // identity axes from the mutable wake time.
+    nominalDueAtMillis: 1_100_000,
+    expiresAtMillis: 2_000_000,
     occurrenceVersion: 2,
     anchorRevision: 7,
     status: "planned",
@@ -270,6 +275,7 @@ test("travelTimeLead wakes the run early by the farthest hotel's lead",
     assert.deepEqual(result.kind === "planned" && result.run, {
       runId: "m1_7_1100000",
       momentId: "m1", dueAtMillis: 500_000,
+      nominalDueAtMillis: 1_100_000, expiresAtMillis: 2_000_000,
       occurrenceVersion: 2,
       plannedWakeAtMillis: 500_000, anchorRevision: 7,
       status: "planned",
@@ -319,4 +325,124 @@ test("condition runs ignore the stale-anchor fence", () => {
     action: baseMoment.action};
   assert.equal(resolveFireDisposition(eventRun, conditionTemplate, silent),
     "skip:messagingDisabled");
+});
+
+// --- Long-horizon scheduling ------------------------------------------------
+
+test("calendar offsets shift the wall clock, not the elapsed time", () => {
+  // Sangeet at 2026-02-14 18:30 in Asia/Kolkata (UTC+5:30, no DST).
+  const sangeetAt = Date.UTC(2026, 1, 14, 13, 0, 0);
+  const kolkata: AnchorFacts = {...facts, scope: {...facts.scope,
+    timeZone: "Asia/Kolkata"}, functions: {...facts.functions,
+    sangeet: {...facts.functions.sangeet, startsAtMillis: sangeetAt}}};
+  const threeMonths = planRun({...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 0, offsetMonths: -3,
+  }}, kolkata, 0);
+  // Three calendar months before: 2025-11-14 18:30 IST — same wall clock.
+  assert.equal(threeMonths.kind === "planned" &&
+    threeMonths.run.nominalDueAtMillis, Date.UTC(2025, 10, 14, 13, 0, 0));
+  const ninetyDays = planRun({...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 0, offsetDays: -90,
+  }}, kolkata, 0);
+  // Ninety calendar days before: 2025-11-16 18:30 IST.
+  assert.equal(ninetyDays.kind === "planned" &&
+    ninetyDays.run.nominalDueAtMillis, Date.UTC(2025, 10, 16, 13, 0, 0));
+});
+
+test("calendar months clamp the day and preserve time across DST", () => {
+  // Jan 31 minus one month -> Dec 31; plus one month -> Feb 28.
+  const jan31 = Date.UTC(2026, 0, 31, 10, 0, 0);
+  assert.equal(shiftLocalCalendar(jan31, -1, 0, "UTC"),
+    Date.UTC(2025, 11, 31, 10, 0, 0));
+  assert.equal(shiftLocalCalendar(jan31, 1, 0, "UTC"),
+    Date.UTC(2026, 1, 28, 10, 0, 0));
+  // 2026-03-10 09:00 EDT minus three days -> 2026-03-07 09:00 EST: the
+  // local wall clock holds while the UTC instant shifts an hour across
+  // the spring-forward boundary.
+  const afterSpringForward = Date.UTC(2026, 2, 10, 13, 0, 0);
+  assert.equal(
+    shiftLocalCalendar(afterSpringForward, 0, -3, "America/New_York"),
+    Date.UTC(2026, 2, 7, 14, 0, 0));
+});
+
+test("replan keeps a live run past planning grace", () => {
+  // The reproduced defect: a quiet-hours-deferred run whose nominal due
+  // passed the five-minute grace used to be superseded into oblivion.
+  // Expiry — not planning grace — decides whether it still fires.
+  const deferred = run({runId: "m1_7_1100000", dueAtMillis: 1_700_000,
+    nominalDueAtMillis: 1_100_000, expiresAtMillis: 2_000_000});
+  const result = replan(baseMoment, facts, [deferred], 1_600_000);
+  assert.deepEqual(result.supersede, []);
+  assert.deepEqual(result.keep, ["m1_7_1100000"]);
+  assert.equal(result.create, null);
+  // An occurrence that never materialized is still not created late.
+  const fresh = replan(baseMoment, facts, [], 1_600_000);
+  assert.equal(fresh.create, null);
+  assert.equal(fresh.unplannableReason, "dueInPast");
+});
+
+test("expiry is explicit per run: pre-anchor dies at the anchor", () => {
+  const before = planRun(baseMoment, facts, 0);
+  assert.equal(before.kind === "planned" &&
+    before.run.expiresAtMillis, 2_000_000);
+  // A post-anchor send stays useful up to a day late.
+  const after = planRun({...baseMoment, initiation: {kind: "anchored",
+    anchorKind: "functionEnd", anchorId: "sangeet", offsetMinutes: 30}},
+  facts, 0);
+  assert.equal(after.kind === "planned" && after.run.expiresAtMillis,
+    2_400_000 + 30 * 60_000 + 86_400_000);
+  // Fixed-date sends get the same bounded late window.
+  const scheduled: MomentDefinition = {...baseMoment, initiation: {
+    kind: "scheduled", atMillis: 1_100_000,
+  }};
+  const fixed = planRun(scheduled, facts, 0);
+  assert.equal(fixed.kind === "planned" && fixed.run.expiresAtMillis,
+    1_100_000 + 86_400_000);
+});
+
+test("a run past its expiry reports expired, not dispatched", () => {
+  const expired = run({expiresAtMillis: 1_000});
+  assert.equal(resolveFireDisposition(expired, baseMoment, facts, 2_000),
+    "skip:expired");
+  // Runs planned before the field existed keep the old anchor checks.
+  const legacy = run({});
+  assert.equal(resolveFireDisposition(legacy, baseMoment, facts, 2_000),
+    "dispatch");
+});
+
+test("anchorPassed judges the net offset, not just offsetMinutes", () => {
+  // Calendar parts can make a non-positive minute offset net-positive:
+  // -1 day - 30 minutes still dies at the anchor, while -1 day + 2 hours
+  // lands after it (post-anchor sends stay valid when late).
+  const beforeAnchor: MomentDefinition = {...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: -30, offsetDays: -1,
+  }};
+  const lateRun = run({anchorRevision: 7});
+  assert.equal(resolveFireDisposition(lateRun, beforeAnchor, facts,
+    2_100_000), "skip:anchorPassed");
+  const afterAnchor: MomentDefinition = {...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 120, offsetDays: -1,
+  }};
+  // Nominal = anchor -22h — still before the anchor: a late wake skips.
+  assert.equal(resolveFireDisposition(lateRun, afterAnchor, facts,
+    2_100_000), "skip:anchorPassed");
+  const postAnchor: MomentDefinition = {...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 120, offsetDays: 0,
+  }};
+  assert.equal(resolveFireDisposition(lateRun, postAnchor, facts,
+    2_100_000), "dispatch");
+  // Offset-0 is boundary: nominal == anchor counts as pre-anchor, so a
+  // run that reached pass 2 after the anchor still skips — stale "starts
+  // now" copy is worse than silence (momentDefaults pins this too).
+  const atAnchor: MomentDefinition = {...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 0,
+  }};
+  assert.equal(resolveFireDisposition(lateRun, atAnchor, facts,
+    2_000_000), "skip:anchorPassed");
 });

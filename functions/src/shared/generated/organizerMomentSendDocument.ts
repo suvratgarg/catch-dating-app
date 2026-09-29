@@ -22,6 +22,13 @@ export interface OrganizerMomentSendDocument {
     | "optedOut"
     | "endpointSuppressed"
     | "dailyCap"
+    | "deliveryConflict"
+    | "superseded"
+    | "expired"
+    | "programEnded"
+    | "recipientWithdrawn"
+    | "permissionRevoked"
+    | "hostReview"
     | null;
   /**
    * Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps.
