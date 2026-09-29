@@ -243,6 +243,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
@@ -10517,6 +10519,72 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_unified_event_setup_use_cases
                         .hostManagerEventSetupPreferencesSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentConfirmationSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment confirmation contract',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentConfirmationSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentDetailsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment details',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentDetailsSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentModeSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment mode section',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentModeSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentModeTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment collection modes',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentModeTilePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentReviewSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment review sheet',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentReviewSheetPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOfferPaymentSetupPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Offer payment setup step',
+                builder:
+                    _widgetbook_workspace_hosts_host_offer_payment_use_cases
+                        .hostOfferPaymentSetupPageBodyPreview,
               ),
             ],
           ),
