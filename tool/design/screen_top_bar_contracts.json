@@ -508,6 +508,15 @@
       "occurrences": 3
     },
     {
+      "path": "lib/programs/presentation/program_stakeholder_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 3
+    },
+    {
       "path": "lib/programs/presentation/program_work_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

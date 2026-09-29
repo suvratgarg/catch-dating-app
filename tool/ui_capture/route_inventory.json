@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "77eec1a56ed28244db9c606f85fe6826e19fb84a5bf4cf56f216fbd9a8b02d7d",
-    "routeContractSha256": "4b39ee4ea4ad17468db9481aea7725275075077c25193e46b40ec15cffa4acf3",
-    "goRouteCount": 110,
+    "normalizedFileSha256": "d9f2fbbface6f90d7d9f3c3ad378faf9c2c7dd651eafdb977565f81d06ab1b1f",
+    "routeContractSha256": "2d08872bd54aff0251d26f78729f9abd51e8fed6f5fadbabfa2f6db33e6b9a5e",
+    "goRouteCount": 112,
     "shellBranchCount": 9,
-    "enumRouteCount": 95,
-    "referencedRouteCount": 95,
-    "runtimeRouteCount": 95,
+    "enumRouteCount": 97,
+    "referencedRouteCount": 97,
+    "runtimeRouteCount": 97,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -628,7 +628,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.paymentConfirmationScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final data=state.extra!as PaymentConfirmationData;return PaymentConfirmationScreen(data:data);}",
+      "presentationExpression": "(context,state)=>PaymentConfirmationScreen(data:state.extra!as PaymentConfirmationData)",
       "presentationTarget": "PaymentConfirmationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1156,6 +1156,23 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkCountsScreen",
+      "path": "/host/work/:programId/counts",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/counts",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkCountsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramStakeholderScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramStakeholderScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostProgramsScreen",
       "path": "/host/programs",
       "pathParameters": [],
@@ -1235,6 +1252,23 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>ProgramImportScreen(programId:state.pathParameters['programId']!)",
       "presentationTarget": "ProgramImportScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostProgramMomentsScreen",
+      "path": "/host/programs/:programId/moments",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/moments",
+      "runtimeParentId": "hostProgramWorkspaceScreen",
+      "runtimePathExpression": "'moments'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:_programMomentScope(state),scopeTitle:state.uri.queryParameters['title'])",
+      "presentationTarget": "OrganizerMomentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1709,7 +1743,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/inbox/host_inbox_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 350,
+      "line": 362,
       "ordinal": 1,
       "presentationExpression": "(_)=>HostNewMessageScreen(organizerId:organizerId)",
       "presentationTarget": "HostNewMessageScreen",
@@ -1797,6 +1831,7 @@
     "hostOrganizerScreen",
     "hostProgramGuestsScreen",
     "hostProgramImportScreen",
+    "hostProgramMomentsScreen",
     "hostProgramsScreen",
     "hostProgramTeamScreen",
     "hostProgramWorkspaceScreen",
@@ -1804,6 +1839,7 @@
     "hostTodayFocusScreen",
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
+    "hostWorkCountsScreen",
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",
     "hostWorkEventScreen",

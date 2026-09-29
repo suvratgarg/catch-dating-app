@@ -899,6 +899,12 @@
       "reason": "Staff manifest import lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
+      "routeId": "hostWorkCountsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Stakeholder counts overview lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
       "routeId": "hostProgramsScreen",
       "status": "planned",
       "priority": "P1",

@@ -12456,6 +12456,41 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program counts',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionCountsRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programFunctionCountsRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelOccupancyRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelOccupancyRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStakeholderScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programStakeholderScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program dispatch',
         children: [
           _widgetbook.WidgetbookComponent(

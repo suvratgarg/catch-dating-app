@@ -1579,6 +1579,19 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerAttentionItemDocument.ts",
   },
   {
+    name: "OrganizerEntitlementsDocument",
+    source: "firestore/organizer_entitlements.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerEntitlementsDocument.ts",
+  },
+  {
+    name: "OrganizerEntitlementReceiptDocument",
+    source: "firestore/organizer_entitlement_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerEntitlementReceiptDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -2562,6 +2575,14 @@ const schemaSpecs = [
       "programFunctionDoorViewCallableResponse.ts",
   },
   {
+    name: "ProgramStakeholderCountsCallableResponse",
+    source:
+      "callable_responses/program_stakeholder_counts_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programStakeholderCountsCallableResponse.ts",
+  },
+  {
     name: "ProgramManifestImportCallableResponse",
     source: "callable_responses/program_manifest_import_response.schema.json",
     typeOutput:
@@ -3350,6 +3371,67 @@ const schemaSpecs = [
     source: "callables/admin_update_organizer_details_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminUpdateOrganizerDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminGrantOrganizerEntitlementCallablePayload",
+    source:
+      "callables/admin_grant_organizer_entitlement_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminGrantOrganizerEntitlementCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminGrantOrganizerEntitlementCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRevokeOrganizerEntitlementGrantCallablePayload",
+    source:
+      "callables/" +
+      "admin_revoke_organizer_entitlement_grant_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminRevokeOrganizerEntitlementGrantCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRevokeOrganizerEntitlementGrantCallablePayload.ts",
+    ],
+  },
+  {
+    name: "GetOrganizerEntitlementCallablePayload",
+    source: "callables/get_organizer_entitlement_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerEntitlementCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "getOrganizerEntitlementCallablePayload.ts",
+    ],
+  },
+  {
+    name: "OrganizerEntitlementMutationCallableResponse",
+    source:
+      "callable_responses/" +
+      "organizer_entitlement_mutation_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerEntitlementMutationCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "organizerEntitlementMutationCallableResponse.ts",
+    ],
+  },
+  {
+    name: "OrganizerEntitlementCallableResponse",
+    source:
+      "callable_responses/organizer_entitlement_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerEntitlementCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "organizerEntitlementCallableResponse.ts",
+    ],
   },
   {
     name: "AdminGetEventDetailsCallablePayload",
@@ -6127,6 +6209,9 @@ async function main() {
   const hostAttentionPolicyCatalog = readContractJson(
     "catalogs/host_attention_policies.json"
   );
+  const organizerEntitlementSkuCatalog = readContractJson(
+    "catalogs/organizer_entitlement_skus.json"
+  );
   const eventSuccessMomentPresentationCatalog = readContractJson(
     "catalogs/event_success_moment_presentations.json"
   );
@@ -6203,6 +6288,7 @@ async function main() {
       personFieldCatalog,
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
+      organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -6235,6 +6321,7 @@ async function main() {
       personFieldCatalog,
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
+      organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -7749,6 +7836,7 @@ function renderTsSchemaRegistry({
   personFieldCatalog,
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
+  organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -7775,6 +7863,7 @@ function renderTsSchemaRegistry({
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
+    ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -7887,6 +7976,7 @@ function renderToolSchemaRegistry({
   personFieldCatalog,
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
+  organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -7899,6 +7989,7 @@ function renderToolSchemaRegistry({
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
+    ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],

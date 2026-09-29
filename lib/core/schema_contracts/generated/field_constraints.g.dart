@@ -6555,6 +6555,76 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const adminGrantOrganizerEntitlementCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.note',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadOperationId = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.operationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadQuantityTotal = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.quantityTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadReceiptRef = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.receiptRef',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadSku = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.sku',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wedding_essentials', 'wedding_pro', 'wedding_signature', 'wedding_transport_addon', 'planner_annual'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadSource = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInvoice', 'checkout', 'promo'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadUnit = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.unit',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['program', 'organizerYear'],
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadValidFromMillis = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.validFromMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminGrantOrganizerEntitlementCallablePayloadValidUntilMillis = CatchContractFieldConstraints(
+    path: 'adminGrantOrganizerEntitlementCallablePayload.validUntilMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const adminLinkOrganizerIntakeToSalesPayloadCandidateId = CatchContractFieldConstraints(
     path: 'adminLinkOrganizerIntakeToSalesPayload.candidateId',
     maxLength: 240,
@@ -11206,6 +11276,37 @@ abstract final class CatchContractConstraints {
     path: 'adminReviseSalesQuoteResponse.receipt.revision',
     valueTypes: <String>['integer'],
     minimum: 1,
+  );
+
+  static const adminRevokeOrganizerEntitlementGrantCallablePayloadGrantId = CatchContractFieldConstraints(
+    path: 'adminRevokeOrganizerEntitlementGrantCallablePayload.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeOrganizerEntitlementGrantCallablePayloadOperationId = CatchContractFieldConstraints(
+    path: 'adminRevokeOrganizerEntitlementGrantCallablePayload.operationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const adminRevokeOrganizerEntitlementGrantCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminRevokeOrganizerEntitlementGrantCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeOrganizerEntitlementGrantCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'adminRevokeOrganizerEntitlementGrantCallablePayload.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const adminSalesEvidenceProposalsListCallablePayloadCursor = CatchContractFieldConstraints(
@@ -77856,6 +77957,14 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const getOrganizerEntitlementCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerEntitlementCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getOrganizerEventSetupDefaultsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'getOrganizerEventSetupDefaultsCallablePayload.organizerId',
     required: true,
@@ -98879,6 +98988,521 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.verifiedReviewCount',
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const organizerEntitlementCallableResponseCatalogVersion = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.catalogVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementCallableResponseGrants = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsActive = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsGrantId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsQuantityConsumed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.quantityConsumed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsQuantityRemaining = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.quantityRemaining',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsQuantityTotal = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.quantityTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsRevoked = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.revoked',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsSku = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.sku',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wedding_essentials', 'wedding_pro', 'wedding_signature', 'wedding_transport_addon', 'planner_annual'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsSkuLabel = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.skuLabel',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsSource = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInvoice', 'checkout', 'promo'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsUnit = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.unit',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['program', 'organizerYear'],
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsValidFromMillis = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.validFromMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementCallableResponseGrantsItemsValidUntilMillis = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.grants.items.validUntilMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementCallableResponseMetersFlightDaysUsed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.meters.flightDaysUsed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementCallableResponseMetersWaConversationsUsed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.meters.waConversationsUsed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerEntitlementCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementCallableResponseSkuCatalog = CatchContractFieldConstraints(
+    path: 'organizerEntitlementCallableResponse.skuCatalog',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerEntitlementMutationCallableResponseGrantId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementMutationCallableResponse.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementMutationCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementMutationCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementMutationCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementMutationCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEntitlementMutationCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementMutationCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementMutationCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerEntitlementMutationCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementReceiptDocumentAction = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const organizerEntitlementReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.contentHash',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementReceiptDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementReceiptDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementReceiptDocumentGrantId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentOperationId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementReceiptDocumentResultRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.resultRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerEntitlementReceiptDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerEntitlementsDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentGrants = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsGrantId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.grantId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsNote = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.note',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsOperationContentHash = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.operationContentHash',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsOperationResultRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.operationResultRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsQuantityConsumed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.quantityConsumed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsQuantityTotal = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.quantityTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsReceiptRef = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.receiptRef',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsRevokedBy = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.revokedBy',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsRevokeReason = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.revokeReason',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsSku = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.sku',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wedding_essentials', 'wedding_pro', 'wedding_signature', 'wedding_transport_addon', 'planner_annual'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsSource = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInvoice', 'checkout', 'promo'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsUnit = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.unit',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['program', 'organizerYear'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsValidFromNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.validFrom._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsValidFromSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.validFrom._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsValidUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.validUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentGrantsItemsValidUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.grants.items.validUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentMetersFlightDaysUsed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.meters.flightDaysUsed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerEntitlementsDocumentMetersPeriodStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.meters.periodStartsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentMetersPeriodStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.meters.periodStartsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEntitlementsDocumentMetersWaConversationsUsed = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.meters.waConversationsUsed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerEntitlementsDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEntitlementsDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEntitlementsDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerEntitlementsDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEntitlementsDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEntitlementsDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const organizerEventCandidateReviewDecisionDocumentBlockerResolutions = CatchContractFieldConstraints(
@@ -120933,6 +121557,172 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctions = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.checkedInHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.expectedHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsInvitedCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.invitedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsNoShowCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.noShowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpAttending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpPending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpPending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsStatus = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scheduled', 'completed', 'cancelled'],
+  );
+
+  static const programStakeholderCountsCallableResponseGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.guestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotels = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsLegCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.legCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHouseholdCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.householdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const programStationScopeCallablePayloadPickupPointId = CatchContractFieldConstraints(
@@ -150482,6 +151272,16 @@ abstract final class CatchContractConstraints {
     'adminGetSalesPrivacyCaseResponse.restriction.revision': adminGetSalesPrivacyCaseResponseRestrictionRevision,
     'adminGetSalesPrivacyCaseResponse.restriction.status': adminGetSalesPrivacyCaseResponseRestrictionStatus,
     'adminGetSalesReceiptCallablePayload.requestId': adminGetSalesReceiptCallablePayloadRequestId,
+    'adminGrantOrganizerEntitlementCallablePayload.note': adminGrantOrganizerEntitlementCallablePayloadNote,
+    'adminGrantOrganizerEntitlementCallablePayload.operationId': adminGrantOrganizerEntitlementCallablePayloadOperationId,
+    'adminGrantOrganizerEntitlementCallablePayload.organizerId': adminGrantOrganizerEntitlementCallablePayloadOrganizerId,
+    'adminGrantOrganizerEntitlementCallablePayload.quantityTotal': adminGrantOrganizerEntitlementCallablePayloadQuantityTotal,
+    'adminGrantOrganizerEntitlementCallablePayload.receiptRef': adminGrantOrganizerEntitlementCallablePayloadReceiptRef,
+    'adminGrantOrganizerEntitlementCallablePayload.sku': adminGrantOrganizerEntitlementCallablePayloadSku,
+    'adminGrantOrganizerEntitlementCallablePayload.source': adminGrantOrganizerEntitlementCallablePayloadSource,
+    'adminGrantOrganizerEntitlementCallablePayload.unit': adminGrantOrganizerEntitlementCallablePayloadUnit,
+    'adminGrantOrganizerEntitlementCallablePayload.validFromMillis': adminGrantOrganizerEntitlementCallablePayloadValidFromMillis,
+    'adminGrantOrganizerEntitlementCallablePayload.validUntilMillis': adminGrantOrganizerEntitlementCallablePayloadValidUntilMillis,
     'adminLinkOrganizerIntakeToSalesPayload.candidateId': adminLinkOrganizerIntakeToSalesPayloadCandidateId,
     'adminLinkOrganizerIntakeToSalesPayload.curationPath': adminLinkOrganizerIntakeToSalesPayloadCurationPath,
     'adminLinkOrganizerIntakeToSalesPayload.expectedCandidateHash': adminLinkOrganizerIntakeToSalesPayloadExpectedCandidateHash,
@@ -151130,6 +151930,10 @@ abstract final class CatchContractConstraints {
     'adminReviseSalesQuoteResponse.quoteVersion.termVersion': adminReviseSalesQuoteResponseQuoteVersionTermVersion,
     'adminReviseSalesQuoteResponse.receipt.requestId': adminReviseSalesQuoteResponseReceiptRequestId,
     'adminReviseSalesQuoteResponse.receipt.revision': adminReviseSalesQuoteResponseReceiptRevision,
+    'adminRevokeOrganizerEntitlementGrantCallablePayload.grantId': adminRevokeOrganizerEntitlementGrantCallablePayloadGrantId,
+    'adminRevokeOrganizerEntitlementGrantCallablePayload.operationId': adminRevokeOrganizerEntitlementGrantCallablePayloadOperationId,
+    'adminRevokeOrganizerEntitlementGrantCallablePayload.organizerId': adminRevokeOrganizerEntitlementGrantCallablePayloadOrganizerId,
+    'adminRevokeOrganizerEntitlementGrantCallablePayload.reason': adminRevokeOrganizerEntitlementGrantCallablePayloadReason,
     'adminSalesEvidenceProposalsListCallablePayload.cursor': adminSalesEvidenceProposalsListCallablePayloadCursor,
     'adminSalesEvidenceProposalsListCallablePayload.limit': adminSalesEvidenceProposalsListCallablePayloadLimit,
     'adminSalesEvidenceProposalsListCallablePayload.organizerId': adminSalesEvidenceProposalsListCallablePayloadOrganizerId,
@@ -160093,6 +160897,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerCrmSummaryCallableResponse.smsOptInCount': getOrganizerCrmSummaryCallableResponseSmsOptInCount,
     'getOrganizerCrmSummaryCallableResponse.truncated': getOrganizerCrmSummaryCallableResponseTruncated,
     'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount': getOrganizerCrmSummaryCallableResponseWhatsappOptInCount,
+    'getOrganizerEntitlementCallablePayload.organizerId': getOrganizerEntitlementCallablePayloadOrganizerId,
     'getOrganizerEventSetupDefaultsCallablePayload.organizerId': getOrganizerEventSetupDefaultsCallablePayloadOrganizerId,
     'getOrganizerFormAnalyticsCallablePayload.formId': getOrganizerFormAnalyticsCallablePayloadFormId,
     'getOrganizerFormAnalyticsCallablePayload.organizerId': getOrganizerFormAnalyticsCallablePayloadOrganizerId,
@@ -162987,6 +163792,77 @@ abstract final class CatchContractConstraints {
     'organizerDocument.tags': organizerDocumentTags,
     'organizerDocument.tags.items': organizerDocumentTagsItems,
     'organizerDocument.verifiedReviewCount': organizerDocumentVerifiedReviewCount,
+    'organizerEntitlementCallableResponse.catalogVersion': organizerEntitlementCallableResponseCatalogVersion,
+    'organizerEntitlementCallableResponse.grants': organizerEntitlementCallableResponseGrants,
+    'organizerEntitlementCallableResponse.grants.items.active': organizerEntitlementCallableResponseGrantsItemsActive,
+    'organizerEntitlementCallableResponse.grants.items.grantId': organizerEntitlementCallableResponseGrantsItemsGrantId,
+    'organizerEntitlementCallableResponse.grants.items.quantityConsumed': organizerEntitlementCallableResponseGrantsItemsQuantityConsumed,
+    'organizerEntitlementCallableResponse.grants.items.quantityRemaining': organizerEntitlementCallableResponseGrantsItemsQuantityRemaining,
+    'organizerEntitlementCallableResponse.grants.items.quantityTotal': organizerEntitlementCallableResponseGrantsItemsQuantityTotal,
+    'organizerEntitlementCallableResponse.grants.items.revoked': organizerEntitlementCallableResponseGrantsItemsRevoked,
+    'organizerEntitlementCallableResponse.grants.items.sku': organizerEntitlementCallableResponseGrantsItemsSku,
+    'organizerEntitlementCallableResponse.grants.items.skuLabel': organizerEntitlementCallableResponseGrantsItemsSkuLabel,
+    'organizerEntitlementCallableResponse.grants.items.source': organizerEntitlementCallableResponseGrantsItemsSource,
+    'organizerEntitlementCallableResponse.grants.items.unit': organizerEntitlementCallableResponseGrantsItemsUnit,
+    'organizerEntitlementCallableResponse.grants.items.validFromMillis': organizerEntitlementCallableResponseGrantsItemsValidFromMillis,
+    'organizerEntitlementCallableResponse.grants.items.validUntilMillis': organizerEntitlementCallableResponseGrantsItemsValidUntilMillis,
+    'organizerEntitlementCallableResponse.meters.flightDaysUsed': organizerEntitlementCallableResponseMetersFlightDaysUsed,
+    'organizerEntitlementCallableResponse.meters.waConversationsUsed': organizerEntitlementCallableResponseMetersWaConversationsUsed,
+    'organizerEntitlementCallableResponse.organizerId': organizerEntitlementCallableResponseOrganizerId,
+    'organizerEntitlementCallableResponse.revision': organizerEntitlementCallableResponseRevision,
+    'organizerEntitlementCallableResponse.schemaVersion': organizerEntitlementCallableResponseSchemaVersion,
+    'organizerEntitlementCallableResponse.skuCatalog': organizerEntitlementCallableResponseSkuCatalog,
+    'organizerEntitlementMutationCallableResponse.grantId': organizerEntitlementMutationCallableResponseGrantId,
+    'organizerEntitlementMutationCallableResponse.organizerId': organizerEntitlementMutationCallableResponseOrganizerId,
+    'organizerEntitlementMutationCallableResponse.replayed': organizerEntitlementMutationCallableResponseReplayed,
+    'organizerEntitlementMutationCallableResponse.revision': organizerEntitlementMutationCallableResponseRevision,
+    'organizerEntitlementMutationCallableResponse.schemaVersion': organizerEntitlementMutationCallableResponseSchemaVersion,
+    'organizerEntitlementReceiptDocument.action': organizerEntitlementReceiptDocumentAction,
+    'organizerEntitlementReceiptDocument.actorUid': organizerEntitlementReceiptDocumentActorUid,
+    'organizerEntitlementReceiptDocument.contentHash': organizerEntitlementReceiptDocumentContentHash,
+    'organizerEntitlementReceiptDocument.createdAt._nanoseconds': organizerEntitlementReceiptDocumentCreatedAtNanoseconds,
+    'organizerEntitlementReceiptDocument.createdAt._seconds': organizerEntitlementReceiptDocumentCreatedAtSeconds,
+    'organizerEntitlementReceiptDocument.expiresAt._nanoseconds': organizerEntitlementReceiptDocumentExpiresAtNanoseconds,
+    'organizerEntitlementReceiptDocument.expiresAt._seconds': organizerEntitlementReceiptDocumentExpiresAtSeconds,
+    'organizerEntitlementReceiptDocument.grantId': organizerEntitlementReceiptDocumentGrantId,
+    'organizerEntitlementReceiptDocument.operationId': organizerEntitlementReceiptDocumentOperationId,
+    'organizerEntitlementReceiptDocument.organizerId': organizerEntitlementReceiptDocumentOrganizerId,
+    'organizerEntitlementReceiptDocument.receiptId': organizerEntitlementReceiptDocumentReceiptId,
+    'organizerEntitlementReceiptDocument.resultRevision': organizerEntitlementReceiptDocumentResultRevision,
+    'organizerEntitlementReceiptDocument.schemaVersion': organizerEntitlementReceiptDocumentSchemaVersion,
+    'organizerEntitlementsDocument.createdAt._nanoseconds': organizerEntitlementsDocumentCreatedAtNanoseconds,
+    'organizerEntitlementsDocument.createdAt._seconds': organizerEntitlementsDocumentCreatedAtSeconds,
+    'organizerEntitlementsDocument.grants': organizerEntitlementsDocumentGrants,
+    'organizerEntitlementsDocument.grants.items.grantedAt._nanoseconds': organizerEntitlementsDocumentGrantsItemsGrantedAtNanoseconds,
+    'organizerEntitlementsDocument.grants.items.grantedAt._seconds': organizerEntitlementsDocumentGrantsItemsGrantedAtSeconds,
+    'organizerEntitlementsDocument.grants.items.grantedBy': organizerEntitlementsDocumentGrantsItemsGrantedBy,
+    'organizerEntitlementsDocument.grants.items.grantId': organizerEntitlementsDocumentGrantsItemsGrantId,
+    'organizerEntitlementsDocument.grants.items.note': organizerEntitlementsDocumentGrantsItemsNote,
+    'organizerEntitlementsDocument.grants.items.operationContentHash': organizerEntitlementsDocumentGrantsItemsOperationContentHash,
+    'organizerEntitlementsDocument.grants.items.operationResultRevision': organizerEntitlementsDocumentGrantsItemsOperationResultRevision,
+    'organizerEntitlementsDocument.grants.items.quantityConsumed': organizerEntitlementsDocumentGrantsItemsQuantityConsumed,
+    'organizerEntitlementsDocument.grants.items.quantityTotal': organizerEntitlementsDocumentGrantsItemsQuantityTotal,
+    'organizerEntitlementsDocument.grants.items.receiptRef': organizerEntitlementsDocumentGrantsItemsReceiptRef,
+    'organizerEntitlementsDocument.grants.items.revokedAt._nanoseconds': organizerEntitlementsDocumentGrantsItemsRevokedAtNanoseconds,
+    'organizerEntitlementsDocument.grants.items.revokedAt._seconds': organizerEntitlementsDocumentGrantsItemsRevokedAtSeconds,
+    'organizerEntitlementsDocument.grants.items.revokedBy': organizerEntitlementsDocumentGrantsItemsRevokedBy,
+    'organizerEntitlementsDocument.grants.items.revokeReason': organizerEntitlementsDocumentGrantsItemsRevokeReason,
+    'organizerEntitlementsDocument.grants.items.sku': organizerEntitlementsDocumentGrantsItemsSku,
+    'organizerEntitlementsDocument.grants.items.source': organizerEntitlementsDocumentGrantsItemsSource,
+    'organizerEntitlementsDocument.grants.items.unit': organizerEntitlementsDocumentGrantsItemsUnit,
+    'organizerEntitlementsDocument.grants.items.validFrom._nanoseconds': organizerEntitlementsDocumentGrantsItemsValidFromNanoseconds,
+    'organizerEntitlementsDocument.grants.items.validFrom._seconds': organizerEntitlementsDocumentGrantsItemsValidFromSeconds,
+    'organizerEntitlementsDocument.grants.items.validUntil._nanoseconds': organizerEntitlementsDocumentGrantsItemsValidUntilNanoseconds,
+    'organizerEntitlementsDocument.grants.items.validUntil._seconds': organizerEntitlementsDocumentGrantsItemsValidUntilSeconds,
+    'organizerEntitlementsDocument.meters.flightDaysUsed': organizerEntitlementsDocumentMetersFlightDaysUsed,
+    'organizerEntitlementsDocument.meters.periodStartsAt._nanoseconds': organizerEntitlementsDocumentMetersPeriodStartsAtNanoseconds,
+    'organizerEntitlementsDocument.meters.periodStartsAt._seconds': organizerEntitlementsDocumentMetersPeriodStartsAtSeconds,
+    'organizerEntitlementsDocument.meters.waConversationsUsed': organizerEntitlementsDocumentMetersWaConversationsUsed,
+    'organizerEntitlementsDocument.organizerId': organizerEntitlementsDocumentOrganizerId,
+    'organizerEntitlementsDocument.revision': organizerEntitlementsDocumentRevision,
+    'organizerEntitlementsDocument.schemaVersion': organizerEntitlementsDocumentSchemaVersion,
+    'organizerEntitlementsDocument.updatedAt._nanoseconds': organizerEntitlementsDocumentUpdatedAtNanoseconds,
+    'organizerEntitlementsDocument.updatedAt._seconds': organizerEntitlementsDocumentUpdatedAtSeconds,
     'organizerEventCandidateReviewDecisionDocument.blockerResolutions': organizerEventCandidateReviewDecisionDocumentBlockerResolutions,
     'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.blockerCode': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsBlockerCode,
     'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.note': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsNote,
@@ -166044,6 +166920,27 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.uid': programStaffListCallableResponseMembersItemsUid,
     'programStaffListCallableResponse.nextCursor': programStaffListCallableResponseNextCursor,
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.accessExpiresAtMillis': programStakeholderCountsCallableResponseAccessExpiresAtMillis,
+    'programStakeholderCountsCallableResponse.functions': programStakeholderCountsCallableResponseFunctions,
+    'programStakeholderCountsCallableResponse.functions.items.checkedInHeads': programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads,
+    'programStakeholderCountsCallableResponse.functions.items.expectedHeads': programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads,
+    'programStakeholderCountsCallableResponse.functions.items.functionId': programStakeholderCountsCallableResponseFunctionsItemsFunctionId,
+    'programStakeholderCountsCallableResponse.functions.items.invitedCount': programStakeholderCountsCallableResponseFunctionsItemsInvitedCount,
+    'programStakeholderCountsCallableResponse.functions.items.noShowCount': programStakeholderCountsCallableResponseFunctionsItemsNoShowCount,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpAttending': programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined': programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe': programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpPending': programStakeholderCountsCallableResponseFunctionsItemsRsvpPending,
+    'programStakeholderCountsCallableResponse.functions.items.status': programStakeholderCountsCallableResponseFunctionsItemsStatus,
+    'programStakeholderCountsCallableResponse.guestCount': programStakeholderCountsCallableResponseGuestCount,
+    'programStakeholderCountsCallableResponse.hotels': programStakeholderCountsCallableResponseHotels,
+    'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount': programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount,
+    'programStakeholderCountsCallableResponse.hotels.items.hotelId': programStakeholderCountsCallableResponseHotelsItemsHotelId,
+    'programStakeholderCountsCallableResponse.hotels.items.legCount': programStakeholderCountsCallableResponseHotelsItemsLegCount,
+    'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount': programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount,
+    'programStakeholderCountsCallableResponse.householdCount': programStakeholderCountsCallableResponseHouseholdCount,
+    'programStakeholderCountsCallableResponse.programId': programStakeholderCountsCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.serverTimeMillis': programStakeholderCountsCallableResponseServerTimeMillis,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
     'programStayDocument.createdAt._nanoseconds': programStayDocumentCreatedAtNanoseconds,

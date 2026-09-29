@@ -866,6 +866,8 @@ function AdminRouteApp() {
         ) : currentNav === "finance" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
             <FinanceOpsScreen
+              key={user?.uid ?? "sample"}
+              actorUid={user?.uid ?? "sample"}
               adminRoles={adminRoles}
               onBackToList={() => navigate(adminPathForNav("finance"))}
               onError={setError}

@@ -1317,6 +1317,22 @@
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
+    "screen.programs.counts": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkCountsScreen"
+          ],
+          "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+          "symbol": "ProgramStakeholderScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, empty, and populated route compositions through CatchRouteScaffold."
+    },
     "screen.host.event.moments": {
       "owners": [
         {
@@ -29639,6 +29655,158 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-TRIPS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.counts",
+      "name": "Program stakeholder counts",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkCountsScreen",
+          "path": "/host/work/:programId/counts",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+        "symbol": "ProgramStakeholderScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programStakeholderCountsProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+            "symbol": "ProgramStakeholderScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "getProgramStakeholderCounts"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "Counts-only read; names resolve from the work access payload. No PII leaves the callable."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "counts_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the counts payload resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        },
+        {
+          "id": "counts_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "CatchLocalizedErrorState inside the route scaffold.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        },
+        {
+          "id": "counts_populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Guest/household totals plus per-function RSVP and per-hotel routing breakdowns.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states",
+            "ProgramFunctionCountsRow/Row states",
+            "ProgramHotelOccupancyRow/Row states"
+          ]
+        },
+        {
+          "id": "counts_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Inline CatchEmptyState rows render when a program has no functions or hotels.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramStakeholderScreen renders summary counters and function/hotel breakdown rows scoped to the stakeholder viewer.",
+        "targetLayout": "Breakdown rows stay provider-free; counts refresh through the shared program repositories.",
+        "sections": [
+          {
+            "id": "section.programs_counts.adapter",
+            "name": "Counts route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramStakeholderScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+              "symbol": "ProgramStakeholderScreen"
+            },
+            "currentOwner": "ProgramStakeholderScreen + programStakeholderCountsProvider",
+            "targetOwner": "provider-free breakdown rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.surface",
+              "catch.badge"
+            ],
+            "states": [
+              "counts_loading",
+              "counts_error",
+              "counts_populated"
+            ],
+            "migration": "Keep the counts read counts-only; label joins stay client-side off work access.",
+            "previewIds": [
+              "ProgramStakeholderScreen/Screen states",
+              "ProgramFunctionCountsRow/Row states",
+              "ProgramHotelOccupancyRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-COUNTS-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }

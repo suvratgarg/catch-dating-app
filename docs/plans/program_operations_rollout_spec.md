@@ -105,7 +105,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `guestRelations` → Guests · RSVP inbox · Imports | **in review** — `/host/work/:programId/guests` + `/host/work/:programId/import` on the shared grid/import surfaces with coordinator-only mutations hidden; `listProgramGuests`, `listProgramHouseholds`, `importProgramManifest` and work-access `functions` widened to the duty |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
-| `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |
+| `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + `ProgramStakeholderScreen` counts surface at `/host/work/:programId/counts` (#458) |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
 
@@ -215,7 +215,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R5 | Stays/room blocks + group-informed allocation | **blocked** — decision 5.5; no A7 code exists to pull | schema + allocation |
 | R6 | Travel capture on household RSVP | **blocked** — decision 5.2 (write-surface widening) | RSVP-side capture |
 | R7 | Distance-aware moment lead times | **in review #456** | merge; optional Routes provider swap |
-| R8 | `stakeholderViewer` counts API + read surface | **blocked** — decision 5.4 (field-safety contract) | API + surface |
+| R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
 | R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |
