@@ -1,0 +1,12 @@
+{
+  "organizerId": "organizer-1",
+  "operationId": "op-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sku": "wedding_pro",
+  "unit": "program",
+  "quantityTotal": 1,
+  "validFromMillis": 1760000000000,
+  "validUntilMillis": 1800000000000,
+  "source": "manualInvoice",
+  "receiptRef": "INV-0412",
+  "note": "Pilot"
+}

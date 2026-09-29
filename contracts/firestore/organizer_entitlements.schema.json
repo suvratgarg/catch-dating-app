@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_entitlements.schema.json",
+  "title": "OrganizerEntitlementsDocument",
+  "description": "Server-owned entitlement document at organizerEntitlements/{organizerId} holding purchased plan grants and metered usage. Written only by admin grant/revoke callables in the pilot; managers receive a bounded callable projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEntitlements",
+  "x-firestore-path": "organizerEntitlements/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer entitlement admin callables",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "grants",
+    "meters",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "grants": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {"$ref": "../shared/organizer_entitlement_common.schema.json#/definitions/entitlementGrant"},
+      "x-catch-ownership": "server-only"
+    },
+    "meters": {"$ref": "../shared/organizer_entitlement_common.schema.json#/definitions/entitlementMeters", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
+  }
+}
