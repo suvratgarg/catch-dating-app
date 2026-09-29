@@ -83,11 +83,43 @@ final _guestFunctions = [
     ProgramGuestsFunction(functionId: fn.functionId, name: fn.name),
 ];
 
+final _stations = [
+  const ProgramStation(
+    pickupPointId: 'pp_del_t3',
+    label: 'Delhi IGI Terminal 3',
+    kind: 'airport',
+    iataCode: 'DEL',
+    terminal: 'T3',
+    meetingZone: 'Pillar 12 arrivals forecourt',
+    instructions: 'Greeter holds a "Kapoor–Shah" placard.',
+    active: true,
+    revision: 4,
+  ),
+  const ProgramStation(
+    pickupPointId: 'pp_ndls',
+    label: 'New Delhi Railway Exit 4',
+    kind: 'railway',
+    active: false,
+    revision: 1,
+  ),
+];
+
+final _hotels = [
+  const ProgramHotel(
+    hotelId: 'hotel_taj',
+    name: 'Taj Palace',
+    address: '2 Sardar Patel Marg, Chanakyapuri',
+    receptionContact: '+91 11 2611 0202',
+    active: true,
+    revision: 6,
+  ),
+];
+
 final _detail = OrganizerProgramDetail(
   program: _program,
   functions: _functions,
-  pickupPoints: const [],
-  hotels: const [],
+  pickupPoints: _stations,
+  hotels: _hotels,
   counts: const {
     'guests': 4,
     'households': 2,

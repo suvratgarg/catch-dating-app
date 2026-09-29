@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'program_workspace_surface.dart';
+
 /// Organizer program workspace — program header, schedule day rail and
 /// function management. Guests/team/import live on pushed sibling routes so
 /// the schedule stays the focus here.
@@ -221,6 +223,66 @@ class _ProgramWorkspacePageBodyState
           ),
           CatchSectionListItem(
             child: CatchSection.contained(
+              title: context.l10n.programsWorkspaceLogisticsTitle,
+              subtitle: context.l10n.programsWorkspaceLogisticsSubtitle,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    context.l10n.programsWorkspacePickupTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  gapH8,
+                  CatchButton(
+                    label: context.l10n.programsWorkspacePickupNew,
+                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                    variant: CatchButtonVariant.secondary,
+                    onPressed: () => _editPickupPoint(context, null),
+                  ),
+                  const SizedBox(height: CatchSpacing.s2),
+                  if (detail.pickupPoints.isEmpty) ...[
+                    gapH8,
+                    Text(
+                      context.l10n.programsWorkspacePickupEmpty,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ] else
+                    for (final point in detail.pickupPoints)
+                      ProgramWorkspaceStationTile(
+                        station: point,
+                        onEdit: () => _editPickupPoint(context, point),
+                      ),
+                  gapH16,
+                  Text(
+                    context.l10n.programsWorkspaceHotelsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  gapH8,
+                  CatchButton(
+                    label: context.l10n.programsWorkspaceHotelNew,
+                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                    variant: CatchButtonVariant.secondary,
+                    onPressed: () => _editHotel(context, null),
+                  ),
+                  const SizedBox(height: CatchSpacing.s2),
+                  if (detail.hotels.isEmpty) ...[
+                    gapH8,
+                    Text(
+                      context.l10n.programsWorkspaceHotelEmpty,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ] else
+                    for (final hotel in detail.hotels)
+                      ProgramWorkspaceHotelTile(
+                        hotel: hotel,
+                        onEdit: () => _editHotel(context, hotel),
+                      ),
+                ],
+              ),
+            ),
+          ),
+          CatchSectionListItem(
+            child: CatchSection.contained(
               title: context.l10n.programsWorkspaceManageTitle,
               child: Column(
                 children: [
@@ -327,6 +389,59 @@ class _ProgramWorkspacePageBodyState
           venueName: draft.venueName,
           venueNotes: draft.venueNotes,
           status: draft.status.name,
+        );
+    if (!mounted) return;
+    ref.invalidate(
+      organizerProgramDetailProvider(widget.programDetail.program.programId),
+    );
+  }
+
+  Future<void> _editPickupPoint(
+    BuildContext context,
+    ProgramStation? existing,
+  ) async {
+    final draft = await showDialog<ProgramPickupPointDraft>(
+      context: context,
+      builder: (_) => ProgramPickupPointEditDialog(existing: existing),
+    );
+    if (draft == null || !mounted) return;
+    await ref
+        .read(programWorkspaceControllerProvider.notifier)
+        .upsertPickupPoint(
+          programId: widget.programDetail.program.programId,
+          pickupPointId: existing?.pickupPointId,
+          expectedRevision: existing?.revision,
+          kind: draft.kind,
+          label: draft.label,
+          iataCode: draft.iataCode,
+          terminal: draft.terminal,
+          meetingZone: draft.meetingZone,
+          instructions: draft.instructions,
+          active: draft.active,
+        );
+    if (!mounted) return;
+    ref.invalidate(
+      organizerProgramDetailProvider(widget.programDetail.program.programId),
+    );
+  }
+
+  Future<void> _editHotel(BuildContext context, ProgramHotel? existing) async {
+    final draft = await showDialog<ProgramHotelDraft>(
+      context: context,
+      builder: (_) => ProgramHotelEditDialog(existing: existing),
+    );
+    if (draft == null || !mounted) return;
+    await ref
+        .read(programWorkspaceControllerProvider.notifier)
+        .upsertHotel(
+          programId: widget.programDetail.program.programId,
+          hotelId: existing?.hotelId,
+          expectedRevision: existing?.revision,
+          name: draft.name,
+          address: draft.address,
+          receptionContact: draft.receptionContact,
+          notes: draft.notes,
+          active: draft.active,
         );
     if (!mounted) return;
     ref.invalidate(
@@ -498,198 +613,3 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
   }
 }
 
-class ProgramFunctionDraft {
-  const ProgramFunctionDraft({
-    required this.name,
-    required this.startsAt,
-    required this.endsAt,
-    required this.venueName,
-    required this.status,
-    this.venueNotes,
-  });
-
-  final String name;
-  final DateTime startsAt;
-  final DateTime endsAt;
-  final String venueName;
-  final String? venueNotes;
-  final ProgramFunctionStatus status;
-}
-
-class ProgramFunctionEditDialog extends StatefulWidget {
-  const ProgramFunctionEditDialog({super.key, this.existing});
-
-  final OrganizerFunctionDetail? existing;
-
-  @override
-  State<ProgramFunctionEditDialog> createState() =>
-      _ProgramFunctionEditDialogState();
-}
-
-class _ProgramFunctionEditDialogState extends State<ProgramFunctionEditDialog> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _venueController;
-  late final TextEditingController _notesController;
-  late ProgramFunctionStatus _status;
-  DateTime? _startsAt;
-  DateTime? _endsAt;
-
-  @override
-  void initState() {
-    super.initState();
-    final existing = widget.existing;
-    _nameController = TextEditingController(text: existing?.name ?? '');
-    _venueController = TextEditingController(text: existing?.venueName ?? '');
-    _notesController = TextEditingController();
-    _status = existing?.status ?? ProgramFunctionStatus.scheduled;
-    _startsAt = existing?.startsAt;
-    _endsAt = existing?.endsAt;
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _venueController.dispose();
-    _notesController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickDateTime({required bool isStart}) async {
-    final base = isStart ? _startsAt : _endsAt;
-    final initial = base ?? DateTime.now();
-    final date = await showCatchDatePicker(
-      copy: catchDatePickerCopy(context.l10n),
-      context: context,
-      initialDate: initial,
-      firstDate: DateTime(initial.year - 2),
-      lastDate: DateTime(initial.year + 5),
-    );
-    if (date == null || !mounted) return;
-    final time = await showCatchTimePicker(
-      copy: catchTimePickerCopy(context.l10n),
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(initial),
-    );
-    if (time == null || !mounted) return;
-    setState(() {
-      final combined = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-      if (isStart) {
-        _startsAt = combined;
-        if (_endsAt != null && _endsAt!.isBefore(combined)) {
-          _endsAt = combined.add(const Duration(hours: 2));
-        }
-      } else {
-        _endsAt = combined.isBefore(_startsAt ?? combined)
-            ? (_startsAt ?? combined).add(const Duration(hours: 2))
-            : combined;
-      }
-    });
-  }
-
-  void _submit() {
-    final name = _nameController.text.trim();
-    final venue = _venueController.text.trim();
-    final startsAt = _startsAt;
-    final endsAt = _endsAt;
-    if (name.isEmpty || venue.isEmpty || startsAt == null || endsAt == null) {
-      return;
-    }
-    Navigator.of(context).pop(
-      ProgramFunctionDraft(
-        name: name,
-        startsAt: startsAt,
-        endsAt: endsAt,
-        venueName: venue,
-        venueNotes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
-        status: _status,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => CatchDialog<void>(
-    title: widget.existing == null
-        ? context.l10n.programsWorkspaceFunctionNew
-        : context.l10n.programsWorkspaceFunctionEdit,
-    actions: [
-      CatchButton(
-        label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-        variant: CatchButtonVariant.secondary,
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      CatchButton(
-        label: context.l10n.programsWorkspaceFunctionSave,
-        onPressed: _submit,
-      ),
-    ],
-    child: CatchSection.containedFieldRows(
-      children: [
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsWorkspaceFunctionName,
-          controller: _nameController,
-          contract:
-              CatchContractConstraints.upsertProgramFunctionCallablePayloadName,
-          textCapitalization: TextCapitalization.words,
-        ),
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsWorkspaceFunctionVenue,
-          controller: _venueController,
-          contract: CatchContractConstraints
-              .upsertProgramFunctionCallablePayloadVenueName,
-          textCapitalization: TextCapitalization.words,
-        ),
-        CatchFieldRow.standard(
-          leading: Icon(CatchIcons.scheduleOutlined),
-          body: Text(
-            _startsAt == null
-                ? context.l10n.programsWorkspaceFunctionStarts
-                : AppTimeFormatters.dateTime(_startsAt!),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
-          onTap: () => _pickDateTime(isStart: true),
-        ),
-        CatchFieldRow.standard(
-          leading: Icon(CatchIcons.scheduleOutlined),
-          body: Text(
-            _endsAt == null
-                ? context.l10n.programsWorkspaceFunctionEnds
-                : AppTimeFormatters.dateTime(_endsAt!),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
-          onTap: () => _pickDateTime(isStart: false),
-        ),
-        CatchChoiceInput<ProgramFunctionStatus>.segmented(
-          options: [
-            for (final status in ProgramFunctionStatus.values)
-              CatchOption(value: status, label: status.name),
-          ],
-          selected: _status,
-          contract: CatchContractConstraints
-              .upsertProgramFunctionCallablePayloadStatus,
-          contractValueBuilder: (status) => status.name,
-          onChanged: (status) => setState(() => _status = status),
-        ),
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsWorkspaceFunctionVenueNotes,
-          controller: _notesController,
-          contract: CatchContractConstraints
-              .upsertProgramFunctionCallablePayloadVenueNotes,
-          maxLines: 3,
-        ),
-      ],
-    ),
-  );
-}
