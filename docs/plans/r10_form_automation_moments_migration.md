@@ -147,7 +147,7 @@ bridge is acceptable; sharing only a journal and a quiet-hours helper is
    remain temporarily with explicit removal criteria; historic records
    stay readable without remaining executable.
 
-## Retirement ledger (phase 5 state)
+## Retirement ledger (phases 5–6 state)
 
 Removed execution paths and the evidence of each removal:
 
@@ -163,6 +163,15 @@ Removed execution paths and the evidence of each removal:
   `organizerCampaignDispatcher.ts`): replaced by
   `CampaignDeliveryWorker` over the shared outbox. The dispatcher keeps
   lease/queue orchestration only.
+- **`campaignHandoff` self-dispatching campaign mint**
+  (`prepareCampaign` + `automationOrigin` campaign creation in
+  `organizerFormAutomations.ts`): replaced by
+  `handoffAutomationMessage`, which atomically mints the companion
+  Moment, the `organizerMomentRuns` occurrence, and the
+  `automationDeliveryMessages` intent. `AutomationDeliveryWorker`
+  executes the send through the shared outbox with transactional
+  authority rechecks; `AutomationWhatsappDeliveryStore` reconciles
+  status receipts after run completion.
 - **`sendEventReminders` cron**: already absent before this work;
   `eventStartReminder`/`eventFeedbackPrompt` moments are its replacement.
 
@@ -186,6 +195,12 @@ criteria (none may produce a send):
   dates need no Moments per the decision above); the scheduler now also
   re-drives stalled `resolving`/`sending` leases and `blocked`
   campaigns.
+- `automationOrigin` campaigns minted before the phase-6 cutover remain
+  executable under the campaign worker until they drain — the handoff's
+  deterministic legacy-campaign id check (`autocampaign_<hash>`) assigns
+  ownership inside the run-creation transaction so retries and deploy
+  overlap cannot double-send. Remove the campaign `automationOrigin`
+  branch when no non-terminal automation-origin campaigns exist.
 
 ## Acceptance demonstration
 

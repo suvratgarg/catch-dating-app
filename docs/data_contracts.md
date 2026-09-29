@@ -4118,8 +4118,13 @@ server-only. The existing create callable edits with an expected revision;
 nullable form scope enables organizer-wide acceptance and attendance rules.
 Published answer conditions carry a server-owned version binding. Runs carry
 source identity, original occurrence time, due time and fenced lease fields.
-Message actions pin a draft campaign revision and generated campaigns carry
-server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
+Message actions pin a draft campaign revision; at handoff the engine mints a
+server-managed companion `organizerMoments` row plus a durable
+`automationDeliveryMessages` intent, and the shared delivery core executes the
+send. Companion Moments carry deterministic `(rule, action)` identity and are
+never organizer-editable. Campaigns created before the cutover still carry
+server-only `automationOrigin` and drain through the campaign executor; client
+campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
 
 ### Event Service WhatsApp Consent Contract
