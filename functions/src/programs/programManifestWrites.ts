@@ -182,6 +182,7 @@ export function buildManifestWrites(
       dimension: meta.dimension,
       sortOrder: 0,
       memberCount: groupAdds.get(groupId) ?? 0,
+      hotelId: null,
       createdAt: now,
       updatedAt: now,
       revision: 1,

@@ -1,10 +1,13 @@
+import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
 import {
   evaluateCondition,
   type TravelLegEvent,
 } from "./momentConditions";
 import {
   loadAnchorFacts,
+  loadTravelFacts,
   MOMENT_RUNS_COLLECTION,
   MOMENT_SENDS_COLLECTION,
   MOMENTS_COLLECTION,
@@ -21,17 +24,26 @@ import {
   type QuietHours,
 } from "./momentPolicy";
 import {
+  nominalDueAtMillis,
+  planRun,
   planManualRun,
   replan,
   resolveFireDisposition,
   selectDueRuns,
 } from "./momentPlanning";
+import {
+  buildTravelContext,
+  haversineTravelMinutes,
+  type TravelEstimateContext,
+  type TravelEstimator,
+} from "./momentTravel";
 import type {
   AnchorFacts,
   MomentAction,
   MomentDefinition,
   MomentScope,
   RunRecord,
+  TravelFacts,
 } from "./momentModel";
 import {scopeId} from "./momentModel";
 
@@ -107,6 +119,10 @@ export interface MomentRunnerDeps {
    *  preference key for uid endpoints. */
   loadConsentFacts: (recipient: ResolvedRecipient,
     moment: MomentDefinition) => Promise<ConsentFacts>;
+  /** Hotel→venue travel estimate in minutes for distance-aware leads.
+   *  Defaults to the pure haversine guess; a Routes provider can replace
+   *  it without engine changes. */
+  estimateTravelMinutes?: TravelEstimator;
 }
 
 export interface SweepSummary {
@@ -159,6 +175,29 @@ export async function runMomentSweep(
     return factsCache.get(key) ?? null;
   };
 
+  // Travel geography loads once per program and only when an armed moment
+  // actually asks for distance-aware leads.
+  const estimator = deps.estimateTravelMinutes ?? haversineTravelMinutes;
+  const travelCache = new Map<string, TravelFacts>();
+  const travelFor = async (
+    moment: MomentDefinition,
+    facts: AnchorFacts,
+  ): Promise<TravelEstimateContext | null> => {
+    if (moment.scope.kind !== "program" ||
+        moment.audience.kind !== "functionGuests" ||
+        moment.audience.travelTimeLead !== true) {
+      return null;
+    }
+    if (facts.travel === undefined) {
+      const programId = moment.scope.programId;
+      if (!travelCache.has(programId)) {
+        travelCache.set(programId, await loadTravelFacts(db, programId));
+      }
+      facts.travel = travelCache.get(programId)!;
+    }
+    return buildTravelContext(moment, facts, estimator);
+  };
+
   // Pass 1: (re)plan anchored/scheduled runs against current facts.
   for (const moment of moments) {
     if (moment.initiation.kind !== "anchored" &&
@@ -167,11 +206,66 @@ export async function runMomentSweep(
     if (facts === null) continue;
     const existing = await db.collection(MOMENT_RUNS_COLLECTION)
       .where("momentId", "==", moment.momentId)
-      .where("status", "==", "planned")
       .get();
     const runs = existing.docs.map((doc) =>
       runFromDocument(doc.data()));
-    const plan = replan(moment, facts, runs, now);
+    const travel = await travelFor(moment, facts);
+    const nominal = planRun(moment, facts, now);
+    const recipients = travel && nominal.kind === "planned" ?
+      (await resolveMomentRecipients(db, moment, nominal.run,
+        travel)).recipients : null;
+    const travelLeadMinutes = recipients ? recipients.reduce((max,
+      recipient) => Math.max(max, recipient.travelLeadMinutes ?? 0), 0) :
+      undefined;
+    const preview = planRun(moment, facts, now,
+      {travel, travelLeadMinutes});
+    if (preview.kind === "planned") {
+      // Earlier run IDs may encode a mutable travel wake. They cannot be
+      // mapped to a nominal occurrence after lead or setting changes; this
+      // remains true when travelTimeLead has since been switched off.
+      const legacy = runs.filter((run) =>
+        run.anchorRevision === preview.run.anchorRevision &&
+        run.runId !== preview.run.runId &&
+        run.occurrenceVersion !== 2 &&
+        run.travelPlanHash === undefined);
+      if (legacy.length > 0) {
+        let held = false;
+        for (const run of legacy.filter((entry) =>
+          entry.status === "planned")) {
+          await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
+            .update({status: "failed",
+              reason: "legacyOccurrenceUnresolved"});
+          held = true;
+        }
+        const nominalRun = runs.find((run) =>
+          run.runId === preview.run.runId);
+        if (nominalRun?.status === "planned") {
+          await db.collection(MOMENT_RUNS_COLLECTION)
+            .doc(nominalRun.runId).update({status: "failed",
+              reason: "legacyOccurrenceUnresolved"});
+          held = true;
+        } else if (!nominalRun) {
+          await db.collection(MOMENT_RUNS_COLLECTION)
+            .doc(preview.run.runId).set({...preview.run,
+              status: "failed", reason: "legacyOccurrenceUnresolved"});
+          held = true;
+        }
+        if (held) {
+          logger.warn("Moment occurrence requires legacy reconciliation", {
+            reason: "legacyOccurrenceUnresolved",
+            momentId: moment.momentId,
+            nominalRunId: preview.run.runId,
+            legacyRunIds: legacy.map((run) => run.runId),
+          });
+          summary.runsSkipped += 1;
+        }
+        continue;
+      }
+    }
+    const travelPlanHash = recipients ?
+      hashTravelPlan(recipients) : undefined;
+    const plan = replan(moment, facts, runs, now,
+      {travel, travelLeadMinutes, travelPlanHash});
     for (const runId of plan.supersede) {
       await db.collection(MOMENT_RUNS_COLLECTION).doc(runId)
         .update({status: "superseded"});
@@ -188,7 +282,14 @@ export async function runMomentSweep(
         summary.runsCreated += 1;
       }
     }
-    if (plan.supersede.length > 0 || plan.create !== null) {
+    for (const change of plan.reschedule) {
+      await db.collection(MOMENT_RUNS_COLLECTION).doc(change.runId)
+        .update({dueAtMillis: change.dueAtMillis,
+          plannedWakeAtMillis: change.plannedWakeAtMillis,
+          travelPlanHash: change.travelPlanHash});
+    }
+    if (plan.supersede.length > 0 || plan.create !== null ||
+        plan.reschedule.length > 0) {
       summary.momentsReplanned += 1;
     }
   }
@@ -215,12 +316,20 @@ export async function runMomentSweep(
       summary.runsSkipped += 1;
       continue;
     }
-    const outcome = await dispatchRun(db, deps, moment, run, facts, now);
+    const outcome = await dispatchRun(db, deps, moment, run, facts, now,
+      await travelFor(moment, facts));
     if (outcome === "deferred") summary.runsDeferred += 1;
     else if (outcome === "fired") summary.runsFired += 1;
     else summary.runsSkipped += 1;
   }
   return summary;
+}
+
+function hashTravelPlan(recipients: ReadonlyArray<ResolvedRecipient>): string {
+  const schedule = recipients.map((recipient) => [
+    recipient.recipientKey, recipient.travelLeadMinutes ?? 0,
+  ]).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+  return createHash("sha256").update(JSON.stringify(schedule)).digest("hex");
 }
 
 async function loadMoment(
@@ -305,6 +414,7 @@ async function dispatchRun(
   run: RunRecord,
   facts: AnchorFacts,
   now: number,
+  travel?: TravelEstimateContext | null,
 ): Promise<DispatchOutcome> {
   const disposition = resolveFireDisposition(run, moment, facts, now);
   if (disposition !== "dispatch") {
@@ -322,14 +432,19 @@ async function dispatchRun(
   const localMinute = await deps.localMinuteOfDay(moment.scope, now);
   const dayKey = await deps.localDayKey(moment.scope, now);
 
-  const resolution = await resolveMomentRecipients(db, moment, run);
+  const resolution = await resolveMomentRecipients(
+    db, moment, run, travel);
   const decisions: PolicyDecision[] = [];
   const byRecipient = new Map<string, ResolvedRecipient>();
   for (const recipient of resolution.recipients) {
     byRecipient.set(recipient.recipientKey, recipient);
   }
+  // Distance-aware leads: the run woke early enough for the farthest
+  // guest; nearer recipients wait for their own due. Deferred recipients
+  // write no send row, so the re-fire below is still idempotent.
+  const nominalDue = travel ? nominalDueAtMillis(moment, run, facts) : 0;
+  let pendingTravelDue: number | null = null;
   for (const recipient of resolution.recipients) {
-    const consent = await deps.loadConsentFacts(recipient, moment);
     const sendRef = db.collection(MOMENT_SENDS_COLLECTION)
       .doc(`${run.runId}_${recipient.recipientKey}`);
     const prior = await sendRef.get();
@@ -338,6 +453,17 @@ async function dispatchRun(
       decisions.push({kind: "send"});
       continue;
     }
+    if (travel) {
+      const due = nominalDue -
+        (recipient.travelLeadMinutes ?? 0) * 60_000;
+      if (due > now) {
+        decisions.push({kind: "defer", reason: "travelLead"});
+        pendingTravelDue = pendingTravelDue === null ?
+          due : Math.min(pendingTravelDue, due);
+        continue;
+      }
+    }
+    const consent = await deps.loadConsentFacts(recipient, moment);
     const sentToday = await countSendsToday(
       db, recipient.recipientKey, dayKey);
     const decision = evaluateRecipientPolicy({
@@ -385,8 +511,13 @@ async function dispatchRun(
     });
   }
   if (decisions.some((d) => d.kind === "defer")) {
-    const retry = await deps.quietEndMillis(moment.scope, now) ??
-      now + 60_000;
+    // Travel-deferred recipients wake the run at their own due, not a flat
+    // minute later; a quiet-hours defer still wins when both apply.
+    const quietRetry = await deps.quietEndMillis(moment.scope, now);
+    const candidates = [quietRetry, pendingTravelDue]
+      .filter((v): v is number => v !== null);
+    const retry = candidates.length > 0 ?
+      Math.min(...candidates) : now + 60_000;
     await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
       .update({dueAtMillis: retry});
     return "deferred";

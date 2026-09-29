@@ -29,7 +29,7 @@ const validPayload = {
   sense: "audience",
   audience: {
     kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   },
   action: {
     kind: "sendTemplate", connectionId: "conn1", templateId: "tpl",
@@ -85,6 +85,30 @@ test("invalid axis combination is rejected at upsert", async () => {
     }),
     /manualRequiresAudienceSense/);
 });
+
+test("travelTimeLead is rejected on non-functionGuests audiences",
+  async () => {
+    const db = new FakeFirestore({});
+    const {deps} = makeDeps(db);
+    await assert.rejects(
+      upsertOrganizerMomentHandler(deps, {
+        actorUid: "mgr",
+        payload: {...validPayload, audience: {
+          kind: "households", rsvpPendingOnly: false,
+          travelTimeLead: true,
+        }},
+      }),
+      /travelTimeLead applies to functionGuests/);
+    // The flag rides through on the legal audience.
+    const created = await upsertOrganizerMomentHandler(deps, {
+      actorUid: "mgr",
+      payload: {...validPayload, audience: {
+        ...validPayload.audience, travelTimeLead: true,
+      }},
+    });
+    assert.equal(created.moment.audience.kind === "functionGuests" &&
+      created.moment.audience.travelTimeLead, true);
+  });
 
 test("arm records approval once; re-arm is rejected", async () => {
   const db = new FakeFirestore({});

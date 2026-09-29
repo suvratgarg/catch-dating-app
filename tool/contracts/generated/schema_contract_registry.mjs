@@ -165014,6 +165014,7 @@ export const programGuestGroupDocumentSchema = {
     "dimension",
     "sortOrder",
     "memberCount",
+    "hotelId",
     "createdAt",
     "updatedAt",
     "revision"
@@ -165052,6 +165053,15 @@ export const programGuestGroupDocumentSchema = {
       "minimum": 0,
       "maximum": 100000,
       "description": "Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete."
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group."
     },
     "createdAt": {
       "type": "object",
@@ -167467,6 +167477,13 @@ export const organizerMomentDocumentSchema = {
           ],
           "description": "functionGuests: one send per household when true (default)."
         },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+        },
         "rsvpPendingOnly": {
           "type": [
             "boolean",
@@ -167649,7 +167666,7 @@ export const organizerMomentRunDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_moment_runs.schema.json",
   "title": "OrganizerMomentRunDocument",
-  "description": "Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.",
+  "description": "Server-owned planned/fired run for a moment. Time-based runId encodes moment + anchor revision + nominal due time; mutable travel wake and deferrals are separate. Triggered/manual identities retain subject/requestKey.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerMomentRuns",
@@ -167678,6 +167695,21 @@ export const organizerMomentRunDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "occurrenceVersion": {
+      "type": "integer",
+      "enum": [
+        2
+      ]
+    },
+    "plannedWakeAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "travelPlanHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     },
     "anchorRevision": {
       "type": "integer",
@@ -168115,6 +168147,13 @@ export const upsertOrganizerMomentCallablePayloadSchema = {
             "null"
           ],
           "description": "functionGuests: one send per household when true (default)."
+        },
+        "travelTimeLead": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
         },
         "rsvpPendingOnly": {
           "type": [
@@ -168628,6 +168667,13 @@ export const organizerMomentCallableResponseSchema = {
               ],
               "description": "functionGuests: one send per household when true (default)."
             },
+            "travelTimeLead": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
+            },
             "rsvpPendingOnly": {
               "type": [
                 "boolean",
@@ -169027,6 +169073,13 @@ export const listOrganizerMomentsCallableResponseSchema = {
                   "null"
                 ],
                 "description": "functionGuests: one send per household when true (default)."
+              },
+              "travelTimeLead": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes."
               },
               "rsvpPendingOnly": {
                 "type": [
@@ -170157,6 +170210,7 @@ export const programIdCallablePayloadSchema = {
   "additionalProperties": false,
   "x-callable-aliases": [
     "getOrganizerProgram",
+    "getProgramStakeholderCounts",
     "getProgramWorkAccess",
     "listProgramHouseholds"
   ],
@@ -170947,6 +171001,15 @@ export const upsertProgramGuestGroupCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 10000
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional programHotels link — where this group's members stay; feeds distance-aware moment lead times. Omitted preserves the existing link; explicit null clears it."
     }
   }
 };
@@ -174930,6 +174993,7 @@ export const programGuestGroupListCallableResponseSchema = {
           "dimension",
           "sortOrder",
           "memberCount",
+          "hotelId",
           "revision"
         ],
         "properties": {
@@ -174956,6 +175020,14 @@ export const programGuestGroupListCallableResponseSchema = {
           "memberCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           },
           "revision": {
             "type": "integer",
@@ -176110,6 +176182,175 @@ export const programFunctionDoorViewCallableResponseSchema = {
             ],
             "maxLength": 140,
             "description": "Staff display name resolved through programStaffGrants; never a uid."
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programStakeholderCountsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_stakeholder_counts_response.schema.json",
+  "title": "ProgramStakeholderCountsCallableResponse",
+  "description": "Counts-only program overview for stakeholderViewer staff and organizer managers: guest and household headcounts, per-function RSVP/attendance histograms, and per-hotel occupancy. The contract carries no PII — ids and counts only, never names, contacts, or notes.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramStakeholderCounts"
+  ],
+  "required": [
+    "programId",
+    "serverTimeMillis",
+    "accessExpiresAtMillis",
+    "guestCount",
+    "householdCount",
+    "functions",
+    "hotels"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "guestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "householdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "status",
+          "invitedCount",
+          "rsvpPending",
+          "rsvpAttending",
+          "rsvpDeclined",
+          "rsvpMaybe",
+          "expectedHeads",
+          "checkedInHeads",
+          "noShowCount"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "invitedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Guests invited to this function: every program guest for allGuests functions, else invited functionGuests rows."
+          },
+          "rsvpPending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Invited guests with no response (or no join row yet on allGuests functions)."
+          },
+          "rsvpAttending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpDeclined": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpMaybe": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "expectedHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Sum of attending party sizes (null reads as 1)."
+          },
+          "checkedInHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Heads marked checkedIn at the door."
+          },
+          "noShowCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "routedGuestCount",
+          "arrivedGuestCount",
+          "legCount"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "routedGuestCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Distinct guests with at least one leg routed to this hotel."
+          },
+          "arrivedGuestCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Distinct routed guests whose hotel-bound leg already arrived."
+          },
+          "legCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
           }
         }
       }

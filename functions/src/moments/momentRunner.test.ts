@@ -70,7 +70,7 @@ const sangeetReminder: MomentDefinition = {
   sense: "audience",
   audience: {
     kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   },
   action: {
     kind: "sendTemplate", connectionId: "conn1", templateId: "tpl",
@@ -162,6 +162,51 @@ test("moved function supersedes the planned run", async () => {
   assert.equal(newRun.exists, true);
 });
 
+test("fresh non-travel scheduled and anchored edits replan normally",
+  async () => {
+    for (const initiation of [
+      {kind: "scheduled" as const, atMillis: 10_000_000},
+      {kind: "anchored" as const, anchorKind: "functionStart" as const,
+        anchorId: "sangeet", offsetMinutes: -15},
+    ]) {
+      const db = new FakeFirestore({});
+      seedTravelProgram(db);
+      const firstMoment: MomentDefinition = {...travelReminder,
+        audience: {kind: "functionGuests", functionId: "sangeet",
+          rsvp: ["attending"], householdDedupe: true,
+          travelTimeLead: false},
+        initiation};
+      writeMoment(db, firstMoment);
+      const {deps} = makeDeps(db, 0);
+      await runMomentSweep(deps);
+      const firstDue = initiation.kind === "scheduled" ?
+        10_000_000 : 9_100_000;
+      const oldId = `m_travel_${initiation.kind === "scheduled" ?
+        0 : 7}_${firstDue}`;
+      const oldRun = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/${oldId}`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(oldRun.occurrenceVersion, 2);
+      const changedInitiation = initiation.kind === "scheduled" ?
+        {kind: "scheduled" as const, atMillis: 11_000_000} :
+        {...initiation, offsetMinutes: -10};
+      writeMoment(db, {...firstMoment, initiation: changedInitiation,
+        revision: 2});
+      const changed = await runMomentSweep(deps);
+      assert.equal(changed.runsSuperseded, 1);
+      assert.equal(changed.runsCreated, 1);
+      const newDue = initiation.kind === "scheduled" ?
+        11_000_000 : 9_400_000;
+      const newId = `m_travel_${initiation.kind === "scheduled" ?
+        0 : 7}_${newDue}`;
+      const nextRun = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/${newId}`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(nextRun.status, "planned");
+      assert.equal(nextRun.occurrenceVersion, 2);
+    }
+  });
+
 test("consenting household receives the template send", async () => {
   const db = new FakeFirestore({});
   seedProgram(db);
@@ -197,6 +242,372 @@ test("quiet hours defer the run without sending", async () => {
   const data = run.data() as Record<string, unknown>;
   assert.equal(data.status, "planned");
   assert.equal(data.dueAtMillis, 1_340_000);
+});
+
+function seedTravelProgram(db: FakeFirestore): void {
+  db.setDoc("organizerPrograms/prog", {
+    organizerId: "org-1", kind: "wedding", title: "Mehta × Rao",
+    timezone: "Asia/Kolkata",
+    startsAt: ts(5_000_000), endsAt: ts(20_000_000),
+    status: "active", capabilities: ["messaging"],
+    createdBy: "mgr", createdAt: ts(0), updatedAt: ts(0), revision: 3,
+  });
+  db.setDoc("programFunctions/sangeet", {
+    programId: "prog", organizerId: "org-1", status: "scheduled",
+    startsAt: ts(10_000_000), endsAt: ts(12_000_000), revision: 7,
+    venueLocation: {name: "Lawn", latitude: 0, longitude: 0},
+  });
+  db.setDoc("programHotels/hotelFar", {
+    programId: "prog", organizerId: "org-1", name: "Far",
+    latitude: 10, longitude: 10, active: true, revision: 1,
+  });
+  db.setDoc("programHotels/hotelNear", {
+    programId: "prog", organizerId: "org-1", name: "Near",
+    latitude: 1, longitude: 1, active: true, revision: 1,
+  });
+  for (const [id, hotelId] of [["groupFar", "hotelFar"],
+    ["groupNear", "hotelNear"]] as const) {
+    db.setDoc(`programGuestGroups/${id}`, {
+      programId: "prog", organizerId: "org-1", label: id,
+      dimension: "side", sortOrder: 0, memberCount: 1, hotelId,
+      createdAt: ts(0), updatedAt: ts(0), revision: 1,
+    });
+  }
+  for (const [guestId, groupId, phone] of [
+    ["gFar", "groupFar", "+9100F"],
+    ["gNear", "groupNear", "+9100N"],
+  ] as const) {
+    db.setDoc(`programGuests/${guestId}`, {
+      programId: "prog", organizerId: "org-1", displayName: guestId,
+      householdId: null, phoneE164: phone, groupIds: [groupId],
+      invitationStatus: "invited", rsvpStatus: "attending",
+      source: "import", revision: 1,
+    });
+    db.setDoc(`programFunctionGuests/fg_${guestId}`, {
+      programId: "prog", organizerId: "org-1", functionId: "sangeet",
+      guestId, invited: true, rsvpStatus: "attending",
+      attendanceStatus: "expected", partySize: 1, revision: 1,
+    });
+  }
+}
+
+const travelReminder: MomentDefinition = {
+  ...sangeetReminder,
+  momentId: "m_travel",
+  initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+    offsetMinutes: 0,
+  },
+  audience: {
+    kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
+    householdDedupe: true, travelTimeLead: true,
+  },
+};
+
+test("travelTimeLead wakes early for the far guest and staggers the rest",
+  async () => {
+    const db = new FakeFirestore({});
+    seedTravelProgram(db);
+    writeMoment(db, travelReminder);
+    // Deterministic leads: far hotel 30m, near hotel 5m. The run's wake
+    // time is nominal (10_000_000) minus the cohort max.
+    const estimator = (origin: {latitude: number}) =>
+      origin.latitude === 10 ? 30 : 5;
+    const first = makeDeps(db, 8_200_000);
+    const deps: MomentRunnerDeps = {
+      ...first.deps, estimateTravelMinutes: estimator};
+    const summary = await runMomentSweep(deps);
+    assert.equal(summary.runsCreated, 1);
+    assert.equal(summary.runsDeferred, 1);
+    assert.equal(summary.runsFired, 0);
+    // Only the far guest was due; the near guest's send row is unwritten.
+    assert.deepEqual(first.sent.map((s) => s.e164), ["+9100F"]);
+    const dbView = deps.firestore() as never as FakeFirestore;
+    const runDoc = await dbView
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get();
+    const run = runDoc.data() as Record<string, unknown>;
+    assert.equal(run.status, "planned");
+    // Re-due at the near guest's own due — not a flat minute later.
+    assert.equal(run.dueAtMillis, 9_700_000);
+    // Unchanged travel planning must not reset the recipient deferral to
+    // the far guest's original 8.2m wake on every sweep.
+    await runMomentSweep({...deps, nowMillis: () => 8_800_000});
+    assert.equal((await dbView
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get())
+      .data()?.dueAtMillis, 9_700_000);
+    db.setDoc("programHotels/unrelated", {
+      programId: "prog", organizerId: "org-1", name: "Other",
+      latitude: 50, longitude: 50, active: true, revision: 1,
+    });
+    db.setDoc("programGuestGroups/unrelated", {
+      programId: "prog", organizerId: "org-1", label: "Other",
+      dimension: "side", sortOrder: 0, memberCount: 0,
+      hotelId: "unrelated", createdAt: ts(0), updatedAt: ts(0),
+      revision: 1,
+    });
+    const unrelatedEstimator = (origin: {latitude: number}) =>
+      origin.latitude === 50 ? 80 : estimator(origin);
+    await runMomentSweep({...deps, nowMillis: () => 8_800_000,
+      estimateTravelMinutes: unrelatedEstimator});
+    assert.equal((await dbView
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get())
+      .data()?.dueAtMillis, 9_700_000);
+    assert.equal(first.sent.length, 1);
+    const sends1 = await dbView.collection(MOMENT_SENDS_COLLECTION).get();
+    assert.equal(sends1.docs.length, 1);
+    // At the near guest's due the same run fires again — replan keeps it,
+    // the far guest's journal row prevents a resend, and the run closes.
+    const second = await runMomentSweep({...deps,
+      nowMillis: () => 9_700_000,
+      estimateTravelMinutes: unrelatedEstimator});
+    assert.equal(second.runsFired, 1);
+    assert.deepEqual(first.sent.map((s) => s.e164).sort(),
+      ["+9100F", "+9100N"]);
+    const done = await dbView
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get();
+    assert.equal(
+      (done.data() as Record<string, unknown>).status, "dispatched");
+    const sends2 = await dbView.collection(MOMENT_SENDS_COLLECTION).get();
+    assert.equal(sends2.docs.length, 2);
+  });
+
+for (const changedFarLead of [20, 40]) {
+  test(`partial travel send survives far lead changing to ${changedFarLead}m`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedTravelProgram(db);
+      writeMoment(db, travelReminder);
+      const {deps, sent} = makeDeps(db, 8_200_000);
+      const firstEstimator = (origin: {latitude: number}) =>
+        origin.latitude === 10 ? 30 : 5;
+      await runMomentSweep({...deps, estimateTravelMinutes: firstEstimator});
+      assert.deepEqual(sent.map((row) => row.e164), ["+9100F"]);
+
+      const changedEstimator = (origin: {latitude: number}) =>
+        origin.latitude === 10 ? changedFarLead : 5;
+      const changed = {...deps, nowMillis: () => 8_800_000,
+        estimateTravelMinutes: changedEstimator};
+      await runMomentSweep(changed);
+      const dbView = deps.firestore() as never as FakeFirestore;
+      const run = await dbView
+        .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get();
+      assert.equal((run.data() as Record<string, unknown>).dueAtMillis,
+        9_700_000);
+      assert.deepEqual(sent.map((row) => row.e164), ["+9100F"]);
+      await runMomentSweep({...changed, nowMillis: () => 9_700_000});
+      await runMomentSweep({...changed, nowMillis: () => 9_700_000});
+      assert.deepEqual(sent.map((row) => row.e164).sort(),
+        ["+9100F", "+9100N"]);
+      const sends = await dbView.collection(MOMENT_SENDS_COLLECTION).get();
+      assert.equal(sends.docs.length, 2);
+    });
+}
+
+test("non-max lead change advances only its pending recipient", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, travelReminder);
+  const {deps, sent} = makeDeps(db, 8_200_000);
+  await runMomentSweep({...deps, estimateTravelMinutes: (origin) =>
+    origin.latitude === 10 ? 30 : 5});
+  const dbView = deps.firestore() as never as FakeFirestore;
+  const runRef = dbView
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`);
+  const oldHash = (await runRef.get()).data()?.travelPlanHash;
+  const changed = {...deps, nowMillis: () => 8_800_000,
+    estimateTravelMinutes: (origin: {latitude: number}) =>
+      origin.latitude === 10 ? 30 : 20};
+  await runMomentSweep(changed);
+  assert.deepEqual(sent.map((row) => row.e164).sort(),
+    ["+9100F", "+9100N"]);
+  const run = (await runRef.get()).data() as Record<string, unknown>;
+  assert.equal(run.status, "dispatched");
+  assert.notEqual(run.travelPlanHash, oldHash);
+  // A later unrelated hotel/group edit cannot resurrect the settled run.
+  db.setDoc("programHotels/hotelUnrelated", {
+    programId: "prog", organizerId: "org-1", name: "Unrelated",
+    latitude: 50, longitude: 50, active: true, revision: 1,
+  });
+  db.setDoc("programGuestGroups/groupUnrelated", {
+    programId: "prog", organizerId: "org-1", label: "Other",
+    dimension: "side", sortOrder: 0, memberCount: 0,
+    hotelId: "hotelUnrelated", createdAt: ts(0), updatedAt: ts(0),
+    revision: 1,
+  });
+  await runMomentSweep({...changed, nowMillis: () => 8_900_000});
+  assert.equal(sent.length, 2);
+});
+
+test("legacy wake-based run requires visible reconciliation", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, travelReminder);
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_8200000`, {
+    runId: "m_travel_7_8200000", momentId: "m_travel",
+    dueAtMillis: 9_700_000, anchorRevision: 7, status: "planned",
+  });
+  db.setDoc(`${MOMENT_SENDS_COLLECTION}/m_travel_7_8200000_guest:gFar`, {
+    momentId: "m_travel", recipientKey: "guest:gFar",
+    decision: "sent", dayKey: "day-1", createdAtMillis: 8_200_000,
+  });
+  const {deps, sent} = makeDeps(db, 8_800_000);
+  const summary = await runMomentSweep({...deps,
+    estimateTravelMinutes: (origin) => origin.latitude === 10 ? 20 : 5});
+  assert.equal(summary.runsSkipped, 1);
+  assert.equal(sent.length, 0);
+  const dbView = deps.firestore() as never as FakeFirestore;
+  for (const id of ["m_travel_7_8200000", "m_travel_7_10000000"]) {
+    const row = (await dbView.doc(`${MOMENT_RUNS_COLLECTION}/${id}`)
+      .get()).data() as Record<string, unknown>;
+    assert.equal(row.status, "failed");
+    assert.equal(row.reason, "legacyOccurrenceUnresolved");
+  }
+  const sends = await dbView.collection(MOMENT_SENDS_COLLECTION).get();
+  assert.equal(sends.docs.length, 1);
+  await runMomentSweep({...deps, nowMillis: () => 9_700_000,
+    estimateTravelMinutes: (origin) => origin.latitude === 10 ? 20 : 5});
+  assert.equal(sent.length, 0);
+});
+
+test("settled legacy receipts do not become a second travel run", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, travelReminder);
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_8200000`, {
+    runId: "m_travel_7_8200000", momentId: "m_travel",
+    dueAtMillis: 9_700_000, anchorRevision: 7,
+    status: "dispatched", recipients: 2, sent: 2,
+  });
+  const {deps, sent} = makeDeps(db, 8_800_000);
+  await runMomentSweep({...deps,
+    estimateTravelMinutes: (origin) => origin.latitude === 10 ? 20 : 5});
+  assert.equal(sent.length, 0);
+  const failed = (await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get())
+    .data() as Record<string, unknown>;
+  assert.equal(failed.status, "failed");
+  assert.equal(failed.reason, "legacyOccurrenceUnresolved");
+  const original = (await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_8200000`).get())
+    .data() as Record<string, unknown>;
+  assert.equal(original.status, "dispatched");
+});
+
+for (const travelTimeLead of [true, false]) {
+  test(`mixed legacy IDs hold nominal run with lead ${travelTimeLead}`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedTravelProgram(db);
+      writeMoment(db, {...travelReminder, audience: {
+        kind: "functionGuests", functionId: "sangeet",
+        rsvp: ["attending"], householdDedupe: true, travelTimeLead,
+      }});
+      db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_8200000`, {
+        runId: "m_travel_7_8200000", momentId: "m_travel",
+        dueAtMillis: 9_700_000, anchorRevision: 7,
+        status: "superseded",
+      });
+      db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`, {
+        runId: "m_travel_7_10000000", momentId: "m_travel",
+        dueAtMillis: 8_800_000, anchorRevision: 7,
+        status: "planned",
+      });
+      db.setDoc(`${MOMENT_SENDS_COLLECTION}/m_travel_7_8200000_guest:gFar`, {
+        momentId: "m_travel", recipientKey: "guest:gFar",
+        decision: "sent", dayKey: "day-1", createdAtMillis: 8_200_000,
+      });
+      const {deps, sent} = makeDeps(db, 8_800_000);
+      await runMomentSweep({...deps,
+        estimateTravelMinutes: (origin) =>
+          origin.latitude === 10 ? 20 : 5});
+      assert.equal(sent.length, 0);
+      const nominal = (await (deps.firestore() as never as FakeFirestore)
+        .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_7_10000000`).get())
+        .data() as Record<string, unknown>;
+      assert.equal(nominal.status, "failed");
+      assert.equal(nominal.reason, "legacyOccurrenceUnresolved");
+      const sends = await (deps.firestore() as never as FakeFirestore)
+        .collection(MOMENT_SENDS_COLLECTION).get();
+      assert.equal(sends.docs.length, 1);
+    });
+}
+
+test("scheduled legacy receipts with revision zero hold nominal sender",
+  async () => {
+    const db = new FakeFirestore({});
+    seedTravelProgram(db);
+    writeMoment(db, {...travelReminder,
+      initiation: {kind: "scheduled", atMillis: 10_000_000}});
+    db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_8200000`, {
+      runId: "m_travel_0_8200000", momentId: "m_travel",
+      dueAtMillis: 10_000_000, anchorRevision: 0,
+      status: "superseded",
+    });
+    db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`, {
+      runId: "m_travel_0_10000000", momentId: "m_travel",
+      dueAtMillis: 10_000_000, anchorRevision: 0,
+      status: "planned",
+    });
+    db.setDoc(`${MOMENT_SENDS_COLLECTION}/m_travel_0_8200000_guest:gFar`, {
+      momentId: "m_travel", recipientKey: "guest:gFar",
+      decision: "sent", dayKey: "day-1", createdAtMillis: 8_200_000,
+    });
+    const {deps, sent} = makeDeps(db, 10_000_000);
+    await runMomentSweep({...deps, estimateTravelMinutes: () => 0});
+    assert.equal(sent.length, 0);
+    const nominal = (await (deps.firestore() as never as FakeFirestore)
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`).get())
+      .data() as Record<string, unknown>;
+    assert.equal(nominal.status, "failed");
+    assert.equal(nominal.reason, "legacyOccurrenceUnresolved");
+  });
+
+test("legacy guard preserves an already terminal nominal run", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, {...travelReminder,
+    initiation: {kind: "scheduled", atMillis: 10_000_000}});
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_8200000`, {
+    runId: "m_travel_0_8200000", momentId: "m_travel",
+    dueAtMillis: 8_200_000, anchorRevision: 0,
+    status: "dispatched",
+  });
+  db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`, {
+    runId: "m_travel_0_10000000", momentId: "m_travel",
+    dueAtMillis: 10_000_000, anchorRevision: 0,
+    status: "dispatched",
+  });
+  const {deps, sent} = makeDeps(db, 10_000_000);
+  await runMomentSweep({...deps, estimateTravelMinutes: () => 0});
+  assert.equal(sent.length, 0);
+  const nominal = (await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_travel_0_10000000`).get())
+    .data() as Record<string, unknown>;
+  assert.equal(nominal.status, "dispatched");
+});
+
+test("flag-off moments keep the single wake time", async () => {
+  const db = new FakeFirestore({});
+  seedTravelProgram(db);
+  writeMoment(db, {
+    ...travelReminder,
+    momentId: "m_plain",
+    initiation: {
+      kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
+      offsetMinutes: -15,
+    },
+    audience: {
+      kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
+      householdDedupe: true, travelTimeLead: false,
+    },
+  });
+  // nominal = 10_000_000 - 900_000 = 9_100_000; no lead, both fire at once.
+  const {deps, sent} = makeDeps(db, 9_100_000);
+  const summary = await runMomentSweep({...deps,
+    estimateTravelMinutes: () => 30});
+  assert.equal(summary.runsCreated, 1);
+  assert.equal(summary.runsFired, 1);
+  assert.equal(sent.length, 2);
 });
 
 test("triggered moments fire on travel-leg events and dedupe", async () => {

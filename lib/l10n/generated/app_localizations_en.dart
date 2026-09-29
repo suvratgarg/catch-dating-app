@@ -16985,6 +16985,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMomentTitleTemplate => 'Title template';
 
   @override
+  String get hostMomentTravelTimeLead => 'Shift send time by hotel distance';
+
+  @override
   String get hostMomentSave => 'Save moment';
 
   @override
@@ -21034,6 +21037,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkLedgerOpen => 'Open trip ledger';
 
   @override
+  String get programsWorkCountsTitle => 'Program counts';
+
+  @override
+  String get programsWorkCountsSubtitle =>
+      'Headcounts, responses and occupancy at a glance.';
+
+  @override
+  String get programsWorkCountsOpen => 'Open counts overview';
+
+  @override
   String get programsWorkCommsTitle => 'Communications';
 
   @override
@@ -21536,6 +21549,89 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsTripCurrentNames =>
       'Guest names reflect current records; no dispatch snapshot was saved.';
+
+  @override
+  String get programsStakeholderTitle => 'Program counts';
+
+  @override
+  String get programsStakeholderSubtitle =>
+      'Headcounts and occupancy — no guest details';
+
+  @override
+  String get programsStakeholderProgramTitle => 'Program';
+
+  @override
+  String get programsStakeholderProgramSubtitle =>
+      'Everyone attached to this program.';
+
+  @override
+  String programsStakeholderGuests({required int count}) {
+    return '$count guests';
+  }
+
+  @override
+  String programsStakeholderHouseholds({required int count}) {
+    return '$count households';
+  }
+
+  @override
+  String get programsStakeholderFunctionsTitle => 'Functions';
+
+  @override
+  String get programsStakeholderFunctionsSubtitle =>
+      'Responses and door counts per function.';
+
+  @override
+  String get programsStakeholderFunctionsEmpty =>
+      'No functions on this program yet.';
+
+  @override
+  String programsStakeholderFunctionRsvp({
+    required int attending,
+    required int declined,
+    required int maybe,
+    required int pending,
+    required int invited,
+  }) {
+    return '$attending attending · $declined declined · $maybe maybe · $pending pending of $invited invited';
+  }
+
+  @override
+  String programsStakeholderFunctionDoor({
+    required int expected,
+    required int checkedIn,
+    required int noShows,
+  }) {
+    return '$expected expected · $checkedIn checked in · $noShows no-shows';
+  }
+
+  @override
+  String get programsStakeholderStatusScheduled => 'Scheduled';
+
+  @override
+  String get programsStakeholderStatusCompleted => 'Completed';
+
+  @override
+  String get programsStakeholderStatusCancelled => 'Cancelled';
+
+  @override
+  String get programsStakeholderHotelsTitle => 'Hotels';
+
+  @override
+  String get programsStakeholderHotelsSubtitle =>
+      'Occupancy from routed travel legs.';
+
+  @override
+  String get programsStakeholderHotelsEmpty => 'No hotel-routed travel yet.';
+
+  @override
+  String programsStakeholderHotelRow({
+    required int arrived,
+    required int routed,
+    required int legs,
+  }) {
+    return '$arrived of $routed guests arrived · $legs legs';
+  }
 
   @override
   String get programsTripsTitle => 'Trip ledger';
@@ -23046,6 +23142,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsGuestsGroupNew => 'New group';
+
+  @override
+  String get programsGuestsGroupEdit => 'Edit group';
+
+  @override
+  String get programsGuestsGroupHotel => 'Hotel for this group';
+
+  @override
+  String get programsGuestsGroupNoHotel => 'No hotel assigned';
+
+  @override
+  String programsGuestsGroupHotelSummary({required String hotel}) {
+    return 'Staying at $hotel';
+  }
+
+  @override
+  String get programsGuestsHotelUnavailable =>
+      'Previously linked hotel is unavailable';
+
+  @override
+  String get programsGuestsNoHotelsAvailable =>
+      'No hotels are available for this program yet. You can save the group without one.';
 
   @override
   String get programsGuestsGroupLabel => 'Group label';

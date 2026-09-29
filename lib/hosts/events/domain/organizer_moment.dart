@@ -124,6 +124,7 @@ class OrganizerMomentAudience {
     this.rsvpPendingOnly,
     this.duty,
     this.scopeIds = const [],
+    this.travelTimeLead,
   });
 
   factory OrganizerMomentAudience.fromMap(Map<Object?, Object?> map) =>
@@ -142,6 +143,9 @@ class OrganizerMomentAudience {
             : null,
         duty: _stringOrNull(map['duty']),
         scopeIds: _stringList(map['scopeIds']),
+        travelTimeLead: map['travelTimeLead'] is bool
+            ? map['travelTimeLead'] as bool
+            : null,
       );
 
   final OrganizerMomentAudienceKind kind;
@@ -153,6 +157,10 @@ class OrganizerMomentAudience {
   final String? duty;
   final List<String> scopeIds;
 
+  /// `functionGuests` only: shift each recipient's send earlier by their
+  /// hotel→function travel estimate (hotel via the guest's linked group).
+  final bool? travelTimeLead;
+
   Map<String, Object?> toJson() => {
     'kind': kind.name,
     if (statuses.isNotEmpty) 'statuses': statuses,
@@ -162,6 +170,7 @@ class OrganizerMomentAudience {
     'rsvpPendingOnly': ?rsvpPendingOnly,
     'duty': ?duty,
     if (scopeIds.isNotEmpty) 'scopeIds': scopeIds,
+    'travelTimeLead': ?travelTimeLead,
   };
 }
 

@@ -111,6 +111,8 @@ class ProgramWorkspaceController extends _$ProgramWorkspaceController {
     String? groupId,
     int? expectedRevision,
     int? sortOrder,
+    String? hotelId,
+    bool clearHotel = false,
   }) => _repository.upsertGuestGroup(
     programId: programId,
     label: label,
@@ -118,6 +120,8 @@ class ProgramWorkspaceController extends _$ProgramWorkspaceController {
     groupId: groupId,
     expectedRevision: expectedRevision,
     sortOrder: sortOrder,
+    hotelId: hotelId,
+    clearHotel: clearHotel,
   );
 
   Future<ProgramMutationResult> deleteGuestGroup({

@@ -33,6 +33,7 @@ const schemaProgramGuestGroupListCallableResponseSchema = <String, Object?>{
           'dimension',
           'sortOrder',
           'memberCount',
+          'hotelId',
           'revision',
         ],
         'properties': <String, Object?>{
@@ -59,6 +60,14 @@ const schemaProgramGuestGroupListCallableResponseSchema = <String, Object?>{
           'memberCount': <String, Object?>{
             'type': 'integer',
             'minimum': 0,
+          },
+          'hotelId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 180,
           },
           'revision': <String, Object?>{
             'type': 'integer',

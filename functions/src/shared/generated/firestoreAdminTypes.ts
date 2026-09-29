@@ -11560,6 +11560,10 @@ export interface ProgramGuestGroupDocument {
    * Denormalized count of programGuests documents whose groupIds contain this group. Maintained transactionally by guest upsert, manifest import, and group delete.
    */
   memberCount: number;
+  /**
+   * Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group.
+   */
+  hotelId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
@@ -12090,6 +12094,10 @@ export interface OrganizerMomentDocument {
      */
     householdDedupe?: boolean | null;
     /**
+     * functionGuests: shift each recipient's due time earlier by their hotel→function travel estimate (hotel comes from the guest's hotel-linked group). Legal only on program scopes.
+     */
+    travelTimeLead?: boolean | null;
+    /**
      * households: restrict to households with a pending member.
      */
     rsvpPendingOnly?: boolean | null;
@@ -12159,12 +12167,15 @@ export interface OrganizerMomentDocument {
 }
 
 /**
- * Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.
+ * Server-owned planned/fired run for a moment. Time-based runId encodes moment + anchor revision + nominal due time; mutable travel wake and deferrals are separate. Triggered/manual identities retain subject/requestKey.
  */
 export interface OrganizerMomentRunDocument {
   runId: string;
   momentId: string;
   dueAtMillis: number;
+  occurrenceVersion?: 2;
+  plannedWakeAtMillis?: number;
+  travelPlanHash?: string;
   anchorRevision: number;
   status:
     | "planned"
