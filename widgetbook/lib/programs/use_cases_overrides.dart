@@ -100,10 +100,6 @@ List<Override> _programOverrides() {
       _programId,
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
-    programHotelRoomsProvider(
-      _programId,
-      _hotelId,
-    ).overrideWithValue(AsyncData(_rooms)),
     programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
     programStakeholderCountsProvider(
       _programId,

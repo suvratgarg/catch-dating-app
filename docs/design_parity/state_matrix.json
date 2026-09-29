@@ -13509,6 +13509,85 @@
               "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
             }
           ]
+        },
+        {
+          "id": "programs.hotel_rooms",
+          "routeId": "hostWorkHotelRoomsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_hotel_rooms_screen.dart",
+            "lib/programs/presentation/program_stay_actions_controller.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "functions/src/programs/programRooms.ts"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.section",
+            "catch.sheet",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-architecture",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Hotel-scoped room board — stay rows, block capacity and unplaced guest names only; assignments and lifecycle advance through upsertProgramStay."
+            }
+          ],
+          "states": [
+            {
+              "id": "rooms_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the room board resolves."
+            },
+            {
+              "id": "rooms_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "unplaced",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Routed guests with no live stay list the suggested block and open the assign sheet."
+            },
+            {
+              "id": "stays",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Stay rows show guest, room label, block and lifecycle status with desk marks."
+            },
+            {
+              "id": "blocks",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Room blocks show live capacity remaining out of the reserved total."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Inline empty states cover hotels with no blocks, stays, or unplaced guests."
+            },
+            {
+              "id": "assign_manage",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "The stay sheet assigns blocks/rooms and advances lifecycle through upsertProgramStay."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-HOTEL-ROOMS-001",
+              "status": "open",
+              "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+            }
+          ]
         }
       ],
       "lintCandidates": [],

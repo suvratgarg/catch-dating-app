@@ -539,6 +539,8 @@ import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
     as _widgetbook_workspace_programs_use_cases_attendance;
 import 'package:widgetbook_workspace/programs/use_cases_function_lead.dart'
     as _widgetbook_workspace_programs_use_cases_function_lead;
+import 'package:widgetbook_workspace/programs/use_cases_rooms.dart'
+    as _widgetbook_workspace_programs_use_cases_rooms;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12732,7 +12734,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programHotelRoomsScreenStates,
               ),
             ],
@@ -12742,7 +12744,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programRoomBlockRowStates,
               ),
             ],
@@ -12752,7 +12754,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programStayRowStates,
               ),
             ],
@@ -12762,7 +12764,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Sheet states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programStaySheetStates,
               ),
             ],
@@ -12772,7 +12774,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programUnplacedGuestRowStates,
               ),
             ],
