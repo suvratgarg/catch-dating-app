@@ -2072,6 +2072,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/programDeliveryMessageDocument.ts",
   },
   {
+    name: "ProgramWhatsappDispatchDocument",
+    source: "firestore/program_whatsapp_dispatches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programWhatsappDispatchDocument.ts",
+  },
+  {
     name: "ProgramDeliveryMessageIntent",
     source: "operations/program_delivery_message_intent.schema.json",
     typeOutput:

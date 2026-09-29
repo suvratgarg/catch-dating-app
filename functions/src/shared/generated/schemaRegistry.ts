@@ -557,6 +557,7 @@ export {programRoomBlockDocumentSchema} from "./schemas/programRoomBlockDocument
 export {programTravelLegDocumentSchema} from "./schemas/programTravelLegDocument";
 export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocument";
 export {programDeliveryMessageDocumentSchema} from "./schemas/programDeliveryMessageDocument";
+export {programWhatsappDispatchDocumentSchema} from "./schemas/programWhatsappDispatchDocument";
 export {programDeliveryMessageIntentSchema} from "./schemas/programDeliveryMessageIntent";
 export {programDeliveryAttemptSchema} from "./schemas/programDeliveryAttempt";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";

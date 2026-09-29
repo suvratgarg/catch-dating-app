@@ -555,6 +555,7 @@ import {
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
   programDeliveryMessageDocumentSchema,
+  programWhatsappDispatchDocumentSchema,
   programDeliveryMessageIntentSchema,
   programDeliveryAttemptSchema,
   organizerMomentDocumentSchema,
@@ -1704,6 +1705,7 @@ export const validateProgramRoomBlockDocument = ajv.compile(programRoomBlockDocu
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
 export const validateProgramDeliveryMessageDocument = ajv.compile(programDeliveryMessageDocumentSchema);
+export const validateProgramWhatsappDispatchDocument = ajv.compile(programWhatsappDispatchDocumentSchema);
 export const validateProgramDeliveryMessageIntent = ajv.compile(programDeliveryMessageIntentSchema);
 export const validateProgramDeliveryAttempt = ajv.compile(programDeliveryAttemptSchema);
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);

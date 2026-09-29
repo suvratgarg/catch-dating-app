@@ -1774,6 +1774,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programDeliveryMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
     match /transportVendors/{vendorId} {
       allow read, write: if false;
     }

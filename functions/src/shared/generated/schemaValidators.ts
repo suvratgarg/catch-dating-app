@@ -557,6 +557,7 @@ export {validateProgramRoomBlockDocument} from "./validators/programRoomBlockDoc
 export {validateProgramTravelLegDocument} from "./validators/programTravelLegDocument";
 export {validateProgramTravelPartyDocument} from "./validators/programTravelPartyDocument";
 export {validateProgramDeliveryMessageDocument} from "./validators/programDeliveryMessageDocument";
+export {validateProgramWhatsappDispatchDocument} from "./validators/programWhatsappDispatchDocument";
 export {validateProgramDeliveryMessageIntent} from "./validators/programDeliveryMessageIntent";
 export {validateProgramDeliveryAttempt} from "./validators/programDeliveryAttempt";
 export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";

@@ -564,6 +564,7 @@ Do not edit it by hand.
 | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
 | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
 | ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `functions/src/shared/generated/programDeliveryMessageDocument.ts` |
+| ProgramWhatsappDispatchDocument | `firestore/program_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/programWhatsappDispatchDocument.ts` |
 | ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `functions/src/shared/generated/programDeliveryMessageIntent.ts` |
 | ProgramDeliveryAttempt | `operations/program_delivery_attempt.schema.json` | `functions/src/shared/generated/programDeliveryAttempt.ts` |
 | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
@@ -1694,6 +1695,7 @@ Do not edit it by hand.
 | `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
 | `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
 | `schemaProgramDeliveryMessageDocumentSchema` | ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_document.g.dart` |
+| `schemaProgramWhatsappDispatchDocumentSchema` | ProgramWhatsappDispatchDocument | `firestore/program_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/program_whatsapp_dispatch_document.g.dart` |
 | `schemaProgramDeliveryMessageIntentSchema` | ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_intent.g.dart` |
 | `schemaProgramDeliveryAttemptSchema` | ProgramDeliveryAttempt | `operations/program_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_attempt.g.dart` |
 | `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |

@@ -865,6 +865,7 @@ export 'program_travel_leg_document.g.dart';
 export 'program_travel_party_document.g.dart';
 export 'program_trip_action_callable_payload.g.dart';
 export 'program_trip_list_callable_response.g.dart';
+export 'program_whatsapp_dispatch_document.g.dart';
 export 'promote_form_communication_intent_callable_payload.g.dart';
 export 'promote_form_communication_intent_callable_response.g.dart';
 export 'provider_sync_run_document.g.dart';

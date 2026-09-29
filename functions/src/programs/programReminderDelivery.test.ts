@@ -44,7 +44,7 @@ const facts: AnchorFacts = {
 
 const recipient: ResolvedRecipient = {
   recipientKey: "household:hh1",
-  endpoint: {kind: "phone", e164: "+910001"},
+  endpoint: {kind: "phone", e164: "+911234567001"},
   householdId: "hh1",
 };
 
@@ -58,8 +58,8 @@ function seedProgram(db: FakeFirestore): void {
   });
   db.setDoc("organizerMoments/m_reminder", {...moment});
   db.setDoc("organizerSenderConnections/conn1", {
-    organizerId: "org-1", status: "active", phoneNumberId: "wa-1",
-    secretVersionResource: "sec/1", revision: 2,
+    organizerId: "org-1", status: "active", phoneNumberId: "2002",
+    wabaId: "1001", secretVersionResource: "sec/1", revision: 2,
   });
   db.setDoc("organizerMessageTemplates/tpl1", {
     organizerId: "org-1", status: "APPROVED", name: "reminder",
@@ -67,7 +67,7 @@ function seedProgram(db: FakeFirestore): void {
   });
   db.setDoc("programHouseholds/hh1", {
     programId: "prog", organizerId: "org-1", label: "Sharma",
-    primaryPhoneE164: "+910001", memberGuestIds: ["g1"],
+    primaryPhoneE164: "+911234567001", memberGuestIds: ["g1"],
     messagingConsent: {granted: true}, revision: 4,
   });
 }
@@ -105,8 +105,8 @@ test("a program reminder reserves, claims, submits and receipts durably",
     const outcome = await h.deliver();
     assert.equal(outcome.kind, "sent");
     assert.equal(h.calls.length, 1);
-    assert.equal(h.calls[0].toE164, "+910001");
-    assert.equal(h.calls[0].phoneNumberId, "wa-1");
+    assert.equal(h.calls[0].toE164, "+911234567001");
+    assert.equal(h.calls[0].phoneNumberId, "2002");
     const doc = record(db);
     assert.equal(doc.lifecycle, "active");
     assert.equal(doc.attempts.length, 1);

@@ -124208,6 +124208,142 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programWhatsappDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programWhatsappDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programWhatsappDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programWhatsappDispatchDocumentContextProgramId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.context.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programWhatsappDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programWhatsappDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programWhatsappDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.providerAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const programWhatsappDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.providerPhoneNumberId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const programWhatsappDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programWhatsappDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programWhatsappDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programWhatsappDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'programWhatsappDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const promoteFormCommunicationIntentCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'promoteFormCommunicationIntentCallablePayload.requestId',
     maxLength: 180,
@@ -168937,6 +169073,23 @@ abstract final class CatchContractConstraints {
     'programTripListCallableResponse.trips.items.vendorId': programTripListCallableResponseTripsItemsVendorId,
     'programTripListCallableResponse.trips.items.vendorName': programTripListCallableResponseTripsItemsVendorName,
     'programTripListCallableResponse.trips.items.voidReason': programTripListCallableResponseTripsItemsVoidReason,
+    'programWhatsappDispatchDocument.attemptId': programWhatsappDispatchDocumentAttemptId,
+    'programWhatsappDispatchDocument.bindingRevision': programWhatsappDispatchDocumentBindingRevision,
+    'programWhatsappDispatchDocument.context.mode': programWhatsappDispatchDocumentContextMode,
+    'programWhatsappDispatchDocument.context.organizerId': programWhatsappDispatchDocumentContextOrganizerId,
+    'programWhatsappDispatchDocument.context.programId': programWhatsappDispatchDocumentContextProgramId,
+    'programWhatsappDispatchDocument.createdAt': programWhatsappDispatchDocumentCreatedAt,
+    'programWhatsappDispatchDocument.endpointHash': programWhatsappDispatchDocumentEndpointHash,
+    'programWhatsappDispatchDocument.messageId': programWhatsappDispatchDocumentMessageId,
+    'programWhatsappDispatchDocument.payloadHash': programWhatsappDispatchDocumentPayloadHash,
+    'programWhatsappDispatchDocument.providerAccountId': programWhatsappDispatchDocumentProviderAccountId,
+    'programWhatsappDispatchDocument.providerPhoneNumberId': programWhatsappDispatchDocumentProviderPhoneNumberId,
+    'programWhatsappDispatchDocument.recipientEndpointId': programWhatsappDispatchDocumentRecipientEndpointId,
+    'programWhatsappDispatchDocument.schemaVersion': programWhatsappDispatchDocumentSchemaVersion,
+    'programWhatsappDispatchDocument.senderHash': programWhatsappDispatchDocumentSenderHash,
+    'programWhatsappDispatchDocument.senderId': programWhatsappDispatchDocumentSenderId,
+    'programWhatsappDispatchDocument.templateDocumentId': programWhatsappDispatchDocumentTemplateDocumentId,
+    'programWhatsappDispatchDocument.templateHash': programWhatsappDispatchDocumentTemplateHash,
     'promoteFormCommunicationIntentCallablePayload.requestId': promoteFormCommunicationIntentCallablePayloadRequestId,
     'promoteFormCommunicationIntentCallablePayload.responseId': promoteFormCommunicationIntentCallablePayloadResponseId,
     'promoteFormCommunicationIntentCallablePayload.withdrawalToken': promoteFormCommunicationIntentCallablePayloadWithdrawalToken,

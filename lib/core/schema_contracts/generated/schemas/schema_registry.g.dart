@@ -2777,6 +2777,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaProgramDeliveryMessageDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'ProgramWhatsappDispatchDocument',
+    source: 'firestore/program_whatsapp_dispatches.schema.json',
+    schema: schemaProgramWhatsappDispatchDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProgramDeliveryMessageIntent',
     source: 'operations/program_delivery_message_intent.schema.json',
     schema: schemaProgramDeliveryMessageIntentSchema,
@@ -6196,6 +6201,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ProgramTravelLegDocument': schemaProgramTravelLegDocumentSchema,
   'ProgramTravelPartyDocument': schemaProgramTravelPartyDocumentSchema,
   'ProgramDeliveryMessageDocument': schemaProgramDeliveryMessageDocumentSchema,
+  'ProgramWhatsappDispatchDocument': schemaProgramWhatsappDispatchDocumentSchema,
   'ProgramDeliveryMessageIntent': schemaProgramDeliveryMessageIntentSchema,
   'ProgramDeliveryAttempt': schemaProgramDeliveryAttemptSchema,
   'OrganizerMomentDocument': schemaOrganizerMomentDocumentSchema,
@@ -7324,6 +7330,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/program_travel_legs.schema.json': schemaProgramTravelLegDocumentSchema,
   'firestore/program_travel_parties.schema.json': schemaProgramTravelPartyDocumentSchema,
   'firestore/program_delivery_messages.schema.json': schemaProgramDeliveryMessageDocumentSchema,
+  'firestore/program_whatsapp_dispatches.schema.json': schemaProgramWhatsappDispatchDocumentSchema,
   'operations/program_delivery_message_intent.schema.json': schemaProgramDeliveryMessageIntentSchema,
   'operations/program_delivery_attempt.schema.json': schemaProgramDeliveryAttemptSchema,
   'firestore/organizer_moments.schema.json': schemaOrganizerMomentDocumentSchema,

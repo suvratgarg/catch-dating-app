@@ -21,6 +21,15 @@ import {
   MetaProviderError, MetaWhatsappProvider, OrganizerTokenStore,
   metaTemplateFromDocument,
 } from "../organizers/organizerWhatsappProvider";
+import {whatsappStatusCorrelation} from
+  "../eventSuccess/operations/whatsappDeliveryProtocol";
+import {whatsappEndpointHash} from
+  "../eventSuccess/operations/whatsappReplyProtocol";
+import {validateProgramWhatsappDispatchDocument} from
+  "../shared/generated/validators/programWhatsappDispatchDocument";
+
+/** Claim-time submission evidence for webhook status correlation. */
+export const PROGRAM_WHATSAPP_DISPATCHES = "programWhatsappDispatches";
 
 export type ProgramDeliveryOutbox = FirestoreDeliveryOutbox<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
@@ -66,8 +75,9 @@ interface RecipientEndpointFacts {
   withdrawn: boolean;
 }
 
-function endpointRef(e164: string): string {
-  return "e164:" + operationContentHash(e164).slice(0, 48);
+function endpointRef(e164: string): string | null {
+  const hash = whatsappEndpointHash(e164);
+  return hash ? "whatsapp:" + hash : null;
 }
 
 /**
@@ -256,7 +266,7 @@ export async function prepareProgramWhatsappChannel(
           candidate: {mode: "live", binding: {
             routeId: "organizerProgramWhatsapp", transport: "whatsapp",
             senderIdentity: "organizerManaged", provider: "meta",
-            senderId: conn.phoneNumberId, bindingRevision: conn.revision,
+            senderId: whatsapp.connectionId, bindingRevision: conn.revision,
             recipientEndpointId: recipient.endpointId,
             fallbackOwner: "catch",
           } satisfies ProviderBinding}}});
@@ -283,20 +293,63 @@ async function dispatchProgramWhatsapp(
       reserved.binding.provider !== "meta") {
     return {kind: "withheld", reason: "notReserved"};
   }
-  const claim = await outbox.claimLiveDispatch<{e164: string}>(
-    messageId, attemptId,
-    // The claim transaction re-reads the endpoint so the number dialed is
-    // exactly the one the reservation authorized.
-    async (tx, _record, _attempt, _now) => {
-      const recipient = await readRecipientEndpoint(tx, db, intent);
-      if (!recipient.e164 || recipient.endpointId !==
-          _attempt.binding.recipientEndpointId) {
-        return {kind: "withheld"};
-      }
-      return {kind: "ready", value: {e164: recipient.e164},
-        validUntil: Math.min(_now + FACT_SNAPSHOT_MS, intent.expiresAt),
-        commit: () => undefined};
-    });
+  const claim = await outbox.claimLiveDispatch<{
+    e164: string; payloadHash: string}>(
+      messageId, attemptId,
+      // The claim transaction re-reads the endpoint, sender, and template so
+      // the number dialed and the payload hashed are exactly the ones the
+      // reservation authorized. The dispatch evidence commits atomically
+      // with the claim — a later webhook status can verify against it.
+      async (tx, record, liveAttempt, now) => {
+        const recipient = await readRecipientEndpoint(tx, db, intent);
+        const [connSnap, tplSnap] = await Promise.all([
+          tx.get(db.collection("organizerSenderConnections")
+            .doc(intent.whatsapp!.connectionId)),
+          tx.get(db.collection("organizerMessageTemplates")
+            .doc(intent.whatsapp!.templateId)),
+        ]);
+        const conn = connSnap.data() as
+        OrganizerSenderConnectionDocument | undefined;
+        const tpl = tplSnap.data() as
+        OrganizerMessageTemplateDocument | undefined;
+        const endpointHash = recipient.e164 ?
+          whatsappEndpointHash(recipient.e164) : null;
+        if (!recipient.e164 || !endpointHash || recipient.endpointId !==
+          liveAttempt.binding.recipientEndpointId ||
+          !conn || conn.status !== "active" || !conn.phoneNumberId ||
+          !conn.secretVersionResource || !conn.wabaId ||
+          conn.organizerId !== intent.context.organizerId ||
+          conn.revision !== liveAttempt.binding.bindingRevision ||
+          intent.whatsapp!.connectionId !== liveAttempt.binding.senderId ||
+          !tpl || tpl.status !== "APPROVED") {
+          return {kind: "withheld"};
+        }
+        const payloadHash = operationContentHash([
+          metaTemplateFromDocument(tpl), intent.whatsapp!.variables]);
+        const dispatch = {
+          schemaVersion: 1, attemptId: liveAttempt.attemptId,
+          messageId: record.messageId, context: intent.context,
+          senderId: intent.whatsapp!.connectionId,
+          bindingRevision: conn.revision,
+          providerAccountId: conn.wabaId,
+          providerPhoneNumberId: conn.phoneNumberId,
+          senderHash: operationContentHash(connSnap.data()),
+          recipientEndpointId: "whatsapp:" + endpointHash,
+          endpointHash,
+          templateDocumentId: intent.whatsapp!.templateId,
+          templateHash: operationContentHash(tplSnap.data()),
+          payloadHash, createdAt: now};
+        if (!validateProgramWhatsappDispatchDocument(dispatch)) {
+          throw new Error("Invalid program WhatsApp dispatch evidence");
+        }
+        const ref = db.collection(PROGRAM_WHATSAPP_DISPATCHES)
+          .doc(liveAttempt.attemptId);
+        if ((await tx.get(ref)).exists) return {kind: "withheld"};
+        return {kind: "ready",
+          value: {e164: recipient.e164, payloadHash},
+          validUntil: Math.min(now + FACT_SNAPSHOT_MS, intent.expiresAt),
+          commit: () => tx.create(ref, dispatch)};
+      });
   if (claim.kind === "withheld") {
     return {kind: "withheld", reason: claim.reason};
   }
@@ -309,7 +362,8 @@ async function dispatchProgramWhatsapp(
       toE164: claim.resource.e164,
       template: metaTemplateFromDocument(sender.template),
       variables: {...intent.whatsapp!.variables},
-      callbackData: `programDelivery:${attempt.attemptId}`,
+      callbackData: whatsappStatusCorrelation(attempt.attemptId,
+        claim.resource.payloadHash),
       deadline: claim.permit.validUntil}));
   } catch (error) {
     // Only a proven unsent request plus actual permit expiry can mark this
