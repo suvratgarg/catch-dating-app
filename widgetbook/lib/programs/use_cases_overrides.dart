@@ -104,9 +104,6 @@ List<Override> _programOverrides() {
     programStakeholderCountsProvider(
       _programId,
     ).overrideWithValue(AsyncData(_stakeholderCounts)),
-    programAttendanceReportProvider(
-      _programId,
-    ).overrideWithValue(AsyncData(_attendanceReport)),
     programTransportVendorsProvider('org_1', _programId).overrideWithValue(
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(

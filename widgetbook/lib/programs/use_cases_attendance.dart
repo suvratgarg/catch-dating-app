@@ -1,6 +1,75 @@
-part of 'use_cases.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-final _attendanceReport = ProgramAttendanceReport(
+import '../support/page_preview.dart';
+import '../support/widgetbook_harness.dart';
+import '../utility/preview.dart';
+
+const _programId = 'program_kapoor_shah';
+
+final _now = DateTime(2026, 2, 14, 14, 30);
+
+final _access = ProgramWorkAccess(
+  programId: _programId,
+  organizerId: 'org_1',
+  title: 'Kapoor–Shah Wedding',
+  kind: ProgramKind.wedding,
+  timezone: 'Asia/Kolkata',
+  status: ProgramStatus.active,
+  actorRole: ProgramActorRole.staff,
+  duties: const [],
+  grantExpiresAt: _now.add(const Duration(hours: 8)),
+  capabilities: const {},
+  pickupPoints: const [],
+  hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  functions: [
+    ProgramFunction(
+      functionId: 'fn_sangeet',
+      name: 'Sangeet',
+      venueName: 'The Leela Ballroom',
+      startsAt: _now.add(const Duration(hours: 3)),
+      endsAt: _now.add(const Duration(hours: 6)),
+      checkInEnabled: true,
+      status: ProgramFunctionStatus.scheduled,
+      expectedCount: 80,
+      checkedInCount: 61,
+    ),
+    ProgramFunction(
+      functionId: 'fn_reception',
+      name: 'Reception',
+      venueName: 'The Leela Gardens',
+      startsAt: _now.add(const Duration(hours: 8)),
+      endsAt: _now.add(const Duration(hours: 12)),
+      checkInEnabled: true,
+      status: ProgramFunctionStatus.scheduled,
+      expectedCount: 58,
+      checkedInCount: 35,
+    ),
+  ],
+  vehicleClasses: const [],
+);
+
+List<Override> _overrides() => [
+  programProjectionClockProvider.overrideWithValue(() => _now),
+  uidProvider.overrideWithValue(const AsyncData<String?>('uid_greeter')),
+  isObviouslyOfflineProvider.overrideWithValue(false),
+  programWorkEntryProvider(_programId, null).overrideWithValue(
+    AsyncData((value: _access, snapshotAt: null, snapshotExpiresAt: null)),
+  ),
+  programAttendanceReportProvider(
+    _programId,
+  ).overrideWithValue(AsyncData(_report)),
+];
+
+final _report = ProgramAttendanceReport(
   programId: _programId,
   serverTime: _now,
   accessExpiresAt: _now.add(const Duration(hours: 8)),
@@ -71,7 +140,7 @@ Widget programAttendanceReportScreenStates(BuildContext context) {
         label: 'report',
         child: WidgetbookUtilityDeviceFrame(
           child: ProviderScope(
-            overrides: _programOverrides(),
+            overrides: _overrides(),
             child: const ProgramAttendanceReportScreen(programId: _programId),
           ),
         ),
@@ -91,11 +160,11 @@ Widget programFunctionAttendanceRowStates(BuildContext context) {
     catalogId: 'screen.programs.attendance_report',
     children: [
       ProgramFunctionAttendanceRow(
-        attendance: _attendanceReport.functions[0],
+        attendance: _report.functions[0],
         functionName: 'Sangeet',
       ),
       ProgramFunctionAttendanceRow(
-        attendance: _attendanceReport.functions[1],
+        attendance: _report.functions[1],
         functionName: 'Reception',
       ),
     ],
