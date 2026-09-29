@@ -647,12 +647,21 @@
     },
     {
       "authority": "flutter_screens",
+      "authorityId": "screen.programs.counts",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Counts-only stakeholder overview of program arrivals and routing.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-012"
+    },
+    {
+      "authority": "flutter_screens",
       "authorityId": "screen.programs.attendance_report",
       "status": "planned",
       "priority": "P1",
       "reason": "Attendance report and reconciliation export surface.",
       "targetFeature": "feature.programs_arrivals_ops",
-      "debtId": "PROGRAMS-FEATURE-012"
+      "debtId": "PROGRAMS-FEATURE-013"
     },
     {
       "authority": "flutter_screens",

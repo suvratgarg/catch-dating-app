@@ -12,6 +12,7 @@ export const programIdCallablePayloadSchema: Record<string, unknown> = {
   "x-callable-aliases": [
     "getOrganizerProgram",
     "getProgramAttendanceReport",
+    "getProgramStakeholderCounts",
     "getProgramWorkAccess",
     "listProgramHouseholds"
   ],

@@ -727,6 +727,8 @@ export {getProgramFunctionDoorView, createProgramWalkIn} from
   "./doorJournal/doorView";
 export {getProgramAttendanceReport} from
   "./programs/attendanceReportView";
+export {getProgramStakeholderCounts} from
+  "./programs/stakeholderCountsView";
 
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,

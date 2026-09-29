@@ -69,6 +69,7 @@ import 'package:catch_dating_app/programs/presentation/program_guests_screen.dar
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
@@ -535,6 +536,13 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       path: Routes.hostWorkAttendanceReportScreen.path,
       name: Routes.hostWorkAttendanceReportScreen.name,
       builder: (context, state) => ProgramAttendanceReportScreen(
+        programId: state.pathParameters['programId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkCountsScreen.path,
+      name: Routes.hostWorkCountsScreen.name,
+      builder: (context, state) => ProgramStakeholderScreen(
         programId: state.pathParameters['programId']!,
       ),
     ),
