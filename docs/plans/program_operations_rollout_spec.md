@@ -151,9 +151,10 @@ receipts, since either can resend an already contacted guest.
 |---|---|
 | Program CRUD + wedding preset + function upsert + staff grant/invite + guest/household upsert + manifest import | **callables built + deployed** |
 | Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **built** (#452) — `/host/programs` list/workspace/guests/team/import (W1) |
-| Programs under Events tab + Organizer → Plan screen | **missing** (W5) |
+| Programs under Events tab + Organizer → Plan screen | **in review** — Events "Programs" header action → `/host/programs` (this batch); Organizer → Plan screen still missing |
+| Program logistics editors (pickup points, hotels) | **in review** (#474) — workspace Logistics section |
 | Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **in review** — rebased onto current main and re-verified (#455) |
-| Attendance report / export per function | **missing** |
+| Attendance report / export per function | **built** (#460) — `/host/work/:programId/attendance` + CSV export |
 | Retention / anonymization on archive | **missing** |
 
 ---

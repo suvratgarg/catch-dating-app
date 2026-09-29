@@ -10355,6 +10355,19 @@
           ]
         },
         {
+          "id": "open_programs_action",
+          "kind": "populated",
+          "status": "tested",
+          "source": "HostEventsClubSection owns a Programs header action beside New event that pushes hostProgramsScreen with the selected organizer id; the program index and workspace remain under the programs feature.",
+          "tests": [
+            "test/hosts/host_events_layout_test.dart"
+          ],
+          "nextAction": "Fold the Programs header entry into the Events tab contract if the events route gains an inline program inventory.",
+          "previewIds": [
+            "hostHomeRouteStates"
+          ]
+        },
+        {
           "id": "offline",
           "kind": "offline",
           "status": "captured",

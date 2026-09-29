@@ -514,6 +514,27 @@
             }
           ],
           "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice."
+        },
+        {
+          "id": "open_programs",
+          "owner": "events_list",
+          "codeValue": "_openPrograms",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.programs.list"
+              }
+            }
+          ],
+          "description": "Opens the organizer's multi-day program index from the Events header with the selected organizer carried as a route parameter."
         }
       ],
       "stateIds": [
@@ -535,6 +556,7 @@
         "create_event_action",
         "manage_event_navigation",
         "dress_rehearsal_action",
+        "open_programs_action",
         "offline",
         "text_scale_2",
         "reduced_motion",
@@ -775,6 +797,16 @@
             }
           ]
         },
+        "open_programs_action": {
+          "actionCases": [
+            {
+              "id": "open",
+              "enabledActions": [
+                "open_programs"
+              ]
+            }
+          ]
+        },
         "offline": {
           "dimensions": {
             "load": "offline"
@@ -845,7 +877,8 @@
           "stateIds": [
             "create_event_action",
             "manage_event_navigation",
-            "dress_rehearsal_action"
+            "dress_rehearsal_action",
+            "open_programs_action"
           ],
           "evidence": [
             "captures"
