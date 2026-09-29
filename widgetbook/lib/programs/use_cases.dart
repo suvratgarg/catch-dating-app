@@ -16,12 +16,15 @@ import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
+import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+part 'use_cases_overrides.dart';
 
 const _programId = 'program_kapoor_shah';
 const _pickupPointId = 'del_t3';
@@ -253,6 +256,35 @@ final _trips = ProgramTripList(
   trips: [_trip],
 );
 
+final _stakeholderCounts = ProgramStakeholderCounts(
+  programId: _programId,
+  serverTime: _now,
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
+  guestCount: 142,
+  householdCount: 58,
+  functions: [
+    const ProgramFunctionCounts(
+      functionId: 'fn_sangeet',
+      status: ProgramFunctionStatus.scheduled,
+      invitedCount: 80,
+      rsvpPending: 12,
+      rsvpAttending: 50,
+      rsvpDeclined: 14,
+      rsvpMaybe: 4,
+      expectedHeads: 60,
+      checkedInHeads: 12,
+      noShowCount: 3,
+    ),
+  ],
+  hotels: [
+    const ProgramHotelOccupancy(
+      hotelId: 'hotel_taj',
+      routedGuestCount: 40,
+      arrivedGuestCount: 31,
+      legCount: 14,
+    ),
+  ],
+);
 final _roomBlocks = <ProgramRoomBlock>[
   ProgramRoomBlock(
     roomBlockId: 'blk_bride',
@@ -324,123 +356,6 @@ final _rooms = ProgramHotelRooms(
   ],
 );
 
-ProgramOperationOutboxStore _previewJournal() {
-  final storage = MemoryCommandJournalStorage();
-  return createProgramOperationJournal(
-    storage: () async => storage,
-    currentAccountId: () => 'uid_greeter',
-  );
-}
-
-class _PreviewMutator implements ProgramOperationsMutator {
-  @override
-  Future<ProgramMutationResult> setReadiness({
-    required String programId,
-    required String legId,
-    required String action,
-    required String clientOperationId,
-    required int expectedRevision,
-    required DateTime observedAt,
-    TravelLegObservationReference? afterObservation,
-    int? manualCurbAtMillis,
-    String? manualCurbNote,
-  }) async => const ProgramMutationResult(
-    entityId: 'leg',
-    revision: 2,
-    alreadyApplied: false,
-  );
-
-  @override
-  Future<DispatchResult> dispatchTrip({
-    required String programId,
-    required String pickupPointId,
-    required String vehicleClassId,
-    required String plateDisplay,
-    required List<String> legIds,
-    required DateTime departedAt,
-    required String clientOperationId,
-    String? destinationHotelId,
-    String? destinationLabel,
-    String? vendorId,
-    required List<DispatchLegRevision> expectedLegRevisions,
-  }) async => const DispatchResult(
-    tripId: 'trip_preview',
-    revision: 1,
-    alreadyApplied: false,
-    passengerCount: 0,
-  );
-
-  @override
-  Future<ProgramDoorJournalBatch> recordDoorAction({
-    required String programId,
-    required String functionId,
-    required Map<String, Object?> operation,
-  }) async => const ProgramDoorJournalBatch(
-    entityId: 'fn',
-    revision: 2,
-    results: [],
-    appendedCount: 1,
-    duplicateCount: 0,
-    rejectedCount: 0,
-    alreadyApplied: false,
-  );
-
-  @override
-  Future<ProgramMutationResult> createWalkIn({
-    required String programId,
-    required String functionId,
-    required String displayName,
-    required DateTime occurredAt,
-    required String clientOperationId,
-    int? partySize,
-    String? note,
-  }) async => const ProgramMutationResult(
-    entityId: 'guest',
-    revision: 1,
-    alreadyApplied: false,
-  );
-}
-
-List<Override> _programOverrides() {
-  return [
-    programProjectionClockProvider.overrideWithValue(() => _now),
-    uidProvider.overrideWithValue(const AsyncData<String?>('uid_greeter')),
-    programOperationsOutboxProvider.overrideWithValue(
-      ProgramOperationsOutbox(_previewJournal(), _PreviewMutator()),
-    ),
-    isObviouslyOfflineProvider.overrideWithValue(false),
-    programWorkEntryProvider(_programId, null).overrideWithValue(
-      AsyncData((value: _access, snapshotAt: null, snapshotExpiresAt: null)),
-    ),
-    programArrivalsRosterProvider(
-      _programId,
-      _pickupPointId,
-    ).overrideWithValue(AsyncData(_roster)),
-    programTransportPlanProvider(
-      _programId,
-      _pickupPointId,
-    ).overrideWithValue(AsyncData(_plan)),
-    programHotelInboundProvider(
-      _programId,
-      _hotelId,
-    ).overrideWithValue(AsyncData(_inbound)),
-    programHotelRoomsProvider(
-      _programId,
-      _hotelId,
-    ).overrideWithValue(AsyncData(_rooms)),
-    programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
-    programTransportVendorsProvider('org_1', _programId).overrideWithValue(
-      const AsyncData(<ProgramVendorOption>[
-        ProgramVendorOption(
-          vendorId: 'vendor_meru',
-          name: 'Meru Cabs',
-          active: true,
-          boundToProgram: true,
-        ),
-      ]),
-    ),
-  ];
-}
 
 @widgetbook.UseCase(
   name: 'Screen states',
@@ -542,121 +457,6 @@ Widget programHotelDeskScreenStates(BuildContext context) {
         ),
       ),
     ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramHotelRoomsScreen,
-  path: '[P1 product surfaces]/Program hotel rooms',
-)
-Widget programHotelRoomsScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramHotelRoomsScreen',
-    contractId: 'screen.programs.hotel_rooms',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'room board',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _programOverrides(),
-            child: const ProgramHotelRoomsScreen(
-              programId: _programId,
-              hotelId: _hotelId,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Row states',
-  type: ProgramUnplacedGuestRow,
-  path: '[P1 product surfaces]/Program hotel rooms',
-)
-Widget programUnplacedGuestRowStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramUnplacedGuestRow',
-    catalogId: 'screen.programs.hotel_rooms',
-    children: [
-      ProviderScope(
-        overrides: _programOverrides(),
-        child: ProgramUnplacedGuestRow(
-          guest: _rooms.unplacedGuests.first,
-          rooms: _rooms,
-          onChanged: () {},
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Row states',
-  type: ProgramStayRow,
-  path: '[P1 product surfaces]/Program hotel rooms',
-)
-Widget programStayRowStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramStayRow',
-    catalogId: 'screen.programs.hotel_rooms',
-    children: [
-      ProviderScope(
-        overrides: _programOverrides(),
-        child: Column(
-          children: [
-            for (final stay in _rooms.stays)
-              ProgramStayRow(stay: stay, rooms: _rooms, onChanged: () {}),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Row states',
-  type: ProgramRoomBlockRow,
-  path: '[P1 product surfaces]/Program hotel rooms',
-)
-Widget programRoomBlockRowStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramRoomBlockRow',
-    catalogId: 'screen.programs.hotel_rooms',
-    children: [
-      ProviderScope(
-        overrides: _programOverrides(),
-        child: Column(
-          children: [
-            for (final block in _roomBlocks) ProgramRoomBlockRow(block: block),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Sheet states',
-  type: ProgramStaySheet,
-  path: '[P1 product surfaces]/Program hotel rooms',
-)
-Widget programStaySheetStates(BuildContext context) {
-  return ProviderScope(
-    overrides: _programOverrides(),
-    child: WidgetbookUtilitySheetFrame(
-      child: ProgramStaySheet(
-        programId: _programId,
-        hotelId: _hotelId,
-        blocks: _roomBlocks,
-        guestId: 'guest_vikram',
-        guestDisplayName: 'Vikram Rao',
-        suggestedRoomBlockId: 'blk_bride',
-        onChanged: () {},
-      ),
-    ),
   );
 }
 
@@ -983,3 +783,179 @@ Widget programJournalRecoverySheetPreview(BuildContext context) =>
         child: const ProgramJournalRecoverySheet(accountId: 'uid_greeter'),
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Screen states',
+  type: ProgramStakeholderScreen,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programStakeholderScreenStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgramStakeholderScreen',
+    contractId: 'screen.programs.counts',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'counts',
+        child: WidgetbookUtilityDeviceFrame(
+          child: ProviderScope(
+            overrides: _programOverrides(),
+            child: const ProgramStakeholderScreen(programId: _programId),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramFunctionCountsRow,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programFunctionCountsRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramFunctionCountsRow',
+    catalogId: 'screen.programs.counts',
+    children: [
+      ProgramFunctionCountsRow(
+        counts: _stakeholderCounts.functions.first,
+        name: 'Sangeet',
+      ),
+      ProgramFunctionCountsRow(counts: _stakeholderCounts.functions.first),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramHotelOccupancyRow,
+  path: '[P1 product surfaces]/Program counts',
+)
+Widget programHotelOccupancyRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramHotelOccupancyRow',
+    catalogId: 'screen.programs.counts',
+    children: [
+      ProgramHotelOccupancyRow(
+        occupancy: _stakeholderCounts.hotels.first,
+        name: 'Taj Palace',
+      ),
+      ProgramHotelOccupancyRow(occupancy: _stakeholderCounts.hotels.first),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Screen states',
+  type: ProgramHotelRoomsScreen,
+  path: '[P1 product surfaces]/Program hotel rooms',
+)
+Widget programHotelRoomsScreenStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgramHotelRoomsScreen',
+    contractId: 'screen.programs.hotel_rooms',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'room board',
+        child: WidgetbookUtilityDeviceFrame(
+          child: ProviderScope(
+            overrides: _programOverrides(),
+            child: const ProgramHotelRoomsScreen(
+              programId: _programId,
+              hotelId: _hotelId,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramUnplacedGuestRow,
+  path: '[P1 product surfaces]/Program hotel rooms',
+)
+Widget programUnplacedGuestRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramUnplacedGuestRow',
+    catalogId: 'screen.programs.hotel_rooms',
+    children: [
+      ProviderScope(
+        overrides: _programOverrides(),
+        child: ProgramUnplacedGuestRow(
+          guest: _rooms.unplacedGuests.first,
+          rooms: _rooms,
+          onChanged: () {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramStayRow,
+  path: '[P1 product surfaces]/Program hotel rooms',
+)
+Widget programStayRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramStayRow',
+    catalogId: 'screen.programs.hotel_rooms',
+    children: [
+      ProviderScope(
+        overrides: _programOverrides(),
+        child: Column(
+          children: [
+            for (final stay in _rooms.stays)
+              ProgramStayRow(stay: stay, rooms: _rooms, onChanged: () {}),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row states',
+  type: ProgramRoomBlockRow,
+  path: '[P1 product surfaces]/Program hotel rooms',
+)
+Widget programRoomBlockRowStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'ProgramRoomBlockRow',
+    catalogId: 'screen.programs.hotel_rooms',
+    children: [
+      ProviderScope(
+        overrides: _programOverrides(),
+        child: Column(
+          children: [
+            for (final block in _roomBlocks) ProgramRoomBlockRow(block: block),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sheet states',
+  type: ProgramStaySheet,
+  path: '[P1 product surfaces]/Program hotel rooms',
+)
+Widget programStaySheetStates(BuildContext context) {
+  return ProviderScope(
+    overrides: _programOverrides(),
+    child: WidgetbookUtilitySheetFrame(
+      child: ProgramStaySheet(
+        programId: _programId,
+        hotelId: _hotelId,
+        blocks: _roomBlocks,
+        guestId: 'guest_vikram',
+        guestDisplayName: 'Vikram Rao',
+        suggestedRoomBlockId: 'blk_bride',
+        onChanged: () {},
+      ),
+    ),
+  );
+}

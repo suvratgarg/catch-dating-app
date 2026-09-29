@@ -630,6 +630,112 @@ class ProgramHotelRooms {
   final List<ProgramUnplacedGuest> unplacedGuests;
 }
 
+/// Counts-only overview rows for stakeholderViewer staff — ids and
+/// headcounts, never names. Function rows key on functionId so the screen
+/// joins names from the work-access payload.
+class ProgramFunctionCounts {
+  const ProgramFunctionCounts({
+    required this.functionId,
+    required this.status,
+    required this.invitedCount,
+    required this.rsvpPending,
+    required this.rsvpAttending,
+    required this.rsvpDeclined,
+    required this.rsvpMaybe,
+    required this.expectedHeads,
+    required this.checkedInHeads,
+    required this.noShowCount,
+  });
+
+  factory ProgramFunctionCounts.fromMap(Map<Object?, Object?> map) =>
+      ProgramFunctionCounts(
+        functionId: requiredString(map, 'functionId'),
+        status: ProgramFunctionStatus.values.byName(
+          requiredString(map, 'status'),
+        ),
+        invitedCount: requiredInt(map, 'invitedCount'),
+        rsvpPending: requiredInt(map, 'rsvpPending'),
+        rsvpAttending: requiredInt(map, 'rsvpAttending'),
+        rsvpDeclined: requiredInt(map, 'rsvpDeclined'),
+        rsvpMaybe: requiredInt(map, 'rsvpMaybe'),
+        expectedHeads: requiredInt(map, 'expectedHeads'),
+        checkedInHeads: requiredInt(map, 'checkedInHeads'),
+        noShowCount: requiredInt(map, 'noShowCount'),
+      );
+
+  final String functionId;
+  final ProgramFunctionStatus status;
+  final int invitedCount;
+  final int rsvpPending;
+  final int rsvpAttending;
+  final int rsvpDeclined;
+  final int rsvpMaybe;
+  final int expectedHeads;
+  final int checkedInHeads;
+  final int noShowCount;
+}
+
+class ProgramHotelOccupancy {
+  const ProgramHotelOccupancy({
+    required this.hotelId,
+    required this.routedGuestCount,
+    required this.arrivedGuestCount,
+    required this.legCount,
+  });
+
+  factory ProgramHotelOccupancy.fromMap(Map<Object?, Object?> map) =>
+      ProgramHotelOccupancy(
+        hotelId: requiredString(map, 'hotelId'),
+        routedGuestCount: requiredInt(map, 'routedGuestCount'),
+        arrivedGuestCount: requiredInt(map, 'arrivedGuestCount'),
+        legCount: requiredInt(map, 'legCount'),
+      );
+
+  final String hotelId;
+  final int routedGuestCount;
+  final int arrivedGuestCount;
+  final int legCount;
+}
+
+class ProgramStakeholderCounts {
+  const ProgramStakeholderCounts({
+    required this.programId,
+    required this.serverTime,
+    required this.accessExpiresAt,
+    required this.guestCount,
+    required this.householdCount,
+    required this.functions,
+    required this.hotels,
+  });
+
+  factory ProgramStakeholderCounts.fromCallableData(Object? value) {
+    final map = requiredMap(value, 'stakeholder counts');
+    return ProgramStakeholderCounts(
+      programId: requiredString(map, 'programId'),
+      serverTime: requiredDateTime(map, 'serverTimeMillis'),
+      accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
+      guestCount: requiredInt(map, 'guestCount'),
+      householdCount: requiredInt(map, 'householdCount'),
+      functions: mapList(
+        map['functions'],
+        'functions',
+      ).map(ProgramFunctionCounts.fromMap).toList(growable: false),
+      hotels: mapList(
+        map['hotels'],
+        'hotels',
+      ).map(ProgramHotelOccupancy.fromMap).toList(growable: false),
+    );
+  }
+
+  final String programId;
+  final DateTime serverTime;
+  final DateTime? accessExpiresAt;
+  final int guestCount;
+  final int householdCount;
+  final List<ProgramFunctionCounts> functions;
+  final List<ProgramHotelOccupancy> hotels;
+}
+
 class ProgramVendorOption {
   const ProgramVendorOption({
     required this.vendorId,

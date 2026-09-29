@@ -172,6 +172,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `upsertProgramTravelLeg` / `upsertProgramTravelParty` | `src/transport/programTravel.ts` | Planner-owned travel legs and ride-together parties |
 | `importProgramManifest` | `src/programs/programManifestImport.ts` | Preview/commit guest manifest import with externalReference dedup, household/party label matching, and receipt-backed idempotent convergence |
 | `recordProgramDoorJournal` / `getProgramFunctionDoorView` / `createProgramWalkIn` | `src/doorJournal/` | Durable offline-safe door check-in journal, the function-scoped door roster/counts/journal-tail projection, and least-privilege walk-in creation for program function entry points |
+| `getProgramStakeholderCounts` | `src/programs/stakeholderCountsView.ts` | Counts-only program overview for stakeholderViewer staff and managers: guest/household headcounts, per-function RSVP/attendance histograms, and hotel-scoped occupancy; no PII crosses |
 | `getProgramArrivalsRoster` / `getProgramTransportPlan` / `setProgramTravelReadiness` | `src/transport/programArrivals.ts` | Station-scoped redacted arrivals roster, deterministic grouping suggestions, and claim/ready/disruption writes |
 | `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` / `getProgramHotelInbound` / `listProgramTrips` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, trip lifecycle, hotel-scoped inbound projection, and the reconciliation trip ledger |
 | `getProgramHotelRooms` / `upsertProgramStay` / `upsertProgramRoomBlock` | `src/programs/programRooms.ts` | Hotel-scoped room board (blocks with live capacity, stays, unplaced routed guests with block suggestions), revision-fenced stay assignment that re-counts block rollups in-transaction, and coordinator-only block inventory writes |
@@ -202,6 +203,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
 | `adminRecordActionExecution` | `src/admin/adminActionExecutions.ts` | Admin append-only bounded execution receipt for catalog-driven actions |
+| `adminGrantOrganizerEntitlement` | `src/admin/organizerEntitlements.ts` | Admin Owner or Finance grants one organizer entitlement with an idempotent operation receipt and audit log; grants no dispatch authority |
+| `adminRevokeOrganizerEntitlementGrant` | `src/admin/organizerEntitlements.ts` | Admin Owner or Finance revokes one existing organizer entitlement grant with an idempotent operation receipt and audit log |
+| `getOrganizerEntitlement` | `src/entitlements/organizerEntitlementRead.ts` | Organizer manager reads a bounded entitlement, usage-meter, and SKU catalog projection without admin-only grant details |
 | `adminGetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner exact Firebase Auth uid role lookup |
 | `adminListAdminRoleAssignments` | `src/admin/adminUserRoles.ts` | Admin-owner bounded role assignment register |
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |

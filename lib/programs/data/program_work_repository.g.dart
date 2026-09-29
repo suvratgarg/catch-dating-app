@@ -764,6 +764,85 @@ final class ProgramTripListFamily extends $Family
   String toString() => r'programTripListProvider';
 }
 
+@ProviderFor(programStakeholderCounts)
+final programStakeholderCountsProvider = ProgramStakeholderCountsFamily._();
+
+final class ProgramStakeholderCountsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramStakeholderCounts>,
+          ProgramStakeholderCounts,
+          FutureOr<ProgramStakeholderCounts>
+        >
+    with
+        $FutureModifier<ProgramStakeholderCounts>,
+        $FutureProvider<ProgramStakeholderCounts> {
+  ProgramStakeholderCountsProvider._({
+    required ProgramStakeholderCountsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programStakeholderCountsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programStakeholderCountsHash();
+
+  @override
+  String toString() {
+    return r'programStakeholderCountsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramStakeholderCounts> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramStakeholderCounts> create(Ref ref) {
+    final argument = this.argument as String;
+    return programStakeholderCounts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramStakeholderCountsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programStakeholderCountsHash() =>
+    r'8a9ff43059a23737c10e99727882a80edbabb10e';
+
+final class ProgramStakeholderCountsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProgramStakeholderCounts>, String> {
+  ProgramStakeholderCountsFamily._()
+    : super(
+        retry: null,
+        name: r'programStakeholderCountsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProgramStakeholderCountsProvider call(String programId) =>
+      ProgramStakeholderCountsProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programStakeholderCountsProvider';
+}
+
 @ProviderFor(programTransportVendors)
 final programTransportVendorsProvider = ProgramTransportVendorsFamily._();
 
