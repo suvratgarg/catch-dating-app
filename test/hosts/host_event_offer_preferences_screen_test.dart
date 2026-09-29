@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -18,6 +19,91 @@ import '../test_pump_helpers.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  final hash = List.filled(64, 'a').join();
+
+  EventOfferConfiguration offerConfiguration({int revision = 0}) =>
+      revision > 0
+          ? const EventOfferConfiguration(
+              organizerId: 'club-1',
+              eventId: 'event-1',
+              eventSourceRevision: 8,
+              startsAtMillis: 1791043800000,
+              nowMillis: 1790000000000,
+              suggestedExpiresAtMillis: null,
+              preferencesRevision: 1,
+              preferences: null,
+            )
+          : EventOfferConfiguration.fromResponse({
+              'organizerId': 'club-1',
+              'eventId': 'event-1',
+              'eventSourceRevision': 8,
+              'startsAtMillis': 1791043800000,
+              'nowMillis': 1790000000000,
+              'suggestedExpiresAtMillis': null,
+              'preferencesRevision': revision,
+              'preferences': null,
+              'paymentTerms': null,
+            });
+
+  ManagerEventSetupDefaults defaults({
+    ManagerEventSetupPreferences preferences =
+        const ManagerEventSetupPreferences(),
+  }) => ManagerEventSetupDefaults(
+    organizerId: 'club-1',
+    cityId: 'in-mh-mumbai',
+    marketId: 'in-mh-mumbai',
+    timezone: 'Asia/Kolkata',
+    organizerDefaultsRevision: 1,
+    basicsReviewedHash: hash,
+    preferencesRevision: 1,
+    preferences: preferences,
+    preferencesHash: hash,
+    reviewedDefaultsHash: hash,
+  );
+
+  EventOfferPreferencesController offerController({
+    int revision = 0,
+    ManagerEventSetupPreferences? defaultPreferences,
+    List<EventOfferPreferencesUpdateRequest>? writes,
+    PreviewEventOfferPreferences? readPreview,
+    String displayName = 'Saturday mixer',
+  }) {
+    final controller = EventOfferPreferencesController(
+      userId: 'host-1',
+      organizerId: 'club-1',
+      eventId: 'event-1',
+      displayName: displayName,
+      readConfiguration: ({required organizerId, required eventId}) async =>
+          offerConfiguration(
+            revision:
+                writes == null || writes.isEmpty ? revision : revision + 1,
+          ),
+      readDefaults: (_) async =>
+          defaults(preferences: defaultPreferences ?? const ManagerEventSetupPreferences()),
+      readPreview: readPreview,
+      write: (request) async {
+        writes?.add(request);
+        return EventOfferPreferencesReceipt(
+          eventId: 'event-1',
+          preferencesRevision: revision + 1,
+          replayed: false,
+        );
+      },
+    );
+    controller.configuration = offerConfiguration(revision: revision);
+    controller.defaults = defaults(
+      preferences: defaultPreferences ?? const ManagerEventSetupPreferences(),
+    );
+    return controller;
+  }
+
+  Widget app(Widget child) => MaterialApp(
+    theme: CatchTheme.light,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: child,
+  );
+
   testWidgets('settings controller rebinds for organizer, event, and actor',
       (tester) async {
     final accounts = StreamController<String?>();
@@ -28,30 +114,25 @@ void main() {
     final bindings = <String>[];
     await tester.pumpWidget(ProviderScope(
       overrides: [uidProvider.overrideWith((ref) => accounts.stream)],
-      child: MaterialApp(
-        theme: CatchTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: StatefulBuilder(builder: (context, setState) {
-          updateRoute = setState;
-          return HostEventOfferPreferencesScreen(
-            organizerId: organizerId, eventId: eventId, onBack: () {},
-            controllerForUser: (uid) {
-              bindings.add('$uid/$organizerId/$eventId');
-              return EventOfferPreferencesController(
-                userId: uid, organizerId: organizerId, eventId: eventId,
-                readConfiguration: ({required organizerId,
-                    required eventId}) async =>
-                    throw StateError('Fixture read unavailable'),
-                readDefaults: (_) async =>
-                    throw StateError('Fixture read unavailable'),
-                write: (_) async => throw StateError('No save'),
-              );
-            },
-          );
-        }),
-      ),
-    ));
+      child: app(StatefulBuilder(builder: (context, setState) {
+        updateRoute = setState;
+        return HostEventOfferPreferencesScreen(
+          organizerId: organizerId, eventId: eventId, onBack: () {},
+          controllerForUser: (uid) {
+            bindings.add('$uid/$organizerId/$eventId');
+            return EventOfferPreferencesController(
+              userId: uid, organizerId: organizerId, eventId: eventId,
+              readConfiguration: ({required organizerId,
+                  required eventId}) async =>
+                  throw StateError('Fixture read unavailable'),
+              readDefaults: (_) async =>
+                  throw StateError('Fixture read unavailable'),
+              write: (_) async => throw StateError('No save'),
+            );
+          },
+        );
+      }),
+    )));
     accounts.add('host-1');
     await pumpFeatureUi(tester);
     expect(bindings, ['host-1/club-1/event-1']);
@@ -68,48 +149,172 @@ void main() {
       (tester) async {
     final accounts = StreamController<String?>();
     addTearDown(accounts.close);
-    final hash = List.filled(64, 'a').join();
     var created = 0;
     final controller = EventOfferPreferencesController(
       userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
       readConfiguration: ({required organizerId, required eventId}) async =>
-          const EventOfferConfiguration(
-            organizerId: 'club-1', eventId: 'event-1',
-            eventSourceRevision: 8, startsAtMillis: 1791043800000,
-            nowMillis: 1790000000000, suggestedExpiresAtMillis: null,
-            preferencesRevision: 0, preferences: null,
-          ),
-      readDefaults: (_) async => ManagerEventSetupDefaults(
-        organizerId: 'club-1', cityId: null, marketId: null,
-        timezone: null, organizerDefaultsRevision: null,
-        basicsReviewedHash: hash, preferencesRevision: 0,
-        preferences: const ManagerEventSetupPreferences(),
-        preferencesHash: hash, reviewedDefaultsHash: hash,
-      ),
+          offerConfiguration(),
+      readDefaults: (_) async => defaults(),
       write: (_) async => throw StateError('No save in this test'),
     );
     await tester.pumpWidget(ProviderScope(
       overrides: [uidProvider.overrideWith((ref) => accounts.stream)],
-      child: MaterialApp(
-        theme: CatchTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: HostEventOfferPreferencesScreen(
-          organizerId: 'club-1', eventId: 'event-1', onBack: () {},
-          controllerForUser: (uid) {
-            expect(uid, 'host-1');
-            created++;
-            return controller;
-          },
-        ),
-      ),
+      child: app(HostEventOfferPreferencesScreen(
+        organizerId: 'club-1', eventId: 'event-1', onBack: () {},
+        controllerForUser: (uid) {
+          expect(uid, 'host-1');
+          created++;
+          return controller;
+        },
+      )),
     ));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(created, 0);
     accounts.add('host-1');
     await pumpFeatureUi(tester);
     expect(created, 1);
-    expect(find.text('Published event offers'), findsOneWidget);
+    expect(find.text('Offer payments'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('fresh event shows mode choices and lists save blockers',
+      (tester) async {
+    final controller = offerController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
+      organizerId: 'club-1', eventId: 'event-1',
+      initialController: controller, onBack: () {},
+    )));
+    await pumpFeatureUi(tester);
+    expect(find.text('Free admission'), findsOneWidget);
+    expect(find.text('Payment page link'), findsOneWidget);
+    expect(find.text('Manual instructions'), findsOneWidget);
+    expect(find.text('CHOOSE HOW GUESTS PAY'), findsOneWidget);
+    // Catch checkout stays gated until provider activation ships.
+    final checkout = tester.widget<CatchChoiceTile>(
+      find.byKey(const ValueKey('offer-payment-mode-catchCheckout')),
+    );
+    expect(checkout.onTap, isNull);
+    expect(find.textContaining('Coming soon'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'payment page link asks for link and reuse confirmation before saving',
+    (tester) async {
+      tester.view.physicalSize = const Size(1080, 3200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      final writes = <EventOfferPreferencesUpdateRequest>[];
+      var backed = false;
+      final controller = offerController(writes: writes);
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
+        organizerId: 'club-1', eventId: 'event-1',
+        initialController: controller, onBack: () => backed = true,
+      )));
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.byKey(
+        const ValueKey('offer-payment-mode-reusablePage')));
+      await pumpFeatureUi(tester);
+      expect(find.byKey(const ValueKey('offer-payment-amount')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('offer-payment-page-url')),
+          findsOneWidget);
+      expect(find.text('SET A TICKET PRICE'), findsOneWidget);
+
+      await tester.enterText(
+          find.byKey(const ValueKey('offer-payment-amount')), '1200');
+      await pumpFeatureUi(tester);
+      expect(find.text('ADD THE PAYMENT PAGE LINK'), findsOneWidget);
+
+      await tester.enterText(
+          find.byKey(const ValueKey('offer-payment-page-url')),
+          'https://rzp.io/l/saturday-social');
+      await pumpFeatureUi(tester);
+      expect(
+          find.text('CONFIRM THE PAGE CAN BE REUSED'), findsOneWidget);
+
+      final reuseField =
+          find.byKey(const ValueKey('offer-payment-page-reuse'));
+      await tester.ensureVisible(reuseField);
+      await pumpFeatureUi(tester);
+      await tester.tap(find.descendant(
+        of: reuseField,
+        matching: find.byType(CatchToggleInput),
+      ));
+      await pumpFeatureUi(tester);
+      expect(find.text('SET OFFER VALIDITY'), findsOneWidget);
+
+      await tester.tap(find.text('Offer valid for'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('24 h'));
+      await pumpFeatureUi(tester);
+      expect(find.text('CHOOSE HOW GUESTS PAY'), findsNothing);
+      expect(find.textContaining('READY'), findsOneWidget);
+
+      await tester.tap(find.byKey(
+          const ValueKey('offer-payment-setup-save')));
+      await pumpFeatureUi(tester);
+      expect(writes, hasLength(1));
+      final intents = writes.single.intents;
+      expect(intents.expectedAmountMinor.value, 120000);
+      expect(intents.collectionPreference.value,
+          EventCollectionPreference.reusablePage);
+      expect(intents.offerValidityMinutes.value, 1440);
+      expect(intents.reusablePaymentPage.value?.url,
+          'https://rzp.io/l/saturday-social');
+      expect(intents.reusablePaymentPage.value?.reusableForEvents, isTrue);
+      expect(backed, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
+  testWidgets('free admission hides payment fields and records a free offer',
+      (tester) async {
+    final writes = <EventOfferPreferencesUpdateRequest>[];
+    var backed = false;
+    final controller = offerController(
+      writes: writes,
+      defaultPreferences: const ManagerEventSetupPreferences(
+        collectionPreference: EventCollectionPreference.manualInstructions,
+        currency: 'INR',
+        offerValidityMinutes: 1440,
+        paymentInstructions: 'Pay at the door',
+      ),
+    );
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
+      organizerId: 'club-1', eventId: 'event-1',
+      initialController: controller, onBack: () => backed = true,
+    )));
+    await pumpFeatureUi(tester);
+    // Organizer suggestions preselect manual collection on this event.
+    expect(find.byKey(const ValueKey('offer-payment-instructions')),
+        findsOneWidget);
+
+    await tester.tap(
+        find.byKey(const ValueKey('offer-payment-mode-free')));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(const ValueKey('offer-payment-amount')), findsNothing);
+    expect(find.byKey(const ValueKey('offer-payment-instructions')),
+        findsNothing);
+    expect(find.text('Nothing to confirm'), findsOneWidget);
+    expect(find.textContaining('READY'), findsOneWidget);
+
+    await tester.tap(
+        find.byKey(const ValueKey('offer-payment-setup-save')));
+    await pumpFeatureUi(tester);
+    expect(writes, hasLength(1));
+    expect(writes.single.intents.expectedAmountMinor.value, 0);
+    expect(writes.single.intents.collectionPreference.mode,
+        EventSetupValueMode.clear);
+    expect(writes.single.intents.paymentInstructions.mode,
+        EventSetupValueMode.clear);
+    expect(backed, isTrue);
     expect(tester.takeException(), isNull);
   });
 
@@ -121,48 +326,23 @@ void main() {
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
     });
-    final hash = List.filled(64, 'a').join();
-    final controller = EventOfferPreferencesController(
-      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
-      displayName: 'Saturday mixer',
-      readConfiguration: ({required organizerId, required eventId}) async =>
-          throw StateError('Preview read unavailable'),
-      readDefaults: (_) async => throw StateError('Preview read unavailable'),
-      write: (_) async => throw StateError('Preview save unavailable'),
-    );
-    controller.configuration = const EventOfferConfiguration(
-      organizerId: 'club-1', eventId: 'event-1',
-      eventSourceRevision: 8, startsAtMillis: 1791043800000,
-      nowMillis: 1790000000000, suggestedExpiresAtMillis: null,
-      preferencesRevision: 0, preferences: null,
-    );
-    controller.defaults = ManagerEventSetupDefaults(
-      organizerId: 'club-1', cityId: 'in-mh-mumbai',
-      marketId: 'in-mh-mumbai', timezone: 'Asia/Kolkata',
-      organizerDefaultsRevision: 1, basicsReviewedHash: hash,
-      preferencesRevision: 1,
-      preferences: const ManagerEventSetupPreferences(
-        timezone: 'Asia/Kolkata', currency: 'INR',
+    final controller = offerController(
+      defaultPreferences: const ManagerEventSetupPreferences(
+        collectionPreference: EventCollectionPreference.manualInstructions,
+        currency: 'INR',
       ),
-      preferencesHash: hash, reviewedDefaultsHash: hash,
     );
     addTearDown(controller.dispose);
-    await tester.pumpWidget(ProviderScope(child: MaterialApp(
-      theme: CatchTheme.light,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: MediaQuery(
-        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: HostEventOfferPreferencesScreen(
-          organizerId: 'club-1', eventId: 'event-1',
-          initialController: controller, onBack: () {},
-        ),
+    await tester.pumpWidget(ProviderScope(child: app(MediaQuery(
+      data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+      child: HostEventOfferPreferencesScreen(
+        organizerId: 'club-1', eventId: 'event-1',
+        initialController: controller, onBack: () {},
       ),
-    )));
-    expect(find.text('Published event offers'), findsOneWidget);
-    final amount = find.byKey(
-      const ValueKey('event-preference-expectedAmountMinor-null'),
-    );
+    ))));
+    await pumpFeatureUi(tester);
+    expect(find.text('Offer payments'), findsOneWidget);
+    final amount = find.byKey(const ValueKey('offer-payment-amount'));
     await tester.ensureVisible(amount);
     await pumpFeatureUi(tester);
     expect(amount, findsOneWidget);

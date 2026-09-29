@@ -4,6 +4,7 @@ import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.d
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
@@ -266,50 +267,51 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
 )
 Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
-  final controller = EventOfferPreferencesController(
-    userId: 'preview-host',
-    organizerId: 'preview-club',
-    eventId: 'preview-published-event',
-    displayName: 'Saturday mixer',
-    readConfiguration: ({required organizerId, required eventId}) async =>
-        throw StateError('Preview does not read offer settings'),
-    readDefaults: (_) async =>
-        throw StateError('Preview does not read defaults'),
-    write: (_) async => throw StateError('Preview does not submit settings'),
-  );
-  controller.configuration = const EventOfferConfiguration(
-    organizerId: 'preview-club',
-    eventId: 'preview-published-event',
-    eventSourceRevision: 8,
-    startsAtMillis: 1791043800000,
-    nowMillis: 1790000000000,
-    suggestedExpiresAtMillis: null,
-    preferencesRevision: 0,
-    preferences: null,
-  );
-  controller.defaults = ManagerEventSetupDefaults(
-    organizerId: 'preview-club',
-    cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai',
-    timezone: 'Asia/Kolkata',
-    organizerDefaultsRevision: 1,
-    basicsReviewedHash: hash,
-    preferencesRevision: 1,
-    preferences: const ManagerEventSetupPreferences(
+  EventOfferPreferencesController controller({
+    required int preferencesRevision,
+    PrivateEventPreferencesSnapshot? preferences,
+    ManagerEventSetupPreferences defaultPreferences =
+        const ManagerEventSetupPreferences(),
+  }) {
+    final controller = EventOfferPreferencesController(
+      userId: 'preview-host',
+      organizerId: 'preview-club',
+      eventId: 'preview-published-event',
+      displayName: 'Saturday mixer',
+      readConfiguration: ({required organizerId, required eventId}) async =>
+          throw StateError('Preview does not read offer settings'),
+      readDefaults: (_) async =>
+          throw StateError('Preview does not read defaults'),
+      write: (_) async => throw StateError('Preview does not submit settings'),
+    );
+    controller.configuration = EventOfferConfiguration(
+      organizerId: 'preview-club',
+      eventId: 'preview-published-event',
+      eventSourceRevision: 8,
+      startsAtMillis: 1791043800000,
+      nowMillis: 1790000000000,
+      suggestedExpiresAtMillis: null,
+      preferencesRevision: preferencesRevision,
+      preferences: preferences,
+    );
+    controller.defaults = ManagerEventSetupDefaults(
+      organizerId: 'preview-club',
+      cityId: 'in-mh-mumbai',
+      marketId: 'in-mh-mumbai',
       timezone: 'Asia/Kolkata',
-      currency: 'INR',
-      offerValidityMinutes: 1440,
-      collectionPreference: EventCollectionPreference.manualInstructions,
-    ),
-    preferencesHash: hash,
-    reviewedDefaultsHash: hash,
-  );
-  return WidgetbookPageCatalogFrame(
-    title: 'HostEventOfferPreferencesScreen',
-    contractId: 'screen.host.event.published.preferences',
-    children: [
+      organizerDefaultsRevision: 1,
+      basicsReviewedHash: hash,
+      preferencesRevision: 1,
+      preferences: defaultPreferences,
+      preferencesHash: hash,
+      reviewedDefaultsHash: hash,
+    );
+    return controller;
+  }
+
+  Widget card(String label, EventOfferPreferencesController controller) =>
       WidgetbookPageStateCard(
-        label: 'future offers; existing terms unchanged',
+        label: label,
         child: WidgetbookHostDeviceFrame(
           child: ProviderScope(
             child: HostEventOfferPreferencesScreen(
@@ -320,6 +322,45 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
             ),
           ),
         ),
+      );
+
+  return WidgetbookPageCatalogFrame(
+    title: 'HostEventOfferPreferencesScreen',
+    contractId: 'screen.host.event.published.preferences',
+    children: [
+      card(
+        'organizer suggestion; price missing',
+        controller(
+          preferencesRevision: 0,
+          defaultPreferences: const ManagerEventSetupPreferences(
+            timezone: 'Asia/Kolkata',
+            currency: 'INR',
+            offerValidityMinutes: 1440,
+            collectionPreference: EventCollectionPreference.manualInstructions,
+          ),
+        ),
+      ),
+      card(
+        'saved manual instructions; ready',
+        controller(
+          preferencesRevision: 1,
+          preferences: const PrivateEventPreferencesSnapshot(
+            revision: 1,
+            intents: PrivateEventPreferenceIntents(),
+            resolvedValues: {
+              'expectedAmountMinor': 120000,
+              'collectionPreference': 'manualInstructions',
+              'currency': 'INR',
+              'offerValidityMinutes': 1440,
+              'paymentInstructions': 'UPI to saturdaymixer@okhdfc',
+            },
+            paymentTerms: {},
+          ),
+        ),
+      ),
+      card(
+        'fresh event; nothing chosen yet',
+        controller(preferencesRevision: 0),
       ),
     ],
   );
