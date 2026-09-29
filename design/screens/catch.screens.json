@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-09-28",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -480,7 +480,7 @@
         },
         {
           "routes": [
-            "hostOperatorEventScreen"
+            "hostWorkEventScreen"
           ],
           "file": "lib/hosts/presentation/host_event_operator_screen.dart",
           "symbol": "HostEventOperatorScreen",
@@ -1197,6 +1197,33 @@
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
+    "screen.programs.moments": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramMomentsScreen"
+          ],
+          "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+          "symbol": "_OrganizerMomentsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramMomentsScreen"
+          ],
+          "file": "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+          "symbol": "_OrganizerMomentEditScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The moments list and its create/edit surface are canonical pushed routes with shared compact back chrome."
+    },
     "screen.programs.arrivals": {
       "owners": [
         {
@@ -1276,6 +1303,22 @@
         }
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.counts": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkCountsScreen"
+          ],
+          "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+          "symbol": "ProgramStakeholderScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, empty, and populated route compositions through CatchRouteScaffold."
     },
     "screen.host.event.moments": {
       "owners": [
@@ -14545,8 +14588,8 @@
           "role": "primary"
         },
         {
-          "id": "hostOperatorEventScreen",
-          "path": "/host/operator/:eventId",
+          "id": "hostWorkEventScreen",
+          "path": "/host/work/event/:eventId",
           "role": "host"
         },
         {
@@ -17733,6 +17776,16 @@
           "tests": [
             "test/hosts/host_inbox_view_model_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
+          ]
+        },
+        {
+          "id": "program_queries",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "HostInboxScope.program selects WhatsApp threads whose contactId belongs to the program guest list plus Catch threads whose otherUid is a verified linked uid from those threads.",
+          "nextAction": "Add a program-scoped inbox capture when the program workspace gains golden coverage.",
+          "tests": [
+            "test/hosts/host_inbox_view_model_test.dart"
           ]
         },
         {
@@ -28553,6 +28606,171 @@
       ]
     },
     {
+      "id": "screen.programs.moments",
+      "name": "Program moments",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramMomentsScreen",
+          "path": "/host/programs/:programId/moments",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+        "symbol": "OrganizerMomentsScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; the moments workspace is a pushed route with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "organizerMomentsControllerProvider, OrganizerMomentsRepository and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "organizerMomentsControllerProvider",
+        "files": [
+          {
+            "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+            "symbol": "OrganizerMomentsScreen"
+          },
+          {
+            "file": "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+            "symbol": "OrganizerMomentsController"
+          },
+          {
+            "file": "lib/hosts/events/data/organizer_moments_repository.dart",
+            "symbol": "organizerMomentsRepository"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+            "symbol": "OrganizerMomentsController"
+          }
+        ],
+        "notes": "The screen renders the program scope the server returns; lifecycle transitions (arm, pause, resume, run) and edits stay controller-owned. Program scope reuses the same unified moments engine as the event route."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R4 program-scope moments route on the unified organizer moments surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "moments_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "OrganizerMomentsScreen renders the canonical loading viewport while organizerMomentsControllerProvider resolves the program scope.",
+          "nextAction": "Review against program design references when they land."
+        },
+        {
+          "id": "moments_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Backend and authorization failures render CatchLocalizedErrorState with scope-scoped retry.",
+          "nextAction": "Review against program design references when they land."
+        },
+        {
+          "id": "moments_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "A program scope with no moments renders the empty state and the create affordance.",
+          "nextAction": "Review against program design references when they land."
+        },
+        {
+          "id": "moments_list",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "The list renders each moment with lifecycle status, initiation, audience, and action summaries plus lifecycle and manual-run actions.",
+          "nextAction": "Review against program design references when they land."
+        },
+        {
+          "id": "moment_editor",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Create and edit swap the list for the inline moment editor covering initiation, sense, audience, and action fields.",
+          "nextAction": "Review against program design references when they land."
+        },
+        {
+          "id": "moment_mutation",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Arm, pause, resume, run, and save mark the affected moment busy and surface localized failures.",
+          "nextAction": "Review against program design references when they land."
+        }
+      ],
+      "composition": {
+        "currentLayout": "OrganizerMomentsScreen resolves the program scope once and composes the moment list, lifecycle actions, and the inline create/edit editor.",
+        "targetLayout": "Moments continues pushing scope and lifecycle resolution into typed display data.",
+        "sections": [
+          {
+            "id": "section.program_moments.adapter",
+            "name": "Program moments route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "OrganizerMomentsScreen",
+              "OrganizerMomentEditScreen"
+            ],
+            "flutter": {
+              "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+              "symbol": "OrganizerMomentsScreen"
+            },
+            "currentOwner": "OrganizerMomentsScreen + organizerMomentsControllerProvider",
+            "targetOwner": "provider-free moments body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field",
+              "catch.button",
+              "catch.menu",
+              "catch.error_state",
+              "catch.skeleton",
+              "catch.surface"
+            ],
+            "states": [
+              "moments_loading",
+              "moments_error",
+              "moments_empty",
+              "moments_list",
+              "moment_editor",
+              "moment_mutation"
+            ],
+            "migration": "Keep list and editor composition provider-free once the moments payload is resolved."
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-MOMENTS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
       "id": "screen.programs.arrivals",
       "name": "Program arrivals roster",
       "owner": "programs",
@@ -29414,6 +29632,158 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-TRIPS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.counts",
+      "name": "Program stakeholder counts",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkCountsScreen",
+          "path": "/host/work/:programId/counts",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+        "symbol": "ProgramStakeholderScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programStakeholderCountsProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+            "symbol": "ProgramStakeholderScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "getProgramStakeholderCounts"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "Counts-only read; names resolve from the work access payload. No PII leaves the callable."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "counts_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the counts payload resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        },
+        {
+          "id": "counts_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "CatchLocalizedErrorState inside the route scaffold.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        },
+        {
+          "id": "counts_populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Guest/household totals plus per-function RSVP and per-hotel routing breakdowns.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states",
+            "ProgramFunctionCountsRow/Row states",
+            "ProgramHotelOccupancyRow/Row states"
+          ]
+        },
+        {
+          "id": "counts_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Inline CatchEmptyState rows render when a program has no functions or hotels.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramStakeholderScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramStakeholderScreen renders summary counters and function/hotel breakdown rows scoped to the stakeholder viewer.",
+        "targetLayout": "Breakdown rows stay provider-free; counts refresh through the shared program repositories.",
+        "sections": [
+          {
+            "id": "section.programs_counts.adapter",
+            "name": "Counts route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramStakeholderScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_stakeholder_screen.dart",
+              "symbol": "ProgramStakeholderScreen"
+            },
+            "currentOwner": "ProgramStakeholderScreen + programStakeholderCountsProvider",
+            "targetOwner": "provider-free breakdown rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.surface",
+              "catch.badge"
+            ],
+            "states": [
+              "counts_loading",
+              "counts_error",
+              "counts_populated"
+            ],
+            "migration": "Keep the counts read counts-only; label joins stay client-side off work access.",
+            "previewIds": [
+              "ProgramStakeholderScreen/Screen states",
+              "ProgramFunctionCountsRow/Row states",
+              "ProgramHotelOccupancyRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-COUNTS-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }

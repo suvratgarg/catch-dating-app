@@ -25,6 +25,10 @@ export interface ProgramGuestGroupDocument {
    */
   memberCount: number;
   /**
+   * Optional programHotels link: where members of this group stay. Distance-aware moment lead times (audience.travelTimeLead) resolve each guest to the hotel of their first hotel-linked group.
+   */
+  hotelId: string | null;
+  /**
    * Serialized Firestore Timestamp fixture shape.
    */
   createdAt: {

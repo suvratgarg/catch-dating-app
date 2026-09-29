@@ -471,6 +471,8 @@ export {organizerContactTagVocabularyDocumentSchema} from "./schemas/organizerCo
 export {organizerSavedAudienceDocumentSchema} from "./schemas/organizerSavedAudienceDocument";
 export {organizerManualSendTaskDocumentSchema} from "./schemas/organizerManualSendTaskDocument";
 export {organizerAttentionItemDocumentSchema} from "./schemas/organizerAttentionItemDocument";
+export {organizerEntitlementsDocumentSchema} from "./schemas/organizerEntitlementsDocument";
+export {organizerEntitlementReceiptDocumentSchema} from "./schemas/organizerEntitlementReceiptDocument";
 export {organizerContactIdentityLinkDocumentSchema} from "./schemas/organizerContactIdentityLinkDocument";
 export {organizerContactIdentityClaimDocumentSchema} from "./schemas/organizerContactIdentityClaimDocument";
 export {organizerContactEventEdgeDocumentSchema} from "./schemas/organizerContactEventEdgeDocument";
@@ -550,6 +552,8 @@ export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocume
 export {programStaffInviteDocumentSchema} from "./schemas/programStaffInviteDocument";
 export {programPickupPointDocumentSchema} from "./schemas/programPickupPointDocument";
 export {programHotelDocumentSchema} from "./schemas/programHotelDocument";
+export {programStayDocumentSchema} from "./schemas/programStayDocument";
+export {programRoomBlockDocumentSchema} from "./schemas/programRoomBlockDocument";
 export {programTravelLegDocumentSchema} from "./schemas/programTravelLegDocument";
 export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocument";
 export {organizerMomentDocumentSchema} from "./schemas/organizerMomentDocument";
@@ -625,6 +629,7 @@ export {programTransportPlanCallableResponseSchema} from "./schemas/programTrans
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
+export {programStakeholderCountsCallableResponseSchema} from "./schemas/programStakeholderCountsOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";
 export {transportVendorListCallableResponseSchema} from "./schemas/transportVendorListOutput";
@@ -754,6 +759,11 @@ export {adminUpdateClubDetailsCallablePayloadSchema} from "./schemas/adminUpdate
 export {adminGetOrganizerDetailsCallablePayloadSchema} from "./schemas/adminGetOrganizerDetailsInput";
 export {adminListOrganizerDetailsCallablePayloadSchema} from "./schemas/adminListOrganizerDetailsInput";
 export {adminUpdateOrganizerDetailsCallablePayloadSchema} from "./schemas/adminUpdateOrganizerDetailsInput";
+export {adminGrantOrganizerEntitlementCallablePayloadSchema} from "./schemas/adminGrantOrganizerEntitlementInput";
+export {adminRevokeOrganizerEntitlementGrantCallablePayloadSchema} from "./schemas/adminRevokeOrganizerEntitlementGrantInput";
+export {getOrganizerEntitlementCallablePayloadSchema} from "./schemas/getOrganizerEntitlementInput";
+export {organizerEntitlementMutationCallableResponseSchema} from "./schemas/organizerEntitlementMutationOutput";
+export {organizerEntitlementCallableResponseSchema} from "./schemas/organizerEntitlementOutput";
 export {adminGetEventDetailsCallablePayloadSchema} from "./schemas/adminGetEventDetailsInput";
 export {adminListEventDetailsCallablePayloadSchema} from "./schemas/adminListEventDetailsInput";
 export {adminListExternalEventDetailsCallablePayloadSchema} from "./schemas/adminListExternalEventDetailsInput";
@@ -1117,6 +1127,7 @@ export {profilePromptCatalog} from "./catalogs/profilePromptCatalog";
 export {personFieldCatalog} from "./catalogs/personFieldCatalog";
 export {organizerFormTemplateCatalog} from "./catalogs/organizerFormTemplateCatalog";
 export {hostAttentionPolicyCatalog} from "./catalogs/hostAttentionPolicyCatalog";
+export {organizerEntitlementSkuCatalog} from "./catalogs/organizerEntitlementSkuCatalog";
 export {photoPromptCatalog} from "./catalogs/photoPromptCatalog";
 export {profilePromptLimits} from "./catalogs/profilePromptLimits";
 export {photoPromptLimits} from "./catalogs/photoPromptLimits";

@@ -11,15 +11,18 @@ final class SubmitProgramHouseholdRsvpCallableRequest {
     required this.token,
     required this.responses,
     required this.messagingConsent,
+    this.travel,
   });
 
   final String token;
   final List<Map<String, Object?>> responses;
   final bool messagingConsent;
+  final List<Map<String, Object?>>? travel;
 
   Map<String, Object?> toJson() => {
     'token': token,
     'responses': responses,
     'messagingConsent': messagingConsent,
+    'travel': ?travel,
   };
 }

@@ -1005,8 +1005,9 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
   assert.match(ci, /name: Backend source review/u);
   const feedback = workflow("pr-feedback.yml");
-  assert.match(feedback, /git diff --check/u);
-  assert.match(feedback, /node tool\/harness\.mjs plan/u);
+  const plan = namedStep(feedback, "Plan affected checks");
+  assert.match(plan, /node tool\/harness\.mjs plan --base "\$BASE_SHA" --head HEAD --mode pr --json/u);
+  assert.doesNotMatch(feedback, /git diff --check/u);
   assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
   assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);
 });

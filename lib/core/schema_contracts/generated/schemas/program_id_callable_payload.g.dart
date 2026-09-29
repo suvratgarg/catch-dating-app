@@ -13,6 +13,7 @@ const schemaProgramIdCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'x-callable-aliases': <Object?>[
     'getOrganizerProgram',
+    'getProgramStakeholderCounts',
     'getProgramWorkAccess',
     'listProgramHouseholds',
   ],

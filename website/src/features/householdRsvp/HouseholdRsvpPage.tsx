@@ -14,18 +14,23 @@ import {
   EventRuntimeSectionStack,
   Field,
   FormStatus,
+  SelectField,
   TextField,
 } from "../../shared/ui/primitives";
 import {programHouseholdItineraryIcsUrl} from "../../firebase";
 import {householdRsvpCopy as copy} from "../../content/householdRsvp";
 import {
   draftFor,
+  travelDraftFor,
+  travelDraftIncomplete,
   type Credential,
   type HouseholdRsvpScreen,
   type MemberFunctionView,
   type MemberView,
   type ResponseDraft,
   type RsvpStatus,
+  type TravelDraft,
+  type TravelKind,
 } from "./householdRsvpModel";
 import {useHouseholdRsvpController} from "./useHouseholdRsvpController";
 
@@ -121,11 +126,150 @@ function MemberFunctionCard({
   );
 }
 
+const OTHER_DESTINATION = "__other";
+
+function toLocalInput(millis: number | null | undefined): string {
+  if (millis == null) return "";
+  const date = new Date(millis);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-` +
+    `${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function TravelBlockCard({
+  member,
+  kind,
+  hotels,
+  draft,
+  pending,
+  onChange,
+}: {
+  member: MemberView;
+  kind: TravelKind;
+  hotels: {hotelId: string; name: string}[];
+  draft: TravelDraft | undefined;
+  pending: boolean;
+  onChange: (patch: Partial<TravelDraft>) => void;
+}) {
+  const title = kind === "outbound" ? copy.travelDeparture : copy.travelArrival;
+  const inputId = `${member.guestId}-${kind}`;
+  const destination = draft?.destinationHotelId ??
+    (draft?.destinationLabel ? OTHER_DESTINATION : "");
+  return (
+    <EventRuntimeModule
+      title={copy.travelBlockTitle(member.displayName, title)}>
+      <TextField
+        id={`${inputId}-flight`}
+        label={copy.travelFlight}
+        placeholder={copy.travelFlightPlaceholder}
+        disabled={pending}
+        value={draft?.flightNumber ?? ""}
+        onChange={(event) =>
+          onChange({flightNumber: event.target.value || null})}
+      />
+      <TextField
+        id={`${inputId}-from`}
+        label={copy.travelFrom}
+        placeholder={copy.travelFromPlaceholder}
+        maxLength={3}
+        disabled={pending}
+        value={draft?.originIata ?? ""}
+        onChange={(event) =>
+          onChange({originIata: event.target.value.toUpperCase() || null})}
+      />
+      <TextField
+        id={`${inputId}-to`}
+        label={copy.travelTo}
+        placeholder={copy.travelToPlaceholder}
+        maxLength={3}
+        disabled={pending}
+        value={draft?.destinationIata ?? ""}
+        onChange={(event) =>
+          onChange({destinationIata: event.target.value.toUpperCase() || null})}
+      />
+      <TextField
+        id={`${inputId}-when`}
+        label={kind === "outbound" ? copy.travelWhenDeparture :
+          copy.travelWhen}
+        type="datetime-local"
+        disabled={pending}
+        value={toLocalInput(draft?.scheduledArrivalAtMillis)}
+        onChange={(event) => {
+          const value = event.target.value;
+          onChange({scheduledArrivalAtMillis:
+            value === "" ? null : new Date(value).getTime()});
+        }}
+      />
+      <SelectField
+        id={`${inputId}-hotel`}
+        label={copy.travelHotel}
+        disabled={pending}
+        value={destination}
+        onChange={(event) => {
+          const value = event.target.value;
+          onChange({
+            destinationHotelId: value === "" || value === OTHER_DESTINATION ?
+              null : value,
+            destinationLabel: value === OTHER_DESTINATION ?
+              draft?.destinationLabel ?? null : null,
+          });
+        }}>
+        <option value="">{copy.travelHotelChoose}</option>
+        {hotels.map((hotel) => (
+          <option key={hotel.hotelId} value={hotel.hotelId}>
+            {hotel.name}
+          </option>
+        ))}
+        <option value={OTHER_DESTINATION}>{copy.travelHotelOther}</option>
+      </SelectField>
+      {destination === OTHER_DESTINATION ? (
+        <TextField
+          id={`${inputId}-destination`}
+          label={copy.travelDestinationLabel}
+          placeholder={copy.travelDestinationPlaceholder}
+          disabled={pending}
+          value={draft?.destinationLabel ?? ""}
+          onChange={(event) =>
+            onChange({destinationLabel: event.target.value || null})}
+        />
+      ) : null}
+      <TextField
+        id={`${inputId}-passengers`}
+        label={copy.travelPassengers}
+        type="number" min={1} max={200} inputMode="numeric"
+        disabled={pending}
+        value={draft?.passengers == null ? "" : String(draft.passengers)}
+        onChange={(event) => {
+          const value = event.target.value;
+          onChange({passengers: value === "" ? null :
+            Math.max(1, Math.min(200, Number.parseInt(value, 10) || 1))});
+        }}
+      />
+      <TextField
+        id={`${inputId}-luggage`}
+        label={copy.travelLuggage}
+        type="number" min={0} max={500} inputMode="numeric"
+        disabled={pending}
+        value={draft?.luggageUnits == null ? "" : String(draft.luggageUnits)}
+        onChange={(event) => {
+          const value = event.target.value;
+          onChange({luggageUnits: value === "" ? null :
+            Math.max(0, Math.min(500, Number.parseInt(value, 10) || 0))});
+        }}
+      />
+      {draft && travelDraftIncomplete(draft) ? (
+        <p>{copy.travelIncomplete}</p>
+      ) : null}
+    </EventRuntimeModule>
+  );
+}
+
 export function HouseholdRsvpView({
   credential,
   screen,
   setResponse,
   setConsent,
+  setTravel,
   submit,
   refresh,
   refreshing,
@@ -135,6 +279,8 @@ export function HouseholdRsvpView({
   setResponse: (guestId: string, functionId: string,
     patch: Partial<ResponseDraft>) => void;
   setConsent: (value: boolean) => void;
+  setTravel: (guestId: string, kind: TravelKind,
+    patch: Partial<TravelDraft>) => void;
   submit: () => void;
   refresh: () => void;
   refreshing: boolean;
@@ -181,6 +327,19 @@ export function HouseholdRsvpView({
                       pending={screen.pending}
                       onChange={(patch) =>
                         setResponse(member.guestId, fn.functionId, patch)}
+                    />
+                  ))}
+                  {(["inbound", "outbound"] as const).map((kind) => (
+                    <TravelBlockCard
+                      key={kind}
+                      member={member}
+                      kind={kind}
+                      hotels={screen.view.hotels}
+                      draft={travelDraftFor(
+                        screen.travelDrafts, member.guestId, kind)}
+                      pending={screen.pending}
+                      onChange={(patch) =>
+                        setTravel(member.guestId, kind, patch)}
                     />
                   ))}
                 </div>

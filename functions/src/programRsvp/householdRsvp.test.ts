@@ -116,6 +116,21 @@ const seed = (): Record<string, FakeData> => ({
     expiresAt: admin.firestore.Timestamp.fromMillis(FUTURE),
     revokedBy: null, revokedAt: null, updatedAt: now, revision: 1,
   },
+  "programHotels/hotel-1": {
+    programId: "program-1", organizerId: "org-1", name: "Grand",
+    address: null, location: null, notes: null,
+    createdAt: now, updatedAt: now, revision: 1,
+  },
+  "programHotels/hotel-foreign": {
+    programId: "program-9", organizerId: "org-9", name: "Elsewhere",
+    address: null, location: null, notes: null,
+    createdAt: now, updatedAt: now, revision: 1,
+  },
+  "programPickupPoints/pickup-1": {
+    programId: "program-1", organizerId: "org-1", name: "T3 arrivals",
+    kind: "airport", terminal: "T3", location: null, notes: null,
+    createdAt: now, updatedAt: now, revision: 1,
+  },
 });
 
 const token = (householdId = "hh-1") => mintHouseholdToken({
@@ -216,6 +231,216 @@ test("submit rejects cross-household and uninvited responses",
     assert.equal(
       db.getDoc("programHouseholds/hh-1")!.messagingConsent, null);
   });
+
+const leg = (id: string, patch: FakeData = {}): FakeData => ({
+  programId: "program-1",
+  organizerId: "org-1",
+  guestId: "g-1",
+  partyId: null,
+  kind: "inbound",
+  flightNumber: "UA100",
+  carrierCode: "UA",
+  originIata: "SFO",
+  destinationIata: "DEL",
+  scheduledArrivalAt:
+    admin.firestore.Timestamp.fromMillis(1_800_500_000_000),
+  estimatedArrivalAt: null,
+  actualArrivalAt: null,
+  flightStatus: "scheduled",
+  flightInstanceId: null,
+  international: null,
+  pickupPointId: null,
+  destinationHotelId: "hotel-1",
+  destinationLabel: null,
+  readiness: "expected",
+  readyAt: null,
+  claimedByUid: null,
+  claimedAt: null,
+  manualCurbAt: null,
+  manualCurbNote: null,
+  passengers: 1,
+  luggageUnits: 0,
+  requiredCapabilities: [],
+  dedicatedVehicle: false,
+  source: "formResponse",
+  createdAt: now,
+  updatedAt: now,
+  revision: 1,
+  arrivalTerminal: null,
+  flightRefreshedAt: null,
+  flightNextRefreshAt: null,
+  flightAlertSubscriptionId: null,
+  flightProviderUpdatedAt: null,
+  flightAlertFlightNumber: null,
+  flightAlertLease: null,
+  ...patch,
+});
+
+const travelBlock = (patch: FakeData = {}): FakeData => ({
+  guestId: "g-1",
+  kind: "inbound",
+  flightNumber: "UA123",
+  originIata: "SFO",
+  destinationIata: "DEL",
+  scheduledArrivalAtMillis: 1_800_500_000_000,
+  destinationHotelId: "hotel-1",
+  ...patch,
+});
+
+const submit = (data: FakeData, db: FakeFirestore) =>
+  submitProgramHouseholdRsvpHandler(request({
+    token: token(),
+    responses: [],
+    messagingConsent: false,
+    ...data,
+  }, "anonymous"), deps(db));
+
+test("travel blocks land deterministic formResponse legs", async () => {
+  const db = new FakeFirestore(seed());
+  const out = await submit({
+    travel: [
+      travelBlock(),
+      travelBlock({guestId: "g-2", kind: "outbound",
+        flightNumber: "UA900", pickupPointId: "pickup-1",
+        passengers: 4}),
+    ],
+  }, db);
+  assert.equal(out.travelLegAppliedCount, 2);
+  const inbound = db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound")!;
+  assert.equal(inbound.programId, "program-1");
+  assert.equal(inbound.organizerId, "org-1");
+  assert.equal(inbound.guestId, "g-1");
+  assert.equal(inbound.kind, "inbound");
+  assert.equal(inbound.source, "formResponse");
+  assert.equal(inbound.flightNumber, "UA123");
+  assert.equal(inbound.flightStatus, "scheduled");
+  assert.equal(inbound.destinationHotelId, "hotel-1");
+  assert.equal(inbound.passengers, 1);
+  const outbound =
+    db.getDoc("programTravelLegs/rsvp_hh-1_g-2_outbound")!;
+  assert.equal(outbound.flightNumber, "UA900");
+  assert.equal(outbound.pickupPointId, "pickup-1");
+  assert.equal(outbound.passengers, 4);
+});
+
+test("travel resubmits update the same leg and keep provenance",
+  async () => {
+    const db = new FakeFirestore({...seed(),
+      "programTravelLegs/rsvp_hh-1_g-1_inbound": leg(
+        "rsvp_hh-1_g-1_inbound", {
+          partyId: "party-1",
+          claimedByUid: "driver-1",
+          createdAt: admin.firestore.Timestamp.fromMillis(1_000),
+          revision: 3,
+        })});
+    const out = await submit({
+      travel: [travelBlock({flightNumber: "UA456", passengers: 3})],
+    }, db);
+    assert.equal(out.travelLegAppliedCount, 1);
+    const doc = db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound")!;
+    assert.equal(doc.flightNumber, "UA456");
+    assert.equal(doc.passengers, 3);
+    // Party membership and provenance are planner-owned.
+    assert.equal(doc.partyId, "party-1");
+    assert.equal(doc.source, "formResponse");
+    assert.equal(
+      (doc.createdAt as FirebaseFirestore.Timestamp).toMillis(),
+      1_000);
+    // Rebooking invalidates claimed curb state and refreshes identity.
+    assert.equal(doc.claimedByUid, null);
+    // nextRevision is lamport-style: max(prior + 1, now millis).
+    assert.equal(doc.revision, now.toMillis());
+  });
+
+test("travel blocks cannot reach foreign members or places",
+  async () => {
+    const db = new FakeFirestore(seed());
+    await assert.rejects(submit({
+      travel: [travelBlock({guestId: "g-3"})],
+    }, db), (err) =>
+      (err as {code?: string}).code === "permission-denied");
+    await assert.rejects(submit({
+      travel: [travelBlock({destinationHotelId: "hotel-foreign"})],
+    }, db), (err) =>
+      (err as {code?: string}).code === "invalid-argument");
+    assert.equal(
+      db.getDoc("programTravelLegs/rsvp_hh-1_g-3_inbound"), undefined);
+    assert.equal(
+      db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound"), undefined);
+  });
+
+test("travel blocks need a destination and an arrival", async () => {
+  const db = new FakeFirestore(seed());
+  await assert.rejects(submit({
+    travel: [travelBlock({destinationHotelId: null,
+      destinationLabel: null})],
+  }, db), (err) =>
+    (err as {code?: string}).code === "invalid-argument");
+  await assert.rejects(submit({
+    travel: [travelBlock({scheduledArrivalAtMillis: null})],
+  }, db), (err) =>
+    (err as {code?: string}).code === "invalid-argument");
+  // A free-text destination covers guests not staying at a program
+  // hotel.
+  const out = await submit({
+    travel: [travelBlock({destinationHotelId: null,
+      destinationLabel: "Family home, Jaipur"})],
+  }, db);
+  assert.equal(out.travelLegAppliedCount, 1);
+  assert.equal(
+    db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound")!
+      .destinationLabel, "Family home, Jaipur");
+});
+
+test("dispatched journeys reject household edits", async () => {
+  const db = new FakeFirestore({...seed(),
+    "programTravelLegs/rsvp_hh-1_g-1_inbound": leg(
+      "rsvp_hh-1_g-1_inbound", {readiness: "dispatched"})});
+  await assert.rejects(submit({travel: [travelBlock()]}, db),
+    (err) => (err as {code?: string}).code === "failed-precondition");
+  assert.equal(
+    db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound")!
+      .flightNumber, "UA100");
+});
+
+test("submits without travel write no legs", async () => {
+  const db = new FakeFirestore(seed());
+  const out = await submit({}, db);
+  assert.equal(out.travelLegAppliedCount, 0);
+  assert.equal(
+    db.getDoc("programTravelLegs/rsvp_hh-1_g-1_inbound"), undefined);
+});
+
+test("view echoes submitted travel and the program hotels", async () => {
+  const db = new FakeFirestore({...seed(),
+    "programTravelLegs/rsvp_hh-1_g-1_inbound": leg(
+      "rsvp_hh-1_g-1_inbound", {
+        flightNumber: "UA123", passengers: 3, luggageUnits: 2,
+        pickupPointId: "pickup-1", partyId: "party-1",
+      }),
+    // A planner-owned leg for the same member must not echo.
+    "programTravelLegs/leg-planner": leg("leg-planner", {
+      source: "planner", flightNumber: "AI400"}),
+    // hh-2's captured leg must not leak into hh-1's view.
+    "programTravelLegs/rsvp_hh-2_g-3_inbound": leg(
+      "rsvp_hh-2_g-3_inbound", {guestId: "g-3",
+        flightNumber: "AI900"})});
+  const view = await getProgramHouseholdRsvpViewHandler(
+    request({token: token()}, "anonymous"), deps(db));
+  // hotel-foreign belongs to program-9 and must not appear.
+  assert.deepEqual(view.hotels, [{hotelId: "hotel-1", name: "Grand"}]);
+  const g1 = view.members.find((member) => member.guestId === "g-1")!;
+  assert.equal(g1.travel.length, 1);
+  const block = g1.travel[0];
+  assert.equal(block.kind, "inbound");
+  assert.equal(block.flightNumber, "UA123");
+  assert.equal(block.passengers, 3);
+  assert.equal(block.luggageUnits, 2);
+  assert.equal(block.destinationHotelId, "hotel-1");
+  assert.equal(block.scheduledArrivalAtMillis, 1_800_500_000_000);
+  const g2 = view.members.find((member) => member.guestId === "g-2")!;
+  assert.equal(g2.travel.length, 0);
+});
 
 test("bad, expired and foreign tokens never open a view", async () => {
   const db = new FakeFirestore(seed());

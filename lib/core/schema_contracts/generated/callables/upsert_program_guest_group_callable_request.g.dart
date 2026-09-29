@@ -14,6 +14,7 @@ final class UpsertProgramGuestGroupCallableRequest {
     required this.label,
     required this.dimension,
     this.sortOrder,
+    this.hotelId,
   });
 
   final String programId;
@@ -22,6 +23,7 @@ final class UpsertProgramGuestGroupCallableRequest {
   final String label;
   final String dimension;
   final int? sortOrder;
+  final String? hotelId;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
@@ -30,5 +32,6 @@ final class UpsertProgramGuestGroupCallableRequest {
     'label': label,
     'dimension': dimension,
     'sortOrder': ?sortOrder,
+    'hotelId': ?hotelId,
   };
 }

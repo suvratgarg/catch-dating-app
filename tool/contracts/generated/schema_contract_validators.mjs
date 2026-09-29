@@ -469,6 +469,8 @@ import {
   organizerSavedAudienceDocumentSchema,
   organizerManualSendTaskDocumentSchema,
   organizerAttentionItemDocumentSchema,
+  organizerEntitlementsDocumentSchema,
+  organizerEntitlementReceiptDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -548,6 +550,8 @@ import {
   programStaffInviteDocumentSchema,
   programPickupPointDocumentSchema,
   programHotelDocumentSchema,
+  programStayDocumentSchema,
+  programRoomBlockDocumentSchema,
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
   organizerMomentDocumentSchema,
@@ -623,6 +627,7 @@ import {
   programHotelInboundCallableResponseSchema,
   recordProgramDoorJournalCallableResponseSchema,
   programFunctionDoorViewCallableResponseSchema,
+  programStakeholderCountsCallableResponseSchema,
   programManifestImportCallableResponseSchema,
   dispatchProgramTripCallableResponseSchema,
   transportVendorListCallableResponseSchema,
@@ -752,6 +757,11 @@ import {
   adminGetOrganizerDetailsCallablePayloadSchema,
   adminListOrganizerDetailsCallablePayloadSchema,
   adminUpdateOrganizerDetailsCallablePayloadSchema,
+  adminGrantOrganizerEntitlementCallablePayloadSchema,
+  adminRevokeOrganizerEntitlementGrantCallablePayloadSchema,
+  getOrganizerEntitlementCallablePayloadSchema,
+  organizerEntitlementMutationCallableResponseSchema,
+  organizerEntitlementCallableResponseSchema,
   adminGetEventDetailsCallablePayloadSchema,
   adminListEventDetailsCallablePayloadSchema,
   adminListExternalEventDetailsCallablePayloadSchema,
@@ -1599,6 +1609,8 @@ export const validateOrganizerContactTagVocabularyDocument = ajv.compile(organiz
 export const validateOrganizerSavedAudienceDocument = ajv.compile(organizerSavedAudienceDocumentSchema);
 export const validateOrganizerManualSendTaskDocument = ajv.compile(organizerManualSendTaskDocumentSchema);
 export const validateOrganizerAttentionItemDocument = ajv.compile(organizerAttentionItemDocumentSchema);
+export const validateOrganizerEntitlementsDocument = ajv.compile(organizerEntitlementsDocumentSchema);
+export const validateOrganizerEntitlementReceiptDocument = ajv.compile(organizerEntitlementReceiptDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
 export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
@@ -1678,6 +1690,8 @@ export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDo
 export const validateProgramStaffInviteDocument = ajv.compile(programStaffInviteDocumentSchema);
 export const validateProgramPickupPointDocument = ajv.compile(programPickupPointDocumentSchema);
 export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
+export const validateProgramStayDocument = ajv.compile(programStayDocumentSchema);
+export const validateProgramRoomBlockDocument = ajv.compile(programRoomBlockDocumentSchema);
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);
@@ -1753,6 +1767,7 @@ export const validateProgramTransportPlanCallableResponse = ajv.compile(programT
 export const validateProgramHotelInboundCallableResponse = ajv.compile(programHotelInboundCallableResponseSchema);
 export const validateRecordProgramDoorJournalCallableResponse = ajv.compile(recordProgramDoorJournalCallableResponseSchema);
 export const validateProgramFunctionDoorViewCallableResponse = ajv.compile(programFunctionDoorViewCallableResponseSchema);
+export const validateProgramStakeholderCountsCallableResponse = ajv.compile(programStakeholderCountsCallableResponseSchema);
 export const validateProgramManifestImportCallableResponse = ajv.compile(programManifestImportCallableResponseSchema);
 export const validateDispatchProgramTripCallableResponse = ajv.compile(dispatchProgramTripCallableResponseSchema);
 export const validateTransportVendorListCallableResponse = ajv.compile(transportVendorListCallableResponseSchema);
@@ -1882,6 +1897,11 @@ export const validateAdminUpdateClubDetailsCallablePayload = ajv.compile(adminUp
 export const validateAdminGetOrganizerDetailsCallablePayload = ajv.compile(adminGetOrganizerDetailsCallablePayloadSchema);
 export const validateAdminListOrganizerDetailsCallablePayload = ajv.compile(adminListOrganizerDetailsCallablePayloadSchema);
 export const validateAdminUpdateOrganizerDetailsCallablePayload = ajv.compile(adminUpdateOrganizerDetailsCallablePayloadSchema);
+export const validateAdminGrantOrganizerEntitlementCallablePayload = ajv.compile(adminGrantOrganizerEntitlementCallablePayloadSchema);
+export const validateAdminRevokeOrganizerEntitlementGrantCallablePayload = ajv.compile(adminRevokeOrganizerEntitlementGrantCallablePayloadSchema);
+export const validateGetOrganizerEntitlementCallablePayload = ajv.compile(getOrganizerEntitlementCallablePayloadSchema);
+export const validateOrganizerEntitlementMutationCallableResponse = ajv.compile(organizerEntitlementMutationCallableResponseSchema);
+export const validateOrganizerEntitlementCallableResponse = ajv.compile(organizerEntitlementCallableResponseSchema);
 export const validateAdminGetEventDetailsCallablePayload = ajv.compile(adminGetEventDetailsCallablePayloadSchema);
 export const validateAdminListEventDetailsCallablePayload = ajv.compile(adminListEventDetailsCallablePayloadSchema);
 export const validateAdminListExternalEventDetailsCallablePayload = ajv.compile(adminListExternalEventDetailsCallablePayloadSchema);

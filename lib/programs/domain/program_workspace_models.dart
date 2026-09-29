@@ -21,6 +21,7 @@ class OrganizerProgramSummary {
 class OrganizerProgramSettings {
   const OrganizerProgramSettings({
     required this.programId,
+    required this.organizerId,
     required this.kind,
     required this.title,
     required this.timezone,
@@ -33,6 +34,7 @@ class OrganizerProgramSettings {
   });
 
   final String programId;
+  final String organizerId;
   final ProgramKind kind;
   final String title;
   final String timezone;
@@ -118,6 +120,7 @@ class OrganizerProgramDetail {
     return OrganizerProgramDetail(
       program: OrganizerProgramSettings(
         programId: requiredString(programMap, 'programId'),
+        organizerId: requiredString(programMap, 'organizerId'),
         kind: ProgramKind.values.byName(requiredString(programMap, 'kind')),
         title: requiredString(programMap, 'title'),
         timezone: requiredString(programMap, 'timezone'),
@@ -165,6 +168,7 @@ class ProgramGuestRow {
     required this.rsvpStatus,
     required this.revision,
     this.householdId,
+    this.contactId,
     this.phoneE164,
     this.email,
     this.externalReference,
@@ -174,6 +178,7 @@ class ProgramGuestRow {
     guestId: requiredString(map, 'guestId'),
     displayName: requiredString(map, 'displayName'),
     householdId: map['householdId'] as String?,
+    contactId: map['contactId'] as String?,
     phoneE164: map['phoneE164'] as String?,
     email: map['email'] as String?,
     externalReference: map['externalReference'] as String?,
@@ -186,6 +191,10 @@ class ProgramGuestRow {
   final String guestId;
   final String displayName;
   final String? householdId;
+
+  /// Optional `organizerContacts` link; the program-scoped inbox uses it to
+  /// attribute contact-linked threads to this program's guests.
+  final String? contactId;
   final String? phoneE164;
   final String? email;
   final String? externalReference;
@@ -257,6 +266,7 @@ class ProgramGuestGroupRow {
     required this.memberCount,
     required this.revision,
     this.sortOrder,
+    this.hotelId,
   });
 
   factory ProgramGuestGroupRow.fromMap(Map<Object?, Object?> map) =>
@@ -270,6 +280,7 @@ class ProgramGuestGroupRow {
         sortOrder: map['sortOrder'] is num
             ? (map['sortOrder']! as num).toInt()
             : null,
+        hotelId: map['hotelId'] is String ? map['hotelId']! as String : null,
         revision: requiredInt(map, 'revision'),
       );
 
@@ -278,6 +289,10 @@ class ProgramGuestGroupRow {
   final String dimension;
   final int memberCount;
   final int? sortOrder;
+
+  /// `programHotels` link — where this group stays; feeds distance-aware
+  /// moment lead times.
+  final String? hotelId;
   final int revision;
 }
 

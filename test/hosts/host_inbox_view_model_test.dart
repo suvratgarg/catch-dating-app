@@ -2,6 +2,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
@@ -60,6 +61,52 @@ void main() {
         ),
         const HostInboxScope.event('upcoming'),
       );
+    });
+
+    test('requested program scope survives a truncated or loading menu', () {
+      final programs = [_program('program-1')];
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('program-1'),
+          programs: programs,
+        ),
+        const HostInboxScope.program('program-1'),
+      );
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('foreign'),
+          programs: programs,
+        ),
+        const HostInboxScope.program('foreign'),
+      );
+      expect(
+        resolveHostInboxScope(
+          events: [upcoming],
+          now: now,
+          requestedScope: const HostInboxScope.program('program-1'),
+        ),
+        const HostInboxScope.program('program-1'),
+      );
+    });
+
+    test('scope equality distinguishes program from event and general', () {
+      expect(
+        const HostInboxScope.program('program-1'),
+        const HostInboxScope.program('program-1'),
+      );
+      expect(
+        const HostInboxScope.program('program-1'),
+        isNot(const HostInboxScope.program('program-2')),
+      );
+      expect(
+        const HostInboxScope.program('program-1'),
+        isNot(const HostInboxScope.event('program-1')),
+      );
+      expect(const HostInboxScope.program('program-1').isGeneral, isFalse);
     });
   });
 
@@ -213,6 +260,65 @@ void main() {
         ]);
       },
     );
+
+    test('program scope lists only verified linked catch threads', () {
+      final workspace = HostInboxViewModel.compose(
+        events: [live],
+        inbox: _inbox([
+          _preview(uid: 'guest-uid', eventIds: const [], name: 'Guest'),
+          _preview(uid: 'stranger', eventIds: const [], name: 'Stranger'),
+        ]),
+        participations: const [],
+        selectedOrganizerId: 'club-1',
+        selectedScope: const HostInboxScope.program('program-1'),
+        selectedSegment: HostInboxAudienceSegment.booked,
+        query: '',
+        now: now,
+        programs: [_program('program-1'), _program('program-2')],
+        programAudience: const HostInboxProgramAudience(
+          contactIds: {'contact-1'},
+          linkedUids: {'guest-uid'},
+        ),
+      );
+
+      expect(workspace.isProgram, isTrue);
+      expect(workspace.isGeneral, isFalse);
+      expect(workspace.selectedProgram?.programId, 'program-1');
+      expect(workspace.threads.single.preview.otherUid, 'guest-uid');
+      expect(workspace.threads.single.statusLabel, 'Program guest');
+      expect(
+        workspace.scopeOptions,
+        containsAll([
+          const HostInboxScope.event('live'),
+          const HostInboxScope.program('program-1'),
+          const HostInboxScope.program('program-2'),
+          const HostInboxScope.general(),
+        ]),
+      );
+    });
+
+    test('unverified program scope never shows general threads', () {
+      final workspace = HostInboxViewModel.compose(
+        events: [live],
+        inbox: _inbox([
+          _preview(uid: 'general', eventIds: const [], name: 'General'),
+          _preview(uid: 'event', eventIds: ['live'], name: 'Event'),
+        ]),
+        participations: const [],
+        selectedOrganizerId: 'club-1',
+        selectedScope: const HostInboxScope.program('deleted-program'),
+        selectedSegment: HostInboxAudienceSegment.booked,
+        query: '',
+        now: now,
+        programs: [_program('program-1')],
+      );
+
+      expect(
+        workspace.selectedScope,
+        const HostInboxScope.program('deleted-program'),
+      );
+      expect(workspace.threads, isEmpty);
+    });
   });
 }
 
@@ -222,6 +328,13 @@ ChatsListViewModel _inbox(List<ChatThreadPreview> previews) =>
       conversations: previews,
       totalThreadCount: previews.length,
     );
+
+OrganizerProgramSummary _program(String id) => OrganizerProgramSummary(
+  programId: id,
+  title: 'Program $id',
+  kind: ProgramKind.wedding,
+  status: ProgramStatus.active,
+);
 
 ChatThreadPreview _preview({
   required String uid,

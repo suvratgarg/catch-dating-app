@@ -3510,7 +3510,7 @@
               "id": "match-chat-new-match-empty-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Claude Messaging · New match (empty) panel exported with the generic data-screen-label reference exporter and registered for advisory pixel comparison against match_chat_empty_thread.",
+              "notes": "Claude Messaging \u00b7 New match (empty) panel exported with the generic data-screen-label reference exporter and registered for advisory pixel comparison against match_chat_empty_thread.",
               "path": "design/reference_screens/screen.matches.chat/new_match_empty.png"
             }
           ],
@@ -3848,7 +3848,7 @@
             {
               "id": "DP-MATCHES-CHAT-004",
               "status": "closed",
-              "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+              "nextAction": "Closed. Populated Messaging thread and Messaging \u00b7 New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
             }
           ]
         }
@@ -4036,7 +4036,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "ProfileInlineSingleChoiceEntryEditor and ProfileInlineMultiChoiceEntryEditor delegate wrapping controls, source-order ' · ' summaries, Cancel/Done orientation, and final-selection policy to CatchField.choices. allowEmptySelection controls whether a final selection may be removed independently from showOptionalLabel; Education and Languages are clearable without Optional copy, while Religion is both clearable and visibly Optional. Height delegates to CatchField.stepper, pace delegates disclosure/action chrome to CatchField.control while retaining CatchRangeSlider, and prompt pairs use CatchSection.containedFieldRows.",
+              "notes": "ProfileInlineSingleChoiceEntryEditor and ProfileInlineMultiChoiceEntryEditor delegate wrapping controls, source-order ' \u00b7 ' summaries, Cancel/Done orientation, and final-selection policy to CatchField.choices. allowEmptySelection controls whether a final selection may be removed independently from showOptionalLabel; Education and Languages are clearable without Optional copy, while Religion is both clearable and visibly Optional. Height delegates to CatchField.stepper, pace delegates disclosure/action chrome to CatchField.control while retaining CatchRangeSlider, and prompt pairs use CatchSection.containedFieldRows.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4235,7 +4235,7 @@
               "id": "profile-public-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Public-profile Claude reference is regenerated from the current Profile · other panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device.",
+              "notes": "Public-profile Claude reference is regenerated from the current Profile \u00b7 other panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device.",
               "path": "design/reference_screens/manifest.json"
             }
           ],
@@ -8692,6 +8692,16 @@
               ],
               "captureIds": [
                 "host_inbox_general"
+              ]
+            },
+            {
+              "id": "program_queries",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "HostInboxScope.program filters WhatsApp threads by guest contactId and Catch threads by verified linked uid from the program guest list.",
+              "tests": [
+                "test/hosts/host_inbox_view_model_test.dart",
+                "test/hosts/inbox/host_inbox_people_test.dart"
               ]
             },
             {
@@ -13188,6 +13198,151 @@
               "kind": "empty",
               "status": "implemented",
               "notes": "Before a file is chosen only the picker call to action renders."
+            }
+          ]
+        },
+        {
+          "id": "programs.moments",
+          "routeId": "hostProgramMomentsScreen",
+          "implementationPaths": [
+            "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+            "lib/hosts/events/data/organizer_moments_repository.dart",
+            "lib/hosts/events/domain/organizer_moment.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.error_state",
+            "catch.field",
+            "catch.menu",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "R4 program-scope moments route on the unified organizer moments surface."
+            }
+          ],
+          "states": [
+            {
+              "id": "moments_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The route-owned loading viewport stays inside the Host shell while the moments list resolves."
+            },
+            {
+              "id": "moments_error",
+              "kind": "error",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Backend and authorization failures fail closed through the shared localized error state and scope-scoped retry."
+            },
+            {
+              "id": "moments_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Scopes without moments render the empty state with the create affordance."
+            },
+            {
+              "id": "moments_list",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The list renders lifecycle status plus initiation, audience, and action summaries for every definition the server returns."
+            },
+            {
+              "id": "moment_editor",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The inline editor covers manual, scheduled, anchored, and triggered initiation with audience and action fields bound to generated contract constraints."
+            },
+            {
+              "id": "moment_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Arm, pause, resume, manual run, and save mark the affected moment busy and surface localized failures."
+            }
+          ]
+        },
+        {
+          "id": "programs.counts",
+          "routeId": "hostWorkCountsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_stakeholder_screen.dart",
+            "lib/programs/data/program_work_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.section",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "Counts-only stakeholderViewer overview specified in the rollout spec; no PII crosses the callable boundary."
+            }
+          ],
+          "states": [
+            {
+              "id": "counts_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while programStakeholderCountsProvider resolves."
+            },
+            {
+              "id": "counts_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "counts_populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Guest and household totals, per-function RSVP/door counts, and per-hotel occupancy rows."
+            },
+            {
+              "id": "counts_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Empty counts surface when the program has no functions, guests, or routed hotels."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-012",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surface currently carries widgetbook previews only."
             }
           ]
         }
