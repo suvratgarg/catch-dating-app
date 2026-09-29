@@ -8,8 +8,9 @@ import {
 import {sampleOverview} from "../../shared/api/sampleData";
 
 describe("generated admin callable validators", () => {
-  it("covers every callable used by adminApi", () => {
-    expect(adminCallableValidationCoverage.callables).toHaveLength(45);
+  it("covers every discovered Admin callable with a strict request", () => {
+    expect(adminCallableValidationCoverage.callables).toEqual(
+      adminCallableValidationCoverage.strictRequests);
     expect(adminCallableValidationCoverage.strictRequests).toContain(
       "adminGetHostAnalytics"
     );
@@ -35,7 +36,13 @@ describe("generated admin callable validators", () => {
         "adminRevokeOrganizerEntitlementGrant",
       ])
     );
-    expect(adminCallableValidationCoverage.strictResponses).toHaveLength(17);
+    expect(adminCallableValidationCoverage.strictResponses).toEqual(
+      expect.arrayContaining([
+        "adminLinkOrganizerIntakeToSales", "adminAttestSalesHostSettlement",
+        "adminGetSalesIntelligenceCatalog", "adminGenerateSalesOutreachDraft",
+        "adminCopySalesOutreachDraft",
+      ])
+    );
     expect(adminCallableValidationCoverage.strictResponses).toEqual(
       expect.arrayContaining([
         "adminGetOverview",
