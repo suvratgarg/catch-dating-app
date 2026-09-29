@@ -584,6 +584,7 @@ Widget programTripLedgerRowStates(BuildContext context) {
         child: ProgramTripLedgerRow(
           trip: _trip,
           programId: _programId,
+          canVoid: true,
           onChanged: () {},
         ),
       ),

@@ -21775,6 +21775,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsTripsStatusVoided => 'Voided';
 
   @override
+  String get programsTripsExport => 'Export CSV';
+
+  @override
+  String get programsTripsExporting => 'Exporting…';
+
+  @override
+  String programsTripsExportSubject({required String title}) {
+    return '$title trip ledger';
+  }
+
+  @override
+  String get programsTripsReviewTitle => 'Needs review';
+
+  @override
+  String get programsTripsReviewSubtitle =>
+      'Open, cancelled and voided trips to reconcile before the vendor invoice clears';
+
+  @override
+  String get programsTripsReviewOnly => 'Review only';
+
+  @override
+  String get programsTripsShowAll => 'Show all';
+
+  @override
+  String get programsTripsReviewEmpty => 'Nothing left to review on this page.';
+
+  @override
   String programsWorkShellExpires({required Object date}) {
     return 'Access expires $date';
   }

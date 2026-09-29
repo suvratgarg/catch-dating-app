@@ -34935,6 +34935,54 @@ abstract class AppLocalizations {
   /// **'Voided'**
   String get programsTripsStatusVoided;
 
+  /// Program operations copy: programsTripsExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get programsTripsExport;
+
+  /// Program operations copy: programsTripsExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting…'**
+  String get programsTripsExporting;
+
+  /// Program operations copy: programsTripsExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} trip ledger'**
+  String programsTripsExportSubject({required String title});
+
+  /// Program operations copy: programsTripsReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get programsTripsReviewTitle;
+
+  /// Program operations copy: programsTripsReviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open, cancelled and voided trips to reconcile before the vendor invoice clears'**
+  String get programsTripsReviewSubtitle;
+
+  /// Program operations copy: programsTripsReviewOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Review only'**
+  String get programsTripsReviewOnly;
+
+  /// Program operations copy: programsTripsShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get programsTripsShowAll;
+
+  /// Program operations copy: programsTripsReviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to review on this page.'**
+  String get programsTripsReviewEmpty;
+
   /// Program operations copy: programsWorkShellExpires.
   ///
   /// In en, this message translates to:
