@@ -18,7 +18,9 @@ export type CommunicationRouteDefinition = Readonly<{
     | "organizerFollowerUpdate"
     | "catchEventSms"
     | "catchEventRcs"
-    | "organizerEventWhatsapp";
+    | "organizerEventWhatsapp"
+    | "organizerProgramWhatsapp"
+    | "catchProgramActivity";
   transport: CommunicationTransport;
   adapterKey: string;
   senderIdentity: "hostPersonalDevice" | "organizerManaged" | "catchPlatform";
@@ -29,21 +31,24 @@ export type CommunicationRouteDefinition = Readonly<{
     | "eventAnnouncement"
     | "followerUpdate"
     | "platformMessage"
-    | "eventService";
+    | "eventService"
+    | "programService";
   audienceScope:
     | "singleContact"
     | "organizerCrmSegment"
     | "catchPermissionedAudience"
     | "linkedCatchAccount"
     | "eventRoster"
-    | "organizerFollowers";
+    | "organizerFollowers"
+    | "programGuests";
   consentScope:
     | "directUserAction"
     | "linkedCatchAccount"
     | "eventService"
     | "organizerMarketing"
     | "followPreference"
-    | "catchMessaging";
+    | "catchMessaging"
+    | "programService";
   observability: "none" | "catchActivity" | "providerReceipts";
   requiresHostFinalSend: boolean;
   supportsReplies: boolean;
@@ -180,6 +185,34 @@ export const communicationRoutes = {
     requiresHostFinalSend: false,
     supportsReplies: true,
     supportsScheduling: false,
+  },
+  // Program-scoped routes never share sender, consent, or suppression state
+  // with event or campaign routes merely because they reuse a transport.
+  organizerProgramWhatsapp: {
+    id: "organizerProgramWhatsapp",
+    transport: "whatsapp",
+    adapterKey: "meta_whatsapp_business",
+    senderIdentity: "organizerManaged",
+    deliveryMode: "programService",
+    audienceScope: "programGuests",
+    consentScope: "programService",
+    observability: "providerReceipts",
+    requiresHostFinalSend: false,
+    supportsReplies: true,
+    supportsScheduling: true,
+  },
+  catchProgramActivity: {
+    id: "catchProgramActivity",
+    transport: "catchApp",
+    adapterKey: "catch_activity_push",
+    senderIdentity: "organizerManaged",
+    deliveryMode: "programService",
+    audienceScope: "programGuests",
+    consentScope: "programService",
+    observability: "catchActivity",
+    requiresHostFinalSend: false,
+    supportsReplies: false,
+    supportsScheduling: true,
   },
 } as const satisfies Record<
   CommunicationRouteDefinition["id"],

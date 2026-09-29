@@ -118853,6 +118853,857 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const programDeliveryAttemptAttemptId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryAttemptAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const programDeliveryAttemptBindingProvider = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchActivity', 'fcm'],
+  );
+
+  static const programDeliveryAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryAttemptBindingRouteId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptBindingSenderId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryAttemptBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptBindingTransport = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptContextMode = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptContextOrganizerId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptContextProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.context.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryAttemptCreatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptIntentId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryAttemptIntentRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const programDeliveryAttemptMode = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptOrdinal = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryAttemptSchemaVersion = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programDeliveryAttemptStateAt = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryAttemptStateClassification = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const programDeliveryAttemptStateEvidenceId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptStateKind = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryAttemptStateReason = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'responded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'programEnded', 'rsvpChanged', 'recipientWithdrawn'],
+  );
+
+  static const programDeliveryAttemptStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttempts = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsAttemptId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingProvider = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchActivity', 'fcm'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingRouteId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingSenderId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsBindingTransport = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsContextMode = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsContextOrganizerId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsContextProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.context.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsIntentId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsIntentRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsMode = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsOrdinal = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateClassification = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateEvidenceId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateReason = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'responded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'programEnded', 'rsvpChanged', 'recipientWithdrawn'],
+  );
+
+  static const programDeliveryMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentDeliveryConflict = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.deliveryConflict',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programDeliveryMessageDocumentIntentBody = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.body',
+    maxLength: 8000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentContextMode = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentContextProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.context.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const programDeliveryMessageDocumentIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentIntentIntentId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerProgramWhatsapp', 'catchProgramActivity'],
+    minItems: 1,
+    maxItems: 3,
+  );
+
+  static const programDeliveryMessageDocumentIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerProgramWhatsapp', 'catchProgramActivity'],
+  );
+
+  static const programDeliveryMessageDocumentIntentProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guest', 'household', 'staff'],
+  );
+
+  static const programDeliveryMessageDocumentIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const programDeliveryMessageDocumentIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programDeliveryMessageDocumentIntentTitle = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.title',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentWorkflowMomentId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.workflow.momentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageDocumentIntentWorkflowRunId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.workflow.runId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.lifecycle',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const programDeliveryMessageDocumentMessageId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const programDeliveryMessageDocumentRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.schemaVersion',
+    required: true,
+  );
+
+  static const programDeliveryMessageDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageIntentBody = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.body',
+    maxLength: 8000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentContextMode = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentContextProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.context.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const programDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const programDeliveryMessageIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDeliveryMessageIntentIntentId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerProgramWhatsapp', 'catchProgramActivity'],
+    minItems: 1,
+    maxItems: 3,
+  );
+
+  static const programDeliveryMessageIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerProgramWhatsapp', 'catchProgramActivity'],
+  );
+
+  static const programDeliveryMessageIntentProgramId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.programId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guest', 'household', 'staff'],
+  );
+
+  static const programDeliveryMessageIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentRevision = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const programDeliveryMessageIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programDeliveryMessageIntentTitle = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.title',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentWorkflowMomentId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.workflow.momentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const programDeliveryMessageIntentWorkflowRunId = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.workflow.runId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programDoorJournalDocumentAction = CatchContractFieldConstraints(
     path: 'programDoorJournalDocument.action',
     required: true,
@@ -167312,6 +168163,118 @@ abstract final class CatchContractConstraints {
     'programAttendanceReportCallableResponse.programInvitedGuests': programAttendanceReportCallableResponseProgramInvitedGuests,
     'programAttendanceReportCallableResponse.programNoShowGuests': programAttendanceReportCallableResponseProgramNoShowGuests,
     'programAttendanceReportCallableResponse.serverTimeMillis': programAttendanceReportCallableResponseServerTimeMillis,
+    'programDeliveryAttempt.attemptId': programDeliveryAttemptAttemptId,
+    'programDeliveryAttempt.authorization.checkedAt': programDeliveryAttemptAuthorizationCheckedAt,
+    'programDeliveryAttempt.authorization.instructionRevision': programDeliveryAttemptAuthorizationInstructionRevision,
+    'programDeliveryAttempt.authorization.permissionRevision': programDeliveryAttemptAuthorizationPermissionRevision,
+    'programDeliveryAttempt.authorization.validUntil': programDeliveryAttemptAuthorizationValidUntil,
+    'programDeliveryAttempt.binding.bindingRevision': programDeliveryAttemptBindingBindingRevision,
+    'programDeliveryAttempt.binding.fallbackOwner': programDeliveryAttemptBindingFallbackOwner,
+    'programDeliveryAttempt.binding.provider': programDeliveryAttemptBindingProvider,
+    'programDeliveryAttempt.binding.recipientEndpointId': programDeliveryAttemptBindingRecipientEndpointId,
+    'programDeliveryAttempt.binding.routeId': programDeliveryAttemptBindingRouteId,
+    'programDeliveryAttempt.binding.senderId': programDeliveryAttemptBindingSenderId,
+    'programDeliveryAttempt.binding.senderIdentity': programDeliveryAttemptBindingSenderIdentity,
+    'programDeliveryAttempt.binding.transport': programDeliveryAttemptBindingTransport,
+    'programDeliveryAttempt.context.mode': programDeliveryAttemptContextMode,
+    'programDeliveryAttempt.context.organizerId': programDeliveryAttemptContextOrganizerId,
+    'programDeliveryAttempt.context.programId': programDeliveryAttemptContextProgramId,
+    'programDeliveryAttempt.createdAt': programDeliveryAttemptCreatedAt,
+    'programDeliveryAttempt.intentId': programDeliveryAttemptIntentId,
+    'programDeliveryAttempt.intentRevision': programDeliveryAttemptIntentRevision,
+    'programDeliveryAttempt.mode': programDeliveryAttemptMode,
+    'programDeliveryAttempt.ordinal': programDeliveryAttemptOrdinal,
+    'programDeliveryAttempt.schemaVersion': programDeliveryAttemptSchemaVersion,
+    'programDeliveryAttempt.state.at': programDeliveryAttemptStateAt,
+    'programDeliveryAttempt.state.classification': programDeliveryAttemptStateClassification,
+    'programDeliveryAttempt.state.evidenceId': programDeliveryAttemptStateEvidenceId,
+    'programDeliveryAttempt.state.kind': programDeliveryAttemptStateKind,
+    'programDeliveryAttempt.state.providerMessageId': programDeliveryAttemptStateProviderMessageId,
+    'programDeliveryAttempt.state.reason': programDeliveryAttemptStateReason,
+    'programDeliveryAttempt.state.reconcileAfter': programDeliveryAttemptStateReconcileAfter,
+    'programDeliveryMessageDocument.attempts': programDeliveryMessageDocumentAttempts,
+    'programDeliveryMessageDocument.attempts.items.attemptId': programDeliveryMessageDocumentAttemptsItemsAttemptId,
+    'programDeliveryMessageDocument.attempts.items.authorization.checkedAt': programDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt,
+    'programDeliveryMessageDocument.attempts.items.authorization.instructionRevision': programDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision,
+    'programDeliveryMessageDocument.attempts.items.authorization.permissionRevision': programDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision,
+    'programDeliveryMessageDocument.attempts.items.authorization.validUntil': programDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil,
+    'programDeliveryMessageDocument.attempts.items.binding.bindingRevision': programDeliveryMessageDocumentAttemptsItemsBindingBindingRevision,
+    'programDeliveryMessageDocument.attempts.items.binding.fallbackOwner': programDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner,
+    'programDeliveryMessageDocument.attempts.items.binding.provider': programDeliveryMessageDocumentAttemptsItemsBindingProvider,
+    'programDeliveryMessageDocument.attempts.items.binding.recipientEndpointId': programDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId,
+    'programDeliveryMessageDocument.attempts.items.binding.routeId': programDeliveryMessageDocumentAttemptsItemsBindingRouteId,
+    'programDeliveryMessageDocument.attempts.items.binding.senderId': programDeliveryMessageDocumentAttemptsItemsBindingSenderId,
+    'programDeliveryMessageDocument.attempts.items.binding.senderIdentity': programDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity,
+    'programDeliveryMessageDocument.attempts.items.binding.transport': programDeliveryMessageDocumentAttemptsItemsBindingTransport,
+    'programDeliveryMessageDocument.attempts.items.context.mode': programDeliveryMessageDocumentAttemptsItemsContextMode,
+    'programDeliveryMessageDocument.attempts.items.context.organizerId': programDeliveryMessageDocumentAttemptsItemsContextOrganizerId,
+    'programDeliveryMessageDocument.attempts.items.context.programId': programDeliveryMessageDocumentAttemptsItemsContextProgramId,
+    'programDeliveryMessageDocument.attempts.items.createdAt': programDeliveryMessageDocumentAttemptsItemsCreatedAt,
+    'programDeliveryMessageDocument.attempts.items.intentId': programDeliveryMessageDocumentAttemptsItemsIntentId,
+    'programDeliveryMessageDocument.attempts.items.intentRevision': programDeliveryMessageDocumentAttemptsItemsIntentRevision,
+    'programDeliveryMessageDocument.attempts.items.mode': programDeliveryMessageDocumentAttemptsItemsMode,
+    'programDeliveryMessageDocument.attempts.items.ordinal': programDeliveryMessageDocumentAttemptsItemsOrdinal,
+    'programDeliveryMessageDocument.attempts.items.schemaVersion': programDeliveryMessageDocumentAttemptsItemsSchemaVersion,
+    'programDeliveryMessageDocument.attempts.items.state.at': programDeliveryMessageDocumentAttemptsItemsStateAt,
+    'programDeliveryMessageDocument.attempts.items.state.classification': programDeliveryMessageDocumentAttemptsItemsStateClassification,
+    'programDeliveryMessageDocument.attempts.items.state.evidenceId': programDeliveryMessageDocumentAttemptsItemsStateEvidenceId,
+    'programDeliveryMessageDocument.attempts.items.state.kind': programDeliveryMessageDocumentAttemptsItemsStateKind,
+    'programDeliveryMessageDocument.attempts.items.state.providerMessageId': programDeliveryMessageDocumentAttemptsItemsStateProviderMessageId,
+    'programDeliveryMessageDocument.attempts.items.state.reason': programDeliveryMessageDocumentAttemptsItemsStateReason,
+    'programDeliveryMessageDocument.attempts.items.state.reconcileAfter': programDeliveryMessageDocumentAttemptsItemsStateReconcileAfter,
+    'programDeliveryMessageDocument.createdAt': programDeliveryMessageDocumentCreatedAt,
+    'programDeliveryMessageDocument.deliveryConflict': programDeliveryMessageDocumentDeliveryConflict,
+    'programDeliveryMessageDocument.intent.body': programDeliveryMessageDocumentIntentBody,
+    'programDeliveryMessageDocument.intent.context.mode': programDeliveryMessageDocumentIntentContextMode,
+    'programDeliveryMessageDocument.intent.context.organizerId': programDeliveryMessageDocumentIntentContextOrganizerId,
+    'programDeliveryMessageDocument.intent.context.programId': programDeliveryMessageDocumentIntentContextProgramId,
+    'programDeliveryMessageDocument.intent.createdAt': programDeliveryMessageDocumentIntentCreatedAt,
+    'programDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts': programDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts,
+    'programDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute': programDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'programDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds': programDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds,
+    'programDeliveryMessageDocument.intent.expiresAt': programDeliveryMessageDocumentIntentExpiresAt,
+    'programDeliveryMessageDocument.intent.instructionRevision': programDeliveryMessageDocumentIntentInstructionRevision,
+    'programDeliveryMessageDocument.intent.intentId': programDeliveryMessageDocumentIntentIntentId,
+    'programDeliveryMessageDocument.intent.kind': programDeliveryMessageDocumentIntentKind,
+    'programDeliveryMessageDocument.intent.permittedRoutes': programDeliveryMessageDocumentIntentPermittedRoutes,
+    'programDeliveryMessageDocument.intent.permittedRoutes.items': programDeliveryMessageDocumentIntentPermittedRoutesItems,
+    'programDeliveryMessageDocument.intent.programId': programDeliveryMessageDocumentIntentProgramId,
+    'programDeliveryMessageDocument.intent.recipient.kind': programDeliveryMessageDocumentIntentRecipientKind,
+    'programDeliveryMessageDocument.intent.recipient.recipientKey': programDeliveryMessageDocumentIntentRecipientRecipientKey,
+    'programDeliveryMessageDocument.intent.revision': programDeliveryMessageDocumentIntentRevision,
+    'programDeliveryMessageDocument.intent.schemaVersion': programDeliveryMessageDocumentIntentSchemaVersion,
+    'programDeliveryMessageDocument.intent.title': programDeliveryMessageDocumentIntentTitle,
+    'programDeliveryMessageDocument.intent.workflow.kind': programDeliveryMessageDocumentIntentWorkflowKind,
+    'programDeliveryMessageDocument.intent.workflow.momentId': programDeliveryMessageDocumentIntentWorkflowMomentId,
+    'programDeliveryMessageDocument.intent.workflow.runId': programDeliveryMessageDocumentIntentWorkflowRunId,
+    'programDeliveryMessageDocument.lifecycle': programDeliveryMessageDocumentLifecycle,
+    'programDeliveryMessageDocument.messageId': programDeliveryMessageDocumentMessageId,
+    'programDeliveryMessageDocument.revision': programDeliveryMessageDocumentRevision,
+    'programDeliveryMessageDocument.schemaVersion': programDeliveryMessageDocumentSchemaVersion,
+    'programDeliveryMessageDocument.updatedAt': programDeliveryMessageDocumentUpdatedAt,
+    'programDeliveryMessageIntent.body': programDeliveryMessageIntentBody,
+    'programDeliveryMessageIntent.context.mode': programDeliveryMessageIntentContextMode,
+    'programDeliveryMessageIntent.context.organizerId': programDeliveryMessageIntentContextOrganizerId,
+    'programDeliveryMessageIntent.context.programId': programDeliveryMessageIntentContextProgramId,
+    'programDeliveryMessageIntent.createdAt': programDeliveryMessageIntentCreatedAt,
+    'programDeliveryMessageIntent.deliveryPolicy.maxAttempts': programDeliveryMessageIntentDeliveryPolicyMaxAttempts,
+    'programDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute': programDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'programDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds': programDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds,
+    'programDeliveryMessageIntent.expiresAt': programDeliveryMessageIntentExpiresAt,
+    'programDeliveryMessageIntent.instructionRevision': programDeliveryMessageIntentInstructionRevision,
+    'programDeliveryMessageIntent.intentId': programDeliveryMessageIntentIntentId,
+    'programDeliveryMessageIntent.kind': programDeliveryMessageIntentKind,
+    'programDeliveryMessageIntent.permittedRoutes': programDeliveryMessageIntentPermittedRoutes,
+    'programDeliveryMessageIntent.permittedRoutes.items': programDeliveryMessageIntentPermittedRoutesItems,
+    'programDeliveryMessageIntent.programId': programDeliveryMessageIntentProgramId,
+    'programDeliveryMessageIntent.recipient.kind': programDeliveryMessageIntentRecipientKind,
+    'programDeliveryMessageIntent.recipient.recipientKey': programDeliveryMessageIntentRecipientRecipientKey,
+    'programDeliveryMessageIntent.revision': programDeliveryMessageIntentRevision,
+    'programDeliveryMessageIntent.schemaVersion': programDeliveryMessageIntentSchemaVersion,
+    'programDeliveryMessageIntent.title': programDeliveryMessageIntentTitle,
+    'programDeliveryMessageIntent.workflow.kind': programDeliveryMessageIntentWorkflowKind,
+    'programDeliveryMessageIntent.workflow.momentId': programDeliveryMessageIntentWorkflowMomentId,
+    'programDeliveryMessageIntent.workflow.runId': programDeliveryMessageIntentWorkflowRunId,
     'programDoorJournalDocument.action': programDoorJournalDocumentAction,
     'programDoorJournalDocument.actorUid': programDoorJournalDocumentActorUid,
     'programDoorJournalDocument.createdAt._nanoseconds': programDoorJournalDocumentCreatedAtNanoseconds,

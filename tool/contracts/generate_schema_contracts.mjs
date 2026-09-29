@@ -2066,6 +2066,23 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
   },
   {
+    name: "ProgramDeliveryMessageDocument",
+    source: "firestore/program_delivery_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programDeliveryMessageDocument.ts",
+  },
+  {
+    name: "ProgramDeliveryMessageIntent",
+    source: "operations/program_delivery_message_intent.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programDeliveryMessageIntent.ts",
+  },
+  {
+    name: "ProgramDeliveryAttempt",
+    source: "operations/program_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/programDeliveryAttempt.ts",
+  },
+  {
     name: "OrganizerMomentDocument",
     source: "firestore/organizer_moments.schema.json",
     typeOutput: "functions/src/shared/generated/organizerMomentDocument.ts",

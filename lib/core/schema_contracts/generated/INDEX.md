@@ -563,6 +563,9 @@ Do not edit it by hand.
 | ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `functions/src/shared/generated/programRoomBlockDocument.ts` |
 | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
 | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
+| ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `functions/src/shared/generated/programDeliveryMessageDocument.ts` |
+| ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `functions/src/shared/generated/programDeliveryMessageIntent.ts` |
+| ProgramDeliveryAttempt | `operations/program_delivery_attempt.schema.json` | `functions/src/shared/generated/programDeliveryAttempt.ts` |
 | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
 | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `functions/src/shared/generated/organizerMomentRunDocument.ts` |
 | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `functions/src/shared/generated/organizerMomentSendDocument.ts` |
@@ -1690,6 +1693,9 @@ Do not edit it by hand.
 | `schemaProgramRoomBlockDocumentSchema` | ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `lib/core/schema_contracts/generated/schemas/program_room_block_document.g.dart` |
 | `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
 | `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
+| `schemaProgramDeliveryMessageDocumentSchema` | ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_document.g.dart` |
+| `schemaProgramDeliveryMessageIntentSchema` | ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_intent.g.dart` |
+| `schemaProgramDeliveryAttemptSchema` | ProgramDeliveryAttempt | `operations/program_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_attempt.g.dart` |
 | `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |
 | `schemaOrganizerMomentRunDocumentSchema` | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_run_document.g.dart` |
 | `schemaOrganizerMomentSendDocumentSchema` | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_send_document.g.dart` |
