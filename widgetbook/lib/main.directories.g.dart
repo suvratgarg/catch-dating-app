@@ -535,6 +535,8 @@ import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
+import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
+    as _widgetbook_workspace_programs_use_cases_attendance;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12463,7 +12465,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_attendance
                     .programAttendanceReportScreenStates,
               ),
             ],
@@ -12473,7 +12475,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_programs_use_cases
+                builder: _widgetbook_workspace_programs_use_cases_attendance
                     .programFunctionAttendanceRowStates,
               ),
             ],
