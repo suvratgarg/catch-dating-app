@@ -118606,6 +118606,253 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const programAttendanceReportCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programAttendanceReportCallableResponseFunctions = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsAttendingGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.attendingGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsAttendingHeads = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.attendingHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsCheckedInGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.checkedInGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsCheckedInHeads = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.checkedInHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsDeclinedGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.declinedGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsDeclinedCheckedInGuestIds = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.declinedCheckedInGuestIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsDeclinedCheckedInGuestIdsItems = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.declinedCheckedInGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsInvitedNoResponseGuestIds = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.invitedNoResponseGuestIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsInvitedNoResponseGuestIdsItems = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.invitedNoResponseGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsNoShowGuestIds = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.noShowGuestIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsNoShowGuestIdsItems = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.noShowGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsWalkInGuestIds = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.walkInGuestIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExceptionsWalkInGuestIdsItems = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.exceptions.walkInGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsExpectedGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.expectedGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsInvitedGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.invitedGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsMaybeGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.maybeGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsNoResponseGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.noResponseGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsNoShowGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.noShowGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsRespondedGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.respondedGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsWalkInGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.walkInGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseFunctionsItemsWalkInHeads = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.functions.items.walkInHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseProgramAttendingGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programAttendingGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseProgramCheckedInGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programCheckedInGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseProgramGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programAttendanceReportCallableResponseProgramInvitedGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programInvitedGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseProgramNoShowGuests = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.programNoShowGuests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programAttendanceReportCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'programAttendanceReportCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programDoorJournalDocumentAction = CatchContractFieldConstraints(
     path: 'programDoorJournalDocument.action',
     required: true,
@@ -121276,6 +121523,82 @@ abstract final class CatchContractConstraints {
     path: 'programRoomBlockDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programStaffAttentionCallableResponseItems = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsDuty = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.duty',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsItemId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.itemId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsMomentId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsRunId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.runId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsSeverity = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const programStaffAttentionCallableResponseItemsItemsTitle = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.items.items.title',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffAttentionCallableResponseTruncated = CatchContractFieldConstraints(
+    path: 'programStaffAttentionCallableResponse.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const programStaffGrantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -166958,6 +167281,37 @@ abstract final class CatchContractConstraints {
     'programArrivalsRosterCallableResponse.vehicleClasses.items.luggageCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsLuggageCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.passengerCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsPassengerCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.sortOrder': programArrivalsRosterCallableResponseVehicleClassesItemsSortOrder,
+    'programAttendanceReportCallableResponse.accessExpiresAtMillis': programAttendanceReportCallableResponseAccessExpiresAtMillis,
+    'programAttendanceReportCallableResponse.functions': programAttendanceReportCallableResponseFunctions,
+    'programAttendanceReportCallableResponse.functions.items.attendingGuests': programAttendanceReportCallableResponseFunctionsItemsAttendingGuests,
+    'programAttendanceReportCallableResponse.functions.items.attendingHeads': programAttendanceReportCallableResponseFunctionsItemsAttendingHeads,
+    'programAttendanceReportCallableResponse.functions.items.checkedInGuests': programAttendanceReportCallableResponseFunctionsItemsCheckedInGuests,
+    'programAttendanceReportCallableResponse.functions.items.checkedInHeads': programAttendanceReportCallableResponseFunctionsItemsCheckedInHeads,
+    'programAttendanceReportCallableResponse.functions.items.declinedGuests': programAttendanceReportCallableResponseFunctionsItemsDeclinedGuests,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.declinedCheckedInGuestIds': programAttendanceReportCallableResponseFunctionsItemsExceptionsDeclinedCheckedInGuestIds,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.declinedCheckedInGuestIds.items': programAttendanceReportCallableResponseFunctionsItemsExceptionsDeclinedCheckedInGuestIdsItems,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.invitedNoResponseGuestIds': programAttendanceReportCallableResponseFunctionsItemsExceptionsInvitedNoResponseGuestIds,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.invitedNoResponseGuestIds.items': programAttendanceReportCallableResponseFunctionsItemsExceptionsInvitedNoResponseGuestIdsItems,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.noShowGuestIds': programAttendanceReportCallableResponseFunctionsItemsExceptionsNoShowGuestIds,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.noShowGuestIds.items': programAttendanceReportCallableResponseFunctionsItemsExceptionsNoShowGuestIdsItems,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.walkInGuestIds': programAttendanceReportCallableResponseFunctionsItemsExceptionsWalkInGuestIds,
+    'programAttendanceReportCallableResponse.functions.items.exceptions.walkInGuestIds.items': programAttendanceReportCallableResponseFunctionsItemsExceptionsWalkInGuestIdsItems,
+    'programAttendanceReportCallableResponse.functions.items.expectedGuests': programAttendanceReportCallableResponseFunctionsItemsExpectedGuests,
+    'programAttendanceReportCallableResponse.functions.items.functionId': programAttendanceReportCallableResponseFunctionsItemsFunctionId,
+    'programAttendanceReportCallableResponse.functions.items.invitedGuests': programAttendanceReportCallableResponseFunctionsItemsInvitedGuests,
+    'programAttendanceReportCallableResponse.functions.items.maybeGuests': programAttendanceReportCallableResponseFunctionsItemsMaybeGuests,
+    'programAttendanceReportCallableResponse.functions.items.noResponseGuests': programAttendanceReportCallableResponseFunctionsItemsNoResponseGuests,
+    'programAttendanceReportCallableResponse.functions.items.noShowGuests': programAttendanceReportCallableResponseFunctionsItemsNoShowGuests,
+    'programAttendanceReportCallableResponse.functions.items.respondedGuests': programAttendanceReportCallableResponseFunctionsItemsRespondedGuests,
+    'programAttendanceReportCallableResponse.functions.items.walkInGuests': programAttendanceReportCallableResponseFunctionsItemsWalkInGuests,
+    'programAttendanceReportCallableResponse.functions.items.walkInHeads': programAttendanceReportCallableResponseFunctionsItemsWalkInHeads,
+    'programAttendanceReportCallableResponse.programAttendingGuests': programAttendanceReportCallableResponseProgramAttendingGuests,
+    'programAttendanceReportCallableResponse.programCheckedInGuests': programAttendanceReportCallableResponseProgramCheckedInGuests,
+    'programAttendanceReportCallableResponse.programGuests': programAttendanceReportCallableResponseProgramGuests,
+    'programAttendanceReportCallableResponse.programId': programAttendanceReportCallableResponseProgramId,
+    'programAttendanceReportCallableResponse.programInvitedGuests': programAttendanceReportCallableResponseProgramInvitedGuests,
+    'programAttendanceReportCallableResponse.programNoShowGuests': programAttendanceReportCallableResponseProgramNoShowGuests,
+    'programAttendanceReportCallableResponse.serverTimeMillis': programAttendanceReportCallableResponseServerTimeMillis,
     'programDoorJournalDocument.action': programDoorJournalDocumentAction,
     'programDoorJournalDocument.actorUid': programDoorJournalDocumentActorUid,
     'programDoorJournalDocument.createdAt._nanoseconds': programDoorJournalDocumentCreatedAtNanoseconds,
@@ -167325,6 +167679,16 @@ abstract final class CatchContractConstraints {
     'programRoomBlockDocument.totalRooms': programRoomBlockDocumentTotalRooms,
     'programRoomBlockDocument.updatedAt._nanoseconds': programRoomBlockDocumentUpdatedAtNanoseconds,
     'programRoomBlockDocument.updatedAt._seconds': programRoomBlockDocumentUpdatedAtSeconds,
+    'programStaffAttentionCallableResponse.items': programStaffAttentionCallableResponseItems,
+    'programStaffAttentionCallableResponse.items.items.createdAtMillis': programStaffAttentionCallableResponseItemsItemsCreatedAtMillis,
+    'programStaffAttentionCallableResponse.items.items.duty': programStaffAttentionCallableResponseItemsItemsDuty,
+    'programStaffAttentionCallableResponse.items.items.itemId': programStaffAttentionCallableResponseItemsItemsItemId,
+    'programStaffAttentionCallableResponse.items.items.momentId': programStaffAttentionCallableResponseItemsItemsMomentId,
+    'programStaffAttentionCallableResponse.items.items.runId': programStaffAttentionCallableResponseItemsItemsRunId,
+    'programStaffAttentionCallableResponse.items.items.severity': programStaffAttentionCallableResponseItemsItemsSeverity,
+    'programStaffAttentionCallableResponse.items.items.title': programStaffAttentionCallableResponseItemsItemsTitle,
+    'programStaffAttentionCallableResponse.programId': programStaffAttentionCallableResponseProgramId,
+    'programStaffAttentionCallableResponse.truncated': programStaffAttentionCallableResponseTruncated,
     'programStaffGrantDocument.createdAt._nanoseconds': programStaffGrantDocumentCreatedAtNanoseconds,
     'programStaffGrantDocument.createdAt._seconds': programStaffGrantDocumentCreatedAtSeconds,
     'programStaffGrantDocument.createdBy': programStaffGrantDocumentCreatedBy,

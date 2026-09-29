@@ -13345,6 +13345,170 @@
               "nextAction": "Route captures land with the program golden pass; the surface currently carries widgetbook previews only."
             }
           ]
+        },
+        {
+          "id": "programs.attendance_report",
+          "routeId": "hostWorkAttendanceReportScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_attendance_report_screen.dart",
+            "lib/programs/presentation/program_attendance_actions_controller.dart",
+            "lib/programs/data/program_work_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.section",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-architecture",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Counts-and-ids attendance report scoped to viewer authority; CSV export shares exactly what the viewer can read."
+            }
+          ],
+          "states": [
+            {
+              "id": "attendance_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while programAttendanceReportProvider resolves."
+            },
+            {
+              "id": "attendance_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "report",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Program totals plus per-function invited/responded/attending/checked-in breakdowns with exception chips."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Empty report surface when the program has no functions or guests."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-013",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surface currently carries widgetbook previews only."
+            }
+          ]
+        },
+        {
+          "id": "programs.now_next",
+          "routeId": "hostWorkNowScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_now_next_screen.dart",
+            "lib/programs/data/program_work_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.empty_state",
+            "catch.field",
+            "catch.meta_row",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-architecture",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Now/Next is a pure client projection over the staff work-access payload — functions bucketed in-progress, upcoming and earlier with door counts."
+            }
+          ],
+          "states": [
+            {
+              "id": "now_next_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the work-access payload resolves."
+            },
+            {
+              "id": "now_next_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "now_next_buckets",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Functions bucketed in-progress, upcoming and earlier with expected/checked-in counts; rows open the door roster."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-NOWNEXT-001",
+              "status": "open",
+              "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+            }
+          ]
+        },
+        {
+          "id": "programs.attention",
+          "routeId": "hostWorkAttentionScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_attention_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "functions/src/programs/programStaffAttention.ts"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.empty_state",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-architecture",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program-scoped staffAttention sends filtered server-side to the caller's active duties, deduplicated per run and duty."
+            }
+          ],
+          "states": [
+            {
+              "id": "attention_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the attention feed resolves."
+            },
+            {
+              "id": "attention_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "attention_feed",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Each alert renders severity, duty and recency; the feed empties when no duties carry open alerts."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-ATTENTION-001",
+              "status": "open",
+              "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+            }
+          ]
         }
       ],
       "lintCandidates": [],

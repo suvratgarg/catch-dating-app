@@ -170666,6 +170666,7 @@ export const programIdCallablePayloadSchema = {
   "additionalProperties": false,
   "x-callable-aliases": [
     "getOrganizerProgram",
+    "getProgramAttendanceReport",
     "getProgramStakeholderCounts",
     "getProgramWorkAccess",
     "listProgramHouseholds"
@@ -174418,7 +174419,7 @@ export const programAccessCallableResponseSchema = {
     "functions": {
       "type": "array",
       "maxItems": 40,
-      "description": "Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.",
+      "description": "Function-scoped door, check-in, and guest-desk surfaces for functionCheckIn, functionLead, and guestRelations holders, intersected with each assignment's functionIds. Empty for other duties.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -177120,6 +177121,310 @@ export const programFunctionDoorViewCallableResponseSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const programAttendanceReportCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_attendance_report_response.schema.json",
+  "title": "ProgramAttendanceReportCallableResponse",
+  "description": "Per-function attendance report for reconciliationViewer staff, coordinators, and organizer managers. Separates RSVP truth (who promised what) from door truth (who actually arrived) and lists exception guest ids a reconciler chases by hand. Ids and counts only — no names, contacts, or notes.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramAttendanceReport"
+  ],
+  "required": [
+    "programId",
+    "serverTimeMillis",
+    "accessExpiresAtMillis",
+    "programGuests",
+    "programInvitedGuests",
+    "programAttendingGuests",
+    "programCheckedInGuests",
+    "programNoShowGuests",
+    "functions"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "programGuests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Distinct guests with any function row in the program."
+    },
+    "programInvitedGuests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "programAttendingGuests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "programCheckedInGuests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "programNoShowGuests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "invitedGuests",
+          "respondedGuests",
+          "attendingGuests",
+          "attendingHeads",
+          "maybeGuests",
+          "declinedGuests",
+          "noResponseGuests",
+          "checkedInGuests",
+          "checkedInHeads",
+          "noShowGuests",
+          "expectedGuests",
+          "walkInGuests",
+          "walkInHeads",
+          "exceptions"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "invitedGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "respondedGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "attendingGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "attendingHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Sum of attending party sizes (null reads as 1)."
+          },
+          "maybeGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "declinedGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "noResponseGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "checkedInGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "checkedInHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "noShowGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "expectedGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "walkInGuests": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Checked-in guests with no invite row."
+          },
+          "walkInHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "exceptions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "invitedNoResponseGuestIds",
+              "declinedCheckedInGuestIds",
+              "noShowGuestIds",
+              "walkInGuestIds"
+            ],
+            "properties": {
+              "invitedNoResponseGuestIds": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "description": "Invited guests who never responded, sorted."
+              },
+              "declinedCheckedInGuestIds": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "description": "Declined guests who checked in anyway, sorted."
+              },
+              "noShowGuestIds": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "description": "Guests marked noShow at the door, sorted."
+              },
+              "walkInGuestIds": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "description": "Checked-in guests with no invite row, sorted."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programStaffAttentionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_staff_attention_response.schema.json",
+  "title": "ProgramStaffAttentionCallableResponse",
+  "description": "Program staff attention feed: staffAttention moment sends raised for this program, filtered to the caller's active duties. Coordinators and managers receive every duty's alerts. Send fanout is deduplicated per run and duty.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "listProgramStaffAttention"
+  ],
+  "required": [
+    "programId",
+    "items",
+    "truncated"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "runId",
+          "momentId",
+          "duty",
+          "severity",
+          "title",
+          "createdAtMillis"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "runId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "momentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "duty": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warning",
+              "urgent"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "truncated": {
+      "type": "boolean"
     }
   }
 };

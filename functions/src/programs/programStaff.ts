@@ -116,11 +116,12 @@ export async function getProgramWorkAccessHandler(
       "pickupPointIds");
   const hotelScope = access.role === "manager" ? null :
     unionScope(access.grant!.duties, "hotelIds");
-  // Function surfaces exist only for door duties; other staff never pay the
-  // function query and always read an empty list. An empty scope set loads
-  // nothing; null means unrestricted.
+  // Function surfaces exist only for door and guest-desk duties; other staff
+  // never pay the function query and always read an empty list. An empty
+  // scope set loads nothing; null means unrestricted.
   const doorDuties = access.grant?.duties.filter((duty) =>
     duty.duty === "functionCheckIn" || duty.duty === "functionLead" ||
+    duty.duty === "guestRelations" ||
     duty.duty === "programCoordinator") ?? [];
   const functionScope = access.role === "manager" ? null :
     unionScope(doorDuties, "functionIds");

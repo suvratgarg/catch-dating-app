@@ -11,6 +11,7 @@ import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
+
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
@@ -656,6 +657,7 @@ Widget programTripLedgerRowStates(BuildContext context) {
         child: ProgramTripLedgerRow(
           trip: _trip,
           programId: _programId,
+          canVoid: true,
           onChanged: () {},
         ),
       ),

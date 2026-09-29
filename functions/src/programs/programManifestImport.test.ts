@@ -157,8 +157,30 @@ test("staff without coordinator duty cannot import", async () => {
       clientOperationId: "import-op-0001", rows: [row],
     }, "greeter-1"), deps(store)),
     (error: unknown) =>
-      error instanceof Error && error.message.includes("programCoordinator"),
+      error instanceof Error && error.message.includes("guestRelations"),
   );
+});
+
+test("guestRelations staff can preview and commit manifests", async () => {
+  const store = new MiniFirestore({
+    ...seed(),
+    "programStaffGrants/program-1__desk-1": {
+      programId: "program-1", organizerId: "org-1", uid: "desk-1",
+      status: "active", duties: [{duty: "guestRelations",
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: NOW + 3600_000}],
+      expiresAt: ts(NOW + 3600_000),
+    },
+  });
+  const preview = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "preview",
+    clientOperationId: "import-op-0001", rows: [row],
+  }, "desk-1"), deps(store));
+  assert.equal(preview.guestsCreated, 1);
+  const commit = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit",
+    clientOperationId: "import-op-0001", rows: [row],
+  }, "desk-1"), deps(store));
+  assert.equal(commit.guestsCreated, 1);
 });
 
 test("multirow imports create distinct people and complete group membership",

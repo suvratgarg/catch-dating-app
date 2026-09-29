@@ -76,7 +76,7 @@ export interface ProgramAccessCallableResponse {
     name: string;
   }[];
   /**
-   * Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.
+   * Function-scoped door, check-in, and guest-desk surfaces for functionCheckIn, functionLead, and guestRelations holders, intersected with each assignment's functionIds. Empty for other duties.
    *
    * @maxItems 40
    */

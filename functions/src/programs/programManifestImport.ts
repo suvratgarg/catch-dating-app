@@ -142,7 +142,7 @@ export async function importProgramManifestHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(),
     });
-    requireProgramDuty(access, "programCoordinator");
+    requireProgramDuty(access, "guestRelations");
     let state = await loadManifest(db, data.programId);
     const completed: number[] = [];
     const importedGuestIds: string[] = [];
@@ -172,7 +172,7 @@ export async function importProgramManifestHandler(
         db, programId: data.programId, actorUid,
         now: deps.now(), transaction: tx,
       });
-      requireProgramDuty(access, "programCoordinator");
+      requireProgramDuty(access, "guestRelations");
       const receipt = (await tx.get(receiptRef)).data() as
         TransportOperationReceiptDocument | undefined;
       if (receipt && (receipt.requestHash !== requestHash ||

@@ -5529,6 +5529,20 @@
       ]
     },
     {
+      "collectionGroup": "programFunctions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startsAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "programStays",
       "queryScope": "COLLECTION",
       "fields": [

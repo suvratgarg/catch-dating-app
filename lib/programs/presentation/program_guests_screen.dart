@@ -102,25 +102,55 @@ class ProgramGuestsScreen extends ConsumerWidget {
         ),
         builder: (context, page) => ProgramGuestsPageBody(
           programId: programId,
-          programDetail: detail,
+          programTitle: detail.program.title,
+          functions: [
+            for (final fn in detail.functions)
+              ProgramGuestsFunction(functionId: fn.functionId, name: fn.name),
+          ],
+          hotels: detail.hotels,
           guestPage: page,
+          canManageGuests: true,
         ),
       ),
     );
   }
 }
 
+/// Guest desk for `guestRelations` staff landing from the work shell. Renders
+/// the same household × function grid as the organizer screen, sourced from
+/// `getProgramWorkAccess` instead of the manager-only `getOrganizerProgram`;
+/// guest/household/group mutations stay hidden unless the actor also holds
+/// `programCoordinator` (or is the organizer manager).
+
+/// The function columns the guest desk matrix renders. Both the organizer
+/// detail model and the staff work-access model map onto it.
+class ProgramGuestsFunction {
+  const ProgramGuestsFunction({required this.functionId, required this.name});
+
+  final String functionId;
+  final String name;
+}
+
 class ProgramGuestsPageBody extends ConsumerStatefulWidget {
   const ProgramGuestsPageBody({
     super.key,
     required this.programId,
-    required this.programDetail,
+    required this.programTitle,
+    required this.functions,
+    required this.hotels,
     required this.guestPage,
+    required this.canManageGuests,
   });
 
   final String programId;
-  final OrganizerProgramDetail programDetail;
+  final String programTitle;
+  final List<ProgramGuestsFunction> functions;
+  final List<ProgramHotel> hotels;
   final ProgramGuestListPage guestPage;
+
+  /// Guest/household/group upserts stay coordinator-only; `guestRelations`
+  /// desks read the same grid and record per-function RSVPs instead.
+  final bool canManageGuests;
 
   @override
   ConsumerState<ProgramGuestsPageBody> createState() =>
@@ -132,8 +162,8 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
   String? _pendingGuestKey;
   Object? _mutationError;
 
-  OrganizerFunctionDetail? get _selectedFunction {
-    final functions = widget.programDetail.functions;
+  ProgramGuestsFunction? get _selectedFunction {
+    final functions = widget.functions;
     if (functions.isEmpty) return null;
     for (final fn in functions) {
       if (fn.functionId == _selectedFunctionId) return fn;
@@ -152,7 +182,9 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
 
   void _refresh() {
     ref.invalidate(programGuestListProvider(widget.programId));
-    ref.invalidate(organizerProgramDetailProvider(widget.programId));
+    if (widget.canManageGuests) {
+      ref.invalidate(organizerProgramDetailProvider(widget.programId));
+    }
   }
 
   Future<void> _recordRsvp(ProgramGuestRow guest, String status) async {
@@ -198,7 +230,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-        title: widget.programDetail.program.title,
+        title: widget.programTitle,
         subtitle: context.l10n.programsGuestsTitle,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided
@@ -209,12 +241,12 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
       ),
       body: CatchRouteBody.standardSections(
         sections: [
-          if (widget.programDetail.functions.length > 1)
+          if (widget.functions.length > 1)
             CatchSectionListItem(
               child: CatchChoiceInput<String>.segmented(
                 scrollable: true,
                 options: [
-                  for (final fn in widget.programDetail.functions)
+                  for (final fn in widget.functions)
                     CatchOption(value: fn.functionId, label: fn.name),
                 ],
                 selected: selectedFn?.functionId,
@@ -247,13 +279,15 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchButton(
-                    label: context.l10n.programsGuestsAddGuest,
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => _addGuest(context),
-                  ),
-                  const SizedBox(height: CatchSpacing.s3),
+                  if (widget.canManageGuests) ...[
+                    CatchButton(
+                      label: context.l10n.programsGuestsAddGuest,
+                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: () => _addGuest(context),
+                    ),
+                    const SizedBox(height: CatchSpacing.s3),
+                  ],
                   if (page.guests.isEmpty)
                     CatchEmptyState(
                       icon: CatchIcons.groupsOutlined,
@@ -273,7 +307,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                           for (final member in guestsByHousehold[householdId]!)
                             ProgramGuestsFunctionRow(
                               guest: member,
-                              functions: widget.programDetail.functions,
+                              functions: widget.functions,
                               selectedFunction: selectedFn,
                               joinIndex: joinIndex,
                               pending: _pendingGuestKey == member.guestId,
@@ -294,7 +328,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                           for (final member in unaffiliated)
                             ProgramGuestsFunctionRow(
                               guest: member,
-                              functions: widget.programDetail.functions,
+                              functions: widget.functions,
                               selectedFunction: selectedFn,
                               joinIndex: joinIndex,
                               pending: _pendingGuestKey == member.guestId,
@@ -314,13 +348,15 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchButton(
-                    label: context.l10n.programsGuestsGroupNew,
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => _addGroup(context),
-                  ),
-                  const SizedBox(height: CatchSpacing.s2),
+                  if (widget.canManageGuests) ...[
+                    CatchButton(
+                      label: context.l10n.programsGuestsGroupNew,
+                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: () => _addGroup(context),
+                    ),
+                    const SizedBox(height: CatchSpacing.s2),
+                  ],
                   if (page.groups.isEmpty)
                     Text(
                       context.l10n.programsGuestsGroupsEmpty,
@@ -347,7 +383,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                               Text(
                                 context.l10n.programsGuestsGroupHotelSummary(
                                   hotel:
-                                      widget.programDetail.hotels
+                                      widget.hotels
                                           .where(
                                             (hotel) =>
                                                 hotel.hotelId == group.hotelId,
@@ -362,24 +398,29 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                               ),
                           ],
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CatchIconAction.icon(
-                              icon: CatchIcons.editOutlined,
-                              variant: CatchIconActionVariant.plain,
-                              tooltip: context.l10n.programsGuestsGroupEdit,
-                              onPressed: () => _editGroup(context, group),
-                            ),
-                            CatchIconAction.icon(
-                              icon: CatchIcons.deleteOutline,
-                              variant: CatchIconActionVariant.plain,
-                              accent: CatchTokens.of(context).danger,
-                              tooltip: context.l10n.programsGuestsGroupDelete,
-                              onPressed: () => _deleteGroup(context, group),
-                            ),
-                          ],
-                        ),
+                        trailing: widget.canManageGuests
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CatchIconAction.icon(
+                                    icon: CatchIcons.editOutlined,
+                                    variant: CatchIconActionVariant.plain,
+                                    tooltip:
+                                        context.l10n.programsGuestsGroupEdit,
+                                    onPressed: () => _editGroup(context, group),
+                                  ),
+                                  CatchIconAction.icon(
+                                    icon: CatchIcons.deleteOutline,
+                                    variant: CatchIconActionVariant.plain,
+                                    accent: CatchTokens.of(context).danger,
+                                    tooltip:
+                                        context.l10n.programsGuestsGroupDelete,
+                                    onPressed: () =>
+                                        _deleteGroup(context, group),
+                                  ),
+                                ],
+                              )
+                            : null,
                       ),
                 ],
               ),
@@ -426,10 +467,8 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     final draft =
         await showDialog<({String label, String dimension, String? hotelId})>(
           context: context,
-          builder: (_) => ProgramGuestGroupEditDialog(
-            hotels: widget.programDetail.hotels,
-            group: group,
-          ),
+          builder: (_) =>
+              ProgramGuestGroupEditDialog(hotels: widget.hotels, group: group),
         );
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
@@ -496,8 +535,8 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
   });
 
   final ProgramGuestRow guest;
-  final List<OrganizerFunctionDetail> functions;
-  final OrganizerFunctionDetail? selectedFunction;
+  final List<ProgramGuestsFunction> functions;
+  final ProgramGuestsFunction? selectedFunction;
   final Map<String, ProgramFunctionGuestRow> joinIndex;
   final bool pending;
   final void Function(ProgramGuestRow guest, String status) onRsvp;

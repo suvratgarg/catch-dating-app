@@ -8,6 +8,7 @@ library;
 part 'program_access_models.dart';
 part 'program_door_models.dart';
 part 'program_workspace_models.dart';
+part 'program_attendance_models.dart';
 
 enum TravelLegReadiness {
   expected,
@@ -398,6 +399,64 @@ class ProgramTripList {
   final String? nextCursor;
 }
 
+/// One program attention alert — a deduplicated staffAttention moment send
+/// from the organizerMomentSends journal, already filtered server-side to the
+/// caller's duties.
+class ProgramStaffAttentionItem {
+  const ProgramStaffAttentionItem({
+    required this.itemId,
+    required this.runId,
+    required this.momentId,
+    required this.duty,
+    required this.severity,
+    required this.title,
+    required this.createdAt,
+  });
+
+  factory ProgramStaffAttentionItem.fromMap(Map<Object?, Object?> map) =>
+      ProgramStaffAttentionItem(
+        itemId: requiredString(map, 'itemId'),
+        runId: requiredString(map, 'runId'),
+        momentId: requiredString(map, 'momentId'),
+        duty: requiredString(map, 'duty'),
+        severity: requiredString(map, 'severity'),
+        title: requiredString(map, 'title'),
+        createdAt: requiredDateTime(map, 'createdAtMillis'),
+      );
+
+  final String itemId;
+  final String runId;
+  final String momentId;
+  final String duty;
+  final String severity;
+  final String title;
+  final DateTime createdAt;
+}
+
+class ProgramStaffAttention {
+  const ProgramStaffAttention({
+    required this.programId,
+    required this.items,
+    required this.truncated,
+  });
+
+  factory ProgramStaffAttention.fromCallableData(Object? value) {
+    final map = requiredMap(value, 'program staff attention');
+    return ProgramStaffAttention(
+      programId: requiredString(map, 'programId'),
+      truncated: map['truncated'] == true,
+      items: mapList(
+        map['items'],
+        'items',
+      ).map(ProgramStaffAttentionItem.fromMap).toList(growable: false),
+    );
+  }
+
+  final String programId;
+  final List<ProgramStaffAttentionItem> items;
+  final bool truncated;
+}
+
 class HotelExpectedLeg {
   const HotelExpectedLeg({
     required this.legId,
@@ -630,9 +689,8 @@ class ProgramHotelRooms {
   final List<ProgramUnplacedGuest> unplacedGuests;
 }
 
-/// Counts-only overview rows for stakeholderViewer staff — ids and
-/// headcounts, never names. Function rows key on functionId so the screen
-/// joins names from the work-access payload.
+/// Guest-id exception sets for one function — the lists a
+/// reconciliationViewer works through by hand. Guest ids only, no PII.
 class ProgramFunctionCounts {
   const ProgramFunctionCounts({
     required this.functionId,

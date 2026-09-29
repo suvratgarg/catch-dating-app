@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "39a9794f55d6b5041d7a38bf411cc283f6f4deed57c7448dc81bb5a4a7ad149f",
-    "routeContractSha256": "4c7372428843540ff4ee9f1dbd91b9df92e6501ed561de90aa26ed4415717f27",
-    "goRouteCount": 111,
+    "normalizedFileSha256": "6f7c1c2803573015743efecf9bce83f8c2e6213d27529514c6b4695e4b2ca024",
+    "routeContractSha256": "713dbcda7163051ceb764daa72f0d6b2bec1f1dc3e154a1ab2de3b1a5e3274b0",
+    "goRouteCount": 116,
     "shellBranchCount": 9,
-    "enumRouteCount": 96,
-    "referencedRouteCount": 96,
-    "runtimeRouteCount": 96,
+    "enumRouteCount": 101,
+    "referencedRouteCount": 101,
+    "runtimeRouteCount": 101,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1123,6 +1123,40 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkNowScreen",
+      "path": "/host/work/:programId/now",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/now",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkNowScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramNowNextScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramNowNextScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkAttentionScreen",
+      "path": "/host/work/:programId/attention",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/attention",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkAttentionScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramAttentionScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramAttentionScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkTripsScreen",
       "path": "/host/work/:programId/trips",
       "pathParameters": [
@@ -1136,6 +1170,57 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>ProgramTripsScreen(programId:state.pathParameters['programId']!)",
       "presentationTarget": "ProgramTripsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkGuestsScreen",
+      "path": "/host/work/:programId/guests",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/guests",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkGuestsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramGuestDeskScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramGuestDeskScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkImportScreen",
+      "path": "/host/work/:programId/import",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/import",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkImportScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramImportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramImportScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkAttendanceReportScreen",
+      "path": "/host/work/:programId/attendance",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/attendance",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkAttendanceReportScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramAttendanceReportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramAttendanceReportScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1823,12 +1908,17 @@
     "hostTodayFocusScreen",
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
+    "hostWorkAttendanceReportScreen",
+    "hostWorkAttentionScreen",
     "hostWorkCountsScreen",
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",
     "hostWorkEventScreen",
+    "hostWorkGuestsScreen",
     "hostWorkHotelRoomsScreen",
     "hostWorkHotelScreen",
+    "hostWorkImportScreen",
+    "hostWorkNowScreen",
     "hostWorkProgramScreen",
     "hostWorkScreen",
     "hostWorkTripsScreen",

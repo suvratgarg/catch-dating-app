@@ -21047,6 +21047,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkCountsOpen => 'Open counts overview';
 
   @override
+  String get programsWorkAttendanceTitle => 'Attendance report';
+
+  @override
+  String get programsWorkAttendanceSubtitle =>
+      'RSVP truth vs door truth per function, with exception queues.';
+
+  @override
+  String get programsWorkAttendanceOpen => 'Open attendance report';
+
+  @override
   String get programsWorkCommsTitle => 'Communications';
 
   @override
@@ -21058,6 +21068,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsWorkCommsInboxRow => 'Guest inbox';
+
+  @override
+  String get programsWorkGuestsTitle => 'Guest desk';
+
+  @override
+  String get programsWorkGuestsSubtitle =>
+      'Households, function RSVPs and manifest imports.';
+
+  @override
+  String get programsWorkLeadTitle => 'Function lead';
+
+  @override
+  String get programsWorkLeadSubtitle =>
+      'Timeline and alerts for your functions.';
+
+  @override
+  String get programsWorkLeadNowNextRow => 'Now & next';
+
+  @override
+  String get programsWorkLeadAttentionRow => 'Attention';
+
+  @override
+  String get programsNowNextTitle => 'Now & next';
+
+  @override
+  String get programsNowNextSubtitle => 'Your functions across the day.';
+
+  @override
+  String get programsNowNextNowTitle => 'In progress';
+
+  @override
+  String get programsNowNextNowSubtitle => 'Functions on the clock right now.';
+
+  @override
+  String get programsNowNextUpcomingTitle => 'Up next';
+
+  @override
+  String get programsNowNextUpcomingSubtitle =>
+      'Scheduled later, earliest first.';
+
+  @override
+  String get programsNowNextEarlierTitle => 'Earlier';
+
+  @override
+  String get programsNowNextEarlierSubtitle => 'Functions already wrapped.';
+
+  @override
+  String get programsNowNextBucketEmpty => 'Nothing in this window.';
+
+  @override
+  String get programsNowNextEmptyTitle => 'No functions yet';
+
+  @override
+  String get programsNowNextEmptyMessage =>
+      'The planner has not scheduled any functions you can see.';
+
+  @override
+  String get programsAttentionTitle => 'Attention';
+
+  @override
+  String get programsAttentionSubtitle => 'Alerts raised for your duties.';
+
+  @override
+  String get programsAttentionFeedTitle => 'Program alerts';
+
+  @override
+  String get programsAttentionFeedSubtitle => 'Newest alerts first.';
+
+  @override
+  String get programsAttentionFeedSubtitleTruncated =>
+      'Newest alerts first — older alerts may be cut off.';
+
+  @override
+  String get programsAttentionEmpty =>
+      'Nothing needs your attention right now.';
 
   @override
   String get programsWorkShellEmptyTitle => 'No duties assigned';
@@ -21685,6 +21770,93 @@ class AppLocalizationsEn extends AppLocalizations {
       'Guest names reflect current records; no dispatch snapshot was saved.';
 
   @override
+  String get programsAttendanceTitle => 'Attendance report';
+
+  @override
+  String get programsAttendanceSubtitle => 'RSVP vs door per function';
+
+  @override
+  String get programsAttendanceRefresh => 'Refresh report';
+
+  @override
+  String get programsAttendanceExport => 'Export CSV';
+
+  @override
+  String get programsAttendanceExporting => 'Exporting…';
+
+  @override
+  String get programsAttendanceProgramTitle => 'Program totals';
+
+  @override
+  String programsAttendanceProgramSubtitle({required String time}) {
+    return 'As of $time';
+  }
+
+  @override
+  String get programsAttendanceFunctionsTitle => 'Per function';
+
+  @override
+  String get programsAttendanceFunctionsSubtitle =>
+      'Invited vs attended vs checked in, with exception queues.';
+
+  @override
+  String get programsAttendanceEmpty => 'No functions on this program yet.';
+
+  @override
+  String programsAttendanceInvited({required int count}) {
+    return '$count invited';
+  }
+
+  @override
+  String programsAttendanceAttending({required int count}) {
+    return '$count attending';
+  }
+
+  @override
+  String programsAttendanceCheckedIn({required int count}) {
+    return '$count checked in';
+  }
+
+  @override
+  String programsAttendanceNoShow({required int count}) {
+    return '$count no-show';
+  }
+
+  @override
+  String programsAttendanceRowCounts({
+    required int invited,
+    required int attending,
+    required int checkedIn,
+  }) {
+    return '$invited invited · $attending attending · $checkedIn checked in';
+  }
+
+  @override
+  String programsAttendanceWalkIns({required int count}) {
+    return '$count walk-in not on the invite list';
+  }
+
+  @override
+  String programsAttendanceNoResponseException({required int count}) {
+    return '$count invited, no response';
+  }
+
+  @override
+  String programsAttendanceDeclinedCheckedIn({required int count}) {
+    return '$count declined but arrived';
+  }
+
+  @override
+  String programsAttendanceWalkInException({required int count}) {
+    return '$count walk-in to reconcile';
+  }
+
+  @override
+  String programsAttendanceShareSubject({required String title}) {
+    return '$title attendance report';
+  }
+
+  @override
   String get programsStakeholderTitle => 'Program counts';
 
   @override
@@ -21810,6 +21982,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsTripsStatusVoided => 'Voided';
+
+  @override
+  String get programsTripsExport => 'Export CSV';
+
+  @override
+  String get programsTripsExporting => 'Exporting…';
+
+  @override
+  String programsTripsExportSubject({required String title}) {
+    return '$title trip ledger';
+  }
+
+  @override
+  String get programsTripsReviewTitle => 'Needs review';
+
+  @override
+  String get programsTripsReviewSubtitle =>
+      'Open, cancelled and voided trips to reconcile before the vendor invoice clears';
+
+  @override
+  String get programsTripsReviewOnly => 'Review only';
+
+  @override
+  String get programsTripsShowAll => 'Show all';
+
+  @override
+  String get programsTripsReviewEmpty => 'Nothing left to review on this page.';
 
   @override
   String programsWorkShellExpires({required Object date}) {

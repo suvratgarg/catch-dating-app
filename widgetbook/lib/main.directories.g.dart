@@ -535,6 +535,10 @@ import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
+import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
+    as _widgetbook_workspace_programs_use_cases_attendance;
+import 'package:widgetbook_workspace/programs/use_cases_function_lead.dart'
+    as _widgetbook_workspace_programs_use_cases_function_lead;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12456,6 +12460,56 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program attendance',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramAttendanceReportScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases_attendance
+                    .programAttendanceReportScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionAttendanceRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_attendance
+                    .programFunctionAttendanceRowStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program attention',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramAttentionRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_function_lead
+                    .programAttentionRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramAttentionScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases_function_lead
+                    .programAttentionScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program counts',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -12583,6 +12637,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Program guests',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestDeskScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestDeskScreenStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'ProgramGuestEditDialog',
             useCases: [
@@ -12735,6 +12799,31 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programImportScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program now next',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionNowNextRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases_function_lead
+                    .programFunctionNowNextRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramNowNextScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases_function_lead
+                    .programNowNextScreenStates,
               ),
             ],
           ),

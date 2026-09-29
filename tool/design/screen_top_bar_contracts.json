@@ -418,6 +418,15 @@
       "leading": "back"
     },
     {
+      "path": "lib/programs/presentation/program_guest_desk_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 5
+    },
+    {
       "path": "lib/programs/presentation/program_guests_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
@@ -517,7 +526,34 @@
       "occurrences": 3
     },
     {
+      "path": "lib/programs/presentation/program_now_next_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 3
+    },
+    {
+      "path": "lib/programs/presentation/program_attention_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 3
+    },
+    {
       "path": "lib/programs/presentation/program_stakeholder_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 3
+    },
+    {
+      "path": "lib/programs/presentation/program_attendance_report_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",

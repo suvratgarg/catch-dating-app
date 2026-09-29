@@ -2603,6 +2603,23 @@ const schemaSpecs = [
       "programFunctionDoorViewCallableResponse.ts",
   },
   {
+    name: "ProgramAttendanceReportCallableResponse",
+    source:
+      "callable_responses/program_attendance_report_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programAttendanceReportCallableResponse.ts",
+  },
+  {
+    name: "ProgramStaffAttentionCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_staff_attention_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programStaffAttentionCallableResponse.ts",
+  },
+  {
     name: "ProgramStakeholderCountsCallableResponse",
     source:
       "callable_responses/program_stakeholder_counts_response.schema.json",

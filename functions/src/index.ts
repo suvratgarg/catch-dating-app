@@ -710,6 +710,8 @@ export {
   upsertProgramTravelParty,
 } from "./transport/programTravel";
 export {importProgramManifest} from "./programs/programManifestImport";
+export {listProgramStaffAttention} from
+  "./programs/programStaffAttention";
 export {
   getProgramArrivalsRoster,
   getProgramTransportPlan,
@@ -736,6 +738,8 @@ export {recordProgramDoorJournal} from
   "./doorJournal/recordProgramDoorJournal";
 export {getProgramFunctionDoorView, createProgramWalkIn} from
   "./doorJournal/doorView";
+export {getProgramAttendanceReport} from
+  "./programs/attendanceReportView";
 export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 
