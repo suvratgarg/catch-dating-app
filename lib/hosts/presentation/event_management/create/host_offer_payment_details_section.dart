@@ -127,7 +127,7 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
           title: l10n.hostOfferPaymentValidity,
           contract: CatchContractConstraints
               .configureEventOfferPreferencesCallablePayloadIntentsOfferValidityMinutesValue,
-          disclosureMode: CatchFieldMode.localExpanded,
+          disclosureMode: CatchFieldMode.localCollapsed,
           helperText: l10n.hostOfferPaymentValidityHint,
           values: const [
             ...offerPaymentValidityChips,
