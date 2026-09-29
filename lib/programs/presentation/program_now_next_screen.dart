@@ -169,15 +169,20 @@ class ProgramNowNextScreen extends ConsumerWidget {
           : Column(
               children: [
                 for (final fn in functions)
-                  _FunctionNowNextRow(fn: fn, live: live, programId: programId),
+                  ProgramFunctionNowNextRow(
+                    fn: fn,
+                    live: live,
+                    programId: programId,
+                  ),
               ],
             ),
     ),
   );
 }
 
-class _FunctionNowNextRow extends StatelessWidget {
-  const _FunctionNowNextRow({
+class ProgramFunctionNowNextRow extends StatelessWidget {
+  const ProgramFunctionNowNextRow({
+    super.key,
     required this.fn,
     required this.live,
     required this.programId,

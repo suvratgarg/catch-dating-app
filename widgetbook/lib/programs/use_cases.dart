@@ -11,10 +11,10 @@ import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
+
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_now_next_screen.dart';
+
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
@@ -286,31 +286,6 @@ final _stakeholderCounts = ProgramStakeholderCounts(
     ),
   ],
 );
-final _attention = ProgramStaffAttention(
-  programId: _programId,
-  truncated: false,
-  items: [
-    ProgramStaffAttentionItem(
-      itemId: 'run_late_functionLead',
-      runId: 'run_late',
-      momentId: 'moment_late_arrival_gate',
-      duty: 'functionLead',
-      severity: 'warning',
-      title: 'Late arrival at hotel — escort to Sangeet',
-      createdAt: _now.subtract(const Duration(minutes: 12)),
-    ),
-    ProgramStaffAttentionItem(
-      itemId: 'run_mehndi_functionLead',
-      runId: 'run_mehndi',
-      momentId: 'moment_late_arrival_gate',
-      duty: 'functionLead',
-      severity: 'urgent',
-      title: 'Guest of honour delayed — hold Mehendi entry',
-      createdAt: _now.subtract(const Duration(hours: 2)),
-    ),
-  ],
-);
-
 
 @widgetbook.UseCase(
   name: 'Screen states',
@@ -797,55 +772,6 @@ Widget programHotelOccupancyRowStates(BuildContext context) {
         name: 'Taj Palace',
       ),
       ProgramHotelOccupancyRow(occupancy: _stakeholderCounts.hotels.first),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramNowNextScreen,
-  path: '[P1 product surfaces]/Program now next',
-)
-Widget programNowNextScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramNowNextScreen',
-    contractId: 'screen.programs.nowNext',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'function buckets',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _programOverrides(),
-            child: ProgramNowNextScreen(programId: _programId, now: () => _now),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramAttentionScreen,
-  path: '[P1 product surfaces]/Program attention',
-)
-Widget programAttentionScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramAttentionScreen',
-    contractId: 'screen.programs.attention',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'duty alerts',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _programOverrides(),
-            child: ProgramAttentionScreen(
-              programId: _programId,
-              now: () => _now,
-            ),
-          ),
-        ),
-      ),
     ],
   );
 }

@@ -89,7 +89,7 @@ class ProgramAttentionScreen extends ConsumerWidget {
                     : Column(
                         children: [
                           for (final item in feed.items)
-                            _AttentionRow(
+                            ProgramAttentionRow(
                               item: item,
                               now: (now ?? DateTime.now)(),
                             ),
@@ -104,8 +104,8 @@ class ProgramAttentionScreen extends ConsumerWidget {
   }
 }
 
-class _AttentionRow extends StatelessWidget {
-  const _AttentionRow({required this.item, required this.now});
+class ProgramAttentionRow extends StatelessWidget {
+  const ProgramAttentionRow({super.key, required this.item, required this.now});
 
   final ProgramStaffAttentionItem item;
   final DateTime now;
