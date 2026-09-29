@@ -7,7 +7,9 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
@@ -92,6 +94,54 @@ final _detail = OrganizerProgramDetail(
     'inboundLegs': 3,
     'activeStaff': 2,
   },
+);
+
+final _deskAccess = ProgramWorkAccess(
+  programId: _programId,
+  organizerId: 'org_1',
+  title: 'Kapoor–Shah Wedding',
+  kind: ProgramKind.wedding,
+  timezone: 'Asia/Kolkata',
+  status: ProgramStatus.active,
+  actorRole: ProgramActorRole.staff,
+  duties: [
+    ProgramDutyAssignment(
+      duty: ProgramStaffDuty.guestRelations,
+      pickupPointIds: const {},
+      hotelIds: const {},
+      functionIds: const {},
+      expiresAt: _now.add(const Duration(hours: 8)),
+    ),
+  ],
+  grantExpiresAt: _now.add(const Duration(hours: 8)),
+  capabilities: const {},
+  pickupPoints: const [],
+  hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  functions: [
+    ProgramFunction(
+      functionId: _functionId,
+      name: 'Sangeet',
+      venueName: 'The Leela Ballroom',
+      startsAt: _now.add(const Duration(hours: 3)),
+      endsAt: _now.add(const Duration(hours: 6)),
+      checkInEnabled: true,
+      status: ProgramFunctionStatus.scheduled,
+      expectedCount: 80,
+      checkedInCount: 61,
+    ),
+    ProgramFunction(
+      functionId: 'fn_ceremony',
+      name: 'Ceremony',
+      venueName: 'Lakeside Pavilion',
+      startsAt: _now.add(const Duration(days: 1, hours: 2)),
+      endsAt: _now.add(const Duration(days: 1, hours: 5)),
+      checkInEnabled: false,
+      status: ProgramFunctionStatus.scheduled,
+      expectedCount: 60,
+      checkedInCount: 0,
+    ),
+  ],
+  vehicleClasses: const [],
 );
 
 final _summaries = [
@@ -454,6 +504,38 @@ Widget programGuestsScreenStates(BuildContext context) {
           child: ProviderScope(
             overrides: _workspaceOverrides(),
             child: const ProgramGuestsScreen(programId: _programId),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Screen states',
+  type: ProgramGuestDeskScreen,
+  path: '[P1 product surfaces]/Program guests',
+)
+Widget programGuestDeskScreenStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'ProgramGuestDeskScreen',
+    contractId: 'screen.programs.guests',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'guestRelations desk',
+        child: WidgetbookUtilityDeviceFrame(
+          child: ProviderScope(
+            overrides: [
+              ..._workspaceOverrides(),
+              programWorkEntryProvider(_programId, null).overrideWithValue(
+                AsyncData((
+                  value: _deskAccess,
+                  snapshotAt: null,
+                  snapshotExpiresAt: null,
+                )),
+              ),
+            ],
+            child: const ProgramGuestDeskScreen(programId: _programId),
           ),
         ),
       ),

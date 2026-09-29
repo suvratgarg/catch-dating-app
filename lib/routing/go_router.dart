@@ -65,6 +65,7 @@ import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.d
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';

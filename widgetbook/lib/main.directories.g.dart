@@ -12611,6 +12611,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program guests',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestDeskScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestDeskScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramGuestEditDialog',
             useCases: [
               _widgetbook.WidgetbookUseCase(

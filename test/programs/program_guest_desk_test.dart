@@ -3,7 +3,7 @@ import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:flutter/material.dart';
