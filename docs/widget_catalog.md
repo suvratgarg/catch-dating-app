@@ -1035,7 +1035,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramArrivalActionMenu</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:415</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramArrivalReadinessBadge</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:376</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramArrivalRow</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:261</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramFunctionAttendanceRow</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart:207</code> | — | — | One function's attendance reconciliation: invited vs attended vs checked-in, plus the exception counts needing follow-up. |
+| <code>ProgramFunctionAttendanceRow</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart:210</code> | — | — | One function's attendance reconciliation: invited vs attended vs checked-in, plus the exception counts needing follow-up. |
 | <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:240</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:311</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
 | <code>ProgramDoorAttendanceBadge</code> | <code>lib/programs/presentation/program_door_screen.dart:574</code> | — | — | No class documentation or registry summary. |

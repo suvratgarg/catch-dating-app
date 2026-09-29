@@ -29787,7 +29787,8 @@
             "dependencies": [
               "catch.top_bar",
               "catch.section",
-              "catch.field_row",
+              "catch.field",
+              "catch.meta_row",
               "catch.badge",
               "catch.button"
             ],
