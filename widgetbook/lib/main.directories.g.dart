@@ -543,6 +543,8 @@ import 'package:widgetbook_workspace/programs/use_cases_rooms.dart'
     as _widgetbook_workspace_programs_use_cases_rooms;
 import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
     as _widgetbook_workspace_programs_workspace_use_cases;
+import 'package:widgetbook_workspace/programs/workspace_use_cases_logistics.dart'
+    as _widgetbook_workspace_programs_workspace_use_cases_logistics;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
@@ -12954,8 +12956,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hotel edit dialog',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programHotelEditDialogStates,
+                builder:
+                    _widgetbook_workspace_programs_workspace_use_cases_logistics
+                        .programHotelEditDialogStates,
               ),
             ],
           ),
@@ -12984,8 +12987,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Pickup point edit dialog',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programPickupPointEditDialogStates,
+                builder:
+                    _widgetbook_workspace_programs_workspace_use_cases_logistics
+                        .programPickupPointEditDialogStates,
               ),
             ],
           ),
@@ -13004,8 +13008,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hotel tile',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programWorkspaceHotelTileStates,
+                builder:
+                    _widgetbook_workspace_programs_workspace_use_cases_logistics
+                        .programWorkspaceHotelTileStates,
               ),
             ],
           ),
@@ -13034,8 +13039,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Station tile',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programWorkspaceStationTileStates,
+                builder:
+                    _widgetbook_workspace_programs_workspace_use_cases_logistics
+                        .programWorkspaceStationTileStates,
               ),
             ],
           ),
