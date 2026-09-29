@@ -12992,6 +12992,7 @@
           "routeId": "hostProgramWorkspaceScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_workspace_screen.dart",
+            "lib/programs/presentation/program_workspace_surface.dart",
             "lib/programs/presentation/program_workspace_controller.dart",
             "lib/programs/data/program_setup_repository.dart"
           ],

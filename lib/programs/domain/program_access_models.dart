@@ -110,6 +110,10 @@ class ProgramStation {
     required this.kind,
     this.iataCode,
     this.terminal,
+    this.meetingZone,
+    this.instructions,
+    this.active,
+    this.revision,
   });
 
   factory ProgramStation.fromMap(Map<Object?, Object?> map) => ProgramStation(
@@ -118,6 +122,10 @@ class ProgramStation {
     kind: requiredString(map, 'kind'),
     iataCode: map['iataCode'] as String?,
     terminal: map['terminal'] as String?,
+    meetingZone: map['meetingZone'] as String?,
+    instructions: map['instructions'] as String?,
+    active: map['active'] as bool?,
+    revision: map['revision'] as int?,
   );
 
   final String pickupPointId;
@@ -125,18 +133,37 @@ class ProgramStation {
   final String kind;
   final String? iataCode;
   final String? terminal;
+  final String? meetingZone;
+  final String? instructions;
+  final bool? active;
+  final int? revision;
 }
 
 class ProgramHotel {
-  const ProgramHotel({required this.hotelId, required this.name});
+  const ProgramHotel({
+    required this.hotelId,
+    required this.name,
+    this.address,
+    this.receptionContact,
+    this.active,
+    this.revision,
+  });
 
   factory ProgramHotel.fromMap(Map<Object?, Object?> map) => ProgramHotel(
     hotelId: requiredString(map, 'hotelId'),
     name: requiredString(map, 'name'),
+    address: map['address'] as String?,
+    receptionContact: map['receptionContact'] as String?,
+    active: map['active'] as bool?,
+    revision: map['revision'] as int?,
   );
 
   final String hotelId;
   final String name;
+  final String? address;
+  final String? receptionContact;
+  final bool? active;
+  final int? revision;
 }
 
 enum ProgramFunctionStatus { scheduled, completed, cancelled }
