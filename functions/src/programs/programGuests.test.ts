@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as admin from "firebase-admin";
 import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore, type FakeData} from
   "../shared/testing/programFirestore";
@@ -281,6 +282,43 @@ test("household inventory reports overflow instead of silently dropping rows",
     await assert.rejects(listProgramHouseholdsHandler(request({
       programId: "program-1",
     }, "manager-1"), deps(db)), /500-record limit/);
+  });
+
+const guestDeskGrant = (uid: string, duty: string): FakeData => ({
+  programId: "program-1", organizerId: "org-1", uid,
+  displayName: "Staff", phoneLastFour: "0000",
+  duties: [{
+    duty, expiresAtMillis: now.toMillis() + 60_000,
+    pickupPointIds: [], hotelIds: [],
+  }],
+  status: "active", createdBy: "manager-1", createdAt: now,
+  expiresAt: admin.firestore.Timestamp.fromMillis(
+    now.toMillis() + 3_600_000),
+  revokedBy: null, revokedAt: null, updatedAt: now, revision: 1,
+});
+
+test("guestRelations staff read the guest desk while greeters stay locked out",
+  async () => {
+    const db = new FakeFirestore({...seed(),
+      "programStaffGrants/program-1__desk-1": guestDeskGrant(
+        "desk-1", "guestRelations"),
+      "programStaffGrants/program-1__greeter-1": guestDeskGrant(
+        "greeter-1", "airportGreeter"),
+    });
+    const page = await listProgramGuestsHandler(request({
+      programId: "program-1",
+    }, "desk-1"), deps(db));
+    assert.equal(page.guests.length, 2);
+    const households = await listProgramHouseholdsHandler(request({
+      programId: "program-1",
+    }, "desk-1"), deps(db));
+    assert.equal(households.households.length, 2);
+    await assert.rejects(listProgramGuestsHandler(request({
+      programId: "program-1",
+    }, "greeter-1"), deps(db)), /guestRelations/);
+    await assert.rejects(listProgramHouseholdsHandler(request({
+      programId: "program-1",
+    }, "greeter-1"), deps(db)), /guestRelations/);
   });
 
 test("guest inventory rejects foreign ownership and cursor references",

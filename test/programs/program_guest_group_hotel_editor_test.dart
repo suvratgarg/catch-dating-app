@@ -38,26 +38,6 @@ class _Repository extends Fake implements ProgramSetupRepository {
   }
 }
 
-OrganizerProgramDetail _detail({List<ProgramHotel> hotels = const []}) =>
-    OrganizerProgramDetail(
-      program: OrganizerProgramSettings(
-        programId: 'program',
-        organizerId: 'organizer-1',
-        kind: ProgramKind.wedding,
-        title: 'Wedding',
-        timezone: 'Asia/Kolkata',
-        status: ProgramStatus.active,
-        startsAt: DateTime(2026),
-        endsAt: DateTime(2026, 2),
-        capabilities: const [],
-        revision: 1,
-      ),
-      functions: const [],
-      pickupPoints: const [],
-      hotels: hotels,
-      counts: const {},
-    );
-
 ProgramGuestListPage _page({List<ProgramGuestGroupRow> groups = const []}) =>
     ProgramGuestListPage(
       programId: 'program',
@@ -77,10 +57,11 @@ Widget _app(
     theme: AppTheme.light,
     home: ProgramGuestsPageBody(
       programId: 'program',
-      programDetail: _detail(
-        hotels: const [ProgramHotel(hotelId: 'hotel-1', name: 'Lakeview')],
-      ),
+      programTitle: 'Program',
+      functions: const [],
+      hotels: const [ProgramHotel(hotelId: 'hotel-1', name: 'Lakeview')],
       guestPage: _page(groups: groups),
+      canManageGuests: true,
     ),
   ),
 );

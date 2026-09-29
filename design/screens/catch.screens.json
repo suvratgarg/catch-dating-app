@@ -1142,7 +1142,19 @@
         },
         {
           "routes": [
-            "hostProgramGuestsScreen"
+            "hostWorkGuestsScreen"
+          ],
+          "file": "lib/programs/presentation/program_guest_desk_screen.dart",
+          "symbol": "ProgramGuestDeskScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramGuestsScreen",
+            "hostWorkGuestsScreen"
           ],
           "file": "lib/programs/presentation/program_guests_screen.dart",
           "symbol": "_ProgramGuestsPageBodyState",
@@ -1185,7 +1197,8 @@
       "owners": [
         {
           "routes": [
-            "hostProgramImportScreen"
+            "hostProgramImportScreen",
+            "hostWorkImportScreen"
           ],
           "file": "lib/programs/presentation/program_import_screen.dart",
           "symbol": "_ProgramImportScreenState",
@@ -28160,6 +28173,11 @@
           "id": "hostProgramGuestsScreen",
           "path": "/host/programs/:programId/guests",
           "role": "primary"
+        },
+        {
+          "id": "hostWorkGuestsScreen",
+          "path": "/host/work/:programId/guests",
+          "role": "host"
         }
       ],
       "source": {
@@ -28476,6 +28494,11 @@
           "id": "hostProgramImportScreen",
           "path": "/host/programs/:programId/import",
           "role": "primary"
+        },
+        {
+          "id": "hostWorkImportScreen",
+          "path": "/host/work/:programId/import",
+          "role": "host"
         }
       ],
       "source": {

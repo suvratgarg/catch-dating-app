@@ -33789,6 +33789,18 @@ abstract class AppLocalizations {
   /// **'Guest inbox'**
   String get programsWorkCommsInboxRow;
 
+  /// Program operations copy: programsWorkGuestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest desk'**
+  String get programsWorkGuestsTitle;
+
+  /// Program operations copy: programsWorkGuestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Households, function RSVPs and manifest imports.'**
+  String get programsWorkGuestsSubtitle;
+
   /// Program operations copy: programsWorkShellEmptyTitle.
   ///
   /// In en, this message translates to:

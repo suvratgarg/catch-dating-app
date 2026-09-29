@@ -289,7 +289,7 @@ const doorGrant = (uid: string, duty: string, functionIds?: string[]) => ({
   revision: 1,
 });
 
-test("work access lists functions only for door duties, scoped by grant",
+test("work access lists functions for door and guest duties, scoped by grant",
   async () => {
     const seed = baseSeed();
     seed["programFunctions/fn-sangeet"] = functionDoc("fn-sangeet");
@@ -300,6 +300,8 @@ test("work access lists functions only for door duties, scoped by grant",
       doorGrant("door-1", "functionCheckIn", ["fn-sangeet"]);
     seed["programStaffGrants/program-1__lead-1"] =
       doorGrant("lead-1", "functionLead");
+    seed["programStaffGrants/program-1__guest-1"] =
+      doorGrant("guest-1", "guestRelations");
     const store = new FakeFirestore(seed);
 
     const scoped = await getProgramWorkAccessHandler(
@@ -313,6 +315,13 @@ test("work access lists functions only for door duties, scoped by grant",
       request({programId: "program-1"}, "lead-1"), deps(store));
     assert.deepEqual(
       lead.functions.map((f) => f.functionId).sort(),
+      ["fn-mehndi", "fn-sangeet"]);
+
+    // guestRelations is program-scoped — the desk sees every function.
+    const guestDesk = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "guest-1"), deps(store));
+    assert.deepEqual(
+      guestDesk.functions.map((f) => f.functionId).sort(),
       ["fn-mehndi", "fn-sangeet"]);
 
     const manager = await getProgramWorkAccessHandler(

@@ -21070,6 +21070,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkCommsInboxRow => 'Guest inbox';
 
   @override
+  String get programsWorkGuestsTitle => 'Guest desk';
+
+  @override
+  String get programsWorkGuestsSubtitle =>
+      'Households, function RSVPs and manifest imports.';
+
+  @override
   String get programsWorkShellEmptyTitle => 'No duties assigned';
 
   @override
