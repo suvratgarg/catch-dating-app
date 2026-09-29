@@ -237,6 +237,21 @@ export function programProjectionExpiresAt(access: ProgramAccess,
     ...assignments.map((assignment) => assignment.expiresAtMillis));
 }
 
+/** Archived programs are read-only pending retention; the dedicated
+ *  unarchiveProgram callable is the only way back. Mutation handlers call
+ *  this after requireProgramAccess/requireProgramManager; read paths skip it
+ *  so staff surfaces keep working through the grace window and afterward. */
+export function requireProgramMutable(
+  program: Pick<OrganizerProgramDocument, "status">
+): void {
+  if (program.status === "archived") {
+    throw new HttpsError(
+      "failed-precondition",
+      "This program is archived and read-only. Restore it to make changes."
+    );
+  }
+}
+
 export function assertRevision(actual: number, expected: number | undefined):
   void {
   if (expected !== undefined && actual !== expected) {

@@ -11500,6 +11500,10 @@ export interface ProgramFunctionDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11665,6 +11669,10 @@ export interface ProgramGuestGroupDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11878,6 +11886,10 @@ export interface ProgramHotelDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11977,6 +11989,10 @@ export interface ProgramRoomBlockDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -12117,6 +12133,10 @@ export interface ProgramTravelPartyDocument {
    * @maxItems 50
    */
   legIds: string[];
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -12935,6 +12955,10 @@ export interface TransportTripDocument {
       luggageUnits: number;
     }[];
   };
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

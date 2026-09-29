@@ -12,8 +12,14 @@ export interface ProgramStaffListCallableResponse {
    */
   members: {
     uid: string;
-    displayName: string;
-    phoneLastFour: string;
+    /**
+     * Null after archive anonymization scrubs staff identity.
+     */
+    displayName: string | null;
+    /**
+     * Null after archive anonymization.
+     */
+    phoneLastFour: string | null;
     duties: {
       duty:
         | "programCoordinator"

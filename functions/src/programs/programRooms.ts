@@ -38,6 +38,7 @@ import {
   nextRevision,
   programProjectionExpiresAt,
   requireProgramAccess,
+  requireProgramMutable,
   requireProgramDuty,
 } from "../shared/programAuthority";
 import type {ProgramAccess, ProgramDutyAssignment} from
@@ -233,6 +234,7 @@ export async function upsertProgramStayHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
       transaction: tx,
     });
+    requireProgramMutable(access.program);
     const hotelDuties = access.role === "manager" ? [] :
       dutyAssignments(access, "hotelDesk");
     if (access.role !== "manager" && hotelDuties.length === 0) {
@@ -409,6 +411,7 @@ export async function upsertProgramRoomBlockHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
       transaction: tx,
     });
+    requireProgramMutable(access.program);
     // Inventory definition is coordinator/manager work; hotelDesk consumes it.
     requireProgramDuty(access, "programCoordinator");
     if (!["draft", "active"].includes(access.program.status)) {

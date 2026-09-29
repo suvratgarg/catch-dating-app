@@ -12,6 +12,7 @@ import {
   dutyAssignments,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   type ProgramAccess,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
@@ -165,6 +166,7 @@ export async function issueProgramHouseholdRsvpLinkHandler(
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
+  requireProgramMutable(access.program);
   requireAnyDuty(access, ["guestRelations", "communications"]);
   const householdSnap = await db.collection("programHouseholds")
     .doc(data.householdId).get();
@@ -379,6 +381,7 @@ export async function submitProgramHouseholdRsvpHandler(
   await db.runTransaction(async (tx) => {
     const bundle = await loadHouseholdBundle(
       db, identity.programId, identity.householdId, tx);
+    requireProgramMutable(bundle.program);
     const {household, guests, rowsByGuest, functions} = bundle;
     const now = deps.now();
     const memberIds = new Set(household.memberGuestIds);

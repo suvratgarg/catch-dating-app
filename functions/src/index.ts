@@ -654,6 +654,11 @@ export {
   getOrganizerProgram,
 } from "./programs/programs";
 export {
+  archiveProgram,
+  unarchiveProgram,
+  anonymizeDueProgramsSweep,
+} from "./programs/programRetention";
+export {
   getProgramWorkAccess,
   listProgramStaff,
   grantProgramStaff,
