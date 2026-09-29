@@ -745,8 +745,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:97</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentsEntryField</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_entry_field.dart:10</code> | — | — | Manage-screen entry into the event's organizer Moments workspace. |
-| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:19</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:93</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:21</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:95</code> | — | — | No class documentation or registry summary. |
 | <code>ClubBasicsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_details_step.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ClubEventSuccessDefaultsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart:8</code> | — | — | No class documentation or registry summary. |
@@ -1067,13 +1067,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:269</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:402</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:148</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:632</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:1171</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_screen.dart:989</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:518</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:898</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:71</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceStationTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:810</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:520</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:73</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:24</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:563</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:381</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:290</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceStationTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:202</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:226</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:330</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportSheet</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:268</code> | — | — | No class documentation or registry summary. |
@@ -1228,7 +1228,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:24</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentEditScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart:6</code> | — | — | Creates or revises a moment through upsertOrganizerMoment. Revising an armed moment drops it back to draft with approval cleared — the backend owns that lifecycle; the form only submits the new definition. |
 | <code>OrganizerMomentsScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_screen.dart:20</code> | — | — | Moments for one event or program scope: the organizer's send rules with their approve-the-rule-once lifecycle (draft → armed → paused/done). |
-| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:211</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
+| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:224</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
 | <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
@@ -1303,7 +1303,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTeamScreen</code> | <code>lib/programs/presentation/program_team_screen.dart:20</code> | — | — | Program team roster — active staff grants with their duty scopes, plus grant/invite/revoke actions. Duty sets are program-wide in W1 (empty resource scopes); per-station/hotel/function scoping lands with the assignment picker surfaces. |
 | <code>ProgramTripsScreen</code> | <code>lib/programs/presentation/program_trips_screen.dart:18</code> | — | — | The trip ledger: every dispatch as a reconciliation record — plate, vendor, class, manifest and outcome. Voided trips keep their row so the vendor invoice can be checked line by line. Rows that are not yet arrived surface in the needs-review strip for reconciliation viewers, and the whole ledger exports to CSV. |
 | <code>ProgramWorkScreen</code> | <code>lib/programs/presentation/program_work_screen.dart:23</code> | — | — | Scoped entry point for private program staff. |
-| <code>ProgramWorkspaceScreen</code> | <code>lib/programs/presentation/program_workspace_screen.dart:21</code> | — | — | Organizer program workspace — program header, schedule day rail and function management. Guests/team/import live on pushed sibling routes so the schedule stays the focus here. |
+| <code>ProgramWorkspaceScreen</code> | <code>lib/programs/presentation/program_workspace_screen.dart:23</code> | — | — | Organizer program workspace — program header, schedule day rail and function management. Guests/team/import live on pushed sibling routes so the schedule stays the focus here. |
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>MessagingPermissionsScreen</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:11</code> | — | — | No class documentation or registry summary. |

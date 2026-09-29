@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:46e17bff40eb59bcfbac1f3f2227c3b5ca700427ab3253529b15658693e93e70",
-  "resolvedDigest": "sha256:6411db648d557aef662eb7dbabcbbb7b9ab7acf34ba219a2288f9e5e4632288a",
+  "sourceDigest": "sha256:a4c254b643fa8c57d2ec5fb9ece9f30bb842662e045abafc25c3b0f59768c1e0",
+  "resolvedDigest": "sha256:7209f63c3a6796e30439382b416ba41ede0292b51935c1daa0603dc8750f2a40",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -14,14 +14,14 @@
   },
   "coverage": {
     "surfaces": 1,
-    "states": 22,
-    "scenarios": 22,
-    "actionCases": 22,
-    "actions": 14,
+    "states": 23,
+    "scenarios": 23,
+    "actionCases": 23,
+    "actions": 15,
     "captures": 17,
     "previews": 1,
     "testFiles": 4,
-    "evidenceExceptions": 22
+    "evidenceExceptions": 23
   },
   "surfaces": [
     {
@@ -134,14 +134,14 @@
         ]
       },
       "coverage": {
-        "states": 22,
-        "scenarios": 22,
-        "actionCases": 22,
-        "actions": 14,
+        "states": 23,
+        "scenarios": 23,
+        "actionCases": 23,
+        "actions": 15,
         "captures": 17,
         "previews": 1,
         "testFiles": 4,
-        "evidenceExceptions": 22
+        "evidenceExceptions": 23
       },
       "dimensions": {
         "load": {
@@ -554,6 +554,28 @@
           ],
           "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice.",
           "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_programs",
+          "owner": "events_list",
+          "codeValue": "_openPrograms",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.programs.list"
+              }
+            }
+          ],
+          "description": "Opens the organizer's multi-day program index from the Events header with the selected organizer carried as a route parameter.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -592,7 +614,8 @@
           "stateIds": [
             "create_event_action",
             "manage_event_navigation",
-            "dress_rehearsal_action"
+            "dress_rehearsal_action",
+            "open_programs_action"
           ],
           "evidence": [
             "captures"
@@ -666,7 +689,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -722,7 +746,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -780,7 +805,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -837,7 +863,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -896,7 +923,8 @@
                   "retry_event_history",
                   "repeat_event",
                   "manage_event",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -956,7 +984,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1015,7 +1044,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1071,7 +1101,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1128,7 +1159,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1183,7 +1215,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1246,7 +1279,8 @@
                   "retry_host_events",
                   "create_organizer",
                   "retry_event_history",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1303,7 +1337,8 @@
                   "repeat_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1360,7 +1395,8 @@
                   "repeat_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1416,7 +1452,8 @@
                   "repeat_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1473,7 +1510,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1530,7 +1568,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1587,7 +1626,8 @@
                   "retry_event_history",
                   "create_event",
                   "repeat_event",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1644,7 +1684,66 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "open_programs"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "open_programs_action",
+          "stateId": "open_programs_action",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_events_layout_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "open",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_programs"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_operational_event",
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1701,7 +1800,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1757,7 +1857,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1813,7 +1914,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
@@ -1869,7 +1971,8 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "start_dress_rehearsal"
+                  "start_dress_rehearsal",
+                  "open_programs"
                 ]
               }
             }
