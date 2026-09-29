@@ -63,6 +63,7 @@ import 'package:catch_dating_app/payments/presentation/payment_confirmation_scre
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
@@ -70,6 +71,7 @@ import 'package:catch_dating_app/programs/presentation/program_guests_screen.dar
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_now_next_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
@@ -526,6 +528,18 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
         functionId: state.pathParameters['functionId']!,
         functionName: state.uri.queryParameters['function'],
       ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkNowScreen.path,
+      name: Routes.hostWorkNowScreen.name,
+      builder: (context, state) =>
+          ProgramNowNextScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkAttentionScreen.path,
+      name: Routes.hostWorkAttentionScreen.name,
+      builder: (context, state) =>
+          ProgramAttentionScreen(programId: state.pathParameters['programId']!),
     ),
     GoRoute(
       path: Routes.hostWorkTripsScreen.path,

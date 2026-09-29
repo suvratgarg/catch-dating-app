@@ -267,6 +267,16 @@ class ProgramWorkRepository {
         parse: ProgramTripList.fromCallableData,
       );
 
+  /// Function-lead attention feed — the callable returns only the alerts
+  /// stamped for duties the caller holds.
+  Future<ProgramStaffAttention> listStaffAttention(String programId) => _call(
+    name: 'listProgramStaffAttention',
+    authorityScopedRead: true,
+    payload: ProgramIdCallableRequest(programId: programId).toJson(),
+    action: 'load staff attention',
+    parse: ProgramStaffAttention.fromCallableData,
+  );
+
   /// The reconciliationViewer's program-wide attendance report — per-function
   /// RSVP-vs-door counts plus the exception guest-id lists.
   Future<ProgramAttendanceReport> getAttendanceReport(String programId) =>
@@ -760,5 +770,17 @@ Future<List<ProgramVendorOption>> programTransportVendors(
     () => ref
         .read(programWorkRepositoryProvider)
         .listVendors(organizerId: organizerId, programId: programId),
+  );
+}
+
+/// Function-lead attention feed scoped to the caller's duties.
+@riverpod
+Future<ProgramStaffAttention> programStaffAttention(Ref ref, String programId) {
+  final accountId = _watchWorkAccount(ref);
+  return readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () => ref.read(programWorkRepositoryProvider).listStaffAttention(programId),
   );
 }

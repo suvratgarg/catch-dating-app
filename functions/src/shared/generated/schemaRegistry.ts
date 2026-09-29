@@ -630,6 +630,7 @@ export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelI
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
 export {programAttendanceReportCallableResponseSchema} from "./schemas/programAttendanceReportOutput";
+export {programStaffAttentionCallableResponseSchema} from "./schemas/programStaffAttentionOutput";
 export {programStakeholderCountsCallableResponseSchema} from "./schemas/programStakeholderCountsOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";

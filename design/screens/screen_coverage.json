@@ -466,6 +466,20 @@
       "reason": "Covered by screen.programs.door as the function-scoped door check-in roster."
     },
     {
+      "routeId": "hostWorkNowScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.programs.now_next as the function-lead timeline board.",
+      "screenId": "screen.programs.now_next"
+    },
+    {
+      "routeId": "hostWorkAttentionScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.programs.attention as the function-lead duty-alert feed.",
+      "screenId": "screen.programs.attention"
+    },
+    {
       "routeId": "hostWorkTripsScreen",
       "status": "contracted",
       "priority": "P1",

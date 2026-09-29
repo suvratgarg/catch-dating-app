@@ -33801,6 +33801,132 @@ abstract class AppLocalizations {
   /// **'Households, function RSVPs and manifest imports.'**
   String get programsWorkGuestsSubtitle;
 
+  /// Program operations copy: programsWorkLeadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Function lead'**
+  String get programsWorkLeadTitle;
+
+  /// Program operations copy: programsWorkLeadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline and alerts for your functions.'**
+  String get programsWorkLeadSubtitle;
+
+  /// Program operations copy: programsWorkLeadNowNextRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now & next'**
+  String get programsWorkLeadNowNextRow;
+
+  /// Program operations copy: programsWorkLeadAttentionRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Attention'**
+  String get programsWorkLeadAttentionRow;
+
+  /// Program operations copy: programsNowNextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Now & next'**
+  String get programsNowNextTitle;
+
+  /// Program operations copy: programsNowNextSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your functions across the day.'**
+  String get programsNowNextSubtitle;
+
+  /// Program operations copy: programsNowNextNowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get programsNowNextNowTitle;
+
+  /// Program operations copy: programsNowNextNowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Functions on the clock right now.'**
+  String get programsNowNextNowSubtitle;
+
+  /// Program operations copy: programsNowNextUpcomingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Up next'**
+  String get programsNowNextUpcomingTitle;
+
+  /// Program operations copy: programsNowNextUpcomingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled later, earliest first.'**
+  String get programsNowNextUpcomingSubtitle;
+
+  /// Program operations copy: programsNowNextEarlierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get programsNowNextEarlierTitle;
+
+  /// Program operations copy: programsNowNextEarlierSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Functions already wrapped.'**
+  String get programsNowNextEarlierSubtitle;
+
+  /// Program operations copy: programsNowNextBucketEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this window.'**
+  String get programsNowNextBucketEmpty;
+
+  /// Program operations copy: programsNowNextEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions yet'**
+  String get programsNowNextEmptyTitle;
+
+  /// Program operations copy: programsNowNextEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The planner has not scheduled any functions you can see.'**
+  String get programsNowNextEmptyMessage;
+
+  /// Program operations copy: programsAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attention'**
+  String get programsAttentionTitle;
+
+  /// Program operations copy: programsAttentionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts raised for your duties.'**
+  String get programsAttentionSubtitle;
+
+  /// Program operations copy: programsAttentionFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program alerts'**
+  String get programsAttentionFeedTitle;
+
+  /// Program operations copy: programsAttentionFeedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest alerts first.'**
+  String get programsAttentionFeedSubtitle;
+
+  /// Program operations copy: programsAttentionFeedSubtitleTruncated.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest alerts first — older alerts may be cut off.'**
+  String get programsAttentionFeedSubtitleTruncated;
+
+  /// Program operations copy: programsAttentionEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs your attention right now.'**
+  String get programsAttentionEmpty;
+
   /// Program operations copy: programsWorkShellEmptyTitle.
   ///
   /// In en, this message translates to:

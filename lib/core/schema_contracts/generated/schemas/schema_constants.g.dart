@@ -848,6 +848,7 @@ export 'program_manifest_import_callable_response.g.dart';
 export 'program_mutation_callable_response.g.dart';
 export 'program_pickup_point_document.g.dart';
 export 'program_room_block_document.g.dart';
+export 'program_staff_attention_callable_response.g.dart';
 export 'program_staff_grant_document.g.dart';
 export 'program_staff_invite_document.g.dart';
 export 'program_staff_list_callable_response.g.dart';

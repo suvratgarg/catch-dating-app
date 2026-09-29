@@ -710,6 +710,8 @@ export {
   upsertProgramTravelParty,
 } from "./transport/programTravel";
 export {importProgramManifest} from "./programs/programManifestImport";
+export {listProgramStaffAttention} from
+  "./programs/programStaffAttention";
 export {
   getProgramArrivalsRoster,
   getProgramTransportPlan,
