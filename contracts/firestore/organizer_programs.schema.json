@@ -48,6 +48,17 @@
     "endsAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     },
+    "rsvpDeadlineAt": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "RSVP deadline anchor for Moments scheduling; absent until the organizer sets one."
+    },
     "status": {
       "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
     },

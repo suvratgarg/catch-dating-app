@@ -148,7 +148,25 @@ export const organizerMomentDocumentSchema: Record<string, unknown> = {
           ],
           "minimum": -43200,
           "maximum": 43200,
-          "description": "Minutes relative to the anchor; negative is before."
+          "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+        },
+        "offsetDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -731,
+          "maximum": 731,
+          "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+        },
+        "offsetMonths": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -24,
+          "maximum": 24,
+          "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
         },
         "triggerKind": {
           "anyOf": [

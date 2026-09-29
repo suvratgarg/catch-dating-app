@@ -51,9 +51,17 @@ export interface OrganizerMomentDocument {
      */
     anchorId?: string | null;
     /**
-     * Minutes relative to the anchor; negative is before.
+     * Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset.
      */
     offsetMinutes?: number | null;
+    /**
+     * Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes.
+     */
+    offsetDays?: number | null;
+    /**
+     * Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first.
+     */
+    offsetMonths?: number | null;
     /**
      * Required when kind=triggered.
      */

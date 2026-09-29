@@ -55,6 +55,15 @@ const schemaCreateOrganizerProgramCallablePayloadSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'rsvpDeadlineAtMillis': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'Optional RSVP deadline anchor for Moments scheduling.',
+    },
     'capabilities': <String, Object?>{
       'type': 'array',
       'maxItems': 8,

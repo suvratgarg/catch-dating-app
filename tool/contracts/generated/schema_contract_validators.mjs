@@ -554,9 +554,18 @@ import {
   programRoomBlockDocumentSchema,
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
+  programDeliveryMessageDocumentSchema,
+  programWhatsappDispatchDocumentSchema,
+  programDeliveryMessageIntentSchema,
+  programDeliveryAttemptSchema,
+  campaignDeliveryMessageDocumentSchema,
+  campaignWhatsappDispatchDocumentSchema,
+  campaignDeliveryMessageIntentSchema,
+  campaignDeliveryAttemptSchema,
   organizerMomentDocumentSchema,
   organizerMomentRunDocumentSchema,
   organizerMomentSendDocumentSchema,
+  organizerMomentSweepStateDocumentSchema,
   upsertOrganizerMomentCallablePayloadSchema,
   organizerMomentActionCallablePayloadSchema,
   runOrganizerMomentCallablePayloadSchema,
@@ -1700,9 +1709,18 @@ export const validateProgramStayDocument = ajv.compile(programStayDocumentSchema
 export const validateProgramRoomBlockDocument = ajv.compile(programRoomBlockDocumentSchema);
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateProgramDeliveryMessageDocument = ajv.compile(programDeliveryMessageDocumentSchema);
+export const validateProgramWhatsappDispatchDocument = ajv.compile(programWhatsappDispatchDocumentSchema);
+export const validateProgramDeliveryMessageIntent = ajv.compile(programDeliveryMessageIntentSchema);
+export const validateProgramDeliveryAttempt = ajv.compile(programDeliveryAttemptSchema);
+export const validateCampaignDeliveryMessageDocument = ajv.compile(campaignDeliveryMessageDocumentSchema);
+export const validateCampaignWhatsappDispatchDocument = ajv.compile(campaignWhatsappDispatchDocumentSchema);
+export const validateCampaignDeliveryMessageIntent = ajv.compile(campaignDeliveryMessageIntentSchema);
+export const validateCampaignDeliveryAttempt = ajv.compile(campaignDeliveryAttemptSchema);
 export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);
 export const validateOrganizerMomentRunDocument = ajv.compile(organizerMomentRunDocumentSchema);
 export const validateOrganizerMomentSendDocument = ajv.compile(organizerMomentSendDocumentSchema);
+export const validateOrganizerMomentSweepStateDocument = ajv.compile(organizerMomentSweepStateDocumentSchema);
 export const validateUpsertOrganizerMomentCallablePayload = ajv.compile(upsertOrganizerMomentCallablePayloadSchema);
 export const validateOrganizerMomentActionCallablePayload = ajv.compile(organizerMomentActionCallablePayloadSchema);
 export const validateRunOrganizerMomentCallablePayload = ajv.compile(runOrganizerMomentCallablePayloadSchema);

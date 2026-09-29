@@ -94,6 +94,34 @@ export const organizerProgramDocumentSchema: Record<string, unknown> = {
         }
       }
     },
+    "rsvpDeadlineAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "RSVP deadline anchor for Moments scheduling; absent until the organizer sets one."
+    },
     "status": {
       "type": "string",
       "enum": [

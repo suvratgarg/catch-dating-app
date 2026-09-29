@@ -1,21 +1,16 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
-import type {
-  DocumentReference, Firestore, Transaction,
-} from "firebase-admin/firestore";
-import {operationContentHash} from "../../operations/durableActions";
+import type {Firestore, Transaction} from "firebase-admin/firestore";
+import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
 import {
-  parseMessageIntent, prepareDeliveryAttempt,
-} from "./messageProtocol";
-import {mergeDeliveryReceipt, VerifiedDeliveryReceipt} from
-  "./deliveryReceipts";
-import {
-  assistanceMessageId, canClaimLiveAttempt, evaluateOutbox,
-  MessageRecord, newMessageRecord, OutboxFacts, parseMessageRecord,
-  PermitResult, LiveAttempt, LiveDispatchPermit,
+  MessageRecord, OutboxFacts, PermitResult, LiveAttempt,
+  LiveDispatchPermit,
 } from "./messageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
+import {FirestoreDeliveryOutbox} from
+  "../../delivery/firestoreDeliveryOutbox";
+import {eventAssistanceDeliveryAdapter} from "./eventAssistanceDelivery";
 
-export const EVENT_ASSISTANCE_MESSAGES = "eventAssistanceMessages";
+export const EVENT_ASSISTANCE_MESSAGES =
+  eventAssistanceDeliveryAdapter.collection;
 
 /**
  * Trusted source reader: read domain/permission documents through this same
@@ -36,223 +31,65 @@ export type PrepareDispatchResource<T> = (
  * bounded record owns reservation/dispatch contention; no provider runs in a
  * transaction. A completed workflow cannot prevent a delayed delivery receipt
  * from being reconciled here.
+ *
+ * The lifecycle lives in `FirestoreDeliveryOutbox` — the shared delivery
+ * core — behind `eventAssistanceDeliveryAdapter`, which keeps EA's generated
+ * contracts, identity, and revision semantics. Behavior is unchanged.
  */
 export class FirestoreMessageOutbox {
-  constructor(
-    private readonly db: Firestore,
-    private readonly readFacts: ReadOutboxFacts,
-    private readonly clock: () => number = Date.now
-  ) {}
+  private readonly core: FirestoreDeliveryOutbox<
+    MessageRecord["intent"]["context"],
+    LiveAttempt["binding"],
+    MessageRecord["intent"], MessageRecord["attempts"][number], MessageRecord>;
 
-  async enqueue(value: unknown): Promise<MessageRecord> {
-    const intent = structuredClone(parseMessageIntent(value));
-    const reference = this.reference(assistanceMessageId(intent));
-    return transact(this.db, async (transaction) => {
-      const snapshot = await transaction.get(reference);
-      if (snapshot.exists) {
-        const existing = parseMessageRecord(snapshot.data());
-        if (operationContentHash(existing.intent) !==
-            operationContentHash(intent)) {
-          throw new Error("Message intent identity already has other content");
-        }
-        return existing;
-      }
-      const now = this.now(intent.createdAt);
-      if (now >= intent.expiresAt) throw new Error("Message intent expired");
-      const record = newMessageRecord(intent, now);
-      transaction.create(reference, record);
-      return record;
-    });
+  constructor(
+    db: Firestore,
+    readFacts: ReadOutboxFacts,
+    clock: () => number = Date.now
+  ) {
+    this.core = new FirestoreDeliveryOutbox(db, eventAssistanceDeliveryAdapter,
+      readFacts, clock);
   }
 
-  async get(messageId: string): Promise<MessageRecord | null> {
-    const snapshot = await this.reference(messageId).get();
-    if (!snapshot.exists) return null;
-    const record = parseMessageRecord(snapshot.data());
-    if (record.messageId !== messageId) throw new Error("Message id mismatch");
-    return record;
+  enqueue(value: unknown): Promise<MessageRecord> {
+    return this.core.enqueue(value);
+  }
+
+  get(messageId: string): Promise<MessageRecord | null> {
+    return this.core.get(messageId);
   }
 
   async reserve(messageId: string): Promise<{
     record: MessageRecord; decision: DeliveryDecision;
   }> {
-    return transact(this.db, async (transaction) => {
-      const record = await this.read(transaction, messageId);
-      const facts = await this.readFacts(transaction, record.intent,
-        this.now(record.updatedAt));
-      // Re-sample after fact reads: a slow/retried transaction cannot extend
-      // the validity of an earlier permission snapshot.
-      const now = this.now(record.updatedAt);
-      let released = false;
-      const attempts = record.attempts.map((attempt) => {
-        if (attempt.state.kind !== "reserved" ||
-            attempt.authorization.validUntil > now) return attempt;
-        // Claim and release contend on this same document. A claim that won
-        // already changed reserved to unknown and can never enter this path.
-        released = true;
-        return {...attempt, state: {kind: "notDispatched" as const, at: now,
-          reason: "reservationExpired" as const}};
-      });
-      const current = released ? {...record, attempts} : record;
-      const decision = evaluateOutbox(current, facts, now);
-      if (decision.kind !== "dispatch") {
-        return {record: released ?
-          this.write(transaction, record, current, now) : record, decision};
-      }
-      const attempt = prepareDeliveryAttempt({...facts, intent: current.intent,
-        lifecycle: current.lifecycle, attempts: current.attempts, now});
-      if (!attempt) throw new Error("Message reservation decision drift");
-      return {record: this.write(transaction, record,
-        {...current, attempts: [...current.attempts, attempt]}, now), decision};
-    });
+    const result = await this.core.reserve(messageId);
+    return {record: result.record,
+      decision: result.decision as DeliveryDecision};
   }
 
-  async claimLiveDispatch<T = undefined>(
+  claimLiveDispatch<T = undefined>(
     messageId: string, attemptId: string,
     prepareResource?: PrepareDispatchResource<T>
   ): Promise<PermitResult<T>> {
-    return transact(this.db, async (transaction) => {
-      const record = await this.read(transaction, messageId);
-      const facts = await this.readFacts(transaction, record.intent,
-        this.now(record.updatedAt));
-      const now = this.now(record.updatedAt);
-      const result = canClaimLiveAttempt(record, attemptId, facts, now);
-      if (result.kind === "withheld") return {...result, record};
-      const resource = prepareResource ? await prepareResource(transaction,
-        record, result.attempt, now) : null;
-      if (resource?.kind === "withheld") {
-        return {kind: "withheld", record, reason: "resourceUnavailable"};
-      }
-      const committedAt = this.now(now);
-      const validUntil = Math.min(result.validUntil,
-        resource?.validUntil ?? result.validUntil);
-      if (!Number.isSafeInteger(validUntil) || committedAt >= validUntil) {
-        return {kind: "withheld", record, reason: "authorizationExpired"};
-      }
-      // Debit and payload evidence commit with the single-send claim.
-      resource?.commit();
-      const attempt = {...result.attempt, state: {
-        kind: "unknown" as const, at: committedAt, providerMessageId: null,
-        reason: "workerInterrupted" as const,
-        reconcileAfter: committedAt + 120_000,
-      }};
-      const next = this.write(transaction, record, {...record,
-        attempts: record.attempts.map((a) =>
-          a.attemptId === attemptId ? attempt : a)}, committedAt);
-      return {kind: "claimed", record: next,
-        resource: resource?.value as T, permit: {
-          messageId, intent: record.intent, attempt,
-          validUntil,
-        }};
-    });
+    return this.core.claimLiveDispatch<T>(messageId, attemptId,
+      prepareResource) as Promise<PermitResult<T>>;
   }
 
   /** Only for a worker that proves permit expiry prevented all provider I/O. */
-  async recordExpiredBeforeSend(permit: LiveDispatchPermit):
+  recordExpiredBeforeSend(permit: LiveDispatchPermit):
     Promise<MessageRecord> {
-    return transact(this.db, async (tx) => {
-      const record = await this.read(tx, permit.messageId);
-      const attempt = record.attempts.find((a) =>
-        a.attemptId === permit.attempt.attemptId);
-      const now = this.now(record.updatedAt);
-      if (!Number.isSafeInteger(permit.validUntil) ||
-          permit.validUntil <= permit.attempt.state.at ||
-          permit.validUntil > permit.attempt.authorization.validUntil ||
-          now < permit.validUntil ||
-          operationContentHash(record.intent) !==
-            operationContentHash(permit.intent) ||
-          !attempt || attempt.mode !== "live") {
-        throw new Error("Unsent evidence is outside the expired permit");
-      }
-      if (operationContentHash(attempt) !==
-          operationContentHash(permit.attempt) ||
-          attempt.state.kind !== "unknown" ||
-          attempt.state.reason !== "workerInterrupted") return record;
-      return this.write(tx, record, {...record,
-        attempts: record.attempts.map((a) => a.attemptId !== attempt.attemptId ?
-          a : {...a, state: {kind: "notDispatched", at: now,
-            reason: "permitExpired"}}),
-      }, now);
-    });
+    return this.core.recordExpiredBeforeSend(permit);
   }
 
   /** Authenticated/correlated normalized evidence; never a raw HTTP body. */
-  async recordReceipt(
-    messageId: string, receipt: VerifiedDeliveryReceipt
-  ) {
-    return transact(this.db, async (transaction) => {
-      const record = await this.read(transaction, messageId);
-      const now = this.now(record.updatedAt);
-      if (receipt.receivedAt > now) throw new Error("Future provider receipt");
-      const attempt = record.attempts.find((a) =>
-        a.attemptId === receipt.attemptId);
-      if (!attempt || attempt.mode !== "live") {
-        throw new Error("Receipt has no live message attempt");
-      }
-      const merged = mergeDeliveryReceipt(attempt, receipt);
-      const conflict = record.deliveryConflict ||
-        merged.disposition === "conflictingEvidence";
-      if (operationContentHash(merged.attempt) ===
-          operationContentHash(attempt) &&
-          conflict === record.deliveryConflict) {
-        return {record, disposition: merged.disposition};
-      }
-      return {record: this.write(transaction, record, {...record,
-        deliveryConflict: conflict, attempts: record.attempts.map((a) =>
-          a.attemptId === attempt.attemptId ? merged.attempt : a)}, now),
-      disposition: merged.disposition};
-    });
+  recordReceipt(messageId: string, receipt: VerifiedDeliveryReceipt) {
+    return this.core.recordReceipt(messageId, receipt);
   }
 
-  async close(
+  close(
     messageId: string, expectedRevision: number,
     lifecycle: "cancelled" | "superseded"
   ): Promise<MessageRecord> {
-    if (lifecycle !== "cancelled" && lifecycle !== "superseded") {
-      throw new Error("Invalid message closure");
-    }
-    return transact(this.db, async (transaction) => {
-      const record = await this.read(transaction, messageId);
-      if (record.lifecycle === lifecycle) return record;
-      if (record.lifecycle !== "active" ||
-          record.revision !== expectedRevision) {
-        throw new Error("Message revision or lifecycle changed");
-      }
-      return this.write(transaction, record, {...record, lifecycle},
-        this.now(record.updatedAt));
-    });
-  }
-
-  private reference(messageId: string): DocumentReference {
-    if (!/^outbox:[a-f0-9]{64}$/.test(messageId)) {
-      throw new Error("Invalid outbox id");
-    }
-    return this.db.collection(EVENT_ASSISTANCE_MESSAGES).doc(messageId);
-  }
-
-  private async read(transaction: Transaction, messageId: string) {
-    const snapshot = await transaction.get(this.reference(messageId));
-    if (!snapshot.exists) throw new Error("Message not found");
-    const record = parseMessageRecord(snapshot.data());
-    if (record.messageId !== messageId) throw new Error("Message id mismatch");
-    return record;
-  }
-
-  private write(
-    transaction: Transaction, previous: MessageRecord,
-    changed: MessageRecord, now: number
-  ): MessageRecord {
-    const next = parseMessageRecord({...changed,
-      revision: previous.revision + 1, updatedAt: now});
-    transaction.set(this.reference(previous.messageId), next);
-    return next;
-  }
-
-  private now(previous: number): number {
-    const now = this.clock();
-    if (!Number.isSafeInteger(now) || now < previous) {
-      throw new Error("Message worker clock is invalid or moved backwards");
-    }
-    return now;
+    return this.core.close(messageId, expectedRevision, lifecycle);
   }
 }

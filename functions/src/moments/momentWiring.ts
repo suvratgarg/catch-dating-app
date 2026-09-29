@@ -9,7 +9,6 @@ import {
 import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
-  metaTemplateFromDocument,
 } from "../organizers/organizerWhatsappProvider";
 import {
   activityNotificationId,
@@ -21,8 +20,6 @@ import {
   type NotificationPreference,
 } from "../shared/notifications";
 import type {
-  OrganizerMessageTemplateDocument,
-  OrganizerSenderConnectionDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {
@@ -32,13 +29,14 @@ import type {
 import type {ResolvedRecipient} from "./momentDocuments";
 import type {ConsentFacts, QuietHours} from "./momentPolicy";
 import type {MomentRunnerDeps} from "./momentRunner";
+import {deliverProgramReminder} from "../programs/programReminderDelivery";
 
 /**
  * Production seams for the moment runner. The runner decides who/whether;
- * this module owns how: Meta WhatsApp templates through the same provider +
- * token store the campaign dispatcher uses, FCM + activity items through
- * shared/notifications, and consent facts from household consent or user
- * notification preferences.
+ * this module owns how: Meta WhatsApp template sends produce durable
+ * intents dispatched by the shared delivery core, FCM + activity items
+ * go through shared/notifications, and consent facts come from household
+ * consent or user notification preferences.
  *
  * Quiet hours default to 21:00-08:00 local in the scope's timezone; a scope
  * doc may override with `messagingQuietHours {startMinute,endMinute}` and
@@ -97,8 +95,13 @@ export function buildMomentRunnerDeps(
     quietHoursFor: (scope) => loadQuietHours(firestore(), scope),
     dailyCapFor: (scope) => loadDailyCap(firestore(), scope),
     pushCopyFor: (moment) => pushCopy(firestore(), moment),
-    sendTemplateToPhone: (params) =>
-      sendTemplate(firestore(), tokenStore, provider(), params),
+    deliverProgramReminder: (params) => deliverProgramReminder({
+      db: firestore(),
+      provider: provider(),
+      credentials: tokenStore,
+      now: () => Date.now(),
+      ...params,
+    }),
     sendPushToUid: (params) => sendPush(firestore(), params),
     writeStaffAttention: (params) => staffAttention(firestore(), params),
     loadConsentFacts: (recipient) =>
@@ -209,46 +212,6 @@ export function quietEndWith(
 }
 
 // --- Delivery seams ----------------------------------------------------------
-
-async function sendTemplate(
-  db: Firestore,
-  tokenStore: OrganizerTokenStore,
-  provider: MetaWhatsappProvider,
-  params: {
-    e164: string;
-    connectionId: string;
-    templateId: string;
-    variables: Readonly<Record<string, string>>;
-    runId: string;
-    recipientKey: string;
-  },
-): Promise<void> {
-  const [connSnap, templateSnap] = await Promise.all([
-    db.collection("organizerSenderConnections").doc(params.connectionId)
-      .get(),
-    db.collection("organizerMessageTemplates").doc(params.templateId).get(),
-  ]);
-  const connection = connSnap.data() as
-    OrganizerSenderConnectionDocument | undefined;
-  const template = templateSnap.data() as
-    OrganizerMessageTemplateDocument | undefined;
-  if (!connection?.secretVersionResource || !connection.phoneNumberId ||
-      !template) {
-    throw new Error(
-      "Moment send blocked: connection/template incomplete " +
-      `(run ${params.runId}).`);
-  }
-  const accessToken = await tokenStore.access(
-    connection.secretVersionResource);
-  await provider.sendTemplate({
-    accessToken,
-    phoneNumberId: connection.phoneNumberId,
-    toE164: params.e164,
-    template: metaTemplateFromDocument(template),
-    variables: {...params.variables},
-    callbackData: `moment:${params.runId}:${params.recipientKey}`,
-  });
-}
 
 async function pushCopy(
   db: Firestore,

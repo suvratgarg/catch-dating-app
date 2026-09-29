@@ -164425,6 +164425,34 @@ export const organizerProgramDocumentSchema = {
         }
       }
     },
+    "rsvpDeadlineAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "RSVP deadline anchor for Moments scheduling; absent until the organizer sets one."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -167690,6 +167718,3103 @@ export const programTravelPartyDocumentSchema = {
   }
 };
 
+export const programDeliveryMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_delivery_messages.schema.json",
+  "title": "ProgramDeliveryMessageDocument",
+  "description": "Private durable program delivery outbox. The immutable intent and bounded attempt history survive moment-run completion and delayed provider callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programDeliveryMessages",
+  "x-firestore-path": "programDeliveryMessages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "trusted program delivery workers",
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "revision",
+    "intent",
+    "lifecycle",
+    "attempts",
+    "deliveryConflict",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "programId",
+        "recipient",
+        "workflow",
+        "createdAt",
+        "expiresAt",
+        "permittedRoutes",
+        "deliveryPolicy",
+        "kind",
+        "title",
+        "body",
+        "instructionRevision"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "programId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "programId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "recipientKey"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "guest",
+                "household",
+                "staff"
+              ]
+            },
+            "recipientKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Stable recipient identity inside the program (guest id, household id, or staff uid). Endpoint resolution lives in the facts reader, never in the intent."
+            }
+          }
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "momentId",
+            "runId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "programMoment"
+            },
+            "momentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "runId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Moment-run occurrence identity. Phase 3 refines this into an explicit occurrence key once anchor revisions exist."
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "organizerProgramWhatsapp",
+              "catchProgramActivity"
+            ]
+          }
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 86400
+            }
+          }
+        },
+        "kind": {
+          "type": "string",
+          "const": "programReminder"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "The program/moment fact revision this intent was issued under. Reservation authority expires with it."
+        },
+        "whatsapp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "connectionId",
+            "templateId",
+            "variables"
+          ],
+          "properties": {
+            "connectionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "variables": {
+              "type": "object",
+              "maxProperties": 20,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            }
+          },
+          "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "superseded",
+        "responded"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "attemptId",
+          "intentId",
+          "intentRevision",
+          "ordinal",
+          "createdAt",
+          "state",
+          "mode",
+          "context",
+          "binding",
+          "authorization"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
+          },
+          "attemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+          },
+          "intentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+          },
+          "intentRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reserved",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "reason",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "unknown",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "timeout",
+                      "connectionLost",
+                      "workerInterrupted"
+                    ]
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "delivered",
+                      "read"
+                    ]
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "classification",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "failed",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "classification": {
+                    "type": "string",
+                    "enum": [
+                      "technical",
+                      "policy",
+                      "suppressed",
+                      "invalidRecipient"
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "revoked",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reason"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "notDispatched",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "superseded",
+                      "responded",
+                      "expired",
+                      "permissionRevoked",
+                      "reservationExpired",
+                      "permitExpired",
+                      "programEnded",
+                      "rsvpChanged",
+                      "recipientWithdrawn"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "mode": {
+            "const": "live",
+            "type": "string"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "programId",
+              "organizerId"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "live"
+              },
+              "programId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            }
+          },
+          "binding": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "transport",
+                  "senderIdentity",
+                  "provider",
+                  "senderId",
+                  "bindingRevision",
+                  "recipientEndpointId",
+                  "fallbackOwner"
+                ],
+                "properties": {
+                  "routeId": {
+                    "const": "organizerProgramWhatsapp",
+                    "type": "string"
+                  },
+                  "transport": {
+                    "const": "whatsapp",
+                    "type": "string"
+                  },
+                  "senderIdentity": {
+                    "const": "organizerManaged",
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "meta",
+                      "gupshup",
+                      "twilio"
+                    ]
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "bindingRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "recipientEndpointId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "fallbackOwner": {
+                    "type": "string",
+                    "enum": [
+                      "catch",
+                      "provider"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "transport",
+                  "senderIdentity",
+                  "provider",
+                  "senderId",
+                  "bindingRevision",
+                  "recipientEndpointId",
+                  "fallbackOwner"
+                ],
+                "properties": {
+                  "routeId": {
+                    "const": "catchProgramActivity",
+                    "type": "string"
+                  },
+                  "transport": {
+                    "const": "catchApp",
+                    "type": "string"
+                  },
+                  "senderIdentity": {
+                    "const": "catchPlatform",
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "catchActivity",
+                      "fcm"
+                    ]
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "bindingRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "recipientEndpointId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "fallbackOwner": {
+                    "type": "string",
+                    "enum": [
+                      "catch"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "authorization": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "permissionRevision",
+              "checkedAt",
+              "validUntil",
+              "instructionRevision"
+            ],
+            "properties": {
+              "permissionRevision": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "checkedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "validUntil": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "instructionRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deliveryConflict": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programWhatsappDispatchDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_whatsapp_dispatches.schema.json",
+  "title": "ProgramWhatsappDispatchDocument",
+  "description": "Private claim-time binding between one program delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the program delivery outbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "context",
+    "senderId",
+    "bindingRevision",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "senderHash",
+    "recipientEndpointId",
+    "endpointHash",
+    "templateDocumentId",
+    "templateHash",
+    "payloadHash",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "programId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "organizerSenderConnections document id that owned the send."
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "senderHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the sender connection snapshot authorized at claim."
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of the E.164 destination; the raw number never appears here."
+    },
+    "templateDocumentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "templateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the rendered template + variables; the status callback must carry the matching correlation."
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programDeliveryMessageIntentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "intentId",
+    "revision",
+    "context",
+    "programId",
+    "recipient",
+    "workflow",
+    "createdAt",
+    "expiresAt",
+    "permittedRoutes",
+    "deliveryPolicy",
+    "kind",
+    "title",
+    "body",
+    "instructionRevision"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "programId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "recipientKey"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "guest",
+            "household",
+            "staff"
+          ]
+        },
+        "recipientKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Stable recipient identity inside the program (guest id, household id, or staff uid). Endpoint resolution lives in the facts reader, never in the intent."
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "momentId",
+        "runId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "programMoment"
+        },
+        "momentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "runId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Moment-run occurrence identity. Phase 3 refines this into an explicit occurrence key once anchor revisions exist."
+        }
+      }
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "permittedRoutes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "enum": [
+          "organizerProgramWhatsapp",
+          "catchProgramActivity"
+        ]
+      }
+    },
+    "deliveryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxAttempts",
+        "maxAttemptsPerRoute",
+        "minimumRetrySeconds"
+      ],
+      "properties": {
+        "maxAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "maxAttemptsPerRoute": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "minimumRetrySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        }
+      }
+    },
+    "kind": {
+      "type": "string",
+      "const": "programReminder"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000
+    },
+    "instructionRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The program/moment fact revision this intent was issued under. Reservation authority expires with it."
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionId",
+        "templateId",
+        "variables"
+      ],
+      "properties": {
+        "connectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "variables": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+    }
+  },
+  "title": "ProgramDeliveryMessageIntent"
+};
+
+export const programDeliveryAttemptSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "intentId",
+    "intentRevision",
+    "ordinal",
+    "createdAt",
+    "state",
+    "mode",
+    "context",
+    "binding",
+    "authorization"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reserved",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "reason",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unknown",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "timeout",
+                "connectionLost",
+                "workerInterrupted"
+              ]
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "accepted",
+                "delivered",
+                "read"
+              ]
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "classification",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failed",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "classification": {
+              "type": "string",
+              "enum": [
+                "technical",
+                "policy",
+                "suppressed",
+                "invalidRecipient"
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "revoked",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "notDispatched",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "superseded",
+                "responded",
+                "expired",
+                "permissionRevoked",
+                "reservationExpired",
+                "permitExpired",
+                "programEnded",
+                "rsvpChanged",
+                "recipientWithdrawn"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "mode": {
+      "const": "live",
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "programId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "binding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeId",
+            "transport",
+            "senderIdentity",
+            "provider",
+            "senderId",
+            "bindingRevision",
+            "recipientEndpointId",
+            "fallbackOwner"
+          ],
+          "properties": {
+            "routeId": {
+              "const": "organizerProgramWhatsapp",
+              "type": "string"
+            },
+            "transport": {
+              "const": "whatsapp",
+              "type": "string"
+            },
+            "senderIdentity": {
+              "const": "organizerManaged",
+              "type": "string"
+            },
+            "provider": {
+              "type": "string",
+              "enum": [
+                "meta",
+                "gupshup",
+                "twilio"
+              ]
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "bindingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "fallbackOwner": {
+              "type": "string",
+              "enum": [
+                "catch",
+                "provider"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeId",
+            "transport",
+            "senderIdentity",
+            "provider",
+            "senderId",
+            "bindingRevision",
+            "recipientEndpointId",
+            "fallbackOwner"
+          ],
+          "properties": {
+            "routeId": {
+              "const": "catchProgramActivity",
+              "type": "string"
+            },
+            "transport": {
+              "const": "catchApp",
+              "type": "string"
+            },
+            "senderIdentity": {
+              "const": "catchPlatform",
+              "type": "string"
+            },
+            "provider": {
+              "type": "string",
+              "enum": [
+                "catchActivity",
+                "fcm"
+              ]
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "bindingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "fallbackOwner": {
+              "type": "string",
+              "enum": [
+                "catch"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "permissionRevision",
+        "checkedAt",
+        "validUntil",
+        "instructionRevision"
+      ],
+      "properties": {
+        "permissionRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  },
+  "title": "ProgramDeliveryAttempt"
+};
+
+export const campaignDeliveryMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/campaign_delivery_messages.schema.json",
+  "title": "CampaignDeliveryMessageDocument",
+  "description": "Private durable campaign delivery outbox. The immutable intent and bounded attempt history survive dispatch interruption and delayed provider callbacks. The organizerCampaignRecipients row remains the CRM/report mirror; this record is the execution authority. Recipient endpoints are references; transport credentials stay in their own private stores.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "campaignDeliveryMessages",
+  "x-firestore-path": "campaignDeliveryMessages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "trusted campaign delivery workers",
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "revision",
+    "intent",
+    "lifecycle",
+    "attempts",
+    "deliveryConflict",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "campaignId",
+        "recipient",
+        "workflow",
+        "createdAt",
+        "expiresAt",
+        "permittedRoutes",
+        "deliveryPolicy",
+        "kind",
+        "instructionRevision",
+        "whatsapp"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "campaignId",
+            "recipientId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "campaignId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recipientId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "recipientKey"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "campaignRecipient"
+              ]
+            },
+            "recipientKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "organizerCampaignRecipients document id — the frozen per-recipient campaign row. Endpoint and consent facts resolve at claim time, never in the intent."
+            }
+          }
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "campaignId",
+            "recipientId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "campaignDispatch"
+            },
+            "campaignId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recipientId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "organizerWhatsappCampaign"
+            ]
+          }
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 86400
+            }
+          }
+        },
+        "kind": {
+          "type": "string",
+          "const": "campaignMessage"
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "The campaign dispatch epoch (dispatchedAt millis) this intent was issued under. Reservation authority expires when the campaign's dispatch epoch changes."
+        },
+        "whatsapp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "connectionId",
+            "templateId",
+            "variables"
+          ],
+          "properties": {
+            "connectionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "variables": {
+              "type": "object",
+              "maxProperties": 20,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            }
+          },
+          "description": "Approved WhatsApp template content frozen from the campaign/recipient snapshot; sender credentials never appear here."
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "superseded",
+        "responded"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "attemptId",
+          "intentId",
+          "intentRevision",
+          "ordinal",
+          "createdAt",
+          "state",
+          "mode",
+          "context",
+          "binding",
+          "authorization"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
+          },
+          "attemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+          },
+          "intentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+          },
+          "intentRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reserved",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "reason",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "unknown",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "timeout",
+                      "connectionLost",
+                      "workerInterrupted"
+                    ]
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "delivered",
+                      "read"
+                    ]
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "classification",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "failed",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "classification": {
+                    "type": "string",
+                    "enum": [
+                      "technical",
+                      "policy",
+                      "suppressed",
+                      "invalidRecipient"
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "revoked",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reason"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "notDispatched",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "superseded",
+                      "expired",
+                      "permissionRevoked",
+                      "reservationExpired",
+                      "permitExpired",
+                      "campaignEnded",
+                      "recipientWithdrawn"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "mode": {
+            "const": "live",
+            "type": "string"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "organizerId",
+              "campaignId",
+              "recipientId"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "live"
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "campaignId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "recipientId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              }
+            }
+          },
+          "binding": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "routeId",
+              "transport",
+              "senderIdentity",
+              "provider",
+              "senderId",
+              "bindingRevision",
+              "recipientEndpointId",
+              "fallbackOwner"
+            ],
+            "properties": {
+              "routeId": {
+                "const": "organizerWhatsappCampaign",
+                "type": "string"
+              },
+              "transport": {
+                "const": "whatsapp",
+                "type": "string"
+              },
+              "senderIdentity": {
+                "const": "organizerManaged",
+                "type": "string"
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "meta"
+                ]
+              },
+              "senderId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$",
+                "description": "organizerSenderConnections document id that owns the send."
+              },
+              "bindingRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "recipientEndpointId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "fallbackOwner": {
+                "type": "string",
+                "enum": [
+                  "catch"
+                ]
+              }
+            }
+          },
+          "authorization": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "permissionRevision",
+              "checkedAt",
+              "validUntil",
+              "instructionRevision"
+            ],
+            "properties": {
+              "permissionRevision": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "checkedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "validUntil": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "instructionRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deliveryConflict": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const campaignWhatsappDispatchDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/campaign_whatsapp_dispatches.schema.json",
+  "title": "CampaignWhatsappDispatchDocument",
+  "description": "Private claim-time binding between one campaign delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the campaign delivery outbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "campaignWhatsappDispatches",
+  "x-firestore-path": "campaignWhatsappDispatches/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "trusted campaign delivery workers",
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "context",
+    "senderId",
+    "bindingRevision",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "senderHash",
+    "recipientEndpointId",
+    "endpointHash",
+    "templateDocumentId",
+    "templateHash",
+    "payloadHash",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "campaignId",
+        "recipientId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "organizerSenderConnections document id that owned the send."
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "senderHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the sender connection snapshot authorized at claim."
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of the E.164 destination; the raw number never appears here."
+    },
+    "templateDocumentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "templateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the rendered template + variables; the status callback must carry the matching correlation."
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const campaignDeliveryMessageIntentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "intentId",
+    "revision",
+    "context",
+    "campaignId",
+    "recipient",
+    "workflow",
+    "createdAt",
+    "expiresAt",
+    "permittedRoutes",
+    "deliveryPolicy",
+    "kind",
+    "instructionRevision",
+    "whatsapp"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "campaignId",
+        "recipientId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "campaignId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "recipientKey"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "campaignRecipient"
+          ]
+        },
+        "recipientKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "organizerCampaignRecipients document id — the frozen per-recipient campaign row. Endpoint and consent facts resolve at claim time, never in the intent."
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "campaignId",
+        "recipientId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "campaignDispatch"
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "permittedRoutes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "organizerWhatsappCampaign"
+        ]
+      }
+    },
+    "deliveryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxAttempts",
+        "maxAttemptsPerRoute",
+        "minimumRetrySeconds"
+      ],
+      "properties": {
+        "maxAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "maxAttemptsPerRoute": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "minimumRetrySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        }
+      }
+    },
+    "kind": {
+      "type": "string",
+      "const": "campaignMessage"
+    },
+    "instructionRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The campaign dispatch epoch (dispatchedAt millis) this intent was issued under. Reservation authority expires when the campaign's dispatch epoch changes."
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionId",
+        "templateId",
+        "variables"
+      ],
+      "properties": {
+        "connectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "variables": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "description": "Approved WhatsApp template content frozen from the campaign/recipient snapshot; sender credentials never appear here."
+    }
+  },
+  "title": "CampaignDeliveryMessageIntent"
+};
+
+export const campaignDeliveryAttemptSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "intentId",
+    "intentRevision",
+    "ordinal",
+    "createdAt",
+    "state",
+    "mode",
+    "context",
+    "binding",
+    "authorization"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reserved",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "reason",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unknown",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "timeout",
+                "connectionLost",
+                "workerInterrupted"
+              ]
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "accepted",
+                "delivered",
+                "read"
+              ]
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "classification",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failed",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "classification": {
+              "type": "string",
+              "enum": [
+                "technical",
+                "policy",
+                "suppressed",
+                "invalidRecipient"
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "revoked",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "notDispatched",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "superseded",
+                "expired",
+                "permissionRevoked",
+                "reservationExpired",
+                "permitExpired",
+                "campaignEnded",
+                "recipientWithdrawn"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "mode": {
+      "const": "live",
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "campaignId",
+        "recipientId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "transport",
+        "senderIdentity",
+        "provider",
+        "senderId",
+        "bindingRevision",
+        "recipientEndpointId",
+        "fallbackOwner"
+      ],
+      "properties": {
+        "routeId": {
+          "const": "organizerWhatsappCampaign",
+          "type": "string"
+        },
+        "transport": {
+          "const": "whatsapp",
+          "type": "string"
+        },
+        "senderIdentity": {
+          "const": "organizerManaged",
+          "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "meta"
+          ]
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$",
+          "description": "organizerSenderConnections document id that owns the send."
+        },
+        "bindingRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "fallbackOwner": {
+          "type": "string",
+          "enum": [
+            "catch"
+          ]
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "permissionRevision",
+        "checkedAt",
+        "validUntil",
+        "instructionRevision"
+      ],
+      "properties": {
+        "permissionRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  },
+  "title": "CampaignDeliveryAttempt"
+};
+
 export const organizerMomentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_moments.schema.json",
@@ -167836,7 +170961,25 @@ export const organizerMomentDocumentSchema = {
           ],
           "minimum": -43200,
           "maximum": 43200,
-          "description": "Minutes relative to the anchor; negative is before."
+          "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+        },
+        "offsetDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -731,
+          "maximum": 731,
+          "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+        },
+        "offsetMonths": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -24,
+          "maximum": 24,
+          "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
         },
         "triggerKind": {
           "anyOf": [
@@ -168152,6 +171295,18 @@ export const organizerMomentRunDocumentSchema = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "nominalDueAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Scheduled occurrence time (anchor plus offsets), the identity axis behind runId; dueAtMillis is the mutable next-wake time and may differ for deferrals."
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Hard stop on firing this run; a deferred run past expiry skips instead of sending late."
+    },
     "occurrenceVersion": {
       "type": "integer",
       "enum": [
@@ -168290,6 +171445,13 @@ export const organizerMomentSendDocumentSchema = {
         "optedOut",
         "endpointSuppressed",
         "dailyCap",
+        "deliveryConflict",
+        "superseded",
+        "expired",
+        "programEnded",
+        "recipientWithdrawn",
+        "permissionRevoked",
+        "hostReview",
         null
       ],
       "description": "Suppression reason; null on sent."
@@ -168380,6 +171542,44 @@ export const organizerMomentSendDocumentSchema = {
       ],
       "maxLength": 240,
       "description": "staffAttention: rendered alert title."
+    }
+  }
+};
+
+export const organizerMomentSweepStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_sweep_state.schema.json",
+  "title": "OrganizerMomentSweepStateDocument",
+  "description": "Server-owned pagination state for the moment sweep. The armed-moments scan advances a durable cursor so discovery stays bounded at any armed-moment count.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentSweepState",
+  "x-firestore-path": "organizerMomentSweepState/{sweepId}",
+  "x-document-id-field": "sweepId",
+  "x-owner": "moment runner",
+  "required": [
+    "sweepId",
+    "afterMomentId",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "sweepId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "afterMomentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "Last armed-moment doc id scanned; null restarts the scan."
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   }
 };
@@ -168507,7 +171707,25 @@ export const upsertOrganizerMomentCallablePayloadSchema = {
           ],
           "minimum": -43200,
           "maximum": 43200,
-          "description": "Minutes relative to the anchor; negative is before."
+          "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+        },
+        "offsetDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -731,
+          "maximum": 731,
+          "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+        },
+        "offsetMonths": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -24,
+          "maximum": 24,
+          "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
         },
         "triggerKind": {
           "anyOf": [
@@ -169026,7 +172244,25 @@ export const organizerMomentCallableResponseSchema = {
               ],
               "minimum": -43200,
               "maximum": 43200,
-              "description": "Minutes relative to the anchor; negative is before."
+              "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+            },
+            "offsetDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -731,
+              "maximum": 731,
+              "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+            },
+            "offsetMonths": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -24,
+              "maximum": 24,
+              "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
             },
             "triggerKind": {
               "anyOf": [
@@ -169433,7 +172669,25 @@ export const listOrganizerMomentsCallableResponseSchema = {
                 ],
                 "minimum": -43200,
                 "maximum": 43200,
-                "description": "Minutes relative to the anchor; negative is before."
+                "description": "Minutes relative to the anchor; negative is before. Applied as an absolute-time shift after any calendar offset."
+              },
+              "offsetDays": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -731,
+                "maximum": 731,
+                "description": "Calendar days relative to the anchor in the scope's timezone, preserving the anchor's local wall-clock time; negative is before. Applied after offsetMonths, before offsetMinutes."
+              },
+              "offsetMonths": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -24,
+                "maximum": 24,
+                "description": "Calendar months relative to the anchor in the scope's timezone, preserving local wall-clock time; the day-of-month clamps to the target month's length. Negative is before. Applied first."
               },
               "triggerKind": {
                 "anyOf": [
@@ -170773,6 +174027,15 @@ export const createOrganizerProgramCallablePayloadSchema = {
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Optional RSVP deadline anchor for Moments scheduling."
+    },
     "capabilities": {
       "type": "array",
       "maxItems": 8,
@@ -170926,6 +174189,15 @@ export const updateOrganizerProgramCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "RSVP deadline anchor for Moments; null clears it."
     },
     "status": {
       "type": "string",

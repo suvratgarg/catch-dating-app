@@ -93,9 +93,17 @@ function makeDeps(db: FakeFirestore, now: number) {
     quietHoursFor: () => null,
     dailyCapFor: () => 0,
     pushCopyFor: async () => ({title: "Soon", body: "Soon"}),
-    sendTemplateToPhone: async (p) => {
-      sent.push({e164: p.e164, runId: p.runId,
-        recipientKey: p.recipientKey});
+    // Program-scope template sends route through the durable delivery
+    // core; the stub records the same observable send the provider seam
+    // used to, so routing assertions stay valid.
+    deliverProgramReminder: async (p) => {
+      sent.push({
+        e164: p.recipient.endpoint.kind === "phone" ?
+          p.recipient.endpoint.e164 : "",
+        runId: p.run.runId,
+        recipientKey: p.recipient.recipientKey,
+      });
+      return {kind: "sent"};
     },
     sendPushToUid: async () => {},
     writeStaffAttention: async () => {},
@@ -708,4 +716,187 @@ test("staffAttention sends journal the attention-projection fields",
     assert.equal(rows[0].duty, "door");
     assert.equal(rows[0].severity, "urgent");
     assert.equal(rows[0].title, "Door staffing gap");
+  });
+
+// --- Long-horizon scheduling ------------------------------------------------
+
+test("sweep pages armed moments on a durable cursor", async () => {
+  const db = new FakeFirestore({});
+  seedProgram(db);
+  for (let index = 0; index < 505; index += 1) {
+    writeMoment(db, {...sangeetReminder,
+      momentId: `m_${String(index).padStart(4, "0")}`,
+      initiation: {kind: "scheduled", atMillis: 999_000_000}});
+  }
+  const {deps} = makeDeps(db, 0);
+  const dbView = deps.firestore() as never as FakeFirestore;
+  const first = await runMomentSweep(deps);
+  assert.equal(first.runsCreated, 500);
+  const cursor = (await dbView
+    .doc("organizerMomentSweepState/armed").get())
+    .data() as Record<string, unknown>;
+  assert.equal(cursor.afterMomentId, "m_0499");
+  // The next sweep resumes after the cursor and wraps on a short page.
+  const second = await runMomentSweep(deps);
+  assert.equal(second.runsCreated, 5);
+  const wrapped = (await dbView
+    .doc("organizerMomentSweepState/armed").get())
+    .data() as Record<string, unknown>;
+  assert.equal(wrapped.afterMomentId, null);
+  // From the front again — deterministic run ids make re-planning free.
+  const third = await runMomentSweep(deps);
+  assert.equal(third.runsCreated, 0);
+});
+
+test("rsvpDeadline anchor plans off the stored program deadline", async () => {
+  const db = new FakeFirestore({});
+  seedProgram(db);
+  db.updateDoc("organizerPrograms/prog", {rsvpDeadlineAt: ts(3_000_000)});
+  writeMoment(db, {...sangeetReminder, momentId: "m_rsvp",
+    initiation: {kind: "anchored", anchorKind: "rsvpDeadline",
+      anchorId: null, offsetMinutes: -15}});
+  const {deps} = makeDeps(db, 0);
+  const summary = await runMomentSweep(deps);
+  assert.equal(summary.runsCreated, 1);
+  const run = (await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_rsvp_3_2100000`).get())
+    .data() as Record<string, unknown>;
+  assert.equal(run.dueAtMillis, 2_100_000);
+  assert.equal(run.nominalDueAtMillis, 2_100_000);
+  // A before-deadline nudge is pointless once the deadline has passed.
+  assert.equal(run.expiresAtMillis, 3_000_000);
+});
+
+test("a deferral landing past expiry terminates the run honestly", async () => {
+  const db = new FakeFirestore({});
+  seedProgram(db);
+  db.updateDoc("programHouseholds/hh1",
+    {messagingConsent: {granted: true}});
+  writeMoment(db, sangeetReminder);
+  // The run is due at 1_100_000; quiet hours end at 2_500_000, past the
+  // anchor-bound expiry at 2_000_000 — park nothing, expire it.
+  const depsBase = makeDeps(db, 1_100_000);
+  const deps: MomentRunnerDeps = {...depsBase.deps,
+    quietEndMillis: () => 2_500_000};
+  const summary = await runMomentSweep(deps);
+  assert.equal(summary.runsDeferred, 0);
+  assert.equal(summary.runsSkipped, 1);
+  const run = await (deps.firestore() as never as FakeFirestore)
+    .doc(`${MOMENT_RUNS_COLLECTION}/m_sangeet_7_1100000`).get();
+  const data = run.data() as Record<string, unknown>;
+  assert.equal(data.status, "skipped");
+  assert.equal(data.reason, "expired");
+  assert.equal(depsBase.sent.length, 0);
+});
+
+test("a quiet-hours deferral fires after wake, past planning grace",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    db.updateDoc("programHouseholds/hh1",
+      {messagingConsent: {granted: true}});
+    writeMoment(db, sangeetReminder);
+    const depsBase = makeDeps(db, 1_100_000);
+    let quiet = true;
+    const deps: MomentRunnerDeps = {...depsBase.deps,
+      quietEndMillis: () => (quiet ? 1_340_000 : null)};
+    await runMomentSweep(deps);
+    assert.equal(depsBase.sent.length, 0);
+    // At the deferred wake the nominal due is ~4 minutes past grace; the
+    // run must keep its identity and fire — the reproduced defect swept
+    // it into "dueInPast" instead.
+    quiet = false;
+    const later = await runMomentSweep({...deps, nowMillis: () => 1_340_000});
+    assert.equal(later.runsFired, 1);
+    assert.equal(depsBase.sent.length, 1);
+    const run = await (deps.firestore() as never as FakeFirestore)
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_sangeet_7_1100000`).get();
+    assert.equal(
+      (run.data() as Record<string, unknown>).status, "dispatched");
+  });
+
+test("a guest joining mid-deferral is caught at fire time", async () => {
+  const db = new FakeFirestore({});
+  seedProgram(db);
+  db.updateDoc("programHouseholds/hh1",
+    {messagingConsent: {granted: true}});
+  writeMoment(db, {...sangeetReminder, audience: {
+    kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
+    householdDedupe: false, travelTimeLead: false,
+  }});
+  const depsBase = makeDeps(db, 1_100_000);
+  let quiet = true;
+  const deps: MomentRunnerDeps = {...depsBase.deps,
+    quietEndMillis: () => (quiet ? 1_340_000 : null)};
+  await runMomentSweep(deps);
+  // Meera accepts while the run is parked — she gets this reminder when
+  // it wakes; the audience is resolved at fire time, not plan time.
+  db.setDoc("programGuests/g3", {
+    programId: "prog", organizerId: "org-1", displayName: "Meera",
+    householdId: null, phoneE164: "+910003",
+    invitationStatus: "invited", rsvpStatus: "attending",
+    source: "import", revision: 1,
+  });
+  db.setDoc("programFunctionGuests/fg3", {
+    programId: "prog", organizerId: "org-1", functionId: "sangeet",
+    guestId: "g3", invited: true, rsvpStatus: "attending",
+    attendanceStatus: "expected", partySize: 1, revision: 1,
+  });
+  quiet = false;
+  await runMomentSweep({...deps, nowMillis: () => 1_340_000});
+  assert.deepEqual(depsBase.sent.map((s) => s.e164).sort(),
+    ["+910001", "+910002", "+910003"]);
+  // A guest arriving after the run closed is never replayed a completed
+  // occurrence — there is no historical backlog for them.
+  db.setDoc("programGuests/g4", {
+    programId: "prog", organizerId: "org-1", displayName: "Late",
+    householdId: null, phoneE164: "+910004",
+    invitationStatus: "invited", rsvpStatus: "attending",
+    source: "import", revision: 1,
+  });
+  db.setDoc("programFunctionGuests/fg4", {
+    programId: "prog", organizerId: "org-1", functionId: "sangeet",
+    guestId: "g4", invited: true, rsvpStatus: "attending",
+    attendanceStatus: "expected", partySize: 1, revision: 1,
+  });
+  await runMomentSweep({...deps, nowMillis: () => 1_500_000});
+  assert.equal(depsBase.sent.length, 3);
+});
+
+test("rsvpPendingOnly households drop out when the last member RSVPs",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    // hh1 is consent-declined and fully answered; hhPending still owes a
+    // reply — only the second qualifies while pendingOnly is set.
+    db.setDoc("programGuests/gp", {
+      programId: "prog", organizerId: "org-1", displayName: "P",
+      householdId: "hhPending", phoneE164: "+9100P",
+      invitationStatus: "invited", rsvpStatus: "pending",
+      source: "import", revision: 1,
+    });
+    db.setDoc("programHouseholds/hhPending", {
+      programId: "prog", organizerId: "org-1", label: "Pending",
+      primaryPhoneE164: "+9100P", memberGuestIds: ["gp"], revision: 1,
+    });
+    writeMoment(db, {...sangeetReminder, momentId: "m_chase",
+      audience: {kind: "households", rsvpPendingOnly: true}});
+    const depsBase = makeDeps(db, 1_100_000);
+    let quiet = true;
+    const deps: MomentRunnerDeps = {...depsBase.deps,
+      quietEndMillis: () => (quiet ? 1_340_000 : null)};
+    await runMomentSweep(deps);
+    // The last pending member answers during the deferral; the chase
+    // reminder has nothing left to do when it wakes.
+    db.updateDoc("programGuests/gp", {rsvpStatus: "attending"});
+    quiet = false;
+    const later = await runMomentSweep({...deps,
+      nowMillis: () => 1_340_000});
+    assert.equal(later.runsFired, 1);
+    assert.equal(depsBase.sent.length, 0);
+    const run = await (deps.firestore() as never as FakeFirestore)
+      .doc(`${MOMENT_RUNS_COLLECTION}/m_chase_7_1100000`).get();
+    const data = run.data() as Record<string, unknown>;
+    assert.equal(data.status, "dispatched");
+    assert.equal(data.recipients, 0);
   });

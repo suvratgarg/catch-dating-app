@@ -2066,6 +2066,52 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
   },
   {
+    name: "ProgramDeliveryMessageDocument",
+    source: "firestore/program_delivery_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programDeliveryMessageDocument.ts",
+  },
+  {
+    name: "ProgramWhatsappDispatchDocument",
+    source: "firestore/program_whatsapp_dispatches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "ProgramDeliveryMessageIntent",
+    source: "operations/program_delivery_message_intent.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programDeliveryMessageIntent.ts",
+  },
+  {
+    name: "ProgramDeliveryAttempt",
+    source: "operations/program_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/programDeliveryAttempt.ts",
+  },
+  {
+    name: "CampaignDeliveryMessageDocument",
+    source: "firestore/campaign_delivery_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignDeliveryMessageDocument.ts",
+  },
+  {
+    name: "CampaignWhatsappDispatchDocument",
+    source: "firestore/campaign_whatsapp_dispatches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "CampaignDeliveryMessageIntent",
+    source: "operations/campaign_delivery_message_intent.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/campaignDeliveryMessageIntent.ts",
+  },
+  {
+    name: "CampaignDeliveryAttempt",
+    source: "operations/campaign_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/campaignDeliveryAttempt.ts",
+  },
+  {
     name: "OrganizerMomentDocument",
     source: "firestore/organizer_moments.schema.json",
     typeOutput: "functions/src/shared/generated/organizerMomentDocument.ts",
@@ -2079,6 +2125,12 @@ const schemaSpecs = [
     name: "OrganizerMomentSendDocument",
     source: "firestore/organizer_moment_sends.schema.json",
     typeOutput: "functions/src/shared/generated/organizerMomentSendDocument.ts",
+  },
+  {
+    name: "OrganizerMomentSweepStateDocument",
+    source: "firestore/organizer_moment_sweep_state.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMomentSweepStateDocument.ts",
   },
   {
     name: "UpsertOrganizerMomentCallablePayload",

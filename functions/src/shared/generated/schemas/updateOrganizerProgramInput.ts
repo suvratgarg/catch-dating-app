@@ -44,6 +44,15 @@ export const updateOrganizerProgramCallablePayloadSchema: Record<string, unknown
       "minimum": 0,
       "maximum": 9007199254740991
     },
+    "rsvpDeadlineAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "RSVP deadline anchor for Moments; null clears it."
+    },
     "status": {
       "type": "string",
       "enum": [

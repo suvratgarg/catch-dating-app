@@ -1476,6 +1476,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerMomentSweepState/{sweepId} {
+      allow read, write: if false;
+    }
+
     match /organizerBroadcastSummaries/{broadcastId} {
       allow read, write: if false;
     }
@@ -1485,6 +1489,14 @@ service cloud.firestore {
     }
 
     match /organizerCampaignWebhookReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /campaignDeliveryMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /campaignWhatsappDispatches/{attemptId} {
       allow read, write: if false;
     }
 
@@ -1771,6 +1783,14 @@ service cloud.firestore {
     }
 
     match /programTravelParties/{partyId} {
+      allow read, write: if false;
+    }
+
+    match /programDeliveryMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappDispatches/{attemptId} {
       allow read, write: if false;
     }
 

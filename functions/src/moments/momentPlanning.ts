@@ -43,9 +43,17 @@ export interface ReplanResult {
 export type FireDisposition =
   "dispatch" | "skip:momentNotArmed" | "skip:messagingDisabled" |
     "skip:scopeCancelled" | "skip:functionCancelled" | "skip:staleAnchor" |
-    "skip:anchorPassed";
+    "skip:anchorPassed" | "skip:expired";
 
 const DEFAULT_GRACE_MILLIS = 5 * 60_000;
+
+/** Product default zone for calendar offsets when a scope doc carries no
+ *  timezone; mirrors the quiet-hours default in momentWiring. */
+export const DEFAULT_SCOPE_TIMEZONE = "Asia/Kolkata";
+
+/** A post-anchor or fixed-date send may still be useful up to a day late;
+ *  beyond that a missed run expires instead of firing stale copy. */
+export const LATE_FIRE_WINDOW_MILLIS = 24 * 60 * 60_000;
 
 /** Scheduled runs do not depend on a mutable anchor; revision is fixed. */
 const SCHEDULED_ANCHOR_REVISION = 0;
@@ -137,6 +145,107 @@ export function resolveAnchor(
   }
 }
 
+interface CivilParts {
+  year: number; month: number; day: number;
+  hour: number; minute: number; second: number; ms: number;
+}
+
+function civilPartsAt(epochMs: number, timeZone: string): CivilParts {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone, hourCycle: "h23", year: "numeric", month: "2-digit",
+    day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
+  }).formatToParts(new Date(epochMs));
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+  return {
+    year: get("year"), month: get("month"), day: get("day"),
+    hour: get("hour") % 24, minute: get("minute"), second: get("second"),
+    ms: epochMs - Math.floor(epochMs / 1000) * 1000,
+  };
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+/**
+ * Converts a civil ("wall-clock") instant in `timeZone` back to epoch ms.
+ * The zone offset depends on the answer, so iterate: offset(guess) =
+ * civil-as-UTC minus guess converges within three passes because the
+ * offset is piecewise-constant around the result. DST gaps resolve to the
+ * edge the formatter reports; folds resolve deterministically.
+ */
+function localToEpoch(civilUtc: number, timeZone: string): number {
+  let instant = civilUtc;
+  for (let i = 0; i < 3; i += 1) {
+    const p = civilPartsAt(instant, timeZone);
+    const offset = Date.UTC(p.year, p.month - 1, p.day,
+      p.hour, p.minute, p.second, p.ms) - instant;
+    instant = civilUtc - offset;
+  }
+  return instant;
+}
+
+/**
+ * Wall-clock shift in the scope's timezone: `months` first, then `days`,
+ * preserving the anchor's local time-of-day. The day-of-month clamps to
+ * the target month's length (Jan 31 − 1 month → Dec 31, +1 month → Feb
+ * 28/29); days then shift the resulting civil date. Returns the anchor
+ * unchanged when both shifts are zero.
+ */
+export function shiftLocalCalendar(
+  atMillis: number,
+  months: number,
+  days: number,
+  timeZone: string,
+): number {
+  if (!Number.isSafeInteger(months) || !Number.isSafeInteger(days)) {
+    throw new RangeError("Calendar offsets must be whole units.");
+  }
+  if (months === 0 && days === 0) return atMillis;
+  const p = civilPartsAt(atMillis, timeZone);
+  const monthTotal = p.year * 12 + (p.month - 1) + months;
+  const year = Math.floor(monthTotal / 12);
+  const month = (monthTotal % 12) + 1;
+  const day = Math.min(p.day, daysInMonth(year, month));
+  return localToEpoch(
+    Date.UTC(year, month - 1, day + days,
+      p.hour, p.minute, p.second, p.ms),
+    timeZone);
+}
+
+/**
+ * The anchor-plus-offsets instant for an anchored initiation: calendar
+ * months/days shift the local wall clock in the scope zone; minutes then
+ * apply as an absolute-time shift (DST-accurate).
+ */
+export function effectiveDueAtMillis(
+  initiation: Extract<MomentInitiation, {kind: "anchored"}>,
+  anchorAtMillis: number,
+  timeZone: string,
+): number {
+  const shifted = shiftLocalCalendar(anchorAtMillis,
+    initiation.offsetMonths ?? 0, initiation.offsetDays ?? 0, timeZone);
+  return shifted + initiation.offsetMinutes * 60_000;
+}
+
+/**
+ * The instant past which a run may no longer fire. A before-the-anchor
+ * reminder is meaningless once the anchored fact exists — it dies at the
+ * anchor (matching the anchorPassed disposition); post-anchor and
+ * fixed-date sends get a bounded late window.
+ */
+function runExpiryAtMillis(
+  initiation: MomentInitiation,
+  anchor: Extract<ResolvedAnchor, {kind: "resolved"}>,
+  nominalDue: number,
+): number {
+  if (initiation.kind === "anchored" && nominalDue <= anchor.atMillis) {
+    return anchor.atMillis;
+  }
+  return nominalDue + LATE_FIRE_WINDOW_MILLIS;
+}
+
 export function planRun(
   moment: MomentDefinition,
   facts: AnchorFacts,
@@ -171,8 +280,10 @@ export function planRun(
         "manualInitiation" : anchor.reason,
     };
   }
-  const offsetMillis = initiation.kind === "anchored" ?
-    initiation.offsetMinutes * 60_000 : 0;
+  const timeZone = facts.scope.timeZone ?? DEFAULT_SCOPE_TIMEZONE;
+  const nominalDue = initiation.kind === "anchored" ?
+    effectiveDueAtMillis(initiation, anchor.atMillis, timeZone) :
+    anchor.atMillis;
   const wantsLead = moment.audience.kind === "functionGuests" &&
     moment.audience.travelTimeLead === true;
   const travelLeadMinutes = wantsLead && options?.travel ?
@@ -181,7 +292,6 @@ export function planRun(
     throw new RangeError("Travel lead must be non-negative whole minutes.");
   }
   const travelLeadMillis = travelLeadMinutes * 60_000;
-  const nominalDue = anchor.atMillis + offsetMillis;
   requireMillis(nominalDue);
   const dueAtMillis = nominalDue - travelLeadMillis;
   requireMillis(dueAtMillis);
@@ -197,6 +307,8 @@ export function planRun(
       runId: `${moment.momentId}_${anchor.anchorRevision}_${nominalDue}`,
       momentId: moment.momentId,
       dueAtMillis,
+      nominalDueAtMillis: nominalDue,
+      expiresAtMillis: runExpiryAtMillis(initiation, anchor, nominalDue),
       occurrenceVersion: 2,
       ...(wantsLead && options?.travel ?
         {plannedWakeAtMillis: dueAtMillis} : {}),
@@ -222,10 +334,27 @@ export function replan(
     travelLeadMinutes: options?.travelLeadMinutes,
   });
   if (result.kind !== "planned") {
+    // Planning grace is a create-time gate only. A run that already
+    // materialized stays live past its nominal due — expiry and
+    // anchor-passed checks decide whether it still fires; superseding it
+    // here would silently erase a quiet-hours-deferred occurrence.
+    let retained: string | null = null;
+    if (result.reason === "dueInPast") {
+      const identity = planRun(moment, facts, nowMillis, {
+        travel: options?.travel,
+        travelLeadMinutes: options?.travelLeadMinutes,
+        graceMillis: Number.MAX_SAFE_INTEGER,
+      });
+      if (identity.kind === "planned" &&
+          planned.some((run) => run.runId === identity.run.runId)) {
+        retained = identity.run.runId;
+      }
+    }
     return {
-      supersede: planned.map((run) => run.runId),
+      supersede: planned.map((run) => run.runId)
+        .filter((runId) => runId !== retained),
       create: null,
-      keep: [],
+      keep: retained === null ? [] : [retained],
       reschedule: [],
       unplannableReason: result.reason,
     };
@@ -302,7 +431,8 @@ export function nominalDueAtMillis(
   if (moment.initiation.kind === "anchored") {
     const anchor = resolveAnchor(moment.initiation, facts);
     if (anchor.kind === "resolved") {
-      return anchor.atMillis + moment.initiation.offsetMinutes * 60_000;
+      return effectiveDueAtMillis(moment.initiation, anchor.atMillis,
+        facts.scope.timeZone ?? DEFAULT_SCOPE_TIMEZONE);
     }
   }
   return run.dueAtMillis;
@@ -358,6 +488,12 @@ export function resolveFireDisposition(
       return "skip:functionCancelled";
     }
   }
+  // A materialized run past its expiry is dead regardless of the current
+  // anchor state — the remaining checks only re-derive the same truth.
+  if (run.expiresAtMillis !== undefined && nowMillis !== undefined &&
+      nowMillis > run.expiresAtMillis) {
+    return "skip:expired";
+  }
   if (initiation.kind !== "anchored") {
     return "dispatch";
   }
@@ -367,11 +503,16 @@ export function resolveFireDisposition(
   }
   // A "before the anchor" send is pointless once the anchor has passed —
   // a T-15m reminder delivered after the event started is worse than
-  // none. Post-anchor sends (positive offsets) stay valid when late.
-  if (nowMillis !== undefined && initiation.offsetMinutes <= 0) {
+  // none. Post-anchor sends (net positive offset, including calendar
+  // parts) stay valid when late.
+  if (nowMillis !== undefined) {
     const anchor = resolveAnchor(initiation, facts);
-    if (anchor.kind === "resolved" && anchor.atMillis <= nowMillis) {
-      return "skip:anchorPassed";
+    if (anchor.kind === "resolved") {
+      const nominal = effectiveDueAtMillis(initiation, anchor.atMillis,
+        facts.scope.timeZone ?? DEFAULT_SCOPE_TIMEZONE);
+      if (nominal <= anchor.atMillis && anchor.atMillis <= nowMillis) {
+        return "skip:anchorPassed";
+      }
     }
   }
   return "dispatch";
