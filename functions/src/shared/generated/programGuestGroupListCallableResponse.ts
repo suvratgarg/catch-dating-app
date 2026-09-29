@@ -16,6 +16,7 @@ export interface ProgramGuestGroupListCallableResponse {
     dimension: string;
     sortOrder: number;
     memberCount: number;
+    hotelId: string | null;
     revision: number;
   }[];
 }

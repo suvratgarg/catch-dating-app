@@ -25,7 +25,7 @@ const programMoment: MomentDefinition = {
   sense: "audience",
   audience: {
     kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   },
   action: {
     kind: "sendTemplate", connectionId: "conn1", templateId: "tpl",

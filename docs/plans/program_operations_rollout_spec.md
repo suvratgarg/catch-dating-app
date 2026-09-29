@@ -105,7 +105,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `guestRelations` → Guests · RSVP inbox · Imports | **missing UI** — all callables deployed |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
-| `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + counts projection (#458); screen still missing |
+| `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + `ProgramStakeholderScreen` counts surface at `/host/work/:programId/counts` (#458) |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
 
@@ -130,6 +130,20 @@ never CRM, saved audiences, sender connections, or payouts.
 | Campaign `recipientSource: programSelection` | **built** — upsert validates/normalizes it (programId required, savedAudienceId null) and the dispatcher materializes program recipients via `programRsvp/programSelection.ts` |
 | `organizerFormAutomations` → `triggered` moments migration | **missing** — decision 9 approved; form automations still own pipeline |
 | WhatsApp program templates | **runbook, not code** — `program_function_starting`, `program_get_ready`, `program_transport_ready`, `program_rsvp_deadline_reminder` each need an approved Meta template per sender connection |
+
+For #456 legacy reminder reconciliation, the server-owned
+`organizerMomentRuns` document records `status: failed` with
+`reason: legacyOccurrenceUnresolved` when an old wake-based run ID might
+share recipients with a nominal-time run ID. The sweep also emits a structured
+warning with the moment ID and conflicting run IDs. There is no Host UI reader
+or automatic resume for this hold. Before activating the new runner, the
+operator should inspect all runs for each affected moment and anchor revision,
+then compare `organizerMomentSends/{runId}_{recipientKey}` receipts across
+those IDs. Keep every receipt and the failed status intact. If the original
+occurrence or recipient delivery cannot be proven, leave it held; resolving
+or replaying remaining recipients needs a separately reviewed migration or
+targeted-send procedure. Do not reset a failed run to `planned` or delete
+receipts, since either can resend an already contacted guest.
 
 ### 3.5 Organizer-facing program management
 
@@ -201,7 +215,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R5 | Stays/room blocks + group-informed allocation | **blocked** — decision 5.5; no A7 code exists to pull | schema + allocation |
 | R6 | Travel capture on household RSVP | **blocked** — decision 5.2 (write-surface widening) | RSVP-side capture |
 | R7 | Distance-aware moment lead times | **in review #456** | merge; optional Routes provider swap |
-| R8 | `stakeholderViewer` counts API + read surface | **blocked** — decision 5.4 (field-safety contract) | API + surface |
+| R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
 | R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |

@@ -26863,6 +26863,12 @@ abstract class AppLocalizations {
   /// **'Title template'**
   String get hostMomentTitleTemplate;
 
+  /// Toggle for distance-aware sends: each guest's message moves earlier by their hotel-to-venue travel estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift send time by hotel distance'**
+  String get hostMomentTravelTimeLead;
+
   /// Moment editor save action label.
   ///
   /// In en, this message translates to:
@@ -33723,6 +33729,24 @@ abstract class AppLocalizations {
   /// **'Open trip ledger'**
   String get programsWorkLedgerOpen;
 
+  /// Program operations copy: programsWorkCountsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program counts'**
+  String get programsWorkCountsTitle;
+
+  /// Program operations copy: programsWorkCountsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Headcounts, responses and occupancy at a glance.'**
+  String get programsWorkCountsSubtitle;
+
+  /// Program operations copy: programsWorkCountsOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open counts overview'**
+  String get programsWorkCountsOpen;
+
   /// Program operations copy: programsWorkCommsTitle.
   ///
   /// In en, this message translates to:
@@ -34688,6 +34712,128 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest names reflect current records; no dispatch snapshot was saved.'**
   String get programsTripCurrentNames;
+
+  /// Program operations copy: programsStakeholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program counts'**
+  String get programsStakeholderTitle;
+
+  /// Program operations copy: programsStakeholderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Headcounts and occupancy — no guest details'**
+  String get programsStakeholderSubtitle;
+
+  /// Program operations copy: programsStakeholderProgramTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get programsStakeholderProgramTitle;
+
+  /// Program operations copy: programsStakeholderProgramSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone attached to this program.'**
+  String get programsStakeholderProgramSubtitle;
+
+  /// Program operations copy: programsStakeholderGuests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests'**
+  String programsStakeholderGuests({required int count});
+
+  /// Program operations copy: programsStakeholderHouseholds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} households'**
+  String programsStakeholderHouseholds({required int count});
+
+  /// Program operations copy: programsStakeholderFunctionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Functions'**
+  String get programsStakeholderFunctionsTitle;
+
+  /// Program operations copy: programsStakeholderFunctionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses and door counts per function.'**
+  String get programsStakeholderFunctionsSubtitle;
+
+  /// Program operations copy: programsStakeholderFunctionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions on this program yet.'**
+  String get programsStakeholderFunctionsEmpty;
+
+  /// Program operations copy: programsStakeholderFunctionRsvp.
+  ///
+  /// In en, this message translates to:
+  /// **'{attending} attending · {declined} declined · {maybe} maybe · {pending} pending of {invited} invited'**
+  String programsStakeholderFunctionRsvp({
+    required int attending,
+    required int declined,
+    required int maybe,
+    required int pending,
+    required int invited,
+  });
+
+  /// Program operations copy: programsStakeholderFunctionDoor.
+  ///
+  /// In en, this message translates to:
+  /// **'{expected} expected · {checkedIn} checked in · {noShows} no-shows'**
+  String programsStakeholderFunctionDoor({
+    required int expected,
+    required int checkedIn,
+    required int noShows,
+  });
+
+  /// Program operations copy: programsStakeholderStatusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get programsStakeholderStatusScheduled;
+
+  /// Program operations copy: programsStakeholderStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get programsStakeholderStatusCompleted;
+
+  /// Program operations copy: programsStakeholderStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get programsStakeholderStatusCancelled;
+
+  /// Program operations copy: programsStakeholderHotelsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels'**
+  String get programsStakeholderHotelsTitle;
+
+  /// Program operations copy: programsStakeholderHotelsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupancy from routed travel legs.'**
+  String get programsStakeholderHotelsSubtitle;
+
+  /// Program operations copy: programsStakeholderHotelsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotel-routed travel yet.'**
+  String get programsStakeholderHotelsEmpty;
+
+  /// Program operations copy: programsStakeholderHotelRow.
+  ///
+  /// In en, this message translates to:
+  /// **'{arrived} of {routed} guests arrived · {legs} legs'**
+  String programsStakeholderHotelRow({
+    required int arrived,
+    required int routed,
+    required int legs,
+  });
 
   /// Program operations copy: programsTripsTitle.
   ///
@@ -37191,6 +37337,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New group'**
   String get programsGuestsGroupNew;
+
+  /// Opens the existing program group editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get programsGuestsGroupEdit;
+
+  /// Optional program hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel for this group'**
+  String get programsGuestsGroupHotel;
+
+  /// Cleared optional hotel association for a guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotel assigned'**
+  String get programsGuestsGroupNoHotel;
+
+  /// Hotel linked to a program guest group.
+  ///
+  /// In en, this message translates to:
+  /// **'Staying at {hotel}'**
+  String programsGuestsGroupHotelSummary({required String hotel});
+
+  /// The previously linked program hotel is missing from the current catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously linked hotel is unavailable'**
+  String get programsGuestsHotelUnavailable;
+
+  /// Explains that a new group can be saved before program hotels exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels are available for this program yet. You can save the group without one.'**
+  String get programsGuestsNoHotelsAvailable;
 
   /// Program workspace copy: programsGuestsGroupLabel.
   ///

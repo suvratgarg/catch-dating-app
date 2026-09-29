@@ -3,6 +3,7 @@
   "organizerId": "org-1",
   "label": "Groom side",
   "dimension": "side",
+  "hotelId": null,
   "sortOrder": 0,
   "memberCount": 4,
   "createdAt": {

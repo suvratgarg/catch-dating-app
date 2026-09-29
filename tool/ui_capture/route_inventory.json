@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "b9d380496e7def0529f15e9cffca817f71d8ab958caeb58f50c3d13e9bb76182",
-    "routeContractSha256": "265ca9fb119308545283af85533ea7a340b88ddbe3ef2c9c0fd4f97e052862e7",
-    "goRouteCount": 111,
+    "normalizedFileSha256": "6d222c3921b1a84220439690099f2bd7e8f58f5e9cd97a8fc97b95505105d27c",
+    "routeContractSha256": "14c4ba2518ba4d29d95a4a792caeee4bb5e2ec3bd32f52d50d01266ea854312c",
+    "goRouteCount": 112,
     "shellBranchCount": 9,
-    "enumRouteCount": 96,
-    "referencedRouteCount": 96,
-    "runtimeRouteCount": 96,
+    "enumRouteCount": 97,
+    "referencedRouteCount": 97,
+    "runtimeRouteCount": 97,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1156,6 +1156,23 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkCountsScreen",
+      "path": "/host/work/:programId/counts",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/counts",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkCountsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramStakeholderScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramStakeholderScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostProgramsScreen",
       "path": "/host/programs",
       "pathParameters": [],
@@ -1823,6 +1840,7 @@
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
     "hostWorkAttentionScreen",
+    "hostWorkCountsScreen",
     "hostWorkDispatchScreen",
     "hostWorkDoorScreen",
     "hostWorkEventScreen",

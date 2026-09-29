@@ -277,6 +277,17 @@ class ProgramWorkRepository {
     parse: ProgramStaffAttention.fromCallableData,
   );
 
+  /// Counts-only overview for stakeholderViewer staff: ids + headcounts,
+  /// no guest names or contacts cross the wire.
+  Future<ProgramStakeholderCounts> getStakeholderCounts(String programId) =>
+      _call(
+        name: 'getProgramStakeholderCounts',
+        authorityScopedRead: true,
+        payload: ProgramIdCallableRequest(programId: programId).toJson(),
+        action: 'load the program counts',
+        parse: ProgramStakeholderCounts.fromCallableData,
+      );
+
   /// Vendor picker data for the dispatch sheet — the callable filters to
   /// vendors bound to this program and returns operational fields only.
   Future<List<ProgramVendorOption>> listVendors({
@@ -695,6 +706,23 @@ Future<ProgramTripList> programTripList(
     () => ref
         .read(programWorkRepositoryProvider)
         .listTrips(programId, cursor: cursor),
+  );
+  retainProgramProjection(ref, result.accessExpiresAt);
+  return result;
+}
+
+@riverpod
+Future<ProgramStakeholderCounts> programStakeholderCounts(
+  Ref ref,
+  String programId,
+) async {
+  final accountId = _watchWorkAccount(ref);
+  final result = await readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () =>
+        ref.read(programWorkRepositoryProvider).getStakeholderCounts(programId),
   );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;

@@ -87201,6 +87201,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId = CatchContractFieldConstraints(
     path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId',
     maxLength: 180,
@@ -107502,6 +107507,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const organizerMomentCallableResponseMomentAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerMomentCallableResponseMomentInitiationAnchorId = CatchContractFieldConstraints(
     path: 'organizerMomentCallableResponse.moment.initiation.anchorId',
     maxLength: 180,
@@ -107759,6 +107769,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const organizerMomentDocumentAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerMomentDocumentCreatedAtMillis = CatchContractFieldConstraints(
     path: 'organizerMomentDocument.createdAtMillis',
     required: true,
@@ -107925,6 +107940,18 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentRunDocumentOccurrenceVersion = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.occurrenceVersion',
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMomentRunDocumentPlannedWakeAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.plannedWakeAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerMomentRunDocumentReason = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.reason',
     maxLength: 120,
@@ -107979,6 +108006,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentRunDocument.targetFunctionId',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentTravelPlanHash = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelPlanHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const organizerMomentSendDocumentActionKind = CatchContractFieldConstraints(
@@ -118864,6 +118897,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programGuestGroupDocumentHotelId = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programGuestGroupDocumentLabel = CatchContractFieldConstraints(
     path: 'programGuestGroupDocument.label',
     maxLength: 140,
@@ -118947,6 +118987,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -120962,6 +121009,172 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctions = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.checkedInHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.expectedHeads',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsInvitedCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.invitedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsNoShowCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.noShowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpAttending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsRsvpPending = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.rsvpPending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseFunctionsItemsStatus = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.functions.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scheduled', 'completed', 'cancelled'],
+  );
+
+  static const programStakeholderCountsCallableResponseGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.guestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotels = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsHotelId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.hotelId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsLegCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.legCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseHouseholdCount = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.householdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programStakeholderCountsCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStakeholderCountsCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'programStakeholderCountsCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const programStationScopeCallablePayloadPickupPointId = CatchContractFieldConstraints(
@@ -145553,6 +145766,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['signedUp'],
   );
 
+  static const upsertOrganizerMomentCallablePayloadAudienceTravelTimeLead = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.travelTimeLead',
+    valueTypes: <String>['boolean'],
+  );
+
   static const upsertOrganizerMomentCallablePayloadInitiationAnchorId = CatchContractFieldConstraints(
     path: 'upsertOrganizerMomentCallablePayload.initiation.anchorId',
     maxLength: 180,
@@ -146032,6 +146250,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadHotelId = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.hotelId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -161398,6 +161623,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIdsItems,
     'listOrganizerMomentsCallableResponse.moments.items.audience.statuses': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatuses,
     'listOrganizerMomentsCallableResponse.moments.items.audience.statuses.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatusesItems,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.travelTimeLead': listOrganizerMomentsCallableResponseMomentsItemsAudienceTravelTimeLead,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorKind,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis': listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis,
@@ -164206,6 +164432,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentCallableResponse.moment.audience.scopeIds.items': organizerMomentCallableResponseMomentAudienceScopeIdsItems,
     'organizerMomentCallableResponse.moment.audience.statuses': organizerMomentCallableResponseMomentAudienceStatuses,
     'organizerMomentCallableResponse.moment.audience.statuses.items': organizerMomentCallableResponseMomentAudienceStatusesItems,
+    'organizerMomentCallableResponse.moment.audience.travelTimeLead': organizerMomentCallableResponseMomentAudienceTravelTimeLead,
     'organizerMomentCallableResponse.moment.initiation.anchorId': organizerMomentCallableResponseMomentInitiationAnchorId,
     'organizerMomentCallableResponse.moment.initiation.anchorKind': organizerMomentCallableResponseMomentInitiationAnchorKind,
     'organizerMomentCallableResponse.moment.initiation.atMillis': organizerMomentCallableResponseMomentInitiationAtMillis,
@@ -164244,6 +164471,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.audience.scopeIds.items': organizerMomentDocumentAudienceScopeIdsItems,
     'organizerMomentDocument.audience.statuses': organizerMomentDocumentAudienceStatuses,
     'organizerMomentDocument.audience.statuses.items': organizerMomentDocumentAudienceStatusesItems,
+    'organizerMomentDocument.audience.travelTimeLead': organizerMomentDocumentAudienceTravelTimeLead,
     'organizerMomentDocument.createdAtMillis': organizerMomentDocumentCreatedAtMillis,
     'organizerMomentDocument.initiation.anchorId': organizerMomentDocumentInitiationAnchorId,
     'organizerMomentDocument.initiation.anchorKind': organizerMomentDocumentInitiationAnchorKind,
@@ -164267,6 +164495,8 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
     'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
     'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
+    'organizerMomentRunDocument.occurrenceVersion': organizerMomentRunDocumentOccurrenceVersion,
+    'organizerMomentRunDocument.plannedWakeAtMillis': organizerMomentRunDocumentPlannedWakeAtMillis,
     'organizerMomentRunDocument.reason': organizerMomentRunDocumentReason,
     'organizerMomentRunDocument.recipients': organizerMomentRunDocumentRecipients,
     'organizerMomentRunDocument.runId': organizerMomentRunDocumentRunId,
@@ -164276,6 +164506,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
     'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
     'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentRunDocument.travelPlanHash': organizerMomentRunDocumentTravelPlanHash,
     'organizerMomentSendDocument.actionKind': organizerMomentSendDocumentActionKind,
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
     'organizerMomentSendDocument.dayKey': organizerMomentSendDocumentDayKey,
@@ -165778,6 +166009,7 @@ abstract final class CatchContractConstraints {
     'programGuestGroupDocument.createdAt._nanoseconds': programGuestGroupDocumentCreatedAtNanoseconds,
     'programGuestGroupDocument.createdAt._seconds': programGuestGroupDocumentCreatedAtSeconds,
     'programGuestGroupDocument.dimension': programGuestGroupDocumentDimension,
+    'programGuestGroupDocument.hotelId': programGuestGroupDocumentHotelId,
     'programGuestGroupDocument.label': programGuestGroupDocumentLabel,
     'programGuestGroupDocument.memberCount': programGuestGroupDocumentMemberCount,
     'programGuestGroupDocument.organizerId': programGuestGroupDocumentOrganizerId,
@@ -165789,6 +166021,7 @@ abstract final class CatchContractConstraints {
     'programGuestGroupListCallableResponse.groups': programGuestGroupListCallableResponseGroups,
     'programGuestGroupListCallableResponse.groups.items.dimension': programGuestGroupListCallableResponseGroupsItemsDimension,
     'programGuestGroupListCallableResponse.groups.items.groupId': programGuestGroupListCallableResponseGroupsItemsGroupId,
+    'programGuestGroupListCallableResponse.groups.items.hotelId': programGuestGroupListCallableResponseGroupsItemsHotelId,
     'programGuestGroupListCallableResponse.groups.items.label': programGuestGroupListCallableResponseGroupsItemsLabel,
     'programGuestGroupListCallableResponse.groups.items.memberCount': programGuestGroupListCallableResponseGroupsItemsMemberCount,
     'programGuestGroupListCallableResponse.groups.items.revision': programGuestGroupListCallableResponseGroupsItemsRevision,
@@ -166063,6 +166296,27 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.uid': programStaffListCallableResponseMembersItemsUid,
     'programStaffListCallableResponse.nextCursor': programStaffListCallableResponseNextCursor,
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.accessExpiresAtMillis': programStakeholderCountsCallableResponseAccessExpiresAtMillis,
+    'programStakeholderCountsCallableResponse.functions': programStakeholderCountsCallableResponseFunctions,
+    'programStakeholderCountsCallableResponse.functions.items.checkedInHeads': programStakeholderCountsCallableResponseFunctionsItemsCheckedInHeads,
+    'programStakeholderCountsCallableResponse.functions.items.expectedHeads': programStakeholderCountsCallableResponseFunctionsItemsExpectedHeads,
+    'programStakeholderCountsCallableResponse.functions.items.functionId': programStakeholderCountsCallableResponseFunctionsItemsFunctionId,
+    'programStakeholderCountsCallableResponse.functions.items.invitedCount': programStakeholderCountsCallableResponseFunctionsItemsInvitedCount,
+    'programStakeholderCountsCallableResponse.functions.items.noShowCount': programStakeholderCountsCallableResponseFunctionsItemsNoShowCount,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpAttending': programStakeholderCountsCallableResponseFunctionsItemsRsvpAttending,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpDeclined': programStakeholderCountsCallableResponseFunctionsItemsRsvpDeclined,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpMaybe': programStakeholderCountsCallableResponseFunctionsItemsRsvpMaybe,
+    'programStakeholderCountsCallableResponse.functions.items.rsvpPending': programStakeholderCountsCallableResponseFunctionsItemsRsvpPending,
+    'programStakeholderCountsCallableResponse.functions.items.status': programStakeholderCountsCallableResponseFunctionsItemsStatus,
+    'programStakeholderCountsCallableResponse.guestCount': programStakeholderCountsCallableResponseGuestCount,
+    'programStakeholderCountsCallableResponse.hotels': programStakeholderCountsCallableResponseHotels,
+    'programStakeholderCountsCallableResponse.hotels.items.arrivedGuestCount': programStakeholderCountsCallableResponseHotelsItemsArrivedGuestCount,
+    'programStakeholderCountsCallableResponse.hotels.items.hotelId': programStakeholderCountsCallableResponseHotelsItemsHotelId,
+    'programStakeholderCountsCallableResponse.hotels.items.legCount': programStakeholderCountsCallableResponseHotelsItemsLegCount,
+    'programStakeholderCountsCallableResponse.hotels.items.routedGuestCount': programStakeholderCountsCallableResponseHotelsItemsRoutedGuestCount,
+    'programStakeholderCountsCallableResponse.householdCount': programStakeholderCountsCallableResponseHouseholdCount,
+    'programStakeholderCountsCallableResponse.programId': programStakeholderCountsCallableResponseProgramId,
+    'programStakeholderCountsCallableResponse.serverTimeMillis': programStakeholderCountsCallableResponseServerTimeMillis,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
     'programStayDocument.createdAt._nanoseconds': programStayDocumentCreatedAtNanoseconds,
@@ -169458,6 +169712,7 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerMomentCallablePayload.audience.scopeIds.items': upsertOrganizerMomentCallablePayloadAudienceScopeIdsItems,
     'upsertOrganizerMomentCallablePayload.audience.statuses': upsertOrganizerMomentCallablePayloadAudienceStatuses,
     'upsertOrganizerMomentCallablePayload.audience.statuses.items': upsertOrganizerMomentCallablePayloadAudienceStatusesItems,
+    'upsertOrganizerMomentCallablePayload.audience.travelTimeLead': upsertOrganizerMomentCallablePayloadAudienceTravelTimeLead,
     'upsertOrganizerMomentCallablePayload.initiation.anchorId': upsertOrganizerMomentCallablePayloadInitiationAnchorId,
     'upsertOrganizerMomentCallablePayload.initiation.anchorKind': upsertOrganizerMomentCallablePayloadInitiationAnchorKind,
     'upsertOrganizerMomentCallablePayload.initiation.atMillis': upsertOrganizerMomentCallablePayloadInitiationAtMillis,
@@ -169524,6 +169779,7 @@ abstract final class CatchContractConstraints {
     'upsertProgramGuestGroupCallablePayload.dimension': upsertProgramGuestGroupCallablePayloadDimension,
     'upsertProgramGuestGroupCallablePayload.expectedRevision': upsertProgramGuestGroupCallablePayloadExpectedRevision,
     'upsertProgramGuestGroupCallablePayload.groupId': upsertProgramGuestGroupCallablePayloadGroupId,
+    'upsertProgramGuestGroupCallablePayload.hotelId': upsertProgramGuestGroupCallablePayloadHotelId,
     'upsertProgramGuestGroupCallablePayload.label': upsertProgramGuestGroupCallablePayloadLabel,
     'upsertProgramGuestGroupCallablePayload.programId': upsertProgramGuestGroupCallablePayloadProgramId,
     'upsertProgramGuestGroupCallablePayload.sortOrder': upsertProgramGuestGroupCallablePayloadSortOrder,

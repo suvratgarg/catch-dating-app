@@ -487,6 +487,13 @@
       "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
     },
     {
+      "routeId": "hostWorkCountsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.counts",
+      "reason": "Covered by screen.programs.counts as the stakeholder counts overview."
+    },
+    {
       "routeId": "hostProgramsScreen",
       "status": "contracted",
       "priority": "P1",

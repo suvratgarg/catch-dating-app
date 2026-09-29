@@ -74,7 +74,7 @@ test("functionStartReminder defaults to T-15m for attending guests", () => {
       kind: "functionGuests",
       functionId: "sangeet",
       rsvp: ["attending"],
-      householdDedupe: true,
+      householdDedupe: true, travelTimeLead: false,
     },
     action: {
       kind: "sendTemplate",
@@ -97,6 +97,7 @@ test("functionStartReminder defaults to T-15m for attending guests", () => {
     runId: "prog_sangeet_function_start_reminder_7_9100000",
     momentId: "prog_sangeet_function_start_reminder",
     dueAtMillis: 9_100_000,
+    occurrenceVersion: 2,
     anchorRevision: 7,
     status: "planned",
   });
@@ -113,7 +114,7 @@ test("dressReminder defaults to T-60m with the get-ready template", () => {
   });
   assert.deepEqual(moment.audience, {
     kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   });
   assert.deepEqual(moment.action, {
     kind: "sendTemplate", connectionId: "conn1",
@@ -157,7 +158,7 @@ test("transportReadyNotice anchors the departure and its guests", () => {
   });
   assert.deepEqual(moment.audience, {
     kind: "functionGuests", functionId: "sangeet", rsvp: ["attending"],
-    householdDedupe: true,
+    householdDedupe: true, travelTimeLead: false,
   });
   assert.deepEqual(moment.action, {
     kind: "sendTemplate", connectionId: "conn1",
@@ -172,6 +173,7 @@ test("transportReadyNotice anchors the departure and its guests", () => {
     runId: "prog_udrT1_transport_ready_4_1700000",
     momentId: "prog_udrT1_transport_ready",
     dueAtMillis: 1_700_000,
+    occurrenceVersion: 2,
     anchorRevision: 4,
     status: "planned",
   });
@@ -317,7 +319,7 @@ test("options override offsets, audience, templates and status", () => {
     templateId: "tpl_custom",
     variables: {functionName: "The Big Sangeet", extra: "x"},
     rsvp: ["attending", "maybe"],
-    householdDedupe: false,
+    householdDedupe: false, travelTimeLead: false,
     name: "Custom reminder",
   });
   assert.ok(moment);
@@ -333,7 +335,7 @@ test("options override offsets, audience, templates and status", () => {
   });
   assert.deepEqual(moment.audience, {
     kind: "functionGuests", functionId: "sangeet",
-    rsvp: ["attending", "maybe"], householdDedupe: false,
+    rsvp: ["attending", "maybe"], householdDedupe: false, travelTimeLead: false,
   });
   // A draft template output is well-formed but never plans.
   assert.deepEqual(planRun(moment, facts, 0),
