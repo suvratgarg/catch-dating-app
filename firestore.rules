@@ -1786,6 +1786,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Archive-anonymization journal; written only by the retention sweep.
+    match /programRetentionRuns/{programId} {
+      allow read, write: if false;
+    }
+
     match /programDeliveryMessages/{messageId} {
       allow read, write: if false;
     }

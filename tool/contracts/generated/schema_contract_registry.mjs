@@ -164728,6 +164728,107 @@ export const organizerProgramDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "archivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived."
+    },
+    "archivedFromStatus": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Status the program held before archive; unarchiveProgram restores it during the grace window."
+    },
+    "anonymizeAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Retention clock: archivedAt + 14 days. The anonymize sweep processes once this passes."
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained."
     }
   }
 };
@@ -165163,6 +165264,34 @@ export const programFunctionGuestDocumentSchema = {
         }
       ],
       "description": "Staff uid who recorded a staff-sourced response; null for household-link and imported responses."
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -165306,6 +165435,34 @@ export const programDoorJournalDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -165476,6 +165633,34 @@ export const programGuestDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -165637,9 +165822,17 @@ export const programHouseholdDocumentSchema = {
       "description": "Human label such as 'The Sharma family' used on invitations and rosters."
     },
     "primaryContactName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 140
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140,
+          "description": "Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "primaryPhoneE164": {
       "type": [
@@ -165796,6 +165989,34 @@ export const programHouseholdDocumentSchema = {
         }
       },
       "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -165844,13 +166065,29 @@ export const programStaffGrantDocumentSchema = {
       "maxLength": 180
     },
     "displayName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "phoneLastFour": {
-      "type": "string",
-      "pattern": "^[0-9]{4}$"
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4}$",
+          "description": "Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "duties": {
       "type": "array",
@@ -166035,6 +166272,34 @@ export const programStaffGrantDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -166079,15 +166344,30 @@ export const programStaffInviteDocumentSchema = {
       "maxLength": 180
     },
     "phoneE164": {
-      "type": "string",
-      "minLength": 4,
-      "maxLength": 32,
-      "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite."
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 32,
+          "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite. Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "displayName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "duties": {
       "type": "array",
@@ -166300,6 +166580,34 @@ export const programStaffInviteDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -166837,6 +167145,34 @@ export const programStayDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -167612,6 +167948,34 @@ export const programTravelLegDocumentSchema = {
         }
       ],
       "description": "Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered."
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 };
@@ -167714,6 +168078,204 @@ export const programTravelPartyDocumentSchema = {
         "maxLength": 180
       },
       "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
+    }
+  }
+};
+
+export const programRetentionRunDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProgramRetentionRunDocument",
+  "description": "Durable journal for one program's archive-anonymization run. Document id equals the program id (a program anonymizes at most once). Phases record per-collection progress so a crashed or chunked run resumes idempotently.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programRetentionRuns",
+  "x-firestore-path": "programRetentionRuns/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "program retention sweep",
+  "required": [
+    "programId",
+    "organizerId",
+    "status",
+    "phases",
+    "startedAt",
+    "updatedAt",
+    "leaseUntil",
+    "leaseToken",
+    "error",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "completed",
+        "failed"
+      ]
+    },
+    "phases": {
+      "type": "array",
+      "maxItems": 16,
+      "description": "Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "collection",
+          "processed",
+          "cursor"
+        ],
+        "properties": {
+          "collection": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "processed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180,
+            "description": "Last document id processed in this phase; resume token for chunked sweeps."
+          },
+          "completedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "startedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "leaseToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Fencing token for the worker currently holding the run lease."
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
     }
   }
 };
@@ -174320,6 +174882,62 @@ export const updateOrganizerProgramCallablePayloadSchema = {
   }
 };
 
+export const archiveProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/archive_program_payload.schema.json",
+  "title": "ArchiveProgramCallablePayload",
+  "description": "Archive a program: explicit owner/manager action that starts the 14-day anonymization grace window. expectedRevision fences concurrent edits.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "archiveProgram"
+  ],
+  "required": [
+    "programId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const unarchiveProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/unarchive_program_payload.schema.json",
+  "title": "UnarchiveProgramCallablePayload",
+  "description": "Restore an archived program to its pre-archive status. Only valid while the grace window is still open; expectedRevision fences concurrent edits.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "unarchiveProgram"
+  ],
+  "required": [
+    "programId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const grantProgramStaffCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/grant_program_staff_payload.schema.json",
@@ -177451,6 +178069,30 @@ export const organizerProgramListCallableResponseSchema = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "archivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Set when the program is archived; null otherwise."
+          },
+          "anonymizeAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Grace deadline after which identity fields are scrubbed."
+          },
+          "anonymizedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Set once identity/free-text fields were scrubbed."
           }
         }
       }
@@ -178219,6 +178861,30 @@ export const organizerProgramCallableResponseSchema = {
         "revision": {
           "type": "integer",
           "minimum": 1
+        },
+        "archivedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Set when the program is archived; null otherwise."
+        },
+        "anonymizeAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Grace deadline: identity scrub happens after this unless the program is unarchived."
+        },
+        "anonymizedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Set once identity/free-text fields were scrubbed; program stays archived indefinitely."
         }
       }
     },
@@ -178460,6 +179126,88 @@ export const organizerProgramCallableResponseSchema = {
           "minimum": 0
         }
       }
+    }
+  }
+};
+
+export const archiveProgramCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/archive_program_response.schema.json",
+  "title": "ArchiveProgramCallableResponse",
+  "description": "Archive acknowledgement: committed program revision plus the anonymization deadline the grace window grants for unarchive.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "archiveProgram"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "alreadyApplied",
+    "anonymizeAtMillis"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact clientOperationId replay returned the original result."
+    },
+    "anonymizeAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Identity fields are scrubbed at this deadline unless the program is unarchived first."
+    }
+  }
+};
+
+export const unarchiveProgramCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/unarchive_program_response.schema.json",
+  "title": "UnarchiveProgramCallableResponse",
+  "description": "Unarchive acknowledgement: committed program revision plus the status restored from the pre-archive record.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "unarchiveProgram"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "alreadyApplied",
+    "restoredStatus"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact clientOperationId replay returned the original result."
+    },
+    "restoredStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
     }
   }
 };

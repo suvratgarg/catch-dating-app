@@ -400,5 +400,106 @@ const schemaOrganizerProgramDocumentSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
     },
+    'archivedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived.',
+    },
+    'archivedFromStatus': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'draft',
+            'active',
+            'completed',
+            'archived',
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Status the program held before archive; unarchiveProgram restores it during the grace window.',
+    },
+    'anonymizeAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Retention clock: archivedAt + 14 days. The anonymize sweep processes once this passes.',
+    },
+    'anonymizedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained.',
+    },
   },
 };

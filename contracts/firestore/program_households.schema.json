@@ -1,134 +1,146 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/program_households.schema.json",
-  "title": "ProgramHouseholdDocument",
-  "description": "Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "programHouseholds",
-  "x-firestore-path": "programHouseholds/{householdId}",
-  "x-document-id-field": "householdId",
-  "x-owner": "program guest management callables",
-  "required": [
-    "programId",
-    "organizerId",
-    "label",
-    "primaryContactName",
-    "primaryPhoneE164",
-    "primaryEmail",
-    "memberGuestIds",
-    "deliveryPreference",
-    "createdAt",
-    "updatedAt",
-    "revision"
-  ],
-  "properties": {
-    "programId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "$id": "https://catch.app/contracts/firestore/program_households.schema.json",
+ "title": "ProgramHouseholdDocument",
+ "description": "Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.",
+ "type": "object",
+ "additionalProperties": false,
+ "x-firestore-collection": "programHouseholds",
+ "x-firestore-path": "programHouseholds/{householdId}",
+ "x-document-id-field": "householdId",
+ "x-owner": "program guest management callables",
+ "required": [
+  "programId",
+  "organizerId",
+  "label",
+  "primaryContactName",
+  "primaryPhoneE164",
+  "primaryEmail",
+  "memberGuestIds",
+  "deliveryPreference",
+  "createdAt",
+  "updatedAt",
+  "revision"
+ ],
+ "properties": {
+  "programId": {
+   "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+  },
+  "organizerId": {
+   "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+  },
+  "label": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 140,
+   "description": "Human label such as 'The Sharma family' used on invitations and rosters."
+  },
+  "primaryContactName": {
+   "anyOf": [
+    {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 140,
+     "description": "Null after archive anonymization."
     },
-    "organizerId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-    },
-    "label": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 140,
-      "description": "Human label such as 'The Sharma family' used on invitations and rosters."
-    },
-    "primaryContactName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 140
-    },
-    "primaryPhoneE164": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 20
-    },
-    "primaryEmail": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "memberGuestIds": {
-      "type": "array",
-      "minItems": 0,
-      "maxItems": 50,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-      }
-    },
-    "deliveryPreference": {
-      "type": "string",
-      "enum": [
-        "whatsapp",
-        "sms",
-        "email",
-        "none"
-      ],
-      "description": "Invitation delivery preference; does not grant messaging consent by itself."
-    },
-    "side": {
-      "anyOf": [
-        {
-          "$ref": "../shared/program_common.schema.json#/definitions/programHouseholdSide"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Optional side assignment used for per-side counts and seating; labels are configured on the program."
-    },
-    "createdAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
-    },
-    "updatedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
-    },
-    "revision": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 9007199254740991
-    },
-    "messagingConsent": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "additionalProperties": false,
-      "required": [
-        "granted",
-        "grantedAt",
-        "source"
-      ],
-      "properties": {
-        "granted": {
-          "type": "boolean"
-        },
-        "grantedAt": {
-          "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
-        },
-        "source": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "householdRsvpLink",
-            "staff",
-            "import",
-            "whatsappStop",
-            null
-          ],
-          "description": "Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook."
-        }
-      },
-      "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick \u2014 RSVP acceptance alone is not consent."
+    {
+     "type": "null"
     }
+   ]
+  },
+  "primaryPhoneE164": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 20
+  },
+  "primaryEmail": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 320
+  },
+  "memberGuestIds": {
+   "type": "array",
+   "minItems": 0,
+   "maxItems": 50,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+   }
+  },
+  "deliveryPreference": {
+   "type": "string",
+   "enum": [
+    "whatsapp",
+    "sms",
+    "email",
+    "none"
+   ],
+   "description": "Invitation delivery preference; does not grant messaging consent by itself."
+  },
+  "side": {
+   "anyOf": [
+    {
+     "$ref": "../shared/program_common.schema.json#/definitions/programHouseholdSide"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "description": "Optional side assignment used for per-side counts and seating; labels are configured on the program."
+  },
+  "createdAt": {
+   "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+  },
+  "updatedAt": {
+   "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+  },
+  "revision": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 9007199254740991
+  },
+  "messagingConsent": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "additionalProperties": false,
+   "required": [
+    "granted",
+    "grantedAt",
+    "source"
+   ],
+   "properties": {
+    "granted": {
+     "type": "boolean"
+    },
+    "grantedAt": {
+     "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "source": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "enum": [
+      "householdRsvpLink",
+      "staff",
+      "import",
+      "whatsappStop",
+      null
+     ],
+     "description": "Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook."
+    }
+   },
+   "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick \u2014 RSVP acceptance alone is not consent."
+  },
+  "anonymizedAt": {
+   "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+   "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
   }
+ }
 }

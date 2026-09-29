@@ -556,6 +556,7 @@ export {validateProgramStayDocument} from "./validators/programStayDocument";
 export {validateProgramRoomBlockDocument} from "./validators/programRoomBlockDocument";
 export {validateProgramTravelLegDocument} from "./validators/programTravelLegDocument";
 export {validateProgramTravelPartyDocument} from "./validators/programTravelPartyDocument";
+export {validateProgramRetentionRunDocument} from "./validators/programRetentionRunDocument";
 export {validateProgramDeliveryMessageDocument} from "./validators/programDeliveryMessageDocument";
 export {validateProgramWhatsappDispatchDocument} from "./validators/programWhatsappDispatchDocument";
 export {validateProgramDeliveryMessageIntent} from "./validators/programDeliveryMessageIntent";
@@ -585,6 +586,8 @@ export {validateListOrganizerProgramsCallablePayload} from "./validators/listOrg
 export {validateListMyHostAssignmentsCallablePayload} from "./validators/listMyHostAssignmentsInput";
 export {validateCreateOrganizerProgramCallablePayload} from "./validators/createOrganizerProgramInput";
 export {validateUpdateOrganizerProgramCallablePayload} from "./validators/updateOrganizerProgramInput";
+export {validateArchiveProgramCallablePayload} from "./validators/archiveProgramInput";
+export {validateUnarchiveProgramCallablePayload} from "./validators/unarchiveProgramInput";
 export {validateGrantProgramStaffCallablePayload} from "./validators/grantProgramStaffInput";
 export {validateRevokeProgramStaffCallablePayload} from "./validators/revokeProgramStaffInput";
 export {validateInviteProgramStaffCallablePayload} from "./validators/inviteProgramStaffInput";
@@ -632,6 +635,8 @@ export {validateOrganizerProgramListCallableResponse} from "./validators/organiz
 export {validateProgramAccessCallableResponse} from "./validators/programAccessOutput";
 export {validateListMyHostAssignmentsCallableResponse} from "./validators/listMyHostAssignmentsOutput";
 export {validateOrganizerProgramCallableResponse} from "./validators/organizerProgramOutput";
+export {validateArchiveProgramCallableResponse} from "./validators/archiveProgramOutput";
+export {validateUnarchiveProgramCallableResponse} from "./validators/unarchiveProgramOutput";
 export {validateProgramInviteClaimCallableResponse} from "./validators/programInviteClaimOutput";
 export {validateProgramStaffListCallableResponse} from "./validators/programStaffListOutput";
 export {validateProgramGuestListCallableResponse} from "./validators/programGuestListOutput";

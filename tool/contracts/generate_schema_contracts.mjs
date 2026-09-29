@@ -2066,6 +2066,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
   },
   {
+    name: "ProgramRetentionRunDocument",
+    source: "firestore/program_retention_runs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programRetentionRunDocument.ts",
+  },
+  {
     name: "ProgramDeliveryMessageDocument",
     source: "firestore/program_delivery_messages.schema.json",
     typeOutput:
@@ -2229,6 +2235,18 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "updateOrganizerProgramCallablePayload.ts",
+  },
+  {
+    name: "ArchiveProgramCallablePayload",
+    source: "callables/archive_program_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/archiveProgramCallablePayload.ts",
+  },
+  {
+    name: "UnarchiveProgramCallablePayload",
+    source: "callables/unarchive_program_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/unarchiveProgramCallablePayload.ts",
   },
   {
     name: "GrantProgramStaffCallablePayload",
@@ -2578,6 +2596,18 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerProgramCallableResponse.ts",
+  },
+  {
+    name: "ArchiveProgramCallableResponse",
+    source: "callable_responses/archive_program_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/archiveProgramCallableResponse.ts",
+  },
+  {
+    name: "UnarchiveProgramCallableResponse",
+    source: "callable_responses/unarchive_program_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/unarchiveProgramCallableResponse.ts",
   },
   {
     name: "ProgramInviteClaimCallableResponse",

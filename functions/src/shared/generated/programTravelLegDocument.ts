@@ -161,4 +161,11 @@ export interface ProgramTravelLegDocument {
       _nanoseconds: number;
     };
   };
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }
