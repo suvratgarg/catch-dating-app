@@ -1144,7 +1144,7 @@
           "routes": [
             "hostWorkGuestsScreen"
           ],
-          "file": "lib/programs/presentation/program_guests_screen.dart",
+          "file": "lib/programs/presentation/program_guest_desk_screen.dart",
           "symbol": "ProgramGuestDeskScreen",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
