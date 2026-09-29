@@ -432,6 +432,7 @@ class ProgramSetupRepository {
     String? hotelId,
     int? expectedRevision,
     String? address,
+    String? receptionContact,
     String? notes,
     bool? active,
   }) => _call(
@@ -442,6 +443,7 @@ class ProgramSetupRepository {
       expectedRevision: expectedRevision,
       name: name,
       address: address ?? '',
+      receptionContact: receptionContact,
       notes: notes,
       active: active,
     ).toJson(),

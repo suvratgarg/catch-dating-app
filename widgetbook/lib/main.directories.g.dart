@@ -12893,6 +12893,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelEditDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hotel edit dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programHotelEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramListPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -12913,12 +12923,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramPickupPointEditDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Pickup point edit dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programPickupPointEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramWorkspaceFunctionTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Function tile',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programWorkspaceFunctionTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkspaceHotelTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hotel tile',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programWorkspaceHotelTileStates,
               ),
             ],
           ),
@@ -12939,6 +12969,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_programs_workspace_use_cases
                     .programWorkspaceScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkspaceStationTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Station tile',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programWorkspaceStationTileStates,
               ),
             ],
           ),

@@ -37480,6 +37480,138 @@ abstract class AppLocalizations {
   /// **'Guest inbox'**
   String get programsWorkspaceInboxTitle;
 
+  /// Program workspace copy: programsWorkspaceLogisticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logistics'**
+  String get programsWorkspaceLogisticsTitle;
+
+  /// Program workspace copy: programsWorkspaceLogisticsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup points and hotels staff operate against'**
+  String get programsWorkspaceLogisticsSubtitle;
+
+  /// Program workspace copy: programsWorkspacePickupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup points'**
+  String get programsWorkspacePickupTitle;
+
+  /// Program workspace copy: programsWorkspacePickupNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add pickup point'**
+  String get programsWorkspacePickupNew;
+
+  /// Program workspace copy: programsWorkspacePickupEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit pickup point'**
+  String get programsWorkspacePickupEdit;
+
+  /// Program workspace copy: programsWorkspacePickupEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pickup points yet — add airports, railway stations or other meeting points.'**
+  String get programsWorkspacePickupEmpty;
+
+  /// Program workspace copy: programsWorkspacePickupKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get programsWorkspacePickupKind;
+
+  /// Program workspace copy: programsWorkspacePickupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get programsWorkspacePickupLabel;
+
+  /// Program workspace copy: programsWorkspacePickupIata.
+  ///
+  /// In en, this message translates to:
+  /// **'IATA code'**
+  String get programsWorkspacePickupIata;
+
+  /// Program workspace copy: programsWorkspacePickupTerminal.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminal'**
+  String get programsWorkspacePickupTerminal;
+
+  /// Program workspace copy: programsWorkspacePickupMeetingZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting zone'**
+  String get programsWorkspacePickupMeetingZone;
+
+  /// Program workspace copy: programsWorkspacePickupInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff instructions'**
+  String get programsWorkspacePickupInstructions;
+
+  /// Program workspace copy: programsWorkspaceLogisticsActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get programsWorkspaceLogisticsActive;
+
+  /// Program workspace copy: programsWorkspaceLogisticsInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get programsWorkspaceLogisticsInactive;
+
+  /// Program workspace copy: programsWorkspaceHotelsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels'**
+  String get programsWorkspaceHotelsTitle;
+
+  /// Program workspace copy: programsWorkspaceHotelNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add hotel'**
+  String get programsWorkspaceHotelNew;
+
+  /// Program workspace copy: programsWorkspaceHotelEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit hotel'**
+  String get programsWorkspaceHotelEdit;
+
+  /// Program workspace copy: programsWorkspaceHotelEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels yet — add the lodging blocks your guests stay in.'**
+  String get programsWorkspaceHotelEmpty;
+
+  /// Program workspace copy: programsWorkspaceHotelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel name'**
+  String get programsWorkspaceHotelName;
+
+  /// Program workspace copy: programsWorkspaceHotelAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get programsWorkspaceHotelAddress;
+
+  /// Program workspace copy: programsWorkspaceHotelReception.
+  ///
+  /// In en, this message translates to:
+  /// **'Reception contact'**
+  String get programsWorkspaceHotelReception;
+
+  /// Program workspace copy: programsWorkspaceHotelNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get programsWorkspaceHotelNotes;
+
   /// Program workspace copy: programsGuestsTitle.
   ///
   /// In en, this message translates to:

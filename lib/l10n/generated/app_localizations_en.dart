@@ -23287,6 +23287,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkspaceInboxTitle => 'Guest inbox';
 
   @override
+  String get programsWorkspaceLogisticsTitle => 'Logistics';
+
+  @override
+  String get programsWorkspaceLogisticsSubtitle =>
+      'Pickup points and hotels staff operate against';
+
+  @override
+  String get programsWorkspacePickupTitle => 'Pickup points';
+
+  @override
+  String get programsWorkspacePickupNew => 'Add pickup point';
+
+  @override
+  String get programsWorkspacePickupEdit => 'Edit pickup point';
+
+  @override
+  String get programsWorkspacePickupEmpty =>
+      'No pickup points yet — add airports, railway stations or other meeting points.';
+
+  @override
+  String get programsWorkspacePickupKind => 'Type';
+
+  @override
+  String get programsWorkspacePickupLabel => 'Label';
+
+  @override
+  String get programsWorkspacePickupIata => 'IATA code';
+
+  @override
+  String get programsWorkspacePickupTerminal => 'Terminal';
+
+  @override
+  String get programsWorkspacePickupMeetingZone => 'Meeting zone';
+
+  @override
+  String get programsWorkspacePickupInstructions => 'Staff instructions';
+
+  @override
+  String get programsWorkspaceLogisticsActive => 'Active';
+
+  @override
+  String get programsWorkspaceLogisticsInactive => 'Inactive';
+
+  @override
+  String get programsWorkspaceHotelsTitle => 'Hotels';
+
+  @override
+  String get programsWorkspaceHotelNew => 'Add hotel';
+
+  @override
+  String get programsWorkspaceHotelEdit => 'Edit hotel';
+
+  @override
+  String get programsWorkspaceHotelEmpty =>
+      'No hotels yet — add the lodging blocks your guests stay in.';
+
+  @override
+  String get programsWorkspaceHotelName => 'Hotel name';
+
+  @override
+  String get programsWorkspaceHotelAddress => 'Address';
+
+  @override
+  String get programsWorkspaceHotelReception => 'Reception contact';
+
+  @override
+  String get programsWorkspaceHotelNotes => 'Notes';
+
+  @override
   String get programsGuestsTitle => 'Guests & RSVP';
 
   @override

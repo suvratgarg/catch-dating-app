@@ -52,6 +52,50 @@ class ProgramWorkspaceController extends _$ProgramWorkspaceController {
     status: status,
   );
 
+  Future<ProgramMutationResult> upsertPickupPoint({
+    required String programId,
+    required String kind,
+    required String label,
+    String? pickupPointId,
+    int? expectedRevision,
+    String? iataCode,
+    String? terminal,
+    String? meetingZone,
+    String? instructions,
+    bool? active,
+  }) => _repository.upsertPickupPoint(
+    programId: programId,
+    kind: kind,
+    label: label,
+    pickupPointId: pickupPointId,
+    expectedRevision: expectedRevision,
+    iataCode: iataCode,
+    terminal: terminal,
+    meetingZone: meetingZone,
+    instructions: instructions,
+    active: active,
+  );
+
+  Future<ProgramMutationResult> upsertHotel({
+    required String programId,
+    required String name,
+    String? hotelId,
+    int? expectedRevision,
+    String? address,
+    String? receptionContact,
+    String? notes,
+    bool? active,
+  }) => _repository.upsertHotel(
+    programId: programId,
+    name: name,
+    hotelId: hotelId,
+    expectedRevision: expectedRevision,
+    address: address,
+    receptionContact: receptionContact,
+    notes: notes,
+    active: active,
+  );
+
   Future<ProgramMutationResult> applyFunctionInvitations({
     required String programId,
     required String functionId,
