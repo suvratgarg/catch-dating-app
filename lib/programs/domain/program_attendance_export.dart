@@ -3,12 +3,10 @@ import 'package:catch_dating_app/programs/domain/program_models.dart';
 class ProgramAttendanceReportExport {
   const ProgramAttendanceReportExport({
     required this.fileName,
-    required this.subject,
     required this.csv,
   });
 
   final String fileName;
-  final String subject;
   final String csv;
 }
 
@@ -114,7 +112,6 @@ ProgramAttendanceReportExport buildProgramAttendanceReportExport({
   final date = exported.split('T').first;
   return ProgramAttendanceReportExport(
     fileName: '${slug.isEmpty ? 'program' : slug}-attendance-$date.csv',
-    subject: '$programTitle attendance report',
     csv: _csv(rows),
   );
 }

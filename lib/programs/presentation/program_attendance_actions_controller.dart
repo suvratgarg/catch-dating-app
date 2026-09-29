@@ -17,6 +17,7 @@ class ProgramAttendanceActions extends _$ProgramAttendanceActions {
   Future<void> exportReport({
     required String programId,
     required String programTitle,
+    required String subject,
     required Map<String, String> functionNames,
   }) async {
     final repository = ref.read(programWorkRepositoryProvider);
@@ -32,8 +33,8 @@ class ProgramAttendanceActions extends _$ProgramAttendanceActions {
     await share.shareCsvFile(
       csv: export.csv,
       fileName: export.fileName,
-      subject: export.subject,
-      text: export.subject,
+      subject: subject,
+      text: subject,
     );
   }
 }

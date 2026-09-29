@@ -29120,6 +29120,8 @@
   "@programsAttendanceDeclinedCheckedIn": {"description": "Program operations copy: programsAttendanceDeclinedCheckedIn.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_attendance_report_screen", "placeholders": {"count": {"type": "int"}}},
   "programsAttendanceWalkInException": "{count} walk-in to reconcile",
   "@programsAttendanceWalkInException": {"description": "Program operations copy: programsAttendanceWalkInException.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_attendance_report_screen", "placeholders": {"count": {"type": "int"}}},
+  "programsAttendanceShareSubject": "{title} attendance report",
+  "@programsAttendanceShareSubject": {"description": "Program operations copy: programsAttendanceShareSubject.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_attendance_report_screen", "placeholders": {"title": {"type": "String"}}},
   "programsStakeholderTitle": "Program counts",
   "@programsStakeholderTitle": {"description": "Program operations copy: programsStakeholderTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_stakeholder_screen"},
   "programsStakeholderSubtitle": "Headcounts and occupancy — no guest details",

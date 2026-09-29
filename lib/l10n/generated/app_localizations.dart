@@ -34723,6 +34723,12 @@ abstract class AppLocalizations {
   /// **'{count} walk-in to reconcile'**
   String programsAttendanceWalkInException({required int count});
 
+  /// Program operations copy: programsAttendanceShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} attendance report'**
+  String programsAttendanceShareSubject({required String title});
+
   /// Program operations copy: programsStakeholderTitle.
   ///
   /// In en, this message translates to:

@@ -21643,6 +21643,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String programsAttendanceShareSubject({required String title}) {
+    return '$title attendance report';
+  }
+
+  @override
   String get programsStakeholderTitle => 'Program counts';
 
   @override

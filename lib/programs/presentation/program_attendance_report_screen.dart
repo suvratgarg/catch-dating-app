@@ -40,6 +40,9 @@ class _ProgramAttendanceReportScreenState
           .exportReport(
             programId: widget.programId,
             programTitle: access?.title ?? widget.programId,
+            subject: context.l10n.programsAttendanceShareSubject(
+              title: access?.title ?? widget.programId,
+            ),
             functionNames: {
               for (final fn in access?.functions ?? <ProgramFunction>[])
                 fn.functionId: fn.name,

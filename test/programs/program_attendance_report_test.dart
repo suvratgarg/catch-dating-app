@@ -256,7 +256,6 @@ void main() {
       exportedAt: DateTime.utc(2026, 1, 5, 12),
     );
     expect(export.fileName, 'kapoor-wedding-attendance-2026-01-05.csv');
-    expect(export.subject, 'Kapoor Wedding attendance report');
     expect(export.csv, contains('row_type,program_id,program_title'));
     expect(
       export.csv,
