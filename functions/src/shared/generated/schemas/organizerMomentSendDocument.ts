@@ -57,6 +57,7 @@ export const organizerMomentSendDocumentSchema: Record<string, unknown> = {
         "programEnded",
         "recipientWithdrawn",
         "permissionRevoked",
+        "frequencyCapped",
         "hostReview",
         null
       ],
@@ -110,6 +111,7 @@ export const organizerMomentSendDocumentSchema: Record<string, unknown> = {
       "enum": [
         "event",
         "program",
+        "organizer",
         null
       ]
     },
@@ -148,6 +150,30 @@ export const organizerMomentSendDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 240,
       "description": "staffAttention: rendered alert title."
+    },
+    "deliveryMessageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^outbox:[a-f0-9]{64}$",
+      "description": "Durable intent record that executed this send (automation/program durable deliveries); the outbox owns the attempt history this row projects."
+    },
+    "deliveryState": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "accepted",
+        "unknown",
+        "delivered",
+        "read",
+        "failed",
+        "revoked",
+        null
+      ],
+      "description": "Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery."
     }
   }
 } as const;

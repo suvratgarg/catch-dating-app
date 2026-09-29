@@ -29,7 +29,8 @@ export interface EventInviteLinkDocument {
     | "consumerApp"
     | "runtimeWeb"
     | "campaign"
-    | "api";
+    | "api"
+    | "formAutomation";
   destinationKind?:
     | "catchEvent"
     | "eventRuntime"

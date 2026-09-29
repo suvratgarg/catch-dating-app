@@ -25,7 +25,8 @@ export const organizerMomentActionCallablePayloadSchema: Record<string, unknown>
           "type": "string",
           "enum": [
             "event",
-            "program"
+            "program",
+            "organizer"
           ]
         },
         "eventId": {
@@ -45,6 +46,15 @@ export const organizerMomentActionCallablePayloadSchema: Record<string, unknown>
           "minLength": 1,
           "maxLength": 180,
           "description": "Required when kind=program; must be null otherwise."
+        },
+        "organizerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments."
         }
       }
     },

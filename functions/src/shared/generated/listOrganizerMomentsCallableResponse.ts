@@ -9,7 +9,7 @@ export interface ListOrganizerMomentsCallableResponse {
   moments: {
     momentId: string;
     scope: {
-      kind: "event" | "program";
+      kind: "event" | "program" | "organizer";
       /**
        * Required when kind=event; must be null otherwise.
        */
@@ -18,6 +18,10 @@ export interface ListOrganizerMomentsCallableResponse {
        * Required when kind=program; must be null otherwise.
        */
       programId?: string | null;
+      /**
+       * Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.
+       */
+      organizerId?: string | null;
     };
     name: string;
     initiation: {
@@ -58,11 +62,23 @@ export interface ListOrganizerMomentsCallableResponse {
       /**
        * Required when kind=triggered.
        */
-      triggerKind?: ("lateArrivalAtHotel" | "flightDisrupted") | null;
+      triggerKind?:
+        | ("lateArrivalAtHotel" | "flightDisrupted" | "formAutomation")
+        | null;
       /**
        * Optional function scope for triggered moments.
        */
       functionId?: string | null;
+      /**
+       * Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.
+       */
+      automation?: {
+        ruleId: string;
+        ruleRevision: number;
+        actionId: string;
+        recipeCampaignId: string;
+        recipeRevision: number;
+      } | null;
     };
     sense: "individual" | "audience";
     audience: {
@@ -156,7 +172,7 @@ export interface ListOrganizerMomentsCallableResponse {
       approvedByUid: string;
       approvedAtMillis: number;
     } | null;
-    origin: "organizer" | "systemDefault";
+    origin: "organizer" | "systemDefault" | "formAutomation";
     revision: number;
   }[];
 }

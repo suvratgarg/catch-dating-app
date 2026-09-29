@@ -7,7 +7,7 @@
  */
 export interface RunOrganizerMomentCallablePayload {
   scope: {
-    kind: "event" | "program";
+    kind: "event" | "program" | "organizer";
     /**
      * Required when kind=event; must be null otherwise.
      */
@@ -16,6 +16,10 @@ export interface RunOrganizerMomentCallablePayload {
      * Required when kind=program; must be null otherwise.
      */
     programId?: string | null;
+    /**
+     * Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.
+     */
+    organizerId?: string | null;
   };
   momentId: string;
   requestKey: string;

@@ -27,6 +27,7 @@ const schemaListOrganizerMomentsCallablePayloadSchema = <String, Object?>{
           'enum': <Object?>[
             'event',
             'program',
+            'organizer',
           ],
         },
         'eventId': <String, Object?>{
@@ -46,6 +47,15 @@ const schemaListOrganizerMomentsCallablePayloadSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
           'description': 'Required when kind=program; must be null otherwise.',
+        },
+        'organizerId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+          'description': 'Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.',
         },
       },
     },

@@ -9,9 +9,11 @@
  *   (individual) or resolved as a set at fire time (audience)
  * - action: the channel (WhatsApp template | push | staff attention)
  *
- * A Moment is scoped to either a Catch event or a private program; the
- * anchors and audiences legal for each scope differ and are enforced by
- * `validateMomentDefinition`.
+ * A Moment is scoped to a Catch event, a private program, or an organizer.
+ * Organizer scope is the server-managed home for form-automation companion
+ * moments — the rule stays the authored object and the projection carries
+ * its approved revision pins. The anchors and audiences legal for each
+ * scope differ and are enforced by `validateMomentDefinition`.
  */
 
 export type MomentScope = {
@@ -20,6 +22,9 @@ export type MomentScope = {
 } | {
   kind: "program";
   programId: string;
+} | {
+  kind: "organizer";
+  organizerId: string;
 };
 
 export type MomentScopeKind = MomentScope["kind"];
@@ -28,7 +33,22 @@ export type MomentAnchorKind =
   "scopeStart" | "scopeEnd" | "functionStart" | "functionEnd" |
     "rsvpDeadline" | "travelLegTime";
 
-export type MomentTriggerKind = "lateArrivalAtHotel" | "flightDisrupted";
+export type MomentTriggerKind =
+  "lateArrivalAtHotel" | "flightDisrupted" | "formAutomation";
+
+/**
+ * Server-managed binding between a companion moment and its authored
+ * form-automation rule action. The rule owns editing, arming, and approval;
+ * this projection carries the approved revision pins the delivery claim
+ * re-verifies.
+ */
+export interface MomentAutomationBinding {
+  ruleId: string;
+  ruleRevision: number;
+  actionId: string;
+  recipeCampaignId: string;
+  recipeRevision: number;
+}
 
 export type MomentInitiation = {
   kind: "manual";
@@ -49,6 +69,8 @@ export type MomentInitiation = {
   kind: "triggered";
   triggerKind: MomentTriggerKind;
   functionId: string | null;
+  /** Required when triggerKind is "formAutomation"; absent otherwise. */
+  automation?: MomentAutomationBinding | null;
 };
 
 export type MomentInitiationKind = MomentInitiation["kind"];
@@ -103,7 +125,7 @@ export type MomentActionKind = MomentAction["kind"];
 
 export type MomentStatus = "draft" | "armed" | "paused" | "done";
 
-export type MomentOrigin = "organizer" | "systemDefault";
+export type MomentOrigin = "organizer" | "systemDefault" | "formAutomation";
 
 export interface MomentApproval {
   approvedByUid: string;
@@ -199,6 +221,26 @@ export interface RunRecord {
   targetFunctionId?: string;
   /** Subject of a triggered run, when the fact names one. */
   subjectId?: string;
+  /**
+   * Occurrence binding for form-automation sends. The automation engine
+   * owns trigger matching and the business delay; this run materializes
+   * when the action is reached. `deliveryMessageId` names the durable
+   * intent that executes the send — the outbox owns the attempt history.
+   */
+  automation?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    eventKind: "submitted" | "withdrawn" | "applicationAccepted" |
+      "eventAttended";
+    sourceId: string;
+    occurredAtMillis: number;
+    /** Business-delay horizon at handoff; the claim re-derives it live. */
+    dueAtMillis: number;
+    /** Contact identity resolved at handoff; claim re-derives live. */
+    contactId: string;
+    deliveryMessageId: string;
+  };
 }
 
 export function requireMillis(value: number): void {
@@ -209,7 +251,8 @@ export function requireMillis(value: number): void {
 }
 
 export function scopeId(scope: MomentScope): string {
-  return scope.kind === "event" ? scope.eventId : scope.programId;
+  return scope.kind === "event" ? scope.eventId :
+    scope.kind === "program" ? scope.programId : scope.organizerId;
 }
 
 export function sameScope(a: MomentScope, b: MomentScope): boolean {
@@ -230,7 +273,8 @@ const AUDIENCE_SCOPES: Readonly<Record<MomentAudienceKind,
   };
 
 /**
- * Audiences that resolve phone endpoints — all program-scoped. A
+ * Audiences that resolve phone endpoints. Program scopes produce
+ * guest:/household: keys; organizer scopes produce contact: keys. A
  * sendTemplate action needs one; any other pairing could never reach a
  * WhatsApp recipient and previously died at fire time.
  */
@@ -242,7 +286,9 @@ export type MomentInvariantViolation =
   "subjectRequiresTriggered" | "triggeredRequiresProgramScope" |
     "anchorNotLegalForScope" | "audienceNotLegalForScope" |
     "audienceSenseMismatch" | "armedRequiresApproval" |
-    "manualRequiresAudienceSense" | "sendTemplateRequiresPhoneAudience";
+    "manualRequiresAudienceSense" | "sendTemplateRequiresPhoneAudience" |
+    "automationTriggerRequiresOrganizerScope" |
+    "automationTriggerShapeMismatch" | "organizerScopeRequiresAutomation";
 
 /**
  * Returns every axis invariant the definition violates. Empty means valid.
@@ -260,8 +306,27 @@ export function validateMomentDefinition(
       !PHONE_AUDIENCES.has(audience.kind)) {
     violations.push("sendTemplateRequiresPhoneAudience");
   }
-  if (initiation.kind === "triggered" && scope.kind !== "program") {
+  const automationTriggered = initiation.kind === "triggered" &&
+    initiation.triggerKind === "formAutomation";
+  if (initiation.kind === "triggered" && !automationTriggered &&
+      scope.kind !== "program") {
     violations.push("triggeredRequiresProgramScope");
+  }
+  // Organizer scope is reserved for the server-managed automation subset:
+  // triggered initiation bound to a rule action, one contact subject,
+  // template send only.
+  if (scope.kind === "organizer" && !automationTriggered) {
+    violations.push("organizerScopeRequiresAutomation");
+  }
+  if (initiation.kind === "triggered" &&
+      initiation.triggerKind === "formAutomation") {
+    if (scope.kind !== "organizer") {
+      violations.push("automationTriggerRequiresOrganizerScope");
+    }
+    if (initiation.automation == null || audience.kind !== "subject" ||
+        action.kind !== "sendTemplate") {
+      violations.push("automationTriggerShapeMismatch");
+    }
   }
   if (initiation.kind === "anchored" &&
       PROGRAM_ONLY_ANCHORS.has(initiation.anchorKind) &&

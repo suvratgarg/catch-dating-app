@@ -32,6 +32,7 @@ const schemaUpsertOrganizerMomentCallablePayloadSchema = <String, Object?>{
           'enum': <Object?>[
             'event',
             'program',
+            'organizer',
           ],
         },
         'eventId': <String, Object?>{
@@ -51,6 +52,15 @@ const schemaUpsertOrganizerMomentCallablePayloadSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
           'description': 'Required when kind=program; must be null otherwise.',
+        },
+        'organizerId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+          'description': 'Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.',
         },
       },
     },
@@ -154,6 +164,7 @@ const schemaUpsertOrganizerMomentCallablePayloadSchema = <String, Object?>{
               'enum': <Object?>[
                 'lateArrivalAtHotel',
                 'flightDisrupted',
+                'formAutomation',
               ],
             },
             <String, Object?>{
@@ -169,6 +180,55 @@ const schemaUpsertOrganizerMomentCallablePayloadSchema = <String, Object?>{
           ],
           'maxLength': 180,
           'description': 'Optional function scope for triggered moments.',
+        },
+        'automation': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'ruleId',
+                'ruleRevision',
+                'actionId',
+                'recipeCampaignId',
+                'recipeRevision',
+              ],
+              'properties': <String, Object?>{
+                'ruleId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'ruleRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000000,
+                },
+                'actionId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'recipeCampaignId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'recipeRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000000,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+          'description': 'Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.',
         },
       },
     },

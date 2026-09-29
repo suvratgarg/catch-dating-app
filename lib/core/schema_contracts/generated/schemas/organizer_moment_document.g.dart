@@ -8,7 +8,7 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_moments.schema.json',
   'title': 'OrganizerMomentDocument',
-  'description': 'Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).',
+  'description': 'Unified send definition: initiation x sense x action over an event, program, or organizer scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once). Organizer-scope moments are the server-managed projections of form automation rules — they are never authored directly.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerMoments',
@@ -50,6 +50,7 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
           'enum': <Object?>[
             'event',
             'program',
+            'organizer',
           ],
         },
         'eventId': <String, Object?>{
@@ -70,6 +71,15 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
           'maxLength': 180,
           'description': 'Required when kind=program; must be null otherwise.',
         },
+        'organizerId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+          'description': 'Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.',
+        },
       },
     },
     'scopeKind': <String, Object?>{
@@ -77,6 +87,7 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'event',
         'program',
+        'organizer',
       ],
       'description': 'Denormalized scope.kind for list queries.',
     },
@@ -84,7 +95,7 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
-      'description': 'Denormalized scope id (eventId or programId) for list queries.',
+      'description': 'Denormalized scope id (eventId, programId, or organizerId) for list queries.',
     },
     'name': <String, Object?>{
       'type': 'string',
@@ -177,6 +188,7 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
               'enum': <Object?>[
                 'lateArrivalAtHotel',
                 'flightDisrupted',
+                'formAutomation',
               ],
             },
             <String, Object?>{
@@ -192,6 +204,55 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
           ],
           'maxLength': 180,
           'description': 'Optional function scope for triggered moments.',
+        },
+        'automation': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'ruleId',
+                'ruleRevision',
+                'actionId',
+                'recipeCampaignId',
+                'recipeRevision',
+              ],
+              'properties': <String, Object?>{
+                'ruleId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'ruleRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000000,
+                },
+                'actionId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'recipeCampaignId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'recipeRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000000,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+          'description': 'Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.',
         },
       },
     },
@@ -429,8 +490,9 @@ const schemaOrganizerMomentDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'organizer',
         'systemDefault',
+        'formAutomation',
       ],
-      'description': 'systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted.',
+      'description': 'systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted. formAutomation moments are server-managed projections of automation rules — arm/pause state mirrors rule.enabled.',
     },
     'revision': <String, Object?>{
       'type': 'integer',

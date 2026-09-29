@@ -3,12 +3,12 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).
+ * Unified send definition: initiation x sense x action over an event, program, or organizer scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once). Organizer-scope moments are the server-managed projections of form automation rules — they are never authored directly.
  */
 export interface OrganizerMomentDocument {
   momentId: string;
   scope: {
-    kind: "event" | "program";
+    kind: "event" | "program" | "organizer";
     /**
      * Required when kind=event; must be null otherwise.
      */
@@ -17,13 +17,17 @@ export interface OrganizerMomentDocument {
      * Required when kind=program; must be null otherwise.
      */
     programId?: string | null;
+    /**
+     * Required when kind=organizer; must be null otherwise. Organizer scope hosts server-managed form-automation companion moments.
+     */
+    organizerId?: string | null;
   };
   /**
    * Denormalized scope.kind for list queries.
    */
-  scopeKind: "event" | "program";
+  scopeKind: "event" | "program" | "organizer";
   /**
-   * Denormalized scope id (eventId or programId) for list queries.
+   * Denormalized scope id (eventId, programId, or organizerId) for list queries.
    */
   scopeId: string;
   name: string;
@@ -65,11 +69,23 @@ export interface OrganizerMomentDocument {
     /**
      * Required when kind=triggered.
      */
-    triggerKind?: ("lateArrivalAtHotel" | "flightDisrupted") | null;
+    triggerKind?:
+      | ("lateArrivalAtHotel" | "flightDisrupted" | "formAutomation")
+      | null;
     /**
      * Optional function scope for triggered moments.
      */
     functionId?: string | null;
+    /**
+     * Server-managed binding to the form-automation rule action; required when triggerKind=formAutomation. The rule stays the authored object — this projection carries its approved revision pins.
+     */
+    automation?: {
+      ruleId: string;
+      ruleRevision: number;
+      actionId: string;
+      recipeCampaignId: string;
+      recipeRevision: number;
+    } | null;
   };
   sense: "individual" | "audience";
   audience: {
@@ -164,9 +180,9 @@ export interface OrganizerMomentDocument {
     approvedAtMillis: number;
   } | null;
   /**
-   * systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted.
+   * systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted. formAutomation moments are server-managed projections of automation rules — arm/pause state mirrors rule.enabled.
    */
-  origin: "organizer" | "systemDefault";
+  origin: "organizer" | "systemDefault" | "formAutomation";
   revision: number;
   createdAtMillis: number;
   updatedAtMillis: number;

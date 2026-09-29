@@ -46,4 +46,31 @@ export interface OrganizerMomentRunDocument {
     [k: string]: number;
   } | null;
   suppressedNoEndpoint?: number | null;
+  /**
+   * Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages.
+   */
+  automation?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    sourceId: string;
+    occurredAtMillis: number;
+    /**
+     * Business-delay horizon computed by the automation engine at handoff; the delivery claim re-derives it from live facts.
+     */
+    dueAtMillis: number;
+    /**
+     * Contact identity resolved at handoff; claim re-derives the live identity so merges follow the send.
+     */
+    contactId: string;
+    /**
+     * Durable intent record this run executes; the outbox owns the actual attempt history.
+     */
+    deliveryMessageId: string;
+  } | null;
 }
