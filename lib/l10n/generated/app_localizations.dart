@@ -33747,6 +33747,24 @@ abstract class AppLocalizations {
   /// **'Open counts overview'**
   String get programsWorkCountsOpen;
 
+  /// Program operations copy: programsWorkAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance report'**
+  String get programsWorkAttendanceTitle;
+
+  /// Program operations copy: programsWorkAttendanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP truth vs door truth per function, with exception queues.'**
+  String get programsWorkAttendanceSubtitle;
+
+  /// Program operations copy: programsWorkAttendanceOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open attendance report'**
+  String get programsWorkAttendanceOpen;
+
   /// Program operations copy: programsWorkCommsTitle.
   ///
   /// In en, this message translates to:
@@ -34599,6 +34617,130 @@ abstract class AppLocalizations {
   /// **'Guest names reflect current records; no dispatch snapshot was saved.'**
   String get programsTripCurrentNames;
 
+  /// Program operations copy: programsAttendanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance report'**
+  String get programsAttendanceTitle;
+
+  /// Program operations copy: programsAttendanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP vs door per function'**
+  String get programsAttendanceSubtitle;
+
+  /// Program operations copy: programsAttendanceRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh report'**
+  String get programsAttendanceRefresh;
+
+  /// Program operations copy: programsAttendanceExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get programsAttendanceExport;
+
+  /// Program operations copy: programsAttendanceExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting…'**
+  String get programsAttendanceExporting;
+
+  /// Program operations copy: programsAttendanceProgramTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program totals'**
+  String get programsAttendanceProgramTitle;
+
+  /// Program operations copy: programsAttendanceProgramSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'As of {time}'**
+  String programsAttendanceProgramSubtitle({required String time});
+
+  /// Program operations copy: programsAttendanceFunctionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Per function'**
+  String get programsAttendanceFunctionsTitle;
+
+  /// Program operations copy: programsAttendanceFunctionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited vs attended vs checked in, with exception queues.'**
+  String get programsAttendanceFunctionsSubtitle;
+
+  /// Program operations copy: programsAttendanceEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions on this program yet.'**
+  String get programsAttendanceEmpty;
+
+  /// Program operations copy: programsAttendanceInvited.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} invited'**
+  String programsAttendanceInvited({required int count});
+
+  /// Program operations copy: programsAttendanceAttending.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attending'**
+  String programsAttendanceAttending({required int count});
+
+  /// Program operations copy: programsAttendanceCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} checked in'**
+  String programsAttendanceCheckedIn({required int count});
+
+  /// Program operations copy: programsAttendanceNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} no-show'**
+  String programsAttendanceNoShow({required int count});
+
+  /// Program operations copy: programsAttendanceRowCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{invited} invited · {attending} attending · {checkedIn} checked in'**
+  String programsAttendanceRowCounts({
+    required int invited,
+    required int attending,
+    required int checkedIn,
+  });
+
+  /// Program operations copy: programsAttendanceWalkIns.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} walk-in not on the invite list'**
+  String programsAttendanceWalkIns({required int count});
+
+  /// Program operations copy: programsAttendanceNoResponseException.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} invited, no response'**
+  String programsAttendanceNoResponseException({required int count});
+
+  /// Program operations copy: programsAttendanceDeclinedCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} declined but arrived'**
+  String programsAttendanceDeclinedCheckedIn({required int count});
+
+  /// Program operations copy: programsAttendanceWalkInException.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} walk-in to reconcile'**
+  String programsAttendanceWalkInException({required int count});
+
+  /// Program operations copy: programsAttendanceShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} attendance report'**
+  String programsAttendanceShareSubject({required String title});
+
   /// Program operations copy: programsStakeholderTitle.
   ///
   /// In en, this message translates to:
@@ -34804,6 +34946,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voided'**
   String get programsTripsStatusVoided;
+
+  /// Program operations copy: programsTripsExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get programsTripsExport;
+
+  /// Program operations copy: programsTripsExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting…'**
+  String get programsTripsExporting;
+
+  /// Program operations copy: programsTripsExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} trip ledger'**
+  String programsTripsExportSubject({required String title});
+
+  /// Program operations copy: programsTripsReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get programsTripsReviewTitle;
+
+  /// Program operations copy: programsTripsReviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open, cancelled and voided trips to reconcile before the vendor invoice clears'**
+  String get programsTripsReviewSubtitle;
+
+  /// Program operations copy: programsTripsReviewOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Review only'**
+  String get programsTripsReviewOnly;
+
+  /// Program operations copy: programsTripsShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get programsTripsShowAll;
+
+  /// Program operations copy: programsTripsReviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to review on this page.'**
+  String get programsTripsReviewEmpty;
 
   /// Program operations copy: programsWorkShellExpires.
   ///

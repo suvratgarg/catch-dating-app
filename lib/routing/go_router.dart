@@ -62,6 +62,7 @@ import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart'
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
@@ -542,6 +543,13 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostWorkImportScreen.name,
       builder: (context, state) =>
           ProgramImportScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkAttendanceReportScreen.path,
+      name: Routes.hostWorkAttendanceReportScreen.name,
+      builder: (context, state) => ProgramAttendanceReportScreen(
+        programId: state.pathParameters['programId']!,
+      ),
     ),
     GoRoute(
       path: Routes.hostWorkCountsScreen.path,

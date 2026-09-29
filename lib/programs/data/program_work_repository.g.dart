@@ -683,6 +683,85 @@ final class ProgramTripListFamily extends $Family
   String toString() => r'programTripListProvider';
 }
 
+@ProviderFor(programAttendanceReport)
+final programAttendanceReportProvider = ProgramAttendanceReportFamily._();
+
+final class ProgramAttendanceReportProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramAttendanceReport>,
+          ProgramAttendanceReport,
+          FutureOr<ProgramAttendanceReport>
+        >
+    with
+        $FutureModifier<ProgramAttendanceReport>,
+        $FutureProvider<ProgramAttendanceReport> {
+  ProgramAttendanceReportProvider._({
+    required ProgramAttendanceReportFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programAttendanceReportProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programAttendanceReportHash();
+
+  @override
+  String toString() {
+    return r'programAttendanceReportProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramAttendanceReport> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramAttendanceReport> create(Ref ref) {
+    final argument = this.argument as String;
+    return programAttendanceReport(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramAttendanceReportProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programAttendanceReportHash() =>
+    r'ef4875bbc0e32499ac51d6f10a1a47149d57c7d1';
+
+final class ProgramAttendanceReportFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProgramAttendanceReport>, String> {
+  ProgramAttendanceReportFamily._()
+    : super(
+        retry: null,
+        name: r'programAttendanceReportProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProgramAttendanceReportProvider call(String programId) =>
+      ProgramAttendanceReportProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programAttendanceReportProvider';
+}
+
 @ProviderFor(programStakeholderCounts)
 final programStakeholderCountsProvider = ProgramStakeholderCountsFamily._();
 

@@ -731,6 +731,8 @@ export {recordProgramDoorJournal} from
   "./doorJournal/recordProgramDoorJournal";
 export {getProgramFunctionDoorView, createProgramWalkIn} from
   "./doorJournal/doorView";
+export {getProgramAttendanceReport} from
+  "./programs/attendanceReportView";
 export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 

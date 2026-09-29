@@ -101,10 +101,10 @@ never CRM, saved audiences, sender connections, or payouts.
 | `transportDispatcher` → Arrivals · Dispatch | **built** — dispatch screen on same prefix |
 | `hotelDesk` → Inbound · Rooms | **partial** — `/hotel/:hotelId` inbound desk exists; **Rooms has no stays/room-block model** (§3.3) |
 | `functionCheckIn` → Door · Walk-ins | **built** — `/host/work/:programId/door/:functionId` roster, check-in/undo/no-show/party-size, walk-in capture, offline outbox replay (#448) |
-| `functionLead` → Now/Next · Door · Attention | **partial** — Door destination is shared with `functionCheckIn` (#448); Now/Next and Attention screens still missing |
-| `guestRelations` → Guests · RSVP inbox · Imports | **in review** — `/host/work/:programId/guests` + `/host/work/:programId/import` on the shared grid/import surfaces with coordinator-only mutations hidden; `listProgramGuests`, `listProgramHouseholds`, `importProgramManifest` and work-access `functions` widened to the duty |
+| `functionLead` → Now/Next · Door · Attention | **in review** — Now/Next projection + duty-filtered attention feed (`listProgramStaffAttention`) in #470; Door destination is shared with `functionCheckIn` (#448) |
+| `guestRelations` → Guests · RSVP inbox · Imports | **in review** — `/host/work/:programId/guests` + `/host/work/:programId/import` on the shared grid/import surfaces with coordinator-only mutations hidden; `listProgramGuests`, `listProgramHouseholds`, `importProgramManifest` and work-access `functions` widened to the duty (#469) |
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
-| `reconciliationViewer` → Trips · Exceptions · Export | **partial** — `/trips` ledger exists; exceptions/export missing |
+| `reconciliationViewer` → Trips · Exceptions · Export | **in review** — needs-review strip + review-only filter on the `/trips` ledger, bounded CSV export via external share, void affordance gated to dispatch authority (#471); per-function attendance report + CSV export (#460) |
 | `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + `ProgramStakeholderScreen` counts surface at `/host/work/:programId/counts` (#458) |
 | `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
@@ -218,7 +218,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **partial** — programSelection dispatcher **built** on main | formAutomation→triggered-moments migration (multi-day: needs event-scoped triggers + CRM action kinds) |
-| R11 | Reconciliation/export, per-function attendance report, retention | **missing** | report callable, exceptions, retention policy |
+| R11 | Reconciliation/export, per-function attendance report, retention | **in review #460** — callable + report screen + CSV export | retention policy |
 | R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
 Merge-ready now (no ordering dependency): R9's entitlements PR (#455).

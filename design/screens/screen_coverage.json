@@ -473,18 +473,11 @@
       "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
     },
     {
-      "routeId": "hostWorkGuestsScreen",
+      "routeId": "hostWorkAttendanceReportScreen",
       "status": "contracted",
       "priority": "P1",
-      "screenId": "screen.programs.guests",
-      "reason": "Covered by screen.programs.guests as the least-privilege guestRelations variant of the household and function RSVP matrix; guest and group mutations stay hidden unless the actor also holds programCoordinator."
-    },
-    {
-      "routeId": "hostWorkImportScreen",
-      "status": "contracted",
-      "priority": "P1",
-      "screenId": "screen.programs.import",
-      "reason": "Covered by screen.programs.import as the staff manifest mapping and import surface; the callable re-checks guestRelations server-side."
+      "screenId": "screen.programs.attendance_report",
+      "reason": "Covered by screen.programs.attendance_report as the attendance reconciliation surface."
     },
     {
       "routeId": "hostWorkCountsScreen",

@@ -1317,6 +1317,22 @@
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
+    "screen.programs.attendance_report": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkAttendanceReportScreen"
+          ],
+          "file": "lib/programs/presentation/program_attendance_report_screen.dart",
+          "symbol": "_ProgramAttendanceReportScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
     "screen.programs.counts": {
       "owners": [
         {
@@ -29655,6 +29671,167 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-TRIPS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.attendance_report",
+      "name": "Program attendance report",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkAttendanceReportScreen",
+          "path": "/host/work/:programId/attendance",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_attendance_report_screen.dart",
+        "symbol": "ProgramAttendanceReportScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading",
+          "empty"
+        ],
+        "owner": "program providers, ProgramAttendanceActions and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programAttendanceReportProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_attendance_report_screen.dart",
+            "symbol": "ProgramAttendanceReportScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programAttendanceReport"
+          },
+          {
+            "file": "lib/programs/presentation/program_attendance_actions_controller.dart",
+            "symbol": "ProgramAttendanceActions"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_attendance_actions_controller.dart",
+            "symbol": "ProgramAttendanceActions"
+          }
+        ],
+        "notes": "The report is counts and guest ids only; CSV export shares exactly what the viewer can read."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "attendance_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the report resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttendanceReportScreen/Screen states"
+          ]
+        },
+        {
+          "id": "attendance_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Report failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttendanceReportScreen/Screen states"
+          ]
+        },
+        {
+          "id": "report",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Program totals plus per-function invited/attending/checked-in counts and exception badges.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttendanceReportScreen/Screen states"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Programs with no functions render an inline empty state.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramAttendanceReportScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramAttendanceReportScreen renders program totals then per-function reconciliation rows with exception badges.",
+        "targetLayout": "The report stays read-focused for reconciliation viewers; export is the only action.",
+        "sections": [
+          {
+            "id": "section.programs_attendance.adapter",
+            "name": "Attendance report route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramAttendanceReportScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_attendance_report_screen.dart",
+              "symbol": "ProgramAttendanceReportScreen"
+            },
+            "currentOwner": "ProgramAttendanceReportScreen + programAttendanceReportProvider",
+            "targetOwner": "provider-free report rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.field",
+              "catch.meta_row",
+              "catch.badge",
+              "catch.button"
+            ],
+            "states": [
+              "attendance_loading",
+              "attendance_error",
+              "report",
+              "empty"
+            ],
+            "migration": "Keep report rows provider-free; export stays behind the controller.",
+            "previewIds": [
+              "ProgramAttendanceReportScreen/Screen states",
+              "ProgramFunctionAttendanceRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-ATTENDANCE-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }
