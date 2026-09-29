@@ -203,6 +203,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
 | `adminRecordActionExecution` | `src/admin/adminActionExecutions.ts` | Admin append-only bounded execution receipt for catalog-driven actions |
+| `adminGrantOrganizerEntitlement` | `src/admin/organizerEntitlements.ts` | Admin Owner or Finance grants one organizer entitlement with an idempotent operation receipt and audit log; grants no dispatch authority |
+| `adminRevokeOrganizerEntitlementGrant` | `src/admin/organizerEntitlements.ts` | Admin Owner or Finance revokes one existing organizer entitlement grant with an idempotent operation receipt and audit log |
+| `getOrganizerEntitlement` | `src/entitlements/organizerEntitlementRead.ts` | Organizer manager reads a bounded entitlement, usage-meter, and SKU catalog projection without admin-only grant details |
 | `adminGetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner exact Firebase Auth uid role lookup |
 | `adminListAdminRoleAssignments` | `src/admin/adminUserRoles.ts` | Admin-owner bounded role assignment register |
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |

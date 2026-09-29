@@ -22,6 +22,16 @@ import type {AdminApplyEventMessagingBudgetCallablePayload} from
   "../../generated/contracts/adminApplyEventMessagingBudgetCallablePayload";
 import type {AdminApplyEventMessagingBudgetCallableResponse} from
   "../../generated/contracts/adminApplyEventMessagingBudgetCallableResponse";
+import type {AdminGrantOrganizerEntitlementCallablePayload} from
+  "../../generated/contracts/adminGrantOrganizerEntitlementCallablePayload";
+import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
+  "../../generated/contracts/adminRevokeOrganizerEntitlementGrantCallablePayload";
+import type {GetOrganizerEntitlementCallablePayload} from
+  "../../generated/contracts/getOrganizerEntitlementCallablePayload";
+import type {OrganizerEntitlementCallableResponse} from
+  "../../generated/contracts/organizerEntitlementCallableResponse";
+import type {OrganizerEntitlementMutationCallableResponse} from
+  "../../generated/contracts/organizerEntitlementMutationCallableResponse";
 import {
   sampleClubDetails,
   sampleEventDetails,
@@ -240,6 +250,113 @@ const sampleMessagingBudgetDecisionRoutes = new Map<
   string,
   AdminReviewEventMessagingBudgetCallablePayload["routeId"]
 >();
+
+type SampleOrganizerEntitlementGrant =
+  OrganizerEntitlementCallableResponse["grants"][number];
+
+const sampleOrganizerEntitlementSkuCatalog:
+  OrganizerEntitlementCallableResponse["skuCatalog"] = {
+    wedding_essentials: {
+      label: "Wedding Essentials",
+      unit: "program",
+      priceMinor: 2499900,
+      currency: "INR",
+      limits: {
+        guests: 150,
+        functions: 5,
+        staffAssignments: 10,
+        momentsPerFunction: 3,
+      },
+      capabilitiesAllowed: ["forms", "messaging"],
+      includedFlightDays: 0,
+      includedWaConversations: 0,
+      stakeholderSeats: 2,
+    },
+    wedding_pro: {
+      label: "Wedding Pro",
+      unit: "program",
+      priceMinor: 5999900,
+      currency: "INR",
+      limits: {
+        guests: 400,
+        functions: 10,
+        staffAssignments: 30,
+        momentsPerFunction: null,
+      },
+      capabilitiesAllowed: [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging",
+      ],
+      includedFlightDays: 0,
+      includedWaConversations: 0,
+      stakeholderSeats: 6,
+    },
+    wedding_signature: {
+      label: "Wedding Signature",
+      unit: "program",
+      priceMinor: 14999900,
+      currency: "INR",
+      limits: {
+        guests: 1000,
+        functions: null,
+        staffAssignments: 100,
+        momentsPerFunction: null,
+      },
+      capabilitiesAllowed: [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging",
+      ],
+      includedFlightDays: 300,
+      includedWaConversations: 3000,
+      stakeholderSeats: null,
+    },
+    wedding_transport_addon: {
+      label: "Arrivals desk + dispatch add-on",
+      unit: "program",
+      priceMinor: 1499900,
+      currency: "INR",
+      limits: {
+        guests: null,
+        functions: null,
+        staffAssignments: null,
+        momentsPerFunction: null,
+      },
+      capabilitiesAllowed: ["arrivalsTransport"],
+      includedFlightDays: 0,
+      includedWaConversations: 0,
+      stakeholderSeats: null,
+    },
+    planner_annual: {
+      label: "Planner annual (quote)",
+      unit: "organizerYear",
+      priceMinor: null,
+      currency: "INR",
+      limits: {
+        guests: null,
+        functions: null,
+        staffAssignments: null,
+        momentsPerFunction: null,
+      },
+      capabilitiesAllowed: [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging",
+      ],
+      includedFlightDays: 0,
+      includedWaConversations: 0,
+      stakeholderSeats: null,
+    },
+  };
+
+const sampleOrganizerEntitlements = new Map<string, {
+  revision: number;
+  grants: SampleOrganizerEntitlementGrant[];
+}>();
 
 function sampleAdminRoleAssignments(
   payload: AdminListAdminRoleAssignmentsPayload = {}
@@ -2381,6 +2498,121 @@ export async function stageEventMessagingBudget(
     AdminApplyEventMessagingBudgetCallablePayload,
     AdminApplyEventMessagingBudgetCallableResponse
   >(functions, "adminApplyEventMessagingBudget");
+  return (await callable(payload)).data;
+}
+
+export async function getOrganizerEntitlement(
+  payload: GetOrganizerEntitlementCallablePayload
+): Promise<OrganizerEntitlementCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    const organizerId = payload.organizerId.trim();
+    const record = sampleOrganizerEntitlements.get(organizerId);
+    return {
+      schemaVersion: 1,
+      organizerId,
+      catalogVersion: 1,
+      revision: record?.revision ?? 0,
+      grants: (record?.grants ?? []).map((grant) => ({...grant})),
+      meters: {flightDaysUsed: 0, waConversationsUsed: 0},
+      skuCatalog: sampleOrganizerEntitlementSkuCatalog,
+    };
+  }
+  // This callable is scoped to organizer managers rather than admin roles, so
+  // it stays outside the generated admin validator registry and uses the bare
+  // Firebase callable.
+  const callable = firebaseHttpsCallable<
+    GetOrganizerEntitlementCallablePayload,
+    OrganizerEntitlementCallableResponse
+  >(functions, "getOrganizerEntitlement");
+  return (await callable(payload)).data;
+}
+
+export async function grantOrganizerEntitlement(
+  payload: AdminGrantOrganizerEntitlementCallablePayload
+): Promise<OrganizerEntitlementMutationCallableResponse> {
+  if (dataMode() === "sample") {
+    const organizerId = payload.organizerId.trim();
+    const record = sampleOrganizerEntitlements.get(organizerId) ?? {
+      revision: 0,
+      grants: [] as SampleOrganizerEntitlementGrant[],
+    };
+    const grantId = `grant_${payload.operationId}`;
+    if (record.grants.some((grant) => grant.grantId === grantId)) {
+      return {
+        schemaVersion: 1,
+        organizerId,
+        revision: record.revision,
+        grantId,
+        replayed: true,
+      };
+    }
+    const catalogEntry = sampleOrganizerEntitlementSkuCatalog[payload.sku];
+    const now = Date.now();
+    const validFromMillis = payload.validFromMillis ?? now;
+    const validUntilMillis = payload.validUntilMillis ?? null;
+    const grant: SampleOrganizerEntitlementGrant = {
+      grantId,
+      sku: payload.sku,
+      skuLabel: catalogEntry?.label ?? payload.sku,
+      unit: payload.unit,
+      quantityTotal: payload.quantityTotal,
+      quantityConsumed: 0,
+      quantityRemaining: payload.quantityTotal,
+      validFromMillis,
+      validUntilMillis,
+      source: payload.source,
+      active: validFromMillis <= now &&
+        (validUntilMillis === null || validUntilMillis > now),
+      revoked: false,
+    };
+    record.grants = [...record.grants, grant];
+    record.revision += 1;
+    sampleOrganizerEntitlements.set(organizerId, record);
+    return {
+      schemaVersion: 1,
+      organizerId,
+      revision: record.revision,
+      grantId,
+      replayed: false,
+    };
+  }
+  const callable = httpsCallable<
+    AdminGrantOrganizerEntitlementCallablePayload,
+    OrganizerEntitlementMutationCallableResponse
+  >(functions, "adminGrantOrganizerEntitlement");
+  return (await callable(payload)).data;
+}
+
+export async function revokeOrganizerEntitlementGrant(
+  payload: AdminRevokeOrganizerEntitlementGrantCallablePayload
+): Promise<OrganizerEntitlementMutationCallableResponse> {
+  if (dataMode() === "sample") {
+    const organizerId = payload.organizerId.trim();
+    const record = sampleOrganizerEntitlements.get(organizerId);
+    const grant = record?.grants.find((entry) =>
+      entry.grantId === payload.grantId);
+    if (!record || !grant) {
+      throw new Error("Unknown entitlement grant for this organizer.");
+    }
+    if (grant.revoked) {
+      throw new Error("This entitlement grant is already revoked.");
+    }
+    record.grants = record.grants.map((entry) => entry.grantId === grant.grantId ?
+      {...entry, active: false, revoked: true} : entry);
+    record.revision += 1;
+    return {
+      schemaVersion: 1,
+      organizerId,
+      revision: record.revision,
+      grantId: grant.grantId,
+      replayed: false,
+    };
+  }
+  const callable = httpsCallable<
+    AdminRevokeOrganizerEntitlementGrantCallablePayload,
+    OrganizerEntitlementMutationCallableResponse
+  >(functions, "adminRevokeOrganizerEntitlementGrant");
   return (await callable(payload)).data;
 }
 

@@ -471,6 +471,8 @@ export {validateOrganizerContactTagVocabularyDocument} from "./validators/organi
 export {validateOrganizerSavedAudienceDocument} from "./validators/organizerSavedAudienceDocument";
 export {validateOrganizerManualSendTaskDocument} from "./validators/organizerManualSendTaskDocument";
 export {validateOrganizerAttentionItemDocument} from "./validators/organizerAttentionItemDocument";
+export {validateOrganizerEntitlementsDocument} from "./validators/organizerEntitlementsDocument";
+export {validateOrganizerEntitlementReceiptDocument} from "./validators/organizerEntitlementReceiptDocument";
 export {validateOrganizerContactIdentityLinkDocument} from "./validators/organizerContactIdentityLinkDocument";
 export {validateOrganizerContactIdentityClaimDocument} from "./validators/organizerContactIdentityClaimDocument";
 export {validateOrganizerContactEventEdgeDocument} from "./validators/organizerContactEventEdgeDocument";
@@ -758,6 +760,11 @@ export {validateAdminUpdateClubDetailsCallablePayload} from "./validators/adminU
 export {validateAdminGetOrganizerDetailsCallablePayload} from "./validators/adminGetOrganizerDetailsInput";
 export {validateAdminListOrganizerDetailsCallablePayload} from "./validators/adminListOrganizerDetailsInput";
 export {validateAdminUpdateOrganizerDetailsCallablePayload} from "./validators/adminUpdateOrganizerDetailsInput";
+export {validateAdminGrantOrganizerEntitlementCallablePayload} from "./validators/adminGrantOrganizerEntitlementInput";
+export {validateAdminRevokeOrganizerEntitlementGrantCallablePayload} from "./validators/adminRevokeOrganizerEntitlementGrantInput";
+export {validateGetOrganizerEntitlementCallablePayload} from "./validators/getOrganizerEntitlementInput";
+export {validateOrganizerEntitlementMutationCallableResponse} from "./validators/organizerEntitlementMutationOutput";
+export {validateOrganizerEntitlementCallableResponse} from "./validators/organizerEntitlementOutput";
 export {validateAdminGetEventDetailsCallablePayload} from "./validators/adminGetEventDetailsInput";
 export {validateAdminListEventDetailsCallablePayload} from "./validators/adminListEventDetailsInput";
 export {validateAdminListExternalEventDetailsCallablePayload} from "./validators/adminListExternalEventDetailsInput";

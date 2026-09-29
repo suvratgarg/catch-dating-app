@@ -45,6 +45,11 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/finance/controllers/useOrganizerEntitlementController.ts",
+      "test": "admin/src/features/finance/controllers/useOrganizerEntitlementController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/growth/controllers/useGrowthKpiController.ts",
       "test": "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
       "status": "required"

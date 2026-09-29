@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "organizer-1",
+  "grants": [
+    {
+      "grantId": "grant-1",
+      "sku": "wedding_pro",
+      "unit": "program",
+      "quantityTotal": 1,
+      "quantityConsumed": 0,
+      "validFrom": {
+        "_seconds": 1760000000,
+        "_nanoseconds": 0
+      },
+      "validUntil": {
+        "_seconds": 1800000000,
+        "_nanoseconds": 0
+      },
+      "source": "manualInvoice",
+      "receiptRef": "INV-0412",
+      "note": null,
+      "grantedBy": "admin-uid-1",
+      "grantedAt": {
+        "_seconds": 1760000100,
+        "_nanoseconds": 0
+      },
+      "revokedAt": null,
+      "revokedBy": null,
+      "revokeReason": null
+    }
+  ],
+  "meters": {
+    "flightDaysUsed": -1,
+    "waConversationsUsed": 1240,
+    "periodStartsAt": {
+      "_seconds": 1760000000,
+      "_nanoseconds": 0
+    }
+  },
+  "revision": 3,
+  "createdAt": {
+    "_seconds": 1759000000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1760000200,
+    "_nanoseconds": 0
+  }
+}

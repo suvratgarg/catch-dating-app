@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_entitlement_mutation_response.schema.json",
+  "title": "OrganizerEntitlementMutationCallableResponse",
+  "description": "Result of an admin entitlement grant or revoke mutation, including idempotent replay marker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "revision",
+    "grantId",
+    "replayed"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "grantId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "replayed": {"type": "boolean"}
+  }
+}
