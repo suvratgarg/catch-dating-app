@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 96,
-  "updated": "2026-09-09",
+  "version": 97,
+  "updated": "2026-09-30",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -3745,6 +3745,29 @@
         ]
       },
       "notes": "Reuses governed runtime primitives; unit tests exercise synthetic-only transitions."
+    },
+    {
+      "id": "host_content_review",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/HostContentReview.tsx",
+      "exportName": "HostContentReview",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostContentReview.stories.tsx",
+        "exportName": "WorkflowLed",
+        "states": [
+          "workflow-led-content",
+          "fictional-examples"
+        ]
+      },
+      "notes": "Workbench-only content organisation review using canonical React primitives and authored copy. No new public route, backend adapter, approval action or payment action."
     }
   ]
 }

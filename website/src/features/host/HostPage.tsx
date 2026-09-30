@@ -1,4 +1,4 @@
-import {hostPageCopy} from "@content/host";
+import {hostPageCopy, hostSiteActions, hostSiteNavigation} from "@content/host";
 import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
@@ -25,14 +25,8 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         brandHref="/"
         menuCopy={siteMenuCopy}
         tone="dark"
-        nav={[
-          {href: "#workflow", label: hostPageCopy.nav.workflow},
-          {href: "#live", label: hostPageCopy.nav.liveTools},
-          {href: "#works-now", label: hostPageCopy.nav.worksNow},
-          {href: "#coming-soon", label: hostPageCopy.nav.comingSoon},
-          {href: "/organizers/", label: hostPageCopy.nav.organizers},
-        ]}
-        ctaHref="#founding-hosts"
+        nav={[...hostSiteNavigation]}
+        ctaHref={hostSiteActions.apply}
         ctaLabel={hostPageCopy.nav.apply}
       />
       <WebsitePageMain id="top">
@@ -52,10 +46,8 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         brandHref="/"
         body={hostPageCopy.footer}
         links={[
-          {href: "#workflow", label: hostPageCopy.nav.workflow},
-          {href: "#live", label: hostPageCopy.nav.liveTools},
-          {href: "#coming-soon", label: hostPageCopy.nav.comingSoon},
-          {href: "#founding-hosts", label: hostPageCopy.nav.apply},
+          ...hostSiteNavigation.filter((item) => item.footer),
+          {href: hostSiteActions.apply, label: hostPageCopy.nav.apply},
           ...siteFooterLegalLinks,
         ]}
       />

@@ -20,7 +20,7 @@ export {CardGrid, ChipRail, ChoiceCard, ChoiceChip, ChoiceChipGrid, FilterRail, 
 export type {ChipRailItem} from "./layout2";
 export {EvidenceStrip, HeroAccent, HomeHeroBody, HomeHeroCopy, HomeHeroInner, HomeHeroShell, HomeHeroStage, ProofLedgerRows} from "./marketing";
 export type {AppDownloadStorePlatform, ProofLedgerItem} from "./marketing";
-export {ActivityMark, CaptureCard, CaptureGrid, HomeHeroMedia, HostCreateFlowCapture, HostPreviewHeroMedia, MarketingInfoCardGrid, MarketingLoopList, MarketingSection, MarketingSectionCopy, PhoneCaptureShell} from "./media";
+export {ActivityMark, CaptureCard, CaptureGrid, HomeHeroMedia, HostCreateFlowCapture, HostPreviewHeroMedia, MarketingFactList, MarketingInfoCardGrid, MarketingLoopList, MarketingSection, MarketingSectionCopy, PhoneCaptureShell} from "./media";
 export type {ActivityMarkSize, CaptureRecord, MarketingInfoCardItem, MarketingLoopListItem, MarketingLoopListProps} from "./media";
 export {DirectoryClaimPressureCopy, DirectoryClaimPressureList, DirectoryClaimPressureStats, FeaturedOrganizerCardGrid, FeaturedOrganizersGrid, ListingFactGrid, ListingHeroCopy, ListingHeroEyebrow, ListingHeroInner, ListingHeroMetrics, ListingHeroShell, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailEmptyState, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerResultSummary, OrganizerSearchSection, OrganizerSearchStats, RecommendedOrganizersSectionShell} from "./organizer";
 export type {ActivityListing, FeaturedOrganizerCardItem, ListingRailLinkItem, ListingStatusLedgerItem} from "./organizer";

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.8.0
-updated: 2026-08-19
+version: 0.9.0
+updated: 2026-09-30
 owner: marketing_website
 status: active
 ---
@@ -1052,6 +1052,61 @@ Run:
 
 The next useful proof is applying the same convention to one additional admin
 read or mutation family without changing the surrounding UI contracts.
+
+## Workflow-led marketing consolidation
+
+The canonical implementation remains the React application in `website/`. The
+static `website/research-preview/host-redesign/` concept on
+`feat/host-site-redesign` is reference material, not an alternative deployable
+application. Do not promote it wholesale or copy its reset, token namespace,
+imperative demo script, submission endpoints or product policy.
+
+The first reference composition is `features/host/HostContentReview.tsx`, shown
+in `stories/HostContentReview.stories.tsx`. It is a workbench-only content
+mockup, not a new public route. `content/hostOrganization.ts` owns its copy and
+fictional, typed display projections. It uses the existing site chrome, section,
+copy, information-grid, ordered-step, action and link owners. The new
+`ContentGrid` marketing-split variant and neutral `MarketingFactList` are also
+used by the canonical Host workflow section. Existing generated Catch tokens
+and website semantic roles own colors, typography, gutters and spacing; this
+slice introduces no second palette, reset, theme or breakpoint registry.
+`content/host.ts` owns canonical Host navigation/action destinations for both
+header and footer, as well as the live-event adoption summary.
+
+The proposed content order is problem and contact action → recognisable buyer
+workflows → concrete illustrative outcomes and steps → shared capabilities →
+supported starting point, data boundary and contact action. Persona examples
+change context, not controllers, repositories or product rules. Lifecycle
+ordering is a story choice, not a compulsory admission pipeline. Application
+review, durable membership, event eligibility, payment and admission remain
+independent in the community example. Social events can begin with a file
+import; weddings can begin with scoped household responses.
+
+| Static concept material | React destination / treatment |
+|---|---|
+| `index.html`, `host.html`: host-first opener, workflow and capability story | Ported as proposed content in the Host content-review composition. Public root and existing Host sequence remain retained until content approval. |
+| `clubs.html`: applications, repeat community and booking | Ported as fictional application/review/eligibility/payment/admission example. Membership transition and returning-guest automation remain explicitly unverified. |
+| `mixers.html`: live facilitation alongside existing booking | Ported as a tailored social-event entrance; existing Host live-event controllers and sections remain canonical. File import is distinguished from direct sync. |
+| `planners.html`: weddings, retreats and multi-day coordination | Ported as a scoped household/function story; travel enrichment and broad launch assertions remain deferred. |
+| `directory.html`, `claim.html` | Existing `/organizers/` and `/claim/` routes, loading/auth/authority states and generated projections retained. Prototype cards and fixture claims are not imported. |
+| `apply.html` | Existing event-qualified beta application retained with its frozen-payload controller and validation. The mockup uses the confirmed contact destination for walkthrough enquiries and explains that beta intake does not book a call. |
+| `stack.html`, interactive tiers/console/audit | Deferred and retained on the concept branch. A later port must use shared controls and typed fictional projections; no new repository/callable layer. Commercial tiers and availability claims need decisions. |
+| `concept.css`, `concept.js`, fixtures/media | Retained reference only. Reuse presentation ideas selectively through current primitives/content, not duplicate tokens or client-owned business rules. |
+
+No prototype files are removed by this slice. Legal/help, consumer discovery and
+waitlist, directory/claim, public forms, offers/bookings/payments, guest runtime,
+invitations, household RSVP, rehearsal and private sales demos retain their
+existing routes, metadata, consent rules, generated contracts and controllers.
+The content-review composition performs no remote reads or mutations. A
+fictional payment/admission label is not a checkout action or proof of a
+complete automation. Named prospect examples are labelled illustrative and
+must not become customer logos, results or testimonials without evidence.
+
+Before public integration, decide the root audience and consumer entry, the
+walkthrough contact/scheduling commitment, workflow availability, membership
+transition, allowed customer naming and commercial terms. The default is a
+guided, supported first event, no direct-sync promise, and no universal tariff.
+Marketing claims must not override server-owned capability/availability policy.
 
 ## Open Decisions
 
