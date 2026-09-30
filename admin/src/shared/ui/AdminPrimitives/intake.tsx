@@ -1,3 +1,4 @@
+import {ButtonControl} from "@catch/web-ui";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -482,7 +483,7 @@ export function AdminIntakeStageRail<TStage extends string>({
       {options.map((option) => {
         const selected = option.id === value;
         return (
-          <button
+          <ButtonControl
             aria-current={selected ? "step" : undefined}
             className={selected ? "selected" : ""}
             key={option.id}
@@ -490,7 +491,7 @@ export function AdminIntakeStageRail<TStage extends string>({
             type="button"
           >
             <strong>{option.label}</strong>
-          </button>
+          </ButtonControl>
         );
       })}
     </nav>

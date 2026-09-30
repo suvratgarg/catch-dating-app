@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-28",
+  "updated": "2026-09-30",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -794,6 +794,86 @@
       "reason": "Private Sales operations are governed by callable contracts, role boundaries and focused workspace tests. The shared intake-to-demo feature orchestration contract remains planned.",
       "targetFeature": "feature.host_acquisition",
       "debtId": "FEATURE-SALES-WORKSPACE-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_overview",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Consumer/social and Host-entry concept projection of Marketing Home; fictional event cards and waitlist handoffs reuse existing discovery and conversion owners.",
+      "primaryAuthorityId": "home"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_platform",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Illustrative Host capability, tier, FAQ and local stack-audit projection of Host Acquisition; no new product authority, integration or commercial availability is created.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_planners",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Planner persona content projection of Host Acquisition; household/functions, logistics and communications remain illustrative and reuse existing acquisition handoffs.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_mixers",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Mixer persona content projection of Host Acquisition; attribution, admission, pricing and facilitation examples remain illustrative without a separate transaction workflow.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_clubs",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Club persona content projection of Host Acquisition; application, repeat-guest and community examples remain illustrative without granting membership or event eligibility.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_directory",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Fictional directory-content projection of Explore organizer discovery; its GET search hands off to the existing organizer_search route without creating listing or claim authority.",
+      "primaryAuthorityId": "organizer_search"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_claim",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Explanatory concept projection of Organizer Claim; real lookup, identity, proof, pending submission and ownership decisions remain in the existing claim route.",
+      "primaryAuthorityId": "claim"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_apply",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Illustrative pilot application content projection of Host Acquisition; submission hands off to the existing five-stage Host intake rather than introducing another application controller.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_stack",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Local illustrative tool-filter, selection, mapping-detail and suggested-tier projection of Host Acquisition; no remote connection, import, purchase or lead mutation is created.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host_workflows",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Workflow-led content-review projection of Host Acquisition; fictional examples and guided-contact handoffs do not implement personalised entry, approval, checkout or admission.",
+      "primaryAuthorityId": "host"
     }
   ]
 }

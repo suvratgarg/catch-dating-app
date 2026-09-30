@@ -919,6 +919,16 @@ export const OrganizerSearch = {
       [
         "home",
         "host",
+        "host_overview",
+        "host_platform",
+        "host_planners",
+        "host_mixers",
+        "host_clubs",
+        "host_directory",
+        "host_claim",
+        "host_apply",
+        "host_stack",
+        "host_workflows",
         "public_form",
         "event_runtime",
         "event_rehearsal",
@@ -977,6 +987,15 @@ export const OrganizerSearch = {
     },
   };
   assert.deepEqual(validateWebsiteMeta(validMeta), []);
+  assert.match(
+    validateWebsiteMeta({
+      ...validMeta,
+      routes: Object.fromEntries(
+        Object.entries(validMeta.routes).filter(([key]) => key !== "host_workflows")
+      ),
+    }).join("\n"),
+    /routes is missing host_workflows/u
+  );
   assert.match(
     validateWebsiteMeta({
       ...validMeta,

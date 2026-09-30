@@ -37,18 +37,20 @@ export interface HostPreviewFaqItem {
 }
 
 export function HostPreviewFaqList({
+  initiallyOpenIndex,
   className,
   items,
   reveal = false,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   items: HostPreviewFaqItem[];
+  initiallyOpenIndex?: number;
   reveal?: boolean;
 }) {
   return (
     <div {...props} className={classNames("host-preview-faq__list", className)}>
       {items.map((item, index) => (
-        <details data-reveal={reveal || undefined} key={item.key ?? String(item.question) ?? index}>
+        <details open={index === initiallyOpenIndex || undefined} data-reveal={reveal || undefined} key={item.key ?? String(item.question) ?? index}>
           <summary>{item.question}</summary>
           <p>{item.answer}</p>
         </details>

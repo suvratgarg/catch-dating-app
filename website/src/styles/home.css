@@ -885,7 +885,7 @@ h3 {
 }
 
 .loop-list span {
-  color: var(--website-text-faint);
+  color: var(--website-text-muted);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 500;
@@ -1244,4 +1244,53 @@ h3 {
   .hero__stage .phone-capture {
     animation: none;
   }
+}
+
+/* Reusable marketing content composition; existing palette/type/token owners. */
+.marketing-content-split {
+  display: grid;
+  align-items: start;
+  gap: var(--catch-space-s12);
+}
+
+.marketing-facts {
+  min-width: 0;
+  padding: var(--catch-space-s6);
+  border: 1px solid var(--website-line);
+  border-radius: var(--catch-radius-md);
+  background: var(--website-surface);
+}
+
+.marketing-facts dl { margin: var(--catch-space-s5) 0; }
+.marketing-facts dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: var(--catch-space-s4);
+  padding: var(--catch-space-s3) 0;
+  border-bottom: 1px solid var(--website-line);
+}
+.marketing-facts dt { color: var(--website-text-muted); }
+.marketing-facts dd { margin: 0; overflow-wrap: anywhere; }
+.marketing-facts p { color: var(--website-copy-muted); font-size: 14px; line-height: 1.6; }
+.surface-grid .button { margin-top: var(--catch-space-s6); justify-self: start; }
+
+/* Workbench content mockup adopts the same shared section and spacing system. */
+.host-content-review .story-section + .story-section { border-top: 1px solid var(--website-line); }
+.host-content-review .story-section > * + * { margin-top: var(--catch-space-s6); }
+.host-content-review h1 { font-size: clamp(36px, 6vw, 68px); max-width: 900px; line-height: 1.05; }
+.host-content-review .story-section > p { max-width: 780px; color: var(--website-copy-muted); line-height: 1.6; }
+.host-content-review .loop-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
+
+@media (min-width: 720px) {
+  .marketing-content-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 519px) {
+  .marketing-facts dl > div { grid-template-columns: minmax(0, 1fr); gap: var(--catch-space-s2); }
+}
+
+.marketing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--catch-space-s4);
 }

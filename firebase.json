@@ -127,6 +127,46 @@
       ],
       "rewrites": [
         {
+          "source": "/host/overview/**",
+          "destination": "/host/overview/index.html"
+        },
+        {
+          "source": "/host/platform/**",
+          "destination": "/host/platform/index.html"
+        },
+        {
+          "source": "/host/planners/**",
+          "destination": "/host/planners/index.html"
+        },
+        {
+          "source": "/host/mixers/**",
+          "destination": "/host/mixers/index.html"
+        },
+        {
+          "source": "/host/clubs/**",
+          "destination": "/host/clubs/index.html"
+        },
+        {
+          "source": "/host/directory/**",
+          "destination": "/host/directory/index.html"
+        },
+        {
+          "source": "/host/claim/**",
+          "destination": "/host/claim/index.html"
+        },
+        {
+          "source": "/host/apply/**",
+          "destination": "/host/apply/index.html"
+        },
+        {
+          "source": "/host/stack/**",
+          "destination": "/host/stack/index.html"
+        },
+        {
+          "source": "/host/workflows/**",
+          "destination": "/host/workflows/index.html"
+        },
+        {
           "source": "/events/**",
           "destination": "/events/index.html"
         },

@@ -114,6 +114,76 @@
       "twitterDescription": "Explore a synthetic example of a host workflow.",
       "canonicalPath": "/demo/",
       "robots": "noindex, follow"
+    },
+    "host_overview": {
+      "title": "Overview | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/overview/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_platform": {
+      "title": "Platform | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/platform/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_planners": {
+      "title": "Planners | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/planners/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_mixers": {
+      "title": "Mixers | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/mixers/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_clubs": {
+      "title": "Clubs | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/clubs/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_directory": {
+      "title": "Directory | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/directory/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_claim": {
+      "title": "Claim | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/claim/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_apply": {
+      "title": "Apply | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/apply/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_stack": {
+      "title": "Stack | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/stack/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
+    },
+    "host_workflows": {
+      "title": "Workflows | Catch Host content preview",
+      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "canonicalPath": "/host/workflows/",
+      "twitterDescription": "Catch Host workflow and concept preview.",
+      "robots": "noindex, follow"
     }
   },
   "listing": {

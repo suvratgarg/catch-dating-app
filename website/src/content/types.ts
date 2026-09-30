@@ -98,7 +98,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "sales_demo" | "home" | "host" | "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
+      "sales_demo" | "home" | "host" | "host_overview" | "host_platform" | "host_planners" | "host_mixers" | "host_clubs" | "host_directory" | "host_claim" | "host_apply" | "host_stack" | "host_workflows" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
       StaticPageMetaCopy
     >
   >;

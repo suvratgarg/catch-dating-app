@@ -19,7 +19,7 @@ import {UiLabel} from "./layout";
 export {ButtonLink, PlainButton, PlainLink} from "./actionControls";
 export type {ButtonSize, ButtonVariant} from "./actionControls";
 
-export type ActionGroupVariant = "flow" | "hero" | "host-create-flow";
+export type ActionGroupVariant = "flow" | "hero" | "host-create-flow" | "marketing";
 
 export interface ProcessStatusAction {
   href: string;
