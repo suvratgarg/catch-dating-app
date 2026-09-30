@@ -32,7 +32,17 @@
         "help",
         "not_found",
         "event_booking",
-        "sales_demo"
+        "sales_demo",
+        "host_overview",
+        "host_platform",
+        "host_planners",
+        "host_mixers",
+        "host_clubs",
+        "host_directory",
+        "host_claim",
+        "host_apply",
+        "host_stack",
+        "host_workflows"
       ],
       "additionalProperties": false,
       "properties": {
@@ -85,6 +95,36 @@
           "$ref": "#/$defs/staticMeta"
         },
         "sales_demo": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_overview": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_platform": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_planners": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_mixers": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_clubs": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_directory": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_claim": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_apply": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_stack": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "host_workflows": {
           "$ref": "#/$defs/staticMeta"
         }
       }

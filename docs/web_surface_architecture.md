@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.23.2
-updated: 2026-09-27
+version: 0.24.0
+updated: 2026-09-30
 owner: web_platform
 status: active
 ---
@@ -1317,3 +1317,80 @@ this route. The generated static HTML contains generic noindex metadata, and
 Hosting applies no-referrer and private/no-store headers. No grant, prospect
 research or strategy appears in static content. Verified identity and explicit
 start remain separate from anonymous preview and organizer claim approval.
+
+
+## Identity and public event-entry consolidation boundary
+
+Source inventory on 2026-09-30 verified that website claims, forms, booking,
+offers and runtime already share the lazy Firebase Auth runtime in
+`website/src/firebase.ts`: `watchClaimAuthState` has public form/runtime aliases,
+and `beginPublicEventPhoneVerification` is the existing reCAPTCHA/OTP transport.
+Claims currently expose Google popup; forms also support email links and
+policy-specific anonymous drafts. Admin retains its Firebase app adapter,
+phone sign-in cleanup and privileged custom-claim policy. Do not import admin
+APIs into public entry points. `@catch/web-ui` remains Firebase-free.
+
+Both source defaults reference the dev project; prod builds inject the expected
+project through existing workflow variables. Read-only Firebase registration
+inventory verified Consumer Web and Host Web registrations in prod/dev, with
+no separately named admin/marketing registration. This does not verify current
+deployed variable values. No source Auth tenantId assignment was found. Live
+provider/domain/tenant reads returned HTTP403: settings remain unverified, not
+proven absent. No settings, grants or credentials were changed.
+
+Keep identity → claim proof/review → organiser management → event/operator
+permissions → privileged admin claims separate. Approval transactions create
+scoped organiser membership; authentication alone does not grant ownership.
+No provider linking or explicit persistence was found; shared project configuration
+does not imply one UID across Google/phone or a cross-subdomain session.
+
+Current gaps: explicit phone entry on claim, a public profile-completion bridge
+required by claim approval (`users/{uid}.profileComplete`), general public account
+history/profile and provider linking. These are product/recovery decisions, not
+delivered by sharing infrastructure. Local answers may precede verification when
+the existing form policy allows; current booking quote/history still require OTP.
+
+### Public event information and proposed dual entry
+
+`EventDetailRecord` currently projects title, summary, activityKind, date,
+startTime/endTime/timezone, location/locationDetails, accessibility, requirements,
+priceLabel, capacityLimit/remainingCapacity, listing/organiser, source attribution,
+reviews, isUpcoming, registrationState/mode and paidBookingAvailable. Event imagery
+and cancellation terms are not independently projected in this record; do not
+invent them. Static counts are informational, not a live seat promise.
+
+It has no public application form link, viewer application/membership/eligibility,
+current offer/grant/expiry or personalised payment recovery status. Manager-only
+application APIs cannot become consumer reads. Existing `/offer/` is the private
+recipient-bound approved-application checkout owner; public booking OTP explicitly
+denies manual-approval/membership/cohort/invite restrictions, and offer admission
+also denies unsupported partitioned admission. Membership approved is not event
+eligible, capacity reserved, payment captured or admission granted.
+
+Low-fidelity content/state structure for the next event-page increment:
+
+1. Public event identity, summary, time, venue disclosure, host and source.
+2. Separate joining/policy action panel; identify only when the chosen action
+   needs it, keeping event information readable.
+3. Event facts/accessibility/requirements, host/provenance and genuine reviews.
+4. State projection from reviewed authority, never inferred from attendance:
+
+| State | Proposed content / existing owner |
+|---|---|
+| Signed out / checking | Public details plus actual joining route; suppress checkout while authority resolves. |
+| New guest | Application only with verified public form producer linkage; reuse `/f/`. |
+| Submitted / in review / application waitlisted | Authorised status/receipt, distinct from event seat waitlist; no checkout. |
+| Membership approved but event ineligible/restricted | Explain supported requirements safely; do not unlock public OTP booking. |
+| Approved + eligible + current recipient offer | Explicit review/checkout action using `/offer/`; payment requires a separate deliberate action, never background charging. |
+| Revoked / declined / withdrawn / expired | Safe unavailable state with permitted contact/retry; no stale browser approval recovery. |
+| Full / closed / past | No new booking, preserve existing receipt/refund recovery; unrestricted free event may keep server waitlist. |
+| Already booked / payment pending / failed / refund state | Exact UID-bound existing booking/payment controller; capture is separate from server admission proof. |
+| External event | Official source CTA and provenance; no Catch application/payment promise. |
+
+Next implementation needs (a) canonical public form/event producer linkage and
+(b) a narrowly scoped consumer event-entry projection with safe reasons,
+membership versus admission distinction, version/expiry and identity isolation.
+These require explicit contract/authority approval. No broad manager read,
+new grant, source-rule bypass, OTP or payment was attempted in consolidation.
+The safe layout increment can reuse EventDetailHeroLayout/ActionPanel/FactGrid
+and existing controllers after that structure is reviewed.

@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 97,
+  "version": 98,
   "updated": "2026-09-30",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -3750,7 +3750,8 @@
       "id": "host_content_review",
       "kind": "supporting-component",
       "routeIds": [
-        "host"
+        "host",
+        "host_workflows"
       ],
       "owner": "features/host",
       "source": "website/src/features/host/HostContentReview.tsx",
@@ -3767,7 +3768,223 @@
           "fictional-examples"
         ]
       },
-      "notes": "Workbench-only content organisation review using canonical React primitives and authored copy. No new public route, backend adapter, approval action or payment action."
+      "notes": "Canonical workflow-led content composition with fictional examples; existing intake, claims and booking authorities remain separate."
+    },
+    {
+      "id": "host_concept_page",
+      "kind": "route",
+      "routeIds": [
+        "host_overview"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Overview",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_platform",
+      "kind": "route",
+      "routeIds": [
+        "host_platform"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Platform",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_planners",
+      "kind": "route",
+      "routeIds": [
+        "host_planners"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Planners",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_mixers",
+      "kind": "route",
+      "routeIds": [
+        "host_mixers"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Mixers",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_clubs",
+      "kind": "route",
+      "routeIds": [
+        "host_clubs"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Clubs",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_directory",
+      "kind": "route",
+      "routeIds": [
+        "host_directory"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Directory",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_claim",
+      "kind": "route",
+      "routeIds": [
+        "host_claim"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Claim",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_apply",
+      "kind": "route",
+      "routeIds": [
+        "host_apply"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Apply",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "host_concept_stack",
+      "kind": "route",
+      "routeIds": [
+        "host_stack"
+      ],
+      "owner": "features/host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "exportName": "HostConceptPage",
+      "css": [
+        "website/src/styles/home.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostConcepts.stories.tsx",
+        "exportName": "Stack",
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ]
+      },
+      "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
     }
   ]
 }

@@ -1,5 +1,6 @@
 import type {HostListing} from "../features/organizers/types";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
+import {hostConceptRoutes} from "@content/hostConceptNavigation";
 import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
@@ -37,6 +38,13 @@ const websiteMeta = validatedWebsiteMeta(metaContent);
 
 export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
   websiteMeta.routes;
+
+export function pageMetaForHostPath(pathname: string): PageMeta | null {
+  const path = pathname.replace(/\/+$/, "") + "/";
+  if (path === "/host/workflows/") return websiteMeta.routes.host_workflows;
+  const route = hostConceptRoutes.find((candidate) => candidate.path === path);
+  return route ? websiteMeta.routes[route.id] : null;
+}
 
 export function pageMetaForListing(
   listing: HostListing,

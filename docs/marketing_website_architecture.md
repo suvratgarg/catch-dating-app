@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.9.0
+version: 0.10.0
 updated: 2026-09-30
 owner: marketing_website
 status: active
@@ -1055,58 +1055,158 @@ read or mutation family without changing the surrounding UI contracts.
 
 ## Workflow-led marketing consolidation
 
-The canonical implementation remains the React application in `website/`. The
-static `website/research-preview/host-redesign/` concept on
-`feat/host-site-redesign` is reference material, not an alternative deployable
-application. Do not promote it wholesale or copy its reset, token namespace,
-imperative demo script, submission endpoints or product policy.
+The canonical implementation is the existing React application in `website/`,
+on `codex/marketing-foundation-content-20260930`, based on `e16429978bee48b9e193dc9a17d732f703e69033`.
+The reference source is the clean `feat/host-site-redesign` worktree at
+`1d1508fbf783f427a863c640ee38be8736e69db8`, in
+`website/research-preview/host-redesign/`. That source/history stays intact;
+no static CSS, token namespace, imperative script or backend endpoint is promoted.
 
-The first reference composition is `features/host/HostContentReview.tsx`, shown
-in `stories/HostContentReview.stories.tsx`. It is a workbench-only content
-mockup, not a new public route. `content/hostOrganization.ts` owns its copy and
-fictional, typed display projections. It uses the existing site chrome, section,
-copy, information-grid, ordered-step, action and link owners. The new
-`ContentGrid` marketing-split variant and neutral `MarketingFactList` are also
-used by the canonical Host workflow section. Existing generated Catch tokens
-and website semantic roles own colors, typography, gutters and spacing; this
-slice introduces no second palette, reset, theme or breakpoint registry.
-`content/host.ts` owns canonical Host navigation/action destinations for both
-header and footer, as well as the live-event adoption summary.
+`content/prototypeContent.ts` preserves all nine source pages, 49 sections,
+681 exact original text nodes and per-file SHA-256 provenance. Original wording
+is reference-only. Display projections retain every unique concern with explicit
+concept notices, readable bodies, FAQ answers and capability lists.
+`features/host/concepts/HostConceptPage.tsx` composes those projections using
+the existing site shell, responsive section/grid/action/choice/field/disclosure
+owners. Persona views change content, never domain authority or data providers.
+`content/hostConceptNavigation.ts` owns destinations; prototype filenames are
+mapped to canonical routes and valid anchors. Source dead sample anchors are not
+invented as real event links. Source `#waitlist` now points to the existing home
+waitlist; directory GET search opens the real `/organizers/?q=...` owner.
 
-The proposed content order is problem and contact action → recognisable buyer
-workflows → concrete illustrative outcomes and steps → shared capabilities →
-supported starting point, data boundary and contact action. Persona examples
-change context, not controllers, repositories or product rules. Lifecycle
-ordering is a story choice, not a compulsory admission pipeline. Application
-review, durable membership, event eligibility, payment and admission remain
-independent in the community example. Social events can begin with a file
-import; weddings can begin with scoped household responses.
+`features/host/HostContentReview.tsx` now also owns `/host/workflows/`.
+Its proposed order is recognisable problem → concrete workflow → independent
+application/membership/eligibility/payment/admission decisions → shared
+capabilities → supported first step and data boundary → guided contact action.
+All examples remain fictional. Afterfly-like membership approval is distinct
+from event eligibility; weddings have a household/function story, not a forced
+community admission funnel. Current live Host content, consumer root and all
+transactional owners remain available. There is no universal pricing tariff or
+unverified customer proof.
 
-| Static concept material | React destination / treatment |
+### Complete route and interaction parity
+
+| Prototype source | Canonical route / owner | Content and interaction treatment |
+|---|---|---|
+| `index.html` | `/host/overview/` · HostConceptPage | Consumer/social opener, sample events, organiser entrances, cumulative adoption story and claim pressure retained as concepts. One shared fictional console replay; current `/` and waitlist remain production owners. |
+| `host.html` | `/host/platform/` · HostConceptPage | Booking coexistence, all capability groups, Programs, pilot, FAQ retained. Shared tier selection and stack model; native FAQ disclosure. |
+| `planners.html` | `/host/planners/` · same composition | Run-of-show, household/functions, travel/logistics, lifecycle messages, hands-on pilot and FAQ. Availability and enrichment claims remain illustrative. |
+| `mixers.html` | `/host/mixers/` · same composition | Promotion attribution, pricing/admission concepts, revenue, first-ten-minutes tools, community, pilot and FAQ. No new demographic authority or tariff. |
+| `clubs.html` | `/host/clubs/` · same composition | Application, review, repeat records, live coordination, payment and community concepts. No inference that attendance establishes durable membership. |
+| `directory.html` | `/host/directory/` + `/organizers/` | All six fictional samples/statuses retained separately from real listings. Shared search field/GET form forwards to existing directory controller, preserving low-friction public entry. |
+| `claim.html` | `/host/claim/` + `/claim/` | All explanatory/state examples retained. Existing claim controller owns identity, proof, pending/frozen requests and actual submit. No authentication-to-ownership shortcut. |
+| `apply.html` | `/host/apply/` + `/host/#founding-hosts` | Authored concerns/stages retained. Source has an explicit form mount, not submission code; handoff reuses canonical five-stage intake/validation. Walkthrough contact remains separate from intake. |
+| `stack.html`, `stack-data.js` | `/host/stack/` + platform embed | All 37 tools/8 groups, filter, selection, receipt totals/details and tier precedence retained in one pure model/content owner. Program > no-platform or three replacement groups > alongside. Network suffix illustrative. No connection, purchase or import created. |
+| `concept.js` tiers | prototypePresentationModel + shared choice controls | Three selectable adoption levels; synchronized model indices, native keyboard buttons, fine-pointer hover, pinned manual choice and 4.2s hidden/reduced-motion-safe rotation. Ring styling is not duplicated. |
+| `concept.js` console | same presentation model + fictional fixtures | 1.6s progressive rows, check-in tally, source replay reset semantics, hidden pause, immediate reduced-motion rows; added explicit pause/replay controls. No production data. |
+| source native FAQ / reveal / navigation | existing FAQ/site/lifecycle owners | Native keyboard disclosures (first item open), canonical responsive mobile menu and existing reduced-motion reveal/focus behavior. Source lacked a mobile menu; no duplicate imperative handlers. |
+
+All new concept routes have centralized metadata, self-canonical static outputs,
+Hosting rewrites and `noindex, follow`; content claims and route retirement are
+still owner decisions. No deploy occurred. Existing analytics/consent and private
+route exclusions remain canonical; new public concept navigation has ordinary
+route analytics only if existing consent permits it. Sensitive credentials and
+synthetic tool selections are not forwarded as lead data.
+
+### Source section ledger
+
+Every row below is a retained React section ID; interactive tier content is
+reachable through native choices rather than always expanded. Source hashes and
+exact wording are in the typed catalog, not generated contract files.
+
+| Source file / section | Canonical destination | Preserved concern |
+|---|---|---|
+| `index.html#section-1` | `/host/overview/#section-1` | The room before the match. |
+| `index.html#section-2` | `/host/overview/#section-2` | Happening on Catch. |
+| `index.html#section-3` | `/host/overview/#section-3` | Built around the way you host. |
+| `index.html#section-4` | `/host/overview/#section-4` | One system. Three levels of commitment. |
+| `index.html#section-5` | `/host/overview/#section-5` | Your organizer page may already exist. |
+| `index.html#attend` | `/host/overview/#attend` | Here for the events, not the tooling? |
+| `host.html#section-1` | `/host/platform/#section-1` | Your booking tool stops at the sale. That's where we start. |
+| `host.html#tiers` | `/host/platform/#tiers` | Every feature is honest about what it needs. |
+| `host.html#section-3` | `/host/platform/#section-3` | Grouped by the job it does. |
+| `host.html#section-4` | `/host/platform/#section-4` | Tell us your pile. We'll tell you the fit. |
+| `host.html#section-5` | `/host/platform/#section-5` | Your organizer page may already exist. |
+| `host.html#pilot` | `/host/platform/#pilot` | Pilot Catch on your next event. |
+| `host.html#section-7` | `/host/platform/#section-7` | Fair questions. |
+| `planners.html#section-1` | `/host/planners/#section-1` | The run of show is not a spreadsheet of spreadsheets. |
+| `planners.html#section-2` | `/host/planners/#section-2` | One record from save-the-date to departure. |
+| `planners.html#logistics` | `/host/planners/#logistics` | The logistics layer. |
+| `planners.html#section-4` | `/host/planners/#section-4` | Every message has a place in the timeline. |
+| `planners.html#section-5` | `/host/planners/#section-5` | We run the first one with you. |
+| `planners.html#section-6` | `/host/planners/#section-6` | Fair questions. |
+| `mixers.html#section-1` | `/host/mixers/#section-1` | Fill the room. Balance the room. Get paid for both. |
+| `mixers.html#demand` | `/host/mixers/#demand` | Know which promotion actually worked. |
+| `mixers.html#section-3` | `/host/mixers/#section-3` | A balanced room is a pricing feature, not a compromise. |
+| `mixers.html#section-4` | `/host/mixers/#section-4` | Revenue you can actually read. |
+| `mixers.html#section-5` | `/host/mixers/#section-5` | The first ten minutes decide the event. |
+| `mixers.html#section-6` | `/host/mixers/#section-6` | Events that build your audience, not just fill it. |
+| `mixers.html#pilot` | `/host/mixers/#pilot` | Pilot Catch on your next event. |
+| `mixers.html#section-8` | `/host/mixers/#section-8` | Fair questions. |
+| `clubs.html#section-1` | `/host/clubs/#section-1` | The weekly event, without the weekly scramble. |
+| `clubs.html#section-2` | `/host/clubs/#section-2` | The ops that repeat, automated. |
+| `clubs.html#live` | `/host/clubs/#live` | Pairings and pace groups, settled before the warm-up ends. |
+| `clubs.html#section-4` | `/host/clubs/#section-4` | An attendance record that becomes a community. |
+| `clubs.html#pilot` | `/host/clubs/#pilot` | Pilot Catch on your next event. |
+| `clubs.html#section-6` | `/host/clubs/#section-6` | Fair questions. |
+| `directory.html#section-1` | `/host/directory/#section-1` | Organizers already on the record. |
+| `directory.html#section-2` | `/host/directory/#section-2` | Find your page. |
+| `directory.html#section-3` | `/host/directory/#section-3` | Prototype content |
+| `claim.html#section-1` | `/host/claim/#section-1` | This page is yours. Prove it. |
+| `claim.html#how` | `/host/claim/#how` | Three steps. One review. |
+| `claim.html#section-3` | `/host/claim/#section-3` | Your page, working for you. |
+| `claim.html#section-4` | `/host/claim/#section-4` | Where a claim can land. |
+| `claim.html#section-5` | `/host/claim/#section-5` | Found your page? Start there. |
+| `claim.html#section-6` | `/host/claim/#section-6` | Fair questions. |
+| `apply.html#section-1` | `/host/apply/#section-1` | Request a free pilot. |
+| `apply.html#section-2` | `/host/apply/#section-2` | Five quick steps. |
+| `apply.html#section-3` | `/host/apply/#section-3` | Application in. |
+| `stack.html#section-1` | `/host/stack/#section-1` | Map your stack. Keep what works. |
+| `stack.html#section-2` | `/host/stack/#section-2` | What do you run today? |
+| `stack.html#section-3` | `/host/stack/#section-3` | Five fractures every duct-taped stack shares. |
+| `stack.html#section-4` | `/host/stack/#section-4` | Bring the pile. We'll map it on the call. |
+
+### Existing application parity retained
+
+| Existing route family | Canonical source and preserved behavior |
 |---|---|
-| `index.html`, `host.html`: host-first opener, workflow and capability story | Ported as proposed content in the Host content-review composition. Public root and existing Host sequence remain retained until content approval. |
-| `clubs.html`: applications, repeat community and booking | Ported as fictional application/review/eligibility/payment/admission example. Membership transition and returning-guest automation remain explicitly unverified. |
-| `mixers.html`: live facilitation alongside existing booking | Ported as a tailored social-event entrance; existing Host live-event controllers and sections remain canonical. File import is distinguished from direct sync. |
-| `planners.html`: weddings, retreats and multi-day coordination | Ported as a scoped household/function story; travel enrichment and broad launch assertions remain deferred. |
-| `directory.html`, `claim.html` | Existing `/organizers/` and `/claim/` routes, loading/auth/authority states and generated projections retained. Prototype cards and fixture claims are not imported. |
-| `apply.html` | Existing event-qualified beta application retained with its frozen-payload controller and validation. The mockup uses the confirmed contact destination for walkthrough enquiries and explains that beta intake does not book a call. |
-| `stack.html`, interactive tiers/console/audit | Deferred and retained on the concept branch. A later port must use shared controls and typed fictional projections; no new repository/callable layer. Commercial tiers and availability claims need decisions. |
-| `concept.css`, `concept.js`, fixtures/media | Retained reference only. Reuse presentation ideas selectively through current primitives/content, not duplicate tokens or client-owned business rules. |
+| `/` | HomePage: consumer copy/discovery, download pending state, waitlist and consent; no retirement. |
+| `/host/` (legacy preview redirects) | HostPage: supported live workflow, setup/playbook/comparison/trust/FAQ, beta offer and existing five-stage application controller; unchanged contracts. |
+| `/organizers/`, generated organiser canonical/legacy paths | Directory/search/listing controllers, generated publication policy, filters/empty/loading states, corrections/reviews and provenance retained. |
+| `/claim/`, `/claim/:listing` | Claim route resolution, Google identity/existing shared Auth session, proof/submission/pending protection retained; claim approval is privileged and scoped. |
+| `/events/:eventId`, `/booking/:eventId`, `/offer/` | Event content, external source handoff, phone OTP, exact quote/payment/admission/recovery and private approved-application offer authority unchanged. |
+| `/f/:publicFormId` | Public projection, policy-specific anonymous/verified entry, version-bound draft, local answer retention, files, review, idempotent submission/withdrawal/attribution retained. |
+| `/join/:publicRuntimeId`, `/event-update/:linkId`, `/invite/:inviteToken` | Existing roster-bound guest runtime, bearer-scoped assistance, opaque invitation resolver and analytics exclusions retained. |
+| `/rsvp/:householdToken`, `/rehearse/:publicRehearsalId`, `/demo/:invitationId` | Household/function scopes, synthetic rehearsal boundary and private sales demo retained. |
+| `/privacy/`, `/terms/`, `/help/`, unknown routes | Published legal/help bodies, metadata/static output and actual 404 policy retained; no prototype legal text replaces approved content. |
 
-No prototype files are removed by this slice. Legal/help, consumer discovery and
-waitlist, directory/claim, public forms, offers/bookings/payments, guest runtime,
-invitations, household RSVP, rehearsal and private sales demos retain their
-existing routes, metadata, consent rules, generated contracts and controllers.
-The content-review composition performs no remote reads or mutations. A
-fictional payment/admission label is not a checkout action or proof of a
-complete automation. Named prospect examples are labelled illustrative and
-must not become customer logos, results or testimonials without evidence.
+### Shared platform boundaries
 
-Before public integration, decide the root audience and consumer entry, the
-walkthrough contact/scheduling commitment, workflow availability, membership
-transition, allowed customer naming and commercial terms. The default is a
-guided, supported first event, no direct-sync promise, and no universal tariff.
-Marketing claims must not override server-owned capability/availability policy.
+Marketing and admin already use React 19, TypeScript 6, Vite, TanStack Query,
+Firebase, generated Catch tokens and `@catch/web-ui`. Their step rails now consume
+the same `ButtonControl` non-submitting/disabled semantics, retaining surface
+callbacks/classes and selected `aria-current="step"`. Existing package controls
+own fields, toggles, tables, badges and empty states. Marketing `<dl>` facts,
+admin operational summaries, pending-operation leases and domain validation
+remain surface-owned because their contracts differ. No privileged admin imports
+enter the public bundle, and no new Firebase/callable/repository tier is added.
+
+Identity/claim/provider configuration inventory and public event dual-entry
+boundaries are maintained in `docs/web_surface_architecture.md`. A shared Firebase
+project is not proof of cross-origin sessions, linked providers, organiser
+ownership or global roles. Public form entry remains low friction according to
+its actual identity policy; existing required OTP boundaries remain unchanged.
+
+### Remaining product and authority decisions
+
+Content retirement, root B2B/consumer prioritization, commercial tier availability,
+universal tariff, direct integration claims, customer proof and broad program
+launch remain unapproved. Preserve source copy for review. Basic forms, member
+approval, CRM history, QR and referral/UTM features must not be called unique
+without competitive proof; workflow/operational differences need reachable
+end-to-end evidence. Conditional pricing or network concepts never override
+server authority. The migration adds presentation and honest local demos, not
+missing network/account/permission/payment products.
 
 ## Open Decisions
 

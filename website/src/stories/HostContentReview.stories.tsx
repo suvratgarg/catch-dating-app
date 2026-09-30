@@ -11,6 +11,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const WorkflowLed: Story = {
   parameters: {catchComponent: {
-    id: "host_content_review", routeIds: ["host"], states: ["workflow-led-content", "fictional-examples"],
+    id: "host_content_review", routeIds: ["host", "host_workflows"], states: ["workflow-led-content", "fictional-examples"],
   }},
 };

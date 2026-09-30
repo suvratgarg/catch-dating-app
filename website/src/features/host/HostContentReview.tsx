@@ -1,4 +1,5 @@
 import {hostOrganizationCopy, hostOrganizationNavigation, hostWorkflowExamples} from "@content/hostOrganization";
+import {hostConceptCopy} from "@content/hostConceptNavigation";
 import {ownerGatedSiteDestinations, siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
@@ -6,12 +7,12 @@ import {
   MarketingLoopList, MarketingSection, MarketingSectionCopy, UiLabel,
 } from "../../shared/ui/primitives";
 
-// Workbench-only composition. No controller, remote data or mutation boundary.
+// Canonical workflow composition; examples are fictional, with existing production handoffs.
 export function HostContentReview() {
   const copy = hostOrganizationCopy;
   return (
     <>
-      <SiteHeader brandHref="/" menuCopy={copy.menu} nav={[...hostOrganizationNavigation]}
+      <SiteHeader brandHref="/" menuCopy={copy.menu} nav={[...hostOrganizationNavigation, ...hostConceptCopy.personaLinks]}
         ctaHref={ownerGatedSiteDestinations.contactHref} ctaLabel={copy.hero.primaryAction} />
       <WebsitePageMain id="top">
         <MarketingSection variant="story" aria-labelledby="content-review-title">
@@ -61,7 +62,7 @@ export function HostContentReview() {
           <p>{copy.pilot.betaNote}</p>
         </MarketingSection>
       </WebsitePageMain>
-      <SiteFooter brandHref="/" body={copy.footer} links={[...hostOrganizationNavigation, ...siteFooterLegalLinks]} />
+      <SiteFooter brandHref="/" body={copy.footer} links={[...hostOrganizationNavigation, ...hostConceptCopy.nav, ...hostConceptCopy.personaLinks, ...hostConceptCopy.additionalLinks, ...siteFooterLegalLinks]} />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import {hostPageCopy, hostSiteActions, hostSiteNavigation} from "@content/host";
+import {hostConceptCopy} from "@content/hostConceptNavigation";
 import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
@@ -25,7 +26,7 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         brandHref="/"
         menuCopy={siteMenuCopy}
         tone="dark"
-        nav={[...hostSiteNavigation]}
+        nav={[...hostSiteNavigation, hostConceptCopy.nav[0]]}
         ctaHref={hostSiteActions.apply}
         ctaLabel={hostPageCopy.nav.apply}
       />
@@ -48,6 +49,9 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         links={[
           ...hostSiteNavigation.filter((item) => item.footer),
           {href: hostSiteActions.apply, label: hostPageCopy.nav.apply},
+          ...hostConceptCopy.nav,
+          ...hostConceptCopy.personaLinks,
+          ...hostConceptCopy.additionalLinks,
           ...siteFooterLegalLinks,
         ]}
       />
