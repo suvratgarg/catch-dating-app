@@ -19,7 +19,7 @@ export const hostPageCopy = {
       "Bring a CSV from Luma, Eventbrite, Partiful, POSH, Airbnb, BookMyShow—or anywhere else.",
   },
   workflow: {
-    title: "From exported guest list to live room in minutes.",
+    title: "From your guest list to a coordinated live event.",
     body:
       "Keep selling tickets or taking RSVPs where you already do. Catch begins with the guest list you export.",
     railLabel: "Setup steps",
@@ -101,7 +101,7 @@ export const hostWorkflowSteps = [
   {
     step: "02",
     title: "Import the guest list",
-    body: "Upload a CSV in the organizer app or use secure forwarding.",
+    body: "Review the CSV or XLSX import in the organizer app.",
   },
   {
     step: "03",
@@ -381,4 +381,23 @@ export const hostApplicationCopy = {
     noteBody:
       "Catch reviews the event, guest-list setup, and selected live tools before confirming beta access. Selected hosts get a guided import check and a run-through before doors open.",
   },
+} as const;
+
+// Canonical destinations for the Host header, footer and in-page actions.
+export const hostSiteActions = {apply: "#founding-hosts", workflow: "#workflow"} as const;
+export const hostSiteNavigation = [
+  {href: hostSiteActions.workflow, label: hostPageCopy.nav.workflow, footer: true},
+  {href: "#live", label: hostPageCopy.nav.liveTools, footer: true},
+  {href: "#works-now", label: hostPageCopy.nav.worksNow, footer: false},
+  {href: "#coming-soon", label: hostPageCopy.nav.comingSoon, footer: true},
+  {href: "/organizers/", label: hostPageCopy.nav.organizers, footer: false},
+] as const;
+export const hostWorkflowOverview = {
+  label: "The first adoption step",
+  facts: [
+    {label: "Current bookings", value: "Keep your existing ticketing or RSVP tool"},
+    {label: "Guest-list handoff", value: "Reviewed CSV or XLSX import; manual mapping for other formats"},
+    {label: "Guest entry", value: "Phone verification in the event’s mobile browser"},
+  ],
+  note: "Selected hosts get hands-on setup. File import does not imply direct platform sync.",
 } as const;

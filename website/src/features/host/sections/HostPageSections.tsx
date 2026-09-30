@@ -7,12 +7,16 @@ import {
   hostPageCopy,
   hostSetupProof,
   hostWorkflowSteps,
+  hostWorkflowOverview,
+  hostSiteActions,
 } from "@content/host";
 import {SectionHeader} from "../../../shared/site";
 import {
   ActionGroup,
   ButtonLink,
   CaptureGrid,
+  ContentGrid,
+  MarketingFactList,
   HomeHeroStage,
   HostBridgeDemo,
   HostCompatibilityLine,
@@ -50,15 +54,15 @@ export function HostHeroSection({captures: _captures}: {captures: HostCaptureMap
             variant="hero"
           >
             <ButtonLink
-              href="#founding-hosts"
-              onClick={() => trackCtaClick("host_hero_apply", "#founding-hosts")}
+              href={hostSiteActions.apply}
+              onClick={() => trackCtaClick("host_hero_apply", hostSiteActions.apply)}
             >
               {hostPageCopy.hero.primaryAction}
             </ButtonLink>
             <ButtonLink
               variant="ghost"
-              href="#workflow"
-              onClick={() => trackCtaClick("host_hero_workflow", "#workflow")}
+              href={hostSiteActions.workflow}
+              onClick={() => trackCtaClick("host_hero_workflow", hostSiteActions.workflow)}
             >
               {hostPageCopy.hero.secondaryAction}
             </ButtonLink>
@@ -77,12 +81,15 @@ export function HostHeroSection({captures: _captures}: {captures: HostCaptureMap
 export function HostWorkflowSection() {
   return (
     <MarketingSection variant="story" id="workflow" aria-labelledby="workflow-title">
-      <SectionHeader
-        id="workflow-title"
-        title={hostPageCopy.workflow.title}
-        body={hostPageCopy.workflow.body}
-      />
-      <MarketingLoopList items={[...hostWorkflowSteps]} variant="host" />
+      <ContentGrid variant="marketing-split">
+        <SectionHeader
+          id="workflow-title"
+          title={hostPageCopy.workflow.title}
+          body={hostPageCopy.workflow.body}
+        />
+        <MarketingFactList label={hostWorkflowOverview.label} items={hostWorkflowOverview.facts} note={hostWorkflowOverview.note} />
+      </ContentGrid>
+      <MarketingLoopList items={hostWorkflowSteps} variant="host" />
     </MarketingSection>
   );
 }

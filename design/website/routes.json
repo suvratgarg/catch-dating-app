@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 15,
-  "updated": "2026-08-19",
+  "version": 16,
+  "updated": "2026-09-30",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -773,6 +773,336 @@
             "active",
             "completed",
             "unavailable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_overview",
+      "kind": "static",
+      "path": "/host/overview/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_overview",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_platform",
+      "kind": "static",
+      "path": "/host/platform/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_platform",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_planners",
+      "kind": "static",
+      "path": "/host/planners/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_planners",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_mixers",
+      "kind": "static",
+      "path": "/host/mixers/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_mixers",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_clubs",
+      "kind": "static",
+      "path": "/host/clubs/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_clubs",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_directory",
+      "kind": "static",
+      "path": "/host/directory/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_directory",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_claim",
+      "kind": "static",
+      "path": "/host/claim/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_claim",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_apply",
+      "kind": "static",
+      "path": "/host/apply/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_apply",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_stack",
+      "kind": "static",
+      "path": "/host/stack/",
+      "pageKey": "host",
+      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "metaKey": "host_stack",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_workflows",
+      "kind": "static",
+      "path": "/host/workflows/",
+      "pageKey": "host",
+      "source": "website/src/features/host/HostContentReview.tsx",
+      "metaKey": "host_workflows",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "local-interaction",
+          "canonical-handoff"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "default",
+            "local-interaction",
+            "canonical-handoff"
           ]
         }
       }

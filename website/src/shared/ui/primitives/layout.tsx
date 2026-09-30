@@ -67,6 +67,7 @@ export type ContentGridVariant =
   | "claim-review"
   | "format"
   | "listing-event"
+  | "marketing-split"
   | "public-event"
   | "surface"
   | "trust";
@@ -148,6 +149,7 @@ export const contentGridClassNames: Record<ContentGridVariant, string> = {
   "claim-review": "claim-review-grid",
   format: "format-grid",
   "listing-event": "listing-catch-event-grid",
+  "marketing-split": "marketing-content-split",
   "public-event": "public-event-grid",
   surface: "surface-grid",
   trust: "trust-grid",

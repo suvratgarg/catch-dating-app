@@ -10,6 +10,7 @@ import {
   marketingSectionClassNames,
   marketingSectionCopyClassNames,
 } from "./layout";
+import {ButtonLink} from "./actionControls";
 import {fallbackCaptionForCapture} from "./media2";
 
 export type ActivityMarkSize = "sm" | "md" | "lg";
@@ -25,12 +26,13 @@ export interface MarketingLoopListItem {
 
 export interface MarketingLoopListProps
   extends Omit<HTMLAttributes<HTMLOListElement>, "children"> {
-  items: MarketingLoopListItem[];
+  items: readonly MarketingLoopListItem[];
   reveal?: boolean;
   variant?: MarketingLoopListVariant;
 }
 
 export interface MarketingInfoCardItem {
+  action?: {href: string; label: ReactNode};
   body: ReactNode;
   key?: string;
   label?: ReactNode;
@@ -201,7 +203,7 @@ export function MarketingInfoCardGrid({
   variant,
   ...props
 }: Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  items: MarketingInfoCardItem[];
+  items: readonly MarketingInfoCardItem[];
   labelVariant?: MarketingInfoCardLabelVariant;
   reveal?: boolean;
   variant: Extract<ContentGridVariant, "surface" | "trust">;
@@ -210,6 +212,7 @@ export function MarketingInfoCardGrid({
     <ContentGrid {...props} className={className} variant={variant}>
       {items.map((item, index) => (
         <MarketingInfoCard
+          action={item.action}
           body={item.body}
           key={item.key ?? (typeof item.title === "string" ? item.title : index)}
           label={item.label}
@@ -223,6 +226,7 @@ export function MarketingInfoCardGrid({
 }
 
 export function MarketingInfoCard({
+  action,
   body,
   className,
   label,
@@ -231,6 +235,7 @@ export function MarketingInfoCard({
   title,
   ...props
 }: Omit<HTMLAttributes<HTMLElement>, "title"> & {
+  action?: MarketingInfoCardItem["action"];
   body: ReactNode;
   label?: ReactNode;
   labelVariant?: MarketingInfoCardLabelVariant;
@@ -252,6 +257,7 @@ export function MarketingInfoCard({
       ) : null}
       <h3>{title}</h3>
       <p>{body}</p>
+      {action ? <ButtonLink href={action.href} variant="ghost">{action.label}</ButtonLink> : null}
     </article>
   );
 }
@@ -412,4 +418,24 @@ export function fallbackAltForCapture(id: string) {
     default:
       return "Catch app screen";
   }
+}
+
+// Neutral read-only facts. Workflow identity and state authority stay in the
+// feature/content owner; this shell cannot approve, pay or change admission.
+export function MarketingFactList({label, items, note}: {
+  label: ReactNode;
+  items: readonly {label: ReactNode; value: ReactNode}[];
+  note?: ReactNode;
+}) {
+  return (
+    <div className="marketing-facts">
+      <UiLabel>{label}</UiLabel>
+      <dl>
+        {items.map((item, index) => (
+          <div key={index}><dt>{item.label}</dt><dd>{item.value}</dd></div>
+        ))}
+      </dl>
+      {note ? <p>{note}</p> : null}
+    </div>
+  );
 }

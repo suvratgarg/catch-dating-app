@@ -10,6 +10,7 @@ import {
   pageClassFor,
   pageMeta,
   pageMetaForEvent,
+  pageMetaForHostPath,
   pageMetaForListing,
   type PageKey,
 } from "./pageMeta";
@@ -82,6 +83,12 @@ const PublicFormPage = lazy(async () => ({
 const HostListingPage = lazy(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
 }));
+const HostConceptPage = lazy(async () => ({
+  default: (await import("../features/host/concepts/HostConceptPage")).HostConceptPage,
+}));
+const HostContentReview = lazy(async () => ({
+  default: (await import("../features/host/HostContentReview")).HostContentReview,
+}));
 const HostPage = lazy(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
 }));
@@ -136,13 +143,13 @@ function MarketingRouteShell() {
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
-    pageMeta[fallbackPage];
+    pageMetaForHostPath(location.pathname) ?? pageMeta[fallbackPage];
 
   useMarketingAnalytics(page, routeKey);
   useDocumentMeta(meta);
 
   return (
-    <PageShell pageClassName={pageClassFor(page)}>
+    <PageShell pageClassName={`${pageClassFor(page)}${pageMetaForHostPath(location.pathname) ? " host-content-review" : ""}`}>
       <Suspense fallback={<RouteLoadingState />}>
         <RouteLifecycleEffects
           page={page}
@@ -151,6 +158,16 @@ function MarketingRouteShell() {
             "" : location.hash}
         />
         <Routes>
+          <Route path={marketingRoutePaths.host_overview} element={<HostConceptPage slug="index" />} />
+          <Route path={marketingRoutePaths.host_platform} element={<HostConceptPage slug="host" />} />
+          <Route path={marketingRoutePaths.host_planners} element={<HostConceptPage slug="planners" />} />
+          <Route path={marketingRoutePaths.host_mixers} element={<HostConceptPage slug="mixers" />} />
+          <Route path={marketingRoutePaths.host_clubs} element={<HostConceptPage slug="clubs" />} />
+          <Route path={marketingRoutePaths.host_directory} element={<HostConceptPage slug="directory" />} />
+          <Route path={marketingRoutePaths.host_claim} element={<HostConceptPage slug="claim" />} />
+          <Route path={marketingRoutePaths.host_apply} element={<HostConceptPage slug="apply" />} />
+          <Route path={marketingRoutePaths.host_stack} element={<HostConceptPage slug="stack" />} />
+          <Route path={marketingRoutePaths.host_workflows} element={<HostContentReview />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route

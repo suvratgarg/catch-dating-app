@@ -80,6 +80,7 @@ export function ProfileStrength({
 export const actionGroupClassNames: Record<ActionGroupVariant, string> = {
   flow: "flow-actions",
   hero: "hero__actions",
+  marketing: "marketing-actions",
   "host-create-flow": "host-create-flow__actions",
 };
 

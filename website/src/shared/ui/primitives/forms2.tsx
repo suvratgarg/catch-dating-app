@@ -2,7 +2,7 @@ import {forwardRef} from "react";
 import type {FormHTMLAttributes, InputHTMLAttributes, ReactNode} from "react";
 import type {SearchFormVariant} from "./forms";
 import {Form, InlineInputField, searchFormClassNames} from "./forms";
-import {classNames} from "@catch/web-ui";
+import {ButtonControl, classNames} from "@catch/web-ui";
 
 export const SearchFormShell = forwardRef<
   HTMLFormElement,
@@ -71,7 +71,8 @@ export function StepRail<TId extends string>({
   return (
     <nav className="operational-step-rail" aria-label={label}>
       {items.map((item, index) => (
-        <button
+        <ButtonControl
+          aria-current={index === currentIndex ? "step" : undefined}
           className={index === currentIndex ? "is-active" : index < currentIndex ? "is-done" : ""}
           disabled={getDisabled?.(item, index)}
           key={item.id}
@@ -81,7 +82,7 @@ export function StepRail<TId extends string>({
           <span>{String(index + 1).padStart(2, "0")}</span>
           <strong>{item.label}</strong>
           {item.body ? <small>{item.body}</small> : null}
-        </button>
+        </ButtonControl>
       ))}
     </nav>
   );
