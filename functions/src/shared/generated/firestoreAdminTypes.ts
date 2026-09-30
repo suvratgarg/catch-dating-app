@@ -11433,6 +11433,22 @@ export interface OrganizerProgramDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived.
+   */
+  archivedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Status the program held before archive; unarchiveProgram restores it during the grace window.
+   */
+  archivedFromStatus?: ("draft" | "active" | "completed" | "archived") | null;
+  /**
+   * Retention clock: archivedAt + 14 days. The anonymize sweep processes once this passes.
+   */
+  anonymizeAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11485,6 +11501,10 @@ export interface ProgramFunctionDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11527,6 +11547,10 @@ export interface ProgramFunctionGuestDocument {
    * Staff uid who recorded a staff-sourced response; null for household-link and imported responses.
    */
   recordedByUid?: string | null;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11569,6 +11593,10 @@ export interface ProgramDoorJournalDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11607,6 +11635,10 @@ export interface ProgramGuestDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11638,6 +11670,10 @@ export interface ProgramGuestGroupDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11650,7 +11686,7 @@ export interface ProgramHouseholdDocument {
    * Human label such as 'The Sharma family' used on invitations and rosters.
    */
   label: string;
-  primaryContactName: string;
+  primaryContactName: string | null;
   primaryPhoneE164: string | null;
   primaryEmail: string | null;
   /**
@@ -11680,6 +11716,10 @@ export interface ProgramHouseholdDocument {
      */
     source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
   } | null;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11689,8 +11729,8 @@ export interface ProgramStaffGrantDocument {
   organizerId: string;
   programId: string;
   uid: string;
-  displayName: string;
-  phoneLastFour: string;
+  displayName: string | null;
+  phoneLastFour: string | null;
   /**
    * Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate.
    *
@@ -11740,6 +11780,10 @@ export interface ProgramStaffGrantDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11748,11 +11792,8 @@ export interface ProgramStaffGrantDocument {
 export interface ProgramStaffInviteDocument {
   organizerId: string;
   programId: string;
-  /**
-   * Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite.
-   */
-  phoneE164: string;
-  displayName: string;
+  phoneE164: string | null;
+  displayName: string | null;
   /**
    * @minItems 1
    * @maxItems 8
@@ -11798,6 +11839,10 @@ export interface ProgramStaffInviteDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11842,6 +11887,10 @@ export interface ProgramHotelDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11894,6 +11943,10 @@ export interface ProgramStayDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -11937,6 +11990,10 @@ export interface ProgramRoomBlockDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -12053,6 +12110,10 @@ export interface ProgramTravelLegDocument {
     token: string;
     expiresAt: FirebaseFirestore.Timestamp;
   };
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -12073,6 +12134,43 @@ export interface ProgramTravelPartyDocument {
    * @maxItems 50
    */
   legIds: string[];
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Durable journal for one program's archive-anonymization run. Document id equals the program id (a program anonymizes at most once). Phases record per-collection progress so a crashed or chunked run resumes idempotently.
+ */
+export interface ProgramRetentionRunDocument {
+  programId: string;
+  organizerId: string;
+  status: "running" | "completed" | "failed";
+  /**
+   * Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.
+   *
+   * @maxItems 16
+   */
+  phases: {
+    collection: string;
+    processed: number;
+    /**
+     * Last document id processed in this phase; resume token for chunked sweeps.
+     */
+    cursor: string | null;
+    completedAtMillis?: number | null;
+  }[];
+  startedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt?: FirebaseFirestore.Timestamp | null;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  /**
+   * Fencing token for the worker currently holding the run lease.
+   */
+  leaseToken: string | null;
+  error: string | null;
+  revision: number;
 }
 
 /**
@@ -13198,6 +13296,10 @@ export interface TransportTripDocument {
       luggageUnits: number;
     }[];
   };
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

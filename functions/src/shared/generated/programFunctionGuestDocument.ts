@@ -57,4 +57,11 @@ export interface ProgramFunctionGuestDocument {
    * Staff uid who recorded a staff-sourced response; null for household-link and imported responses.
    */
   recordedByUid?: string | null;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }

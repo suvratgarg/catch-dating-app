@@ -132,4 +132,29 @@ export interface OrganizerProgramDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived.
+   */
+  archivedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  /**
+   * Status the program held before archive; unarchiveProgram restores it during the grace window.
+   */
+  archivedFromStatus?: ("draft" | "active" | "completed" | "archived") | null;
+  /**
+   * Retention clock: archivedAt + 14 days. The anonymize sweep processes once this passes.
+   */
+  anonymizeAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  /**
+   * Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }

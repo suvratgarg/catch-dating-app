@@ -12,6 +12,7 @@ import {
   dutyCoversTransportRoute,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
 } from "../shared/programAuthority";
 import {vehicleFits} from "./vehicleCapacity";
 import {hashRequest} from "../shared/programOperationHash";
@@ -93,6 +94,7 @@ export async function dispatchProgramTripHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     const assignments = dutyAssignments(access, "transportDispatcher");
     if (access.role !== "manager" && assignments.length === 0) {
       throw new HttpsError(
@@ -463,6 +465,7 @@ async function tripActionHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     const [receiptSnap, tripSnap] = await Promise.all([
       tx.get(receiptRef), tx.get(tripRef)]);
     const receipt = receiptSnap.data() as

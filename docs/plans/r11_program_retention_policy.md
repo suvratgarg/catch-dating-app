@@ -1,18 +1,18 @@
 ---
 doc_id: r11_program_retention_policy
-version: 0.1.0
+version: 0.2.0
 updated: 2026-09-29
 owner: program_operations
-status: draft-for-review
+status: approved
 ---
 
-# R11 — program retention / anonymization policy proposal
+# R11 — program retention / anonymization policy
 
 The rollout spec lists "retention / anonymization on archive" as R11's
-last gap. This document proposes the policy for review before code —
-what gets scrubbed, when, who can trigger it, and what must survive.
-Nothing here is implemented; `organizerPrograms.status` already carries
-an `archived` enum value, so the lifecycle hook exists.
+last gap. This document fixes the approved policy — what gets scrubbed,
+when, who can trigger it, and what must survive.
+`organizerPrograms.status` already carries an `archived` enum value, so
+the lifecycle hook exists.
 
 ## Principles
 
@@ -31,20 +31,25 @@ an `archived` enum value, so the lifecycle hook exists.
 
 `archiveProgram(programId)` callable, organizer owner/manager only:
 
-1. Sets `organizerPrograms.status = "archived"` and
-   `archivedAt` (new field).
+1. Sets `organizerPrograms.status = "archived"`, `archivedAt`, and
+   `anonymizeAt = archivedAt + 14 days` (the approved recap grace
+   window — planners still see names while archived-not-anonymized).
 2. Disables further mutations on program-scoped collections (rules +
-   callable guards check status).
-3. Kicks the anonymization sweep immediately — the policy proposal is
-   that archive IS the anonymization point, not a delayed job. A
-   scheduled fallback sweep (e.g. daily, programs where
-   `endsAt` < now − 30 days and `status == "completed"`) is proposed as
-   the safety net for organizers who never archive.
+   callable guards check status). Reads continue.
+3. Schedules anonymization: a daily sweep runs `anonymizeProgram` on
+   programs where `status == "archived"` and `anonymizeAt <= now`.
 
-Alternative considered: separate "archive" (reversible) from
-"anonymize" (irreversible). Rejected — two terminal states nobody
-remembers to trigger is a policy that never executes. Archive prompts
-the user once, irreversibly, after an explicit confirm.
+`unarchiveProgram(programId)` (same authority) restores the pre-archive
+status while `anonymizeAt > now` — archive is reversible inside the
+grace window; anonymization is not. An in-flight sweep lease also blocks
+unarchive so a restore can never race a partial scrub. Only `archived`
+starts the clock — `completed` never anonymizes and stays the natural
+post-event review state.
+
+Archive does not gate on export: attendance and trip-reconciliation CSV
+exports already exist and remain valid post-anonymization (counts
+survive), so the confirm flow offers the export affordance without
+requiring it.
 
 ## Field-level proposal
 
@@ -52,14 +57,20 @@ the user once, irreversibly, after an explicit confirm.
 
 | Collection | Fields scrubbed | Replacement |
 |---|---|---|
-| `programGuests` | `displayName`, `phoneE164`, `email`, `externalReference`, `contactId` | `displayName: "Guest <shortId>"`, others null; `anonymizedAt` set |
-| `programHouseholds` | `primaryContactName`, `primaryPhoneE164`, `primaryEmail` | null; `anonymizedAt` set |
+| `programGuests` | `displayName`, `phoneE164`, `email`, `externalReference` | `displayName: "Guest <shortId>"`, others null; `anonymizedAt` set; `contactId` is **kept** (approved) so post-event CRM follow-up stays linked |
+| `programHouseholds` | `label`, `primaryContactName`, `primaryPhoneE164`, `primaryEmail` | `label: "Household <shortId>"`, contact fields null; `anonymizedAt` set. *(label added in implementation — family names like "The Sharma family" are the household's identity)* |
 | `programStaffInvites` | `displayName`, `phoneE164` | null; `anonymizedAt` set |
 | `programStaffGrants` | `displayName`, `phoneLastFour` | null; `anonymizedAt` set |
 | `programFunctionGuests` | `responseNote` | null (free text, may carry PII) |
 | `programStays` | `notes`, `roomLabel` | `notes` null; `roomLabel` scrubbed (room numbers tied to identities are a soft identifier) |
 | `programDoorJournal` | `note` | null; action/partySize/functionId survive |
 | `programTravelLegs` | `arrivalTerminal` detail stays — no PII fields; `manualCurbNote` | scrub free-text note fields only |
+| `programTravelParties` | `label` | `label: "Party <shortId>"` *(added — family names ride party labels)* |
+| `programGuestGroups` | `label` | `label: "Group <shortId>"` *(added — group labels often carry family names)* |
+| `programRoomBlocks` | `label`, `notes` | `label: "Block <shortId>"`, `notes` null *(added — same surname/free-text class)* |
+| `programHotels` | `receptionContact`, `notes` | null *(added — reception contact is a named person's details)* |
+| `programFunctions` | `venueNotes` | null *(added — free-text ops notes; name/venue/dressCode/instructions survive as program content)* |
+| `transportTrips` | `notes` | null *(added — free-text; voidReason/vendorNameSnapshot/plates stay operational)* |
 
 ### Keep (operational truth)
 
@@ -79,48 +90,44 @@ the user once, irreversibly, after an explicit confirm.
 
 ### Delete (documents whose only value was live operation)
 
-- `programStaffInvites` with `status == "pending"`/`"expired"` —
-  unclaimed invites carry a phone number for no live purpose. Proposed:
-  delete outright at archive rather than scrub.
+- `programStaffInvites` with `status == "pending"` — unclaimed invites
+  carry a phone number for no live purpose ("expired" is a timestamp
+  state, not a status; all `pending` rows delete). Claimed/revoked
+  invites keep the row for audit with identity fields nulled.
 - Flight-alert leases/subscriptions on `programTravelLegs`
   (`flightAlertSubscriptionId`, `flightAlertLease`) — cancel provider
   subscriptions at archive; scrub the lease fields.
 
-## What needs a product answer
+## Approved decisions (product owner, 2026-09-29)
 
-1. **Grace period.** Should archive be immediate-anonymize (proposed),
-   or archive now → anonymize at +N days (allows a "wedding recap"
-   window where the planner still sees names)? If a window: proposed
-   default is 14 days.
-2. **Export before archive.** Attendance CSV export (#460) and trip
-   reconciliation export (#471) already exist. Should archive require
-   (or offer) a final export download in the confirm flow?
-3. **`contactId` treatment.** Scrub the program-local pointer but keep
-   CRM contact untouched (proposed), or keep `contactId` so post-event
-   CRM follow-up stays linked? Keeping it means anonymized guests are
-   still one join away from identity — that's fine if the threat model
-   is "leaked program docs," not "revoke organizer access."
-4. **Hard delete.** Is there a second stage — program deletion
-   (whole-tree delete) at archive + N months — or is anonymized
-   retention indefinite? Proposed: indefinite anonymized retention;
-   organizer can delete the program entity separately if offered later.
-5. **`archived` vs `completed`.** `completed` exists as a distinct
-   status — should completion alone start the anonymization clock, or
-   only explicit archive? Proposed: only `archived` anonymizes;
-   `completed` stays fully readable (it is the natural post-event
-   review state).
+1. **Grace period: 14 days.** Archive sets the anonymization clock;
+   the sweep scrubs at `archivedAt + 14d`. Archive is reversible via
+   `unarchiveProgram` while `anonymizedAt == null`; anonymization is
+   irreversible.
+2. **Export: offered, not required.** The confirm flow surfaces the
+   existing attendance/trip exports; archive never blocks on one.
+3. **`contactId` kept.** Program-local identity fields scrub, but the
+   CRM link stays so post-event follow-up works. Threat model is
+   leaked program documents, not organizer-access revocation.
+4. **Indefinite anonymized retention.** No second hard-delete stage;
+   whole-program deletion is a separate later capability if offered.
+5. **Only `archived` anonymizes.** `completed` remains fully readable
+   and never enters the clock.
 
-## Implementation shape (once policy is approved)
+## Implementation shape
 
-- One callable `archiveProgram` + one scheduled sweep + one internal
+- `archiveProgram` / `unarchiveProgram` callables (owner/manager,
+  revision-fenced) + a scheduled daily sweep + one internal
   `anonymizeProgram` worker: chunked writes over the collections above,
   idempotent (`anonymizedAt` marker guards re-entry), durable-ops
   journal entry per phase.
-- Contract additions: `archivedAt`/`anonymizedAt` optional fields on
-  the listed collections; `archive_program_payload` callable schema.
+- Contract additions: `archivedAt`/`anonymizeAt`/`anonymizedAt`
+  optional fields on the listed collections; `archive_program` and
+  `unarchive_program` payload/response schemas.
 - Rules: program-scoped writes rejected when
   `organizerPrograms.status == "archived"`; staff reads continue
   (anonymized data is what they should see anyway).
 - Tests: anonymize is idempotent; counts-only surfaces reconcile
   identically pre/post archive; pending invites deleted; free-text
-  fields scrubbed; CRM contact docs untouched.
+  fields scrubbed; `contactId` and CRM contact docs untouched; the
+  grace window keeps archive reversible and blocks anonymization early.

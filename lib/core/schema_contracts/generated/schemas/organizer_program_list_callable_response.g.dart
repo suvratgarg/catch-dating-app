@@ -84,6 +84,30 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 1,
           },
+          'archivedAtMillis': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'description': 'Set when the program is archived; null otherwise.',
+          },
+          'anonymizeAtMillis': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'description': 'Grace deadline after which identity fields are scrubbed.',
+          },
+          'anonymizedAtMillis': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'description': 'Set once identity/free-text fields were scrubbed.',
+          },
         },
       },
     },

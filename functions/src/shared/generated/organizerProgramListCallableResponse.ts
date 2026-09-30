@@ -23,5 +23,17 @@ export interface OrganizerProgramListCallableResponse {
       | "messaging"
     )[];
     revision: number;
+    /**
+     * Set when the program is archived; null otherwise.
+     */
+    archivedAtMillis?: number | null;
+    /**
+     * Grace deadline after which identity fields are scrubbed.
+     */
+    anonymizeAtMillis?: number | null;
+    /**
+     * Set once identity/free-text fields were scrubbed.
+     */
+    anonymizedAtMillis?: number | null;
   }[];
 }

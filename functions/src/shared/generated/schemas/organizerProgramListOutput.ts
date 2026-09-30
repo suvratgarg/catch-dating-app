@@ -81,6 +81,30 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "archivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Set when the program is archived; null otherwise."
+          },
+          "anonymizeAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Grace deadline after which identity fields are scrubbed."
+          },
+          "anonymizedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Set once identity/free-text fields were scrubbed."
           }
         }
       }
