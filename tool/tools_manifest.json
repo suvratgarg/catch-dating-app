@@ -738,6 +738,39 @@
       }
     },
     {
+      "id": "ci:web-hosting-freshness",
+      "category": "ci",
+      "path": "tool/ci/web_hosting_freshness.mjs",
+      "command": "node --test tool/ci/web_hosting_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_web-hosting-promote.yml",
+        "tool/ci/web_hosting_freshness.mjs",
+        "tool/ci/web_hosting_workflow.test.mjs"
+      ],
+      "description": "Evaluates sanitized expected and observed source/run evidence at the final website-promotion freshness gate and refuses any mismatch after at most one no-cache reread.",
+      "checks": [
+        "node --check tool/ci/web_hosting_freshness.mjs",
+        "node --test tool/ci/web_hosting_workflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/web_hosting_workflow.test.mjs",
+        "contains": [
+          "final promotion freshness evaluator accepts only the complete source and latest-run identity",
+          "final freshness shell retries one stale API read once, then still refuses persistent mismatch"
+        ]
+      }
+    },
+    {
       "id": "ci:web-hosting-delivery-workflow",
       "category": "ci",
       "path": "tool/ci/web_hosting_workflow.test.mjs",
@@ -758,11 +791,13 @@
         ".github/workflows/marketing-website.yml",
         ".github/workflows/react-surface-validation.yml",
         "tool/ci/web_hosting_workflow.test.mjs",
+        "tool/ci/web_hosting_freshness.mjs",
         "website/scripts/marketingDeployWorkflow.test.mjs"
       ],
       "description": "Guards the exact Admin, standalone Host, and Marketing Hosting path: runtime-complete triggers, one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
       "checks": [
         "node --check tool/ci/web_hosting_workflow.test.mjs",
+        "node --check tool/ci/web_hosting_freshness.mjs",
         "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs"
       ],
       "role": "gate",

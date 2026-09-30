@@ -389,36 +389,97 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           set -euo pipefail
-          git fetch origin main:refs/remotes/origin/main --no-tags
-          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
-          if [[ "$IS_RECOVERY" == "true" ]]; then
-            test "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
+          read_freshness_evidence() {
+            local cache_mode="$1"
+            local cache_header=""
+            if [[ "$cache_mode" == "no-cache" ]]; then
+              cache_header="Cache-Control: no-cache"
+            fi
+
+            git fetch origin main:refs/remotes/origin/main --no-tags
+            local current_main_sha
+            current_main_sha="$(git rev-parse refs/remotes/origin/main)"
+            local source_is_ancestor=false
+            if git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main; then
+              source_is_ancestor=true
+            fi
+
+            local current_source_run latest_surface_push
+            local source_run_path latest_surface_push_path
+            source_run_path="repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID"
+            latest_surface_push_path="repos/$GITHUB_REPOSITORY/actions/workflows/$SOURCE_CI_WORKFLOW_ID/runs?branch=main&event=push&per_page=1"
+            if [[ -n "$cache_header" ]]; then
+              current_source_run="$(gh api -H "$cache_header" "$source_run_path")"
+              latest_surface_push="$(gh api -H "$cache_header" "$latest_surface_push_path")"
+            else
+              current_source_run="$(gh api "$source_run_path")"
+              latest_surface_push="$(gh api "$latest_surface_push_path")"
+            fi
+
+            local source_run_summary latest_runs_summary
+            source_run_summary="$(jq -c '{
+              id,
+              runAttempt: .run_attempt,
+              headSha: .head_sha,
+              event,
+              branch: .head_branch
+            }' <<< "$current_source_run")"
+            latest_runs_summary="$(jq -c '
+              (.workflow_runs // []) |
+              if type == "array" then map({
+                id,
+                runNumber: .run_number,
+                sha: .head_sha,
+                branch: .head_branch,
+                event
+              }) else [] end
+            ' <<< "$latest_surface_push")"
+            local recovery=false
+            if [[ "$IS_RECOVERY" == "true" ]]; then recovery=true; fi
+
+            jq -cn \
+              --arg source_sha "$SOURCE_SHA" \
+              --arg run_id "$SOURCE_CI_RUN_ID" \
+              --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" \
+              --arg workflow_id "$SOURCE_CI_WORKFLOW_ID" \
+              --argjson run_number "$SOURCE_CI_RUN_NUMBER" \
+              --argjson recovery "$recovery" \
+              --arg main_sha "$current_main_sha" \
+              --argjson source_is_ancestor "$source_is_ancestor" \
+              --argjson source_run "$source_run_summary" \
+              --argjson latest_runs "$latest_runs_summary" '
+                {
+                  expected: {
+                    sourceSha: $source_sha,
+                    runId: $run_id,
+                    runAttempt: $run_attempt,
+                    workflowId: $workflow_id,
+                    runNumber: $run_number,
+                    recovery: $recovery
+                  },
+                  actual: {
+                    mainSha: $main_sha,
+                    sourceIsAncestor: $source_is_ancestor,
+                    sourceRun: $source_run,
+                    latestRuns: $latest_runs
+                  }
+                }
+              '
+          }
+
+          first_evaluation="$(read_freshness_evidence cached | \
+            node tool/ci/web_hosting_freshness.mjs evaluate)"
+          echo "Final source/freshness predicates (initial read): $first_evaluation"
+          if ! jq -e '.passed == true' <<< "$first_evaluation" > /dev/null; then
+            echo "::warning::Initial source/freshness read did not satisfy every predicate; taking one no-cache read."
+            retry_evaluation="$(read_freshness_evidence no-cache | \
+              node tool/ci/web_hosting_freshness.mjs evaluate)"
+            echo "Final source/freshness predicates (single no-cache read): $retry_evaluation"
+            if ! jq -e '.passed == true' <<< "$retry_evaluation" > /dev/null; then
+              echo "::error::Source/freshness gate remains unsatisfied after one no-cache read; refusing deployment."
+              exit 1
+            fi
           fi
-          current_source_run="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"
-          jq -e \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
-              (.id | tostring) == $run_id and
-              .run_attempt == $run_attempt and
-              .head_sha == $source_sha and
-              .event == "push" and
-              .head_branch == "main"
-            ' <<< "$current_source_run" > /dev/null
-          latest_surface_push="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/$SOURCE_CI_WORKFLOW_ID/runs?branch=main&event=push&per_page=1")"
-          jq -e \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_number "$SOURCE_CI_RUN_NUMBER" '
-              .workflow_runs | length == 1 and
-              (.[0].id | tostring) == $run_id and
-              .[0].run_number == $run_number and
-              .[0].head_sha == $source_sha and
-              .[0].head_branch == "main" and
-              .[0].event == "push"
-            ' <<< "$latest_surface_push" > /dev/null
 
       - name: Deploy only the verified production Hosting target without rebuilding
         working-directory: build/web-delivery/package
