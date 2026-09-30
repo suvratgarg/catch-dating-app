@@ -224,7 +224,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     });
     try {
       final link = await ref
-          .read(programSetupRepositoryProvider)
+          .read(programWorkspaceControllerProvider.notifier)
           .issueHouseholdRsvpLink(
             programId: widget.programId,
             householdId: household.householdId,

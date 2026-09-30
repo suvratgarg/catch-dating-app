@@ -400,13 +400,15 @@ class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
     if (confirmed != true || !context.mounted) return;
     setState(() => _pendingProgramId = program.programId);
     try {
-      final repository = ref.read(programSetupRepositoryProvider);
+      final controller = ref.read(
+        programWorkspaceControllerProvider.notifier,
+      );
       await (archiving
-          ? repository.archiveProgram(
+          ? controller.archiveProgram(
               programId: program.programId,
               expectedRevision: program.revision,
             )
-          : repository.unarchiveProgram(
+          : controller.unarchiveProgram(
               programId: program.programId,
               expectedRevision: program.revision,
             ));
