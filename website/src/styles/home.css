@@ -13,6 +13,8 @@
 .organizer-search-hero,
 .directory-claim-pressure,
 .organizer-results,
+.home-discovery,
+.featured-organizers,
 .host-fill-room,
 .listing-section,
 .claim-band,
@@ -1293,4 +1295,9 @@ h3 {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--catch-space-s4);
+}
+
+/* A content-only hero shares the existing shell without reserving a demo column. */
+.hero__inner--content {
+  grid-template-columns: minmax(0, 1fr);
 }

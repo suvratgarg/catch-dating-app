@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 98,
+  "version": 99,
   "updated": "2026-09-30",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -54,7 +54,8 @@
         "organizer_listing_canonical",
         "organizer_listing_legacy",
         "event_detail_canonical",
-        "sales_demo"
+        "sales_demo",
+        "visitor_discovery"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PageShell.tsx",
@@ -93,17 +94,17 @@
         "exportName": "Home",
         "states": [
           "default",
-          "app-download-pending",
-          "waitlist-form"
+          "claim-entry",
+          "workflow-entry"
         ]
       },
-      "notes": "Route-level story coverage; visible Home route sections live in features/home/sections and are registered below."
+      "notes": "Organiser-first public content arrangement; software and account availability remain explicit."
     },
     {
       "id": "home_hero_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -127,7 +128,8 @@
       "id": "home_discovery_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -153,7 +155,7 @@
       "id": "home_formats_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -176,7 +178,8 @@
       "id": "home_featured_organizers_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -200,7 +203,7 @@
       "id": "home_member_loop_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -223,7 +226,7 @@
       "id": "home_host_proof_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -247,7 +250,7 @@
       "id": "home_captures_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -272,7 +275,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/media.tsx",
@@ -351,7 +355,7 @@
       "id": "home_download_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -374,7 +378,7 @@
       "id": "home_trust_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -397,7 +401,7 @@
       "id": "home_waitlist_section",
       "kind": "section",
       "routeIds": [
-        "home"
+        "visitor_discovery"
       ],
       "owner": "features/home/sections",
       "source": "website/src/features/home/sections/HomePageSections.tsx",
@@ -424,7 +428,8 @@
         "home",
         "host",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/media.tsx",
@@ -452,7 +457,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/media.tsx",
@@ -483,7 +489,8 @@
         "event_detail_canonical",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
@@ -509,7 +516,8 @@
         "event_detail_canonical",
         "home",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/actions.tsx",
@@ -538,7 +546,8 @@
       "routeIds": [
         "home",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/organizer.tsx",
@@ -1563,7 +1572,8 @@
         "claim_lookup",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -1700,7 +1710,8 @@
         "claim",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
@@ -1734,7 +1745,8 @@
         "home",
         "host",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
@@ -1764,7 +1776,8 @@
         "claim",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
@@ -1866,7 +1879,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "organizer_search"
+        "organizer_search",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/forms2.tsx",
@@ -1921,7 +1935,8 @@
         "host",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/SectionHeader.tsx",
@@ -1951,7 +1966,8 @@
         "host",
         "claim",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/actions.tsx",
@@ -1978,7 +1994,8 @@
       "id": "shared_control_row",
       "kind": "supporting-component",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -2001,7 +2018,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/forms.tsx",
@@ -2026,7 +2044,8 @@
       "id": "shared_waitlist_form_shell",
       "kind": "supporting-component",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/forms.tsx",
@@ -2155,7 +2174,8 @@
         "host",
         "claim",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -2186,7 +2206,8 @@
       "routeIds": [
         "home",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -2214,7 +2235,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -2244,7 +2266,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/marketing.tsx",
@@ -2751,7 +2774,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "features/host/sections",
       "source": "website/src/features/host/sections/CaptureFrames.tsx",
@@ -2805,7 +2829,8 @@
         "not_found",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "features/marketing",
       "source": "website/src/features/marketing/MarketingConsentBanner.tsx",
@@ -2832,7 +2857,8 @@
         "claim_lookup",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "features/organizers",
       "source": "website/src/features/organizers/OrganizerIdentity.tsx",
@@ -2860,7 +2886,8 @@
         "claim_lookup",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "visitor_discovery"
       ],
       "owner": "features/organizers",
       "source": "website/src/features/organizers/OrganizerIdentity.tsx",
@@ -2933,7 +2960,8 @@
       "kind": "flow",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "visitor_discovery"
       ],
       "owner": "features/waitlist",
       "source": "website/src/features/waitlist/WaitlistForm.tsx",
@@ -3985,6 +4013,32 @@
         ]
       },
       "notes": "All retained prototype pages composed through canonical site shell, content owners and shared controls. Concept demos never invoke remote APIs; existing claim/search/intake routes remain authoritative."
+    },
+    {
+      "id": "route_visitor_discovery",
+      "kind": "route",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/HomePage.tsx",
+      "exportName": "VisitorDiscoveryPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/home.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "VisitorDiscovery",
+        "states": [
+          "default",
+          "app-download-pending",
+          "waitlist-form"
+        ]
+      },
+      "notes": "Original consumer discovery, app availability and waitlist sequence retained at /explore/."
     }
   ]
 }

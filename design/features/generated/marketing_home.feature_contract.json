@@ -3,14 +3,14 @@
   "version": 2,
   "generatedFrom": "design/features/marketing_home.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:831ed515dad679432145a59cfd4c807e8d6e9b4fa97daeec734b15d1e74d5f01",
-  "resolvedDigest": "sha256:c248e9e125c29d9be8947690dc53656fd53ffc61740973eb977ce3095924a31a",
+  "sourceDigest": "sha256:157156bb6592a8645ac78da982ec86ed01e499341d544082eeaf3c15bb4de52c",
+  "resolvedDigest": "sha256:0b74c4f75b144f3eb5cd3e69f78811f1564917e377bf94cbce59fc823686a126",
   "feature": {
     "id": "feature.marketing_home",
     "name": "Marketing Home",
     "owner": "marketing_website",
     "status": "pilot",
-    "description": "Orchestrates the public product entry, organizer and event discovery handoff, store availability, host acquisition handoff, and member waitlist conversion surface."
+    "description": "Preserves visitor discovery, organizer/event handoffs, store availability and member waitlist at /explore/."
   },
   "coverage": {
     "surfaces": 1,
@@ -29,7 +29,7 @@
       "runtime": "react_marketing",
       "authority": {
         "registry": "marketing_routes",
-        "id": "home"
+        "id": "visitor_discovery"
       },
       "actionScope": {
         "included": "Organizer and public-event discovery handoffs, Host acquisition routing, configured or unavailable store CTAs, and member waitlist submission.",
@@ -66,7 +66,7 @@
           }
         ],
         "componentContracts": [
-          "route_home",
+          "route_visitor_discovery",
           "home_discovery_section",
           "home_waitlist_section",
           "shared_app_download_shell",
@@ -344,7 +344,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home",
+              "route_visitor_discovery/VisitorDiscovery",
               "shared_app_download_shell/AppDownloadCtaGroupStory"
             ],
             "tests": [
@@ -416,7 +416,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_visitor_discovery/VisitorDiscovery"
             ],
             "tests": [
               "website/src/features/marketing/useAppDownloadCtas.test.tsx"
@@ -463,7 +463,7 @@
             "captureIds": [],
             "previewIds": [
               "home_waitlist_section/HomeWaitlistSectionStory",
-              "route_home/Home"
+              "route_visitor_discovery/VisitorDiscovery"
             ],
             "tests": [
               "website/src/features/waitlist/useWaitlistFormController.test.tsx"
@@ -571,20 +571,20 @@
       ],
       "resolved": {
         "authority": {
-          "id": "home",
+          "id": "visitor_discovery",
           "kind": "static",
-          "path": "/"
+          "path": "/explore/"
         },
         "components": [
           {
-            "id": "route_home",
+            "id": "route_visitor_discovery",
             "kind": "route",
             "source": "website/src/features/home/HomePage.tsx",
-            "exportName": "HomePage",
+            "exportName": "VisitorDiscoveryPage",
             "storybook": {
               "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
-              "exportName": "Home",
+              "exportName": "VisitorDiscovery",
               "states": [
                 "default",
                 "app-download-pending",
@@ -656,7 +656,7 @@
         ],
         "previews": [
           "home_waitlist_section/HomeWaitlistSectionStory",
-          "route_home/Home",
+          "route_visitor_discovery/VisitorDiscovery",
           "shared_app_download_shell/AppDownloadCtaGroupStory"
         ]
       }

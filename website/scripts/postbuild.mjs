@@ -42,6 +42,7 @@ writeRoute("/events/", {
   robots: "noindex, follow",
 });
 writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
+writeRoute("/explore/", staticRouteMeta(websiteMeta, "visitor_discovery", baseUrl));
 
 writeRoute("/host/overview/", staticRouteMeta(websiteMeta, "host_overview", baseUrl));
 writeRoute("/host/platform/", staticRouteMeta(websiteMeta, "host_platform", baseUrl));

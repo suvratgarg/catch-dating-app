@@ -1,6 +1,7 @@
 export type MarketingRouteId =
   | "sales_demo"
   | "home"
+  | "visitor_discovery"
   | "host"
   | "host_overview"
   | "host_platform"
@@ -38,6 +39,7 @@ export interface MarketingRouteDefinition {
 export const marketingRouteDefinitions = [
   {id: "sales_demo", path: "/demo/:invitationId"},
   {id: "home", path: "/"},
+  {id: "visitor_discovery", path: "/explore/"},
   {id: "host", path: "/host/*"},
   {id: "host_overview", path: "/host/overview/"},
   {id: "host_platform", path: "/host/platform/"},

@@ -107,7 +107,7 @@
     },
     {
       "file": "website/src/stories/MarketingRoutes.stories.tsx",
-      "export": "Home",
+      "export": "VisitorDiscovery",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {

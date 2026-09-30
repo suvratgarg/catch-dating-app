@@ -48,6 +48,9 @@ const SalesDemoPage = lazy(async () => ({
 const ClaimPage = lazy(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
 }));
+const VisitorDiscoveryPage = lazy(async () => ({
+  default: (await import("../features/home/HomePage")).VisitorDiscoveryPage,
+}));
 const HomePage = lazy(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
 }));
@@ -170,6 +173,8 @@ function MarketingRouteShell() {
           <Route path={marketingRoutePaths.host_workflows} element={<HostContentReview />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
+          <Route path={marketingRoutePaths.visitor_discovery}
+            element={<VisitorDiscoveryPage captures={captures} />} />
           <Route
             path={marketingRoutePaths.home}
             element={<HomePage captures={captures} />}

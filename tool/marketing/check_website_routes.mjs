@@ -146,6 +146,7 @@ function validateRoutes(routes, storyDeclarations) {
   const storyDeclarationsByRouteId = groupStoryRouteDeclarations(storyDeclarations);
   const requiredRouteIds = new Set([
     "home",
+    "visitor_discovery",
     "host",
     "event_runtime",
     "event_rehearsal",
@@ -281,6 +282,7 @@ function marketingNotFoundHostingErrors(config) {
 function validatePageKey(route) {
   const allowedPageKeys = new Set([
     "home",
+    "visitor_discovery",
     "host",
     "organizers",
     "listing",
@@ -918,6 +920,7 @@ export const OrganizerSearch = {
     routes: Object.fromEntries(
       [
         "home",
+    "visitor_discovery",
         "host",
         "host_overview",
         "host_platform",

@@ -6,12 +6,12 @@
   "name": "Marketing Home",
   "owner": "marketing_website",
   "status": "pilot",
-  "description": "Orchestrates the public product entry, organizer and event discovery handoff, store availability, host acquisition handoff, and member waitlist conversion surface.",
+  "description": "Preserves visitor discovery, organizer/event handoffs, store availability and member waitlist at /explore/.",
   "surfaces": [
     {
       "id": "marketing_web",
       "runtime": "react_marketing",
-      "authority": {"registry": "marketing_routes", "id": "home"},
+      "authority": {"registry": "marketing_routes", "id": "visitor_discovery"},
       "actionScope": {
         "included": "Organizer and public-event discovery handoffs, Host acquisition routing, configured or unavailable store CTAs, and member waitlist submission.",
         "excluded": [
@@ -47,7 +47,7 @@
           }
         ],
         "componentContracts": [
-          "route_home",
+          "route_visitor_discovery",
           "home_discovery_section",
           "home_waitlist_section",
           "shared_app_download_shell",

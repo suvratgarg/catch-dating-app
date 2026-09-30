@@ -1,3 +1,4 @@
+import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
 import {SectionHeader} from "../../../shared/site";
@@ -148,14 +149,14 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           )}
           <OwnerResponsePrompt
             title={listingPolicy.canRequestClaim ?
-              "Claiming unlocks owner replies." :
+              organizerPresenceCopy.ownerPromptTitle :
               "Owner replies stay attached to the source."}
             body={!listingPolicy.canRequestClaim ?
               "Catch separates attendee proof, public web feedback, and host replies so responses do not blur the review source." :
-              "Public reviews can arrive before the organizer owns the page. Catch keeps them unverified until a claim is approved."}
+              organizerPresenceCopy.ownerPromptBody}
             stats={ownerPromptStats}
             ctaHref={listingPolicy.canRequestClaim ? claimHrefForListing(listing) : undefined}
-            ctaLabel={listingPolicy.canRequestClaim ? "Claim to respond" : undefined}
+            ctaLabel={listingPolicy.canRequestClaim ? organizerPresenceCopy.ownerPromptAction : undefined}
             onCtaClick={(href) => trackCtaClick("owner_response_prompt", href)}
           />
         </div>

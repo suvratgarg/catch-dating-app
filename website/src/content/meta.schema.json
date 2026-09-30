@@ -42,7 +42,8 @@
         "host_claim",
         "host_apply",
         "host_stack",
-        "host_workflows"
+        "host_workflows",
+        "visitor_discovery"
       ],
       "additionalProperties": false,
       "properties": {
@@ -125,6 +126,9 @@
           "$ref": "#/$defs/staticMeta"
         },
         "host_workflows": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "visitor_discovery": {
           "$ref": "#/$defs/staticMeta"
         }
       }

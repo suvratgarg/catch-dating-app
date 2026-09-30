@@ -49,12 +49,14 @@ export function HeroAccent({
 export function HomeHeroInner({
   children,
   className,
+  layout = "split",
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
+  layout?: "split" | "content";
 }) {
   return (
-    <div {...props} className={classNames("hero__inner", className)}>
+    <div {...props} className={classNames("hero__inner", layout === "content" && "hero__inner--content", className)}>
       {children}
     </div>
   );

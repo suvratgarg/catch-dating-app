@@ -1,3 +1,4 @@
+import {organizerPresenceCopy} from "@content/organizerPresence";
 import {
   organizerHeroMediaForSlug,
   organizerListingCopy,
@@ -84,7 +85,7 @@ export function ListingHeroRailSection({
   const policy = organizerPolicyForListing(listing);
   const resolvedCanRequestClaim = canRequestClaim ?? policy.canRequestClaim;
   const primaryDescription = resolvedCanRequestClaim
-    ? "Claim to manage copy, publish events and respond to reviews."
+    ? organizerPresenceCopy.claimDescription
     : isAppCreated
       ? "Open the organizer's published Catch events."
       : policy.claimRequestReason;
