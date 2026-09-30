@@ -12,7 +12,6 @@ import {AutomationWhatsappDeliveryStore} from
 import {
   automationCompanionMomentId,
   automationInviteLinkId,
-  automationLegacyCampaignId,
   automationMomentRunId,
   handoffAutomationMessage,
   syncAutomationCompanionMoments,
@@ -99,7 +98,6 @@ function seedAutomation(
       scheduledAt: null,
       savedAudienceId: null,
       inviteDestinationKind: "event",
-      automationOrigin: null,
       revision: 1,
       createdAt: NOW,
       updatedAt: NOW,
@@ -265,7 +263,6 @@ test("a recipe with an event destination mints a per-occurrence invite " +
       scheduledAt: null,
       savedAudienceId: null,
       inviteDestinationKind: "event",
-      automationOrigin: null,
       revision: 1,
       createdAt: NOW,
       updatedAt: NOW,
@@ -319,34 +316,6 @@ test("a retried handoff converges on the same run and message ids",
       path.startsWith("organizerMomentRuns/"));
     assert.equal(runs.length, 1);
     assert.equal(db.transactionCommits >= 2, true);
-  },
-);
-
-test("a legacy automationOrigin campaign owns its occurrence until drain",
-  async () => {
-    const legacyId = automationLegacyCampaignId(RUN_ID, "welcome");
-    const db = new FakeFirestore(seedAutomation({
-      [`organizerCampaigns/${legacyId}`]: {
-        organizerId: "org-1",
-        status: "sending",
-        automationOrigin: {ruleId: "rule-1", actionId: "welcome"},
-      },
-    }));
-    const result = await handoffAutomationMessage({
-      db: db as unknown as Firestore,
-      automationRunId: RUN_ID,
-      ruleId: "rule-1",
-      event: automationEvent(),
-      rule: rule(),
-      action: action(),
-      nowMillis: () => NOW_MS,
-    });
-    assert.deepEqual(result, {kind: "legacyOwned", campaignId: legacyId});
-    assert.equal(
-      db.getDoc(`organizerMomentRuns/${
-        automationMomentRunId(
-          automationCompanionMomentId("rule-1", "welcome"), RUN_ID)}`),
-      undefined);
   },
 );
 

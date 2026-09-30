@@ -45,7 +45,6 @@ import {
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
 import {campaignVariables} from "./organizerCampaigns";
-import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
 
 /** Claim-time submission evidence for webhook status correlation. */
 export const CAMPAIGN_WHATSAPP_DISPATCHES = "campaignWhatsappDispatches";
@@ -571,14 +570,6 @@ async function dispatchCampaignWhatsapp(
     return {kind: "withheld", reason: claim.reason};
   }
   const attempt = claim.permit.attempt as LiveAttempt;
-  // Automation-sourced campaigns re-verify the rule/event authority right
-  // before provider I/O — the same position the legacy dispatcher used.
-  const campaign = (await db.collection("organizerCampaigns")
-    .doc(intent.context.campaignId).get()).data() as
-    OrganizerCampaignDocument | undefined;
-  if (campaign) {
-    await requireAutomationCampaignAuthority(db, campaign, clock());
-  }
   let providerMessageId: string;
   try {
     ({providerMessageId} = await provider.sendTemplate({
