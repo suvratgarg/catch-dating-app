@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {evaluatePromotionFreshness} from "./web_hosting_freshness.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -12,6 +15,88 @@ function workflow(name) {
 
 function caller(surface) {
   return workflow(`${surface}-website.yml`);
+}
+
+function finalFreshnessGateScript() {
+  const promote = workflow("_web-hosting-promote.yml");
+  const marker = promote.indexOf(
+    "      - name: Refuse to overtake a newer main push immediately before mutation",
+  );
+  const runStart = promote.indexOf("        run: |\n", marker);
+  const runEnd = promote.indexOf(
+    "\n      - name: Deploy only the verified production Hosting target without rebuilding",
+    runStart,
+  );
+  assert.ok(marker >= 0 && runStart > marker && runEnd > runStart);
+  return promote.slice(runStart + "        run: |\n".length, runEnd)
+    .split("\n")
+    .map((line) => line.startsWith("          ") ? line.slice(10) : line)
+    .join("\n");
+}
+
+function runFinalFreshnessGate(mode) {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "web-hosting-freshness-"));
+  const bin = path.join(directory, "bin");
+  fs.mkdirSync(bin);
+  const trace = path.join(directory, "calls.log");
+  const sha = "a".repeat(40);
+  const mainSha = "b".repeat(40);
+  const git = `#!/bin/sh
+case "$1" in
+  fetch) printf 'fetch\\n' >> "$GATE_TRACE"; exit 0 ;;
+  rev-parse) printf '%s\\n' "$GATE_MAIN_SHA"; exit 0 ;;
+  merge-base) [ "$GATE_ANCESTOR" = "true" ]; exit $? ;;
+  *) printf 'unexpected git command\\n' >&2; exit 97 ;;
+esac
+`;
+  const gh = `#!/bin/sh
+printf '%s\\n' "$*" >> "$GATE_TRACE"
+no_cache=false
+for arg in "$@"; do
+  if [ "$arg" = "Cache-Control: no-cache" ]; then no_cache=true; fi
+done
+case "$*" in
+  *"actions/runs/$SOURCE_CI_RUN_ID")
+    printf '%s\\n' '{"id":101,"run_attempt":2,"head_sha":"${sha}","event":"push","head_branch":"main"}'
+    ;;
+  *"actions/workflows/$SOURCE_CI_WORKFLOW_ID/runs?"*)
+    if [ "$GATE_MODE" = "clean" ] || { [ "$GATE_MODE" = "stale-then-fresh" ] && [ "$no_cache" = "true" ]; }; then
+      printf '%s\\n' '{"workflow_runs":[{"id":101,"run_number":73,"head_sha":"${sha}","head_branch":"main","event":"push"}]}'
+    else
+      printf '%s\\n' '{"workflow_runs":[{"id":102,"run_number":74,"head_sha":"${mainSha}","head_branch":"main","event":"push"}]}'
+    fi
+    ;;
+  *) printf 'unexpected GitHub endpoint\\n' >&2; exit 96 ;;
+esac
+`;
+
+  fs.writeFileSync(path.join(bin, "git"), git, {mode: 0o755});
+  fs.writeFileSync(path.join(bin, "gh"), gh, {mode: 0o755});
+  try {
+    const result = spawnSync("/bin/bash", ["-euo", "pipefail", "-c", finalFreshnessGateScript()], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+        GATE_TRACE: trace,
+        GATE_MODE: mode,
+        GATE_MAIN_SHA: mainSha,
+        GATE_ANCESTOR: "true",
+        GITHUB_REPOSITORY: "suvratgarg/catch-dating-app",
+        IS_RECOVERY: "false",
+        SOURCE_CI_RUN_ATTEMPT: "2",
+        SOURCE_CI_RUN_ID: "101",
+        SOURCE_CI_RUN_NUMBER: "73",
+        SOURCE_CI_WORKFLOW_ID: "287908946",
+        SOURCE_SHA: sha,
+      },
+    });
+    const calls = fs.readFileSync(trace, "utf8").trim().split("\n").filter(Boolean);
+    return {result, calls};
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
 }
 
 function promotionIsFresh(candidate, state) {
@@ -388,35 +473,47 @@ test("stale recovery and an older partial-rerun artifact fail before mutation", 
   assert.equal(
     (promote.match(/actions\/workflows\/\$[A-Z_a-z]+\/runs\?branch=main&event=push&per_page=1/gu) ?? []).length,
     2,
-    "latest same-surface push must be checked during authorization and before mutation",
+    "authorization and final freshness each use the exact latest-run endpoint",
   );
+  assert.match(promote,
+    /latest_surface_push_path="repos\/\$GITHUB_REPOSITORY\/actions\/workflows\/\$SOURCE_CI_WORKFLOW_ID\/runs\?branch=main&event=push&per_page=1"/u,
+    "the final freshness gate checks the same exact latest-run endpoint");
   assert.match(promote,
     /actions\/runs\/\$SOURCE_CI_RUN_ID\/artifacts\?per_page=100/u);
   assert.equal(
     (promote.match(/actions\/runs\/\$SOURCE_CI_RUN_ID"\)/gu) ?? []).length,
-    2,
-    "latest source attempt must be checked during authorization and before mutation",
+    1,
+    "authorization checks the source run directly",
   );
-  assert.ok((promote.match(/\.run_attempt == \$run_attempt/gu) ?? []).length >= 3,
-    "historical binding plus both latest-attempt checks must stay enforced");
+  assert.match(promote,
+    /source_run_path="repos\/\$GITHUB_REPOSITORY\/actions\/runs\/\$SOURCE_CI_RUN_ID"/u,
+    "the final freshness gate rereads the same source run");
+  assert.ok((promote.match(/\.run_attempt == \$run_attempt/gu) ?? []).length >= 2,
+    "historical binding and pre-mutation producer attempt must stay enforced");
+  const freshness = fs.readFileSync(
+    path.join(repoRoot, "tool", "ci", "web_hosting_freshness.mjs"),
+    "utf8",
+  );
+  assert.match(freshness,
+    /producerAttempt: sourceRun\.runAttempt === expectedAttempt/u);
   assert.match(promote,
     /freshest_attempt[\s\S]*max \/\/ 0[\s\S]*freshest_attempt" != "\$SOURCE_CI_RUN_ATTEMPT/u);
   assert.match(promote,
     /not the unique freshest package for its producing run/u);
   assert.equal(
     (promote.match(/test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/gu) ?? []).length,
-    2,
-    "recovery source must equal current main after checkout and immediately before mutation",
+    1,
+    "recovery source must equal current main after checkout; final read is evaluated by helper",
   );
   assert.equal(
     (promote.match(/git merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/gu) ?? []).length,
     2,
-    "automatic promotion may cross unrelated commits but still requires main ancestry",
+    "ancestry must be checked before mutation and rechecked at the final freshness gate",
   );
   assert.match(promote,
     /if \[\[ "\$IS_RECOVERY" == "true" \]\]; then[\s\S]*git rev-parse refs\/remotes\/origin\/main/u);
   const lastFreshness = promote.lastIndexOf(
-    'test "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"',
+    "Final source/freshness predicates (single no-cache read)",
   );
   const deploy = promote.indexOf(
     "Deploy only the verified production Hosting target without rebuilding",
@@ -427,6 +524,121 @@ test("stale recovery and an older partial-rerun artifact fail before mutation", 
     "a retained attempt-1 artifact cannot authorize recovery after attempt 2 exists");
   assert.equal(recoveryAttemptIsCurrent(2, {runAttempt: 2}, [{attempt: 1}]), false,
     "a latest rerun with no package must fail closed and require an all-jobs rerun");
+});
+
+function validFreshnessEvidence(overrides = {}) {
+  const sourceSha = "a".repeat(40);
+  const sourceRun = {
+    id: 101,
+    runAttempt: 2,
+    headSha: sourceSha,
+    event: "push",
+    branch: "main",
+  };
+  const latestRun = {
+    id: 101,
+    runNumber: 73,
+    sha: sourceSha,
+    branch: "main",
+    event: "push",
+  };
+  return {
+    expected: {
+      sourceSha,
+      runId: "101",
+      runAttempt: 2,
+      workflowId: "287908946",
+      runNumber: 73,
+      recovery: false,
+    },
+    actual: {
+      mainSha: "b".repeat(40),
+      sourceIsAncestor: true,
+      sourceRun,
+      latestRuns: [latestRun],
+    },
+    ...overrides,
+  };
+}
+
+test("final promotion freshness evaluator accepts only the complete source and latest-run identity", () => {
+  const valid = evaluatePromotionFreshness(validFreshnessEvidence());
+  assert.equal(valid.passed, true);
+  assert.deepEqual(valid.failedChecks, []);
+  assert.equal(valid.actual.sourceRun.id, "101");
+  assert.deepEqual(valid.actual.latestRuns, [{
+    id: "101",
+    runNumber: 73,
+    sha: "a".repeat(40),
+    branch: "main",
+    event: "push",
+  }]);
+
+  const cases = [
+    ["source ancestry failure", (e) => { e.actual.sourceIsAncestor = false; }, "sourceIsAncestorOfMain"],
+    ["producer run identity mismatch", (e) => { e.actual.sourceRun.id = 102; }, "producerRunIdentity"],
+    ["producer attempt mismatch", (e) => { e.actual.sourceRun.runAttempt = 1; }, "producerAttempt"],
+    ["producer SHA mismatch", (e) => { e.actual.sourceRun.headSha = "c".repeat(40); }, "producerSourceSha"],
+    ["producer branch mismatch", (e) => { e.actual.sourceRun.branch = "release"; }, "producerBranch"],
+    ["producer event mismatch", (e) => { e.actual.sourceRun.event = "workflow_dispatch"; }, "producerEvent"],
+    ["latest run id mismatch", (e) => { e.actual.latestRuns[0].id = 102; }, "latestRunIdentity"],
+    ["latest run number mismatch", (e) => { e.actual.latestRuns[0].runNumber = 72; }, "latestRunNumber"],
+    ["latest SHA mismatch", (e) => { e.actual.latestRuns[0].sha = "c".repeat(40); }, "latestRunSourceSha"],
+    ["latest branch mismatch", (e) => { e.actual.latestRuns[0].branch = "release"; }, "latestRunBranch"],
+    ["latest event mismatch", (e) => { e.actual.latestRuns[0].event = "workflow_dispatch"; }, "latestRunEvent"],
+    ["empty latest query", (e) => { e.actual.latestRuns = []; }, "latestRunCountIsOne"],
+    ["ambiguous latest query", (e) => { e.actual.latestRuns.push({...e.actual.latestRuns[0]}); }, "latestRunCountIsOne"],
+    ["recovery must match current main", (e) => {
+      e.expected.recovery = true;
+      e.actual.mainSha = "d".repeat(40);
+    }, "recoverySourceEqualsCurrentMain"],
+  ];
+
+  for (const [label, mutate, failedCheck] of cases) {
+    const evidence = validFreshnessEvidence();
+    mutate(evidence);
+    const result = evaluatePromotionFreshness(evidence);
+    assert.equal(result.passed, false, label);
+    assert.ok(result.failedChecks.includes(failedCheck), label);
+  }
+});
+
+test("final freshness mismatch gets at most one no-cache read and remains fail-closed", () => {
+  const promote = workflow("_web-hosting-promote.yml");
+  const gate = promote.slice(
+    promote.indexOf("Refuse to overtake a newer main push immediately before mutation"),
+    promote.indexOf("Deploy only the verified production Hosting target without rebuilding"),
+  );
+  assert.match(gate, /read_freshness_evidence cached/u);
+  assert.match(gate, /read_freshness_evidence no-cache/u);
+  assert.equal((gate.match(/read_freshness_evidence no-cache/gu) ?? []).length, 1);
+  assert.match(gate, /Cache-Control: no-cache/u);
+  assert.match(gate,
+    /if ! jq -e '\.passed == true'[\s\S]*read_freshness_evidence no-cache[\s\S]*if ! jq -e '\.passed == true'[\s\S]*exit 1/u);
+  assert.match(gate, /git merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/u);
+  assert.match(gate, /sourceIsAncestor: \$source_is_ancestor/u);
+  assert.match(gate, /latestRuns: \$latest_runs/u);
+  assert.match(gate, /Final source\/freshness predicates \(single no-cache read\)/u);
+});
+
+test("final freshness shell retries one stale API read once, then still refuses persistent mismatch", () => {
+  const clean = runFinalFreshnessGate("clean");
+  assert.equal(clean.result.status, 0, clean.result.stderr);
+  assert.equal(clean.calls.filter((call) => call.startsWith("api ")).length, 2);
+  assert.equal(clean.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 0);
+
+  const staleThenFresh = runFinalFreshnessGate("stale-then-fresh");
+  assert.equal(staleThenFresh.result.status, 0, staleThenFresh.result.stderr);
+  assert.equal(staleThenFresh.calls.filter((call) => call.startsWith("api ")).length, 4);
+  assert.equal(staleThenFresh.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 2);
+  assert.match(staleThenFresh.result.stdout, /Initial source\/freshness read did not satisfy/u);
+  assert.match(staleThenFresh.result.stdout, /single no-cache read/u);
+
+  const persistentMismatch = runFinalFreshnessGate("persistent-mismatch");
+  assert.equal(persistentMismatch.result.status, 1);
+  assert.equal(persistentMismatch.calls.filter((call) => call.startsWith("api ")).length, 4);
+  assert.equal(persistentMismatch.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 2);
+  assert.match(persistentMismatch.result.stdout, /remains unsatisfied after one no-cache read; refusing deployment/u);
 });
 
 test("the packaged Firebase target cannot run lifecycle hooks with deploy credentials", () => {
