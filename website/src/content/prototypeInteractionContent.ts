@@ -1,3 +1,7 @@
+import {prototypeStackTiers} from './prototypeStackContent';
+
+const networkTierName = 'Catch network';
+
 export const prototypeInteractionContent = {
   notice: 'Illustrative local preview. These tool mappings, commercial tiers and activity examples preserve the prototype for discussion; they do not verify integrations, availability or pricing.',
   stack: {
@@ -12,9 +16,9 @@ export const prototypeInteractionContent = {
     disclosure: 'Tool selections stay in this browser view. No account, connection, import or purchase is created.',
   },
   tiers: [
-    { id: 'alongside', name: 'Works alongside', ringLabel: 'Works alongside tier' },
-    { id: 'booking', name: 'Catch booking', ringLabel: 'Catch booking tier' },
-    { id: 'network', name: 'Catch network', ringLabel: 'Catch network tier' },
+    { id: 'alongside', name: prototypeStackTiers.alongside.name, ringLabel: `${prototypeStackTiers.alongside.name} tier` },
+    { id: 'booking', name: prototypeStackTiers.booking.name, ringLabel: `${prototypeStackTiers.booking.name} tier` },
+    { id: 'network', name: networkTierName, ringLabel: `${networkTierName} tier` },
   ],
   console: {
     heading: 'Catch Host — live event console',
@@ -37,3 +41,18 @@ export const prototypeInteractionContent = {
     footer: ['live', 'no-download guest runtime', 'host overrides on'],
   },
 } as const;
+
+export type PrototypeTierId = (typeof prototypeInteractionContent.tiers)[number]['id'];
+
+// Catalog projections use the same fictional rows and events as the interactive replay.
+export const prototypeConsoleContentItems = [
+  ...prototypeInteractionContent.console.events.map((event, index) => ({
+    title: event.name,
+    body: `Illustrative concept: ${event.detail} ${index === 0 ? `${prototypeInteractionContent.console.initialCheckIns} ` : ''}${event.status}`,
+    role: 'content' as const,
+  })),
+  ...prototypeInteractionContent.console.rows.map((row) => ({
+    body: `Illustrative concept: ${row.time} ${row.text}`,
+    role: 'content' as const,
+  })),
+];
