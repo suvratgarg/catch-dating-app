@@ -21,6 +21,7 @@ import {
   assertRevision,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   requireProgramDuty,
 } from "../shared/programAuthority";
 import type {
@@ -86,6 +87,7 @@ export async function upsertProgramGuestHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
     const existing = snap.data() as ProgramGuestDocument | undefined;
@@ -341,6 +343,7 @@ export async function upsertProgramHouseholdHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
     const existing = snap.data() as ProgramHouseholdDocument | undefined;

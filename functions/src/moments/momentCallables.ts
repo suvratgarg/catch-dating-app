@@ -15,7 +15,9 @@ import {
 import {
   requireProgramAccess,
   requireProgramDuty,
+  requireProgramMutable,
 } from "../shared/programAuthority";
+import type {ProgramAccess} from "../shared/programAuthority";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   validateListOrganizerMomentsCallablePayload,
@@ -103,7 +105,7 @@ export interface MomentCallablesDeps {
     db: Firestore,
     scope: MomentScope,
     actorUid: string,
-  ) => Promise<void>;
+  ) => Promise<ProgramAccess | void>;
 }
 
 export const defaultMomentCallablesDeps: Omit<MomentCallablesDeps,
@@ -119,7 +121,7 @@ export async function requireMomentManageAuthority(
   db: Firestore,
   scope: MomentScope,
   actorUid: string,
-): Promise<void> {
+): Promise<ProgramAccess | void> {
   // Organizer scope is server-managed: companion moments exist only as
   // projections of form-automation rules and can never be authored,
   // armed, paused, or run through the callables.
@@ -137,7 +139,7 @@ export async function requireMomentManageAuthority(
     if (access.role !== "manager") {
       requireProgramDuty(access, "communications");
     }
-    return;
+    return access;
   }
   const eventSnap = await db.collection("events").doc(scope.eventId).get();
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
@@ -186,7 +188,7 @@ export async function upsertOrganizerMomentHandler(
       "invalid-argument",
       "travelTimeLead applies to functionGuests audiences only.");
   }
-  await deps.authorizeManage(db, scope, params.actorUid);
+  await requireScopeMutable(deps, db, scope, params.actorUid);
 
   const momentId = typeof params.payload.momentId === "string" &&
     params.payload.momentId.length > 0 ?
@@ -238,6 +240,18 @@ interface MomentRefParams extends ActorParams {
   momentId: string;
 }
 
+/** Moment mutations write run/send state, so a program scope must be
+ *  mutable; archived programs stay readable through listOrganizerMoments. */
+async function requireScopeMutable(
+  deps: MomentCallablesDeps,
+  db: Firestore,
+  scope: MomentScope,
+  actorUid: string,
+): Promise<void> {
+  const access = await deps.authorizeManage(db, scope, actorUid);
+  if (access) requireProgramMutable(access.program);
+}
+
 /** Approve-the-rule-once: arms the moment under the actor's approval. */
 export async function armOrganizerMomentHandler(
   deps: MomentCallablesDeps,
@@ -271,7 +285,7 @@ async function transition(
   apply: (moment: MomentDefinition) => LifecycleResult,
 ): Promise<{moment: MomentDefinition}> {
   const db = deps.firestore();
-  await deps.authorizeManage(db, params.scope, params.actorUid);
+  await requireScopeMutable(deps, db, params.scope, params.actorUid);
   const ref = db.collection(MOMENTS_COLLECTION).doc(params.momentId);
   const snap = await ref.get();
   if (!snap.exists) {
@@ -336,7 +350,7 @@ export async function runOrganizerMomentHandler(
     throw new HttpsError(
       "invalid-argument", "requestKey is required for manual moments.");
   }
-  await deps.authorizeManage(db, params.scope, params.actorUid);
+  await requireScopeMutable(deps, db, params.scope, params.actorUid);
   const snap = await db.collection(MOMENTS_COLLECTION)
     .doc(params.momentId).get();
   const current = snap.exists ?

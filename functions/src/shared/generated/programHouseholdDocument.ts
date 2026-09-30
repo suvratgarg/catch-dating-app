@@ -12,7 +12,7 @@ export interface ProgramHouseholdDocument {
    * Human label such as 'The Sharma family' used on invitations and rosters.
    */
   label: string;
-  primaryContactName: string;
+  primaryContactName: string | null;
   primaryPhoneE164: string | null;
   primaryEmail: string | null;
   /**
@@ -56,5 +56,12 @@ export interface ProgramHouseholdDocument {
      * Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook.
      */
     source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
+  } | null;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
   } | null;
 }

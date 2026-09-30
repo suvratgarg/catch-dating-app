@@ -14449,6 +14449,51 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const archiveProgramCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'archiveProgramCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const archiveProgramCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'archiveProgramCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const archiveProgramCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'archiveProgramCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const archiveProgramCallableResponseAnonymizeAtMillis = CatchContractFieldConstraints(
+    path: 'archiveProgramCallableResponse.anonymizeAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const archiveProgramCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'archiveProgramCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const archiveProgramCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'archiveProgramCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const assistantClientsDocumentActive = CatchContractFieldConstraints(
     path: 'assistantClientsDocument.active',
     required: true,
@@ -112497,6 +112542,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerProgramCallableResponseProgramAnonymizeAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.program.anonymizeAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramCallableResponseProgramAnonymizedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.program.anonymizedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramCallableResponseProgramArchivedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.program.archivedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const organizerProgramCallableResponseProgramCapabilities = CatchContractFieldConstraints(
     path: 'organizerProgramCallableResponse.program.capabilities',
     required: true,
@@ -112675,6 +112738,54 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 1000,
+  );
+
+  static const organizerProgramDocumentAnonymizeAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.anonymizeAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProgramDocumentAnonymizeAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.anonymizeAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProgramDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProgramDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProgramDocumentArchivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.archivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProgramDocumentArchivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.archivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProgramDocumentArchivedFromStatus = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.archivedFromStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'active', 'completed', 'archived'],
   );
 
   static const organizerProgramDocumentCapabilities = CatchContractFieldConstraints(
@@ -113009,6 +113120,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 50,
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsAnonymizeAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.anonymizeAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsAnonymizedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.anonymizedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsArchivedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.archivedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const organizerProgramListCallableResponseProgramsItemsCapabilities = CatchContractFieldConstraints(
@@ -122570,6 +122699,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programDoorJournalDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programDoorJournalDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programDoorJournalDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programDoorJournalDocument.createdAt._nanoseconds',
     required: true,
@@ -122661,6 +122804,20 @@ abstract final class CatchContractConstraints {
 
   static const programDoorJournalDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'programDoorJournalDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programFunctionDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programFunctionDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.anonymizedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -123144,6 +123301,20 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const programFunctionGuestDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programFunctionGuestDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programFunctionGuestDocumentAttendanceStatus = CatchContractFieldConstraints(
     path: 'programFunctionGuestDocument.attendanceStatus',
     required: true,
@@ -123334,6 +123505,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programGuestDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programGuestDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programGuestDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programGuestDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programGuestDocumentContactId = CatchContractFieldConstraints(
     path: 'programGuestDocument.contactId',
     maxLength: 180,
@@ -123460,6 +123645,20 @@ abstract final class CatchContractConstraints {
 
   static const programGuestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'programGuestDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programGuestGroupDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programGuestGroupDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.anonymizedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -123894,6 +124093,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programHotelDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programHotelDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programHotelDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programHotelDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const programHotelDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -124434,6 +124647,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHouseholdDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programHouseholdDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programHouseholdDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programHouseholdDocument.createdAt._nanoseconds',
     required: true,
@@ -124519,7 +124746,6 @@ abstract final class CatchContractConstraints {
     path: 'programHouseholdDocument.primaryContactName',
     maxLength: 140,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -125085,6 +125311,154 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programRetentionRunDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRetentionRunDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRetentionRunDocumentError = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.error',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentLeaseToken = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.leaseToken',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentLeaseUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.leaseUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRetentionRunDocumentLeaseUntilSeconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.leaseUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRetentionRunDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentPhases = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.phases',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 16,
+  );
+
+  static const programRetentionRunDocumentPhasesItemsCollection = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.phases.items.collection',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentPhasesItemsCompletedAtMillis = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.phases.items.completedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programRetentionRunDocumentPhasesItemsCursor = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.phases.items.cursor',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentPhasesItemsProcessed = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.phases.items.processed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programRetentionRunDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programRetentionRunDocumentRevision = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programRetentionRunDocumentStartedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.startedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRetentionRunDocumentStartedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.startedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRetentionRunDocumentStatus = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['running', 'completed', 'failed'],
+  );
+
+  static const programRetentionRunDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRetentionRunDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRetentionRunDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programRoomBlockDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programRoomBlockDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programRoomBlockDocumentAssignedCount = CatchContractFieldConstraints(
     path: 'programRoomBlockDocument.assignedCount',
     required: true,
@@ -125303,6 +125677,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const programStaffGrantDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffGrantDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programStaffGrantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.createdAt._nanoseconds',
     required: true,
@@ -125329,7 +125717,6 @@ abstract final class CatchContractConstraints {
     path: 'programStaffGrantDocument.displayName',
     maxLength: 120,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -125431,7 +125818,6 @@ abstract final class CatchContractConstraints {
 
   static const programStaffGrantDocumentPhoneLastFour = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.phoneLastFour',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -125502,6 +125888,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programStaffInviteDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programStaffInviteDocumentClaimedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programStaffInviteDocument.claimedAt._nanoseconds',
     required: true,
@@ -125549,7 +125949,6 @@ abstract final class CatchContractConstraints {
     path: 'programStaffInviteDocument.displayName',
     maxLength: 120,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -125645,7 +126044,6 @@ abstract final class CatchContractConstraints {
     path: 'programStaffInviteDocument.phoneE164',
     maxLength: 32,
     minLength: 4,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -125719,7 +126117,6 @@ abstract final class CatchContractConstraints {
     path: 'programStaffListCallableResponse.members.items.displayName',
     maxLength: 120,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -125804,7 +126201,6 @@ abstract final class CatchContractConstraints {
 
   static const programStaffListCallableResponseMembersItemsPhoneLastFour = CatchContractFieldConstraints(
     path: 'programStaffListCallableResponse.members.items.phoneLastFour',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -126025,6 +126421,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStayDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStayDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const programStayDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -126367,6 +126777,20 @@ abstract final class CatchContractConstraints {
 
   static const programTravelLegDocumentActualArrivalAtSeconds = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.actualArrivalAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programTravelLegDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelLegDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.anonymizedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -126721,6 +127145,20 @@ abstract final class CatchContractConstraints {
 
   static const programTravelLegDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programTravelPartyDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelPartyDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelPartyDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelPartyDocument.anonymizedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -143862,6 +144300,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const transportTripDocumentAnonymizedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'transportTripDocument.anonymizedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const transportTripDocumentAnonymizedAtSeconds = CatchContractFieldConstraints(
+    path: 'transportTripDocument.anonymizedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const transportTripDocumentArrivedAtNanoseconds = CatchContractFieldConstraints(
     path: 'transportTripDocument.arrivedAt._nanoseconds',
     required: true,
@@ -144450,6 +144902,51 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const unarchiveProgramCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const unarchiveProgramCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const unarchiveProgramCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const unarchiveProgramCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const unarchiveProgramCallableResponseRestoredStatus = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallableResponse.restoredStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'active', 'completed', 'archived'],
+  );
+
+  static const unarchiveProgramCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'unarchiveProgramCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const unblockUserCallablePayloadTargetUserId = CatchContractFieldConstraints(
@@ -157035,6 +157532,12 @@ abstract final class CatchContractConstraints {
     'archiveOrganizerSavedAudienceCallablePayload.audienceId': archiveOrganizerSavedAudienceCallablePayloadAudienceId,
     'archiveOrganizerSavedAudienceCallablePayload.expectedRevision': archiveOrganizerSavedAudienceCallablePayloadExpectedRevision,
     'archiveOrganizerSavedAudienceCallablePayload.organizerId': archiveOrganizerSavedAudienceCallablePayloadOrganizerId,
+    'archiveProgramCallablePayload.expectedRevision': archiveProgramCallablePayloadExpectedRevision,
+    'archiveProgramCallablePayload.programId': archiveProgramCallablePayloadProgramId,
+    'archiveProgramCallableResponse.alreadyApplied': archiveProgramCallableResponseAlreadyApplied,
+    'archiveProgramCallableResponse.anonymizeAtMillis': archiveProgramCallableResponseAnonymizeAtMillis,
+    'archiveProgramCallableResponse.entityId': archiveProgramCallableResponseEntityId,
+    'archiveProgramCallableResponse.revision': archiveProgramCallableResponseRevision,
     'assistantClientsDocument.active': assistantClientsDocumentActive,
     'assistantClientsDocument.authUid': assistantClientsDocumentAuthUid,
     'assistantClientsDocument.classification': assistantClientsDocumentClassification,
@@ -170333,6 +170836,9 @@ abstract final class CatchContractConstraints {
     'organizerProgramCallableResponse.pickupPoints.items.pickupPointId': organizerProgramCallableResponsePickupPointsItemsPickupPointId,
     'organizerProgramCallableResponse.pickupPoints.items.revision': organizerProgramCallableResponsePickupPointsItemsRevision,
     'organizerProgramCallableResponse.pickupPoints.items.terminal': organizerProgramCallableResponsePickupPointsItemsTerminal,
+    'organizerProgramCallableResponse.program.anonymizeAtMillis': organizerProgramCallableResponseProgramAnonymizeAtMillis,
+    'organizerProgramCallableResponse.program.anonymizedAtMillis': organizerProgramCallableResponseProgramAnonymizedAtMillis,
+    'organizerProgramCallableResponse.program.archivedAtMillis': organizerProgramCallableResponseProgramArchivedAtMillis,
     'organizerProgramCallableResponse.program.capabilities': organizerProgramCallableResponseProgramCapabilities,
     'organizerProgramCallableResponse.program.capabilities.items': organizerProgramCallableResponseProgramCapabilitiesItems,
     'organizerProgramCallableResponse.program.endsAtMillis': organizerProgramCallableResponseProgramEndsAtMillis,
@@ -170356,6 +170862,13 @@ abstract final class CatchContractConstraints {
     'organizerProgramCallableResponse.program.transportSettings.vehicleClasses.items.luggageCapacity': organizerProgramCallableResponseProgramTransportSettingsVehicleClassesItemsLuggageCapacity,
     'organizerProgramCallableResponse.program.transportSettings.vehicleClasses.items.passengerCapacity': organizerProgramCallableResponseProgramTransportSettingsVehicleClassesItemsPassengerCapacity,
     'organizerProgramCallableResponse.program.transportSettings.vehicleClasses.items.sortOrder': organizerProgramCallableResponseProgramTransportSettingsVehicleClassesItemsSortOrder,
+    'organizerProgramDocument.anonymizeAt._nanoseconds': organizerProgramDocumentAnonymizeAtNanoseconds,
+    'organizerProgramDocument.anonymizeAt._seconds': organizerProgramDocumentAnonymizeAtSeconds,
+    'organizerProgramDocument.anonymizedAt._nanoseconds': organizerProgramDocumentAnonymizedAtNanoseconds,
+    'organizerProgramDocument.anonymizedAt._seconds': organizerProgramDocumentAnonymizedAtSeconds,
+    'organizerProgramDocument.archivedAt._nanoseconds': organizerProgramDocumentArchivedAtNanoseconds,
+    'organizerProgramDocument.archivedAt._seconds': organizerProgramDocumentArchivedAtSeconds,
+    'organizerProgramDocument.archivedFromStatus': organizerProgramDocumentArchivedFromStatus,
     'organizerProgramDocument.capabilities': organizerProgramDocumentCapabilities,
     'organizerProgramDocument.capabilities.items': organizerProgramDocumentCapabilitiesItems,
     'organizerProgramDocument.createdAt._nanoseconds': organizerProgramDocumentCreatedAtNanoseconds,
@@ -170399,6 +170912,9 @@ abstract final class CatchContractConstraints {
     'organizerProgramDocument.updatedAt._nanoseconds': organizerProgramDocumentUpdatedAtNanoseconds,
     'organizerProgramDocument.updatedAt._seconds': organizerProgramDocumentUpdatedAtSeconds,
     'organizerProgramListCallableResponse.programs': organizerProgramListCallableResponsePrograms,
+    'organizerProgramListCallableResponse.programs.items.anonymizeAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizeAtMillis,
+    'organizerProgramListCallableResponse.programs.items.anonymizedAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizedAtMillis,
+    'organizerProgramListCallableResponse.programs.items.archivedAtMillis': organizerProgramListCallableResponseProgramsItemsArchivedAtMillis,
     'organizerProgramListCallableResponse.programs.items.capabilities': organizerProgramListCallableResponseProgramsItemsCapabilities,
     'organizerProgramListCallableResponse.programs.items.capabilities.items': organizerProgramListCallableResponseProgramsItemsCapabilitiesItems,
     'organizerProgramListCallableResponse.programs.items.endsAtMillis': organizerProgramListCallableResponseProgramsItemsEndsAtMillis,
@@ -171709,6 +172225,8 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageIntent.workflow.runId': programDeliveryMessageIntentWorkflowRunId,
     'programDoorJournalDocument.action': programDoorJournalDocumentAction,
     'programDoorJournalDocument.actorUid': programDoorJournalDocumentActorUid,
+    'programDoorJournalDocument.anonymizedAt._nanoseconds': programDoorJournalDocumentAnonymizedAtNanoseconds,
+    'programDoorJournalDocument.anonymizedAt._seconds': programDoorJournalDocumentAnonymizedAtSeconds,
     'programDoorJournalDocument.createdAt._nanoseconds': programDoorJournalDocumentCreatedAtNanoseconds,
     'programDoorJournalDocument.createdAt._seconds': programDoorJournalDocumentCreatedAtSeconds,
     'programDoorJournalDocument.deviceId': programDoorJournalDocumentDeviceId,
@@ -171722,6 +172240,8 @@ abstract final class CatchContractConstraints {
     'programDoorJournalDocument.revision': programDoorJournalDocumentRevision,
     'programDoorJournalDocument.updatedAt._nanoseconds': programDoorJournalDocumentUpdatedAtNanoseconds,
     'programDoorJournalDocument.updatedAt._seconds': programDoorJournalDocumentUpdatedAtSeconds,
+    'programFunctionDocument.anonymizedAt._nanoseconds': programFunctionDocumentAnonymizedAtNanoseconds,
+    'programFunctionDocument.anonymizedAt._seconds': programFunctionDocumentAnonymizedAtSeconds,
     'programFunctionDocument.checkedInCount': programFunctionDocumentCheckedInCount,
     'programFunctionDocument.checkInEnabled': programFunctionDocumentCheckInEnabled,
     'programFunctionDocument.createdAt._nanoseconds': programFunctionDocumentCreatedAtNanoseconds,
@@ -171789,6 +172309,8 @@ abstract final class CatchContractConstraints {
     'programFunctionDoorViewCallableResponse.journal.items.partySize': programFunctionDoorViewCallableResponseJournalItemsPartySize,
     'programFunctionDoorViewCallableResponse.programId': programFunctionDoorViewCallableResponseProgramId,
     'programFunctionDoorViewCallableResponse.serverTimeMillis': programFunctionDoorViewCallableResponseServerTimeMillis,
+    'programFunctionGuestDocument.anonymizedAt._nanoseconds': programFunctionGuestDocumentAnonymizedAtNanoseconds,
+    'programFunctionGuestDocument.anonymizedAt._seconds': programFunctionGuestDocumentAnonymizedAtSeconds,
     'programFunctionGuestDocument.attendanceStatus': programFunctionGuestDocumentAttendanceStatus,
     'programFunctionGuestDocument.createdAt._nanoseconds': programFunctionGuestDocumentCreatedAtNanoseconds,
     'programFunctionGuestDocument.createdAt._seconds': programFunctionGuestDocumentCreatedAtSeconds,
@@ -171815,6 +172337,8 @@ abstract final class CatchContractConstraints {
     'programFunctionInvitationsCallableResponse.revokedCount': programFunctionInvitationsCallableResponseRevokedCount,
     'programFunctionScopeCallablePayload.functionId': programFunctionScopeCallablePayloadFunctionId,
     'programFunctionScopeCallablePayload.programId': programFunctionScopeCallablePayloadProgramId,
+    'programGuestDocument.anonymizedAt._nanoseconds': programGuestDocumentAnonymizedAtNanoseconds,
+    'programGuestDocument.anonymizedAt._seconds': programGuestDocumentAnonymizedAtSeconds,
     'programGuestDocument.contactId': programGuestDocumentContactId,
     'programGuestDocument.createdAt._nanoseconds': programGuestDocumentCreatedAtNanoseconds,
     'programGuestDocument.createdAt._seconds': programGuestDocumentCreatedAtSeconds,
@@ -171833,6 +172357,8 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.source': programGuestDocumentSource,
     'programGuestDocument.updatedAt._nanoseconds': programGuestDocumentUpdatedAtNanoseconds,
     'programGuestDocument.updatedAt._seconds': programGuestDocumentUpdatedAtSeconds,
+    'programGuestGroupDocument.anonymizedAt._nanoseconds': programGuestGroupDocumentAnonymizedAtNanoseconds,
+    'programGuestGroupDocument.anonymizedAt._seconds': programGuestGroupDocumentAnonymizedAtSeconds,
     'programGuestGroupDocument.createdAt._nanoseconds': programGuestGroupDocumentCreatedAtNanoseconds,
     'programGuestGroupDocument.createdAt._seconds': programGuestGroupDocumentCreatedAtSeconds,
     'programGuestGroupDocument.dimension': programGuestGroupDocumentDimension,
@@ -171891,6 +172417,8 @@ abstract final class CatchContractConstraints {
     'programGuestListCallableResponse.programId': programGuestListCallableResponseProgramId,
     'programHotelDocument.active': programHotelDocumentActive,
     'programHotelDocument.address': programHotelDocumentAddress,
+    'programHotelDocument.anonymizedAt._nanoseconds': programHotelDocumentAnonymizedAtNanoseconds,
+    'programHotelDocument.anonymizedAt._seconds': programHotelDocumentAnonymizedAtSeconds,
     'programHotelDocument.createdAt._nanoseconds': programHotelDocumentCreatedAtNanoseconds,
     'programHotelDocument.createdAt._seconds': programHotelDocumentCreatedAtSeconds,
     'programHotelDocument.latitude': programHotelDocumentLatitude,
@@ -171963,6 +172491,8 @@ abstract final class CatchContractConstraints {
     'programHotelRoomsCallableResponse.unplacedGuests.items.displayName': programHotelRoomsCallableResponseUnplacedGuestsItemsDisplayName,
     'programHotelRoomsCallableResponse.unplacedGuests.items.guestId': programHotelRoomsCallableResponseUnplacedGuestsItemsGuestId,
     'programHotelRoomsCallableResponse.unplacedGuests.items.suggestedRoomBlockId': programHotelRoomsCallableResponseUnplacedGuestsItemsSuggestedRoomBlockId,
+    'programHouseholdDocument.anonymizedAt._nanoseconds': programHouseholdDocumentAnonymizedAtNanoseconds,
+    'programHouseholdDocument.anonymizedAt._seconds': programHouseholdDocumentAnonymizedAtSeconds,
     'programHouseholdDocument.createdAt._nanoseconds': programHouseholdDocumentCreatedAtNanoseconds,
     'programHouseholdDocument.createdAt._seconds': programHouseholdDocumentCreatedAtSeconds,
     'programHouseholdDocument.deliveryPreference': programHouseholdDocumentDeliveryPreference,
@@ -172055,6 +172585,27 @@ abstract final class CatchContractConstraints {
     'programPickupPointDocument.terminal': programPickupPointDocumentTerminal,
     'programPickupPointDocument.updatedAt._nanoseconds': programPickupPointDocumentUpdatedAtNanoseconds,
     'programPickupPointDocument.updatedAt._seconds': programPickupPointDocumentUpdatedAtSeconds,
+    'programRetentionRunDocument.completedAt._nanoseconds': programRetentionRunDocumentCompletedAtNanoseconds,
+    'programRetentionRunDocument.completedAt._seconds': programRetentionRunDocumentCompletedAtSeconds,
+    'programRetentionRunDocument.error': programRetentionRunDocumentError,
+    'programRetentionRunDocument.leaseToken': programRetentionRunDocumentLeaseToken,
+    'programRetentionRunDocument.leaseUntil._nanoseconds': programRetentionRunDocumentLeaseUntilNanoseconds,
+    'programRetentionRunDocument.leaseUntil._seconds': programRetentionRunDocumentLeaseUntilSeconds,
+    'programRetentionRunDocument.organizerId': programRetentionRunDocumentOrganizerId,
+    'programRetentionRunDocument.phases': programRetentionRunDocumentPhases,
+    'programRetentionRunDocument.phases.items.collection': programRetentionRunDocumentPhasesItemsCollection,
+    'programRetentionRunDocument.phases.items.completedAtMillis': programRetentionRunDocumentPhasesItemsCompletedAtMillis,
+    'programRetentionRunDocument.phases.items.cursor': programRetentionRunDocumentPhasesItemsCursor,
+    'programRetentionRunDocument.phases.items.processed': programRetentionRunDocumentPhasesItemsProcessed,
+    'programRetentionRunDocument.programId': programRetentionRunDocumentProgramId,
+    'programRetentionRunDocument.revision': programRetentionRunDocumentRevision,
+    'programRetentionRunDocument.startedAt._nanoseconds': programRetentionRunDocumentStartedAtNanoseconds,
+    'programRetentionRunDocument.startedAt._seconds': programRetentionRunDocumentStartedAtSeconds,
+    'programRetentionRunDocument.status': programRetentionRunDocumentStatus,
+    'programRetentionRunDocument.updatedAt._nanoseconds': programRetentionRunDocumentUpdatedAtNanoseconds,
+    'programRetentionRunDocument.updatedAt._seconds': programRetentionRunDocumentUpdatedAtSeconds,
+    'programRoomBlockDocument.anonymizedAt._nanoseconds': programRoomBlockDocumentAnonymizedAtNanoseconds,
+    'programRoomBlockDocument.anonymizedAt._seconds': programRoomBlockDocumentAnonymizedAtSeconds,
     'programRoomBlockDocument.assignedCount': programRoomBlockDocumentAssignedCount,
     'programRoomBlockDocument.createdAt._nanoseconds': programRoomBlockDocumentCreatedAtNanoseconds,
     'programRoomBlockDocument.createdAt._seconds': programRoomBlockDocumentCreatedAtSeconds,
@@ -172084,6 +172635,8 @@ abstract final class CatchContractConstraints {
     'programStaffAttentionCallableResponse.items.items.title': programStaffAttentionCallableResponseItemsItemsTitle,
     'programStaffAttentionCallableResponse.programId': programStaffAttentionCallableResponseProgramId,
     'programStaffAttentionCallableResponse.truncated': programStaffAttentionCallableResponseTruncated,
+    'programStaffGrantDocument.anonymizedAt._nanoseconds': programStaffGrantDocumentAnonymizedAtNanoseconds,
+    'programStaffGrantDocument.anonymizedAt._seconds': programStaffGrantDocumentAnonymizedAtSeconds,
     'programStaffGrantDocument.createdAt._nanoseconds': programStaffGrantDocumentCreatedAtNanoseconds,
     'programStaffGrantDocument.createdAt._seconds': programStaffGrantDocumentCreatedAtSeconds,
     'programStaffGrantDocument.createdBy': programStaffGrantDocumentCreatedBy,
@@ -172110,6 +172663,8 @@ abstract final class CatchContractConstraints {
     'programStaffGrantDocument.uid': programStaffGrantDocumentUid,
     'programStaffGrantDocument.updatedAt._nanoseconds': programStaffGrantDocumentUpdatedAtNanoseconds,
     'programStaffGrantDocument.updatedAt._seconds': programStaffGrantDocumentUpdatedAtSeconds,
+    'programStaffInviteDocument.anonymizedAt._nanoseconds': programStaffInviteDocumentAnonymizedAtNanoseconds,
+    'programStaffInviteDocument.anonymizedAt._seconds': programStaffInviteDocumentAnonymizedAtSeconds,
     'programStaffInviteDocument.claimedAt._nanoseconds': programStaffInviteDocumentClaimedAtNanoseconds,
     'programStaffInviteDocument.claimedAt._seconds': programStaffInviteDocumentClaimedAtSeconds,
     'programStaffInviteDocument.claimedByUid': programStaffInviteDocumentClaimedByUid,
@@ -172178,6 +172733,8 @@ abstract final class CatchContractConstraints {
     'programStakeholderCountsCallableResponse.serverTimeMillis': programStakeholderCountsCallableResponseServerTimeMillis,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
+    'programStayDocument.anonymizedAt._nanoseconds': programStayDocumentAnonymizedAtNanoseconds,
+    'programStayDocument.anonymizedAt._seconds': programStayDocumentAnonymizedAtSeconds,
     'programStayDocument.createdAt._nanoseconds': programStayDocumentCreatedAtNanoseconds,
     'programStayDocument.createdAt._seconds': programStayDocumentCreatedAtSeconds,
     'programStayDocument.endsAt._nanoseconds': programStayDocumentEndsAtNanoseconds,
@@ -172225,6 +172782,8 @@ abstract final class CatchContractConstraints {
     'programTransportPlanCallableResponse.unassigned.items.reason': programTransportPlanCallableResponseUnassignedItemsReason,
     'programTravelLegDocument.actualArrivalAt._nanoseconds': programTravelLegDocumentActualArrivalAtNanoseconds,
     'programTravelLegDocument.actualArrivalAt._seconds': programTravelLegDocumentActualArrivalAtSeconds,
+    'programTravelLegDocument.anonymizedAt._nanoseconds': programTravelLegDocumentAnonymizedAtNanoseconds,
+    'programTravelLegDocument.anonymizedAt._seconds': programTravelLegDocumentAnonymizedAtSeconds,
     'programTravelLegDocument.arrivalTerminal': programTravelLegDocumentArrivalTerminal,
     'programTravelLegDocument.carrierCode': programTravelLegDocumentCarrierCode,
     'programTravelLegDocument.claimedAt._nanoseconds': programTravelLegDocumentClaimedAtNanoseconds,
@@ -172276,6 +172835,8 @@ abstract final class CatchContractConstraints {
     'programTravelLegDocument.source': programTravelLegDocumentSource,
     'programTravelLegDocument.updatedAt._nanoseconds': programTravelLegDocumentUpdatedAtNanoseconds,
     'programTravelLegDocument.updatedAt._seconds': programTravelLegDocumentUpdatedAtSeconds,
+    'programTravelPartyDocument.anonymizedAt._nanoseconds': programTravelPartyDocumentAnonymizedAtNanoseconds,
+    'programTravelPartyDocument.anonymizedAt._seconds': programTravelPartyDocumentAnonymizedAtSeconds,
     'programTravelPartyDocument.createdAt._nanoseconds': programTravelPartyDocumentCreatedAtNanoseconds,
     'programTravelPartyDocument.createdAt._seconds': programTravelPartyDocumentCreatedAtSeconds,
     'programTravelPartyDocument.dedicatedVehicle': programTravelPartyDocumentDedicatedVehicle,
@@ -174633,6 +175194,8 @@ abstract final class CatchContractConstraints {
     'transportOperationReceiptDocument.resultJson': transportOperationReceiptDocumentResultJson,
     'transportOperationReceiptDocument.resultRevision': transportOperationReceiptDocumentResultRevision,
     'transportOperationReceiptDocument.tripId': transportOperationReceiptDocumentTripId,
+    'transportTripDocument.anonymizedAt._nanoseconds': transportTripDocumentAnonymizedAtNanoseconds,
+    'transportTripDocument.anonymizedAt._seconds': transportTripDocumentAnonymizedAtSeconds,
     'transportTripDocument.arrivedAt._nanoseconds': transportTripDocumentArrivedAtNanoseconds,
     'transportTripDocument.arrivedAt._seconds': transportTripDocumentArrivedAtSeconds,
     'transportTripDocument.arrivedByUid': transportTripDocumentArrivedByUid,
@@ -174712,6 +175275,12 @@ abstract final class CatchContractConstraints {
     'transportVendorListCallableResponse.vendors.items.boundToProgram': transportVendorListCallableResponseVendorsItemsBoundToProgram,
     'transportVendorListCallableResponse.vendors.items.name': transportVendorListCallableResponseVendorsItemsName,
     'transportVendorListCallableResponse.vendors.items.vendorId': transportVendorListCallableResponseVendorsItemsVendorId,
+    'unarchiveProgramCallablePayload.expectedRevision': unarchiveProgramCallablePayloadExpectedRevision,
+    'unarchiveProgramCallablePayload.programId': unarchiveProgramCallablePayloadProgramId,
+    'unarchiveProgramCallableResponse.alreadyApplied': unarchiveProgramCallableResponseAlreadyApplied,
+    'unarchiveProgramCallableResponse.entityId': unarchiveProgramCallableResponseEntityId,
+    'unarchiveProgramCallableResponse.restoredStatus': unarchiveProgramCallableResponseRestoredStatus,
+    'unarchiveProgramCallableResponse.revision': unarchiveProgramCallableResponseRevision,
     'unblockUserCallablePayload.targetUserId': unblockUserCallablePayloadTargetUserId,
     'unmergeOrganizerContactsCallablePayload.idempotencyKey': unmergeOrganizerContactsCallablePayloadIdempotencyKey,
     'unmergeOrganizerContactsCallablePayload.mergeReceiptId': unmergeOrganizerContactsCallablePayloadMergeReceiptId,

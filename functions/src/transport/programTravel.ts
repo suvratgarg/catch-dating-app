@@ -8,6 +8,7 @@ import {
   assertRevision,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   requireProgramDuty,
 } from "../shared/programAuthority";
 import {reconcileTravelLegState} from "./travelLegState";
@@ -47,6 +48,7 @@ export async function upsertProgramTravelLegHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     if (!["draft", "active"].includes(access.program.status)) {
       throw new HttpsError("failed-precondition", "This program is closed.");

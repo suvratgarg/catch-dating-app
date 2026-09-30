@@ -46,9 +46,17 @@ const schemaProgramHouseholdDocumentSchema = <String, Object?>{
       'description': 'Human label such as \'The Sharma family\' used on invitations and rosters.',
     },
     'primaryContactName': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 140,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 140,
+          'description': 'Null after archive anonymization.',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'primaryPhoneE164': <String, Object?>{
       'type': <Object?>[
@@ -205,6 +213,34 @@ const schemaProgramHouseholdDocumentSchema = <String, Object?>{
         },
       },
       'description': 'Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent.',
+    },
+    'anonymizedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
     },
   },
 };

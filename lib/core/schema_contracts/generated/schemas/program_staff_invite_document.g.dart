@@ -44,15 +44,30 @@ const schemaProgramStaffInviteDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'phoneE164': <String, Object?>{
-      'type': 'string',
-      'minLength': 4,
-      'maxLength': 32,
-      'description': 'Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 4,
+          'maxLength': 32,
+          'description': 'Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite. Null after archive anonymization.',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'displayName': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 120,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+          'description': 'Null after archive anonymization.',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'duties': <String, Object?>{
       'type': 'array',
@@ -265,6 +280,34 @@ const schemaProgramStaffInviteDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'anonymizedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
     },
   },
 };

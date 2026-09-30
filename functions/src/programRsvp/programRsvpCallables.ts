@@ -12,6 +12,7 @@ import {
   nextRevision,
   requireProgramAccess,
   requireProgramDuty,
+  requireProgramMutable,
   type ProgramAccess,
 } from "../shared/programAuthority";
 import type {
@@ -152,6 +153,7 @@ export async function applyProgramFunctionInvitationsHandler(
       db, programId: data.programId, actorUid,
       now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const functionSnap = await tx.get(functionRef);
     if (!functionSnap.exists ||
@@ -316,6 +318,7 @@ export async function recordProgramFunctionRsvpHandler(
       db, programId: data.programId, actorUid,
       now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireRsvpWriteAccess(access, data.functionId);
     const [functionSnap, guestSnap, fnRows, guestRowsSnap, programFns] =
       await Promise.all([

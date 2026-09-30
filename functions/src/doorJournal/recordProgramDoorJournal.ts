@@ -14,6 +14,7 @@ import {
   dutyCoversFunction,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   type ProgramAccess,
 } from "../shared/programAuthority";
 import type {
@@ -90,6 +91,7 @@ export async function recordProgramDoorJournalHandler(
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
+  requireProgramMutable(access.program);
   requireDoorAuthority(access, data.functionId);
   const now = deps.now();
   type Response =

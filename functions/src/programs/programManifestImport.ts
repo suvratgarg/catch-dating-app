@@ -4,7 +4,7 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {requireProgramAccess, requireProgramDuty} from
+import {requireProgramAccess, requireProgramDuty, requireProgramMutable} from
   "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
@@ -142,6 +142,7 @@ export async function importProgramManifestHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(),
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "guestRelations");
     let state = await loadManifest(db, data.programId);
     const completed: number[] = [];
@@ -172,6 +173,7 @@ export async function importProgramManifestHandler(
         db, programId: data.programId, actorUid,
         now: deps.now(), transaction: tx,
       });
+      requireProgramMutable(access.program);
       requireProgramDuty(access, "guestRelations");
       const receipt = (await tx.get(receiptRef)).data() as
         TransportOperationReceiptDocument | undefined;

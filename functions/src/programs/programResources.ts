@@ -21,6 +21,7 @@ import {
   assertRevision,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   requireProgramDuty,
 } from "../shared/programAuthority";
 import type {
@@ -339,6 +340,7 @@ async function runUpsert(
     const access = await requireProgramAccess({
       db, programId, actorUid, now: deps.now(), transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const organizerId = access.program.organizerId;
     const snap = await tx.get(ref);

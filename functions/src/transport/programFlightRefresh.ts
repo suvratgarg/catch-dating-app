@@ -7,7 +7,8 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {requireProgramAccess} from "../shared/programAuthority";
+import {requireProgramAccess, requireProgramMutable} from
+  "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import type {RefreshProgramTravelLegCallablePayload} from
   "../shared/generated/refreshProgramTravelLegCallablePayload";
@@ -77,10 +78,11 @@ export async function refreshProgramTravelLegHandler(
     );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "refreshProgramTravelLeg");
-  await requireProgramAccess({
+  const access = await requireProgramAccess({
     db, programId: data.programId, actorUid,
     now: admin.firestore.Timestamp.fromDate(deps.now()),
   });
+  requireProgramMutable(access.program);
   const outcome = await refreshTravelLegForRequest(
     db, data.programId, data.legId, {...deps, syncAlert: undefined});
   const legSnap =

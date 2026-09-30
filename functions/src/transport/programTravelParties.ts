@@ -1,7 +1,8 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {assertRevision, nextRevision, requireProgramAccess, requireProgramDuty}
+import {assertRevision, nextRevision, requireProgramAccess, requireProgramDuty,
+  requireProgramMutable}
   from "../shared/programAuthority";
 import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
@@ -32,6 +33,7 @@ export async function upsertProgramTravelPartyHandler(
   return db.runTransaction(async (tx) => {
     const access = await requireProgramAccess({db, transaction: tx,
       programId: data.programId, actorUid, now: deps.now()});
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     if (!["draft", "active"].includes(access.program.status)) {
       throw new HttpsError("failed-precondition", "This program is closed.");

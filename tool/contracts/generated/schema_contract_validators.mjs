@@ -554,6 +554,7 @@ import {
   programRoomBlockDocumentSchema,
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
+  programRetentionRunDocumentSchema,
   programDeliveryMessageDocumentSchema,
   programWhatsappDispatchDocumentSchema,
   programDeliveryMessageIntentSchema,
@@ -587,6 +588,8 @@ import {
   listMyHostAssignmentsCallablePayloadSchema,
   createOrganizerProgramCallablePayloadSchema,
   updateOrganizerProgramCallablePayloadSchema,
+  archiveProgramCallablePayloadSchema,
+  unarchiveProgramCallablePayloadSchema,
   grantProgramStaffCallablePayloadSchema,
   revokeProgramStaffCallablePayloadSchema,
   inviteProgramStaffCallablePayloadSchema,
@@ -634,6 +637,8 @@ import {
   programAccessCallableResponseSchema,
   listMyHostAssignmentsCallableResponseSchema,
   organizerProgramCallableResponseSchema,
+  archiveProgramCallableResponseSchema,
+  unarchiveProgramCallableResponseSchema,
   programInviteClaimCallableResponseSchema,
   programStaffListCallableResponseSchema,
   programGuestListCallableResponseSchema,
@@ -1713,6 +1718,7 @@ export const validateProgramStayDocument = ajv.compile(programStayDocumentSchema
 export const validateProgramRoomBlockDocument = ajv.compile(programRoomBlockDocumentSchema);
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateProgramRetentionRunDocument = ajv.compile(programRetentionRunDocumentSchema);
 export const validateProgramDeliveryMessageDocument = ajv.compile(programDeliveryMessageDocumentSchema);
 export const validateProgramWhatsappDispatchDocument = ajv.compile(programWhatsappDispatchDocumentSchema);
 export const validateProgramDeliveryMessageIntent = ajv.compile(programDeliveryMessageIntentSchema);
@@ -1746,6 +1752,8 @@ export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrga
 export const validateListMyHostAssignmentsCallablePayload = ajv.compile(listMyHostAssignmentsCallablePayloadSchema);
 export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
 export const validateUpdateOrganizerProgramCallablePayload = ajv.compile(updateOrganizerProgramCallablePayloadSchema);
+export const validateArchiveProgramCallablePayload = ajv.compile(archiveProgramCallablePayloadSchema);
+export const validateUnarchiveProgramCallablePayload = ajv.compile(unarchiveProgramCallablePayloadSchema);
 export const validateGrantProgramStaffCallablePayload = ajv.compile(grantProgramStaffCallablePayloadSchema);
 export const validateRevokeProgramStaffCallablePayload = ajv.compile(revokeProgramStaffCallablePayloadSchema);
 export const validateInviteProgramStaffCallablePayload = ajv.compile(inviteProgramStaffCallablePayloadSchema);
@@ -1793,6 +1801,8 @@ export const validateOrganizerProgramListCallableResponse = ajv.compile(organize
 export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
 export const validateListMyHostAssignmentsCallableResponse = ajv.compile(listMyHostAssignmentsCallableResponseSchema);
 export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);
+export const validateArchiveProgramCallableResponse = ajv.compile(archiveProgramCallableResponseSchema);
+export const validateUnarchiveProgramCallableResponse = ajv.compile(unarchiveProgramCallableResponseSchema);
 export const validateProgramInviteClaimCallableResponse = ajv.compile(programInviteClaimCallableResponseSchema);
 export const validateProgramStaffListCallableResponse = ajv.compile(programStaffListCallableResponseSchema);
 export const validateProgramGuestListCallableResponse = ajv.compile(programGuestListCallableResponseSchema);

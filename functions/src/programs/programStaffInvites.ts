@@ -23,6 +23,7 @@ import {
   loadProgramBundle,
   nextRevision,
   programStaffGrantId,
+  requireProgramMutable,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
@@ -99,6 +100,7 @@ export async function inviteProgramStaffHandler(
   return db.runTransaction(async (tx) => {
     const bundle = await requireProgramManager(
       db, data.programId, actorUid, tx);
+    requireProgramMutable(bundle.program);
     const now = deps.now();
     if (data.expiresAtMillis <= now.toMillis() ||
         data.expiresAtMillis > now.toMillis() + maxGrantDurationMillis) {
@@ -210,6 +212,7 @@ export async function claimProgramStaffInviteHandler(
     const {program} = await loadProgramBundle({
       db, programId: invite.programId, transaction: tx,
     });
+    requireProgramMutable(program);
     if (program.organizerId !== invite.organizerId) {
       throw new HttpsError("failed-precondition", "Invite ownership changed.");
     }
@@ -301,6 +304,7 @@ export async function revokeProgramStaffInviteHandler(
       tx.get(inviteRef),
       requireProgramManager(db, data.programId, actorUid, tx),
     ]);
+    requireProgramMutable(program);
     const invite = snap.data() as ProgramStaffInviteDocument | undefined;
     if (!invite || invite.programId !== data.programId ||
         invite.organizerId !== program.organizerId) {

@@ -44,13 +44,29 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
             'maxLength': 180,
           },
           'displayName': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 120,
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+            'description': 'Null after archive anonymization scrubs staff identity.',
           },
           'phoneLastFour': <String, Object?>{
-            'type': 'string',
-            'pattern': '^[0-9]{4}\$',
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'pattern': '^[0-9]{4}\$',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+            'description': 'Null after archive anonymization.',
           },
           'duties': <String, Object?>{
             'type': 'array',

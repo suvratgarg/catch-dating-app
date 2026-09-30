@@ -42,15 +42,30 @@ export const programStaffInviteDocumentSchema: Record<string, unknown> = {
       "maxLength": 180
     },
     "phoneE164": {
-      "type": "string",
-      "minLength": 4,
-      "maxLength": 32,
-      "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite."
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 32,
+          "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite. Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "displayName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Null after archive anonymization."
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "duties": {
       "type": "array",
@@ -263,6 +278,34 @@ export const programStaffInviteDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "anonymizedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
     }
   }
 } as const;
