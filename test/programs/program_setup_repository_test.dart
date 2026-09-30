@@ -85,6 +85,119 @@ void main() {
       },
     );
   }
+
+  group('program lifecycle', () {
+    test('listPrograms parses lifecycle fields for the archive affordance', () async {
+      final functions = _Functions()
+        ..response = {
+          'programs': [
+            {
+              'programId': 'program-active',
+              'kind': 'wedding',
+              'title': 'Mehta–Shah wedding',
+              'status': 'active',
+              'startsAtMillis': 1735689600000,
+              'endsAtMillis': 1736035200000,
+              'capabilities': ['functions'],
+              'archivedAtMillis': null,
+              'anonymizeAtMillis': null,
+              'anonymizedAtMillis': null,
+              'revision': 3,
+            },
+            {
+              'programId': 'program-archived',
+              'kind': 'corporate',
+              'title': 'Aisle Summit',
+              'status': 'archived',
+              'startsAtMillis': 1735689600000,
+              'endsAtMillis': 1736035200000,
+              'capabilities': ['functions'],
+              'archivedAtMillis': 1737000000000,
+              'anonymizeAtMillis': 1738209600000,
+              'anonymizedAtMillis': null,
+              'revision': 9,
+            },
+          ],
+        };
+      final rows = await ProgramSetupRepository(
+        functions,
+      ).listPrograms('org-1');
+      expect(functions.calls, ['listOrganizerPrograms']);
+      expect(rows, hasLength(2));
+      expect(rows[0].revision, 3);
+      expect(rows[0].archivedAt, isNull);
+      expect(rows[1].status, 'archived');
+      expect(
+        rows[1].anonymizeAt,
+        DateTime.fromMillisecondsSinceEpoch(1738209600000),
+      );
+    });
+
+    test('archiveProgram and unarchiveProgram fence on revision', () async {
+      final functions = _Functions()
+        ..response = {
+          'entityId': 'program',
+          'revision': 8,
+          'alreadyApplied': false,
+          'anonymizeAtMillis': 1738209600000,
+        };
+      final repository = ProgramSetupRepository(functions);
+      final archived = await repository.archiveProgram(
+        programId: 'program',
+        expectedRevision: 7,
+      );
+      expect(archived.revision, 8);
+      expect(functions.calls, ['archiveProgram']);
+      expect(functions.payload, {
+        'programId': 'program',
+        'expectedRevision': 7,
+      });
+
+      functions
+        ..response = {
+          'entityId': 'program',
+          'revision': 10,
+          'alreadyApplied': false,
+          'restoredStatus': 'completed',
+        };
+      final restored = await repository.unarchiveProgram(
+        programId: 'program',
+        expectedRevision: 8,
+      );
+      expect(restored.revision, 10);
+      expect(functions.calls.last, 'unarchiveProgram');
+      expect(functions.payload, {
+        'programId': 'program',
+        'expectedRevision': 8,
+      });
+    });
+
+    test('issueHouseholdRsvpLink returns the token and expiry', () async {
+      final functions = _Functions()
+        ..response = {
+          'entityId': 'household-1',
+          'token': 'rsvp-token-abc',
+          'expiresAtMillis': 1736035200000,
+          'alreadyApplied': false,
+        };
+      final link = await ProgramSetupRepository(
+        functions,
+      ).issueHouseholdRsvpLink(
+        programId: 'program',
+        householdId: 'household-1',
+      );
+      expect(link.token, 'rsvp-token-abc');
+      expect(
+        link.expiresAt,
+        DateTime.fromMillisecondsSinceEpoch(1736035200000),
+      );
+      expect(functions.calls, ['issueProgramHouseholdRsvpLink']);
+      expect(functions.payload, {
+        'programId': 'program',
+        'householdId': 'household-1',
+      });
+    });
+  });
 }
 
 class _Functions extends Fake implements FirebaseFunctions {

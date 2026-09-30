@@ -182,12 +182,14 @@ final _summaries = [
     title: 'Kapoor–Shah Wedding',
     kind: ProgramKind.wedding,
     status: ProgramStatus.active,
+    revision: 1,
   ),
   OrganizerProgramSummary(
     programId: 'program_aisle_summit',
     title: 'Aisle Summit 2026',
     kind: ProgramKind.corporate,
     status: ProgramStatus.draft,
+    revision: 1,
   ),
 ];
 

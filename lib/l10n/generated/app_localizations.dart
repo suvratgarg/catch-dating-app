@@ -37501,6 +37501,72 @@ abstract class AppLocalizations {
   /// **'Create a multi-day program to coordinate functions, travel and guest RSVP.'**
   String get programsListEmptyMessage;
 
+  /// Program workspace copy: programsListRowActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Program actions'**
+  String get programsListRowActions;
+
+  /// Program workspace copy: programsListArchiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive program'**
+  String get programsListArchiveAction;
+
+  /// Program workspace copy: programsListUnarchiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive'**
+  String get programsListUnarchiveAction;
+
+  /// Program workspace copy: programsListArchiveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive {title}?'**
+  String programsListArchiveConfirmTitle({required String title});
+
+  /// Program workspace copy: programsListArchiveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The program keeps working read-only. Guest identity details are anonymized on {date} unless you unarchive first.'**
+  String programsListArchiveConfirmMessage({required String date});
+
+  /// Program workspace copy: programsListUnarchiveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive {title}?'**
+  String programsListUnarchiveConfirmTitle({required String title});
+
+  /// Program workspace copy: programsListUnarchiveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The program returns to its previous status and edits work again.'**
+  String get programsListUnarchiveConfirmMessage;
+
+  /// Program workspace copy: programsListArchiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived. Guest details anonymize on {date}.'**
+  String programsListArchiveDone({required String date});
+
+  /// Program workspace copy: programsListUnarchiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Program restored.'**
+  String get programsListUnarchiveDone;
+
+  /// Program workspace copy: programsListAnonymizesOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymizes {date}'**
+  String programsListAnonymizesOn({required String date});
+
+  /// Program workspace copy: programsListAnonymized.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymized'**
+  String get programsListAnonymized;
+
   /// Program workspace copy: programsCreateTitle.
   ///
   /// In en, this message translates to:
@@ -38001,6 +38067,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No household'**
   String get programsGuestsNoHousehold;
+
+  /// Program workspace copy: programsGuestsShareRsvpLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Share RSVP link'**
+  String get programsGuestsShareRsvpLink;
+
+  /// Program workspace copy: programsGuestsRsvpLinkSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP for {household}'**
+  String programsGuestsRsvpLinkSubject({required String household});
 
   /// Program workspace copy: programsGuestsInviteModeAll.
   ///

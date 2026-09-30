@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -160,6 +162,7 @@ class ProgramGuestsPageBody extends ConsumerStatefulWidget {
 class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
   String? _selectedFunctionId;
   String? _pendingGuestKey;
+  String? _pendingRsvpLinkHouseholdId;
   Object? _mutationError;
 
   ProgramGuestsFunction? get _selectedFunction {
@@ -209,6 +212,40 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
       if (mounted) setState(() => _mutationError = error);
     } finally {
       if (mounted) setState(() => _pendingGuestKey = null);
+    }
+  }
+
+  /// Mint the household's guest-facing token and hand the URL to the native
+  /// share sheet (organizers send it over WhatsApp/SMS).
+  Future<void> _shareRsvpLink(ProgramHouseholdRow household) async {
+    setState(() {
+      _pendingRsvpLinkHouseholdId = household.householdId;
+      _mutationError = null;
+    });
+    try {
+      final link = await ref
+          .read(programSetupRepositoryProvider)
+          .issueHouseholdRsvpLink(
+            programId: widget.programId,
+            householdId: household.householdId,
+          );
+      final url = AppConfig.publicSiteUrl.resolve(
+        '/rsvp/${Uri.encodeComponent(link.token)}',
+      );
+      if (!mounted) return;
+      await ref
+          .read(externalShareControllerProvider)
+          .shareText(
+            text: url.toString(),
+            subject: context.l10n.programsGuestsRsvpLinkSubject(
+              household: household.label,
+            ),
+            origin: _shareOrigin(context),
+          );
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    } finally {
+      if (mounted) setState(() => _pendingRsvpLinkHouseholdId = null);
     }
   }
 
@@ -299,9 +336,31 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            householdById[householdId]!.label,
-                            style: Theme.of(context).textTheme.titleSmall,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  householdById[householdId]!.label,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleSmall,
+                                ),
+                              ),
+                              if (widget.canManageGuests)
+                                CatchIconAction.icon(
+                                  icon: CatchIcons.linkRounded,
+                                  tooltip: context
+                                      .l10n
+                                      .programsGuestsShareRsvpLink,
+                                  status: _pendingRsvpLinkHouseholdId ==
+                                          householdId
+                                      ? CatchIconActionStatus.disabled
+                                      : CatchIconActionStatus.enabled,
+                                  onPressed: () => _shareRsvpLink(
+                                    householdById[householdId]!,
+                                  ),
+                                ),
+                            ],
                           ),
                           gapH8,
                           for (final member in guestsByHousehold[householdId]!)
@@ -778,4 +837,9 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
       ],
     ),
   );
+}
+
+Rect? _shareOrigin(BuildContext context) {
+  final box = context.findRenderObject() as RenderBox?;
+  return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
 }

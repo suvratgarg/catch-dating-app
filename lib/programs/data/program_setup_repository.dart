@@ -15,8 +15,9 @@ class ProgramSetupRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<List<({String programId, String title, String kind, String status})>>
-  listPrograms(String organizerId) => _call(
+  Future<List<OrganizerProgramListRow>> listPrograms(
+    String organizerId,
+  ) => _call(
     name: 'listOrganizerPrograms',
     payload: ListOrganizerProgramsCallableRequest(
       organizerId: organizerId,
@@ -25,15 +26,59 @@ class ProgramSetupRepository {
     parse: (value) {
       final map = requiredMap(value, 'organizer programs');
       return mapList(map['programs'], 'programs')
-          .map(
-            (entry) => (
-              programId: requiredString(entry, 'programId'),
-              title: requiredString(entry, 'title'),
-              kind: requiredString(entry, 'kind'),
-              status: requiredString(entry, 'status'),
-            ),
-          )
+          .map(OrganizerProgramListRow.fromMap)
           .toList(growable: false);
+    },
+  );
+
+  /// `archiveProgram`: starts the 14-day anonymization grace window; the
+  /// program keeps reading but every mutation surface rejects writes.
+  Future<ProgramMutationResult> archiveProgram({
+    required String programId,
+    required int expectedRevision,
+  }) => _call(
+    name: 'archiveProgram',
+    payload: ArchiveProgramCallableRequest(
+      programId: programId,
+      expectedRevision: expectedRevision,
+    ).toJson(),
+    action: 'archive the program',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// `unarchiveProgram`: restores the pre-archive status while the grace
+  /// window is still open.
+  Future<ProgramMutationResult> unarchiveProgram({
+    required String programId,
+    required int expectedRevision,
+  }) => _call(
+    name: 'unarchiveProgram',
+    payload: UnarchiveProgramCallableRequest(
+      programId: programId,
+      expectedRevision: expectedRevision,
+    ).toJson(),
+    action: 'unarchive the program',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// `issueProgramHouseholdRsvpLink`: mints the guest-facing token; the
+  /// client composes `${publicSiteUrl}/rsvp/<token>` for sharing.
+  Future<({String token, DateTime expiresAt})> issueHouseholdRsvpLink({
+    required String programId,
+    required String householdId,
+  }) => _call(
+    name: 'issueProgramHouseholdRsvpLink',
+    payload: IssueProgramHouseholdRsvpLinkCallableRequest(
+      programId: programId,
+      householdId: householdId,
+    ).toJson(),
+    action: 'create the RSVP link',
+    parse: (value) {
+      final map = requiredMap(value, 'household RSVP link');
+      return (
+        token: requiredString(map, 'token'),
+        expiresAt: requiredDateTime(map, 'expiresAtMillis'),
+      );
     },
   );
 
@@ -569,6 +614,10 @@ Future<List<OrganizerProgramSummary>> organizerProgramList(
           title: row.title,
           kind: ProgramKind.values.byName(row.kind),
           status: ProgramStatus.values.byName(row.status),
+          revision: row.revision,
+          archivedAt: row.archivedAt,
+          anonymizeAt: row.anonymizeAt,
+          anonymizedAt: row.anonymizedAt,
         ),
       )
       .toList(growable: false);
