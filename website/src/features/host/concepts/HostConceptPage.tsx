@@ -1,6 +1,6 @@
 import {useEffect, useReducer, useState} from "react";
-import {hostConceptCopy, hostConceptRoutes} from "@content/hostConceptNavigation";
-import {prototypeContentPages, type PrototypeContentSection} from "@content/prototypeContent";
+import {hostConceptCopy} from "@content/hostConceptNavigation";
+import {hostConceptContentPages, type HostConceptContentSection} from "@content/hostConceptContent";
 import {prototypeInteractionContent} from "@content/prototypeInteractionContent";
 import {ownerGatedSiteDestinations, siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../../shared/site";
@@ -15,7 +15,7 @@ import {
 } from "./prototypePresentationModel";
 
 export function HostConceptPage({slug}: {slug: string}) {
-  const page = prototypeContentPages.find((candidate) => candidate.slug === slug);
+  const page = hostConceptContentPages.find((candidate) => candidate.slug === slug);
   if (!page) return null;
   const copy = hostConceptCopy;
   return <>
@@ -35,6 +35,7 @@ export function HostConceptPage({slug}: {slug: string}) {
       </MarketingSection>
       {slug === "directory" ? <ConceptDirectorySearch /> : null}
       {page.sections.map((section, index) => <ConceptSection key={section.id} section={section}
+        sectionAction={page.sectionAction}
         slug={slug} first={index === 0} />)}
       {(slug === "index" || slug === "host") ? <ConceptConsole /> : null}
       <MarketingSection variant="story">
@@ -60,48 +61,32 @@ function ConceptDirectorySearch() {
   </MarketingSection>;
 }
 
-function ConceptSection({section, slug, first}: {section: PrototypeContentSection; slug: string; first: boolean}) {
+function ConceptSection({section, sectionAction, slug, first}: {
+  section: HostConceptContentSection;
+  sectionAction?: {readonly label: string; readonly href: string};
+  slug: string;
+  first: boolean;
+}) {
   const copy = hostConceptCopy;
-  const stack = section.interactionHints.includes("data-stack");
-  const tiers = section.interactionHints.includes("data-tiers");
-  const faq = section.items.length > 0 && section.items.every((item) => item.title?.endsWith("?"));
+  const stack = section.layout.includes("stack");
+  const tiers = section.layout.includes("tiers");
+  const faq = section.layout.includes("faq");
   return <MarketingSection variant="story" id={section.id} aria-labelledby={`${slug}-${section.id}-title`}>
     <MarketingSectionCopy variant="proof" reveal={false} titleId={`${slug}-${section.id}-title`}
       title={first ? copy.original : section.heading} body={null} />
-    {section.body.filter((body) => !section.items.some((item) => item.body.includes(body.replace(/^Illustrative concept: /, "")))).map((body, index) => <p key={index}>{body}</p>)}
-    {faq ? <HostPreviewFaqList initiallyOpenIndex={0} items={section.items.map((item) => ({question:item.title,answer:item.body}))} /> : section.items.length && !tiers && !section.interactionHints.includes("data-console") ? <MarketingInfoCardGrid variant="surface" reveal={false}
+    {section.body.map((body, index) => <p key={index}>{body}</p>)}
+    {faq ? <HostPreviewFaqList initiallyOpenIndex={0} items={section.items.map((item) => ({question:item.title,answer:item.body}))} /> : section.items.length && !tiers && !section.layout.includes("console") ? <MarketingInfoCardGrid variant="surface" reveal={false}
       items={section.items.map((item, index) => ({key: `${section.id}-${index}`,
         title: item.title ?? item.label ?? section.heading, label: item.label, body: item.body}))} /> : null}
     {tiers ? <ConceptTiers section={section} /> : null}
     {stack ? <ConceptStack /> : null}
     <ActionGroup variant="marketing">
-      {section.links.map((link, index) => {
-        const href = canonicalConceptDestination(link.sourceHref, slug);
-        return href ? <ButtonLink key={index} href={href} variant="ghost">{link.label}</ButtonLink> : null;
+      {[...section.links, ...(sectionAction ? [sectionAction] : [])].map((link, index) => {
+        const href = link.href;
+        return href ? <ButtonLink key={`${section.id}-action-${index}`} href={href} variant="ghost">{link.label}</ButtonLink> : null;
       })}
-      {slug === "directory" ? <ButtonLink href="/organizers/">{copy.directory}</ButtonLink> : null}
-      {slug === "claim" ? <ButtonLink href="/claim/">{copy.claim}</ButtonLink> : null}
-      {slug === "apply" ? <ButtonLink href="/host/#founding-hosts">{copy.apply}</ButtonLink> : null}
     </ActionGroup>
   </MarketingSection>;
-}
-
-function canonicalConceptDestination(sourceHref: string, slug: string) {
-  if (sourceHref.startsWith("mailto:")) return ownerGatedSiteDestinations.contactHref;
-  const [file, hash] = sourceHref.split("#");
-  if (!file && hash) {
-    const page = prototypeContentPages.find((candidate) => candidate.slug === slug);
-    return page?.sections.some((section) => section.id === hash) ? `#${hash}` :
-      hash === "waitlist" ? "/#waitlist" : null;
-  }
-  const sourceSlug = file?.replace(/\.html$/, "");
-  const route = hostConceptRoutes.find((candidate) => candidate.slug === sourceSlug);
-  if (route) {
-    const page = prototypeContentPages.find((candidate) => candidate.slug === sourceSlug);
-    return route.path + (hash && page?.sections.some((section) => section.id === hash) ? `#${hash}` : "");
-  }
-  if (["/privacy/", "/terms/", "/help/", "/"].includes(file ?? "")) return file;
-  return null;
 }
 
 function useConceptMotion() {
@@ -122,7 +107,7 @@ function useConceptMotion() {
   return context;
 }
 
-function ConceptTiers({section}: {section: PrototypeContentSection}) {
+function ConceptTiers({section}: {section: HostConceptContentSection}) {
   const context = useConceptMotion();
   const [state, setState] = useState(initialPrototypeTierState);
   const tiers = prototypeInteractionContent.tiers;
@@ -131,7 +116,8 @@ function ConceptTiers({section}: {section: PrototypeContentSection}) {
     const timer = window.setInterval(() => setState((value) => reducePrototypeTier(value, {type:"tick"}, context)), prototypeTierRotationMs);
     return () => window.clearInterval(timer);
   }, [context, state.pinned]);
-  const details = section.items.filter((item) => item.originalCopy.some((text) => text === "tap to expand"));
+  const details = section.items.filter((item) => item.role === "tier-detail");
+  const activeDetail = details.find((item) => item.tierId === tiers[state.activeIndex]?.id);
   return <>
     <UiLabel>{hostConceptCopy.tiers}</UiLabel>
     <ChoiceChipGrid aria-label={hostConceptCopy.tiers}>
@@ -141,12 +127,12 @@ function ConceptTiers({section}: {section: PrototypeContentSection}) {
         onMouseEnter={() => setState((value) => reducePrototypeTier(value, {type:"hover", index}, context))} />)}
     </ChoiceChipGrid>
     <LiveStatus>{hostConceptCopy.selectedTier}: {tiers[state.activeIndex]?.name}</LiveStatus>
-    {details[state.activeIndex] ? <section>
-      <h3>{details[state.activeIndex].title}</h3><p>{details[state.activeIndex].body}</p>
-      <ul>{details[state.activeIndex].bullets?.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+    {activeDetail ? <section>
+      <h3>{activeDetail.title}</h3><p>{activeDetail.body}</p>
+      <ul>{activeDetail.bullets?.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
     </section> : null}
     <MarketingInfoCardGrid variant="surface" reveal={false} items={section.items
-      .filter((item) => !details.includes(item) && item.originalCopy.length > 1)
+      .filter((item) => item.role === "tier-note")
       .map((item, index) => ({key:`tier-note-${index}`,title:item.title ?? item.label ?? section.heading,body:item.body}))} />
   </>;
 }

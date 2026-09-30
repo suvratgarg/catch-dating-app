@@ -1,12 +1,47 @@
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {HostConceptPage} from "./HostConceptPage";
-import {prototypeContentPages} from "@content/prototypeContent";
+import {hostConceptContentPages} from "@content/hostConceptContent";
 import {hostConceptCopy} from "@content/hostConceptNavigation";
+// Source provenance and the former rendered-content projection stay test-only.
+import prototypeParity from "./__fixtures__/prototypeParity.json";
 afterEach(() => {cleanup(); vi.unstubAllGlobals(); vi.useRealTimers();});
 beforeEach(() => vi.stubGlobal("matchMedia",vi.fn(() => ({matches:true,addEventListener:vi.fn(),removeEventListener:vi.fn()}))));
 describe("canonical concept migration", () => {
-  it.each(prototypeContentPages)("retains every section of $sourceFile with an explicit concept boundary", (page) => {
+  it("matches the preserved nine-page source and presentation parity fixture", () => {
+    const canonicalContent = hostConceptContentPages.map(({slug, title, description, conceptNotice, sections}) => ({
+      slug, title, description, conceptNotice, sections,
+    }));
+    expect(canonicalContent).toEqual(prototypeParity.contentPages);
+
+    const presentationBySlug = new Map(prototypeParity.presentationPages.map((page) => [page.slug, page]));
+    expect(hostConceptContentPages).toHaveLength(9);
+    expect(presentationBySlug.size).toBe(9);
+
+    let sectionCount = 0;
+    for (const page of hostConceptContentPages) {
+      const presentation = presentationBySlug.get(page.slug);
+      expect(presentation).toBeDefined();
+      expect(page.title).toBe(prototypeParity.sourcePages.find((source) => source.slug === page.slug)?.title);
+      expect(page.sections.map(({id, body, links, layout}) => ({
+        id,
+        body,
+        links: [...links, ...(page.sectionAction ? [page.sectionAction] : [])],
+        stackVisible: layout.includes("stack"),
+        consoleCardsSuppressed: layout.includes("console"),
+      }))).toEqual(presentation?.sections.map(({id, body, links, stackVisible, consoleCardsSuppressed}) => ({
+        id,
+        body,
+        links,
+        stackVisible,
+        consoleCardsSuppressed,
+      })));
+      sectionCount += page.sections.length;
+    }
+    expect(sectionCount).toBe(49);
+  });
+
+  it.each(hostConceptContentPages)("retains every section of $sourceFile with an explicit concept boundary", (page) => {
     const {container}=render(<HostConceptPage slug={page.slug} />);
     expect(screen.getByText(page.conceptNotice)).toBeTruthy();
     for (const section of page.sections) expect(container.querySelector(`#${section.id}`)).toBeTruthy();
@@ -16,9 +51,9 @@ describe("canonical concept migration", () => {
   });
   it("preserves all selectable tier details and the separate Programs information", () => {
     render(<HostConceptPage slug="host" />);
-    const page=prototypeContentPages.find((entry) => entry.slug==="host")!;
+    const page=hostConceptContentPages.find((entry) => entry.slug==="host")!;
     const section=page.sections.find((entry) => entry.id==="tiers")!;
-    const cards=section.items.filter((item) => item.originalCopy.includes("tap to expand"));
+    const cards=section.items.filter((item) => item.role === "tier-detail");
     for (const [index,name] of ["Works alongside", "Catch booking", "Catch network"].entries()) {
       fireEvent.click(screen.getByRole("button",{name:new RegExp(`^${name}`)}));
       expect(screen.getByText(cards[index].body)).toBeTruthy();
