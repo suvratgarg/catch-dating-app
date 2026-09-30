@@ -424,6 +424,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getProgramStakeholderCounts: {maxRequests: 60, windowMs: 60 * 1000},
   createProgramWalkIn: {maxRequests: 60, windowMs: 60 * 1000},
   importProgramManifest: {maxRequests: 10, windowMs: 60 * 1000},
+  archiveProgram: {maxRequests: 10, windowMs: 60 * 1000},
+  unarchiveProgram: {maxRequests: 10, windowMs: 60 * 1000},
   setEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   resolveEventInviteLanding: {maxRequests: 120, windowMs: 60 * 1000},
   startOrganizerConversation: {maxRequests: 5, windowMs: 60 * 1000},
