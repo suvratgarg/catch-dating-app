@@ -11207,6 +11207,27 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
   },
+  "hostEventsRowUnpublished": "Not published",
+  "@hostEventsRowUnpublished": {
+    "description": "Row status for an organizer event that finished setup but is not published to the platform.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostEventsRowSetupPending": "Setup in progress",
+  "@hostEventsRowSetupPending": {
+    "description": "Row status for an organizer event still being configured.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostEventsRowCancelled": "Cancelled",
+  "@hostEventsRowCancelled": {
+    "description": "Row status for a cancelled event shown inside the shared events history.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
   "hostsHostEventsScaffoldTitleCreateYourFirstClub": "Create your first organizer",
   "@hostsHostEventsScaffoldTitleCreateYourFirstClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).",

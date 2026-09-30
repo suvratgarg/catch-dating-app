@@ -208,6 +208,28 @@ class EventRepository with EventRepositoryActions {
     action: 'fetch past organizer events page',
   );
 
+  /// Fetches cancelled organizer events newest-first with an opaque cursor.
+  ///
+  /// Cancelled events keep `publicationState == 'published'`, so they share
+  /// the published index family; the timeline merges them into history.
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchCancelledEventsPage({
+    required String organizerId,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => _fetchOrganizerEventsPage(
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:DESCENDING,__name__:DESCENDING)
+    _db
+        .collection(_collectionPath)
+        .where('publicationState', isEqualTo: 'published')
+        .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.cancelled.name)
+        .orderBy('startTime', descending: true)
+        .orderBy(FieldPath.documentId, descending: true),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch cancelled organizer events page',
+  );
+
   Future<CursorPage<Event, DocumentSnapshot<Event>>> _fetchOrganizerEventsPage(
     Query<Map<String, dynamic>> query, {
     required DocumentSnapshot<Event>? startAfter,

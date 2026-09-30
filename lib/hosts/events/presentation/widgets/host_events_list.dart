@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
@@ -51,8 +52,17 @@ class HostEventsClubCard extends ConsumerWidget {
     final workspaceState = buildHostEventsWorkspaceState(
       eventsState,
       now: now,
+      unpublishedUpcoming:
+          timeline?.unpublishedUpcoming ??
+          const <PrivateEventSetupInventoryItem>[],
+      unpublishedHistory:
+          timeline?.unpublishedHistory ??
+          const <PrivateEventSetupInventoryItem>[],
+      cancelledEvents: timeline?.cancelledEvents ?? const <Event>[],
       hasMoreActive: timeline?.hasMoreActive ?? false,
-      hasMorePast: timeline?.hasMorePast ?? false,
+      hasMorePast:
+          (timeline?.hasMorePast ?? false) ||
+          (timeline?.hasMoreCancelled ?? false),
       loadingMoreActive: timeline?.loadingMoreActive ?? false,
       loadingMorePast: timeline?.loadingMorePast ?? false,
       activeLoadMoreError: timeline?.activeLoadMoreError,
@@ -197,6 +207,12 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
                 onCreateEvent: _showEventEntrySheet,
                 onManageEvent: (event) =>
                     widget.onManageEvent(widget.club, event),
+                onResumeUnpublished: (eventId) =>
+                    widget.onEventEntrySelected(
+                      widget.club,
+                      widget.entryState,
+                      HostEventEntrySelection.saved(eventId),
+                    ),
               ),
             ),
         ],
@@ -232,6 +248,7 @@ class HostEventsTimelinePage extends StatelessWidget
     required this.onRetryPage,
     required this.onCreateEvent,
     required this.onManageEvent,
+    required this.onResumeUnpublished,
     this.onRetryEvents,
   });
 
@@ -242,6 +259,8 @@ class HostEventsTimelinePage extends StatelessWidget
   final VoidCallback onRetryPage;
   final VoidCallback onCreateEvent;
   final ValueChanged<Event> onManageEvent;
+  /// Opens a saved-but-unpublished event in the unified setup flow.
+  final ValueChanged<String> onResumeUnpublished;
   final VoidCallback? onRetryEvents;
 
   @override
@@ -307,16 +326,19 @@ class HostEventsTimelinePage extends StatelessWidget
               itemCount: section.rows.length,
               indexForKeyBuilder: (key) {
                 final index = section.rows.indexWhere(
-                  (row) => key == ValueKey('host-event-row-${row.event.id}'),
+                  (row) => key == ValueKey('host-event-row-${row.id}'),
                 );
                 return index < 0 ? null : index;
               },
               itemBuilder: (context, index) {
                 final row = section.rows[index];
+                final event = row.event;
                 return CatchField.navigate(
-                  key: ValueKey('host-event-row-${row.event.id}'),
+                  key: ValueKey('host-event-row-${row.id}'),
                   content: hostEventRecordLayout(context, row),
-                  onActivate: () => onManageEvent(row.event),
+                  onActivate: () => event != null
+                      ? onManageEvent(event)
+                      : onResumeUnpublished(row.id),
                 );
               },
             ),
@@ -360,15 +382,24 @@ CatchRecordLayout hostEventRecordLayout(
   BuildContext context,
   HostEventLifecycleRowData data,
 ) {
-  final activity = ActivityPalette.resolve(context, data.event.activityKind);
+  final unpublished = data.unpublished;
+  if (unpublished != null) {
+    return CatchRecordLayout(
+      title: data.title,
+      icon: CatchIcons.editNoteRounded,
+      facts: data.facts(context.l10n, time: unpublished.localStartTime),
+    );
+  }
+  final event = data.event!;
+  final activity = ActivityPalette.resolve(context, event.activityKind);
   return CatchRecordLayout(
-    title: data.event.title,
+    title: event.title,
     icon: activity.glyph,
     color: activity.accent,
     facts: data.facts(
       context.l10n,
       time: MaterialLocalizations.of(context).formatTimeOfDay(
-        TimeOfDay.fromDateTime(data.event.startTime),
+        TimeOfDay.fromDateTime(event.startTime),
         alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
       ),
     ),

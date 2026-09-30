@@ -9685,6 +9685,24 @@ abstract class AppLocalizations {
   /// **'Load older events'**
   String get hostEventsTimelineLoadMoreHistory;
 
+  /// Row status for an organizer event that finished setup but is not published to the platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published'**
+  String get hostEventsRowUnpublished;
+
+  /// Row status for an organizer event still being configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup in progress'**
+  String get hostEventsRowSetupPending;
+
+  /// Row status for a cancelled event shown inside the shared events history.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostEventsRowCancelled;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).
   ///
   /// In en, this message translates to:

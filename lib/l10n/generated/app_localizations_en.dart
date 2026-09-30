@@ -6071,6 +6071,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventsTimelineLoadMoreHistory => 'Load older events';
 
   @override
+  String get hostEventsRowUnpublished => 'Not published';
+
+  @override
+  String get hostEventsRowSetupPending => 'Setup in progress';
+
+  @override
+  String get hostEventsRowCancelled => 'Cancelled';
+
+  @override
   String get hostsHostEventsScaffoldTitleCreateYourFirstClub =>
       'Create your first organizer';
 
