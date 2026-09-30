@@ -5,6 +5,7 @@ import {
   scopeId,
   type AnchorFacts,
   type GeoPoint,
+  type MomentAutomationBinding,
   type MomentDefinition,
   type MomentScope,
   type RunRecord,
@@ -48,7 +49,9 @@ export function momentFromDocument(
     action,
     status,
     approval: readApproval(data.approval),
-    origin: data.origin === "systemDefault" ? "systemDefault" : "organizer",
+    origin: data.origin === "systemDefault" ||
+        data.origin === "formAutomation" ?
+      data.origin : "organizer",
     revision: readInt(data.revision, 1),
   };
 }
@@ -105,6 +108,39 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
       {targetFunctionId: data.targetFunctionId} : {}),
     ...(typeof data.subjectId === "string" ?
       {subjectId: data.subjectId} : {}),
+    ...(data.automation && typeof data.automation === "object" ?
+      {automation: readRunAutomation(data.automation)} : {}),
+  };
+}
+
+/** The occurrence binding written by the automation handoff; absent on
+ *  every other run kind. */
+function readRunAutomation(raw: unknown): RunRecord["automation"] {
+  if (typeof raw !== "object" || raw === null) return undefined;
+  const data = raw as Record<string, unknown>;
+  const eventKind = data.eventKind;
+  if (typeof data.ruleId !== "string" ||
+      typeof data.actionId !== "string" ||
+      typeof data.sourceId !== "string" ||
+      typeof data.contactId !== "string" ||
+      typeof data.deliveryMessageId !== "string" ||
+      (eventKind !== "submitted" && eventKind !== "withdrawn" &&
+        eventKind !== "applicationAccepted" && eventKind !== "eventAttended") ||
+      !Number.isSafeInteger(data.ruleRevision) ||
+      !Number.isSafeInteger(data.occurredAtMillis) ||
+      !Number.isSafeInteger(data.dueAtMillis)) {
+    return undefined;
+  }
+  return {
+    ruleId: data.ruleId,
+    ruleRevision: data.ruleRevision as number,
+    actionId: data.actionId,
+    eventKind,
+    sourceId: data.sourceId,
+    occurredAtMillis: data.occurredAtMillis as number,
+    dueAtMillis: data.dueAtMillis as number,
+    contactId: data.contactId,
+    deliveryMessageId: data.deliveryMessageId,
   };
 }
 
@@ -113,13 +149,35 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
 /**
  * Assembles the AnchorFacts a moment plans/fires against. Program scopes
  * read organizerPrograms + programFunctions + programTravelLegs; event
- * scopes read the events doc. A non-active scope reports `cancelled` so
- * fire-time dispositions fail closed.
+ * scopes read the events doc; organizer scopes synthesize a minimal scope
+ * row from the organizers doc (companion moments have no anchors — the
+ * fields exist only so fire-time dispositions and timezone defaults can
+ * evaluate). A non-active scope reports `cancelled` so fire-time
+ * dispositions fail closed.
  */
 export async function loadAnchorFacts(
   db: Firestore,
   scope: MomentScope,
 ): Promise<AnchorFacts | null> {
+  if (scope.kind === "organizer") {
+    const doc = await db.collection("organizers").doc(scope.organizerId)
+      .get();
+    if (!doc.exists) return null;
+    const data = doc.data() as Record<string, unknown>;
+    return {
+      scope: {
+        startsAtMillis: readTimestamp(data.createdAt) ?? 0,
+        endsAtMillis: null,
+        rsvpDeadlineAtMillis: null,
+        revision: readInt(data.revision, 0),
+        messagingEnabled: true,
+        cancelled: data.archived === true || data.status === "archived",
+        organizerId: scope.organizerId,
+      },
+      functions: {},
+      travelLegs: {},
+    };
+  }
   if (scope.kind === "event") {
     const doc = await db.collection("events").doc(scope.eventId).get();
     if (!doc.exists) return null;
@@ -256,10 +314,38 @@ export async function resolveMomentRecipients(
   const {audience, scope} = moment;
   switch (audience.kind) {
   case "subject": {
-    // The triggering fact names the subject (e.g. a travel leg). Resolve to
-    // that record's endpoint; the caller maps leg -> guest -> phone.
+    // The triggering fact names the subject. Program triggers point at a
+    // travel leg (leg -> guest -> phone); organizer-scope automation runs
+    // point at the CRM contact the handoff resolved.
     const subject = run.subjectId;
-    if (!subject || scope.kind !== "program") {
+    if (!subject) return {recipients: [], suppressedNoEndpoint: 0};
+    if (scope.kind === "organizer") {
+      // A merge moves the send to the surviving contact — the same
+      // identity the delivery claim re-derives from the source event.
+      let contactId = subject;
+      let data: Record<string, unknown> | undefined;
+      for (let hop = 0; hop < 10; hop += 1) {
+        const snap = await db.collection("organizerContacts").doc(contactId)
+          .get();
+        data = snap.data() as Record<string, unknown> | undefined;
+        const mergedInto = typeof data?.mergedIntoContactId === "string" ?
+          data.mergedIntoContactId : null;
+        if (!mergedInto || mergedInto === contactId) break;
+        contactId = mergedInto;
+      }
+      const phone = typeof data?.phoneE164 === "string" ?
+        data.phoneE164 : null;
+      if (!data || data.deletedAt != null || data.hiddenAt != null ||
+          data.organizerId !== scope.organizerId || !phone) {
+        return {recipients: [], suppressedNoEndpoint: 1};
+      }
+      return {recipients: [{
+        recipientKey: `contact:${contactId}`,
+        endpoint: {kind: "phone", e164: phone},
+        householdId: null,
+      }], suppressedNoEndpoint: 0};
+    }
+    if (scope.kind !== "program") {
       return {recipients: [], suppressedNoEndpoint: 0};
     }
     const leg = await db.collection("programTravelLegs").doc(subject).get();
@@ -515,6 +601,13 @@ async function staffGrantsFor(
   db: Firestore,
   scope: MomentScope,
 ): Promise<FirebaseFirestore.QuerySnapshot> {
+  // Organizer scope admits subject audiences only — a staffDuty audience
+  // here is unreachable by model validation, so resolve to an empty
+  // grant set rather than mis-scoping the staff query.
+  if (scope.kind === "organizer") {
+    return db.collection("eventStaffGrants")
+      .where("eventId", "==", "").get();
+  }
   const collection = scope.kind === "program" ?
     "programStaffGrants" : "eventStaffGrants";
   let query: Query = db.collection(collection);
@@ -538,6 +631,9 @@ export function readScope(raw: unknown): MomentScope | null {
   }
   if (data.kind === "program" && typeof data.programId === "string") {
     return {kind: "program", programId: data.programId};
+  }
+  if (data.kind === "organizer" && typeof data.organizerId === "string") {
+    return {kind: "organizer", organizerId: data.organizerId};
   }
   return null;
 }
@@ -567,10 +663,32 @@ export function readInitiation(
       triggerKind: data.triggerKind as never,
       functionId: typeof data.functionId === "string" ?
         data.functionId : null,
+      automation: readAutomationBinding(data.automation),
     };
   default:
     return null;
   }
+}
+
+function readAutomationBinding(
+  raw: unknown,
+): MomentAutomationBinding | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const data = raw as Record<string, unknown>;
+  if (typeof data.ruleId !== "string" ||
+      typeof data.actionId !== "string" ||
+      typeof data.recipeCampaignId !== "string" ||
+      !Number.isSafeInteger(data.ruleRevision) ||
+      !Number.isSafeInteger(data.recipeRevision)) {
+    return null;
+  }
+  return {
+    ruleId: data.ruleId,
+    ruleRevision: data.ruleRevision as number,
+    actionId: data.actionId,
+    recipeCampaignId: data.recipeCampaignId,
+    recipeRevision: data.recipeRevision as number,
+  };
 }
 
 export function readAudience(

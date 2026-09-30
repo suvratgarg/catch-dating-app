@@ -14906,6 +14906,1415 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{3,128}\$',
   );
 
+  static const automationDeliveryAttemptAttemptId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const automationDeliveryAttemptBindingProvider = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const automationDeliveryAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptBindingRouteId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptBindingSenderId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptBindingTransport = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptContextActionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptContextContactId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptContextDueAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptContextEventKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const automationDeliveryAttemptContextMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptContextOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptContextOrganizerId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptContextRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptContextRecipeRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryAttemptContextRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptContextRuleRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryAttemptContextSourceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.context.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptCreatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptIntentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryAttemptIntentRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryAttemptMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptOrdinal = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryAttemptSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationDeliveryAttemptStateAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryAttemptStateClassification = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const automationDeliveryAttemptStateEvidenceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptStateKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryAttemptStateReason = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const automationDeliveryAttemptStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'automationDeliveryAttempt.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttempts = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsAttemptId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingProvider = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingRouteId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingSenderId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsBindingTransport = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextActionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextContactId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextDueAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextEventKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextOrganizerId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextRecipeRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextRuleRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsContextSourceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.context.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsIntentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsIntentRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsOrdinal = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateClassification = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateEvidenceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateReason = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const automationDeliveryMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.attempts.items.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentDeliveryConflict = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.deliveryConflict',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextActionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextContactId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextDueAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextEventKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextRecipeRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextRuleRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentIntentContextSourceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.context.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const automationDeliveryMessageDocumentIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentIntentIntentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerWhatsappAutomation'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const automationDeliveryMessageDocumentIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerWhatsappAutomation'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerContact'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageDocumentIntentRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentWhatsappEventId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.whatsapp.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentWhatsappInviteLinkId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.whatsapp.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageDocumentIntentWorkflowMomentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.workflow.momentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentIntentWorkflowRunId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.intent.workflow.runId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.lifecycle',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const automationDeliveryMessageDocumentMessageId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const automationDeliveryMessageDocumentRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationDeliveryMessageDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentContextActionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentContextContactId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentContextDueAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentContextEventKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const automationDeliveryMessageIntentContextMode = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentContextOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentContextRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentContextRecipeRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageIntentContextRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentContextRuleRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageIntentContextSourceId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.context.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const automationDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 86400,
+  );
+
+  static const automationDeliveryMessageIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationDeliveryMessageIntentIntentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['organizerWhatsappAutomation'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const automationDeliveryMessageIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerWhatsappAutomation'],
+  );
+
+  static const automationDeliveryMessageIntentRecipientKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.recipient.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerContact'],
+  );
+
+  static const automationDeliveryMessageIntentRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.recipient.recipientKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentRevision = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationDeliveryMessageIntentRuleId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationDeliveryMessageIntentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.whatsapp.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentWhatsappEventId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.whatsapp.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentWhatsappInviteLinkId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.whatsapp.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.whatsapp.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentWhatsappVariables = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.whatsapp.variables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const automationDeliveryMessageIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationDeliveryMessageIntentWorkflowMomentId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.workflow.momentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationDeliveryMessageIntentWorkflowRunId = CatchContractFieldConstraints(
+    path: 'automationDeliveryMessageIntent.workflow.runId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationWhatsappDispatchDocumentContextActionId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentContextContactId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentContextDueAtMillis = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationWhatsappDispatchDocumentContextEventKind = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const automationWhatsappDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationWhatsappDispatchDocumentContextOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationWhatsappDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const automationWhatsappDispatchDocumentContextRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentContextRecipeRevision = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationWhatsappDispatchDocumentContextRuleId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentContextRuleRevision = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const automationWhatsappDispatchDocumentContextSourceId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.context.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const automationWhatsappDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const automationWhatsappDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const automationWhatsappDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.providerAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const automationWhatsappDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.providerPhoneNumberId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const automationWhatsappDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const automationWhatsappDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const automationWhatsappDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const automationWhatsappDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'automationWhatsappDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const beginOrganizerFormResponseCallablePayloadPublicFormId = CatchContractFieldConstraints(
     path: 'beginOrganizerFormResponseCallablePayload.publicFormId',
     required: true,
@@ -44395,7 +45804,7 @@ abstract final class CatchContractConstraints {
   static const eventInviteLinkDocumentIssuanceChannel = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.issuanceChannel',
     valueTypes: <String>['string'],
-    enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb', 'campaign', 'api'],
+    enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb', 'campaign', 'api', 'formAutomation'],
   );
 
   static const eventInviteLinkDocumentLabel = CatchContractFieldConstraints(
@@ -88265,7 +89674,14 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerMomentsCallablePayload.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const listOrganizerMomentsCallablePayloadScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallablePayload.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerMomentsCallablePayloadScopeProgramId = CatchContractFieldConstraints(
@@ -88452,6 +89868,49 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationActionId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRecipeRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRuleId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRuleRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationFunctionId = CatchContractFieldConstraints(
     path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.functionId',
     maxLength: 180,
@@ -88489,7 +89948,7 @@ abstract final class CatchContractConstraints {
   static const listOrganizerMomentsCallableResponseMomentsItemsInitiationTriggerKind = CatchContractFieldConstraints(
     path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.triggerKind',
     valueTypes: <String>['string'],
-    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted', 'formAutomation'],
   );
 
   static const listOrganizerMomentsCallableResponseMomentsItemsMomentId = CatchContractFieldConstraints(
@@ -88512,7 +89971,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerMomentsCallableResponse.moments.items.origin',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['organizer', 'systemDefault'],
+    enumValues: <String>['organizer', 'systemDefault', 'formAutomation'],
   );
 
   static const listOrganizerMomentsCallableResponseMomentsItemsRevision = CatchContractFieldConstraints(
@@ -88534,7 +89993,14 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerMomentsCallableResponse.moments.items.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerMomentsCallableResponseMomentsItemsScopeProgramId = CatchContractFieldConstraints(
@@ -109107,7 +110573,14 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentActionCallablePayload.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const organizerMomentActionCallablePayloadScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMomentActionCallablePayload.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerMomentActionCallablePayloadScopeProgramId = CatchContractFieldConstraints(
@@ -109287,6 +110760,49 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerMomentCallableResponseMomentInitiationAutomationActionId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.automation.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAutomationRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.automation.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAutomationRecipeRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.automation.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAutomationRuleId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.automation.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAutomationRuleRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.automation.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const organizerMomentCallableResponseMomentInitiationFunctionId = CatchContractFieldConstraints(
     path: 'organizerMomentCallableResponse.moment.initiation.functionId',
     maxLength: 180,
@@ -109324,7 +110840,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentCallableResponseMomentInitiationTriggerKind = CatchContractFieldConstraints(
     path: 'organizerMomentCallableResponse.moment.initiation.triggerKind',
     valueTypes: <String>['string'],
-    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted', 'formAutomation'],
   );
 
   static const organizerMomentCallableResponseMomentMomentId = CatchContractFieldConstraints(
@@ -109347,7 +110863,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentCallableResponse.moment.origin',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['organizer', 'systemDefault'],
+    enumValues: <String>['organizer', 'systemDefault', 'formAutomation'],
   );
 
   static const organizerMomentCallableResponseMomentRevision = CatchContractFieldConstraints(
@@ -109369,7 +110885,14 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentCallableResponse.moment.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const organizerMomentCallableResponseMomentScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerMomentCallableResponseMomentScopeProgramId = CatchContractFieldConstraints(
@@ -109571,6 +111094,49 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerMomentDocumentInitiationAutomationActionId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.automation.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentDocumentInitiationAutomationRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.automation.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentDocumentInitiationAutomationRecipeRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.automation.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerMomentDocumentInitiationAutomationRuleId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.automation.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerMomentDocumentInitiationAutomationRuleRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.automation.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const organizerMomentDocumentInitiationFunctionId = CatchContractFieldConstraints(
     path: 'organizerMomentDocument.initiation.functionId',
     maxLength: 180,
@@ -109608,7 +111174,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentDocumentInitiationTriggerKind = CatchContractFieldConstraints(
     path: 'organizerMomentDocument.initiation.triggerKind',
     valueTypes: <String>['string'],
-    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted', 'formAutomation'],
   );
 
   static const organizerMomentDocumentMomentId = CatchContractFieldConstraints(
@@ -109631,7 +111197,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentDocument.origin',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['organizer', 'systemDefault'],
+    enumValues: <String>['organizer', 'systemDefault', 'formAutomation'],
   );
 
   static const organizerMomentDocumentRevision = CatchContractFieldConstraints(
@@ -109653,7 +111219,14 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentDocument.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const organizerMomentDocumentScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerMomentDocumentScopeProgramId = CatchContractFieldConstraints(
@@ -109675,7 +111248,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerMomentDocument.scopeKind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
   );
 
   static const organizerMomentDocumentSense = CatchContractFieldConstraints(
@@ -109706,6 +111279,75 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentAutomationActionId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentAutomationContactId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.contactId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentAutomationDeliveryMessageId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.deliveryMessageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const organizerMomentRunDocumentAutomationDueAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentAutomationEventKind = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const organizerMomentRunDocumentAutomationOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentAutomationRuleId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentAutomationRuleRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerMomentRunDocumentAutomationSourceId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.automation.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerMomentRunDocumentDueAtMillis = CatchContractFieldConstraints(
@@ -109841,6 +111483,18 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['sent', 'suppressed'],
   );
 
+  static const organizerMomentSendDocumentDeliveryMessageId = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.deliveryMessageId',
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const organizerMomentSendDocumentDeliveryState = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.deliveryState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['accepted', 'unknown', 'delivered', 'read', 'failed', 'revoked'],
+  );
+
   static const organizerMomentSendDocumentDuty = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.duty',
     maxLength: 80,
@@ -109864,7 +111518,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentSendDocumentReason = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.reason',
     valueTypes: <String>['string'],
-    enumValues: <String>['noEndpoint', 'preferenceOff', 'noConsent', 'optedOut', 'endpointSuppressed', 'dailyCap', 'deliveryConflict', 'superseded', 'expired', 'programEnded', 'recipientWithdrawn', 'permissionRevoked', 'hostReview'],
+    enumValues: <String>['noEndpoint', 'preferenceOff', 'noConsent', 'optedOut', 'endpointSuppressed', 'dailyCap', 'deliveryConflict', 'superseded', 'expired', 'programEnded', 'recipientWithdrawn', 'permissionRevoked', 'frequencyCapped', 'hostReview'],
   );
 
   static const organizerMomentSendDocumentRecipientKey = CatchContractFieldConstraints(
@@ -109890,7 +111544,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentSendDocumentScopeKind = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.scopeKind',
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
   );
 
   static const organizerMomentSendDocumentSeverity = CatchContractFieldConstraints(
@@ -131374,7 +133028,14 @@ abstract final class CatchContractConstraints {
     path: 'runOrganizerMomentCallablePayload.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const runOrganizerMomentCallablePayloadScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const runOrganizerMomentCallablePayloadScopeProgramId = CatchContractFieldConstraints(
@@ -149611,6 +151272,49 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const upsertOrganizerMomentCallablePayloadInitiationAutomationActionId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.automation.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAutomationRecipeCampaignId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.automation.recipeCampaignId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAutomationRecipeRevision = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.automation.recipeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAutomationRuleId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.automation.ruleId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAutomationRuleRevision = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.automation.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const upsertOrganizerMomentCallablePayloadInitiationFunctionId = CatchContractFieldConstraints(
     path: 'upsertOrganizerMomentCallablePayload.initiation.functionId',
     maxLength: 180,
@@ -149648,7 +151352,7 @@ abstract final class CatchContractConstraints {
   static const upsertOrganizerMomentCallablePayloadInitiationTriggerKind = CatchContractFieldConstraints(
     path: 'upsertOrganizerMomentCallablePayload.initiation.triggerKind',
     valueTypes: <String>['string'],
-    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted', 'formAutomation'],
   );
 
   static const upsertOrganizerMomentCallablePayloadMomentId = CatchContractFieldConstraints(
@@ -149677,7 +151381,14 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerMomentCallablePayload.scope.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['event', 'program'],
+    enumValues: <String>['event', 'program', 'organizer'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const upsertOrganizerMomentCallablePayloadScopeProgramId = CatchContractFieldConstraints(
@@ -155890,6 +157601,186 @@ abstract final class CatchContractConstraints {
     'assistantManagementReceiptsDocument.result.updatedAt': assistantManagementReceiptsDocumentResultUpdatedAt,
     'assistantManagementReceiptsDocument.schemaVersion': assistantManagementReceiptsDocumentSchemaVersion,
     'assistantManagementReceiptsDocument.targetId': assistantManagementReceiptsDocumentTargetId,
+    'automationDeliveryAttempt.attemptId': automationDeliveryAttemptAttemptId,
+    'automationDeliveryAttempt.authorization.checkedAt': automationDeliveryAttemptAuthorizationCheckedAt,
+    'automationDeliveryAttempt.authorization.instructionRevision': automationDeliveryAttemptAuthorizationInstructionRevision,
+    'automationDeliveryAttempt.authorization.permissionRevision': automationDeliveryAttemptAuthorizationPermissionRevision,
+    'automationDeliveryAttempt.authorization.validUntil': automationDeliveryAttemptAuthorizationValidUntil,
+    'automationDeliveryAttempt.binding.bindingRevision': automationDeliveryAttemptBindingBindingRevision,
+    'automationDeliveryAttempt.binding.fallbackOwner': automationDeliveryAttemptBindingFallbackOwner,
+    'automationDeliveryAttempt.binding.provider': automationDeliveryAttemptBindingProvider,
+    'automationDeliveryAttempt.binding.recipientEndpointId': automationDeliveryAttemptBindingRecipientEndpointId,
+    'automationDeliveryAttempt.binding.routeId': automationDeliveryAttemptBindingRouteId,
+    'automationDeliveryAttempt.binding.senderId': automationDeliveryAttemptBindingSenderId,
+    'automationDeliveryAttempt.binding.senderIdentity': automationDeliveryAttemptBindingSenderIdentity,
+    'automationDeliveryAttempt.binding.transport': automationDeliveryAttemptBindingTransport,
+    'automationDeliveryAttempt.context.actionId': automationDeliveryAttemptContextActionId,
+    'automationDeliveryAttempt.context.contactId': automationDeliveryAttemptContextContactId,
+    'automationDeliveryAttempt.context.dueAtMillis': automationDeliveryAttemptContextDueAtMillis,
+    'automationDeliveryAttempt.context.eventKind': automationDeliveryAttemptContextEventKind,
+    'automationDeliveryAttempt.context.mode': automationDeliveryAttemptContextMode,
+    'automationDeliveryAttempt.context.occurredAtMillis': automationDeliveryAttemptContextOccurredAtMillis,
+    'automationDeliveryAttempt.context.organizerId': automationDeliveryAttemptContextOrganizerId,
+    'automationDeliveryAttempt.context.recipeCampaignId': automationDeliveryAttemptContextRecipeCampaignId,
+    'automationDeliveryAttempt.context.recipeRevision': automationDeliveryAttemptContextRecipeRevision,
+    'automationDeliveryAttempt.context.ruleId': automationDeliveryAttemptContextRuleId,
+    'automationDeliveryAttempt.context.ruleRevision': automationDeliveryAttemptContextRuleRevision,
+    'automationDeliveryAttempt.context.sourceId': automationDeliveryAttemptContextSourceId,
+    'automationDeliveryAttempt.createdAt': automationDeliveryAttemptCreatedAt,
+    'automationDeliveryAttempt.intentId': automationDeliveryAttemptIntentId,
+    'automationDeliveryAttempt.intentRevision': automationDeliveryAttemptIntentRevision,
+    'automationDeliveryAttempt.mode': automationDeliveryAttemptMode,
+    'automationDeliveryAttempt.ordinal': automationDeliveryAttemptOrdinal,
+    'automationDeliveryAttempt.schemaVersion': automationDeliveryAttemptSchemaVersion,
+    'automationDeliveryAttempt.state.at': automationDeliveryAttemptStateAt,
+    'automationDeliveryAttempt.state.classification': automationDeliveryAttemptStateClassification,
+    'automationDeliveryAttempt.state.evidenceId': automationDeliveryAttemptStateEvidenceId,
+    'automationDeliveryAttempt.state.kind': automationDeliveryAttemptStateKind,
+    'automationDeliveryAttempt.state.providerMessageId': automationDeliveryAttemptStateProviderMessageId,
+    'automationDeliveryAttempt.state.reason': automationDeliveryAttemptStateReason,
+    'automationDeliveryAttempt.state.reconcileAfter': automationDeliveryAttemptStateReconcileAfter,
+    'automationDeliveryMessageDocument.attempts': automationDeliveryMessageDocumentAttempts,
+    'automationDeliveryMessageDocument.attempts.items.attemptId': automationDeliveryMessageDocumentAttemptsItemsAttemptId,
+    'automationDeliveryMessageDocument.attempts.items.authorization.checkedAt': automationDeliveryMessageDocumentAttemptsItemsAuthorizationCheckedAt,
+    'automationDeliveryMessageDocument.attempts.items.authorization.instructionRevision': automationDeliveryMessageDocumentAttemptsItemsAuthorizationInstructionRevision,
+    'automationDeliveryMessageDocument.attempts.items.authorization.permissionRevision': automationDeliveryMessageDocumentAttemptsItemsAuthorizationPermissionRevision,
+    'automationDeliveryMessageDocument.attempts.items.authorization.validUntil': automationDeliveryMessageDocumentAttemptsItemsAuthorizationValidUntil,
+    'automationDeliveryMessageDocument.attempts.items.binding.bindingRevision': automationDeliveryMessageDocumentAttemptsItemsBindingBindingRevision,
+    'automationDeliveryMessageDocument.attempts.items.binding.fallbackOwner': automationDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner,
+    'automationDeliveryMessageDocument.attempts.items.binding.provider': automationDeliveryMessageDocumentAttemptsItemsBindingProvider,
+    'automationDeliveryMessageDocument.attempts.items.binding.recipientEndpointId': automationDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId,
+    'automationDeliveryMessageDocument.attempts.items.binding.routeId': automationDeliveryMessageDocumentAttemptsItemsBindingRouteId,
+    'automationDeliveryMessageDocument.attempts.items.binding.senderId': automationDeliveryMessageDocumentAttemptsItemsBindingSenderId,
+    'automationDeliveryMessageDocument.attempts.items.binding.senderIdentity': automationDeliveryMessageDocumentAttemptsItemsBindingSenderIdentity,
+    'automationDeliveryMessageDocument.attempts.items.binding.transport': automationDeliveryMessageDocumentAttemptsItemsBindingTransport,
+    'automationDeliveryMessageDocument.attempts.items.context.actionId': automationDeliveryMessageDocumentAttemptsItemsContextActionId,
+    'automationDeliveryMessageDocument.attempts.items.context.contactId': automationDeliveryMessageDocumentAttemptsItemsContextContactId,
+    'automationDeliveryMessageDocument.attempts.items.context.dueAtMillis': automationDeliveryMessageDocumentAttemptsItemsContextDueAtMillis,
+    'automationDeliveryMessageDocument.attempts.items.context.eventKind': automationDeliveryMessageDocumentAttemptsItemsContextEventKind,
+    'automationDeliveryMessageDocument.attempts.items.context.mode': automationDeliveryMessageDocumentAttemptsItemsContextMode,
+    'automationDeliveryMessageDocument.attempts.items.context.occurredAtMillis': automationDeliveryMessageDocumentAttemptsItemsContextOccurredAtMillis,
+    'automationDeliveryMessageDocument.attempts.items.context.organizerId': automationDeliveryMessageDocumentAttemptsItemsContextOrganizerId,
+    'automationDeliveryMessageDocument.attempts.items.context.recipeCampaignId': automationDeliveryMessageDocumentAttemptsItemsContextRecipeCampaignId,
+    'automationDeliveryMessageDocument.attempts.items.context.recipeRevision': automationDeliveryMessageDocumentAttemptsItemsContextRecipeRevision,
+    'automationDeliveryMessageDocument.attempts.items.context.ruleId': automationDeliveryMessageDocumentAttemptsItemsContextRuleId,
+    'automationDeliveryMessageDocument.attempts.items.context.ruleRevision': automationDeliveryMessageDocumentAttemptsItemsContextRuleRevision,
+    'automationDeliveryMessageDocument.attempts.items.context.sourceId': automationDeliveryMessageDocumentAttemptsItemsContextSourceId,
+    'automationDeliveryMessageDocument.attempts.items.createdAt': automationDeliveryMessageDocumentAttemptsItemsCreatedAt,
+    'automationDeliveryMessageDocument.attempts.items.intentId': automationDeliveryMessageDocumentAttemptsItemsIntentId,
+    'automationDeliveryMessageDocument.attempts.items.intentRevision': automationDeliveryMessageDocumentAttemptsItemsIntentRevision,
+    'automationDeliveryMessageDocument.attempts.items.mode': automationDeliveryMessageDocumentAttemptsItemsMode,
+    'automationDeliveryMessageDocument.attempts.items.ordinal': automationDeliveryMessageDocumentAttemptsItemsOrdinal,
+    'automationDeliveryMessageDocument.attempts.items.schemaVersion': automationDeliveryMessageDocumentAttemptsItemsSchemaVersion,
+    'automationDeliveryMessageDocument.attempts.items.state.at': automationDeliveryMessageDocumentAttemptsItemsStateAt,
+    'automationDeliveryMessageDocument.attempts.items.state.classification': automationDeliveryMessageDocumentAttemptsItemsStateClassification,
+    'automationDeliveryMessageDocument.attempts.items.state.evidenceId': automationDeliveryMessageDocumentAttemptsItemsStateEvidenceId,
+    'automationDeliveryMessageDocument.attempts.items.state.kind': automationDeliveryMessageDocumentAttemptsItemsStateKind,
+    'automationDeliveryMessageDocument.attempts.items.state.providerMessageId': automationDeliveryMessageDocumentAttemptsItemsStateProviderMessageId,
+    'automationDeliveryMessageDocument.attempts.items.state.reason': automationDeliveryMessageDocumentAttemptsItemsStateReason,
+    'automationDeliveryMessageDocument.attempts.items.state.reconcileAfter': automationDeliveryMessageDocumentAttemptsItemsStateReconcileAfter,
+    'automationDeliveryMessageDocument.createdAt': automationDeliveryMessageDocumentCreatedAt,
+    'automationDeliveryMessageDocument.deliveryConflict': automationDeliveryMessageDocumentDeliveryConflict,
+    'automationDeliveryMessageDocument.intent.context.actionId': automationDeliveryMessageDocumentIntentContextActionId,
+    'automationDeliveryMessageDocument.intent.context.contactId': automationDeliveryMessageDocumentIntentContextContactId,
+    'automationDeliveryMessageDocument.intent.context.dueAtMillis': automationDeliveryMessageDocumentIntentContextDueAtMillis,
+    'automationDeliveryMessageDocument.intent.context.eventKind': automationDeliveryMessageDocumentIntentContextEventKind,
+    'automationDeliveryMessageDocument.intent.context.mode': automationDeliveryMessageDocumentIntentContextMode,
+    'automationDeliveryMessageDocument.intent.context.occurredAtMillis': automationDeliveryMessageDocumentIntentContextOccurredAtMillis,
+    'automationDeliveryMessageDocument.intent.context.organizerId': automationDeliveryMessageDocumentIntentContextOrganizerId,
+    'automationDeliveryMessageDocument.intent.context.recipeCampaignId': automationDeliveryMessageDocumentIntentContextRecipeCampaignId,
+    'automationDeliveryMessageDocument.intent.context.recipeRevision': automationDeliveryMessageDocumentIntentContextRecipeRevision,
+    'automationDeliveryMessageDocument.intent.context.ruleId': automationDeliveryMessageDocumentIntentContextRuleId,
+    'automationDeliveryMessageDocument.intent.context.ruleRevision': automationDeliveryMessageDocumentIntentContextRuleRevision,
+    'automationDeliveryMessageDocument.intent.context.sourceId': automationDeliveryMessageDocumentIntentContextSourceId,
+    'automationDeliveryMessageDocument.intent.createdAt': automationDeliveryMessageDocumentIntentCreatedAt,
+    'automationDeliveryMessageDocument.intent.deliveryPolicy.maxAttempts': automationDeliveryMessageDocumentIntentDeliveryPolicyMaxAttempts,
+    'automationDeliveryMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute': automationDeliveryMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'automationDeliveryMessageDocument.intent.deliveryPolicy.minimumRetrySeconds': automationDeliveryMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds,
+    'automationDeliveryMessageDocument.intent.expiresAt': automationDeliveryMessageDocumentIntentExpiresAt,
+    'automationDeliveryMessageDocument.intent.instructionRevision': automationDeliveryMessageDocumentIntentInstructionRevision,
+    'automationDeliveryMessageDocument.intent.intentId': automationDeliveryMessageDocumentIntentIntentId,
+    'automationDeliveryMessageDocument.intent.kind': automationDeliveryMessageDocumentIntentKind,
+    'automationDeliveryMessageDocument.intent.permittedRoutes': automationDeliveryMessageDocumentIntentPermittedRoutes,
+    'automationDeliveryMessageDocument.intent.permittedRoutes.items': automationDeliveryMessageDocumentIntentPermittedRoutesItems,
+    'automationDeliveryMessageDocument.intent.recipient.kind': automationDeliveryMessageDocumentIntentRecipientKind,
+    'automationDeliveryMessageDocument.intent.recipient.recipientKey': automationDeliveryMessageDocumentIntentRecipientRecipientKey,
+    'automationDeliveryMessageDocument.intent.revision': automationDeliveryMessageDocumentIntentRevision,
+    'automationDeliveryMessageDocument.intent.ruleId': automationDeliveryMessageDocumentIntentRuleId,
+    'automationDeliveryMessageDocument.intent.schemaVersion': automationDeliveryMessageDocumentIntentSchemaVersion,
+    'automationDeliveryMessageDocument.intent.whatsapp.connectionId': automationDeliveryMessageDocumentIntentWhatsappConnectionId,
+    'automationDeliveryMessageDocument.intent.whatsapp.eventId': automationDeliveryMessageDocumentIntentWhatsappEventId,
+    'automationDeliveryMessageDocument.intent.whatsapp.inviteLinkId': automationDeliveryMessageDocumentIntentWhatsappInviteLinkId,
+    'automationDeliveryMessageDocument.intent.whatsapp.templateId': automationDeliveryMessageDocumentIntentWhatsappTemplateId,
+    'automationDeliveryMessageDocument.intent.whatsapp.variables': automationDeliveryMessageDocumentIntentWhatsappVariables,
+    'automationDeliveryMessageDocument.intent.workflow.kind': automationDeliveryMessageDocumentIntentWorkflowKind,
+    'automationDeliveryMessageDocument.intent.workflow.momentId': automationDeliveryMessageDocumentIntentWorkflowMomentId,
+    'automationDeliveryMessageDocument.intent.workflow.runId': automationDeliveryMessageDocumentIntentWorkflowRunId,
+    'automationDeliveryMessageDocument.lifecycle': automationDeliveryMessageDocumentLifecycle,
+    'automationDeliveryMessageDocument.messageId': automationDeliveryMessageDocumentMessageId,
+    'automationDeliveryMessageDocument.revision': automationDeliveryMessageDocumentRevision,
+    'automationDeliveryMessageDocument.schemaVersion': automationDeliveryMessageDocumentSchemaVersion,
+    'automationDeliveryMessageDocument.updatedAt': automationDeliveryMessageDocumentUpdatedAt,
+    'automationDeliveryMessageIntent.context.actionId': automationDeliveryMessageIntentContextActionId,
+    'automationDeliveryMessageIntent.context.contactId': automationDeliveryMessageIntentContextContactId,
+    'automationDeliveryMessageIntent.context.dueAtMillis': automationDeliveryMessageIntentContextDueAtMillis,
+    'automationDeliveryMessageIntent.context.eventKind': automationDeliveryMessageIntentContextEventKind,
+    'automationDeliveryMessageIntent.context.mode': automationDeliveryMessageIntentContextMode,
+    'automationDeliveryMessageIntent.context.occurredAtMillis': automationDeliveryMessageIntentContextOccurredAtMillis,
+    'automationDeliveryMessageIntent.context.organizerId': automationDeliveryMessageIntentContextOrganizerId,
+    'automationDeliveryMessageIntent.context.recipeCampaignId': automationDeliveryMessageIntentContextRecipeCampaignId,
+    'automationDeliveryMessageIntent.context.recipeRevision': automationDeliveryMessageIntentContextRecipeRevision,
+    'automationDeliveryMessageIntent.context.ruleId': automationDeliveryMessageIntentContextRuleId,
+    'automationDeliveryMessageIntent.context.ruleRevision': automationDeliveryMessageIntentContextRuleRevision,
+    'automationDeliveryMessageIntent.context.sourceId': automationDeliveryMessageIntentContextSourceId,
+    'automationDeliveryMessageIntent.createdAt': automationDeliveryMessageIntentCreatedAt,
+    'automationDeliveryMessageIntent.deliveryPolicy.maxAttempts': automationDeliveryMessageIntentDeliveryPolicyMaxAttempts,
+    'automationDeliveryMessageIntent.deliveryPolicy.maxAttemptsPerRoute': automationDeliveryMessageIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'automationDeliveryMessageIntent.deliveryPolicy.minimumRetrySeconds': automationDeliveryMessageIntentDeliveryPolicyMinimumRetrySeconds,
+    'automationDeliveryMessageIntent.expiresAt': automationDeliveryMessageIntentExpiresAt,
+    'automationDeliveryMessageIntent.instructionRevision': automationDeliveryMessageIntentInstructionRevision,
+    'automationDeliveryMessageIntent.intentId': automationDeliveryMessageIntentIntentId,
+    'automationDeliveryMessageIntent.kind': automationDeliveryMessageIntentKind,
+    'automationDeliveryMessageIntent.permittedRoutes': automationDeliveryMessageIntentPermittedRoutes,
+    'automationDeliveryMessageIntent.permittedRoutes.items': automationDeliveryMessageIntentPermittedRoutesItems,
+    'automationDeliveryMessageIntent.recipient.kind': automationDeliveryMessageIntentRecipientKind,
+    'automationDeliveryMessageIntent.recipient.recipientKey': automationDeliveryMessageIntentRecipientRecipientKey,
+    'automationDeliveryMessageIntent.revision': automationDeliveryMessageIntentRevision,
+    'automationDeliveryMessageIntent.ruleId': automationDeliveryMessageIntentRuleId,
+    'automationDeliveryMessageIntent.schemaVersion': automationDeliveryMessageIntentSchemaVersion,
+    'automationDeliveryMessageIntent.whatsapp.connectionId': automationDeliveryMessageIntentWhatsappConnectionId,
+    'automationDeliveryMessageIntent.whatsapp.eventId': automationDeliveryMessageIntentWhatsappEventId,
+    'automationDeliveryMessageIntent.whatsapp.inviteLinkId': automationDeliveryMessageIntentWhatsappInviteLinkId,
+    'automationDeliveryMessageIntent.whatsapp.templateId': automationDeliveryMessageIntentWhatsappTemplateId,
+    'automationDeliveryMessageIntent.whatsapp.variables': automationDeliveryMessageIntentWhatsappVariables,
+    'automationDeliveryMessageIntent.workflow.kind': automationDeliveryMessageIntentWorkflowKind,
+    'automationDeliveryMessageIntent.workflow.momentId': automationDeliveryMessageIntentWorkflowMomentId,
+    'automationDeliveryMessageIntent.workflow.runId': automationDeliveryMessageIntentWorkflowRunId,
+    'automationWhatsappDispatchDocument.attemptId': automationWhatsappDispatchDocumentAttemptId,
+    'automationWhatsappDispatchDocument.bindingRevision': automationWhatsappDispatchDocumentBindingRevision,
+    'automationWhatsappDispatchDocument.context.actionId': automationWhatsappDispatchDocumentContextActionId,
+    'automationWhatsappDispatchDocument.context.contactId': automationWhatsappDispatchDocumentContextContactId,
+    'automationWhatsappDispatchDocument.context.dueAtMillis': automationWhatsappDispatchDocumentContextDueAtMillis,
+    'automationWhatsappDispatchDocument.context.eventKind': automationWhatsappDispatchDocumentContextEventKind,
+    'automationWhatsappDispatchDocument.context.mode': automationWhatsappDispatchDocumentContextMode,
+    'automationWhatsappDispatchDocument.context.occurredAtMillis': automationWhatsappDispatchDocumentContextOccurredAtMillis,
+    'automationWhatsappDispatchDocument.context.organizerId': automationWhatsappDispatchDocumentContextOrganizerId,
+    'automationWhatsappDispatchDocument.context.recipeCampaignId': automationWhatsappDispatchDocumentContextRecipeCampaignId,
+    'automationWhatsappDispatchDocument.context.recipeRevision': automationWhatsappDispatchDocumentContextRecipeRevision,
+    'automationWhatsappDispatchDocument.context.ruleId': automationWhatsappDispatchDocumentContextRuleId,
+    'automationWhatsappDispatchDocument.context.ruleRevision': automationWhatsappDispatchDocumentContextRuleRevision,
+    'automationWhatsappDispatchDocument.context.sourceId': automationWhatsappDispatchDocumentContextSourceId,
+    'automationWhatsappDispatchDocument.createdAt': automationWhatsappDispatchDocumentCreatedAt,
+    'automationWhatsappDispatchDocument.endpointHash': automationWhatsappDispatchDocumentEndpointHash,
+    'automationWhatsappDispatchDocument.messageId': automationWhatsappDispatchDocumentMessageId,
+    'automationWhatsappDispatchDocument.payloadHash': automationWhatsappDispatchDocumentPayloadHash,
+    'automationWhatsappDispatchDocument.providerAccountId': automationWhatsappDispatchDocumentProviderAccountId,
+    'automationWhatsappDispatchDocument.providerPhoneNumberId': automationWhatsappDispatchDocumentProviderPhoneNumberId,
+    'automationWhatsappDispatchDocument.recipientEndpointId': automationWhatsappDispatchDocumentRecipientEndpointId,
+    'automationWhatsappDispatchDocument.schemaVersion': automationWhatsappDispatchDocumentSchemaVersion,
+    'automationWhatsappDispatchDocument.senderHash': automationWhatsappDispatchDocumentSenderHash,
+    'automationWhatsappDispatchDocument.senderId': automationWhatsappDispatchDocumentSenderId,
+    'automationWhatsappDispatchDocument.templateDocumentId': automationWhatsappDispatchDocumentTemplateDocumentId,
+    'automationWhatsappDispatchDocument.templateHash': automationWhatsappDispatchDocumentTemplateHash,
     'beginOrganizerFormResponseCallablePayload.publicFormId': beginOrganizerFormResponseCallablePayloadPublicFormId,
     'beginOrganizerFormResponseCallablePayload.requestId': beginOrganizerFormResponseCallablePayloadRequestId,
     'beginOrganizerFormResponseCallablePayload.sourceToken': beginOrganizerFormResponseCallablePayloadSourceToken,
@@ -165774,6 +167665,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis,
     'listOrganizerMomentsCallablePayload.scope.eventId': listOrganizerMomentsCallablePayloadScopeEventId,
     'listOrganizerMomentsCallablePayload.scope.kind': listOrganizerMomentsCallablePayloadScopeKind,
+    'listOrganizerMomentsCallablePayload.scope.organizerId': listOrganizerMomentsCallablePayloadScopeOrganizerId,
     'listOrganizerMomentsCallablePayload.scope.programId': listOrganizerMomentsCallablePayloadScopeProgramId,
     'listOrganizerMomentsCallableResponse.moments': listOrganizerMomentsCallableResponseMoments,
     'listOrganizerMomentsCallableResponse.moments.items.action.connectionId': listOrganizerMomentsCallableResponseMomentsItemsActionConnectionId,
@@ -165802,6 +167694,11 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorKind,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis': listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.actionId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationActionId,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.recipeCampaignId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRecipeCampaignId,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.recipeRevision': listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRecipeRevision,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.ruleId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRuleId,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.automation.ruleRevision': listOrganizerMomentsCallableResponseMomentsItemsInitiationAutomationRuleRevision,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.functionId': listOrganizerMomentsCallableResponseMomentsItemsInitiationFunctionId,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.kind': listOrganizerMomentsCallableResponseMomentsItemsInitiationKind,
     'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetDays': listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetDays,
@@ -165814,6 +167711,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.revision': listOrganizerMomentsCallableResponseMomentsItemsRevision,
     'listOrganizerMomentsCallableResponse.moments.items.scope.eventId': listOrganizerMomentsCallableResponseMomentsItemsScopeEventId,
     'listOrganizerMomentsCallableResponse.moments.items.scope.kind': listOrganizerMomentsCallableResponseMomentsItemsScopeKind,
+    'listOrganizerMomentsCallableResponse.moments.items.scope.organizerId': listOrganizerMomentsCallableResponseMomentsItemsScopeOrganizerId,
     'listOrganizerMomentsCallableResponse.moments.items.scope.programId': listOrganizerMomentsCallableResponseMomentsItemsScopeProgramId,
     'listOrganizerMomentsCallableResponse.moments.items.sense': listOrganizerMomentsCallableResponseMomentsItemsSense,
     'listOrganizerMomentsCallableResponse.moments.items.status': listOrganizerMomentsCallableResponseMomentsItemsStatus,
@@ -168657,6 +170555,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentActionCallablePayload.momentId': organizerMomentActionCallablePayloadMomentId,
     'organizerMomentActionCallablePayload.scope.eventId': organizerMomentActionCallablePayloadScopeEventId,
     'organizerMomentActionCallablePayload.scope.kind': organizerMomentActionCallablePayloadScopeKind,
+    'organizerMomentActionCallablePayload.scope.organizerId': organizerMomentActionCallablePayloadScopeOrganizerId,
     'organizerMomentActionCallablePayload.scope.programId': organizerMomentActionCallablePayloadScopeProgramId,
     'organizerMomentCallableResponse.moment.action.connectionId': organizerMomentCallableResponseMomentActionConnectionId,
     'organizerMomentCallableResponse.moment.action.duty': organizerMomentCallableResponseMomentActionDuty,
@@ -168684,6 +170583,11 @@ abstract final class CatchContractConstraints {
     'organizerMomentCallableResponse.moment.initiation.anchorId': organizerMomentCallableResponseMomentInitiationAnchorId,
     'organizerMomentCallableResponse.moment.initiation.anchorKind': organizerMomentCallableResponseMomentInitiationAnchorKind,
     'organizerMomentCallableResponse.moment.initiation.atMillis': organizerMomentCallableResponseMomentInitiationAtMillis,
+    'organizerMomentCallableResponse.moment.initiation.automation.actionId': organizerMomentCallableResponseMomentInitiationAutomationActionId,
+    'organizerMomentCallableResponse.moment.initiation.automation.recipeCampaignId': organizerMomentCallableResponseMomentInitiationAutomationRecipeCampaignId,
+    'organizerMomentCallableResponse.moment.initiation.automation.recipeRevision': organizerMomentCallableResponseMomentInitiationAutomationRecipeRevision,
+    'organizerMomentCallableResponse.moment.initiation.automation.ruleId': organizerMomentCallableResponseMomentInitiationAutomationRuleId,
+    'organizerMomentCallableResponse.moment.initiation.automation.ruleRevision': organizerMomentCallableResponseMomentInitiationAutomationRuleRevision,
     'organizerMomentCallableResponse.moment.initiation.functionId': organizerMomentCallableResponseMomentInitiationFunctionId,
     'organizerMomentCallableResponse.moment.initiation.kind': organizerMomentCallableResponseMomentInitiationKind,
     'organizerMomentCallableResponse.moment.initiation.offsetDays': organizerMomentCallableResponseMomentInitiationOffsetDays,
@@ -168696,6 +170600,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentCallableResponse.moment.revision': organizerMomentCallableResponseMomentRevision,
     'organizerMomentCallableResponse.moment.scope.eventId': organizerMomentCallableResponseMomentScopeEventId,
     'organizerMomentCallableResponse.moment.scope.kind': organizerMomentCallableResponseMomentScopeKind,
+    'organizerMomentCallableResponse.moment.scope.organizerId': organizerMomentCallableResponseMomentScopeOrganizerId,
     'organizerMomentCallableResponse.moment.scope.programId': organizerMomentCallableResponseMomentScopeProgramId,
     'organizerMomentCallableResponse.moment.sense': organizerMomentCallableResponseMomentSense,
     'organizerMomentCallableResponse.moment.status': organizerMomentCallableResponseMomentStatus,
@@ -168726,6 +170631,11 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.initiation.anchorId': organizerMomentDocumentInitiationAnchorId,
     'organizerMomentDocument.initiation.anchorKind': organizerMomentDocumentInitiationAnchorKind,
     'organizerMomentDocument.initiation.atMillis': organizerMomentDocumentInitiationAtMillis,
+    'organizerMomentDocument.initiation.automation.actionId': organizerMomentDocumentInitiationAutomationActionId,
+    'organizerMomentDocument.initiation.automation.recipeCampaignId': organizerMomentDocumentInitiationAutomationRecipeCampaignId,
+    'organizerMomentDocument.initiation.automation.recipeRevision': organizerMomentDocumentInitiationAutomationRecipeRevision,
+    'organizerMomentDocument.initiation.automation.ruleId': organizerMomentDocumentInitiationAutomationRuleId,
+    'organizerMomentDocument.initiation.automation.ruleRevision': organizerMomentDocumentInitiationAutomationRuleRevision,
     'organizerMomentDocument.initiation.functionId': organizerMomentDocumentInitiationFunctionId,
     'organizerMomentDocument.initiation.kind': organizerMomentDocumentInitiationKind,
     'organizerMomentDocument.initiation.offsetDays': organizerMomentDocumentInitiationOffsetDays,
@@ -168738,6 +170648,7 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.revision': organizerMomentDocumentRevision,
     'organizerMomentDocument.scope.eventId': organizerMomentDocumentScopeEventId,
     'organizerMomentDocument.scope.kind': organizerMomentDocumentScopeKindAtScopePropertyKind,
+    'organizerMomentDocument.scope.organizerId': organizerMomentDocumentScopeOrganizerId,
     'organizerMomentDocument.scope.programId': organizerMomentDocumentScopeProgramId,
     'organizerMomentDocument.scopeId': organizerMomentDocumentScopeId,
     'organizerMomentDocument.scopeKind': organizerMomentDocumentScopeKindAtScopeKind,
@@ -168745,6 +170656,15 @@ abstract final class CatchContractConstraints {
     'organizerMomentDocument.status': organizerMomentDocumentStatus,
     'organizerMomentDocument.updatedAtMillis': organizerMomentDocumentUpdatedAtMillis,
     'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
+    'organizerMomentRunDocument.automation.actionId': organizerMomentRunDocumentAutomationActionId,
+    'organizerMomentRunDocument.automation.contactId': organizerMomentRunDocumentAutomationContactId,
+    'organizerMomentRunDocument.automation.deliveryMessageId': organizerMomentRunDocumentAutomationDeliveryMessageId,
+    'organizerMomentRunDocument.automation.dueAtMillis': organizerMomentRunDocumentAutomationDueAtMillis,
+    'organizerMomentRunDocument.automation.eventKind': organizerMomentRunDocumentAutomationEventKind,
+    'organizerMomentRunDocument.automation.occurredAtMillis': organizerMomentRunDocumentAutomationOccurredAtMillis,
+    'organizerMomentRunDocument.automation.ruleId': organizerMomentRunDocumentAutomationRuleId,
+    'organizerMomentRunDocument.automation.ruleRevision': organizerMomentRunDocumentAutomationRuleRevision,
+    'organizerMomentRunDocument.automation.sourceId': organizerMomentRunDocumentAutomationSourceId,
     'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
     'organizerMomentRunDocument.expiresAtMillis': organizerMomentRunDocumentExpiresAtMillis,
     'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
@@ -168765,6 +170685,8 @@ abstract final class CatchContractConstraints {
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
     'organizerMomentSendDocument.dayKey': organizerMomentSendDocumentDayKey,
     'organizerMomentSendDocument.decision': organizerMomentSendDocumentDecision,
+    'organizerMomentSendDocument.deliveryMessageId': organizerMomentSendDocumentDeliveryMessageId,
+    'organizerMomentSendDocument.deliveryState': organizerMomentSendDocumentDeliveryState,
     'organizerMomentSendDocument.duty': organizerMomentSendDocumentDuty,
     'organizerMomentSendDocument.momentId': organizerMomentSendDocumentMomentId,
     'organizerMomentSendDocument.organizerId': organizerMomentSendDocumentOrganizerId,
@@ -171714,6 +173636,7 @@ abstract final class CatchContractConstraints {
     'runOrganizerMomentCallablePayload.requestKey': runOrganizerMomentCallablePayloadRequestKey,
     'runOrganizerMomentCallablePayload.scope.eventId': runOrganizerMomentCallablePayloadScopeEventId,
     'runOrganizerMomentCallablePayload.scope.kind': runOrganizerMomentCallablePayloadScopeKind,
+    'runOrganizerMomentCallablePayload.scope.organizerId': runOrganizerMomentCallablePayloadScopeOrganizerId,
     'runOrganizerMomentCallablePayload.scope.programId': runOrganizerMomentCallablePayloadScopeProgramId,
     'runOrganizerMomentCallableResponse.runId': runOrganizerMomentCallableResponseRunId,
     'salesActionReceiptDocument.action': salesActionReceiptDocumentAction,
@@ -174240,6 +176163,11 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerMomentCallablePayload.initiation.anchorId': upsertOrganizerMomentCallablePayloadInitiationAnchorId,
     'upsertOrganizerMomentCallablePayload.initiation.anchorKind': upsertOrganizerMomentCallablePayloadInitiationAnchorKind,
     'upsertOrganizerMomentCallablePayload.initiation.atMillis': upsertOrganizerMomentCallablePayloadInitiationAtMillis,
+    'upsertOrganizerMomentCallablePayload.initiation.automation.actionId': upsertOrganizerMomentCallablePayloadInitiationAutomationActionId,
+    'upsertOrganizerMomentCallablePayload.initiation.automation.recipeCampaignId': upsertOrganizerMomentCallablePayloadInitiationAutomationRecipeCampaignId,
+    'upsertOrganizerMomentCallablePayload.initiation.automation.recipeRevision': upsertOrganizerMomentCallablePayloadInitiationAutomationRecipeRevision,
+    'upsertOrganizerMomentCallablePayload.initiation.automation.ruleId': upsertOrganizerMomentCallablePayloadInitiationAutomationRuleId,
+    'upsertOrganizerMomentCallablePayload.initiation.automation.ruleRevision': upsertOrganizerMomentCallablePayloadInitiationAutomationRuleRevision,
     'upsertOrganizerMomentCallablePayload.initiation.functionId': upsertOrganizerMomentCallablePayloadInitiationFunctionId,
     'upsertOrganizerMomentCallablePayload.initiation.kind': upsertOrganizerMomentCallablePayloadInitiationKind,
     'upsertOrganizerMomentCallablePayload.initiation.offsetDays': upsertOrganizerMomentCallablePayloadInitiationOffsetDays,
@@ -174250,6 +176178,7 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerMomentCallablePayload.name': upsertOrganizerMomentCallablePayloadName,
     'upsertOrganizerMomentCallablePayload.scope.eventId': upsertOrganizerMomentCallablePayloadScopeEventId,
     'upsertOrganizerMomentCallablePayload.scope.kind': upsertOrganizerMomentCallablePayloadScopeKind,
+    'upsertOrganizerMomentCallablePayload.scope.organizerId': upsertOrganizerMomentCallablePayloadScopeOrganizerId,
     'upsertOrganizerMomentCallablePayload.scope.programId': upsertOrganizerMomentCallablePayloadScopeProgramId,
     'upsertOrganizerMomentCallablePayload.sense': upsertOrganizerMomentCallablePayloadSense,
     'upsertOrganizerSavedAudienceCallablePayload.audienceId': upsertOrganizerSavedAudienceCallablePayloadAudienceId,

@@ -18,6 +18,10 @@ import {CampaignWhatsappDeliveryStore} from
   "../../organizers/campaignWhatsappDeliveryStore";
 import {CAMPAIGN_WHATSAPP_DISPATCHES} from
   "../../organizers/campaignDeliveryWorker";
+import {AutomationWhatsappDeliveryStore} from
+  "../../organizers/automationWhatsappDeliveryStore";
+import {AUTOMATION_WHATSAPP_DISPATCHES} from
+  "../../organizers/automationDeliveryWorker";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {whatsappAttemptFromReplyId} from "./whatsappReplyProtocol";
 import {whatsappAttemptFromStatus} from "./whatsappDeliveryProtocol";
@@ -38,11 +42,13 @@ implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
   private readonly eventStore: WhatsappDeliveryStore;
   private readonly programStore: ProgramWhatsappDeliveryStore;
   private readonly campaignStore: CampaignWhatsappDeliveryStore;
+  private readonly automationStore: AutomationWhatsappDeliveryStore;
 
   constructor(private readonly db: Firestore, clock: () => number) {
     this.eventStore = new WhatsappDeliveryStore(db, clock);
     this.programStore = new ProgramWhatsappDeliveryStore(db, clock);
     this.campaignStore = new CampaignWhatsappDeliveryStore(db, clock);
+    this.automationStore = new AutomationWhatsappDeliveryStore(db, clock);
   }
 
   async consumeQueued(eventId: string) {
@@ -51,15 +57,23 @@ implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
     const attemptId = validateOrganizerMessagingWebhookEventDocument(queued) ?
       whatsappAttemptFromStatus(queued.callbackData) : null;
     if (attemptId) {
-      const [programDispatch, campaignDispatch] = await Promise.all([
-        this.db.collection(PROGRAM_WHATSAPP_DISPATCHES).doc(attemptId).get(),
-        this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId).get(),
-      ]);
+      const [programDispatch, campaignDispatch, automationDispatch] =
+        await Promise.all([
+          this.db.collection(PROGRAM_WHATSAPP_DISPATCHES).doc(attemptId)
+            .get(),
+          this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId)
+            .get(),
+          this.db.collection(AUTOMATION_WHATSAPP_DISPATCHES).doc(attemptId)
+            .get(),
+        ]);
       if (programDispatch.exists) {
         return this.programStore.consumeQueued(eventId);
       }
       if (campaignDispatch.exists) {
         return this.campaignStore.consumeQueued(eventId);
+      }
+      if (automationDispatch.exists) {
+        return this.automationStore.consumeQueued(eventId);
       }
     }
     return this.eventStore.consumeQueued(eventId);

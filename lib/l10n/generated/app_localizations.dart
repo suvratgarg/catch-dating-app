@@ -38691,6 +38691,309 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{amount} returned. Your booking is cancelled.'**
   String paymentsCancellationRefundReturned({required String amount});
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer payments'**
+  String get hostOfferPaymentTitle;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'How guests pay'**
+  String get hostOfferPaymentModeHeading;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostOfferPaymentModeChange;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment details'**
+  String get hostOfferPaymentDetailsHeading;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'How confirmation works'**
+  String get hostOfferPaymentConfirmationHeading;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment — guests just accept the offer.'**
+  String get hostOfferPaymentModeFreeBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay through Catch — confirmed automatically.'**
+  String get hostOfferPaymentModeCheckoutBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment page link'**
+  String get hostOfferPaymentModePage;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'One shared payment link for every guest — you confirm each payment.'**
+  String get hostOfferPaymentModePageBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'A separate payment link per guest, added while reviewing each offer — you confirm each payment.'**
+  String get hostOfferPaymentModeRequestBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI, bank transfer or cash instructions — you confirm each payment.'**
+  String get hostOfferPaymentModeManualBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get hostOfferPaymentComingSoon;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket price'**
+  String get hostOfferPaymentAmount;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount each guest pays for this event.'**
+  String get hostOfferPaymentAmountHint;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer valid for'**
+  String get hostOfferPaymentValidity;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String hostOfferPaymentValidityHours({required int hours});
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get hostOfferPaymentValidityCustom;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity in minutes'**
+  String get hostOfferPaymentValidityMinutes;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'New offers expire this long after they\'\'re recorded — or at the event start, whichever is sooner.'**
+  String get hostOfferPaymentValidityHint;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment page link'**
+  String get hostOfferPaymentPageLink;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'A public https page — Razorpay, Stripe or similar.'**
+  String get hostOfferPaymentPageLinkHint;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'This page can be reused for every guest'**
+  String get hostOfferPaymentPageReuse;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'The same link appears in every offer message.'**
+  String get hostOfferPaymentPageReuseBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'\'ll add each guest\'\'s payment link when reviewing their offer.'**
+  String get hostOfferPaymentRequestLinksBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI to name@bank, or cash at the door.'**
+  String get hostOfferPaymentInstructionsHint;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Every guest sees this text in their offer.'**
+  String get hostOfferPaymentInstructionsHelper;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Message to guests'**
+  String get hostOfferPaymentMessage;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown above the payment details in the offer.'**
+  String get hostOfferPaymentMessageHint;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed automatically'**
+  String get hostOfferPaymentConfirmAutoTitle;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest checks out through Catch. The offer shows paid the moment the payment verifies — nothing to check, no references to paste.'**
+  String get hostOfferPaymentConfirmAutoBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'You confirm each payment'**
+  String get hostOfferPaymentConfirmManualTitle;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay on your page — Catch can\'\'t see it. Each guest sends you a payment reference; you check your account and confirm it in the offer list.'**
+  String get hostOfferPaymentConfirmPageBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay through their own link — Catch can\'\'t see it. Each guest sends you a payment reference; you check your account and confirm it in the offer list.'**
+  String get hostOfferPaymentConfirmRequestBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'New offers expire'**
+  String get hostOfferPaymentExpires;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your UPI app or bank. When the money arrives, confirm the guest\'\'s payment reference in the offer list. Cash has no signal — you attest that you\'\'ve received it.'**
+  String get hostOfferPaymentConfirmManualBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to confirm'**
+  String get hostOfferPaymentConfirmFreeTitle;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Free offers carry no payment — the guest accepts the offer and a place is held separately.'**
+  String get hostOfferPaymentConfirmFreeBody;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how guests pay'**
+  String get hostOfferPaymentChooseMode;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a ticket price'**
+  String get hostOfferPaymentSetAmount;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a three-letter currency code'**
+  String get hostOfferPaymentSetCurrency;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the payment page link'**
+  String get hostOfferPaymentSetPage;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the page can be reused'**
+  String get hostOfferPaymentConfirmReuse;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Add payment instructions'**
+  String get hostOfferPaymentSetInstructions;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Set offer validity'**
+  String get hostOfferPaymentSetValidity;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checkout needs separate activation — choose another way to collect'**
+  String get hostOfferPaymentCheckoutUnavailable;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Save payment settings'**
+  String get hostOfferPaymentSave;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready — free admission'**
+  String get hostOfferPaymentReadyFree;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready — {amount} via {collection}'**
+  String hostOfferPaymentReadyPaid({
+    required String amount,
+    required String collection,
+  });
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'Review payment terms'**
+  String get hostOfferPaymentReviewTitle;
+
+  /// Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.
+  ///
+  /// In en, this message translates to:
+  /// **'New offers will use these terms'**
+  String get hostOfferPaymentReviewBody;
 }
 
 class _AppLocalizationsDelegate

@@ -565,6 +565,10 @@ export {validateCampaignDeliveryMessageDocument} from "./validators/campaignDeli
 export {validateCampaignWhatsappDispatchDocument} from "./validators/campaignWhatsappDispatchDocument";
 export {validateCampaignDeliveryMessageIntent} from "./validators/campaignDeliveryMessageIntent";
 export {validateCampaignDeliveryAttempt} from "./validators/campaignDeliveryAttempt";
+export {validateAutomationDeliveryMessageDocument} from "./validators/automationDeliveryMessageDocument";
+export {validateAutomationWhatsappDispatchDocument} from "./validators/automationWhatsappDispatchDocument";
+export {validateAutomationDeliveryMessageIntent} from "./validators/automationDeliveryMessageIntent";
+export {validateAutomationDeliveryAttempt} from "./validators/automationDeliveryAttempt";
 export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";
 export {validateOrganizerMomentRunDocument} from "./validators/organizerMomentRunDocument";
 export {validateOrganizerMomentSendDocument} from "./validators/organizerMomentSendDocument";

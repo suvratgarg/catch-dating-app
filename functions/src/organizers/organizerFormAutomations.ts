@@ -65,9 +65,14 @@ import {
   publicWebhookUrl,
 } from "./organizerAutomationWebhook";
 import {
-  prepareAutomatedOrganizerCampaign,
   validateAutomationCampaignRecipe,
 } from "./organizerCampaigns";
+import {
+  handoffAutomationMessage,
+  syncAutomationCompanionMoments,
+} from "./organizerAutomationHandoff";
+import {buildMomentRunnerDeps} from "../moments/momentWiring";
+import {dispatchMomentRun} from "../moments/momentRunner";
 
 type RuleProjection = CreateOrganizerFormAutomationCallableResponse;
 type AutomationAction =
@@ -86,7 +91,10 @@ export interface AutomationDeps {
   timestamp: () => FirebaseFirestore.Timestamp;
   identitySecret: () => string;
   deliverWebhook?: typeof deliverOrganizerAutomationWebhook;
-  prepareCampaign?: typeof prepareAutomatedOrganizerCampaign;
+  /** Messaging actions hand off to the moments orchestration layer; the
+   *  seam owns durable intent minting + companion run dispatch. */
+  handoffMessage?: typeof handoffAutomationMessage;
+  dispatchMomentRun?: (runId: string) => Promise<unknown>;
 }
 
 const defaultDeps: AutomationDeps = {
@@ -253,6 +261,12 @@ export async function createOrganizerFormAutomationHandler(
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     };
+    // Companion-moment projections sync in the rule's own transaction —
+    // reads must precede the rule write, so sync runs first.
+    await syncAutomationCompanionMoments({
+      tx, db, ruleId, rule: updated, actorUid,
+      nowMillis: now.toMillis(),
+    });
     tx.set(ruleRef, updated);
     if (currentForm && form.ref) {
       const consequenceProjection = updateConsequenceProjection(
@@ -437,6 +451,12 @@ export async function setOrganizerFormAutomationStateHandler(
       updatedByUid: actorUid,
       updatedAt: now,
     };
+    // Companion-moment projections sync in the rule's own transaction —
+    // reads must precede the rule write, so sync runs first.
+    await syncAutomationCompanionMoments({
+      tx, db, ruleId: data.ruleId, rule: updated, actorUid,
+      nowMillis: now.toMillis(),
+    });
     tx.set(ref, updated);
     if (liveForm?.organizerId === data.organizerId && form.ref) {
       const consequenceProjection = updateConsequenceProjection(
@@ -1055,30 +1075,44 @@ async function runAutomationAction(
       if (!event.contactId) {
         return actionResult(action, "skipped", null, "no_contact");
       }
-      resultId = await (
-        deps.prepareCampaign ?? prepareAutomatedOrganizerCampaign
-      )({
-        db: params.db,
-        organizerId: event.organizerId,
-        actorUid: rule.updatedByUid,
-        recipeId: action.campaignId!,
-        recipeRevision: action.campaignRevision!,
-        campaignId: deterministicId(
-          "autocampaign",
-          params.runId,
-          action.actionId,
-        ),
-        name: rule.name,
-        now: deps.timestamp,
-        origin: {
+      {
+        const handoff = await (
+          deps.handoffMessage ?? handoffAutomationMessage
+        )({
+          db: params.db,
+          automationRunId: params.runId,
           ruleId: params.ruleId,
-          ruleRevision: rule.revision,
-          actionId: action.actionId,
-          sourceId: event.sourceId,
-          eventKind: event.kind,
-          contactId: event.contactId,
-        },
-      });
+          event,
+          rule,
+          action,
+          nowMillis: () => deps.timestamp().toMillis(),
+        });
+        if (handoff.kind === "legacyOwned") {
+          // A pre-migration executor minted its campaign for this
+          // occurrence — it owns the send until the campaign drains.
+          resultId = handoff.campaignId;
+          break;
+        }
+        const dispatch = deps.dispatchMomentRun ??
+          ((runId: string) => dispatchMomentRun(
+            buildMomentRunnerDeps({firestore: deps.firestore}), runId));
+        // A future-due run waits for the moments sweep — dispatching now
+        // would only bounce off the claim's business-delay recheck.
+        const dispatched = handoff.dueAtMillis >
+            deps.timestamp().toMillis() ?
+          "deferred" : await dispatch(handoff.momentRunId);
+        if (dispatched === "notFound") {
+          throw new HttpsError(
+            "internal", "Automation moment run vanished after handoff.");
+        }
+        if (dispatched === "skipped" || dispatched === "notPlanned") {
+          // A pause/disable between handoff and dispatch withholds the
+          // send; the run doc carries the skip reason for the audit row.
+          return actionResult(
+            action, "skipped", handoff.momentRunId, "moment_not_armed");
+        }
+        resultId = handoff.momentRunId;
+      }
       break;
     case "notifyTeam":
       resultId = await notifyAutomationTeam(params);

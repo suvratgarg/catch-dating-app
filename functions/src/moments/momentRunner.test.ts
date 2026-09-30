@@ -105,6 +105,8 @@ function makeDeps(db: FakeFirestore, now: number) {
       });
       return {kind: "sent"};
     },
+    deliverAutomationMessage: async () =>
+      ({kind: "suppressed" as const, reason: "hostReview" as const}),
     sendPushToUid: async () => {},
     writeStaffAttention: async () => {},
     loadConsentFacts: async (recipient) => {

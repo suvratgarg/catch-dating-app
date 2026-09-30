@@ -133,6 +133,77 @@ export const organizerMomentRunDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": 0
+    },
+    "automation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "ruleRevision",
+        "actionId",
+        "eventKind",
+        "sourceId",
+        "occurredAtMillis",
+        "dueAtMillis",
+        "contactId",
+        "deliveryMessageId"
+      ],
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "ruleRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "eventKind": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn",
+            "applicationAccepted",
+            "eventAttended"
+          ]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "dueAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Business-delay horizon computed by the automation engine at handoff; the delivery claim re-derives it from live facts."
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "description": "Contact identity resolved at handoff; claim re-derives the live identity so merges follow the send."
+        },
+        "deliveryMessageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$",
+          "description": "Durable intent record this run executes; the outbox owns the actual attempt history."
+        }
+      },
+      "description": "Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages."
     }
   }
 } as const;

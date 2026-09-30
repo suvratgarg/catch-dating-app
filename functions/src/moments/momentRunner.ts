@@ -32,6 +32,7 @@ import {
   type ConsentFacts,
   type PolicyDecision,
   type QuietHours,
+  type SuppressionReason,
 } from "./momentPolicy";
 import {
   nominalDueAtMillis,
@@ -57,6 +58,8 @@ import type {
 import {scopeId} from "./momentModel";
 import type {ProgramReminderOutcome}
   from "../programs/programReminderDelivery";
+import type {AutomationSendOutcome}
+  from "../organizers/automationMomentDelivery";
 
 /**
  * Server runner for the unified moments engine. Three entry points:
@@ -117,6 +120,16 @@ export interface MomentRunnerDeps {
     recipient: ResolvedRecipient;
     action: Extract<MomentAction, {kind: "sendTemplate"}>;
   }) => Promise<ProgramReminderOutcome>;
+  /** Organizer-scope automation sends dispatch the intent the handoff
+   *  minted (run.automation.deliveryMessageId) through the shared
+   *  delivery core; the seam maps the worker outcome for the journal. */
+  deliverAutomationMessage: (params: {
+    moment: MomentDefinition;
+    run: RunRecord;
+    facts: AnchorFacts;
+    recipient: ResolvedRecipient;
+    action: Extract<MomentAction, {kind: "sendTemplate"}>;
+  }) => Promise<AutomationSendOutcome>;
   writeStaffAttention: (params: {
     /** The resolved staff member being notified. */
     uid: string;
@@ -485,6 +498,34 @@ export async function ingestTravelLegEvent(
   return {firedRuns};
 }
 
+/**
+ * Dispatches one already-materialized planned run by id — the automation
+ * handoff's entry point. Runs materialize with deterministic ids at
+ * handoff; this loads moment + scope facts and runs the same disposition,
+ * quiet-hours, policy, and journal path a sweep would.
+ */
+export async function dispatchMomentRun(
+  deps: MomentRunnerDeps,
+  runId: string,
+): Promise<DispatchOutcome | "notFound" | "notPlanned"> {
+  const db = deps.firestore();
+  const snap = await db.collection(MOMENT_RUNS_COLLECTION).doc(runId).get();
+  if (!snap.exists) return "notFound";
+  const run = runFromDocument(snap.data()!);
+  if (run.status !== "planned") return "notPlanned";
+  const moment = await loadMoment(db, run.momentId);
+  if (moment === null) {
+    await markRun(db, run, "skipped", {reason: "missingMoment"});
+    return "skipped";
+  }
+  const facts = await loadAnchorFacts(db, moment.scope);
+  if (facts === null) {
+    await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
+    return "skipped";
+  }
+  return dispatchRun(db, deps, moment, run, facts, deps.nowMillis());
+}
+
 /** Fires a manual moment once per caller-supplied request key. */
 export async function runManualMoment(
   deps: MomentRunnerDeps,
@@ -562,6 +603,7 @@ async function dispatchRun(
   // write no send row, so the re-fire below is still idempotent.
   const nominalDue = travel ? nominalDueAtMillis(moment, run, facts) : 0;
   let pendingTravelDue: number | null = null;
+  let pendingDeliveryDue: number | null = null;
   for (const recipient of resolution.recipients) {
     const sendRef = db.collection(MOMENT_SENDS_COLLECTION)
       .doc(`${run.runId}_${recipient.recipientKey}`);
@@ -609,9 +651,15 @@ async function dispatchRun(
     const outcome = await deliver(deps, moment, run, facts, recipient);
     if (outcome.kind === "retry") {
       // Durable-delivery withholding (revoked consent mid-claim, expired
-      // permit, provider ambiguity under arbitration) re-fires the run;
-      // the recipient is never journaled "sent".
+      // permit, provider ambiguity under arbitration, or a live business
+      // delay that moved forward) re-fires the run; the recipient is
+      // never journaled "sent".
       decisions.push({kind: "defer", reason: "delivery"});
+      if (outcome.notBefore !== undefined) {
+        pendingDeliveryDue = pendingDeliveryDue === null ?
+          outcome.notBefore :
+          Math.min(pendingDeliveryDue, outcome.notBefore);
+      }
       continue;
     }
     if (outcome.kind === "suppressed") {
@@ -624,6 +672,16 @@ async function dispatchRun(
       ...(outcome.kind === "suppressed" ? {reason: outcome.reason} : {}),
       dayKey,
       createdAtMillis: now,
+      ...(run.automation ? {
+        runId: run.runId,
+        actionKind: "sendTemplate",
+        organizerId: facts.scope.organizerId ?? null,
+        scopeKind: moment.scope.kind,
+        scopeId: scopeId(moment.scope),
+        deliveryMessageId: run.automation.deliveryMessageId,
+        deliveryState: outcome.kind === "sent" ?
+          outcome.deliveryState ?? null : null,
+      } : {}),
       // staffAttention sends double as the attention-projection source:
       // the durable journal carries every field the organizer Today list
       // needs without a second write path.
@@ -643,7 +701,7 @@ async function dispatchRun(
     // Travel-deferred recipients wake the run at their own due, not a flat
     // minute later; a quiet-hours defer still wins when both apply.
     const quietRetry = await deps.quietEndMillis(moment.scope, now);
-    const candidates = [quietRetry, pendingTravelDue]
+    const candidates = [quietRetry, pendingTravelDue, pendingDeliveryDue]
       .filter((v): v is number => v !== null);
     const retry = candidates.length > 0 ?
       Math.min(...candidates) : now + 60_000;
@@ -668,7 +726,16 @@ async function dispatchRun(
   return "fired";
 }
 
-type DeliverOutcome = ProgramReminderOutcome;
+type DeliverOutcome =
+  | {kind: "sent";
+    /** Durable intent id + honest provider state (durable sends only). */
+    deliveryMessageId?: string;
+    deliveryState?: "accepted" | "unknown" | "delivered" | "read" |
+      "failed" | "revoked"}
+  | {kind: "suppressed"; reason: SuppressionReason}
+  /** Transient withholding — re-fire the run; `notBefore` wakes at a
+   *  live due time the delivery layer re-derived. */
+  | {kind: "retry"; reason: string; notBefore?: number};
 
 async function deliver(
   deps: MomentRunnerDeps,
@@ -689,6 +756,11 @@ async function deliver(
         (recipient.recipientKey.startsWith("guest:") ||
          recipient.recipientKey.startsWith("household:"))) {
       return deps.deliverProgramReminder({moment, run, facts, recipient,
+        action});
+    }
+    if (moment.scope.kind === "organizer" &&
+        recipient.recipientKey.startsWith("contact:")) {
+      return deps.deliverAutomationMessage({moment, run, facts, recipient,
         action});
     }
     // Stored data predating the authoring invariant fails closed for

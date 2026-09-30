@@ -1500,6 +1500,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /automationDeliveryMessages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /automationWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
     match /organizerMessagingWebhookEvents/{eventId} {
       allow read, write: if false;
     }

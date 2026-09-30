@@ -531,12 +531,19 @@ stop remaining actions. Per-action receipts record failures without webhook
 secrets, answers or endpoint payloads.
 
 Campaign actions reuse an unscheduled, reviewed WhatsApp draft and its revision.
-A deterministic generated campaign targets only the triggering canonical contact,
-intersected with the saved audience and current communication eligibility. Normal
-campaign preview, approval, snapshot and dispatch own actual delivery. Origin
-metadata is server-only; generated sends cannot be edited through public upsert.
-Rule, draft and source authority are checked again immediately before sending.
-A successful automation receipt means the campaign was queued, not delivered.
+At handoff the engine mints a deterministic server-managed companion
+`organizerMoments` row per messaging action, a stable `organizerMomentRuns`
+occurrence, and a durable `automationDeliveryMessages` intent in one
+transaction. The shared delivery core owns reservation, claim-time authority
+rechecks, provider submission, uncertain outcomes and receipt reconciliation;
+Moments owns scheduling, deferral and the organizer-visible journal. The
+claim re-reads live rule, recipe revision, source event, merged contact
+identity, consent, endpoint, sender/template readiness and shared frequency
+accounting before any provider call. Campaigns minted before this cutover
+keep their `automationOrigin` and drain through the campaign executor — a
+deterministic legacy-campaign id check inside the handoff transaction makes
+ownership exclusive. A successful automation receipt means the durable intent
+was recorded, not that the message was delivered.
 
 Signed webhook delivery requires public HTTPS on port 443, validates and pins DNS,
 disallows redirects and limits DNS/request duration and response size. Its minimal

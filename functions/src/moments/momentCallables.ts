@@ -122,6 +122,14 @@ export async function requireMomentManageAuthority(
   scope: MomentScope,
   actorUid: string,
 ): Promise<ProgramAccess | void> {
+  // Organizer scope is server-managed: companion moments exist only as
+  // projections of form-automation rules and can never be authored,
+  // armed, paused, or run through the callables.
+  if (scope.kind === "organizer") {
+    throw new HttpsError(
+      "permission-denied",
+      "Organizer-scope moments are managed by automation rules.");
+  }
   if (scope.kind === "program") {
     const access = await requireProgramAccess({
       db,
@@ -391,8 +399,13 @@ function scopeToWire(
   scope: MomentScope,
 ): OrganizerMomentCallableResponse["moment"]["scope"] {
   return scope.kind === "event" ?
-    {kind: "event", eventId: scope.eventId, programId: null} :
-    {kind: "program", eventId: null, programId: scope.programId};
+    {kind: "event", eventId: scope.eventId, programId: null,
+      organizerId: null} :
+    scope.kind === "program" ?
+      {kind: "program", eventId: null, programId: scope.programId,
+        organizerId: null} :
+      {kind: "organizer", eventId: null, programId: null,
+        organizerId: scope.organizerId};
 }
 
 function momentToWire(
@@ -493,6 +506,15 @@ function scopeFromWire(
         "invalid-argument", "scope.eventId is required for event moments.");
     }
     return {kind: "event", eventId: scope.eventId};
+  }
+  if (scope.kind === "organizer") {
+    if (typeof scope.organizerId !== "string" ||
+        scope.organizerId.length === 0) {
+      throw new HttpsError(
+        "invalid-argument",
+        "scope.organizerId is required for organizer moments.");
+    }
+    return {kind: "organizer", organizerId: scope.organizerId};
   }
   if (typeof scope.programId !== "string" || scope.programId.length === 0) {
     throw new HttpsError(

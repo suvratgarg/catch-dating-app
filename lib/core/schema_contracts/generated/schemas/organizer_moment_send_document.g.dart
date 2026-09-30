@@ -59,6 +59,7 @@ const schemaOrganizerMomentSendDocumentSchema = <String, Object?>{
         'programEnded',
         'recipientWithdrawn',
         'permissionRevoked',
+        'frequencyCapped',
         'hostReview',
         null,
       ],
@@ -112,6 +113,7 @@ const schemaOrganizerMomentSendDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'event',
         'program',
+        'organizer',
         null,
       ],
     },
@@ -150,6 +152,30 @@ const schemaOrganizerMomentSendDocumentSchema = <String, Object?>{
       ],
       'maxLength': 240,
       'description': 'staffAttention: rendered alert title.',
+    },
+    'deliveryMessageId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^outbox:[a-f0-9]{64}\$',
+      'description': 'Durable intent record that executed this send (automation/program durable deliveries); the outbox owns the attempt history this row projects.',
+    },
+    'deliveryState': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'accepted',
+        'unknown',
+        'delivered',
+        'read',
+        'failed',
+        'revoked',
+        null,
+      ],
+      'description': 'Latest confirmed provider state projected from the delivery evidence. \'sent\' decisions with an unknown outcome stay honest — never implies confirmed delivery.',
     },
   },
 };

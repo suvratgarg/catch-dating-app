@@ -22,6 +22,8 @@ const permissionCollectionReviewers = new Set([
   "functions/src/events/eventAttendees.ts",
   "functions/src/organizers/campaignDeliveryWorker.ts",
   "functions/src/messaging/participantMessagingPreferences.ts",
+  "functions/src/moments/momentWiring.ts",
+  "functions/src/organizers/automationDeliveryWorker.ts",
   "functions/src/organizers/organizerFormMessagingConsent.ts",
   "functions/src/organizers/organizerFormConsentPromotion.ts",
   "functions/src/organizers/organizerAudienceProjection.ts",

@@ -37,6 +37,8 @@ function runnerDeps(db: FakeFirestore): MomentRunnerDeps {
     dailyCapFor: () => 0,
     pushCopyFor: async () => ({title: "t", body: "b"}),
     deliverProgramReminder: async () => ({kind: "sent" as const}),
+    deliverAutomationMessage: async () =>
+      ({kind: "suppressed" as const, reason: "hostReview" as const}),
     sendPushToUid: async () => {},
     writeStaffAttention: async () => {},
     loadConsentFacts: async () => ({}),

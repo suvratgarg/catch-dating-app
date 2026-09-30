@@ -139,7 +139,8 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
         "consumerApp",
         "runtimeWeb",
         "campaign",
-        "api"
+        "api",
+        "formAutomation"
       ],
       "x-catch-ownership": "callable-owned"
     },
