@@ -97,6 +97,9 @@ class FakeQuerySnapshot {
   get size() {
     return this.docs.length;
   }
+  get empty() {
+    return this.docs.length === 0;
+  }
 }
 
 class FakeTransaction {
@@ -128,6 +131,24 @@ class FakeTransaction {
   }
 }
 
+/** Firestore batch: writes queue and apply atomically at commit. */
+class FakeWriteBatch {
+  private readonly writes: Array<() => void> = [];
+  constructor(private readonly firestore: FakeFirestore) {}
+  set(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => this.firestore.setDoc(ref.path, data));
+  }
+  update(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => this.firestore.updateDoc(ref.path, data));
+  }
+  delete(ref: FakeDocRef) {
+    this.writes.push(() => this.firestore.deleteDoc(ref.path));
+  }
+  async commit() {
+    for (const write of this.writes) write();
+  }
+}
+
 export class FakeFirestore {
   readonly docs: Map<string, FakeData>;
   private autoCounter = 0;
@@ -146,6 +167,9 @@ export class FakeFirestore {
   }
   collection(path: string) {
     return new FakeCollectionRef(this, path);
+  }
+  batch() {
+    return new FakeWriteBatch(this);
   }
   getDoc(path: string) {
     return this.docs.get(path);

@@ -13,6 +13,7 @@ import {
   assertRevision,
   nextRevision,
   requireProgramAccess,
+  requireProgramMutable,
   requireProgramDuty,
 } from "../shared/programAuthority";
 import type {
@@ -133,6 +134,7 @@ export async function upsertProgramGuestGroupHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
       transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     // Duplicate (dimension, label) pairs would silently split manifest
     // imports and audience picks, so uniqueness is enforced inside the
@@ -257,6 +259,7 @@ export async function deleteProgramGuestGroupHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
       transaction: tx,
     });
+    requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
     const existing = snap.data() as ProgramGuestGroupDocument | undefined;

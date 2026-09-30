@@ -556,6 +556,7 @@ export {programStayDocumentSchema} from "./schemas/programStayDocument";
 export {programRoomBlockDocumentSchema} from "./schemas/programRoomBlockDocument";
 export {programTravelLegDocumentSchema} from "./schemas/programTravelLegDocument";
 export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocument";
+export {programRetentionRunDocumentSchema} from "./schemas/programRetentionRunDocument";
 export {programDeliveryMessageDocumentSchema} from "./schemas/programDeliveryMessageDocument";
 export {programWhatsappDispatchDocumentSchema} from "./schemas/programWhatsappDispatchDocument";
 export {programDeliveryMessageIntentSchema} from "./schemas/programDeliveryMessageIntent";
@@ -589,6 +590,8 @@ export {listOrganizerProgramsCallablePayloadSchema} from "./schemas/listOrganize
 export {listMyHostAssignmentsCallablePayloadSchema} from "./schemas/listMyHostAssignmentsInput";
 export {createOrganizerProgramCallablePayloadSchema} from "./schemas/createOrganizerProgramInput";
 export {updateOrganizerProgramCallablePayloadSchema} from "./schemas/updateOrganizerProgramInput";
+export {archiveProgramCallablePayloadSchema} from "./schemas/archiveProgramInput";
+export {unarchiveProgramCallablePayloadSchema} from "./schemas/unarchiveProgramInput";
 export {grantProgramStaffCallablePayloadSchema} from "./schemas/grantProgramStaffInput";
 export {revokeProgramStaffCallablePayloadSchema} from "./schemas/revokeProgramStaffInput";
 export {inviteProgramStaffCallablePayloadSchema} from "./schemas/inviteProgramStaffInput";
@@ -636,6 +639,8 @@ export {organizerProgramListCallableResponseSchema} from "./schemas/organizerPro
 export {programAccessCallableResponseSchema} from "./schemas/programAccessOutput";
 export {listMyHostAssignmentsCallableResponseSchema} from "./schemas/listMyHostAssignmentsOutput";
 export {organizerProgramCallableResponseSchema} from "./schemas/organizerProgramOutput";
+export {archiveProgramCallableResponseSchema} from "./schemas/archiveProgramOutput";
+export {unarchiveProgramCallableResponseSchema} from "./schemas/unarchiveProgramOutput";
 export {programInviteClaimCallableResponseSchema} from "./schemas/programInviteClaimOutput";
 export {programStaffListCallableResponseSchema} from "./schemas/programStaffListOutput";
 export {programGuestListCallableResponseSchema} from "./schemas/programGuestListOutput";

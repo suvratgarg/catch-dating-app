@@ -186,5 +186,33 @@ const schemaProgramFunctionGuestDocumentSchema = <String, Object?>{
       ],
       'description': 'Staff uid who recorded a staff-sourced response; null for household-link and imported responses.',
     },
+    'anonymizedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
+    },
   },
 };

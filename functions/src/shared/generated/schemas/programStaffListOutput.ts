@@ -42,13 +42,29 @@ export const programStaffListCallableResponseSchema: Record<string, unknown> = {
             "maxLength": 180
           },
           "displayName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null after archive anonymization scrubs staff identity."
           },
           "phoneLastFour": {
-            "type": "string",
-            "pattern": "^[0-9]{4}$"
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{4}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null after archive anonymization."
           },
           "duties": {
             "type": "array",

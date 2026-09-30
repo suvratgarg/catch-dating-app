@@ -8,11 +8,8 @@
 export interface ProgramStaffInviteDocument {
   organizerId: string;
   programId: string;
-  /**
-   * Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite.
-   */
-  phoneE164: string;
-  displayName: string;
+  phoneE164: string | null;
+  displayName: string | null;
   /**
    * @minItems 1
    * @maxItems 8
@@ -82,4 +79,11 @@ export interface ProgramStaffInviteDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }

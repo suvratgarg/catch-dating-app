@@ -56,6 +56,18 @@ export interface OrganizerProgramCallableResponse {
       }[];
     };
     revision: number;
+    /**
+     * Set when the program is archived; null otherwise.
+     */
+    archivedAtMillis?: number | null;
+    /**
+     * Grace deadline: identity scrub happens after this unless the program is unarchived.
+     */
+    anonymizeAtMillis?: number | null;
+    /**
+     * Set once identity/free-text fields were scrubbed; program stays archived indefinitely.
+     */
+    anonymizedAtMillis?: number | null;
   };
   /**
    * @maxItems 40

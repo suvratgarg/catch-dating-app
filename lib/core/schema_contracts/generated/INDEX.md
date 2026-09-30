@@ -563,6 +563,7 @@ Do not edit it by hand.
 | ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `functions/src/shared/generated/programRoomBlockDocument.ts` |
 | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
 | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
+| ProgramRetentionRunDocument | `firestore/program_retention_runs.schema.json` | `functions/src/shared/generated/programRetentionRunDocument.ts` |
 | ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `functions/src/shared/generated/programDeliveryMessageDocument.ts` |
 | ProgramWhatsappDispatchDocument | `firestore/program_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/programWhatsappDispatchDocument.ts` |
 | ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `functions/src/shared/generated/programDeliveryMessageIntent.ts` |
@@ -596,6 +597,8 @@ Do not edit it by hand.
 | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallablePayload.ts` |
 | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `functions/src/shared/generated/createOrganizerProgramCallablePayload.ts` |
 | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `functions/src/shared/generated/updateOrganizerProgramCallablePayload.ts` |
+| ArchiveProgramCallablePayload | `callables/archive_program_payload.schema.json` | `functions/src/shared/generated/archiveProgramCallablePayload.ts` |
+| UnarchiveProgramCallablePayload | `callables/unarchive_program_payload.schema.json` | `functions/src/shared/generated/unarchiveProgramCallablePayload.ts` |
 | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `functions/src/shared/generated/grantProgramStaffCallablePayload.ts` |
 | RevokeProgramStaffCallablePayload | `callables/revoke_program_staff_payload.schema.json` | `functions/src/shared/generated/revokeProgramStaffCallablePayload.ts` |
 | InviteProgramStaffCallablePayload | `callables/invite_program_staff_payload.schema.json` | `functions/src/shared/generated/inviteProgramStaffCallablePayload.ts` |
@@ -643,6 +646,8 @@ Do not edit it by hand.
 | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `functions/src/shared/generated/programAccessCallableResponse.ts` |
 | ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallableResponse.ts` |
 | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `functions/src/shared/generated/organizerProgramCallableResponse.ts` |
+| ArchiveProgramCallableResponse | `callable_responses/archive_program_response.schema.json` | `functions/src/shared/generated/archiveProgramCallableResponse.ts` |
+| UnarchiveProgramCallableResponse | `callable_responses/unarchive_program_response.schema.json` | `functions/src/shared/generated/unarchiveProgramCallableResponse.ts` |
 | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `functions/src/shared/generated/programInviteClaimCallableResponse.ts` |
 | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `functions/src/shared/generated/programStaffListCallableResponse.ts` |
 | ProgramGuestListCallableResponse | `callable_responses/program_guest_list_response.schema.json` | `functions/src/shared/generated/programGuestListCallableResponse.ts` |
@@ -1703,6 +1708,7 @@ Do not edit it by hand.
 | `schemaProgramRoomBlockDocumentSchema` | ProgramRoomBlockDocument | `firestore/program_room_blocks.schema.json` | `lib/core/schema_contracts/generated/schemas/program_room_block_document.g.dart` |
 | `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
 | `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
+| `schemaProgramRetentionRunDocumentSchema` | ProgramRetentionRunDocument | `firestore/program_retention_runs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_retention_run_document.g.dart` |
 | `schemaProgramDeliveryMessageDocumentSchema` | ProgramDeliveryMessageDocument | `firestore/program_delivery_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_document.g.dart` |
 | `schemaProgramWhatsappDispatchDocumentSchema` | ProgramWhatsappDispatchDocument | `firestore/program_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/program_whatsapp_dispatch_document.g.dart` |
 | `schemaProgramDeliveryMessageIntentSchema` | ProgramDeliveryMessageIntent | `operations/program_delivery_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/program_delivery_message_intent.g.dart` |
@@ -1736,6 +1742,8 @@ Do not edit it by hand.
 | `schemaListMyHostAssignmentsCallablePayloadSchema` | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_my_host_assignments_callable_payload.g.dart` |
 | `schemaCreateOrganizerProgramCallablePayloadSchema` | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_organizer_program_callable_payload.g.dart` |
 | `schemaUpdateOrganizerProgramCallablePayloadSchema` | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_program_callable_payload.g.dart` |
+| `schemaArchiveProgramCallablePayloadSchema` | ArchiveProgramCallablePayload | `callables/archive_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_program_callable_payload.g.dart` |
+| `schemaUnarchiveProgramCallablePayloadSchema` | UnarchiveProgramCallablePayload | `callables/unarchive_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/unarchive_program_callable_payload.g.dart` |
 | `schemaGrantProgramStaffCallablePayloadSchema` | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/grant_program_staff_callable_payload.g.dart` |
 | `schemaRevokeProgramStaffCallablePayloadSchema` | RevokeProgramStaffCallablePayload | `callables/revoke_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/revoke_program_staff_callable_payload.g.dart` |
 | `schemaInviteProgramStaffCallablePayloadSchema` | InviteProgramStaffCallablePayload | `callables/invite_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/invite_program_staff_callable_payload.g.dart` |
@@ -1783,6 +1791,8 @@ Do not edit it by hand.
 | `schemaProgramAccessCallableResponseSchema` | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_access_callable_response.g.dart` |
 | `schemaListMyHostAssignmentsCallableResponseSchema` | ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_my_host_assignments_callable_response.g.dart` |
 | `schemaOrganizerProgramCallableResponseSchema` | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_callable_response.g.dart` |
+| `schemaArchiveProgramCallableResponseSchema` | ArchiveProgramCallableResponse | `callable_responses/archive_program_response.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_program_callable_response.g.dart` |
+| `schemaUnarchiveProgramCallableResponseSchema` | UnarchiveProgramCallableResponse | `callable_responses/unarchive_program_response.schema.json` | `lib/core/schema_contracts/generated/schemas/unarchive_program_callable_response.g.dart` |
 | `schemaProgramInviteClaimCallableResponseSchema` | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_invite_claim_callable_response.g.dart` |
 | `schemaProgramStaffListCallableResponseSchema` | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_list_callable_response.g.dart` |
 | `schemaProgramGuestListCallableResponseSchema` | ProgramGuestListCallableResponse | `callable_responses/program_guest_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_list_callable_response.g.dart` |
@@ -2427,6 +2437,8 @@ Do not edit it by hand.
 | ListMyHostAssignmentsCallableRequest | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_my_host_assignments_callable_request.g.dart` |
 | CreateOrganizerProgramCallableRequest | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_program_callable_request.g.dart` |
 | UpdateOrganizerProgramCallableRequest | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_program_callable_request.g.dart` |
+| ArchiveProgramCallableRequest | ArchiveProgramCallablePayload | `callables/archive_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/archive_program_callable_request.g.dart` |
+| UnarchiveProgramCallableRequest | UnarchiveProgramCallablePayload | `callables/unarchive_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/unarchive_program_callable_request.g.dart` |
 | GrantProgramStaffCallableRequest | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/grant_program_staff_callable_request.g.dart` |
 | RevokeProgramStaffCallableRequest | RevokeProgramStaffCallablePayload | `callables/revoke_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/revoke_program_staff_callable_request.g.dart` |
 | InviteProgramStaffCallableRequest | InviteProgramStaffCallablePayload | `callables/invite_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/invite_program_staff_callable_request.g.dart` |

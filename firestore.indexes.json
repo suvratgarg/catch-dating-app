@@ -621,6 +621,20 @@
       ]
     },
     {
+      "collectionGroup": "organizerPrograms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "anonymizeAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "programTravelLegs",
       "queryScope": "COLLECTION",
       "fields": [

@@ -24,6 +24,7 @@ import {
   assertRevision,
   loadProgramBundle,
   nextRevision,
+  requireProgramMutable,
 } from "../shared/programAuthority";
 import {replanProgramMoments} from "../moments/momentRunner";
 import type {
@@ -160,6 +161,15 @@ export async function updateOrganizerProgramHandler(
       );
     }
     assertRevision(program.revision, data.expectedRevision);
+    // Archive/unarchive are dedicated lifecycle callables; the generic
+    // update path may never enter or leave the archived state.
+    requireProgramMutable(program);
+    if (data.status === "archived") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Archive programs through archiveProgram so the retention clock starts."
+      );
+    }
     if (data.transportSettings) {
       validateVehicleClasses(data.transportSettings.vehicleClasses);
     }
@@ -259,6 +269,9 @@ export async function listOrganizerProgramsHandler(
         startsAtMillis: program.startsAt.toMillis(),
         endsAtMillis: program.endsAt.toMillis(),
         capabilities: program.capabilities,
+        archivedAtMillis: program.archivedAt?.toMillis() ?? null,
+        anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
+        anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
         revision: program.revision,
       };
     }),
@@ -316,6 +329,9 @@ export async function getOrganizerProgramHandler(
       endsAtMillis: program.endsAt.toMillis(),
       capabilities: program.capabilities,
       transportSettings: program.transportSettings,
+      archivedAtMillis: program.archivedAt?.toMillis() ?? null,
+      anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
+      anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
       revision: program.revision,
     },
     functions: functionsSnap.docs.map((doc) => {

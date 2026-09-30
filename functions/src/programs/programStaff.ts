@@ -32,6 +32,7 @@ import {
   nextRevision,
   programStaffGrantId,
   requireProgramAccess,
+  requireProgramMutable,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
@@ -270,6 +271,7 @@ export async function grantProgramStaffHandler(
   await deps.checkRateLimit(db, actorUid, "grantProgramStaff");
   const {program, organizer} =
     await requireProgramManager(db, data.programId, actorUid);
+  requireProgramMutable(program);
   const now = deps.now();
   if (data.expiresAtMillis <= now.toMillis() ||
       data.expiresAtMillis > now.toMillis() + maxGrantDurationMillis) {
@@ -297,6 +299,7 @@ export async function grantProgramStaffHandler(
   return db.runTransaction(async (tx) => {
     const fresh = await requireProgramManager(
       db, data.programId, actorUid, tx);
+    requireProgramMutable(fresh.program);
     if (fresh.program.organizerId !== program.organizerId ||
         isOrganizerManager(fresh.organizer, authUser.uid)) {
       throw new HttpsError("aborted", "Program staff authority changed.");
@@ -368,13 +371,16 @@ export async function revokeProgramStaffHandler(
     request, validateRevokeProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "revokeProgramStaff");
-  await requireProgramManager(db, data.programId, actorUid);
+  const {program: programForRevoke} =
+    await requireProgramManager(db, data.programId, actorUid);
+  requireProgramMutable(programForRevoke);
   const ref = db.collection("programStaffGrants").doc(
     programStaffGrantId(data.programId, data.uid));
   const now = deps.now();
   return db.runTransaction(async (tx) => {
     const {program} = await requireProgramManager(
       db, data.programId, actorUid, tx);
+    requireProgramMutable(program);
     const snap = await tx.get(ref);
     const grant = snap.data() as ProgramStaffGrantDocument | undefined;
     if (!grant || grant.programId !== data.programId ||

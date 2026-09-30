@@ -16,6 +16,7 @@ import {
   programProjectionExpiresAt,
   programStaffGrantId,
   requireProgramAccess,
+  requireProgramMutable,
 } from "../shared/programAuthority";
 import type {
   ProgramDoorJournalDocument,
@@ -301,6 +302,7 @@ export async function createProgramWalkInHandler(
     db, programId: data.programId, actorUid, now: deps.now(),
   });
   const fn = await loadFunction(db, data.programId, data.functionId);
+  requireProgramMutable(access.program);
   requireDoorAuthority(access, data.functionId);
   if (fn.status === "cancelled") {
     throw new HttpsError("failed-precondition",

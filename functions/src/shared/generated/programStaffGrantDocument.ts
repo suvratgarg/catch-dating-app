@@ -9,8 +9,8 @@ export interface ProgramStaffGrantDocument {
   organizerId: string;
   programId: string;
   uid: string;
-  displayName: string;
-  phoneLastFour: string;
+  displayName: string | null;
+  phoneLastFour: string | null;
   /**
    * Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate.
    *
@@ -81,4 +81,11 @@ export interface ProgramStaffGrantDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
+   */
+  anonymizedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }
