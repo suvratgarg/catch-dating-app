@@ -52,7 +52,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 child: Text(
                   'Choose only the guests you want to include. Review their '
                   'names and phone numbers before sharing with this wedding.',
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.proseM(context),
                 ),
               ),
               gapH24,
@@ -179,7 +179,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                         title: Text(
                           'I want to share only these reviewed guests with '
                           '$weddingName and $plannerName.',
-                          style: CatchTextStyles.bodyM(context),
+                          style: CatchTextStyles.proseM(context),
                         ),
                       ),
                     ),
