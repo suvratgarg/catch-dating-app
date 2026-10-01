@@ -2,10 +2,13 @@ import fs from 'node:fs';
 
 // Summarizes untracked integration output; never writes a repository receipt.
 const filename = process.argv[2];
-if (!filename) throw new Error('Usage: node tool/perf/host_audience_profile_summary.mjs <integration_response_data.json>');
+if (!filename) throw new Error('Usage: node integration_test/host_audience_profile_summary.mjs <integration_response_data.json>');
 const report = JSON.parse(fs.readFileSync(filename, 'utf8'));
 if (!report.fixture?.profileMode) throw new Error('Expected an actual Flutter profile-mode run.');
-const phases = [...new Set(report.fixture.events.map(event => event.phase))];
+const phases = [...new Set([
+  ...Object.keys(report).filter(key => key.endsWith('_frames')).map(key => key.replace(/_frames$/, '')),
+  ...report.fixture.events.map(event => event.phase),
+])];
 console.log(JSON.stringify({
   platform: report.fixture.platform,
   syntheticDelays: {
