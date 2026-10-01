@@ -160,12 +160,13 @@ class ErrorLogger {
     StackTrace? stackTrace,
     Map<String, String>? context,
   }) {
-    final timestamp = DateTime.now().toIso8601String();
-    final prefix = level.name.toUpperCase();
-    final ctx = context != null ? ' ${_formatContext(context)}' : '';
-    _consoleSink('[$prefix][$timestamp]$ctx $message');
-    if (error != null) _consoleSink('  error=$error');
-    if (stackTrace != null) _consoleSink('  $stackTrace');
+    _writeConsoleLog(
+      level: level,
+      message: message,
+      error: error,
+      stackTrace: stackTrace,
+      context: context,
+    );
 
     if ((level == LogLevel.fatal || level == LogLevel.error) && _canReport) {
       unawaited(
@@ -179,13 +180,28 @@ class ErrorLogger {
     }
   }
 
+  void _writeConsoleLog({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {
+    final timestamp = DateTime.now().toIso8601String();
+    final prefix = level.name.toUpperCase();
+    final ctx = context != null ? ' ${_formatContext(context)}' : '';
+    _consoleSink('[$prefix][$timestamp]$ctx $message');
+    if (error != null) _consoleSink('  error=$error');
+    if (stackTrace != null) _consoleSink('  $stackTrace');
+  }
+
   String _formatContext(Map<String, String> context) =>
       context.entries.map((e) => '${e.key}=${e.value}').join(' ');
 
   // ── Convenience methods (backward-compatible) ───────────────────────────────
 
   void logFlutterError(FlutterErrorDetails details, {bool fatal = false}) {
-    log(
+    _writeConsoleLog(
       level: fatal ? LogLevel.fatal : LogLevel.error,
       message: 'Flutter error: ${details.exception}',
       error: details.exception,

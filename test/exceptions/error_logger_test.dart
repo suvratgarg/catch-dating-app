@@ -96,6 +96,8 @@ void main() {
 
     expect(reporter.recordedFlutterErrors, hasLength(1));
     expect(reporter.recordedFlutterErrors.single.fatal, isTrue);
+    expect(reporter.recordedErrors, isEmpty);
+    expect(consoleLines.first, contains('[FATAL]'));
   });
 
   test(
@@ -119,8 +121,8 @@ void main() {
         throwsA(isA<StateError>()),
       );
 
-    expect(consoleLines, hasLength(3));
-    expect(consoleLines.first, contains('provider failed'));
+      expect(consoleLines, hasLength(3));
+      expect(consoleLines.first, contains('provider failed'));
     },
   );
 }

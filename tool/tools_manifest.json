@@ -986,7 +986,7 @@
       "id": "ci:mobile-release-workflow",
       "category": "ci",
       "path": "tool/ci/mobile_release_workflow.test.mjs",
-      "command": "node --test tool/ci/mobile_release_workflow.test.mjs",
+      "command": "node --test tool/ci/mobile_release_workflow.test.mjs tool/ci/mobile_platform_authority_workflow.test.mjs",
       "safety": "local-test",
       "status": "active",
       "ciRequirements": {
@@ -997,7 +997,9 @@
       },
       "impactPaths": [
         ".github/workflows/mobile-internal-release.yml",
+        ".github/workflows/_mobile-platform-authority.yml",
         "tool/ci/mobile_release_workflow.test.mjs",
+        "tool/ci/mobile_platform_authority_workflow.test.mjs",
         "tool/harness.mjs",
         "tool/harness/component_graph.json",
         "tool/harness/component_graph.schema.json",
@@ -1008,7 +1010,8 @@
       "description": "Guards the mobile signed-package producer and automatic iOS handoff: successful main CI authority, exact role/platform target matrices, source-bound 90-day packages, post-comparison authority, exact workflow dispatch, and zero direct store mutation.",
       "checks": [
         "node --check tool/ci/mobile_release_workflow.test.mjs",
-        "node --test tool/ci/mobile_release_workflow.test.mjs",
+        "node --check tool/ci/mobile_platform_authority_workflow.test.mjs",
+        "node --test tool/ci/mobile_release_workflow.test.mjs tool/ci/mobile_platform_authority_workflow.test.mjs",
         "node tool/platform/check_app_targets.mjs --check"
       ],
       "role": "gate",

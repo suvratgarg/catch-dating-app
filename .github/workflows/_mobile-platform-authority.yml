@@ -198,7 +198,12 @@ jobs:
             receipt_file="$(find build/mobile/compare -path \
               "*/mobile-package-receipt-v1-${release_target}-${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}/mobile-package-upload-receipt.json" \
               -type f -print -quit)"
-            test -n "$receipt_file"
+            # download-artifact@v7 extracts one matched artifact directly into
+            # the destination; multiple matches retain artifact-name folders.
+            if [[ -z "$receipt_file" && "$expected_count" == 1 ]]; then
+              receipt_file=build/mobile/compare/mobile-package-upload-receipt.json
+            fi
+            test -f "$receipt_file"
             receipt_dir="$(dirname "$receipt_file")"
             package_id="$(jq -er '.packageArtifact.id' "$receipt_file")"
             package_name="$(jq -er '.packageArtifact.name' "$receipt_file")"

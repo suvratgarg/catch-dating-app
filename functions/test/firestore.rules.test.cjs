@@ -2193,6 +2193,23 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps Catch WhatsApp webhook receipts server-only", async () => {
+      await seed(["catchWhatsappWebhookEvents", "receipt-1"], {
+        eventKind: "inbound", text: "private inbound message",
+      });
+      const clients = [authedDb("host-1"), authedDb("runner-1"),
+        testEnv.unauthenticatedContext().firestore()];
+      for (const client of clients) {
+        const ref = doc(client, "catchWhatsappWebhookEvents", "receipt-1");
+        await assertFails(getDoc(ref));
+        await assertFails(getDocs(collection(client,
+          "catchWhatsappWebhookEvents")));
+        await assertFails(setDoc(ref, {text: "forged"}));
+        await assertFails(updateDoc(ref, {text: "changed"}));
+        await assertFails(deleteDoc(ref));
+      }
+    });
+
     it("keeps host analytics snapshots server-only", async () => {
       const snapshotId = `host-1_${"a".repeat(64)}`;
       await seed(["hostAnalyticsSnapshots", snapshotId], {
