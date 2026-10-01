@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'CatchWhatsappWebhookEventDocument',
+    source: 'firestore/catch_whatsapp_webhook_events.schema.json',
+    schema: schemaCatchWhatsappWebhookEventDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SalesImportHistoryRowDocument',
     source: 'firestore/sales_import_history_rows.schema.json',
     schema: schemaSalesImportHistoryRowDocumentSchema,
@@ -5719,6 +5724,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'CatchWhatsappWebhookEventDocument': schemaCatchWhatsappWebhookEventDocumentSchema,
   'SalesImportHistoryRowDocument': schemaSalesImportHistoryRowDocumentSchema,
   'SalesImportHistoryRecordDocument': schemaSalesImportHistoryRecordDocumentSchema,
   'SalesPrivacyRestriction': schemaSalesPrivacyRestrictionSchema,
@@ -6862,6 +6868,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/catch_whatsapp_webhook_events.schema.json': schemaCatchWhatsappWebhookEventDocumentSchema,
   'firestore/sales_import_history_rows.schema.json': schemaSalesImportHistoryRowDocumentSchema,
   'firestore/sales_import_history_records.schema.json': schemaSalesImportHistoryRecordDocumentSchema,
   'firestore/sales_privacy_restrictions.schema.json': schemaSalesPrivacyRestrictionSchema,

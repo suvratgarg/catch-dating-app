@@ -21,6 +21,9 @@ export const materializedNonSecretParams = [
   "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID",
   "META_WHATSAPP_GRAPH_VERSION",
   "META_WHATSAPP_ENABLED",
+  "CATCH_WHATSAPP_WEBHOOK_ENABLED",
+  "CATCH_WHATSAPP_WABA_ID",
+  "CATCH_WHATSAPP_PHONE_NUMBER_ID",
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
@@ -80,6 +83,20 @@ function normalizedProviderParams(environment = process.env, projectId) {
       "real Meta app and embedded-signup config ids are required when enabled");
   }
 
+  const catchWebhookEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_WEBHOOK_ENABLED");
+  const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
+  const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
+    ?.trim() ?? "";
+  assert(!catchWabaId || /^[0-9]{1,32}$/.test(catchWabaId),
+    "CATCH_WHATSAPP_WABA_ID must be a numeric Meta account id");
+  assert(!catchPhoneNumberId || /^[0-9]{1,32}$/.test(catchPhoneNumberId),
+    "CATCH_WHATSAPP_PHONE_NUMBER_ID must be a numeric Meta phone number id");
+  if (catchWebhookEnabled === "true") {
+    assert(catchWabaId && catchPhoneNumberId,
+      "Catch WABA and phone number ids are required when webhook is enabled");
+  }
+
   const eventAssistance = {
     EVENT_ASSISTANCE_RCS_ENABLED: normalizedBooleanParam(
       environment, "EVENT_ASSISTANCE_RCS_ENABLED"),
@@ -117,6 +134,9 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: configId || " ",
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
+    CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookEnabled,
+    CATCH_WHATSAPP_WABA_ID: catchWabaId || " ",
+    CATCH_WHATSAPP_PHONE_NUMBER_ID: catchPhoneNumberId || " ",
     ...eventAssistance,
     // Blank preserves a fail-closed callable until hosting is provisioned.
     FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",

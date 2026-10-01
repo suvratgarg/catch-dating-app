@@ -1598,10 +1598,10 @@ packages:
     dependency: transitive
     description:
       name: razorpay_flutter
-      sha256: c8a3202f84e28051949fd70d80cba78e2e8575db3114b14b316dc0484cd86468
+      sha256: f0ffd4e162f0c4c8d72e512deaece22d2179e653e470fd794865283c28ff9079
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.6"
+    version: "1.4.7"
   record_use:
     dependency: transitive
     description:

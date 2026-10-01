@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
   salesPrivacyRestrictionSchema,
@@ -1167,6 +1168,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
 export const validateSalesPrivacyRestriction = ajv.compile(salesPrivacyRestrictionSchema);
