@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {catchWhatsappWebhookEventDocumentSchema} from "./schemas/catchWhatsappWebhookEventDocument";
 export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
 export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";
 export {salesPrivacyRestrictionSchema} from "./schemas/salesPrivacyRestriction";

@@ -3541,6 +3541,23 @@
       "read": "server only; current manager receipt projection",
       "write": "server only; immutable source marker and receipt in one transaction",
       "exportedFunctions": []
+    },
+    {
+      "id": "catchWhatsappWebhookEvents",
+      "path": "catchWhatsappWebhookEvents/{eventId}",
+      "rulesMatch": "/catchWhatsappWebhookEvents/{eventId}",
+      "typescriptInterface": "CatchWhatsappWebhookEventDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps Catch WhatsApp webhook receipts server-only"
+      ],
+      "owner": "Catch-owned Meta WhatsApp webhook ingress",
+      "read": "server only; no client or organizer projection",
+      "write": "server only, immutable after exact app signature and sender validation",
+      "exportedFunctions": [
+        "catchWhatsappWebhook"
+      ]
     }
   ]
 }
