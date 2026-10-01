@@ -373,10 +373,11 @@ Future<void> _tap(WidgetTester tester, Key key, {bool settle = true}) async {
   await tester.ensureVisible(target);
   await tester.pump();
   await tester.tap(target);
-  if (settle)
+  if (settle) {
     await pumpFeatureUi(tester);
-  else
+  } else {
     await tester.pump();
+  }
 }
 
 Future<void> _edit(WidgetTester tester, Key key, String value) async {

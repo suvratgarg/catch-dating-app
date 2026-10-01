@@ -1,10 +1,9 @@
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_fields.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-import 'phone_import_controller.dart';
-import 'widgets/phone_import_guest_fields.dart';
-import '../domain/phone_contact.dart';
 
 /// Local phone-contact review seam. No route, workspace authority or save action
 /// is mounted until the canonical CRM import/member contract is available.
@@ -119,7 +118,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 if (sharedPhones.isNotEmpty) ...[
                   gapH12,
                   CatchBanner(
-                    key: ValueKey('phone-import-shared-phones'),
+                    key: const ValueKey('phone-import-shared-phones'),
                     message:
                         'A chosen number is shared by several guests. '
                         'They stay separate; check their household assignments.',
@@ -166,19 +165,22 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CheckboxListTile.adaptive(
-                      key: const ValueKey('phone-import-sharing'),
-                      contentPadding: EdgeInsets.zero,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      value: controller.sharingConfirmed,
-                      onChanged: entries.isEmpty || controller.picking
-                          ? null
-                          : (value) =>
-                                controller.confirmSharing(value ?? false),
-                      title: Text(
-                        'I want to share only these reviewed guests with '
-                        '$weddingName and $plannerName.',
-                        style: CatchTextStyles.bodyM(context),
+                    Material(
+                      type: MaterialType.transparency,
+                      child: CheckboxListTile.adaptive(
+                        key: const ValueKey('phone-import-sharing'),
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        value: controller.sharingConfirmed,
+                        onChanged: entries.isEmpty || controller.picking
+                            ? null
+                            : (value) =>
+                                  controller.confirmSharing(value ?? false),
+                        title: Text(
+                          'I want to share only these reviewed guests with '
+                          '$weddingName and $plannerName.',
+                          style: CatchTextStyles.bodyM(context),
+                        ),
                       ),
                     ),
                     gapH12,
@@ -195,7 +197,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                         entries.any((entry) => !entry.valid)) ...[
                       gapH12,
                       CatchBanner(
-                        key: ValueKey('phone-import-needs-review'),
+                        key: const ValueKey('phone-import-needs-review'),
                         message:
                             'Enter every guest name and choose a phone '
                             'number for each selected contact. Remove contacts '
