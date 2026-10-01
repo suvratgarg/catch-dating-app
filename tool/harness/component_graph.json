@@ -921,31 +921,35 @@
       ],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 30
+      "timeoutSeconds": 30,
+      "checkRequirements": {"executables": ["node"], "packages": []}
     },
     {
       "id": "contracts.schema-projections",
       "owner": "backend_platform",
-      "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs"],
-      "outputs": ["lib/core/schema_contracts/generated/**", "functions/src/shared/generated/**", "admin/src/generated/contracts/**", "website/src/generated/contracts/**", "tool/contracts/generated/**"],
+      "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs", "functions/package.json", "functions/package-lock.json"],
+      "outputs": ["lib/core/schema_contracts/generated/**", "functions/src/shared/generated/**", "admin/src/generated/contracts/**", "tool/contracts/generated/**", "website/src/shared/contracts/generated/**"],
       "checkCommand": "node tool/contracts/generate_schema_contracts.mjs --check",
       "writeCommand": "node tool/contracts/generate_schema_contracts.mjs",
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 180
+      "timeoutSeconds": 180,
+      "checkRequirements": {"executables": ["node"], "packages": [{"kind": "node", "name": "json-schema-to-typescript", "from": "functions/package.json"}]}
     },
     {
       "id": "admin.callable-validators",
       "owner": "web_platform",
-      "inputs": ["contracts/callables/**", "contracts/callable_responses/**", "contracts/shared/**", "admin/src/shared/api/adminApi.ts", "admin/scripts/generateCallableValidators.mjs"],
+      "inputs": ["contracts/**/*.json", "admin/scripts/generateCallableValidators.mjs", "tool/admin/callable_inventory.mjs", "admin/src/**/*.ts", "admin/src/**/*.tsx", "package.json", "admin/package.json"],
       "outputs": ["admin/src/generated/validators/adminCallableValidators.ts"],
       "checkCommand": "npm --workspace catch-admin run check:callable-validators",
       "writeCommand": "npm --workspace catch-admin run generate:callable-validators",
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 60
+      "timeoutSeconds": 60,
+      "checkRequirements": {"executables": ["node", "npm"], "packages": []},
+      "inputExcludes": ["admin/src/**/generated/**", "admin/src/**/*.test.*", "admin/src/**/*.stories.*"]
     },
     {
       "id": "flutter.l10n",
@@ -957,31 +961,34 @@
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 120
+      "timeoutSeconds": 120,
+      "checkRequirements": {"executables": ["node", "flutter"], "packages": []}
     },
     {
       "id": "copy.notification",
       "owner": "content_system",
-      "inputs": ["copy/notifications_en.json", "tool/copy/sync_notification_copy.mjs"],
+      "inputs": ["copy/notifications_en.json", "tool/copy/sync_notification_copy.mjs", "tool/lib/repo_paths.mjs"],
       "outputs": ["functions/src/shared/generated/notificationCopyEn.ts"],
       "checkCommand": "node tool/copy/sync_notification_copy.mjs --check",
       "writeCommand": "node tool/copy/sync_notification_copy.mjs --write",
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 60
+      "timeoutSeconds": 60,
+      "checkRequirements": {"executables": ["node"], "packages": []}
     },
     {
       "id": "copy.native",
       "owner": "content_system",
-      "inputs": ["copy/native_en.json", "tool/copy/sync_native_copy.mjs"],
+      "inputs": ["copy/native_en.json", "tool/copy/sync_native_copy.mjs", "tool/lib/repo_paths.mjs"],
       "outputs": ["ios/Runner/Info.plist", "ios/Runner/en.lproj/InfoPlist.strings"],
       "checkCommand": "node tool/copy/sync_native_copy.mjs --check",
       "writeCommand": "node tool/copy/sync_native_copy.mjs --write",
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 60
+      "timeoutSeconds": 60,
+      "checkRequirements": {"executables": ["node"], "packages": []}
     },
     {
       "id": "copy.event-success-questionnaires",
@@ -993,19 +1000,21 @@
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 60
+      "timeoutSeconds": 60,
+      "checkRequirements": {"executables": ["node"], "packages": []}
     },
     {
       "id": "copy.structured-domain",
       "owner": "content_system",
-      "inputs": ["copy/structured_domain_copy_en.json", "tool/copy/sync_structured_domain_copy.dart", "tool/copy/templates/structured_domain_copy/**"],
+      "inputs": ["copy/structured_domain_copy_en.json", "tool/copy/sync_structured_domain_copy.dart", "tool/copy/templates/structured_domain_copy/**", "pubspec.yaml", "pubspec.lock"],
       "outputs": ["lib/l10n/generated/structured_domain_copy.g.dart", "lib/event_success/domain/event_success_coach.dart", "lib/event_success/domain/event_success_playbooks/library.dart", "lib/event_success/domain/event_success_playbooks/modules.dart", "lib/event_success/domain/event_success_playbooks/metrics.dart", "lib/event_policies/domain/event_policy/cancellation.dart", "lib/event_policies/domain/event_policy/cohort.dart", "lib/event_policies/domain/event_policy/settlement.dart"],
       "checkCommand": "dart run tool/copy/sync_structured_domain_copy.dart --check",
       "writeCommand": "dart run tool/copy/sync_structured_domain_copy.dart --write",
       "platforms": ["darwin", "linux"],
       "deterministic": true,
       "network": false,
-      "timeoutSeconds": 120
+      "timeoutSeconds": 120,
+      "checkRequirements": {"executables": ["dart"], "packages": [{"kind": "dart", "name": "analyzer", "from": ".dart_tool/package_config.json"}]}
     }
   ]
 }

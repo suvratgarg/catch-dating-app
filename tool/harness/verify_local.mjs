@@ -23,10 +23,12 @@
 
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
+import {pathToFileURL} from "node:url";
 import path from "node:path";
 import process from "node:process";
 
-import {deriveTargetWorkflows, extractSteps, workflowForTarget} from "./lib/workflow_steps.mjs";
+import {deriveTargetWorkflows, extractSteps, planCodegenFreshness, workflowForTarget} from "./lib/workflow_steps.mjs";
 import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
 
 const WORKFLOW_DIR = ".github/workflows";
@@ -80,6 +82,7 @@ function resolveTargets({base, head, mode, full, commitWindow}) {
   }
   return {
     targets: plan.operations?.ciTargets ?? [],
+    codegenIds: plan.operations?.codegenIds,
     changedPaths: plan.changedPaths ?? [],
     complete: plan.complete === true,
     mode: plan.mode,
@@ -117,19 +120,74 @@ function runPreflight(args, context) {
         (result.stderr || result.stdout));
     }
   }
+  const graph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const inventory = spawnSync("git", ["ls-files", "-t", "--cached", "--others",
+    "--exclude-standard", "-z"], {encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
+  if (inventory.status !== 0) throw new Error("Cannot inspect freshness source materialization.");
+  const files = inventory.stdout.split("\0").filter(Boolean);
+  const runtimes = new Map();
+  const freshnessChecks = planCodegenFreshness({graph, codegenIds: context.codegenIds,
+    repositoryPaths: files.map((file) => file.slice(2)),
+    sparsePaths: files.filter((file) => file.startsWith("S ")).map((file) => file.slice(2)),
+    fileAvailable: (file) => fs.existsSync(file) && fs.statSync(file).isFile(),
+    executableAvailable(executable) {
+      if (!runtimes.has(executable)) {
+        runtimes.set(executable, spawnSync(executable, ["--version"], {
+          encoding: "utf8", timeout: 15_000}).status === 0);
+      }
+      return runtimes.get(executable);
+    },
+    packageAvailable(dependency) {
+      try {
+        if (dependency.kind === "node") {
+          createRequire(path.resolve(dependency.from)).resolve(dependency.name);
+          return true;
+        }
+        const config = JSON.parse(fs.readFileSync(dependency.from, "utf8"));
+        const entry = config.packages.find((candidate) => candidate.name === dependency.name);
+        return entry && fs.existsSync(new URL(entry.rootUri,
+          pathToFileURL(path.resolve(dependency.from))));
+      } catch {
+        return false;
+      }
+    },
+  });
+  for (const check of freshnessChecks) {
+    if (!check.runnable) { check.status = "ci-only"; continue; }
+    const [executable, ...commandArgs] = check.command.trim().split(/\s+/u);
+    const result = spawnSync(executable, commandArgs, {encoding: "utf8",
+      timeout: check.timeoutSeconds * 1000, maxBuffer: 32 * 1024 * 1024});
+    check.status = result.status === 0 ? "passed" : "failed";
+    localRunnableChecks.push({codegenId: check.codegenId, command: check.command,
+      status: check.status});
+    if (result.status !== 0) {
+      throw new Error(`Freshness preflight failed for ${check.codegenId}: ${check.command}\n` +
+        (result.error?.message || result.stderr || result.stdout) +
+        `\nRegenerate with: ${check.writeCommand}`);
+    }
+  }
   const report = {
     baseSha: commitSha(args.base), headSha: commitSha(args.head),
     mode: context.mode, full: context.full, commitWindow: args.commitWindow,
     complete: true, changedPaths: context.changedPaths, targets: context.targets,
+    codegenIds: context.codegenIds, freshnessChecks,
+    freshnessComplete: freshnessChecks.every((check) => check.status === "passed"),
+    validationComplete: false,
     localRunnableChecks,
-    githubOnlyObligations: context.targets.map((target) => ({target,
-      reason: "Selected CI lane and its runtime checks require GitHub Actions."})),
+    githubOnlyObligations: [
+      ...freshnessChecks.filter((check) => check.status === "ci-only").map((check) => ({
+        codegenId: check.codegenId, command: check.command,
+        reason: check.reasons.join("; "),
+      })),
+      ...context.targets.map((target) => ({target,
+        reason: "Selected CI lane and its runtime checks require GitHub Actions."})),
+    ],
   };
   if (args.json) console.log(JSON.stringify(report, null, 2));
   else {
     console.log(`Structural preflight passed for ${report.baseSha}..${report.headSha} (${report.mode}).`);
-    console.log(`${localRunnableChecks.length} Node-only checks passed; ` +
-      `${report.githubOnlyObligations.length} selected CI lane(s) remain GitHub obligations.`);
+    console.log(`${localRunnableChecks.length} available structural/freshness checks passed; ` +
+      `${report.githubOnlyObligations.length} required check/lane(s) remain GitHub obligations.`);
   }
 }
 

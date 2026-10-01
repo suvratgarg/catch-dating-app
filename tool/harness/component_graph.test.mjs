@@ -689,6 +689,7 @@ test("authored contracts expand to every declared validation consumer", () => {
     "operations",
   ]);
   assert.deepEqual(result.operations.codegenIds, [
+    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
@@ -956,5 +957,55 @@ test("Flutter UI package selects both app builds and visual coverage without Rea
   }
   for (const target of ["admin", "marketing", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
+  }
+});
+
+
+test("freshness routing includes declared indirect inputs and preserves output obligations", () => {
+  const cases = [
+    ["tool/admin/callable_inventory.mjs", ["admin.callable-validators"]],
+    ["contracts/admin/admin_action_catalog.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/operations/common.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/embedded/event_offer_row.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/firestore/sales_quotes.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["admin/src/features/sales/api/salesRepository.ts", ["admin.callable-validators"]],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", ["admin.callable-validators"]],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.test.tsx", []],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.stories.tsx", []],
+    ["admin/src/generated/validators/adminCallableValidators.ts", ["admin.callable-validators"]],
+    ["website/src/shared/contracts/generated/joinWaitlistSchemas.ts", ["contracts.schema-projections"]],
+    ["tool/lib/repo_paths.mjs", ["copy.native", "copy.notification"]],
+    ["functions/package-lock.json", ["contracts.schema-projections"]],
+    ["pubspec.lock", ["copy.structured-domain"]],
+  ];
+  for (const [file, ids] of cases) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, file);
+      assert.deepEqual(result.operations.codegenIds, ids, `${file} ${mode}`);
+    }
+  }
+  const unknown = plan("unowned/generator-input.json");
+  assert.equal(unknown.complete, false);
+  assert.deepEqual(unknown.unknownPaths, ["unowned/generator-input.json"]);
+  assert.deepEqual(planAffected({graph, changedPaths: [], mode: "nightly", full: true})
+    .operations.codegenIds, graph.compileCodegen.map((entry) => entry.id).sort());
+});
+
+test("every generator requires explicit runtimes and package dependencies", () => {
+  assert.ok(graphSchema.$defs.codegen.required.includes("checkRequirements"));
+  assert.deepEqual(graphSchema.$defs.codegenRequirements.required, ["executables", "packages"]);
+  const cases = [
+    (entry) => { delete entry.checkRequirements; },
+    (entry) => { delete entry.checkRequirements.packages; },
+    (entry) => { entry.checkRequirements.executables = []; },
+    (entry) => { entry.checkRequirements.packages = [{kind: "node", name: "example", from: "../package.json"}]; },
+    (entry) => { entry.checkRequirements.executables = ["unsupported"]; },
+  ];
+  for (const mutate of cases) {
+    const invalid = clone(graph);
+    mutate(invalid.compileCodegen[0]);
+    assert.ok(validateComponentGraph(invalid).some((error) => error.includes("checkRequirements")));
+    assert.throws(() => planAffected({graph: invalid, changedPaths: []}), /checkRequirements/u);
   }
 });
