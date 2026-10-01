@@ -1,25 +1,18 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Provider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_tracking_settings_repository.g.dart';
 
-/// Rotates on every auth transition, including sign-out/re-entry to the same UID.
-/// Mutation/editor identity must not survive a previous authenticated session.
-final hostTrackingSessionProvider = Provider<Object>((ref) {
-  ref.watch(uidProvider);
-  return Object();
-});
-
 typedef HostTrackingSettingsScope = ({
   String accountId,
   String organizerId,
-  Object session,
+  AuthenticatedSession session,
 });
 
 /// Private manager settings. IDs are configuration, never account credentials.
@@ -129,10 +122,13 @@ Future<HostTrackingSettings> hostTrackingSettings(
   Ref ref,
   String organizerId,
 ) async {
-  final session = ref.watch(hostTrackingSessionProvider);
+  final authSession = ref.watch(authenticatedSessionProvider);
+  final session = !authSession.isLoading && !authSession.hasError
+      ? authSession.asData?.value
+      : null;
   final auth = ref.watch(uidProvider);
   final uid = !auth.isLoading && !auth.hasError ? auth.asData?.value : null;
-  if (uid == null || uid.isEmpty) {
+  if (uid == null || uid.isEmpty || session == null) {
     throw const SignInRequiredException('read tracking settings');
   }
   final result = await ref
@@ -142,7 +138,10 @@ Future<HostTrackingSettings> hostTrackingSettings(
       ref.read(uidProvider).isLoading ||
       ref.read(uidProvider).hasError ||
       ref.read(uidProvider).asData?.value != uid ||
-      !identical(ref.read(hostTrackingSessionProvider), session)) {
+      !identical(
+        ref.read(authenticatedSessionProvider).asData?.value,
+        session,
+      )) {
     throw const SignInRequiredException('read tracking settings');
   }
   return result;

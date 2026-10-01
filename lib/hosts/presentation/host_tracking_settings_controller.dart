@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -37,7 +38,10 @@ class HostTrackingSettingsController {
           auth.hasError ||
           requireSignedInUid(ref, action: 'save tracking settings') !=
               scope.accountId ||
-          !identical(ref.read(hostTrackingSessionProvider), scope.session) ||
+          !identical(
+            ref.read(authenticatedSessionProvider).asData?.value,
+            scope.session,
+          ) ||
           current.organizerId != scope.organizerId) {
         throw const SignInRequiredException('save tracking settings');
       }

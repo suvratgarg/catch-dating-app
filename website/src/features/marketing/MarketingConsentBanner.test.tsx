@@ -8,8 +8,15 @@ test("analytics consent is separate from advertising and remains revocable", () 
   const changed = vi.fn();
   window.addEventListener(marketingConsentChangedEvent, changed);
   render(<MarketingConsentBanner />);
-  fireEvent.click(screen.getByRole("button", {name: "Analytics only"}));
-  expect(getMarketingConsent()).toMatchObject({analytics: true, marketing: false});
+  fireEvent.click(screen.getByRole("button", {name: "Allow analytics"}));
+  expect(getMarketingConsent()).toMatchObject({choice: "analytics", analytics: true, marketing: false});
+  expect(screen.queryByRole("button", {name: "Accept all"})).toBeNull();
+  expect(window.dataLayer).toContainEqual(["consent", "update", {
+    analytics_storage: "granted",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  }]);
   fireEvent.click(screen.getByRole("button", {name: "Privacy choices"}));
   fireEvent.click(screen.getByRole("button", {name: "Essential only"}));
   expect(getMarketingConsent()).toMatchObject({analytics: false, marketing: false});

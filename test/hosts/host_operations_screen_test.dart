@@ -121,6 +121,7 @@ part 'host_operations_customer_communications_tests.dart';
 part 'host_operations_customers_test_support.dart';
 part 'host_operations_customer_state_tests.dart';
 part 'host_operations_analytics_team_tests.dart';
+part 'host_operations_presence_tests.dart';
 part 'host_operations_team_failures_tests.dart';
 part 'support/host_operations_screen_test_support.dart';
 
@@ -152,6 +153,7 @@ void main() {
   _registerHostOperationsCustomerCommunicationsTests();
   _registerHostOperationsCustomerStateTests();
   _registerHostOperationsAnalyticsTeamTests();
+  _registerHostOperationsPresenceTests();
   _registerHostOperationsTeamFailuresTests();
 }
 

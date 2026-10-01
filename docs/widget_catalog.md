@@ -905,7 +905,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:214</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:266</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostTrackingSettingsSection</code> | <code>lib/hosts/presentation/host_tracking_settings_section.dart:17</code> | — | — | Settings remain in the organiser Insights workspace; server owns eligibility. |
+| <code>HostTrackingSettingsSection</code> | <code>lib/hosts/presentation/host_tracking_settings_section.dart:18</code> | — | — | Settings remain in the organiser Insights workspace; server owns eligibility. |
 | <code>HostedEventPolicySection</code> | <code>lib/hosts/presentation/hosted_event_policy_section.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostedEventScheduleSection</code> | <code>lib/hosts/presentation/hosted_event_schedule_section.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>HostBroadcastComposerSheet</code> | <code>lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart:57</code> | — | — | No class documentation or registry summary. |

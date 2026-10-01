@@ -12,7 +12,7 @@ export function MarketingConsentBanner() {
   const [consent, setConsent] = useState(() => getMarketingConsent());
 
   const [editing, setEditing] = useState(false);
-  const choose = (choice: "accepted" | "analytics" | "essential") => {
+  const choose = (choice: "analytics" | "essential") => {
     setConsent(setMarketingConsent(choice));
     setEditing(false);
   };
@@ -32,12 +32,8 @@ export function MarketingConsentBanner() {
           <Button
             size="small"
             type="button"
-            onClick={() => choose("accepted")}
-          >{websiteCopy["marketingconsentbanner_0327"]}</Button>
-          <Button size="small" type="button" variant="ghost"
-            onClick={() => choose("analytics")}>
-            {marketingConsentPreferencesCopy.analyticsOnly}
-          </Button>
+            onClick={() => choose("analytics")}
+          >{marketingConsentPreferencesCopy.allowAnalytics}</Button>
           <Button
             size="small"
             type="button"

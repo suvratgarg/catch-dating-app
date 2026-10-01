@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -20,9 +21,12 @@ class HostTrackingSettingsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
-    final accountId = auth.isSettledData ? auth.value : null;
-    if (accountId == null || accountId.isEmpty) {
+    final auth = catchAsyncStateFromAsyncValue(
+      ref.watch(authenticatedSessionProvider),
+    );
+    final session = auth.isSettledData ? auth.value : null;
+    final accountId = session?.uid;
+    if (session == null || accountId == null || accountId.isEmpty) {
       return CatchSection.content(
         title: context.l10n.hostsTrackingSettingsTitle,
         child: auth.isLoading
@@ -38,11 +42,12 @@ class HostTrackingSettingsSection extends ConsumerWidget {
     final scope = (
       accountId: accountId,
       organizerId: organizerId,
-      session: ref.watch(hostTrackingSessionProvider),
+      session: session,
     );
     final saveMutation = HostTrackingSettingsController.saveMutation(scope);
-    ref.listen(hostTrackingSessionProvider, (previous, next) {
-      if (!identical(scope.session, next)) saveMutation.reset(ref);
+    ref.listen(authenticatedSessionProvider, (previous, next) {
+      if (!identical(scope.session, next.asData?.value))
+        saveMutation.reset(ref);
     });
     final settings = ref.watch(hostTrackingSettingsProvider(organizerId));
     final settingsState = catchAsyncStateFromAsyncValue(settings);
@@ -101,7 +106,7 @@ class HostTrackingSettingsSection extends ConsumerWidget {
                 );
                 if (!ref.context.mounted ||
                     !identical(
-                      ref.read(hostTrackingSessionProvider),
+                      ref.read(authenticatedSessionProvider).asData?.value,
                       scope.session,
                     )) {
                   return;

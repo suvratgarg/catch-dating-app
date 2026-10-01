@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -389,7 +390,7 @@ HostTrackingSettingsScope _scope(
 ) => (
   accountId: account,
   organizerId: organizer,
-  session: container.read(hostTrackingSessionProvider),
+  session: container.read(authenticatedSessionProvider).asData!.value,
 );
 HostTrackingSettings _settings(String organizer, {int revision = 7}) =>
     HostTrackingSettings(

@@ -118,7 +118,7 @@ final class HostTrackingSettingsProvider
 }
 
 String _$hostTrackingSettingsHash() =>
-    r'a6fb25f1204cc61790ebdce605b6ba2fd96ffde1';
+    r'5732a90fb8522964a2fa739ad0d5240dd383374b';
 
 final class HostTrackingSettingsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostTrackingSettings>, String> {
