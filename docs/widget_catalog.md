@@ -345,7 +345,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OrganizerPosterArtwork</code> | <code>lib/clubs/shared/catch_organizer_poster.dart:247</code> | — | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
 | <code>ClubHostIdentityLine</code> | <code>lib/clubs/shared/club_identity_atoms.dart:60</code> | — | — | No class documentation or registry summary. |
 | <code>ClubTagWrap</code> | <code>lib/clubs/shared/club_identity_atoms.dart:36</code> | — | — | No class documentation or registry summary. |
-| <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:23</code> | — | — | Consumer-only process bootstrap. |
+| <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:25</code> | — | — | Consumer-only process bootstrap. |
 | <code>CelebrationDetailRow</code> | <code>lib/core/celebration/catch_celebration_screen.dart:533</code> | — | — | No class documentation or registry summary. |
 | <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/catch_celebration_screen.dart:496</code> | — | — | No class documentation or registry summary. |
 | <code>CelebrationIcon</code> | <code>lib/core/celebration/catch_celebration_screen.dart:476</code> | — | — | No class documentation or registry summary. |
@@ -1202,7 +1202,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailScreen</code> | <code>lib/clubs/presentation/detail/club_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>ConsumerApp</code> | <code>lib/consumer_app.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:167</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
+| <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:172</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
 | <code>CatchCelebrationScreen</code> | <code>lib/core/celebration/catch_celebration_screen.dart:41</code> | — | — | No class documentation or registry summary. |
 | <code>CatchStartupLoadingScreen</code> | <code>lib/core/widgets/catch_startup_loading_screen.dart:9</code> | — | — | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. |
 | <code>OrderedPhotoManagerScreen</code> | <code>lib/core/widgets/ordered_photo_picker.dart:166</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
