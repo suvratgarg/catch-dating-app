@@ -220,6 +220,8 @@ const retentionCollections = [
   "programRoomBlocks",
   "programFunctions",
   "transportTrips",
+  "workspaceFieldAssertions",
+  "workspaceFieldDecisions",
 ] as const;
 
 function shortId(docId: string): string {
@@ -239,6 +241,9 @@ function retentionScrub(
     revision: nextRevision(
       typeof data.revision === "number" ? data.revision : 0, now)};
   switch (collection) {
+  case "workspaceFieldAssertions":
+  case "workspaceFieldDecisions":
+    return null; // Historical field values are PII, not operational counts.
   case "programGuests":
     return {
       ...marker,
@@ -246,6 +251,7 @@ function retentionScrub(
       phoneE164: null,
       email: null,
       externalReference: null,
+      fieldSelections: {}, fieldConflicts: {},
     };
   case "programHouseholds":
     return {
@@ -254,6 +260,7 @@ function retentionScrub(
       primaryContactName: null,
       primaryPhoneE164: null,
       primaryEmail: null,
+      fieldSelections: {}, fieldConflicts: {},
     };
   case "programGuestGroups":
     return {...marker, label: `Group ${shortId(docId)}`};
@@ -384,6 +391,14 @@ export async function anonymizeProgram(
         let pending = 0;
         for (const doc of snap.docs) {
           const data = doc.data();
+          if (["workspaceFieldAssertions", "workspaceFieldDecisions"]
+            .includes(collection) &&
+              (data.workspaceRef?.kind !== "program" ||
+                data.workspaceRef.id !== programId ||
+                data.organizerId !== claimed.program.organizerId)) {
+            throw new HttpsError("failed-precondition",
+              "Field assertion retention scope needs reconciliation.");
+          }
           if (data.anonymizedAt) continue; // Idempotent re-entry.
           if (collection === "programTravelLegs") {
             const leg = data as ProgramTravelLegDocument;

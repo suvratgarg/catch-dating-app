@@ -6,6 +6,9 @@ import type {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
+import {requiresCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
+
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
   womenInterestedInMen: "womenInterestedInMen",
@@ -369,15 +372,29 @@ export function quoteAttendeeCancellation(params: {
   };
 }
 
+/** Entitlement never waives event review, invitation, inventory or payment. */
+export function assertPolicyAllowsMembership(params: {
+  policy: EventPolicyBundleDocument;
+  hasActiveCommunityMembership?: boolean;
+}): void {
+  if (requiresCommunityMembership(params.policy) &&
+      params.hasActiveCommunityMembership !== true) {
+    throw new HttpsError("failed-precondition",
+      "Approved community membership is required to book this event.");
+  }
+}
+
 export function assertPolicyAllowsSignup(params: {
   policy: EventPolicyBundleDocument;
   cohortId: string;
   roster: EventRosterSnapshot;
   hasValidInvite?: boolean;
   hasHostApproval?: boolean;
+  hasActiveCommunityMembership?: boolean;
   admissionMode?: "general" | "crossPathsPair";
 }) {
   const admission = params.policy.admission;
+  assertPolicyAllowsMembership(params);
   if (admission.inviteRequired && params.hasValidInvite !== true) {
     throw new HttpsError(
       "failed-precondition",

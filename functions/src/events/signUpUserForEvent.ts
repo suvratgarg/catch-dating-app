@@ -1,3 +1,6 @@
+import {communityMembershipId, requiresCommunityMembership,
+  readCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {prepareNativePaidBooking, NativePaidBooking} from
   "../payments/nativeBooking";
 import {preparePairSeatTransition} from "../crossPaths/pairSeatAuthority";
@@ -172,6 +175,7 @@ export async function signUpUserForEvent(
       participationSnap.data() as {
         status?: string;
         paymentId?: string;
+        communityMembershipAtSignup?: unknown;
         inviteLinkId?: string | null;
         inviteSource?: string | null;
       } :
@@ -364,6 +368,9 @@ export async function signUpUserForEvent(
         (reservedRoster.crossPathsPairHeldCount ?? 0) - 1
       ) : reservedRoster.crossPathsPairHeldCount,
     } : reservedRoster;
+    const membership = requiresCommunityMembership(policy) ?
+      await readCommunityMembership({db, tx,
+        organizerId: event.organizerId ?? event.clubId, uid: userId}) : null;
     assertPolicyAllowsSignup({
       policy,
       cohortId,
@@ -371,6 +378,7 @@ export async function signUpUserForEvent(
       hasValidInvite: options.hasValidInvite,
       hasHostApproval: options.hasHostApproval,
       admissionMode: pairHold ? "crossPathsPair" : "general",
+      hasActiveCommunityMembership: membership?.state === "active",
     });
 
     const scheduleClaim = await prepareUserEventScheduleClaimInTransaction(
@@ -478,6 +486,13 @@ export async function signUpUserForEvent(
         cohortAtSignup: cohortId,
         paymentId,
       }),
+      ...(membership ? {communityMembershipAtSignup: {
+        membershipId: communityMembershipId(event.organizerId ?? event.clubId,
+          userId), revision: membership.revision,
+        decisionId: membership.lastDecisionId,
+      }} : existingParticipation?.communityMembershipAtSignup ? {
+        communityMembershipAtSignup: admin.firestore.FieldValue.delete(),
+      } : {}),
       ...inviteAttributionWriteFields(attribution.write),
     }, {merge: true});
     incrementInviteLinkCounterInTransaction({

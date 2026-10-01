@@ -550,6 +550,116 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Current manager-controlled organizer community entitlement. Following, contact linkage, booking and attendance are separate.
+ */
+export interface OrganizerCommunityMembershipDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  uid: string;
+  state: "active" | "revoked";
+  revision: number;
+  source: {
+    applicationId: string;
+    responseId: string;
+    formVersionId: string;
+    applicationRevision: number;
+  };
+  lastDecisionId: string;
+  activatedAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Immutable exact-request membership decision; replay never restores an older current entitlement.
+ */
+export interface OrganizerCommunityMembershipDecisionDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  uid: string;
+  membershipId: string;
+  requestId: string;
+  requestHash: string;
+  actorUid: string;
+  action: "grant" | "revoke";
+  reason: string;
+  previousState: "none" | "active" | "revoked";
+  expectedRevision: number;
+  resultingRevision: number;
+  source: {
+    applicationId: string;
+    responseId: string;
+    formVersionId: string;
+    applicationRevision: number;
+  };
+  decidedAtMillis: number;
+}
+
+/**
+ * Immutable per-field acquisition evidence, explicitly scoped to an existing program or community relationship. A contact pointer or UID does not disclose fields or verify endpoint ownership.
+ */
+export interface WorkspaceFieldAssertionDocument {
+  schemaVersion: 1;
+  workspaceRef:
+    | {
+        kind: "program";
+        id: string;
+      }
+    | {
+        kind: "community";
+        id: string;
+      };
+  organizerId: string;
+  relationshipRef: {
+    kind: "programGuest" | "programHousehold" | "communityContact";
+    id: string;
+  };
+  fieldKey: "displayName" | "phoneE164" | "email";
+  value: string | null;
+  sourceKind: "manualEntry" | "manifestRow";
+  sourceId: string;
+  sourceVersion: number;
+  actorUid: string;
+  observedAtMillis: number;
+  disclosureBasis: "workspaceHostAcquisition";
+  identityEvidenceRef: null;
+  /**
+   * Exact program retention index; null for community assertions. Must agree with workspaceRef.id in the domain writer.
+   */
+  programId: string | null;
+}
+
+/**
+ * Immutable explicit field-selection decision. Records the authorized reviewer and exact before/after assertion pointers without copying field values or granting identity proof.
+ */
+export interface WorkspaceFieldDecisionDocument {
+  schemaVersion: 1;
+  workspaceRef:
+    | {
+        kind: "program";
+        id: string;
+      }
+    | {
+        kind: "community";
+        id: string;
+      };
+  organizerId: string;
+  /**
+   * Exact program retention index; null for community assertions. Must agree with workspaceRef.id in the domain writer.
+   */
+  programId: string | null;
+  relationshipRef: {
+    kind: "programGuest" | "programHousehold" | "communityContact";
+    id: string;
+  };
+  fieldKey: "displayName" | "phoneE164" | "email";
+  actorUid: string;
+  observedAtMillis: number;
+  selectedAssertionId: string;
+  previousAssertionId: string | null;
+  relationshipRevision: number;
+}
+
+/**
  * Private immutable Catch-owned incoming message and status receipts. Exact configured WABA and sender binding, no organizer authority, no outgoing action. Bounded text expires after 30 days. Status facts remain individual events rather than an arrival-ordered delivery projection.
  */
 export interface CatchWhatsappWebhookEventDocument {
@@ -11194,6 +11304,14 @@ export interface EventParticipationDocument {
    * Server time when invite attribution was first attached to the roster edge.
    */
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.
+   */
+  communityMembershipAtSignup?: {
+    membershipId: string;
+    revision: number;
+    decisionId: string;
+  };
 }
 
 /**
@@ -11652,6 +11770,31 @@ export interface ProgramGuestDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Current values are a projection of these exact immutable same-program assertions. Absent fields have unknown acquisition provenance.
+   */
+  fieldSelections?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
+  /**
+   * Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger.
+   */
+  fieldConflicts?: {
+    /**
+     * @maxItems 20
+     */
+    displayName?: string[];
+    /**
+     * @maxItems 20
+     */
+    phoneE164?: string[];
+    /**
+     * @maxItems 20
+     */
+    email?: string[];
+  };
 }
 
 /**
@@ -11733,6 +11876,25 @@ export interface ProgramHouseholdDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  fieldSelections?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
+  fieldConflicts?: {
+    /**
+     * @maxItems 20
+     */
+    displayName?: string[];
+    /**
+     * @maxItems 20
+     */
+    phoneE164?: string[];
+    /**
+     * @maxItems 20
+     */
+    email?: string[];
+  };
 }
 
 /**

@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/decide_organizer_community_membership_payload.schema.json",
+  "title": "DecideOrganizerCommunityMembershipCallablePayload",
+  "description": "Explicit manager decision bound to an approved organizer-target native application and a reviewed membership revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "requestId",
+    "action",
+    "expectedRevision",
+    "applicationId",
+    "expectedApplicationRevision",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "action": {
+      "enum": [
+        "grant",
+        "revoke"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740989
+    },
+    "applicationId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedApplicationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "grant"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "applicationId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "expectedApplicationRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740990
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "applicationId": {
+            "type": "null"
+          },
+          "expectedApplicationRevision": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

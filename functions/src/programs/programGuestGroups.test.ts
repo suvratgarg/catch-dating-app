@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
@@ -18,7 +20,7 @@ const group = (patch: Partial<FakeData> = {}): FakeData => ({
   dimension: "side", sortOrder: 0, memberCount: 0, hotelId: null,
   createdAt: now, updatedAt: now, revision: 1, ...patch,
 });
-const seed = () => ({...baseSeed(),
+const seed = () => seedWorkspaceFieldAssertions({...baseSeed(),
   "programGuestGroups/side-a": group(),
   "programGuestGroups/company-b": group({label: "Acme", dimension: "company"}),
 });

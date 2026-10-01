@@ -18,6 +18,7 @@ final class UpsertProgramGuestCallableRequest {
     this.email,
     this.externalReference,
     this.rsvpStatus,
+    this.fieldChoices,
   });
 
   final String programId;
@@ -30,6 +31,7 @@ final class UpsertProgramGuestCallableRequest {
   final String? email;
   final String? externalReference;
   final String? rsvpStatus;
+  final Map<String, Object?>? fieldChoices;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
@@ -42,5 +44,6 @@ final class UpsertProgramGuestCallableRequest {
     'email': ?email,
     'externalReference': ?externalReference,
     'rsvpStatus': ?rsvpStatus,
+    'fieldChoices': ?fieldChoices,
   };
 }

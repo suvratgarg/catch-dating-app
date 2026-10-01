@@ -251,3 +251,48 @@ function policy(
     settlement: {hostPayoutTiming: "afterEventCompletion"},
   };
 }
+
+
+test("membership does not waive per-event review or capacity", () => {
+  const gated = policy("standard");
+  gated.admission.membershipRequired = true;
+  gated.admission.manualApprovalRequired = true;
+  const roster = {
+    totalBooked: 0,
+    bookedCountsByCohort: {},
+    waitlistedCountsByCohort: {},
+  };
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster,
+        hasActiveCommunityMembership: true,
+      }),
+    /Request to join/
+  );
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster: {...roster, totalBooked: 20},
+        hasActiveCommunityMembership: true,
+        hasHostApproval: true,
+      }),
+    /now full/
+  );
+  gated.admission.membershipRequired = false;
+  gated.admission.format = "membersOnly";
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster,
+        hasHostApproval: true,
+      }),
+    /Approved community membership/
+  );
+});

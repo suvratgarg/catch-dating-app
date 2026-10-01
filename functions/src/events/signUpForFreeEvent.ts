@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -20,6 +22,7 @@ import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {
   assertPolicyAllowsSignup,
+  assertPolicyAllowsMembership,
   cohortIdForUser,
   eventPolicyFromEvent,
   hasAcceptedWaitlistOfferAccess,
@@ -140,8 +143,14 @@ export async function signUpForFreeEventHandler(
       "This event requires payment. Use the payment flow instead."
     );
   }
+  const hasActiveCommunityMembership = await hasEventCommunityMembership({
+    db, organizerId: event.organizerId ?? event.clubId, uid, policy,
+  });
+  // Pair holds are inventory, never community entitlement.
+  assertPolicyAllowsMembership({policy, hasActiveCommunityMembership});
   if (!pairHold) {
     assertPolicyAllowsSignup({
+      hasActiveCommunityMembership,
       policy,
       cohortId,
       roster,

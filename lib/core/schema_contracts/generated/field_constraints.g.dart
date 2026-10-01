@@ -28236,6 +28236,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const decideOrganizerCommunityMembershipCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.action',
+    required: true,
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadApplicationId = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadExpectedApplicationRevision = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.expectedApplicationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740989,
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.reason',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseCurrentRevision = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.currentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseCurrentState = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.currentState',
+    required: true,
+    enumValues: <String>['active', 'revoked'],
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseDecisionId = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.decisionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocmd_[a-f0-9]{64}\$',
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseDecisionRevision = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.decisionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseMembershipId = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocm_[a-f0-9]{64}\$',
+  );
+
+  static const decideOrganizerCommunityMembershipCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'decideOrganizerCommunityMembershipCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const deleteClubCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'deleteClubCallablePayload.clubId',
     maxLength: 180,
@@ -49330,6 +49432,28 @@ abstract final class CatchContractConstraints {
     maxLength: 120,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const eventParticipationDocumentCommunityMembershipAtSignupDecisionId = CatchContractFieldConstraints(
+    path: 'eventParticipationDocument.communityMembershipAtSignup.decisionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocmd_[a-f0-9]{64}\$',
+  );
+
+  static const eventParticipationDocumentCommunityMembershipAtSignupMembershipId = CatchContractFieldConstraints(
+    path: 'eventParticipationDocument.communityMembershipAtSignup.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocm_[a-f0-9]{64}\$',
+  );
+
+  static const eventParticipationDocumentCommunityMembershipAtSignupRevision = CatchContractFieldConstraints(
+    path: 'eventParticipationDocument.communityMembershipAtSignup.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
   );
 
   static const eventParticipationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -97448,6 +97572,223 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerCommunityMembershipDecisionDocumentAction = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.action',
+    required: true,
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentDecidedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.decidedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentExpectedRevision = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740989,
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentMembershipId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocm_[a-f0-9]{64}\$',
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentPreviousState = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.previousState',
+    required: true,
+    enumValues: <String>['none', 'active', 'revoked'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentReason = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.reason',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentResultingRevision = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.resultingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentSourceApplicationId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.source.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentSourceApplicationRevision = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.source.applicationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentSourceFormVersionId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.source.formVersionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.source.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDecisionDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDecisionDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentActivatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.activatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCommunityMembershipDocumentLastDecisionId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.lastDecisionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ocmd_[a-f0-9]{64}\$',
+  );
+
+  static const organizerCommunityMembershipDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const organizerCommunityMembershipDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerCommunityMembershipDocumentSourceApplicationId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.source.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentSourceApplicationRevision = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.source.applicationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const organizerCommunityMembershipDocumentSourceFormVersionId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.source.formVersionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.source.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentState = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.state',
+    required: true,
+    enumValues: <String>['active', 'revoked'],
+  );
+
+  static const organizerCommunityMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunityMembershipDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerCommunityMembershipDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerContactChannelStateDocumentAdminSuppressed = CatchContractFieldConstraints(
     path: 'organizerContactChannelStateDocument.adminSuppressed',
     valueTypes: <String>['boolean'],
@@ -123637,6 +123978,69 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programGuestDocumentFieldConflictsDisplayName = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.displayName',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentFieldConflictsDisplayNameItems = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.displayName.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentFieldConflictsEmail = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.email',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentFieldConflictsEmailItems = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.email.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentFieldConflictsPhoneE164 = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.phoneE164',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentFieldConflictsPhoneE164Items = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldConflicts.phoneE164.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentFieldSelectionsDisplayName = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldSelections.displayName',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentFieldSelectionsEmail = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldSelections.email',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentFieldSelectionsPhoneE164 = CatchContractFieldConstraints(
+    path: 'programGuestDocument.fieldSelections.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
   static const programGuestDocumentGroupIds = CatchContractFieldConstraints(
     path: 'programGuestDocument.groupIds',
     required: true,
@@ -124038,6 +124442,258 @@ abstract final class CatchContractConstraints {
     path: 'programGuestListCallableResponse.guests.items.externalReference',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativeAssertionIds = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternativeAssertionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativeAssertionIdsItems = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternativeAssertionIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternatives = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.assertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsObservedAtMillis = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceVersion = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsValue = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.value',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.assertionId',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameSourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameState = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.state',
+    required: true,
+    enumValues: <String>['available', 'cleared', 'unknown', 'restricted'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativeAssertionIds = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternativeAssertionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativeAssertionIdsItems = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternativeAssertionIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternatives = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.assertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsObservedAtMillis = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceVersion = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsValue = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.value',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.assertionId',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailSourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityEmailState = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.email.state',
+    required: true,
+    enumValues: <String>['available', 'cleared', 'unknown', 'restricted'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativeAssertionIds = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternativeAssertionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativeAssertionIdsItems = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternativeAssertionIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164Alternatives = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.assertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsObservedAtMillis = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceVersion = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsValue = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.value',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AssertionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.assertionId',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164SourceKind = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164State = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.state',
+    required: true,
+    enumValues: <String>['available', 'cleared', 'unknown', 'restricted'],
   );
 
   static const programGuestListCallableResponseGuestsItemsGroupIds = CatchContractFieldConstraints(
@@ -124757,6 +125413,69 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['whatsapp', 'sms', 'email', 'none'],
+  );
+
+  static const programHouseholdDocumentFieldConflictsDisplayName = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.displayName',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programHouseholdDocumentFieldConflictsDisplayNameItems = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.displayName.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programHouseholdDocumentFieldConflictsEmail = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.email',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programHouseholdDocumentFieldConflictsEmailItems = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.email.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programHouseholdDocumentFieldConflictsPhoneE164 = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.phoneE164',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programHouseholdDocumentFieldConflictsPhoneE164Items = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldConflicts.phoneE164.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programHouseholdDocumentFieldSelectionsDisplayName = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldSelections.displayName',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programHouseholdDocumentFieldSelectionsEmail = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldSelections.email',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const programHouseholdDocumentFieldSelectionsPhoneE164 = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.fieldSelections.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
   );
 
   static const programHouseholdDocumentLabel = CatchContractFieldConstraints(
@@ -151802,6 +152521,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertProgramGuestCallablePayloadFieldChoicesDisplayName = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestCallablePayload.fieldChoices.displayName',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const upsertProgramGuestCallablePayloadFieldChoicesEmail = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestCallablePayload.fieldChoices.email',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const upsertProgramGuestCallablePayloadFieldChoicesPhoneE164 = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestCallablePayload.fieldChoices.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
   static const upsertProgramGuestCallablePayloadGroupIds = CatchContractFieldConstraints(
     path: 'upsertProgramGuestCallablePayload.groupIds',
     valueTypes: <String>['array'],
@@ -151987,6 +152724,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const upsertProgramHouseholdCallablePayloadFieldChoicesDisplayName = CatchContractFieldConstraints(
+    path: 'upsertProgramHouseholdCallablePayload.fieldChoices.displayName',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const upsertProgramHouseholdCallablePayloadFieldChoicesEmail = CatchContractFieldConstraints(
+    path: 'upsertProgramHouseholdCallablePayload.fieldChoices.email',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const upsertProgramHouseholdCallablePayloadFieldChoicesPhoneE164 = CatchContractFieldConstraints(
+    path: 'upsertProgramHouseholdCallablePayload.fieldChoices.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
   );
 
   static const upsertProgramHouseholdCallablePayloadHouseholdId = CatchContractFieldConstraints(
@@ -155631,6 +156386,198 @@ abstract final class CatchContractConstraints {
     path: 'withdrawParticipantMessagingPermissionCallableResponse.replayed',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const workspaceFieldAssertionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentDisclosureBasis = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.disclosureBasis',
+    required: true,
+  );
+
+  static const workspaceFieldAssertionDocumentFieldKey = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.fieldKey',
+    required: true,
+    enumValues: <String>['displayName', 'phoneE164', 'email'],
+  );
+
+  static const workspaceFieldAssertionDocumentObservedAtMillis = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceFieldAssertionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentProgramId = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentRelationshipRefId = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.relationshipRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentRelationshipRefKind = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.relationshipRef.kind',
+    required: true,
+    enumValues: <String>['programGuest', 'programHousehold', 'communityContact'],
+  );
+
+  static const workspaceFieldAssertionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const workspaceFieldAssertionDocumentSourceId = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.sourceId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow'],
+  );
+
+  static const workspaceFieldAssertionDocumentSourceVersion = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.sourceVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceFieldAssertionDocumentValue = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.value',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentWorkspaceRefId = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.workspaceRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldAssertionDocumentWorkspaceRefKind = CatchContractFieldConstraints(
+    path: 'workspaceFieldAssertionDocument.workspaceRef.kind',
+    required: true,
+  );
+
+  static const workspaceFieldDecisionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldDecisionDocumentFieldKey = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.fieldKey',
+    required: true,
+    enumValues: <String>['displayName', 'phoneE164', 'email'],
+  );
+
+  static const workspaceFieldDecisionDocumentObservedAtMillis = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceFieldDecisionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldDecisionDocumentPreviousAssertionId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.previousAssertionId',
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const workspaceFieldDecisionDocumentProgramId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldDecisionDocumentRelationshipRefId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.relationshipRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldDecisionDocumentRelationshipRefKind = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.relationshipRef.kind',
+    required: true,
+    enumValues: <String>['programGuest', 'programHousehold', 'communityContact'],
+  );
+
+  static const workspaceFieldDecisionDocumentRelationshipRevision = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.relationshipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceFieldDecisionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const workspaceFieldDecisionDocumentSelectedAssertionId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.selectedAssertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wfa_[a-f0-9]{64}\$',
+  );
+
+  static const workspaceFieldDecisionDocumentWorkspaceRefId = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.workspaceRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceFieldDecisionDocumentWorkspaceRefKind = CatchContractFieldConstraints(
+    path: 'workspaceFieldDecisionDocument.workspaceRef.kind',
+    required: true,
   );
 
   static const all = <String, CatchContractFieldConstraints>{
@@ -159491,6 +160438,20 @@ abstract final class CatchContractConstraints {
     'crossPathsSuggestionExposureDocument.shownAt._nanoseconds': crossPathsSuggestionExposureDocumentShownAtNanoseconds,
     'crossPathsSuggestionExposureDocument.shownAt._seconds': crossPathsSuggestionExposureDocumentShownAtSeconds,
     'crossPathsSuggestionExposureDocument.viewerUid': crossPathsSuggestionExposureDocumentViewerUid,
+    'decideOrganizerCommunityMembershipCallablePayload.action': decideOrganizerCommunityMembershipCallablePayloadAction,
+    'decideOrganizerCommunityMembershipCallablePayload.applicationId': decideOrganizerCommunityMembershipCallablePayloadApplicationId,
+    'decideOrganizerCommunityMembershipCallablePayload.expectedApplicationRevision': decideOrganizerCommunityMembershipCallablePayloadExpectedApplicationRevision,
+    'decideOrganizerCommunityMembershipCallablePayload.expectedRevision': decideOrganizerCommunityMembershipCallablePayloadExpectedRevision,
+    'decideOrganizerCommunityMembershipCallablePayload.organizerId': decideOrganizerCommunityMembershipCallablePayloadOrganizerId,
+    'decideOrganizerCommunityMembershipCallablePayload.reason': decideOrganizerCommunityMembershipCallablePayloadReason,
+    'decideOrganizerCommunityMembershipCallablePayload.requestId': decideOrganizerCommunityMembershipCallablePayloadRequestId,
+    'decideOrganizerCommunityMembershipCallablePayload.uid': decideOrganizerCommunityMembershipCallablePayloadUid,
+    'decideOrganizerCommunityMembershipCallableResponse.currentRevision': decideOrganizerCommunityMembershipCallableResponseCurrentRevision,
+    'decideOrganizerCommunityMembershipCallableResponse.currentState': decideOrganizerCommunityMembershipCallableResponseCurrentState,
+    'decideOrganizerCommunityMembershipCallableResponse.decisionId': decideOrganizerCommunityMembershipCallableResponseDecisionId,
+    'decideOrganizerCommunityMembershipCallableResponse.decisionRevision': decideOrganizerCommunityMembershipCallableResponseDecisionRevision,
+    'decideOrganizerCommunityMembershipCallableResponse.membershipId': decideOrganizerCommunityMembershipCallableResponseMembershipId,
+    'decideOrganizerCommunityMembershipCallableResponse.replayed': decideOrganizerCommunityMembershipCallableResponseReplayed,
     'deleteClubCallablePayload.clubId': deleteClubCallablePayloadClubId,
     'deletedUserTombstoneDocument.completedAt._nanoseconds': deletedUserTombstoneDocumentCompletedAtNanoseconds,
     'deletedUserTombstoneDocument.completedAt._seconds': deletedUserTombstoneDocumentCompletedAtSeconds,
@@ -162304,6 +163265,9 @@ abstract final class CatchContractConstraints {
     'eventParticipationDocument.cancelledAt._seconds': eventParticipationDocumentCancelledAtSeconds,
     'eventParticipationDocument.clubId': eventParticipationDocumentClubId,
     'eventParticipationDocument.cohortAtSignup': eventParticipationDocumentCohortAtSignup,
+    'eventParticipationDocument.communityMembershipAtSignup.decisionId': eventParticipationDocumentCommunityMembershipAtSignupDecisionId,
+    'eventParticipationDocument.communityMembershipAtSignup.membershipId': eventParticipationDocumentCommunityMembershipAtSignupMembershipId,
+    'eventParticipationDocument.communityMembershipAtSignup.revision': eventParticipationDocumentCommunityMembershipAtSignupRevision,
     'eventParticipationDocument.createdAt._nanoseconds': eventParticipationDocumentCreatedAtNanoseconds,
     'eventParticipationDocument.createdAt._seconds': eventParticipationDocumentCreatedAtSeconds,
     'eventParticipationDocument.deletedAt._nanoseconds': eventParticipationDocumentDeletedAtNanoseconds,
@@ -168814,6 +169778,35 @@ abstract final class CatchContractConstraints {
     'organizerCommunicationPreferenceDocument.whatsappPurposes.marketing.termsVersion': organizerCommunicationPreferenceDocumentWhatsappPurposesMarketingTermsVersion,
     'organizerCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._seconds': organizerCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtSeconds,
+    'organizerCommunityMembershipDecisionDocument.action': organizerCommunityMembershipDecisionDocumentAction,
+    'organizerCommunityMembershipDecisionDocument.actorUid': organizerCommunityMembershipDecisionDocumentActorUid,
+    'organizerCommunityMembershipDecisionDocument.decidedAtMillis': organizerCommunityMembershipDecisionDocumentDecidedAtMillis,
+    'organizerCommunityMembershipDecisionDocument.expectedRevision': organizerCommunityMembershipDecisionDocumentExpectedRevision,
+    'organizerCommunityMembershipDecisionDocument.membershipId': organizerCommunityMembershipDecisionDocumentMembershipId,
+    'organizerCommunityMembershipDecisionDocument.organizerId': organizerCommunityMembershipDecisionDocumentOrganizerId,
+    'organizerCommunityMembershipDecisionDocument.previousState': organizerCommunityMembershipDecisionDocumentPreviousState,
+    'organizerCommunityMembershipDecisionDocument.reason': organizerCommunityMembershipDecisionDocumentReason,
+    'organizerCommunityMembershipDecisionDocument.requestHash': organizerCommunityMembershipDecisionDocumentRequestHash,
+    'organizerCommunityMembershipDecisionDocument.requestId': organizerCommunityMembershipDecisionDocumentRequestId,
+    'organizerCommunityMembershipDecisionDocument.resultingRevision': organizerCommunityMembershipDecisionDocumentResultingRevision,
+    'organizerCommunityMembershipDecisionDocument.schemaVersion': organizerCommunityMembershipDecisionDocumentSchemaVersion,
+    'organizerCommunityMembershipDecisionDocument.source.applicationId': organizerCommunityMembershipDecisionDocumentSourceApplicationId,
+    'organizerCommunityMembershipDecisionDocument.source.applicationRevision': organizerCommunityMembershipDecisionDocumentSourceApplicationRevision,
+    'organizerCommunityMembershipDecisionDocument.source.formVersionId': organizerCommunityMembershipDecisionDocumentSourceFormVersionId,
+    'organizerCommunityMembershipDecisionDocument.source.responseId': organizerCommunityMembershipDecisionDocumentSourceResponseId,
+    'organizerCommunityMembershipDecisionDocument.uid': organizerCommunityMembershipDecisionDocumentUid,
+    'organizerCommunityMembershipDocument.activatedAtMillis': organizerCommunityMembershipDocumentActivatedAtMillis,
+    'organizerCommunityMembershipDocument.lastDecisionId': organizerCommunityMembershipDocumentLastDecisionId,
+    'organizerCommunityMembershipDocument.organizerId': organizerCommunityMembershipDocumentOrganizerId,
+    'organizerCommunityMembershipDocument.revision': organizerCommunityMembershipDocumentRevision,
+    'organizerCommunityMembershipDocument.schemaVersion': organizerCommunityMembershipDocumentSchemaVersion,
+    'organizerCommunityMembershipDocument.source.applicationId': organizerCommunityMembershipDocumentSourceApplicationId,
+    'organizerCommunityMembershipDocument.source.applicationRevision': organizerCommunityMembershipDocumentSourceApplicationRevision,
+    'organizerCommunityMembershipDocument.source.formVersionId': organizerCommunityMembershipDocumentSourceFormVersionId,
+    'organizerCommunityMembershipDocument.source.responseId': organizerCommunityMembershipDocumentSourceResponseId,
+    'organizerCommunityMembershipDocument.state': organizerCommunityMembershipDocumentState,
+    'organizerCommunityMembershipDocument.uid': organizerCommunityMembershipDocumentUid,
+    'organizerCommunityMembershipDocument.updatedAtMillis': organizerCommunityMembershipDocumentUpdatedAtMillis,
     'organizerContactChannelStateDocument.adminSuppressed': organizerContactChannelStateDocumentAdminSuppressed,
     'organizerContactChannelStateDocument.campaignAcceptedCount': organizerContactChannelStateDocumentCampaignAcceptedCount,
     'organizerContactChannelStateDocument.channel': organizerContactChannelStateDocumentChannel,
@@ -172434,6 +173427,15 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.displayName': programGuestDocumentDisplayName,
     'programGuestDocument.email': programGuestDocumentEmail,
     'programGuestDocument.externalReference': programGuestDocumentExternalReference,
+    'programGuestDocument.fieldConflicts.displayName': programGuestDocumentFieldConflictsDisplayName,
+    'programGuestDocument.fieldConflicts.displayName.items': programGuestDocumentFieldConflictsDisplayNameItems,
+    'programGuestDocument.fieldConflicts.email': programGuestDocumentFieldConflictsEmail,
+    'programGuestDocument.fieldConflicts.email.items': programGuestDocumentFieldConflictsEmailItems,
+    'programGuestDocument.fieldConflicts.phoneE164': programGuestDocumentFieldConflictsPhoneE164,
+    'programGuestDocument.fieldConflicts.phoneE164.items': programGuestDocumentFieldConflictsPhoneE164Items,
+    'programGuestDocument.fieldSelections.displayName': programGuestDocumentFieldSelectionsDisplayName,
+    'programGuestDocument.fieldSelections.email': programGuestDocumentFieldSelectionsEmail,
+    'programGuestDocument.fieldSelections.phoneE164': programGuestDocumentFieldSelectionsPhoneE164,
     'programGuestDocument.groupIds': programGuestDocumentGroupIds,
     'programGuestDocument.groupIds.items': programGuestDocumentGroupIdsItems,
     'programGuestDocument.householdId': programGuestDocumentHouseholdId,
@@ -172488,6 +173490,42 @@ abstract final class CatchContractConstraints {
     'programGuestListCallableResponse.guests.items.displayName': programGuestListCallableResponseGuestsItemsDisplayName,
     'programGuestListCallableResponse.guests.items.email': programGuestListCallableResponseGuestsItemsEmail,
     'programGuestListCallableResponse.guests.items.externalReference': programGuestListCallableResponseGuestsItemsExternalReference,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternativeAssertionIds': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativeAssertionIds,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternativeAssertionIds.items': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativeAssertionIdsItems,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternatives,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsAssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.observedAtMillis': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsObservedAtMillis,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceId': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.sourceVersion': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsSourceVersion,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.alternatives.items.value': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAlternativesItemsValue,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameAssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameSourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.displayName.state': programGuestListCallableResponseGuestsItemsFieldAuthorityDisplayNameState,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternativeAssertionIds': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativeAssertionIds,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternativeAssertionIds.items': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativeAssertionIdsItems,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternatives,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsAssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.observedAtMillis': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsObservedAtMillis,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceId': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.sourceVersion': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsSourceVersion,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.alternatives.items.value': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAlternativesItemsValue,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailAssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailSourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.email.state': programGuestListCallableResponseGuestsItemsFieldAuthorityEmailState,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternativeAssertionIds': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativeAssertionIds,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternativeAssertionIds.items': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativeAssertionIdsItems,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164Alternatives,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsAssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.observedAtMillis': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsObservedAtMillis,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceId': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.sourceVersion': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsSourceVersion,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.alternatives.items.value': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AlternativesItemsValue,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.assertionId': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164AssertionId,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.sourceKind': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164SourceKind,
+    'programGuestListCallableResponse.guests.items.fieldAuthority.phoneE164.state': programGuestListCallableResponseGuestsItemsFieldAuthorityPhoneE164State,
     'programGuestListCallableResponse.guests.items.groupIds': programGuestListCallableResponseGuestsItemsGroupIds,
     'programGuestListCallableResponse.guests.items.groupIds.items': programGuestListCallableResponseGuestsItemsGroupIdsItems,
     'programGuestListCallableResponse.guests.items.guestId': programGuestListCallableResponseGuestsItemsGuestId,
@@ -172585,6 +173623,15 @@ abstract final class CatchContractConstraints {
     'programHouseholdDocument.createdAt._nanoseconds': programHouseholdDocumentCreatedAtNanoseconds,
     'programHouseholdDocument.createdAt._seconds': programHouseholdDocumentCreatedAtSeconds,
     'programHouseholdDocument.deliveryPreference': programHouseholdDocumentDeliveryPreference,
+    'programHouseholdDocument.fieldConflicts.displayName': programHouseholdDocumentFieldConflictsDisplayName,
+    'programHouseholdDocument.fieldConflicts.displayName.items': programHouseholdDocumentFieldConflictsDisplayNameItems,
+    'programHouseholdDocument.fieldConflicts.email': programHouseholdDocumentFieldConflictsEmail,
+    'programHouseholdDocument.fieldConflicts.email.items': programHouseholdDocumentFieldConflictsEmailItems,
+    'programHouseholdDocument.fieldConflicts.phoneE164': programHouseholdDocumentFieldConflictsPhoneE164,
+    'programHouseholdDocument.fieldConflicts.phoneE164.items': programHouseholdDocumentFieldConflictsPhoneE164Items,
+    'programHouseholdDocument.fieldSelections.displayName': programHouseholdDocumentFieldSelectionsDisplayName,
+    'programHouseholdDocument.fieldSelections.email': programHouseholdDocumentFieldSelectionsEmail,
+    'programHouseholdDocument.fieldSelections.phoneE164': programHouseholdDocumentFieldSelectionsPhoneE164,
     'programHouseholdDocument.label': programHouseholdDocumentLabel,
     'programHouseholdDocument.memberGuestIds': programHouseholdDocumentMemberGuestIds,
     'programHouseholdDocument.memberGuestIds.items': programHouseholdDocumentMemberGuestIdsItems,
@@ -176313,6 +177360,9 @@ abstract final class CatchContractConstraints {
     'upsertProgramGuestCallablePayload.email': upsertProgramGuestCallablePayloadEmail,
     'upsertProgramGuestCallablePayload.expectedRevision': upsertProgramGuestCallablePayloadExpectedRevision,
     'upsertProgramGuestCallablePayload.externalReference': upsertProgramGuestCallablePayloadExternalReference,
+    'upsertProgramGuestCallablePayload.fieldChoices.displayName': upsertProgramGuestCallablePayloadFieldChoicesDisplayName,
+    'upsertProgramGuestCallablePayload.fieldChoices.email': upsertProgramGuestCallablePayloadFieldChoicesEmail,
+    'upsertProgramGuestCallablePayload.fieldChoices.phoneE164': upsertProgramGuestCallablePayloadFieldChoicesPhoneE164,
     'upsertProgramGuestCallablePayload.groupIds': upsertProgramGuestCallablePayloadGroupIds,
     'upsertProgramGuestCallablePayload.groupIds.items': upsertProgramGuestCallablePayloadGroupIdsItems,
     'upsertProgramGuestCallablePayload.guestId': upsertProgramGuestCallablePayloadGuestId,
@@ -176339,6 +177389,9 @@ abstract final class CatchContractConstraints {
     'upsertProgramHotelCallablePayload.receptionContact': upsertProgramHotelCallablePayloadReceptionContact,
     'upsertProgramHouseholdCallablePayload.deliveryPreference': upsertProgramHouseholdCallablePayloadDeliveryPreference,
     'upsertProgramHouseholdCallablePayload.expectedRevision': upsertProgramHouseholdCallablePayloadExpectedRevision,
+    'upsertProgramHouseholdCallablePayload.fieldChoices.displayName': upsertProgramHouseholdCallablePayloadFieldChoicesDisplayName,
+    'upsertProgramHouseholdCallablePayload.fieldChoices.email': upsertProgramHouseholdCallablePayloadFieldChoicesEmail,
+    'upsertProgramHouseholdCallablePayload.fieldChoices.phoneE164': upsertProgramHouseholdCallablePayloadFieldChoicesPhoneE164,
     'upsertProgramHouseholdCallablePayload.householdId': upsertProgramHouseholdCallablePayloadHouseholdId,
     'upsertProgramHouseholdCallablePayload.label': upsertProgramHouseholdCallablePayloadLabel,
     'upsertProgramHouseholdCallablePayload.memberGuestIds': upsertProgramHouseholdCallablePayloadMemberGuestIds,
@@ -176859,5 +177912,33 @@ abstract final class CatchContractConstraints {
     'withdrawParticipantMessagingPermissionCallableResponse.preference.receiptId': withdrawParticipantMessagingPermissionCallableResponsePreferenceReceiptId,
     'withdrawParticipantMessagingPermissionCallableResponse.preference.status': withdrawParticipantMessagingPermissionCallableResponsePreferenceStatus,
     'withdrawParticipantMessagingPermissionCallableResponse.replayed': withdrawParticipantMessagingPermissionCallableResponseReplayed,
+    'workspaceFieldAssertionDocument.actorUid': workspaceFieldAssertionDocumentActorUid,
+    'workspaceFieldAssertionDocument.disclosureBasis': workspaceFieldAssertionDocumentDisclosureBasis,
+    'workspaceFieldAssertionDocument.fieldKey': workspaceFieldAssertionDocumentFieldKey,
+    'workspaceFieldAssertionDocument.observedAtMillis': workspaceFieldAssertionDocumentObservedAtMillis,
+    'workspaceFieldAssertionDocument.organizerId': workspaceFieldAssertionDocumentOrganizerId,
+    'workspaceFieldAssertionDocument.programId': workspaceFieldAssertionDocumentProgramId,
+    'workspaceFieldAssertionDocument.relationshipRef.id': workspaceFieldAssertionDocumentRelationshipRefId,
+    'workspaceFieldAssertionDocument.relationshipRef.kind': workspaceFieldAssertionDocumentRelationshipRefKind,
+    'workspaceFieldAssertionDocument.schemaVersion': workspaceFieldAssertionDocumentSchemaVersion,
+    'workspaceFieldAssertionDocument.sourceId': workspaceFieldAssertionDocumentSourceId,
+    'workspaceFieldAssertionDocument.sourceKind': workspaceFieldAssertionDocumentSourceKind,
+    'workspaceFieldAssertionDocument.sourceVersion': workspaceFieldAssertionDocumentSourceVersion,
+    'workspaceFieldAssertionDocument.value': workspaceFieldAssertionDocumentValue,
+    'workspaceFieldAssertionDocument.workspaceRef.id': workspaceFieldAssertionDocumentWorkspaceRefId,
+    'workspaceFieldAssertionDocument.workspaceRef.kind': workspaceFieldAssertionDocumentWorkspaceRefKind,
+    'workspaceFieldDecisionDocument.actorUid': workspaceFieldDecisionDocumentActorUid,
+    'workspaceFieldDecisionDocument.fieldKey': workspaceFieldDecisionDocumentFieldKey,
+    'workspaceFieldDecisionDocument.observedAtMillis': workspaceFieldDecisionDocumentObservedAtMillis,
+    'workspaceFieldDecisionDocument.organizerId': workspaceFieldDecisionDocumentOrganizerId,
+    'workspaceFieldDecisionDocument.previousAssertionId': workspaceFieldDecisionDocumentPreviousAssertionId,
+    'workspaceFieldDecisionDocument.programId': workspaceFieldDecisionDocumentProgramId,
+    'workspaceFieldDecisionDocument.relationshipRef.id': workspaceFieldDecisionDocumentRelationshipRefId,
+    'workspaceFieldDecisionDocument.relationshipRef.kind': workspaceFieldDecisionDocumentRelationshipRefKind,
+    'workspaceFieldDecisionDocument.relationshipRevision': workspaceFieldDecisionDocumentRelationshipRevision,
+    'workspaceFieldDecisionDocument.schemaVersion': workspaceFieldDecisionDocumentSchemaVersion,
+    'workspaceFieldDecisionDocument.selectedAssertionId': workspaceFieldDecisionDocumentSelectedAssertionId,
+    'workspaceFieldDecisionDocument.workspaceRef.id': workspaceFieldDecisionDocumentWorkspaceRefId,
+    'workspaceFieldDecisionDocument.workspaceRef.kind': workspaceFieldDecisionDocumentWorkspaceRefKind,
   };
 }

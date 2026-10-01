@@ -3,6 +3,12 @@
 
 import {createRequire} from "node:module";
 import {
+  organizerCommunityMembershipDocumentSchema,
+  organizerCommunityMembershipDecisionDocumentSchema,
+  decideOrganizerCommunityMembershipCallablePayloadSchema,
+  decideOrganizerCommunityMembershipCallableResponseSchema,
+  workspaceFieldAssertionDocumentSchema,
+  workspaceFieldDecisionDocumentSchema,
   catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
@@ -1168,6 +1174,12 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateOrganizerCommunityMembershipDocument = ajv.compile(organizerCommunityMembershipDocumentSchema);
+export const validateOrganizerCommunityMembershipDecisionDocument = ajv.compile(organizerCommunityMembershipDecisionDocumentSchema);
+export const validateDecideOrganizerCommunityMembershipCallablePayload = ajv.compile(decideOrganizerCommunityMembershipCallablePayloadSchema);
+export const validateDecideOrganizerCommunityMembershipCallableResponse = ajv.compile(decideOrganizerCommunityMembershipCallableResponseSchema);
+export const validateWorkspaceFieldAssertionDocument = ajv.compile(workspaceFieldAssertionDocumentSchema);
+export const validateWorkspaceFieldDecisionDocument = ajv.compile(workspaceFieldDecisionDocumentSchema);
 export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);

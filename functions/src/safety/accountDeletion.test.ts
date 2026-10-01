@@ -9,6 +9,8 @@ import {deriveEventSeatPolicy} from
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
 import {deleteAccountEventParticipations} from "./accountDeletionSeats";
+import {communityMembershipRows} from
+  "../memberships/communityMembershipFixture";
 import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
@@ -35,8 +37,18 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   const now = {kind: "serverTimestamp"};
   const runnerDeliveryKey = eventBroadcastDeliveryKey("runner-1");
   const otherDeliveryKey = eventBroadcastDeliveryKey("runner-2");
+  const subjectMemberships = {
+    ...communityMembershipRows("club-1", "runner-1"),
+    ...communityMembershipRows("club-2", "runner-1", "revoked"),
+  };
+  const otherMemberships = Object.fromEntries(Object.entries(
+    communityMembershipRows("club-1", "runner-2")
+  ).map(([key, row]) => [key, key.startsWith(
+    "organizerCommunityMembershipDecisions/"
+  ) ? {...row, actorUid: "runner-1"} : row]));
   const harness = createAccountDeletionHarness({
     seed: {
+      ...subjectMemberships, ...otherMemberships,
       "users/runner-1": {
         profilePhotos: [{
           id: "grouped-photo",
@@ -364,6 +376,19 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       write.data.updatedAt === now
     )
   );
+  for (const key of Object.keys(subjectMemberships)) {
+    assert.ok(harness.deletedPublicDocs.includes(key));
+  }
+  for (const [key, value] of Object.entries(otherMemberships)) {
+    assert.equal(harness.deletedPublicDocs.includes(key), false);
+    assert.equal(
+      harness.updateWrites.some((write) => write.path === key), false
+    );
+    assert.equal(harness.setWrites.some((write) => write.path === key), false);
+    if (key.startsWith("organizerCommunityMembershipDecisions/")) {
+      assert.equal(value.actorUid, "runner-1");
+    }
+  }
   assert.ok(
     harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
   );
@@ -602,8 +627,10 @@ test("requestAccountDeletionHandler short-circuits when already deleted",
 
 test("requestAccountDeletionHandler resumes a processing tombstone",
   async () => {
+    const subjectMemberships = communityMembershipRows("club-1", "runner-1");
     const harness = createAccountDeletionHarness({
       seed: {
+        ...subjectMemberships,
         "deletedUsers/runner-1": {
           uid: "runner-1",
           status: "processing",
@@ -622,6 +649,9 @@ test("requestAccountDeletionHandler resumes a processing tombstone",
     );
 
     assert.deepEqual(result, {deleted: true});
+    for (const key of Object.keys(subjectMemberships)) {
+      assert.ok(harness.deletedPublicDocs.includes(key));
+    }
     assert.equal(harness.commits, 1);
     assert.ok(
       harness.setWrites.some((write) =>

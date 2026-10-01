@@ -5,6 +5,12 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {organizerCommunityMembershipDocumentSchema} from "./schemas/organizerCommunityMembershipDocument";
+export {organizerCommunityMembershipDecisionDocumentSchema} from "./schemas/organizerCommunityMembershipDecisionDocument";
+export {decideOrganizerCommunityMembershipCallablePayloadSchema} from "./schemas/decideOrganizerCommunityMembershipInput";
+export {decideOrganizerCommunityMembershipCallableResponseSchema} from "./schemas/decideOrganizerCommunityMembershipOutput";
+export {workspaceFieldAssertionDocumentSchema} from "./schemas/workspaceFieldAssertionDocument";
+export {workspaceFieldDecisionDocumentSchema} from "./schemas/workspaceFieldDecisionDocument";
 export {catchWhatsappWebhookEventDocumentSchema} from "./schemas/catchWhatsappWebhookEventDocument";
 export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
 export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";

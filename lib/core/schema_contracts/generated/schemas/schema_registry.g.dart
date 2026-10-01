@@ -17,6 +17,36 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'OrganizerCommunityMembershipDocument',
+    source: 'firestore/organizer_community_memberships.schema.json',
+    schema: schemaOrganizerCommunityMembershipDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerCommunityMembershipDecisionDocument',
+    source: 'firestore/organizer_community_membership_decisions.schema.json',
+    schema: schemaOrganizerCommunityMembershipDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'DecideOrganizerCommunityMembershipCallablePayload',
+    source: 'callables/decide_organizer_community_membership_payload.schema.json',
+    schema: schemaDecideOrganizerCommunityMembershipCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'DecideOrganizerCommunityMembershipCallableResponse',
+    source: 'callable_responses/organizer_community_membership_decision_response.schema.json',
+    schema: schemaDecideOrganizerCommunityMembershipCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceFieldAssertionDocument',
+    source: 'firestore/workspace_field_assertions.schema.json',
+    schema: schemaWorkspaceFieldAssertionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceFieldDecisionDocument',
+    source: 'firestore/workspace_field_decisions.schema.json',
+    schema: schemaWorkspaceFieldDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappWebhookEventDocument',
     source: 'firestore/catch_whatsapp_webhook_events.schema.json',
     schema: schemaCatchWhatsappWebhookEventDocumentSchema,
@@ -5724,6 +5754,12 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'OrganizerCommunityMembershipDocument': schemaOrganizerCommunityMembershipDocumentSchema,
+  'OrganizerCommunityMembershipDecisionDocument': schemaOrganizerCommunityMembershipDecisionDocumentSchema,
+  'DecideOrganizerCommunityMembershipCallablePayload': schemaDecideOrganizerCommunityMembershipCallablePayloadSchema,
+  'DecideOrganizerCommunityMembershipCallableResponse': schemaDecideOrganizerCommunityMembershipCallableResponseSchema,
+  'WorkspaceFieldAssertionDocument': schemaWorkspaceFieldAssertionDocumentSchema,
+  'WorkspaceFieldDecisionDocument': schemaWorkspaceFieldDecisionDocumentSchema,
   'CatchWhatsappWebhookEventDocument': schemaCatchWhatsappWebhookEventDocumentSchema,
   'SalesImportHistoryRowDocument': schemaSalesImportHistoryRowDocumentSchema,
   'SalesImportHistoryRecordDocument': schemaSalesImportHistoryRecordDocumentSchema,
@@ -6868,6 +6904,12 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/organizer_community_memberships.schema.json': schemaOrganizerCommunityMembershipDocumentSchema,
+  'firestore/organizer_community_membership_decisions.schema.json': schemaOrganizerCommunityMembershipDecisionDocumentSchema,
+  'callables/decide_organizer_community_membership_payload.schema.json': schemaDecideOrganizerCommunityMembershipCallablePayloadSchema,
+  'callable_responses/organizer_community_membership_decision_response.schema.json': schemaDecideOrganizerCommunityMembershipCallableResponseSchema,
+  'firestore/workspace_field_assertions.schema.json': schemaWorkspaceFieldAssertionDocumentSchema,
+  'firestore/workspace_field_decisions.schema.json': schemaWorkspaceFieldDecisionDocumentSchema,
   'firestore/catch_whatsapp_webhook_events.schema.json': schemaCatchWhatsappWebhookEventDocumentSchema,
   'firestore/sales_import_history_rows.schema.json': schemaSalesImportHistoryRowDocumentSchema,
   'firestore/sales_import_history_records.schema.json': schemaSalesImportHistoryRecordDocumentSchema,

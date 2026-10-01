@@ -16,6 +16,42 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "OrganizerCommunityMembershipDocument",
+    source: "firestore/organizer_community_memberships.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCommunityMembershipDocument.ts",
+  },
+  {
+    name: "OrganizerCommunityMembershipDecisionDocument",
+    source: "firestore/organizer_community_membership_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCommunityMembershipDecisionDocument.ts",
+  },
+  {
+    name: "DecideOrganizerCommunityMembershipCallablePayload",
+    source: "callables/decide_organizer_community_membership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/decideOrganizerCommunityMembershipCallablePayload.ts",
+  },
+  {
+    name: "DecideOrganizerCommunityMembershipCallableResponse",
+    source: "callable_responses/organizer_community_membership_decision_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/decideOrganizerCommunityMembershipCallableResponse.ts",
+  },
+  {
+    name: "WorkspaceFieldAssertionDocument",
+    source: "firestore/workspace_field_assertions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/workspaceFieldAssertionDocument.ts",
+  },
+  {
+    name: "WorkspaceFieldDecisionDocument",
+    source: "firestore/workspace_field_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/workspaceFieldDecisionDocument.ts",
+  },
+  {
     name: "CatchWhatsappWebhookEventDocument",
     source: "firestore/catch_whatsapp_webhook_events.schema.json",
     typeOutput: "functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts",

@@ -5,6 +5,12 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateOrganizerCommunityMembershipDocument} from "./validators/organizerCommunityMembershipDocument";
+export {validateOrganizerCommunityMembershipDecisionDocument} from "./validators/organizerCommunityMembershipDecisionDocument";
+export {validateDecideOrganizerCommunityMembershipCallablePayload} from "./validators/decideOrganizerCommunityMembershipInput";
+export {validateDecideOrganizerCommunityMembershipCallableResponse} from "./validators/decideOrganizerCommunityMembershipOutput";
+export {validateWorkspaceFieldAssertionDocument} from "./validators/workspaceFieldAssertionDocument";
+export {validateWorkspaceFieldDecisionDocument} from "./validators/workspaceFieldDecisionDocument";
 export {validateCatchWhatsappWebhookEventDocument} from "./validators/catchWhatsappWebhookEventDocument";
 export {validateSalesImportHistoryRowDocument} from "./validators/salesImportHistoryRowDocument";
 export {validateSalesImportHistoryRecordDocument} from "./validators/salesImportHistoryRecordDocument";

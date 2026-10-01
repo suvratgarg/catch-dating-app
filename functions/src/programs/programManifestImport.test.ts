@@ -1,3 +1,5 @@
+import {validateWorkspaceFieldAssertionDocument} from
+  "../shared/generated/validators/workspaceFieldAssertionDocument";
 import {validateProgramGuestDocument} from
   "../shared/generated/validators/programGuestDocument";
 import {validateProgramTravelLegDocument} from
@@ -13,6 +15,7 @@ import {validateTransportOperationReceiptDocument} from
 import type {ValidateFunction} from "ajv";
 
 const validators: Record<string, ValidateFunction> = {
+  workspaceFieldAssertions: validateWorkspaceFieldAssertionDocument,
   programGuests: validateProgramGuestDocument,
   programTravelLegs: validateProgramTravelLegDocument,
   programHouseholds: validateProgramHouseholdDocument,
@@ -22,6 +25,7 @@ const validators: Record<string, ValidateFunction> = {
 };
 import assert from "node:assert/strict";
 import test from "node:test";
+import {HttpsError} from "firebase-functions/v2/https";
 
 import {importProgramManifestHandler} from "./programManifestImport";
 import {ProgramTravelLegDocument} from
@@ -87,7 +91,7 @@ test("commit replays the original result for the same operation id",
     assert.equal(store.docs.size, docsAfterFirst);
   });
 
-test("re-import updates the same guest and leg without duplicating",
+test("re-import updates the same journey and retains a conflicting phone",
   async () => {
     const store = new MiniFirestore(seed());
     const args = {
@@ -108,7 +112,11 @@ test("re-import updates the same guest and leg without duplicating",
     assert.equal(second.legsUpdated, 1);
     const guest = [...store.docs.values()].find((data) =>
       data.displayName === "Rohan Sharma")!;
-    assert.equal(guest.phoneE164, "+919900009999");
+    assert.equal(guest.phoneE164, row.phoneE164);
+    const pending = (guest.fieldConflicts as {phoneE164: string[]}).phoneE164;
+    assert.equal(pending.length, 1);
+    assert.equal(store.getDoc(`workspaceFieldAssertions/${pending[0]}`)!.value,
+      "+919900009999");
     assert.equal(guest.externalReference, "crm-42");
   });
 
@@ -141,7 +149,7 @@ test("same-name rows without references are not merged", async () => {
   assert.match(response.rowErrors[1].message, /Duplicate/);
 });
 
-test("staff without coordinator duty cannot import", async () => {
+test("staff without guestRelations duty cannot import", async () => {
   const store = new MiniFirestore({
     ...seed(),
     "programStaffGrants/program-1__greeter-1": {
@@ -160,6 +168,46 @@ test("staff without coordinator duty cannot import", async () => {
       error instanceof Error && error.message.includes("guestRelations"),
   );
 });
+
+const stationScopedImportGrants = [
+  {name: "pickup-scoped", scopes: [
+    {pickupPointIds: ["pickup-1"], hotelIds: []},
+  ]},
+  {name: "hotel-scoped", scopes: [
+    {pickupPointIds: [], hotelIds: ["hotel-1"]},
+  ]},
+  {name: "separate station scopes", scopes: [
+    {pickupPointIds: ["pickup-1"], hotelIds: []},
+    {pickupPointIds: [], hotelIds: ["hotel-1"]},
+  ]},
+];
+
+for (const mode of ["preview", "commit"] as const) {
+  for (const {name, scopes} of stationScopedImportGrants) {
+    test(`${name} guestRelations cannot ${mode} a whole-program import`,
+      async () => {
+        const store = new MiniFirestore({
+          ...seed(),
+          "programStaffGrants/program-1__desk-1": {
+            programId: "program-1", organizerId: "org-1", uid: "desk-1",
+            status: "active", duties: scopes.map((scope) => ({
+              duty: "guestRelations", ...scope,
+              expiresAtMillis: NOW + 3600_000,
+            })),
+            expiresAt: ts(NOW + 3600_000),
+          },
+        });
+        const before = new Map(store.docs);
+        await assert.rejects(importProgramManifestHandler(request({
+          programId: "program-1", mode,
+          clientOperationId: "import-op-0001", rows: [row],
+        }, "desk-1"), deps(store)), (error: unknown) =>
+          error instanceof HttpsError && error.code === "permission-denied" &&
+          error.message.includes("Program-wide guest relations"));
+        assert.deepEqual(store.docs, before);
+      });
+  }
+}
 
 test("guestRelations staff can preview and commit manifests", async () => {
   const store = new MiniFirestore({
@@ -369,9 +417,11 @@ test("scheduled ground legs re-import without duplicates", async () => {
 
 test("ambiguous group labels never silently pick a household", async () => {
   const store = new MiniFirestore({...seed(),
-    "programHouseholds/first": {programId: "program-1", label: "Sharma Family",
+    "programHouseholds/first": {programId: "program-1", organizerId: "org-1",
+      label: "Sharma Family",
       memberGuestIds: []},
-    "programHouseholds/second": {programId: "program-1", label: "Sharma Family",
+    "programHouseholds/second": {programId: "program-1",
+      organizerId: "org-1", label: "Sharma Family",
       memberGuestIds: []},
   });
   const response = await importProgramManifestHandler(request({

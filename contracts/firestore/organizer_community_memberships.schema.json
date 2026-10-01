@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_community_memberships.schema.json",
+  "title": "OrganizerCommunityMembershipDocument",
+  "description": "Current manager-controlled organizer community entitlement. Following, contact linkage, booking and attendance are separate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "uid",
+    "state",
+    "revision",
+    "source",
+    "lastDecisionId",
+    "activatedAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "state": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "source": {
+      "$ref": "#/definitions/approvalSource"
+    },
+    "lastDecisionId": {
+      "type": "string",
+      "pattern": "^ocmd_[a-f0-9]{64}$"
+    },
+    "activatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "definitions": {
+    "approvalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId",
+        "responseId",
+        "formVersionId",
+        "applicationRevision"
+      ],
+      "properties": {
+        "applicationId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "responseId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "formVersionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "applicationRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerCommunityMemberships",
+  "x-firestore-path": "organizerCommunityMemberships/{membershipId}",
+  "x-owner": "decideOrganizerCommunityMembership"
+}
