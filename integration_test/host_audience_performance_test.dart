@@ -243,6 +243,9 @@ void main() {
       };
       expect(tester.takeException(), isNull);
     },
+    // This manual benchmark needs a real profile VM; ordinary CI tests use
+    // the focused deterministic regressions instead of connecting to DDS.
+    skip: !kProfileMode,
   );
 }
 
