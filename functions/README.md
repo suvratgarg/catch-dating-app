@@ -10,7 +10,47 @@ Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
 Per-function overrides can be added to individual `onCall` / `onDocumentCreated`
 options when specific functions need higher or lower limits.
 
+## Catch-owned WhatsApp webhook
+
+`catchWhatsappWebhook` receives Meta's verification challenge and signed
+`messages` callbacks for one configured Catch-owned WABA and phone number.
+It remains disabled by default and does not activate organizer messaging or
+send any message. Signed incoming messages and individual delivery statuses
+are persisted idempotently in the server-only `catchWhatsappWebhookEvents`
+collection with 30-day TTL. Receipt order does not overwrite delivery state.
+Message text is limited to 4,096 characters with an explicit truncation flag;
+media is recorded by message type without downloading it. Application logs
+omit callback bodies, participant identifiers, verify tokens and app secrets.
+
+Before live setup, provision the exact Catch app's `CATCH_WHATSAPP_APP_SECRET`
+and an independently generated, at least 32-character
+`CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN` in that environment's Secret Manager.
+Set `CATCH_WHATSAPP_WABA_ID`, `CATCH_WHATSAPP_PHONE_NUMBER_ID` and intentionally
+set `CATCH_WHATSAPP_WEBHOOK_ENABLED=true` only for the reviewed sender.
+No access token is required by this receiving endpoint. Secrets, public endpoint
+deployment and Meta subscriptions require separate operator approval. The
+metadata-only deployment readiness gate requires both enabled secrets and an
+active `catchWhatsappWebhookEvents.expiresAt` TTL policy for this exact target;
+provision those prerequisites before its first deployment.
+
+After deployment, read back the actual HTTPS URL rather than assuming it exists.
+Use that URL and the verify token in Meta's Catch app production setup; subscribe
+to `messages` and subscribe the same app to the exact WABA. Verify a challenge,
+wrong-token/signature rejection, and an approved signed test receipt. Publishing,
+real-number registration, outbound credentials/templates/billing, sending,
+Catch Inbox processing, consent/suppression and operational workflow activation
+remain separate setup steps. A stored callback does not authorize a reply or
+an event-operation action. Check the exact live TTL policy before receiving
+real messages; a source `expiresAt` field alone is not proof of retention.
+
+Protocol: [Meta webhook overview](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/overview/)
+and [endpoint setup](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/create-webhook-endpoint).
+
 ## Function inventory
+
+| Function | File | Purpose |
+|----------|------|---------|
+| `catchWhatsappWebhook` | `src/catchMessaging/whatsappWebhook.ts` | Separate Catch-owned signed message/status ingress, disabled by default; private immutable receipts and no outgoing messages. |
 
 ### Sales and related workflow registrations (September 2026)
 

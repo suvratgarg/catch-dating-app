@@ -1508,6 +1508,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /catchWhatsappWebhookEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /organizerMessagingWebhookEvents/{eventId} {
       allow read, write: if false;
     }
