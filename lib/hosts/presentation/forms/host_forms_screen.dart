@@ -335,6 +335,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             page: _HostFormsLibraryPage(
               request: request,
               directory: directory,
+              onRetry: () => ref.invalidate(
+                hostFormsAccountDirectoryProvider(directoryScope),
+              ),
               query: _query,
               statuses: _statuses,
               purposes: _purposes,
@@ -477,6 +480,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
   const _HostFormsLibraryPage({
     required this.request,
     required this.directory,
+    required this.onRetry,
     required this.query,
     required this.statuses,
     required this.purposes,
@@ -489,6 +493,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
 
   final HostFormListRequest request;
   final AsyncValue<HostFormsDirectoryState> directory;
+  final VoidCallback onRetry;
   final String? query;
   final Set<HostFormLifecycleStatus> statuses;
   final Set<HostFormPurpose> purposes;
@@ -584,8 +589,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
         ),
         CatchAsyncBoundary<HostFormsDirectoryState>.sliver(
           value: directory,
-          onRetry: () =>
-              ref.invalidate(hostFormsDirectoryControllerProvider(request)),
+          onRetry: onRetry,
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 6,

@@ -26,34 +26,20 @@ void main() {
       'Responses renders independently when Forms ${formsFail ? 'fails' : 'is pending'}',
       (tester) async {
         final repository = _Forms();
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              firebaseAuthProvider.overrideWithValue(_Auth()),
-              uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-              hostOperableClubsProvider('host-1').overrideWithValue(
-                AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
-              ),
-              hostFormsRepositoryProvider.overrideWithValue(repository),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: const HostFormsScreen(initialResponses: true),
-            ),
-          ),
-        );
+        await tester.pumpWidget(_app(repository));
         await tester.pump();
         await tester.pump();
         // The responses read must begin without resolving the unrelated forms
         // read. Both still use their canonical manager-authorized repositories.
         expect(repository.responseRequests, greaterThan(0));
-        if (formsFail)
+        if (formsFail) {
           repository.forms.completeError(StateError('Forms unavailable'));
+        }
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 400));
         expect(find.text('No responses yet'), findsWidgets);
         expect(tester.takeException(), isNull);
-        if (!formsFail)
+        if (!formsFail) {
           repository.forms.complete(
             const HostFormPage(
               organizerId: 'forms-club',
@@ -61,10 +47,42 @@ void main() {
               nextCursor: null,
             ),
           );
+        }
         await tester.pump();
       },
     );
   }
+
+  testWidgets('Forms error retry repeats the account-authorized read', (
+    tester,
+  ) async {
+    final repository = _Forms();
+    await tester.pumpWidget(_app(repository));
+    await tester.pump();
+    await tester.pump();
+    repository.forms.completeError(StateError('Forms unavailable'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.text('Forms'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Try again'), findsWidgets);
+    final beforeRetry = repository.formRequests;
+    repository.forms = Completer<HostFormPage>();
+    await tester.tap(find.text('Try again').first);
+    await tester.pump();
+    expect(repository.formRequests, greaterThan(beforeRetry));
+    repository.forms.complete(
+      const HostFormPage(
+        organizerId: 'forms-club',
+        items: [],
+        nextCursor: null,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Try again'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _Auth extends Fake implements FirebaseAuth {
@@ -81,10 +99,15 @@ class _Functions extends Fake implements FirebaseFunctions {}
 
 class _Forms extends HostFormsRepository {
   _Forms() : super(_Functions());
-  final forms = Completer<HostFormPage>();
+  var forms = Completer<HostFormPage>();
+  int formRequests = 0;
   int responseRequests = 0;
   @override
-  Future<HostFormPage> listForms(HostFormListRequest request) => forms.future;
+  Future<HostFormPage> listForms(HostFormListRequest request) {
+    formRequests++;
+    return forms.future;
+  }
+
   @override
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,
@@ -97,3 +120,18 @@ class _Forms extends HostFormsRepository {
     );
   }
 }
+
+Widget _app(_Forms repository) => ProviderScope(
+  overrides: [
+    firebaseAuthProvider.overrideWithValue(_Auth()),
+    uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+    hostOperableClubsProvider('host-1').overrideWithValue(
+      AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+    ),
+    hostFormsRepositoryProvider.overrideWithValue(repository),
+  ],
+  child: MaterialApp(
+    theme: AppTheme.light,
+    home: const HostFormsScreen(initialResponses: true),
+  ),
+);
