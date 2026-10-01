@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "node:crypto";
@@ -59,6 +61,7 @@ function functionGuest(
 ): FakeData {
   return {
     programId: "program-1",
+    organizerId: "org-1",
     functionId,
     guestId,
     invited: true,
@@ -72,7 +75,7 @@ function functionGuest(
 }
 
 function seedBase(): Record<string, FakeData> {
-  return {
+  const synthetic: Record<string, FakeData> = {
     "organizers/org-1": {
       ownerUserId: OWNER,
       hostUserIds: [],
@@ -98,12 +101,14 @@ function seedBase(): Record<string, FakeData> {
     // Two guests share household hh-1 (dedupe to one recipient).
     "programGuests/g-1": {
       programId: "program-1",
+      organizerId: "org-1",
       householdId: "hh-1",
       phoneE164: "+919800000001",
       invitationStatus: "invited",
     },
     "programGuests/g-2": {
       programId: "program-1",
+      organizerId: "org-1",
       householdId: "hh-1",
       phoneE164: "+919800000002",
       invitationStatus: "invited",
@@ -111,6 +116,7 @@ function seedBase(): Record<string, FakeData> {
     // Standalone guest with a reachable phone.
     "programGuests/g-3": {
       programId: "program-1",
+      organizerId: "org-1",
       householdId: null,
       phoneE164: "+919800000003",
       invitationStatus: "invited",
@@ -118,6 +124,7 @@ function seedBase(): Record<string, FakeData> {
     // Standalone guest with no phone -> excluded recipient row.
     "programGuests/g-4": {
       programId: "program-1",
+      organizerId: "org-1",
       householdId: null,
       phoneE164: null,
       invitationStatus: "invited",
@@ -125,6 +132,7 @@ function seedBase(): Record<string, FakeData> {
     // Declined household still resolves; consent flips it excluded.
     "programGuests/g-5": {
       programId: "program-1",
+      organizerId: "org-1",
       householdId: "hh-2",
       phoneE164: "+919800000005",
       invitationStatus: "invited",
@@ -180,6 +188,7 @@ function seedBase(): Record<string, FakeData> {
       parameterBindings: [],
     },
   };
+  return seedWorkspaceFieldAssertions(synthetic);
 }
 
 function programUpsert(extra: FakeData = {}): Record<string, unknown> {
@@ -571,3 +580,80 @@ test(
     assert.equal(sends, 2);
   },
 );
+
+for (const evidenceChange of ["unassigned", "deleted", "foreignScope"]) {
+  test(`program dispatch suppresses ${evidenceChange} field evidence`,
+    async () => {
+      const db = new FakeFirestore(seedBase());
+      const campaignId = await materialize(db);
+      const selected = (db.getDoc("programGuests/g-1")!.fieldSelections as
+        {phoneE164: string}).phoneE164;
+      if (evidenceChange === "unassigned") {
+        db.updateDoc("programGuests/g-1", {fieldSelections: {}});
+      } else if (evidenceChange === "deleted") {
+        db.deleteDoc(`workspaceFieldAssertions/${selected}`);
+      } else {
+        db.updateDoc(`workspaceFieldAssertions/${selected}`, {
+          workspaceRef: {kind: "program", id: "another-wedding"}});
+      }
+      await dispatchCampaign({db: db as unknown as FirebaseFirestore.Firestore,
+        organizerId: "org-1", campaignId, expectedRevision: null,
+        deps: dispatcherDeps(db)});
+      const household = recipients(db).map(([, doc]) => doc)
+        .find((doc) => (doc.programRecipient as {recipientKey: string})
+          .recipientKey === "household:hh-1")!;
+      assert.equal(household.status, "suppressed");
+      assert.equal(household.exclusionReason, "invalidEndpoint");
+      assert.equal(household.providerMessageId, null);
+    });
+}
+
+test("program audience leaves old unassigned phones excluded", async () => {
+  const synthetic = seedBase();
+  for (const [path, doc] of Object.entries(synthetic)) {
+    if (path.startsWith("programGuests/")) doc.fieldSelections = {};
+  }
+  const db = new FakeFirestore(synthetic);
+  await assert.rejects(materialize(db), /noReachableRecipients/);
+  assert.equal(recipients(db).length, 0);
+});
+
+for (const change of ["assertionDeleted", "consentRevoked", "householdMoved"]) {
+  test(`program campaign ${change} between reserve and claim never sends`,
+    async () => {
+      const db = new FakeFirestore(seedBase());
+      const campaignId = await materialize(db);
+      const sends: string[] = [];
+      let changed = false;
+      const d = dispatcherDeps(db);
+      d.tokenStore = {accessBound: async () => {
+        if (!changed) {
+          changed = true;
+          if (change === "consentRevoked") {
+            db.updateDoc("programHouseholds/hh-1", {
+              messagingConsent: {granted: false, grantedAt: NOW,
+                source: "staff"}});
+          } else if (change === "householdMoved") {
+            db.updateDoc("programGuests/g-1", {householdId: null});
+          } else {
+            const id = (db.getDoc("programGuests/g-1")!.fieldSelections as
+              {phoneE164: string}).phoneE164;
+            db.deleteDoc(`workspaceFieldAssertions/${id}`);
+          }
+        }
+        return "test-token";
+      }} as never;
+      d.provider = (() => ({sendTemplate: async (args: {toE164: string}) => {
+        sends.push(args.toE164);
+        return {providerMessageId: "synthetic-accepted"};
+      }})) as never;
+      await dispatchCampaign({db: db as unknown as Firestore,
+        organizerId: "org-1", campaignId, expectedRevision: null, deps: d});
+      assert.equal(changed, true);
+      assert.equal(sends.includes("+919800000001"), false);
+      assert.equal(sends.includes("+919800000003"), true);
+      const dispatches = [...db.docs.entries()].filter(([path]) =>
+        path.startsWith("campaignWhatsappDispatches/"));
+      assert.equal(dispatches.length, 1);
+    });
+}

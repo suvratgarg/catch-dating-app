@@ -3,7 +3,8 @@ import test from "node:test";
 import type {TransportOperationReceiptDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {completedManifestRows} from "./programManifestChunks";
+import {buildManifestChunk, completedManifestRows} from
+  "./programManifestChunks";
 import {seed, request, deps, row, ts, NOW} from "./programManifestFixture";
 import {importProgramManifestHandler} from "./programManifestImport";
 
@@ -181,3 +182,58 @@ test("revoking authority between transactions stops remaining parties",
     const receipt = records(store, "transportOperationReceipts")[0][1];
     assert.equal(receipt.completedRows, 50);
   });
+
+function emptyState() {
+  return {guests: new Map(), legs: new Map(), households: new Map(),
+    parties: new Map(), hotels: new Map(), pickupPoints: new Map(),
+    groups: new Map()};
+}
+
+function chunk(rows: Array<{displayName: string; externalReference: string;
+  phoneE164: string; email: string; partyLabel?: string;
+    groupLabels?: string}>) {
+  let nextId = 0;
+  return buildManifestChunk({rows, completed: [], importedGuestIds: [],
+    state: emptyState(), programId: "program-1", organizerId: "org-1",
+    allocateId: () => `synthetic-${++nextId}`, now: ts(NOW),
+    source: {operationId: "write-budget-fixture", actorUid: "synthetic-host"}});
+}
+const budgetRows = () => Array.from({length: 50}, (_, index) => ({
+  displayName: `Synthetic ${index}`, externalReference: `budget-${index}`,
+  phoneE164: "+919900000001", email: `synthetic-${index}@example.test`,
+}));
+
+test("fifty simple rows include three assertion creates within the write cap",
+  () => {
+    const result = chunk(budgetRows());
+    assert.equal(result.resolvedIndices.length, 50);
+    assert.equal(result.writes.length, 200);
+    assert.equal(result.writes.filter((write) =>
+      write.path.startsWith("workspaceFieldAssertions/")).length, 150);
+  });
+
+test("distinct groups split the import before the actual write budget is full",
+  () => {
+    const result = chunk(budgetRows().map((row, index) => ({...row,
+      partyLabel: `Party ${index}`,
+      groupLabels: Array.from({length: 10}, (_, group) =>
+        `custom:Group ${index}-${group}`).join(";"),
+    })));
+    assert.ok(result.resolvedIndices.length > 0);
+    assert.ok(result.resolvedIndices.length < 50);
+    assert.ok(result.writes.length + 1 <= 500); // Includes operation receipt.
+    assert.equal(result.planned.issues.length, 0);
+  });
+
+test("one over-budget travel party is rejected atomically", () => {
+  const result = chunk(budgetRows().map((row, index) => ({...row,
+    partyLabel: "One party",
+    groupLabels: Array.from({length: 10}, (_, group) =>
+      `custom:Group ${index}-${group}`).join(";"),
+  })));
+  assert.equal(result.resolvedIndices.length, 50);
+  assert.equal(result.writes.length, 0);
+  assert.equal(result.planned.plans.length, 0);
+  assert.equal(result.planned.issues.length, 50);
+  assert.match(result.planned.issues[0].message, /transaction write limit/);
+});

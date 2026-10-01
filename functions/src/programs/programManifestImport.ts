@@ -31,6 +31,10 @@ import {buildManifestPlans, normalizeManifestFlightNumber} from
 import {buildManifestChunk, completedManifestRows} from
   "./programManifestChunks";
 
+import {permittedFieldPointers, readProgramGuestFields,
+  readProgramHouseholdFields, type ScopedProgramGuest,
+  type ScopedProgramHousehold} from "../workspaces/workspaceFieldAuthority";
+
 interface ImportDeps {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -63,6 +67,7 @@ async function listByProgram<T>(
 async function loadManifest(
   db: FirebaseFirestore.Firestore,
   programId: string,
+  organizerId: string,
   tx?: FirebaseFirestore.Transaction,
 ) {
   const [guests, legs, households, parties, hotels, pickupPoints, groups] =
@@ -83,6 +88,21 @@ async function loadManifest(
         db, "programGuestGroups", programId, tx),
     ]);
 
+  await Promise.all([...guests].map(async ([guestId, guest]) => {
+    const resolved = await readProgramGuestFields({db, tx, programId,
+      organizerId, guestId, guest: guest as ScopedProgramGuest});
+    guests.set(guestId, {...guest,
+      ...permittedFieldPointers(guest, resolved)});
+  }));
+  await Promise.all([...households].map(async ([householdId, household]) => {
+    const resolved = await readProgramHouseholdFields({db, tx, programId,
+      organizerId, householdId,
+      household: household as ScopedProgramHousehold});
+    households.set(householdId, {...household,
+      ...permittedFieldPointers({displayName: household.primaryContactName,
+        phoneE164: household.primaryPhoneE164, email: household.primaryEmail},
+      resolved)});
+  }));
   return {guests, legs, households, parties, hotels, pickupPoints, groups};
 }
 
@@ -144,7 +164,8 @@ export async function importProgramManifestHandler(
     });
     requireProgramMutable(access.program);
     requireProgramDuty(access, "guestRelations");
-    let state = await loadManifest(db, data.programId);
+    let state = await loadManifest(db, data.programId,
+      access.program.organizerId);
     const completed: number[] = [];
     const importedGuestIds: string[] = [];
     let result = emptyResult();
@@ -153,7 +174,8 @@ export async function importProgramManifestHandler(
         completed, importedGuestIds, programId: data.programId,
         organizerId: access.program.organizerId,
         allocateId: (collection) => db.collection(collection).doc().id,
-        now: deps.now()});
+        now: deps.now(), source: {operationId: data.clientOperationId,
+          actorUid}});
       state = chunk.state;
       completed.push(...chunk.resolvedIndices);
       importedGuestIds.push(...chunk.planned.plans.map((plan) => plan.guestId));
@@ -188,19 +210,25 @@ export async function importProgramManifestHandler(
       if (completed.length === data.rows.length) {
         return {result: previous, done: true, applied: false};
       }
-      const state = await loadManifest(db, data.programId, tx);
+      const state = await loadManifest(db, data.programId,
+        access.program.organizerId, tx);
       const now = deps.now();
       const {planned, writes, resolvedIndices} = buildManifestChunk({
         rows: data.rows, completed, state,
         importedGuestIds: receipt?.importedGuestIds ?? [],
         programId: data.programId, organizerId: access.program.organizerId,
         allocateId: (collection) => db.collection(collection).doc().id, now,
+        source: {operationId: data.clientOperationId, actorUid},
       });
       const result = addResult(previous, planned);
       const completedRowIndices = [...completed, ...resolvedIndices]
         .sort((a, b) => a - b);
       for (const write of writes) {
-        tx.set(db.doc(write.path), write.data as admin.firestore.DocumentData);
+        if (write.path.startsWith("workspaceFieldAssertions/")) {
+          tx.create(db.doc(write.path), write.data);
+        } else {
+          tx.set(db.doc(write.path), write.data);
+        }
       }
       const progress: TransportOperationReceiptDocument = {
         programId: data.programId, operationKind: "manifestImport",

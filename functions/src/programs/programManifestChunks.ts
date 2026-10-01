@@ -70,6 +70,7 @@ export function buildManifestChunk(args: {
   state: ManifestState; programId: string; organizerId: string;
   allocateId: (collection: string) => string;
   now: FirebaseFirestore.Timestamp;
+  source: {operationId: string; actorUid: string};
 }): {planned: Plan; writes: ReturnType<typeof buildManifestWrites>;
     resolvedIndices: number[]; state: ManifestState} {
   const {rows, completed, allocateId, programId, organizerId, now} = args;
@@ -111,6 +112,19 @@ export function buildManifestChunk(args: {
       issues.push({index: indices[0],
         message: "A travel party cannot import more than 50 source rows."});
     }
+    const groupWrites = issues.length === 0 ? buildManifestWrites(
+      programId, organizerId, candidate, state.households, state.parties,
+      state.legs, state.groups, now, {...args.source,
+        rowIndices: indices}) : [];
+    // One extra write persists the receipt. Count de-duplicated documents,
+    // including assertions, before accepting an atomic travel-party group.
+    const combinedPaths = new Set([...writes.keys(),
+      ...groupWrites.map((write) => write.path)]);
+    if (combinedPaths.size > 499 && writes.size > 0) break;
+    if (combinedPaths.size > 499) {
+      issues.push({index: indices[0],
+        message: "This travel party exceeds the transaction write limit."});
+    }
     if (issues.length > 0) {
       for (const index of indices) {
         const own = issues.filter((issue) => issue.index === index);
@@ -123,9 +137,6 @@ export function buildManifestChunk(args: {
           ({index, message})));
       }
     } else {
-      const groupWrites = buildManifestWrites(programId, organizerId,
-        candidate, state.households, state.parties, state.legs,
-        state.groups, now);
       for (const write of groupWrites) {
         writes.set(write.path, write.data);
         const [collection, id] = write.path.split("/");
