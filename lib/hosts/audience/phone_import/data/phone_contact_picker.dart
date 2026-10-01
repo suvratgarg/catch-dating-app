@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum PhoneContactPickerStatus {
   selected,
@@ -24,10 +23,6 @@ class PhoneContactPickerResult {
 abstract interface class PhoneContactPicker {
   Future<PhoneContactPickerResult> pickContacts();
 }
-
-final phoneContactPickerProvider = Provider<PhoneContactPicker>(
-  (ref) => const NativePhoneContactPicker(),
-);
 
 /// No contacts permission request, enumeration, caching, analytics or upload.
 class NativePhoneContactPicker implements PhoneContactPicker {

@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-import '../../domain/phone_import_draft.dart';
 
 /// One guest's local review fields. Controller commands own all draft changes;
 /// text-controller lifetime and focus remain Flutter mechanics here.
