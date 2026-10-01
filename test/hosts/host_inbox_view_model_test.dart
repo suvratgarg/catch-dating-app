@@ -334,6 +334,7 @@ OrganizerProgramSummary _program(String id) => OrganizerProgramSummary(
   title: 'Program $id',
   kind: ProgramKind.wedding,
   status: ProgramStatus.active,
+  revision: 1,
 );
 
 ChatThreadPreview _preview({

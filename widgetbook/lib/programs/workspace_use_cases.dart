@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
@@ -182,12 +183,14 @@ final _summaries = [
     title: 'Kapoor–Shah Wedding',
     kind: ProgramKind.wedding,
     status: ProgramStatus.active,
+    revision: 1,
   ),
   OrganizerProgramSummary(
     programId: 'program_aisle_summit',
     title: 'Aisle Summit 2026',
     kind: ProgramKind.corporate,
     status: ProgramStatus.draft,
+    revision: 1,
   ),
 ];
 

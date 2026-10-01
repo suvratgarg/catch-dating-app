@@ -3,8 +3,9 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
+
 import 'package:catch_dating_app/hosts/presentation/event_management/host_private_event_setup_inventory_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -218,43 +219,29 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('entry selection carries saved id into the existing flow', (
+  testWidgets('timeline row renders the saved event and forwards its id', (
     tester,
   ) async {
-    HostEventEntrySelection? selection;
+    String? resumed;
+    final row = HostEventLifecycleRowData.fromUnpublished(
+      setup: _saved,
+      now: DateTime(2026, 9, 25, 12),
+    );
     await tester.pumpWidget(
       _app(
         Builder(
-          builder: (context) => TextButton(
-            onPressed: () async {
-              selection = await showCatchBottomSheet<HostEventEntrySelection>(
-                context: context,
-                builder: (_) => HostEventEntrySheet(
-                  state: HostEventEntryState.resolve(organizerId: 'club-1'),
-                  readPrivateInventory:
-                      ({
-                        required organizerId,
-                        required limit,
-                        cursor,
-                        scope,
-                      }) async => const PrivateEventSetupInventoryPage(
-                        events: [_saved],
-                        nextCursor: null,
-                      ),
-                ),
-              );
-            },
-            child: const Text('Open'),
+          builder: (context) => CatchField.navigate(
+            content: hostEventRecordLayout(context, row),
+            onActivate: () => resumed = row.id,
           ),
         ),
       ),
     );
-    await tester.tap(find.text('Open'));
     await pumpFeatureUi(tester);
+    expect(find.text('Saturday mixer'), findsOneWidget);
     await tester.tap(find.text('Saturday mixer'));
     await pumpFeatureUi(tester);
-    expect(selection?.intent, HostEventEntryIntent.resumePrivateEvent);
-    expect(selection?.savedEventId, 'event-1');
+    expect(resumed, 'event-1');
     expect(tester.takeException(), isNull);
   });
 }

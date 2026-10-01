@@ -539,10 +539,9 @@ rechecks, provider submission, uncertain outcomes and receipt reconciliation;
 Moments owns scheduling, deferral and the organizer-visible journal. The
 claim re-reads live rule, recipe revision, source event, merged contact
 identity, consent, endpoint, sender/template readiness and shared frequency
-accounting before any provider call. Campaigns minted before this cutover
-keep their `automationOrigin` and drain through the campaign executor — a
-deterministic legacy-campaign id check inside the handoff transaction makes
-ownership exclusive. A successful automation receipt means the durable intent
+accounting before any provider call. The pre-cutover `automationOrigin`
+campaign drain path is retired — production held no legacy campaigns, so the
+ownership check, mint path, and field were removed rather than kept dormant. A successful automation receipt means the durable intent
 was recorded, not that the message was delivered.
 
 Signed webhook delivery requires public HTTPS on port 443, validates and pins DNS,

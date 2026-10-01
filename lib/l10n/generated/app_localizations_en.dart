@@ -6071,6 +6071,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventsTimelineLoadMoreHistory => 'Load older events';
 
   @override
+  String get hostEventsRowUnpublished => 'Not published';
+
+  @override
+  String get hostEventsRowSetupPending => 'Setup in progress';
+
+  @override
+  String get hostEventsRowCancelled => 'Cancelled';
+
+  @override
   String get hostsHostEventsScaffoldTitleCreateYourFirstClub =>
       'Create your first organizer';
 
@@ -23295,6 +23304,54 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create a multi-day program to coordinate functions, travel and guest RSVP.';
 
   @override
+  String get programsListRowActions => 'Program actions';
+
+  @override
+  String get programsListArchiveAction => 'Archive program';
+
+  @override
+  String get programsListUnarchiveAction => 'Unarchive';
+
+  @override
+  String programsListArchiveConfirmTitle({required String title}) {
+    return 'Archive $title?';
+  }
+
+  @override
+  String programsListArchiveConfirmMessage({required String date}) {
+    return 'The program keeps working read-only. Guest identity details are anonymized on $date unless you unarchive first.';
+  }
+
+  @override
+  String programsListUnarchiveConfirmTitle({required String title}) {
+    return 'Unarchive $title?';
+  }
+
+  @override
+  String get programsListUnarchiveConfirmMessage =>
+      'The program returns to its previous status and edits work again.';
+
+  @override
+  String programsListArchiveDone({required String date}) {
+    return 'Archived. Guest details anonymize on $date.';
+  }
+
+  @override
+  String get programsListUnarchiveDone => 'Program restored.';
+
+  @override
+  String programsListAnonymizesOn({required String date}) {
+    return 'Anonymizes $date';
+  }
+
+  @override
+  String get programsListRestoreWindowExpiredReason =>
+      'The restore window has ended.';
+
+  @override
+  String get programsListAnonymized => 'Anonymized';
+
+  @override
   String get programsCreateTitle => 'New program';
 
   @override
@@ -23576,6 +23633,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsGuestsNoHousehold => 'No household';
+
+  @override
+  String get programsGuestsShareRsvpLink => 'Share RSVP link';
+
+  @override
+  String programsGuestsRsvpLinkSubject({required String household}) {
+    return 'RSVP for $household';
+  }
 
   @override
   String get programsGuestsInviteModeAll => 'all guests';

@@ -85,8 +85,7 @@ export type AutomationDispatchResult =
 const FACT_SNAPSHOT_MS = 120_000;
 
 /**
- * The claim-time authority read shared by reserve and claim — the
- * transactional replacement for `requireAutomationCampaignAuthority`.
+ * The claim-time authority read shared by reserve and claim.
  * Every document a suppression or authorization decision consumes is read
  * inside the transaction: the rule and its approved revisions, the
  * companion moment (instruction revision), the recipe, the live source
@@ -157,7 +156,6 @@ async function readAutomationFacts(
   }
   if (!recipe || recipe.organizerId !== context.organizerId ||
       recipe.revision !== context.recipeRevision ||
-      recipe.automationOrigin ||
       !["draft", "previewed"].includes(recipe.status) ||
       recipe.scheduledAt) {
     return stop("superseded");

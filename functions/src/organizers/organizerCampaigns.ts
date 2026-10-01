@@ -79,7 +79,6 @@ import type {
   FunctionLike,
 } from "../programRsvp/functionInvitation";
 
-import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
 
 type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
 type ExclusionReason = OrganizerCampaignRecipientDocument["exclusionReason"];
@@ -228,11 +227,6 @@ export async function upsertOrganizerCampaignHandler(
     if (existing && existing.organizerId !== data.organizerId) {
       throw new HttpsError("already-exists", "Campaign id collision.");
     }
-    if (existing?.automationOrigin) {
-      throw new HttpsError("failed-precondition",
-        "Edit the automation message configuration " +
-          "instead of its generated send.");
-    }
     if (existing && !["draft", "previewed"].includes(existing.status)) {
       throw new HttpsError(
         "failed-precondition",
@@ -335,7 +329,6 @@ export async function validateAutomationCampaignRecipe(
   );
   const recipe = context.campaign;
   if (
-    recipe.automationOrigin ||
     recipe.revision !== expectedRevision ||
     !recipe.savedAudienceId ||
     !["draft", "previewed"].includes(recipe.status) ||
@@ -360,110 +353,6 @@ export async function validateAutomationCampaignRecipe(
     "A message template value cannot be delivered.",
   );
   return recipe;
-}
-
-/** Stable one-person sends still use normal audience preview and approval. */
-export async function prepareAutomatedOrganizerCampaign(params: {
-  db: FirebaseFirestore.Firestore;
-  organizerId: string;
-  actorUid: string;
-  recipeId: string;
-  recipeRevision: number;
-  campaignId: string;
-  name: string;
-  origin: NonNullable<OrganizerCampaignDocument["automationOrigin"]>;
-  now: () => FirebaseFirestore.Timestamp;
-}): Promise<string> {
-  const recipe = await validateAutomationCampaignRecipe(
-    params.db,
-    params.organizerId,
-    params.recipeId,
-    params.recipeRevision,
-    params.now(),
-  );
-  const ref = params.db
-    .collection("organizerCampaigns")
-    .doc(params.campaignId);
-  const campaign = await params.db.runTransaction(async (tx) => {
-    const snapshot = await tx.get(ref);
-    const existing = snapshot.data() as OrganizerCampaignDocument | undefined;
-    if (existing) {
-      if (
-        existing.organizerId !== params.organizerId ||
-        hashCanonical(existing.automationOrigin) !==
-          hashCanonical(params.origin)
-      ) {
-        throw new HttpsError(
-          "already-exists",
-          "Automation send identity conflict.",
-        );
-      }
-      return existing;
-    }
-    const now = params.now();
-    const created: OrganizerCampaignDocument = {
-      ...recipe,
-      createdByUid: params.actorUid,
-      name: params.name,
-      status: "draft",
-      revision: 1,
-      automationOrigin: params.origin,
-      recipientSnapshotHash: null,
-      audienceCounts: emptyCampaignAudienceCounts(),
-      deliveryCounts: emptyCampaignDeliveryCounts(),
-      leaseOwner: null,
-      leaseExpiresAt: null,
-      scheduledAt: null,
-      createdAt: now,
-      updatedAt: now,
-      approvedAt: null,
-      dispatchedAt: null,
-      completedAt: null,
-      cancelledAt: null,
-    };
-    tx.create(ref, created);
-    return created;
-  });
-  await requireAutomationCampaignAuthority(
-    params.db, campaign, params.now().toMillis());
-  if (
-    [
-      "approved",
-      "scheduled",
-      "resolving",
-      "sending",
-      "completed",
-      "partiallyFailed",
-    ].includes(campaign.status)
-  ) {
-    return params.campaignId;
-  }
-  if (!["draft", "previewed"].includes(campaign.status)) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Automation send was cancelled.",
-    );
-  }
-  const deps: CampaignDeps = {
-    firestore: () => params.db,
-    checkRateLimit: async () => undefined,
-    now: params.now,
-  };
-  const request = (revision: number) =>
-    ({
-      auth: {uid: params.actorUid},
-      data: {
-        organizerId: params.organizerId,
-        campaignId: params.campaignId,
-        expectedRevision: revision,
-      },
-    }) as CallableRequest<unknown>;
-  const preview = await previewOrganizerCampaignHandler(
-    request(campaign.revision),
-    deps,
-  );
-  await approveOrganizerCampaignHandler(request(preview.revision), deps);
-  return params.campaignId;
 }
 
 export async function previewOrganizerCampaignHandler(
@@ -538,8 +427,6 @@ export async function approveOrganizerCampaignHandler(
     data.campaignId,
     deps.now(),
   );
-  await requireAutomationCampaignAuthority(
-    db, initial.campaign, deps.now().toMillis());
   assertExpectedRevision(initial.campaign, data.expectedRevision ?? null);
   const blockers = campaignBlockers(initial, deps.now());
   if (initial.campaign.status !== "previewed" || blockers.length > 0) {
@@ -941,7 +828,6 @@ async function campaignContext(
           organizerId,
           savedAudience: activeSavedAudience,
           now,
-          contactId: campaign.automationOrigin?.contactId,
         }) : campaign.savedAudienceId ?
           {rows: [], tooLarge: false} :
           await loadLegacyAudienceRows({
@@ -969,8 +855,7 @@ async function campaignContext(
     } : null,
     savedAudience: activeSavedAudience,
     savedAudienceChanged,
-    audienceRows: campaign.automationOrigin ? audience.rows.filter((row) =>
-      row.contactId === campaign.automationOrigin!.contactId) : audience.rows,
+    audienceRows: audience.rows,
     audienceTooLarge: audience.tooLarge,
   };
 }
