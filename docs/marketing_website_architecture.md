@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.10.0
+version: 0.11.0
 updated: 2026-09-30
 owner: marketing_website
 status: active
@@ -13,6 +13,57 @@ React marketing website in `website/`. Use `docs/web_surface_architecture.md`
 for domains, deploy targets, CI/CD, and cross-surface hosting boundaries. Use
 `design/website/routes.json` for the route-first contract and
 `design/website/components.json` for the component-first registry.
+
+## Organiser first content review
+
+The public React root composes organiser acquisition content through the existing
+site shell and semantic marketing primitives. Product, Solutions, Explore and
+Resources are section links in this first review pass. The four product jobs
+are presence/discovery, registration/guest management, live operations and
+programme/logistics. Software actions lead to the current supported Host pilot,
+labelled concept routes or a guided walkthrough. They do not imply that the
+prototype's prices, integrations or workflow connections are available.
+
+The previous consumer homepage is preserved as `VisitorDiscoveryPage` at
+`/explore/`, including its app availability, member journey, waitlist and safety
+sections. Discovery and featured organisers reuse their original section owners
+on both routes, with authored acquisition copy overrides on the organiser root.
+The consumer Marketing Home feature contract follows the preserved discovery
+route. The new root is an editorial projection of existing Host acquisition;
+it introduces no account or transaction authority.
+
+Public organiser presence uses Events, About and Reviews anchor navigation.
+Catch and external event cards precede About. When only historical source event
+evidence exists, Events targets that evidence; it does not claim current booking
+inventory. Canonical provider links, review gates and claim policies remain
+unchanged. Detailed source facts stay in About; existing source links retain
+their provenance labels rather than becoming unsupported contact widgets.
+
+| Existing content | Canonical destination in this review pass |
+|---|---|
+| Original homepage's ten sections | Preserved at `/explore/`; discovery and featured-organiser owners also reused at `/`. |
+| Supported Host workflow, playbooks, trust and beta application | Retained at `/host/`, linked from the organiser root. |
+| All 49 prototype sections and nine views | Retained at their `/host/*` content-preview routes; unique console/tier/stack interactions remain labelled illustrative. |
+| Workflow review examples and shared capability/pilot content | Retained at `/host/workflows/`; organiser product/solution sections link to the relevant views. |
+| Directory, profiles and external events | Existing canonical owners, with clearer acquisition navigation and profile section order. |
+| Forms, booking, offers, invites, household RSVP, runtime, rehearsal, assistance, legal and help | Existing routes and controllers retained without contract/permission changes. |
+
+The four surfaces remain distinct: marketing explains adoption; public presence
+represents an organiser; event and authorised guest pages serve event decisions;
+the existing organiser workspace operates events. No new workspace is created.
+`Get started free` currently begins the existing claim request with an explicit
+notice that presence-management tools are in development. Sign-in is described
+as claim sign-in, not access to a fictional dashboard.
+
+Follow-ons need separate authority design and tests: web organiser profile
+completion (claim approval requires `profileComplete`), listing editing and
+event publishing, verified-owner replies with independent moderation, scoped
+aggregate analytics, team permissions and postclaim activation. Instagram
+control proof is not implemented; permission for marketing use is separate.
+Prior prototype promises such as “Claiming unlocks owner replies”, “Claim to
+respond”, and claim-to-publish/manage copy remain preserved in the test-only
+source fixture and concept material. Public profile copy now accurately offers
+ownership review and labels reply tools as planned.
 
 ## Current State
 
@@ -1088,7 +1139,7 @@ unverified customer proof.
 
 | Prototype source | Canonical route / owner | Content and interaction treatment |
 |---|---|---|
-| `index.html` | `/host/overview/` · HostConceptPage | Consumer/social opener, sample events, organiser entrances, cumulative adoption story and claim pressure retained as concepts. One shared fictional console replay; current `/` and waitlist remain production owners. |
+| `index.html` | `/host/overview/` · HostConceptPage | Consumer/social opener, sample events, organiser entrances, cumulative adoption story and claim pressure retained as concepts. One shared fictional console replay; original consumer content and waitlist remain owned by `/explore/` in the local organiser-first review. |
 | `host.html` | `/host/platform/` · HostConceptPage | Booking coexistence, all capability groups, Programs, pilot, FAQ retained. Shared tier selection and stack model; native FAQ disclosure. |
 | `planners.html` | `/host/planners/` · same composition | Run-of-show, household/functions, travel/logistics, lifecycle messages, hands-on pilot and FAQ. Availability and enrichment claims remain illustrative. |
 | `mixers.html` | `/host/mixers/` · same composition | Promotion attribution, pricing/admission concepts, revenue, first-ten-minutes tools, community, pilot and FAQ. No new demographic authority or tariff. |
@@ -1170,7 +1221,8 @@ exact wording are in the typed catalog, not generated contract files.
 
 | Existing route family | Canonical source and preserved behavior |
 |---|---|
-| `/` | HomePage: consumer copy/discovery, download pending state, waitlist and consent; no retirement. |
+| `/` | HomePage: organiser-first content, four product/solution groupings, reused discovery and truthful claim/walkthrough actions. |
+| `/explore/` | VisitorDiscoveryPage: original consumer copy/discovery, download pending state, waitlist and consent; no retirement. |
 | `/host/` (legacy preview redirects) | HostPage: supported live workflow, setup/playbook/comparison/trust/FAQ, beta offer and existing five-stage application controller; unchanged contracts. |
 | `/organizers/`, generated organiser canonical/legacy paths | Directory/search/listing controllers, generated publication policy, filters/empty/loading states, corrections/reviews and provenance retained. |
 | `/claim/`, `/claim/:listing` | Claim route resolution, Google identity/existing shared Auth session, proof/submission/pending protection retained; claim approval is privileged and scoped. |
@@ -1199,9 +1251,7 @@ its actual identity policy; existing required OTP boundaries remain unchanged.
 
 ### Remaining product and authority decisions
 
-Content retirement, root B2B/consumer prioritization, commercial tier availability,
-universal tariff, direct integration claims, customer proof and broad program
-launch remain unapproved. Preserve source copy for review. Basic forms, member
+The organiser-first root is approved for this local review; publication remains pending user review. Content retirement, commercial tier availability, universal tariff, direct integration claims, customer proof and broad programme launch remain unapproved. Preserve source copy for review. Basic forms, member
 approval, CRM history, QR and referral/UTM features must not be called unique
 without competitive proof; workflow/operational differences need reachable
 end-to-end evidence. Conditional pricing or network concepts never override

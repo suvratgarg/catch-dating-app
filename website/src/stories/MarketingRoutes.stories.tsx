@@ -3,7 +3,7 @@ import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
-import {HomePage} from "../features/home/HomePage";
+import {HomePage, VisitorDiscoveryPage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {EventDetailPage} from "../features/events/EventDetailPage";
 import {EventInvitePage} from "../features/events/EventInvitePage";
@@ -58,12 +58,22 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Home: Story = {
-  name: "/",
+  name: "/ · Organisers",
+  parameters: {
+    a11y: {test: "error"},
+    catchRoute: {id: "home", path: "/", reviewStates: ["default", "claim-entry", "workflow-entry"], stateCoverage: {storybook: ["default"], manual: ["claim-entry", "workflow-entry"]}},
+    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "claim-entry", "workflow-entry"]},
+  },
+  render: () => <HomePage captures={captures} />,
+};
+
+export const VisitorDiscovery: Story = {
+  name: "/explore/",
   parameters: {
     a11y: {test: "todo"},
     catchRoute: {
-      id: "home",
-      path: "/",
+      id: "visitor_discovery",
+      path: "/explore/",
       reviewStates: ["default", "app-download-pending", "waitlist-form"],
       stateCoverage: {
         storybook: ["default"],
@@ -71,12 +81,12 @@ export const Home: Story = {
       },
     },
     catchComponent: {
-      id: "route_home",
-      routeIds: ["home"],
+      id: "route_visitor_discovery",
+      routeIds: ["visitor_discovery"],
       states: ["default", "app-download-pending", "waitlist-form"],
     },
   },
-  render: () => <HomePage captures={captures} />,
+  render: () => <VisitorDiscoveryPage captures={captures} />,
 };
 
 export const Host: Story = {

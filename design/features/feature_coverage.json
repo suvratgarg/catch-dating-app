@@ -323,10 +323,10 @@
     },
     {
       "authority": "marketing_routes",
-      "authorityId": "home",
+      "authorityId": "visitor_discovery",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Marketing Home contract covers organizer/event discovery handoffs, Host routing, configured and unavailable store CTAs, and member waitlist submission.",
+      "reason": "Preserved consumer discovery, store availability and member waitlist authority at /explore/.",
       "featureContract": "feature.marketing_home"
     },
     {
@@ -801,7 +801,7 @@
       "status": "grouped",
       "priority": "P1",
       "reason": "Consumer/social and Host-entry concept projection of Marketing Home; fictional event cards and waitlist handoffs reuse existing discovery and conversion owners.",
-      "primaryAuthorityId": "home"
+      "primaryAuthorityId": "visitor_discovery"
     },
     {
       "authority": "marketing_routes",
@@ -873,6 +873,14 @@
       "status": "grouped",
       "priority": "P1",
       "reason": "Workflow-led content-review projection of Host Acquisition; fictional examples and guided-contact handoffs do not implement personalised entry, approval, checkout or admission.",
+      "primaryAuthorityId": "host"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "home",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Editorial organiser-first acquisition entry using existing directory/claim links, supported Host pilot and clearly labelled concept projections; no new account or transactional authority.",
       "primaryAuthorityId": "host"
     }
   ]

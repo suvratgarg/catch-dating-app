@@ -8,6 +8,7 @@ import {validatedWebsiteMeta} from "../content/metaContract";
 export type PageKey =
   | "sales_demo"
   | "home"
+  | "visitor_discovery"
   | "host"
   | "organizers"
   | "listing"
@@ -102,6 +103,7 @@ export function getPageKey(
   if (pathname.startsWith("/f/")) return "public_form";
   if (pathname.startsWith("/host")) return "host";
   if (pathname.startsWith("/organizers")) return "organizers";
+  if (pathname === "/explore" || pathname === "/explore/") return "visitor_discovery";
   if (pathname === "/" || pathname === "") return "home";
   return "not_found";
 }

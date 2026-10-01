@@ -106,18 +106,20 @@ export function HomeHeroSection({captures}: {captures: Record<string, CaptureRec
 
 export function HomeDiscoverySection({
   events: suppliedEvents,
+  copy,
 }: {
   events?: PublicEventCardModel[];
+  copy?: {eyebrow: string; title: string; body: string};
 } = {}) {
   const discovery = usePublicDiscoveryData();
   const visibleEvents = (suppliedEvents ?? discovery.events).slice(0, 3);
   return (
     <MarketingSection variant="home-discovery" id="events" aria-labelledby="home-events-title">
       <SectionHeader
-        eyebrow={websiteCopy["homepagesections_0139"]}
+        eyebrow={copy?.eyebrow ?? websiteCopy["homepagesections_0139"]}
         id="home-events-title"
-        title={websiteCopy["homepagesections_0163"]}
-        body={websiteCopy["homepagesections_0166"]}
+        title={copy?.title ?? websiteCopy["homepagesections_0163"]}
+        body={copy?.body ?? websiteCopy["homepagesections_0166"]}
         wide
       />
       <PublicSearchBar
@@ -196,7 +198,9 @@ export function HomeFormatsSection() {
   );
 }
 
-export function HomeFeaturedOrganizersSection() {
+export function HomeFeaturedOrganizersSection({copy}: {
+  copy?: {eyebrow: string; title: string; body: string; ctaBody: string};
+} = {}) {
   const featured = hostListings
     .filter(isPubliclyReadableListing)
     .slice()
@@ -207,14 +211,14 @@ export function HomeFeaturedOrganizersSection() {
   return (
     <MarketingSection variant="featured-organizers" aria-labelledby="featured-organizers-title">
       <SectionHeader
-        eyebrow={websiteCopy["homepagesections_0153"]}
+        eyebrow={copy?.eyebrow ?? websiteCopy["homepagesections_0153"]}
         id="featured-organizers-title"
-        title={websiteCopy["homepagesections_0165"]}
-        body={websiteCopy["homepagesections_0159"]}
+        title={copy?.title ?? websiteCopy["homepagesections_0165"]}
+        body={copy?.body ?? websiteCopy["homepagesections_0159"]}
       />
       <FeaturedOrganizerCardGrid items={featuredItems} />
       <FeaturedOrganizersCta
-        body={websiteCopy["homepagesections_0158"]}
+        body={copy?.ctaBody ?? websiteCopy["homepagesections_0158"]}
         reveal
       >
         <ButtonLink

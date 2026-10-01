@@ -225,7 +225,7 @@ export function ListingEventEvidenceSection({listing}: {listing: HostListing}) {
   }));
 
   return (
-    <ListingSection variant="events" aria-labelledby="listing-events-title">
+    <ListingSection variant="events" id="event-evidence" aria-labelledby="listing-events-title">
       <SectionHeader
         eyebrow={websiteCopy["listingeventssections_0392"]}
         id="listing-events-title"

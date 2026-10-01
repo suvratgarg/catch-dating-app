@@ -1,3 +1,5 @@
+import {organiserHomeCopy} from "@content/marketingOrganization";
+import {renderOrganiserHomeSections} from "./sections/OrganiserHomeSections";
 import {websiteCopy} from "@content/generated";
 import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {
@@ -19,7 +21,7 @@ import {
   WebsitePageMain,
 } from "../../shared/site";
 
-export function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
+export function VisitorDiscoveryPage({captures}: {captures: Record<string, CaptureRecord>}) {
   return (
     <>
       <SiteHeader
@@ -59,6 +61,34 @@ export function HomePage({captures}: {captures: Record<string, CaptureRecord>}) 
           {href: "#download-app", label: websiteCopy["homepage_0109"]},
           {href: "#trust", label: websiteCopy["homepage_0117"]},
           {href: "#waitlist", label: websiteCopy["homepage_0118"]},
+          ...siteFooterLegalLinks,
+        ]}
+      />
+    </>
+  );
+}
+
+export function HomePage(_props: {captures: Record<string, CaptureRecord>}) {
+  return (
+    <>
+      <SiteHeader
+        brandHref="#top"
+        menuCopy={organiserHomeCopy.menu}
+        tone="dark"
+        nav={[...organiserHomeCopy.nav]}
+        actions={[
+          {...organiserHomeCopy.actions.signIn, variant: "secondary"},
+          organiserHomeCopy.actions.start,
+        ]}
+      />
+      <WebsitePageMain id="top">{renderOrganiserHomeSections()}</WebsitePageMain>
+      <SiteFooter
+        brandHref="#top"
+        body={organiserHomeCopy.footer}
+        links={[
+          ...organiserHomeCopy.nav,
+          organiserHomeCopy.explore.directory,
+          organiserHomeCopy.explore.visitors,
           ...siteFooterLegalLinks,
         ]}
       />

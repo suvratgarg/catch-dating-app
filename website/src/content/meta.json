@@ -2,10 +2,10 @@
   "$schema": "./meta.schema.json",
   "routes": {
     "home": {
-      "title": "Catch | The event before the match",
-      "description": "Catch turns curated singles events in Mumbai and Indore into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
+      "title": "Catch Host | Presence, guests and live events",
+      "description": "Find your organiser page, explore guest and live-event workflows, and discuss a supported Catch pilot alongside your current booking tools.",
       "canonicalPath": "/",
-      "twitterDescription": "Curated singles events in Mumbai and Indore become real dating context."
+      "twitterDescription": "Organiser discovery, existing claim requests and supported live-event workflows."
     },
     "host": {
       "title": "Live event tools for hosts | Catch beta",
@@ -43,7 +43,7 @@
     },
     "organizers": {
       "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
+      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"
@@ -184,6 +184,12 @@
       "canonicalPath": "/host/workflows/",
       "twitterDescription": "Catch Host workflow and concept preview.",
       "robots": "noindex, follow"
+    },
+    "visitor_discovery": {
+      "title": "Catch | The event before the match",
+      "description": "Catch turns curated singles events in Mumbai and Indore into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
+      "canonicalPath": "/explore/",
+      "twitterDescription": "Curated singles events in Mumbai and Indore become real dating context."
     }
   },
   "listing": {

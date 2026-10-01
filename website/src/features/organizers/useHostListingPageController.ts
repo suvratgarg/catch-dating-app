@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteTemplates} from "@content/templates";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
@@ -19,6 +20,7 @@ export function useHostListingPageController(listing: HostListing) {
   const hasEventSupply = Boolean(
     listing.catchEvents?.length || listing.externalEvents?.length
   );
+  const eventsHref = hasEventSupply ? "#events" : listing.eventEvidence?.length ? "#event-evidence" : null;
   const [shareStatus, setShareStatus] = useState("");
   const [isSaved, setIsSaved] = useState(() => readSavedOrganizer(listing.id));
 
@@ -32,21 +34,19 @@ export function useHostListingPageController(listing: HostListing) {
   }, [listing.id]);
 
   const nav = useMemo<SiteNavItem[]>(() => [
-    {href: "#profile", label: websiteCopy["usehostlistingpagecontroller_0495"]},
-    ...(hasEventSupply ? [{href: "#events", label: websiteCopy["usehostlistingpagecontroller_0493"]}] : []),
-    {href: "#reviews", label: websiteCopy["usehostlistingpagecontroller_0496"]},
-    {href: "#fit", label: isAppCreated ? "Format" : "Fit"},
-    ...(!isAppCreated ? [{href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]}] : []),
-    {href: "/organizers/", label: websiteCopy["usehostlistingpagecontroller_0497"]},
-    {href: "/host/", label: websiteCopy["usehostlistingpagecontroller_0494"]},
-  ], [hasEventSupply, isAppCreated]);
+    ...(eventsHref ? [{href: eventsHref, label: organizerPresenceCopy.navigation.events}] : []),
+    {href: "#about", label: organizerPresenceCopy.navigation.about},
+    {href: "#reviews", label: organizerPresenceCopy.navigation.reviews},
+  ], [eventsHref]);
 
   const footerLinks = useMemo<SiteNavItem[]>(() => [
     {href: "/host/", label: websiteCopy["usehostlistingpagecontroller_0494"]},
     {href: "#profile", label: websiteCopy["usehostlistingpagecontroller_0495"]},
-    ...(!isAppCreated ? [{href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]}] : []),
+    {href: "#fit", label: isAppCreated ? "Format" : "Fit"},
+    ...(listing.sources.length ? [{href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]}] : []),
+    {href: "/organizers/", label: websiteCopy["usehostlistingpagecontroller_0497"]},
     ...(policy.canRequestClaim ? [{href: claimHref, label: websiteCopy["usehostlistingpagecontroller_0492"]}] : []),
-  ], [claimHref, isAppCreated, policy.canRequestClaim]);
+  ], [claimHref, isAppCreated, listing.sources.length, policy.canRequestClaim]);
 
   const handleSaveListing = useCallback(() => {
     const nextSaved = !isSaved;

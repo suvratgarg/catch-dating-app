@@ -42,7 +42,7 @@ export function HostConceptPage({slug}: {slug: string}) {
         <ActionGroup variant="marketing">
           <ButtonLink href={ownerGatedSiteDestinations.contactHref}>{copy.contact}</ButtonLink>
           <ButtonLink href="/host/apply/" variant="ghost">{copy.apply}</ButtonLink>
-          <ButtonLink href="/" variant="ghost">{copy.consumer}</ButtonLink>
+          <ButtonLink href="/explore/" variant="ghost">{copy.consumer}</ButtonLink>
         </ActionGroup>
       </MarketingSection>
     </WebsitePageMain>

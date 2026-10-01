@@ -51,7 +51,6 @@ export function HostListingSections({
     <ListingProfileLayout activityToken={activity.token}>
       <ListingProfilePrimary>
         <ListingHeroSection listing={listing} />
-        <ListingFactsSection listing={listing} />
 
         {listing.catchEvents?.length ? (
           <ListingCatchEventsSection listing={listing} />
@@ -65,11 +64,13 @@ export function HostListingSections({
         ) : null}
 
         <ListingEventEvidenceSection listing={listing} />
-        <ListingReviewsSection listing={listing} />
 
         {listing.eventSuccessSummary ? (
           <ListingEventSuccessSection summary={listing.eventSuccessSummary} />
         ) : null}
+
+        <ListingFactsSection listing={listing} />
+        <ListingReviewsSection listing={listing} />
 
         <ListingFitSection
           isAppCreated={isAppCreated}
@@ -102,7 +103,7 @@ export function HostListingSections({
           onShareListing={() => void handleShareListing()}
           shareStatus={shareStatus}
         />
-        {!isAppCreated && listing.sources.length ? (
+        {listing.sources.length ? (
           <ListingSourcesSection listing={listing} />
         ) : null}
         <ListingEventsRailSection listing={listing} />

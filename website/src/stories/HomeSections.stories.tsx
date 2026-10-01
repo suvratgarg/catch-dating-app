@@ -52,7 +52,7 @@ export const HomeHeroSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_hero_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["default", "app-download-ctas"],
     },
   },
@@ -64,7 +64,7 @@ export const HomeDiscoverySectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_discovery_section",
-      routeIds: ["home"],
+      routeIds: ["home", "visitor_discovery"],
       states: ["event-grid", "search-suggestions"],
     },
   },
@@ -76,7 +76,7 @@ export const HomeDiscoveryEmptyStateStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_discovery_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["empty-state"],
     },
   },
@@ -88,7 +88,7 @@ export const HomeFormatsSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_formats_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["format-grid"],
     },
   },
@@ -100,7 +100,7 @@ export const HomeFeaturedOrganizersSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_featured_organizers_section",
-      routeIds: ["home"],
+      routeIds: ["home", "visitor_discovery"],
       states: ["directory-cards", "directory-cta"],
     },
   },
@@ -112,7 +112,7 @@ export const HomeMemberLoopSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_member_loop_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["loop-list"],
     },
   },
@@ -124,7 +124,7 @@ export const HomeHostProofSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_host_proof_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["host-cta", "capture-grid"],
     },
   },
@@ -136,7 +136,7 @@ export const HomeCapturesSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_captures_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["capture-grid"],
     },
   },
@@ -148,7 +148,7 @@ export const HomeCapturesFallback: Story = {
   parameters: {
     catchComponent: {
       id: "home_captures_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["capture-fallback"],
     },
   },
@@ -160,7 +160,7 @@ export const HomeDownloadSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_download_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["app-download-pending"],
     },
   },
@@ -172,7 +172,7 @@ export const HomeTrustSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "home_trust_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["trust-grid"],
     },
   },
@@ -185,7 +185,7 @@ export const HomeWaitlistSectionStory: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "home_waitlist_section",
-      routeIds: ["home"],
+      routeIds: ["visitor_discovery"],
       states: ["waitlist-form"],
     },
   },
