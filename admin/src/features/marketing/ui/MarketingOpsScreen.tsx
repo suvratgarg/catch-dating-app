@@ -6,6 +6,7 @@ import {
   Plus,
   RefreshCw,
 } from "lucide-react";
+import {useEffect} from "react";
 import {
   AdminButton,
   AdminMarketingOpsShell,
@@ -49,6 +50,7 @@ export function MarketingOpsScreen({
   onError,
   onNotice,
   onTabChange,
+  onUnsavedChangesChange,
   selectedDraftId = null,
 }: {
   activeTab?: MarketingStudioTab;
@@ -58,6 +60,7 @@ export function MarketingOpsScreen({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
   onTabChange?: (tab: Exclude<MarketingStudioTab, "draft">) => void;
+  onUnsavedChangesChange?: (dirty: boolean) => void;
   selectedDraftId?: string | null;
 }) {
   const controller = useMarketingOpsController({
@@ -70,6 +73,10 @@ export function MarketingOpsScreen({
     onTabChange,
     selectedDraftId,
   });
+  useEffect(() => {
+    onUnsavedChangesChange?.(controller.hasUnsavedChanges);
+  }, [controller.hasUnsavedChanges, onUnsavedChangesChange]);
+  useEffect(() => () => onUnsavedChangesChange?.(false), [onUnsavedChangesChange]);
   return <MarketingOpsWorkspace controller={controller} />;
 }
 
@@ -258,7 +265,8 @@ function MarketingPersistenceAlerts({controller}: {controller: MarketingOpsContr
           tone="warning"
         >
           These edits are not in the saved dashboard snapshot. Refreshing, closing,
-          or leaving Marketing can discard them; a browser unload warning is active.
+          or leaving Marketing can discard them. A confirmation is required before
+          leaving Marketing, and a browser unload warning is active.
         </AlertRow>
       ) : null}
       {controller.reviewReceiptRecorded ? (
