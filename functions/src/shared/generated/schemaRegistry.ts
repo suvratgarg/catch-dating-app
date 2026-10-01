@@ -11,6 +11,7 @@ export {readPublicOrganizerTrackingSettingsCallablePayloadSchema} from "./schema
 export {organizerTrackingSettingsCallableResponseSchema} from "./schemas/organizerTrackingSettingsOutput";
 export {publicOrganizerTrackingSettingsCallableResponseSchema} from "./schemas/publicOrganizerTrackingSettingsOutput";
 export {organizerTrackingSettingsDocumentSchema} from "./schemas/organizerTrackingSettingsDocument";
+export {catchWhatsappWebhookEventDocumentSchema} from "./schemas/catchWhatsappWebhookEventDocument";
 export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
 export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";
 export {salesPrivacyRestrictionSchema} from "./schemas/salesPrivacyRestriction";

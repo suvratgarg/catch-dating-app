@@ -17917,6 +17917,130 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const catchWhatsappWebhookEventDocumentDeliveryStatus = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.deliveryStatus',
+    required: true,
+    enumValues: <String>['sent', 'delivered', 'read', 'failed'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentErrorCodes = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.errorCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['integer'],
+    maxItems: 10,
+  );
+
+  static const catchWhatsappWebhookEventDocumentErrorCodesItems = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.errorCodes.items',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchWhatsappWebhookEventDocumentEventId = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cwhe_[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappWebhookEventDocumentEventKind = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.eventKind',
+    required: true,
+    enumValues: <String>['inbound', 'status'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchWhatsappWebhookEventDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentMessageId = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.messageId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentMessageType = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.messageType',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentParticipantId = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.participantId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappWebhookEventDocumentPhoneNumberId = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.phoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const catchWhatsappWebhookEventDocumentProviderTimestampSeconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.providerTimestampSeconds',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,12}\$',
+  );
+
+  static const catchWhatsappWebhookEventDocumentReceivedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.receivedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const catchWhatsappWebhookEventDocumentSchema = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.schema',
+    required: true,
+  );
+
+  static const catchWhatsappWebhookEventDocumentText = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.text',
+    maxLength: 4096,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentTextTruncated = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.textTruncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const catchWhatsappWebhookEventDocumentWabaId = CatchContractFieldConstraints(
+    path: 'catchWhatsappWebhookEventDocument.wabaId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
   static const changeEventAssistanceRouteCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'changeEventAssistanceRouteCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -158133,6 +158257,24 @@ abstract final class CatchContractConstraints {
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.termsVersion': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingTermsVersion,
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._nanoseconds': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtNanoseconds,
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._seconds': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtSeconds,
+    'catchWhatsappWebhookEventDocument.deliveryStatus': catchWhatsappWebhookEventDocumentDeliveryStatus,
+    'catchWhatsappWebhookEventDocument.errorCodes': catchWhatsappWebhookEventDocumentErrorCodes,
+    'catchWhatsappWebhookEventDocument.errorCodes.items': catchWhatsappWebhookEventDocumentErrorCodesItems,
+    'catchWhatsappWebhookEventDocument.eventId': catchWhatsappWebhookEventDocumentEventId,
+    'catchWhatsappWebhookEventDocument.eventKind': catchWhatsappWebhookEventDocumentEventKind,
+    'catchWhatsappWebhookEventDocument.expiresAt._nanoseconds': catchWhatsappWebhookEventDocumentExpiresAtNanoseconds,
+    'catchWhatsappWebhookEventDocument.expiresAt._seconds': catchWhatsappWebhookEventDocumentExpiresAtSeconds,
+    'catchWhatsappWebhookEventDocument.messageId': catchWhatsappWebhookEventDocumentMessageId,
+    'catchWhatsappWebhookEventDocument.messageType': catchWhatsappWebhookEventDocumentMessageType,
+    'catchWhatsappWebhookEventDocument.participantId': catchWhatsappWebhookEventDocumentParticipantId,
+    'catchWhatsappWebhookEventDocument.payloadHash': catchWhatsappWebhookEventDocumentPayloadHash,
+    'catchWhatsappWebhookEventDocument.phoneNumberId': catchWhatsappWebhookEventDocumentPhoneNumberId,
+    'catchWhatsappWebhookEventDocument.providerTimestampSeconds': catchWhatsappWebhookEventDocumentProviderTimestampSeconds,
+    'catchWhatsappWebhookEventDocument.receivedAtMillis': catchWhatsappWebhookEventDocumentReceivedAtMillis,
+    'catchWhatsappWebhookEventDocument.schema': catchWhatsappWebhookEventDocumentSchema,
+    'catchWhatsappWebhookEventDocument.text': catchWhatsappWebhookEventDocumentText,
+    'catchWhatsappWebhookEventDocument.textTruncated': catchWhatsappWebhookEventDocumentTextTruncated,
+    'catchWhatsappWebhookEventDocument.wabaId': catchWhatsappWebhookEventDocumentWabaId,
     'changeEventAssistanceRouteCallablePayload.command.context.clockId': changeEventAssistanceRouteCallablePayloadCommandContextClockId,
     'changeEventAssistanceRouteCallablePayload.command.context.eventId': changeEventAssistanceRouteCallablePayloadCommandContextEventId,
     'changeEventAssistanceRouteCallablePayload.command.context.mode': changeEventAssistanceRouteCallablePayloadCommandContextMode,

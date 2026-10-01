@@ -533,6 +533,74 @@
       "sourcePaths": [
         "functions/src/salesDemo/callables.ts"
       ]
+    },
+    {
+      "id": "functions.secret.catch-whatsapp-app-secret",
+      "kind": "secret-version",
+      "name": "CATCH_WHATSAPP_APP_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:catchWhatsappWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "catch-messaging",
+      "sourcePaths": [
+        "functions/src/catchMessaging/whatsappWebhook.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.catch-whatsapp-webhook-verify-token",
+      "kind": "secret-version",
+      "name": "CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:catchWhatsappWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "catch-messaging",
+      "sourcePaths": [
+        "functions/src/catchMessaging/whatsappWebhook.ts"
+      ]
+    },
+    {
+      "id": "firestore.ttl.catch-whatsapp-webhook-events",
+      "kind": "firestore-ttl",
+      "collectionGroup": "catchWhatsappWebhookEvents",
+      "field": "expiresAt",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:catchWhatsappWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ACTIVE"
+      ],
+      "owner": "catch-messaging",
+      "sourcePaths": [
+        "contracts/firestore/catch_whatsapp_webhook_events.schema.json",
+        "functions/src/catchMessaging/whatsappWebhook.ts"
+      ]
     }
   ]
 }

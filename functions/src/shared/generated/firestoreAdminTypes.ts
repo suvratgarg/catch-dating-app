@@ -559,6 +559,31 @@ export interface OrganizerTrackingSettingsDocument {
   updatedAtMillis: number;
 }
 
+/**
+ * Private immutable Catch-owned incoming message and status receipts. Exact configured WABA and sender binding, no organizer authority, no outgoing action. Bounded text expires after 30 days. Status facts remain individual events rather than an arrival-ordered delivery projection.
+ */
+export interface CatchWhatsappWebhookEventDocument {
+  schema: "catch.whatsapp-webhook-event/v1";
+  eventId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  payloadHash: string;
+  eventKind: "inbound" | "status";
+  messageId: string;
+  providerTimestampSeconds: string;
+  participantId: string;
+  messageType: string | null;
+  text: string | null;
+  textTruncated: boolean;
+  deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
+  /**
+   * @maxItems 10
+   */
+  errorCodes: number[];
+  receivedAtMillis: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
 export interface SalesImportHistoryRowDocument {
   schemaVersion: 1;
   classification: "sales_private";

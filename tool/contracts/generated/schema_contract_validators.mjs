@@ -9,6 +9,7 @@ import {
   organizerTrackingSettingsCallableResponseSchema,
   publicOrganizerTrackingSettingsCallableResponseSchema,
   organizerTrackingSettingsDocumentSchema,
+  catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
   salesPrivacyRestrictionSchema,
@@ -1179,6 +1180,7 @@ export const validateReadPublicOrganizerTrackingSettingsCallablePayload = ajv.co
 export const validateOrganizerTrackingSettingsCallableResponse = ajv.compile(organizerTrackingSettingsCallableResponseSchema);
 export const validatePublicOrganizerTrackingSettingsCallableResponse = ajv.compile(publicOrganizerTrackingSettingsCallableResponseSchema);
 export const validateOrganizerTrackingSettingsDocument = ajv.compile(organizerTrackingSettingsDocumentSchema);
+export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
 export const validateSalesPrivacyRestriction = ajv.compile(salesPrivacyRestrictionSchema);

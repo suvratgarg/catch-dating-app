@@ -22,6 +22,11 @@ const schemaSpecs = [
   {"name": "PublicOrganizerTrackingSettingsCallableResponse", "source": "callable_responses/public_organizer_tracking_settings_response.schema.json", "typeOutput": "functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse.ts"},
   {"name": "OrganizerTrackingSettingsDocument", "source": "firestore/organizer_tracking_settings.schema.json", "typeOutput": "functions/src/shared/generated/organizerTrackingSettingsDocument.ts"},
 
+  {
+    name: "CatchWhatsappWebhookEventDocument",
+    source: "firestore/catch_whatsapp_webhook_events.schema.json",
+    typeOutput: "functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts",
+  },
   {"name": "SalesImportHistoryRowDocument", "source": "firestore/sales_import_history_rows.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRowDocument.ts"},
   {"name": "SalesImportHistoryRecordDocument", "source": "firestore/sales_import_history_records.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRecordDocument.ts"},
   {"name": "SalesPrivacyRestriction", "source": "firestore/sales_privacy_restrictions.schema.json", "typeOutput": "functions/src/shared/generated/salesPrivacyRestriction.ts"},

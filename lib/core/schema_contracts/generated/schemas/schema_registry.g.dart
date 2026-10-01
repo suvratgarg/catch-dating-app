@@ -47,6 +47,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOrganizerTrackingSettingsDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'CatchWhatsappWebhookEventDocument',
+    source: 'firestore/catch_whatsapp_webhook_events.schema.json',
+    schema: schemaCatchWhatsappWebhookEventDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SalesImportHistoryRowDocument',
     source: 'firestore/sales_import_history_rows.schema.json',
     schema: schemaSalesImportHistoryRowDocumentSchema,
@@ -5755,6 +5760,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerTrackingSettingsCallableResponse': schemaOrganizerTrackingSettingsCallableResponseSchema,
   'PublicOrganizerTrackingSettingsCallableResponse': schemaPublicOrganizerTrackingSettingsCallableResponseSchema,
   'OrganizerTrackingSettingsDocument': schemaOrganizerTrackingSettingsDocumentSchema,
+  'CatchWhatsappWebhookEventDocument': schemaCatchWhatsappWebhookEventDocumentSchema,
   'SalesImportHistoryRowDocument': schemaSalesImportHistoryRowDocumentSchema,
   'SalesImportHistoryRecordDocument': schemaSalesImportHistoryRecordDocumentSchema,
   'SalesPrivacyRestriction': schemaSalesPrivacyRestrictionSchema,
@@ -6904,6 +6910,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/organizer_tracking_settings_response.schema.json': schemaOrganizerTrackingSettingsCallableResponseSchema,
   'callable_responses/public_organizer_tracking_settings_response.schema.json': schemaPublicOrganizerTrackingSettingsCallableResponseSchema,
   'firestore/organizer_tracking_settings.schema.json': schemaOrganizerTrackingSettingsDocumentSchema,
+  'firestore/catch_whatsapp_webhook_events.schema.json': schemaCatchWhatsappWebhookEventDocumentSchema,
   'firestore/sales_import_history_rows.schema.json': schemaSalesImportHistoryRowDocumentSchema,
   'firestore/sales_import_history_records.schema.json': schemaSalesImportHistoryRecordDocumentSchema,
   'firestore/sales_privacy_restrictions.schema.json': schemaSalesPrivacyRestrictionSchema,

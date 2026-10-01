@@ -11,6 +11,7 @@ export {validateReadPublicOrganizerTrackingSettingsCallablePayload} from "./vali
 export {validateOrganizerTrackingSettingsCallableResponse} from "./validators/organizerTrackingSettingsOutput";
 export {validatePublicOrganizerTrackingSettingsCallableResponse} from "./validators/publicOrganizerTrackingSettingsOutput";
 export {validateOrganizerTrackingSettingsDocument} from "./validators/organizerTrackingSettingsDocument";
+export {validateCatchWhatsappWebhookEventDocument} from "./validators/catchWhatsappWebhookEventDocument";
 export {validateSalesImportHistoryRowDocument} from "./validators/salesImportHistoryRowDocument";
 export {validateSalesImportHistoryRecordDocument} from "./validators/salesImportHistoryRecordDocument";
 export {validateSalesPrivacyRestriction} from "./validators/salesPrivacyRestriction";
