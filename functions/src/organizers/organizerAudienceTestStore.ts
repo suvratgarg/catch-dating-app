@@ -9,7 +9,8 @@ type Transaction = {
   getAll: (...refs: Ref[]) => Promise<unknown[]>;
   get: (ref: Ref | Query) => Promise<unknown>;
   create: (ref: Ref, data: Data) => void;
-  set: (ref: Ref, data: Data) => void;
+  set: (ref: Ref, data: Data, options?: {merge?: boolean}) => void;
+  delete: (ref: Ref) => void;
   update: (ref: Ref, data: Data) => void;
 };
 type Filter = [string, string, unknown];
@@ -178,7 +179,11 @@ export class AudienceTestStore {
         assert.equal(this.docs[ref.path], undefined, "Duplicate create");
         this.write(ref, data);
       }),
-      set: (ref: Ref, data: Data) => writes.push(() => this.write(ref, data)),
+      set: (ref: Ref, data: Data, options?: {merge?: boolean}) =>
+        writes.push(() => this.write(ref, data, options?.merge)),
+      delete: (ref: Ref) => writes.push(() => {
+        delete this.docs[ref.path];
+      }),
       update: (ref: Ref, data: Data) =>
         writes.push(() => this.write(ref, data, true)),
     });
