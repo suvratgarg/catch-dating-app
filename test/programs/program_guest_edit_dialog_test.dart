@@ -3,6 +3,7 @@ import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,6 +54,13 @@ Widget _dialogApp(ValueChanged<ProgramGuestEditResult?> onResult) =>
         ),
       ),
     );
+
+Finder _field(String title) => find.descendant(
+  of: find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  ),
+  matching: find.byType(TextField),
+);
 
 Future<void> _open(
   WidgetTester tester,
@@ -106,7 +114,7 @@ void main() {
   ) async {
     var returned = false;
     await _open(tester, (_) => returned = true);
-    await tester.enterText(find.byType(TextField).at(0), '   ');
+    await tester.enterText(_field('Guest name'), '   ');
     await tester.tap(find.text('Save'));
     await pumpFeatureUi(tester);
     expect(returned, isFalse);
@@ -118,9 +126,9 @@ void main() {
     (tester) async {
       ProgramGuestEditResult? result;
       await _open(tester, (value) => result = value);
-      await tester.enterText(find.byType(TextField).at(0), '  Guest Name  ');
-      await tester.enterText(find.byType(TextField).at(1), '+919876543210');
-      await tester.enterText(find.byType(TextField).at(2), 'guest@example.com');
+      await tester.enterText(_field('Guest name'), '  Guest Name  ');
+      await tester.enterText(_field('Phone (E.164)'), '+919876543210');
+      await tester.enterText(_field('Email'), 'guest@example.com');
       await tester.tap(find.text('Family'));
       await tester.tap(find.text('Zed · side'));
       await tester.tap(find.text('Alpha · side'));
@@ -141,7 +149,7 @@ void main() {
   ) async {
     ProgramGuestEditResult? result;
     await _open(tester, (value) => result = value);
-    await tester.enterText(find.byType(TextField).at(0), 'Guest');
+    await tester.enterText(_field('Guest name'), 'Guest');
     await tester.tap(find.text('Family'));
     await tester.pump();
     await tester.tap(find.text('Family'));
@@ -188,7 +196,7 @@ void main() {
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Add guest'));
       await pumpFeatureUi(tester);
-      await tester.enterText(find.byType(TextField).at(0), '  New Guest  ');
+      await tester.enterText(_field('Guest name'), '  New Guest  ');
       await tester.tap(find.text('Save'));
       await pumpFeatureUi(tester);
       expect(repository.savedProgramId, 'program');
