@@ -1,3 +1,4 @@
+import {organizerContactVisibleFields} from "./organizerContactFields";
 import {retainedNativePaymentAmount} from "../payments/paymentAmounts";
 import {
   contactFilterSelection, contactFilterKey, contactMatchesFilters,
@@ -924,11 +925,7 @@ export async function getOrganizerContactDetailHandler(
     historyLoaded: includeHistory,
     organizerId: data.organizerId,
     contactId: data.contactId,
-    displayName: effectiveDisplayName(contact),
-    sourceDisplayName: contact.displayName,
-    displayNameOverride: contact.displayNameOverride ?? null,
-    phoneE164: contact.phoneE164,
-    email: contact.email,
+    ...organizerContactVisibleFields(contact),
     linkedAccount: contact.linkedUid !== null,
     identityState: activeIdentityState(contact.identityState),
     identityConfidence: contact.identityConfidence,
@@ -2102,20 +2099,23 @@ export async function exportOrganizerContactsHandler(
     "identity_state", "expected_events", "attended_events", "no_shows",
     "attendance_rate", "segments", "whatsapp_permission", "source_coverage",
   ];
-  const csv = [header, ...rows.map(({id, contact, trait}) => [
-    id,
-    effectiveDisplayName(contact),
-    contact.phoneE164 ?? "",
-    contact.email ?? "",
-    contact.identityState,
-    String(trait!.expectedEventCount),
-    String(trait!.attendedEventCount),
-    String(trait!.noShowCount),
+  const csv = [header, ...rows.map(({id, contact, trait}) => {
+    const fields = organizerContactVisibleFields(contact);
+    return [
+      id,
+      fields.displayName,
+      fields.phoneE164 ?? "",
+      fields.email ?? "",
+      contact.identityState,
+      String(trait!.expectedEventCount),
+      String(trait!.attendedEventCount),
+      String(trait!.noShowCount),
     trait!.attendanceRate === null ? "" : String(trait!.attendanceRate),
     trait!.segmentIds.join("|"),
     trait!.whatsappStatus,
-    trait!.sourceCoverage,
-  ])].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+      trait!.sourceCoverage,
+    ];
+  })].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
   const summary = summarySnap.data() as
     OrganizerAudienceSummaryDocument | undefined;
   const sourceCoverage = await resolveOrganizerAudienceCoverage({
@@ -2518,11 +2518,12 @@ function safeContactRow(
       contact.identityState === "merged" || contact.hiddenAt != null) {
     return null;
   }
+  const fields = organizerContactVisibleFields(contact);
   return {
     contactId,
-    displayName: effectiveDisplayName(contact),
-    phoneE164: contact.phoneE164,
-    email: contact.email,
+    displayName: fields.displayName,
+    phoneE164: fields.phoneE164,
+    email: fields.email,
     identityState: activeIdentityState(contact.identityState),
     identityConfidence: contact.identityConfidence,
     ambiguousCandidateCount: contact.ambiguousCandidateContactIds.length,
@@ -3116,7 +3117,7 @@ function normalizeExportPayload(data: unknown): unknown {
 }
 
 function effectiveDisplayName(contact: OrganizerContactDocument): string {
-  return contact.displayNameOverride ?? contact.displayName;
+  return organizerContactVisibleFields(contact).displayName;
 }
 
 function hashEndpoint(value: string): string {
