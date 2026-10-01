@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_fields.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +13,7 @@ void main() {
     for (final (name, builder, type, count)
         in <(String, WidgetBuilder, Type, int)>[
           ('review', hostPhoneImportReviewStates, PhoneImportReviewScreen, 2),
-          ('guests', hostPhoneImportGuestStates, PhoneImportGuestFields, 3),
+          ('guests', hostPhoneImportGuestStates, PhoneImportGuestSection, 3),
         ]) {
       testWidgets('$name previews fit both themes at text scale $scale', (
         tester,
