@@ -259,22 +259,17 @@ class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
                               ),
                               if (program.isArchived &&
                                   program.anonymizedAt == null &&
-                                  program.anonymizeAt != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: CatchSpacing.s2,
-                                  ),
-                                  child: Text(
-                                    context.l10n.programsListAnonymizesOn(
-                                      date: AppTimeFormatters.shortDate(
-                                        program.anonymizeAt!,
-                                      ),
+                                  program.anonymizeAt != null) ...[
+                                const SizedBox(height: CatchSpacing.s2),
+                                Text(
+                                  context.l10n.programsListAnonymizesOn(
+                                    date: AppTimeFormatters.shortDate(
+                                      program.anonymizeAt!,
                                     ),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
                                   ),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
+                              ],
                             ],
                           ),
                           trailing: Row(
@@ -401,6 +396,7 @@ class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
           archiving
               ? l10n.programsListArchiveConfirmMessage(date: anonymizeDate)
               : l10n.programsListUnarchiveConfirmMessage,
+          style: CatchTextStyles.bodyL(context),
         ),
       ),
     );
