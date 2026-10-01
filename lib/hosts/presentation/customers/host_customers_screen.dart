@@ -396,21 +396,23 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                           children: [
                             HostCustomersSummary(
                               summary: summary,
-                              newCustomerCount: ref
-                                  .watch(
-                                    hostCustomerSegmentCountProvider(
-                                      HostCustomerSegmentCountRequest(
-                                        organizerId: selectedClub.id,
-                                        filter:
-                                            HostCustomerFilter.newToOrganizer,
-                                      ),
-                                    ),
-                                  )
-                                  .when(
-                                    data: (value) => value,
-                                    loading: () => null,
-                                    error: (_, _) => null,
-                                  ),
+                              newCustomerCount: peopleView
+                                  ? ref
+                                        .watch(
+                                          hostCustomerSegmentCountProvider(
+                                            HostCustomerSegmentCountRequest(
+                                              organizerId: selectedClub.id,
+                                              filter: HostCustomerFilter
+                                                  .newToOrganizer,
+                                            ),
+                                          ),
+                                        )
+                                        .when(
+                                          data: (value) => value,
+                                          loading: () => null,
+                                          error: (_, _) => null,
+                                        )
+                                  : null,
                               onRetry: () => ref.invalidate(
                                 hostCrmSummaryProvider(selectedClub.id),
                               ),

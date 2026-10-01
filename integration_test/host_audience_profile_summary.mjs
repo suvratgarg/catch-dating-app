@@ -15,6 +15,10 @@ console.log(JSON.stringify({
     formsMs: report.fixture.formsDelayMs,
     responsesMs: report.fixture.responsesDelayMs,
     groupsPageMs: report.fixture.groupPageDelayMs,
+    peopleFirstPageMs: report.fixture.peopleFirstPageMs,
+    summaryMs: report.fixture.summaryMs,
+    messagingMs: report.fixture.messagingMs,
+    largeListPageMs: report.fixture.largeListPageMs,
   },
   phases: phases.map(phase => {
     const events = report.fixture.events.filter(event => event.phase === phase);
@@ -26,6 +30,16 @@ console.log(JSON.stringify({
       phase,
       requests,
       visibleWaitMs: events.find(event => event.event === 'visible')?.elapsedMs,
+      visibleWaitsMs: events.filter(event => event.event === 'visible').length > 1
+        ? events.filter(event => event.event === 'visible').map(event => event.elapsedMs) : undefined,
+      allRowsLoadedMs: events.find(event => event.event === 'allRowsLoaded')?.elapsedMs,
+      // Payload markers record UTF-8 JSON bytes, independently of duration markers.
+      syntheticPayloadBytes: events.filter(event => event.event.endsWith('.payloadBytes'))
+        .reduce((total, event) => total + event.elapsedMs, 0),
+      decodeTotalMs: events.filter(event => event.event.endsWith('.decodeMs'))
+        .reduce((total, event) => total + event.elapsedMs, 0),
+      decodeWorstMs: Math.max(0, ...events.filter(event => event.event.endsWith('.decodeMs'))
+        .map(event => event.elapsedMs)),
       firstFormsToResponsesStartMs: events.find(event => event.event === 'responses.start')?.atMs -
         events.find(event => event.event === 'forms.start')?.atMs || undefined,
       frames: frames && {
