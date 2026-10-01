@@ -1,7 +1,5 @@
-import {organiserHomeCopy} from "@content/marketingOrganization";
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
   OrganizerResultsSection,
@@ -30,15 +28,7 @@ export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
 
   return (
     <>
-      <SiteHeader
-        brandHref="/"
-        menuCopy={organiserHomeCopy.menu}
-        nav={organiserHomeCopy.nav.map((item) => ({...item, href: `/${item.href}`}))}
-        actions={[
-          {...organiserHomeCopy.actions.signIn, variant: "secondary"},
-          organiserHomeCopy.actions.start,
-        ]}
-      />
+      <PublicSiteHeader />
 
       <WebsitePageMain id="top">
         <OrganizerSearchHeroSection controller={controller} />
@@ -57,15 +47,13 @@ export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
         />
       </WebsitePageMain>
 
-      <SiteFooter
-        brandHref="/"
+      <PublicSiteFooter
         body={websiteCopy["organizersearchpage_0352"]}
         links={[
           {href: "/host/", label: websiteCopy["organizersearchpage_0349"]},
           {href: "/explore/", label: websiteCopy["organizersearchpage_0350"]},
           {href: "/organizers/?q=run", label: websiteCopy["organizersearchpage_0351"]},
           {href: "/organizers/?q=dinner", label: websiteCopy["organizersearchpage_0348"]},
-          ...siteFooterLegalLinks,
         ]}
       />
     </>

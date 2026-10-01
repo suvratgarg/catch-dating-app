@@ -48,3 +48,7 @@
   flex-wrap: wrap;
   gap: 10px;
 }
+
+.site-footer__context {
+  grid-column: 1 / -1;
+}

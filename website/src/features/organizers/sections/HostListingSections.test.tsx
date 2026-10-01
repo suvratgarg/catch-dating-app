@@ -7,8 +7,7 @@ import type {HostListing} from "../types";
 import type {ListingClaimController} from "../../claims/useListingClaimController";
 import {useHostListingPageController} from "../useHostListingPageController";
 import {HostListingSections} from "./HostListingSections";
-import {SiteHeader, WebsitePageMain} from "../../../shared/site";
-import {siteMenuCopy} from "@content/site";
+import {PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {ListingFactsSection} from "./ListingFactsSection";
 
 vi.mock("../../../firebaseConfig", () => ({publicReviewsFirebaseConfigured: false}));
@@ -20,8 +19,8 @@ afterEach(cleanup);
 function Profile({listing}: {listing: HostListing}) {
   const controller = useHostListingPageController(listing);
   const claimController = {presentation: {panel: "hidden"}} as ListingClaimController;
-  return <><SiteHeader brandHref="/" menuCopy={siteMenuCopy} nav={controller.nav}
-    ctaHref={controller.claimHref} ctaLabel={controller.headerCtaLabel} />
+  return <><PublicSiteHeader localNav={controller.nav}
+    localActions={[{href: controller.claimHref, label: controller.headerCtaLabel}]} />
     <WebsitePageMain id="profile"><HostListingSections listing={listing} controller={controller}
       claimController={claimController} /></WebsitePageMain></>;
 }
@@ -50,7 +49,13 @@ describe("organizer presence sections", () => {
     const events = container.querySelector("#events")!;
     const about = container.querySelector("#about")!;
     const reviews = container.querySelector("#reviews")!;
+    const localNav = screen.getByRole("navigation", {name: "On this page"});
+    const globalNav = screen.getByRole("navigation", {name: "Primary"});
+    expect(within(globalNav).getAllByRole("link").map((link) => link.textContent))
+      .toEqual(["Product", "Solutions", "Explore", "Resources"]);
     for (const label of ["Events", "About", "Reviews"]) {
+      expect(within(localNav).getByRole("link", {name: label})).toBeTruthy();
+      expect(within(globalNav).queryByRole("link", {name: label})).toBeNull();
       for (const link of screen.getAllByRole("link", {name: label})) {
         expect(container.querySelector(link.getAttribute("href")!)).toBeTruthy();
       }

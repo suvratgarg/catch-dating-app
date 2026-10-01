@@ -6,3 +6,4 @@ export {
   type SiteHeaderAction,
   type SiteNavItem,
 } from "./SiteHeader";
+export {PublicSiteHeader, PublicSiteFooter} from "./PublicSiteChrome";

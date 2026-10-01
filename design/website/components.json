@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 99,
-  "updated": "2026-09-30",
+  "version": 100,
+  "updated": "2026-10-01",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -73,6 +73,98 @@
         ]
       },
       "notes": "Shared website route/page shell owner for the app-level page-shell wrapper and ordinary page main elements. App route code uses PageShell, page route files use WebsitePageMain unless they need a route-specific shared main such as ClaimFlowMain or HostPreviewMain; raw page-shell wrappers and raw <main> tags are blocked by web:react-component-governance."
+    },
+    {
+      "id": "shared_public_site_footer",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "host",
+        "claim",
+        "claim_lookup",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+        "organizer_search",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "event_detail_canonical",
+        "host_workflows",
+        "host_overview",
+        "host_platform",
+        "host_planners",
+        "host_mixers",
+        "host_clubs",
+        "host_directory",
+        "host_claim",
+        "host_apply",
+        "host_stack"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/PublicSiteChrome.tsx",
+      "exportName": "PublicSiteFooter",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/site-footer.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicSiteChrome.stories.tsx",
+        "exportName": "PublicSiteFooterStory",
+        "states": [
+          "global-links",
+          "context-links"
+        ]
+      },
+      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner."
+    },
+    {
+      "id": "shared_public_site_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "host",
+        "claim",
+        "claim_lookup",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+        "organizer_search",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "event_detail_canonical",
+        "host_workflows",
+        "host_overview",
+        "host_platform",
+        "host_planners",
+        "host_mixers",
+        "host_clubs",
+        "host_directory",
+        "host_claim",
+        "host_apply",
+        "host_stack"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/PublicSiteChrome.tsx",
+      "exportName": "PublicSiteHeader",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/site-footer.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicSiteChrome.stories.tsx",
+        "exportName": "PublicSiteHeaderStory",
+        "states": [
+          "global-navigation",
+          "secondary-navigation"
+        ]
+      },
+      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner."
     },
     {
       "id": "route_home",

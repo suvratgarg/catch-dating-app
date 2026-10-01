@@ -1,3 +1,4 @@
+import legalDocument from "./legal.json" with {type: "json"};
 import type {StoreCtaCopy} from "./types";
 
 export const ownerGatedSiteDestinations = {
@@ -33,3 +34,25 @@ export const storeCtaCopy = [
     shortLabel: "Play",
   },
 ] as const satisfies readonly StoreCtaCopy[];
+
+// One authored owner for public marketing chrome across route families.
+export const publicSiteCopy = {
+  menu: {
+    dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close",
+    kicker: "Catch · For organisers", hint: "Presence, guests, and the live event", navLabel: "Mobile",
+  },
+  nav: [
+    {href: "/#product", label: "Product"},
+    {href: "/#solutions", label: "Solutions"},
+    {href: "/#explore", label: "Explore"},
+    {href: "/#resources", label: "Resources"},
+  ],
+  actions: [
+    {href: "/claim/", label: "Sign in for a claim", variant: "secondary"},
+    {href: "/claim/", label: "Get started free", variant: "primary"},
+  ],
+  footerBody: "Catch for organisers: public discovery, guest coordination, and a supported live-event pilot.",
+  footerOperator: legalDocument.ui.footerBody,
+  localNavLabel: "On this page",
+  relatedLinksLabel: "Related links",
+} as const;

@@ -1,7 +1,6 @@
 import type {PublishedLegalPage} from "../../content/types";
-import {siteFooterLegalLinks, siteMenuCopy} from "../../content/site";
 import {publishedLegalContent} from "../../content/legal";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   LegalDocument,
   LegalDocumentContact,
@@ -20,15 +19,13 @@ export function LegalPage({page, effectiveDate}: {
   const {operator, ui} = publishedLegalContent;
   return (
     <>
-      <SiteHeader
-        brandHref="/"
-        menuCopy={siteMenuCopy}
-        nav={[
+      <PublicSiteHeader
+        localNav={[
           {href: "/", label: ui.homeLabel},
           {href: "/organizers/", label: ui.organizersLabel},
           {href: "/host/", label: ui.hostsLabel},
         ]}
-        actions={[{href: `mailto:${operator.supportEmail}`, label: ui.contactLabel}]}
+        localActions={[{href: `mailto:${operator.supportEmail}`, label: ui.contactLabel}]}
       />
       <WebsitePageMain id="top">
         <LegalDocument>
@@ -59,11 +56,7 @@ export function LegalPage({page, effectiveDate}: {
           </LegalDocumentContact>
         </LegalDocument>
       </WebsitePageMain>
-      <SiteFooter
-        brandHref="/"
-        body={ui.footerBody}
-        links={siteFooterLegalLinks.map((link) => ({...link}))}
-      />
+      <PublicSiteFooter body={ui.footerBody} />
     </>
   );
 }

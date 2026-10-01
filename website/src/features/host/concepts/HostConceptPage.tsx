@@ -2,8 +2,8 @@ import {useEffect, useReducer, useState} from "react";
 import {hostConceptCopy} from "@content/hostConceptNavigation";
 import {hostConceptContentPages, type HostConceptContentSection} from "@content/hostConceptContent";
 import {prototypeInteractionContent} from "@content/prototypeInteractionContent";
-import {ownerGatedSiteDestinations, siteFooterLegalLinks, siteMenuCopy} from "@content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../../shared/site";
+import {ownerGatedSiteDestinations} from "@content/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {
   ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChipGrid, ContentGrid, LiveStatus,
   HostPreviewFaqList, MarketingInfoCardGrid, MarketingSection, MarketingSectionCopy, SearchFormShell, TextField, UiLabel,
@@ -19,9 +19,9 @@ export function HostConceptPage({slug}: {slug: string}) {
   if (!page) return null;
   const copy = hostConceptCopy;
   return <>
-    <SiteHeader brandHref="/" menuCopy={siteMenuCopy}
-      nav={[...copy.nav, ...copy.personaLinks]}
-      ctaHref={ownerGatedSiteDestinations.contactHref} ctaLabel={copy.headerContact} />
+    <PublicSiteHeader
+      localNav={[...copy.nav, ...copy.personaLinks]}
+      localActions={[{href: ownerGatedSiteDestinations.contactHref, label: copy.headerContact}]} />
     <WebsitePageMain id="top">
       <MarketingSection variant="story">
         <UiLabel>{copy.eyebrow}</UiLabel>
@@ -46,8 +46,8 @@ export function HostConceptPage({slug}: {slug: string}) {
         </ActionGroup>
       </MarketingSection>
     </WebsitePageMain>
-    <SiteFooter brandHref="/" body={copy.notice}
-      links={[...copy.nav, ...copy.personaLinks, ...copy.additionalLinks, ...siteFooterLegalLinks]} />
+    <PublicSiteFooter body={copy.notice}
+      links={[...copy.nav, ...copy.personaLinks, ...copy.additionalLinks]} />
   </>;
 }
 

@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import {eventDetailCopy} from "../../content/events";
-import {siteFooterLegalLinks, siteMenuCopy} from "../../content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {EventDetailRecord} from "./eventDetailModel";
 import {recordEventInviteLinkOpen} from "../../firebase";
@@ -32,14 +31,12 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
   }, [event.eventId, inviteToken]);
   return (
     <>
-      <SiteHeader
-        actions={[{
+      <PublicSiteHeader
+        localActions={[{
           href: event.listing.path,
           label: eventDetailCopy.nav.organizerAction,
         }]}
-        brandHref="/"
-        menuCopy={siteMenuCopy}
-        nav={[
+        localNav={[
           {href: "/organizers/", label: eventDetailCopy.nav.organizers},
           {href: "/host/", label: eventDetailCopy.nav.host},
         ]}
@@ -55,12 +52,10 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
         <EventDetailReviewsSection event={event} />
       </WebsitePageMain>
 
-      <SiteFooter
-        brandHref="/"
+      <PublicSiteFooter
         body={eventDetailCopy.footerBody}
         links={[
           {href: event.listing.path, label: eventDetailCopy.nav.organizerAction},
-          ...siteFooterLegalLinks,
         ]}
       />
     </>

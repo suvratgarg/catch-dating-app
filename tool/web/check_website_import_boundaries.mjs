@@ -111,7 +111,7 @@ function allowedCrossFeatureImport(sourceLayer, targetLayer) {
   return allowedFeatureImports.get(sourceLayer.feature)?.has(targetLayer.feature) ?? false;
 }
 
-function violationFor(sourceRelativePath, sourceLayer, targetLayer) {
+function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath) {
   if (sourceLayer.name === "story") return null;
 
   if (sourceLayer.name === "content") {
@@ -129,6 +129,11 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer) {
       return "shared modules must not import generated website projections directly";
     }
     if (targetLayer.name === "content") {
+      // This one public chrome adapter consumes the site-wide authored owner.
+      // Other shared modules and all route-specific content remain forbidden.
+      if ((sourceRelativePath === "shared/site/PublicSiteChrome.tsx" ||
+          sourceRelativePath === "shared/site/PublicSiteChrome.test.tsx") &&
+          targetRelativePath === "content/site.ts") return null;
       return "shared UI modules must not own or depend on route-specific marketing content";
     }
     return null;
@@ -224,8 +229,9 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
       continue;
     }
 
-    const targetLayer = layerFor(relativeToWebsiteSource(resolveModulePath(targetAbsolutePath)));
-    const reason = violationFor(sourceRelativePath, sourceLayer, targetLayer);
+    const targetRelativePath = relativeToWebsiteSource(resolveModulePath(targetAbsolutePath));
+    const targetLayer = layerFor(targetRelativePath);
+    const reason = violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath);
     if (reason !== null) {
       violations.push({source: sourceRelativePath, specifier, reason});
     }
@@ -323,6 +329,15 @@ function runSelfTest() {
     violationFor("shared/ui/Card.tsx", {name: "shared"}, {name: "content"}),
     "shared UI modules must not own or depend on route-specific marketing content"
   );
+  for (const source of ["shared/site/PublicSiteChrome.tsx", "shared/site/PublicSiteChrome.test.tsx"]) {
+    assert.equal(violationFor(source, {name: "shared"}, {name: "content"}, "content/site.ts"), null);
+    for (const target of ["content/host.ts", "content/generated.ts", "content/legal.json", "content/marketingOrganization.ts"]) {
+      assert.equal(violationFor(source, {name: "shared"}, {name: "content"}, target),
+        "shared UI modules must not own or depend on route-specific marketing content");
+    }
+  }
+  assert.equal(violationFor("shared/ui/Card.tsx", {name: "shared"}, {name: "content"}, "content/site.ts"),
+    "shared UI modules must not own or depend on route-specific marketing content");
   assert.equal(
     contentAliasTarget("@content/markets"),
     path.join(websiteContentRoot, "markets")

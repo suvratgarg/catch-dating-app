@@ -1,6 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostListing} from "./types";
 import {useListingClaimController} from "../claims/useListingClaimController";
 import {HostListingSections} from "./sections/HostListingSections";
@@ -12,12 +11,9 @@ export function HostListingPage({listing}: {listing: HostListing}) {
 
   return (
     <>
-      <SiteHeader
-        brandHref="/"
-        menuCopy={siteMenuCopy}
-        nav={controller.nav}
-        ctaHref={controller.claimHref}
-        ctaLabel={controller.headerCtaLabel}
+      <PublicSiteHeader
+        localNav={controller.nav}
+        localActions={[{href: controller.claimHref, label: controller.headerCtaLabel}]}
       />
 
       <WebsitePageMain id="profile">
@@ -28,10 +24,9 @@ export function HostListingPage({listing}: {listing: HostListing}) {
         />
       </WebsitePageMain>
 
-      <SiteFooter
-        brandHref="/"
+      <PublicSiteFooter
         body={websiteCopy["hostlistingpage_0346"]}
-        links={[...controller.footerLinks, ...siteFooterLegalLinks]}
+        links={[...controller.footerLinks]}
       />
     </>
   );
