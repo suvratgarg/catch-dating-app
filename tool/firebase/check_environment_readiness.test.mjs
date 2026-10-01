@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 16);
-  assert.equal(execution.report.requirementCount, 20);
+  assert.equal(execution.report.secretCount, 18);
+  assert.equal(execution.report.requirementCount, 23);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,9 +151,9 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    16,
+    18,
   );
-  assert.equal(selected("dev", ["functions"]).length, 20);
+  assert.equal(selected("dev", ["functions"]).length, 23);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", []],
@@ -216,6 +216,28 @@ test("target and capability filtering selects only relevant prerequisites", () =
     );
   }
   assert.deepEqual(selected("dev", ["hosting"]), []);
+});
+
+test("Catch webhook requires its own secrets and active receipt TTL", () => {
+  const expected = [
+    "firestore.ttl.catch-whatsapp-webhook-events",
+    "functions.secret.catch-whatsapp-app-secret",
+    "functions.secret.catch-whatsapp-webhook-verify-token",
+  ];
+  for (const environment of ["dev", "staging", "prod"]) {
+    const requirements = selectReadinessRequirements({
+      manifest, environment, targets: ["functions:catchWhatsappWebhook"],
+      capabilities: [],
+    });
+    assert.deepEqual(requirements.map((entry) => entry.id), expected);
+    assert.equal(requirements[0].collectionGroup, "catchWhatsappWebhookEvents");
+    assert.equal(requirements[0].field, "expiresAt");
+    assert.deepEqual(requirements[0].acceptedStates, ["ACTIVE"]);
+    assert.deepEqual(requirements.slice(1).map((entry) => entry.name), [
+      "CATCH_WHATSAPP_APP_SECRET", "CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
+    ]);
+    assert(requirements.every((entry) => entry.owner === "catch-messaging"));
+  }
 });
 
 test("unknown selectors fail closed while exported no-prerequisite targets remain valid", () => {

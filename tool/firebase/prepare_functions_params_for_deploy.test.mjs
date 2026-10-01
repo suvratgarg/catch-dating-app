@@ -36,6 +36,9 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
+    'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
+    'CATCH_WHATSAPP_WABA_ID=" "',
+    'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
@@ -70,6 +73,9 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
+    'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
+    'CATCH_WHATSAPP_WABA_ID=" "',
+    'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
@@ -261,6 +267,43 @@ test("platform Route config is opt-in and pins only a project-local version", ()
       functionsDir, projectId: "catchdates-dev",
       environment: {...publicIds, RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: value},
     }), /must pin a secret in this project/);
+    assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
+      false);
+  }
+});
+
+
+test("Catch webhook activation is independent and never writes secrets", () => {
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds,
+      CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
+      CATCH_WHATSAPP_WABA_ID: "123",
+      CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
+      CATCH_WHATSAPP_APP_SECRET: "must-not-be-emitted",
+      CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN: "must-not-be-emitted"},
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.equal(result.enabled, false);
+  assert.match(contents, /META_WHATSAPP_ENABLED="false"/);
+  assert.match(contents, /CATCH_WHATSAPP_WEBHOOK_ENABLED="true"/);
+  assert.match(contents, /CATCH_WHATSAPP_WABA_ID="123"/);
+  assert.match(contents, /CATCH_WHATSAPP_PHONE_NUMBER_ID="456"/);
+  assert.doesNotMatch(contents, /APP_SECRET|VERIFY_TOKEN|must-not-be-emitted/);
+});
+
+test("Catch webhook activation rejects absent or unsafe sender ids", () => {
+  for (const patch of [
+    {}, {CATCH_WHATSAPP_WABA_ID: "123"},
+    {CATCH_WHATSAPP_WABA_ID: "bad", CATCH_WHATSAPP_PHONE_NUMBER_ID: "456"},
+    {CATCH_WHATSAPP_WABA_ID: "123", CATCH_WHATSAPP_PHONE_NUMBER_ID: "bad"},
+  ]) {
+    const functionsDir = fixture();
+    assert.throws(() => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
+        ...patch},
+    }), /Catch WABA|numeric Meta/);
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
   }
