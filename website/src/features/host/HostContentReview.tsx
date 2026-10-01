@@ -1,7 +1,7 @@
 import {hostOrganizationCopy, hostOrganizationNavigation, hostWorkflowExamples} from "@content/hostOrganization";
 import {hostConceptCopy} from "@content/hostConceptNavigation";
-import {ownerGatedSiteDestinations, siteFooterLegalLinks} from "@content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {ownerGatedSiteDestinations} from "@content/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   ActionGroup, ButtonLink, ContentGrid, MarketingFactList, MarketingInfoCardGrid,
   MarketingLoopList, MarketingSection, MarketingSectionCopy, UiLabel,
@@ -12,8 +12,8 @@ export function HostContentReview() {
   const copy = hostOrganizationCopy;
   return (
     <>
-      <SiteHeader brandHref="/" menuCopy={copy.menu} nav={[...hostOrganizationNavigation, ...hostConceptCopy.personaLinks]}
-        ctaHref={ownerGatedSiteDestinations.contactHref} ctaLabel={copy.hero.primaryAction} />
+      <PublicSiteHeader localNav={[...hostOrganizationNavigation, ...hostConceptCopy.personaLinks]}
+        localActions={[{href: ownerGatedSiteDestinations.contactHref, label: copy.hero.primaryAction}]} />
       <WebsitePageMain id="top">
         <MarketingSection variant="story" aria-labelledby="content-review-title">
           <UiLabel>{copy.review.title}</UiLabel>
@@ -62,7 +62,7 @@ export function HostContentReview() {
           <p>{copy.pilot.betaNote}</p>
         </MarketingSection>
       </WebsitePageMain>
-      <SiteFooter brandHref="/" body={copy.footer} links={[...hostOrganizationNavigation, ...hostConceptCopy.nav, ...hostConceptCopy.personaLinks, ...hostConceptCopy.additionalLinks, ...siteFooterLegalLinks]} />
+      <PublicSiteFooter body={copy.footer} links={[...hostOrganizationNavigation, ...hostConceptCopy.nav, ...hostConceptCopy.personaLinks, ...hostConceptCopy.additionalLinks]} />
     </>
   );
 }

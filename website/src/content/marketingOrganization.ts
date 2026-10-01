@@ -1,19 +1,11 @@
-import {ownerGatedSiteDestinations} from "./site";
+import {ownerGatedSiteDestinations, publicSiteCopy} from "./site";
 
 export const organiserHomeCopy = {
-  menu: {
-    dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close",
-    kicker: "Catch · For organisers", hint: "Presence, guests, and the live event", navLabel: "Mobile",
-  },
-  nav: [
-    {href: "#product", label: "Product"},
-    {href: "#solutions", label: "Solutions"},
-    {href: "#explore", label: "Explore"},
-    {href: "#resources", label: "Resources"},
-  ],
+  menu: publicSiteCopy.menu,
+  nav: publicSiteCopy.nav,
   actions: {
-    start: {href: "/claim/", label: "Get started free"},
-    signIn: {href: "/claim/", label: "Sign in for a claim"},
+    start: publicSiteCopy.actions[1],
+    signIn: publicSiteCopy.actions[0],
     walkthrough: {href: ownerGatedSiteDestinations.contactHref, label: "Request a software walkthrough"},
     pilot: {href: "/host/", label: "Explore the live-event pilot"},
   },
@@ -72,5 +64,5 @@ export const organiserHomeCopy = {
       {title: "Software walkthrough", body: "Discuss your event and which supported tools could help. A walkthrough request does not create a workspace.", action: {href: ownerGatedSiteDestinations.contactHref, label: "Request a software walkthrough"}},
     ],
   },
-  footer: "Catch for organisers: public discovery, guest coordination, and a supported live-event pilot.",
+  footer: publicSiteCopy.footerBody,
 } as const;

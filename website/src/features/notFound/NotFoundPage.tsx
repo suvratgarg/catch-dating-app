@@ -1,21 +1,17 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
-import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {ProcessStatusPanel} from "../../shared/ui/primitives";
 
 export function NotFoundPage() {
   return (
     <>
-      <SiteHeader
-        brandHref="/"
-        menuCopy={siteMenuCopy}
-        nav={[
+      <PublicSiteHeader
+        localNav={[
           {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
           {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
           {href: "/", label: websiteCopy["notfoundpage_0337"]},
         ]}
-        ctaHref="/organizers/"
-        ctaLabel={websiteCopy["notfoundpage_0342"]}
+        localActions={[{href: "/organizers/", label: websiteCopy["notfoundpage_0342"]}]}
       />
 
       <WebsitePageMain id="top">
@@ -46,14 +42,12 @@ export function NotFoundPage() {
         />
       </WebsitePageMain>
 
-      <SiteFooter
-        brandHref="/"
+      <PublicSiteFooter
         body={websiteCopy["notfoundpage_0333"]}
         links={[
           {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
           {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
           {href: "/claim/", label: websiteCopy["notfoundpage_0332"]},
-          ...siteFooterLegalLinks,
         ]}
       />
     </>

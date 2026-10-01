@@ -1,7 +1,6 @@
 import {organiserHomeCopy} from "@content/marketingOrganization";
 import {renderOrganiserHomeSections} from "./sections/OrganiserHomeSections";
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {
   HomeCapturesSection,
   HomeDiscoverySection,
@@ -16,19 +15,17 @@ import {
 } from "./sections/HomePageSections";
 import type {CaptureRecord} from "../../shared/ui/primitives";
 import {
-  SiteFooter,
-  SiteHeader,
+  PublicSiteFooter,
+  PublicSiteHeader,
   WebsitePageMain,
 } from "../../shared/site";
 
 export function VisitorDiscoveryPage({captures}: {captures: Record<string, CaptureRecord>}) {
   return (
     <>
-      <SiteHeader
-        brandHref="#top"
-        menuCopy={siteMenuCopy}
+      <PublicSiteHeader
         tone="dark"
-        nav={[
+        localNav={[
           {href: "#events", label: websiteCopy["homepage_0110"]},
           {href: "#formats", label: websiteCopy["homepage_0112"]},
           {href: "#members", label: websiteCopy["homepage_0115"]},
@@ -37,8 +34,7 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
           {href: "/organizers/", label: websiteCopy["homepage_0116"]},
           {href: "/host/", label: websiteCopy["homepage_0111"]},
         ]}
-        ctaHref="#waitlist"
-        ctaLabel={websiteCopy["homepage_0114"]}
+        localActions={[{href: "#waitlist", label: websiteCopy["homepage_0114"]}]}
       />
       <WebsitePageMain id="top">
         <HomeHeroSection captures={captures} />
@@ -52,8 +48,7 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
         <HomeTrustSection />
         <HomeWaitlistSection />
       </WebsitePageMain>
-      <SiteFooter
-        brandHref="#top"
+      <PublicSiteFooter
         body={websiteCopy["homepage_0108"]}
         links={[
           {href: "/host/", label: websiteCopy["homepage_0111"]},
@@ -61,7 +56,6 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
           {href: "#download-app", label: websiteCopy["homepage_0109"]},
           {href: "#trust", label: websiteCopy["homepage_0117"]},
           {href: "#waitlist", label: websiteCopy["homepage_0118"]},
-          ...siteFooterLegalLinks,
         ]}
       />
     </>
@@ -71,25 +65,14 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
 export function HomePage(_props: {captures: Record<string, CaptureRecord>}) {
   return (
     <>
-      <SiteHeader
-        brandHref="#top"
-        menuCopy={organiserHomeCopy.menu}
-        tone="dark"
-        nav={[...organiserHomeCopy.nav]}
-        actions={[
-          {...organiserHomeCopy.actions.signIn, variant: "secondary"},
-          organiserHomeCopy.actions.start,
-        ]}
-      />
+      <PublicSiteHeader tone="dark" />
       <WebsitePageMain id="top">{renderOrganiserHomeSections()}</WebsitePageMain>
-      <SiteFooter
-        brandHref="#top"
+      <PublicSiteFooter
         body={organiserHomeCopy.footer}
         links={[
           ...organiserHomeCopy.nav,
           organiserHomeCopy.explore.directory,
           organiserHomeCopy.explore.visitors,
-          ...siteFooterLegalLinks,
         ]}
       />
     </>

@@ -32,8 +32,10 @@ describe("organiser homepage", () => {
     for (const group of ["Product", "Solutions", "Explore", "Resources"]) {
       for (const link of screen.getAllByRole("link", {name: group})) {
         const href = link.getAttribute("href");
-        expect(href?.startsWith("#")).toBe(true);
-        expect(container.querySelector(href!)).toBeTruthy();
+        const destination = new URL(href!, "https://catchdates.com/");
+        expect(destination.pathname).toBe("/");
+        expect(destination.hash).toBe(`#${group.toLowerCase()}`);
+        expect(container.querySelector(destination.hash)).toBeTruthy();
       }
     }
     for (const title of ["Presence and discovery", "Registration and guest management", "Live operations",

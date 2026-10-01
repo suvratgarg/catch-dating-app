@@ -1,3 +1,4 @@
+import type {ReactNode} from "react";
 import {PlainLink} from "../ui/primitives";
 import type {SiteNavItem} from "./SiteHeader";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
@@ -6,10 +7,12 @@ export function SiteFooter({
   brandHref,
   body,
   links,
+  children,
 }: {
   brandHref: string;
   body: string;
   links: SiteNavItem[];
+  children?: ReactNode;
 }) {
   return (
     <footer className="site-footer">
@@ -31,6 +34,7 @@ export function SiteFooter({
           </PlainLink>
         ))}
       </nav>
+      {children}
     </footer>
   );
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.11.0
-updated: 2026-09-30
+version: 0.11.1
+updated: 2026-10-01
 owner: marketing_website
 status: active
 ---
@@ -13,6 +13,23 @@ React marketing website in `website/`. Use `docs/web_surface_architecture.md`
 for domains, deploy targets, CI/CD, and cross-surface hosting boundaries. Use
 `design/website/routes.json` for the route-first contract and
 `design/website/components.json` for the component-first registry.
+
+## Canonical public chrome
+
+`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader` and `PublicSiteFooter`
+for marketing, discovery, directory/listing, public event detail, claim,
+host/concept/workflow, legal/help and 404 pages. `content/site.ts` owns the
+canonical Product/Solutions/Explore/Resources root-section links, root brand,
+claim sign-in/start actions, menu copy and global footer/legal links.
+`SiteHeader` and `SiteFooter` remain low-level presentation primitives.
+The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
+read resolved `content/site.ts`; arbitrary shared UI and every route-specific
+content import remain rejected by scanner self-tests. The canonical footer
+reuses the published operator credit through the site-wide content owner.
+Former route menus and actions remain in a separate labelled secondary nav;
+profile Events/About/Reviews links retain their conditional local anchors.
+Footer context copy and unique route links remain in a separate related-links
+group. Transactional/private shells keep their existing composition and authority.
 
 ## Organiser first content review
 

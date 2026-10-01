@@ -1,6 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
-import {SiteFooter, SiteHeader} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
 import {
   ClaimHeroSection,
@@ -16,16 +15,13 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
 
   return (
     <>
-      <SiteHeader
-        brandHref="/"
-        menuCopy={siteMenuCopy}
-        nav={[
+      <PublicSiteHeader
+        localNav={[
           {href: "/organizers/", label: websiteCopy["claimpage_0025"]},
           {href: "/host/", label: websiteCopy["claimpage_0027"]},
-          {href: "/#trust", label: websiteCopy["claimpage_0031"]},
+          {href: "/explore/#trust", label: websiteCopy["claimpage_0031"]},
         ]}
-        ctaHref="/host/#founding-hosts"
-        ctaLabel={websiteCopy["claimpage_0030"]}
+        localActions={[{href: "/host/#founding-hosts", label: websiteCopy["claimpage_0030"]}]}
       />
 
       <ClaimFlowMain>
@@ -43,14 +39,12 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
         )}
       </ClaimFlowMain>
 
-      <SiteFooter
-        brandHref="/"
+      <PublicSiteFooter
         body={websiteCopy["claimpage_0024"]}
         links={[
           {href: "/organizers/", label: websiteCopy["claimpage_0029"]},
           {href: "/host/", label: websiteCopy["claimpage_0026"]},
-          {href: "/", label: websiteCopy["claimpage_0028"]},
-          ...siteFooterLegalLinks,
+          {href: "/explore/", label: websiteCopy["claimpage_0028"]},
         ]}
       />
     </>

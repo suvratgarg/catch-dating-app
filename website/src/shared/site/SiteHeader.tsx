@@ -41,6 +41,7 @@ export function SiteHeader({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDialogRef = useRef<HTMLDivElement>(null);
   const menuCloseRef = useRef<HTMLButtonElement>(null);
   const headerActions = actions ?? (
     ctaHref && ctaLabel ? [{href: ctaHref, label: ctaLabel}] : []
@@ -60,6 +61,20 @@ export function SiteHeader({
     menuCloseRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setIsMenuOpen(false);
+      if (event.key !== "Tab") return;
+      const controls = Array.from(menuDialogRef.current?.querySelectorAll<HTMLElement>(
+        ':is(a[href], button):not([aria-disabled="true"]):not(:disabled)'
+      ) ?? []);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !menuDialogRef.current?.contains(active))) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && (active === last || !menuDialogRef.current?.contains(active))) {
+        event.preventDefault();
+        first?.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
@@ -123,11 +138,13 @@ export function SiteHeader({
       </header>
 
       <div
+        aria-hidden={!isMenuOpen}
         aria-label={menuCopy.dialogLabel}
         aria-modal="true"
         className={`site-menu ${isMenuOpen ? "is-open" : ""}`}
         id="site-menu"
         inert={!isMenuOpen}
+        ref={menuDialogRef}
         role="dialog"
       >
         <div className="site-menu__top">
