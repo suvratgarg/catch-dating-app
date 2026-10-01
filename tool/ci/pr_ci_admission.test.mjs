@@ -1,5 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {spawnSync} from "node:child_process";
 import {ADMISSION_LABEL, isAdmissionEvent, resolveAdmission} from "./pr_ci_admission.mjs";
 
 const repository = "example/catch";
@@ -28,21 +32,28 @@ function fixture({changePr = {}, mainSha = baseSha, pages = [[row(42)]], runs = 
 }
 
 test("only the sole admitted ready PR on exact head and main can validate", async () => {
-  assert.equal((await resolveAdmission(fixture())).admitted, true);
+  assert.deepEqual(await resolveAdmission(fixture()), {
+    admitted: true, code: "admitted",
+    reason: "Sole admitted PR and latest eligible run match tested head and current main",
+  });
 });
 
-for (const [name, options] of [
-  ["label removed or ordinary unadmitted update", {changePr: {labels: []}}],
-  ["draft converted while waiting", {changePr: {draft: true}}],
-  ["closed PR", {changePr: {state: "closed"}}],
-  ["new head after queued event", {changePr: {head: {sha: "c".repeat(40), repo: {full_name: repository}}}}],
-  ["main advanced since tested merge", {mainSha: "c".repeat(40)}],
-  ["different target branch", {changePr: {base: {ref: "release", repo: {full_name: repository}}}}],
-  ["foreign head repository", {changePr: {head: {sha: headSha, repo: {full_name: "other/catch"}}}}],
-  ["zero labels after state changed between reads", {pages: [[]]}],
-  ["two PRs admitted", {pages: [[row(42), row(43)]]}],
+for (const [name, options, code] of [
+  ["label removed or ordinary unadmitted update", {changePr: {labels: []}}, "awaiting_label"],
+  ["draft converted while waiting", {changePr: {draft: true}}, "draft_pr"],
+  ["closed PR", {changePr: {state: "closed"}}, "ineligible_pr"],
+  ["new head after queued event", {changePr: {head: {sha: "c".repeat(40), repo: {full_name: repository}}}}, "stale_head"],
+  ["main advanced since tested merge", {mainSha: "c".repeat(40)}, "stale_main"],
+  ["different target branch", {changePr: {base: {ref: "release", repo: {full_name: repository}}}}, "ineligible_pr"],
+  ["foreign head repository", {changePr: {head: {sha: headSha, repo: {full_name: "other/catch"}}}}, "ineligible_pr"],
+  ["zero labels after state changed between reads", {pages: [[]]}, "admission_conflict"],
+  ["two PRs admitted", {pages: [[row(42), row(43)]]}, "admission_conflict"],
 ]) {
-  test(`deny ${name}`, async () => assert.equal((await resolveAdmission(fixture(options))).admitted, false));
+  test(`deny ${name}`, async () => {
+    const result = await resolveAdmission(fixture(options));
+    assert.equal(result.admitted, false);
+    assert.equal(result.code, code);
+  });
 }
 
 test("paginate all admissions so a later page cannot hide another PR", async () => {
@@ -64,6 +75,7 @@ test("invalid identities never call GitHub", async () => {
   const input = fixture();
   assert.equal((await resolveAdmission({...input, headSha: "HEAD"})).admitted, false);
   assert.equal((await resolveAdmission({...input, repository: "../other"})).admitted, false);
+  assert.equal((await resolveAdmission({...input, headSha: "HEAD"})).code, "invalid_identity");
   assert.equal(input.requested.length, 0);
 });
 
@@ -78,6 +90,7 @@ test("final recheck revokes an initially eligible snapshot", async () => {
 test("only the newest admission event for the same head can run expensive checks", async () => {
   const input = fixture({runs: [run(1001), run(1000)]});
   assert.equal((await resolveAdmission(input)).admitted, false);
+  assert.equal((await resolveAdmission(input)).code, "superseded_run");
   assert.equal((await resolveAdmission({...input, runId: 1001})).admitted, true);
   assert.equal((await resolveAdmission(fixture({runs: []}))).admitted, false);
 });
@@ -90,4 +103,27 @@ test("unrelated labels neither admit nor supersede a current full run", async ()
   assert.equal(isAdmissionEvent({action: "synchronize"}), true);
   const unrelated = {...run(1001), display_title: "CI pull_request"};
   assert.equal((await resolveAdmission(fixture({runs: [unrelated, run()]}))).admitted, true);
+});
+
+test("unrelated events publish a reason code and still block required validation", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-admission-status-"));
+  try {
+    const eventPath = path.join(root, "event.json");
+    const outputPath = path.join(root, "output.txt");
+    const summaryPath = path.join(root, "summary.md");
+    fs.writeFileSync(eventPath, JSON.stringify({action: "labeled",
+      label: {name: "documentation"}}));
+    const result = spawnSync(process.execPath,
+      ["tool/ci/pr_ci_admission.mjs", "--require"], {
+        encoding: "utf8", env: {...process.env, GITHUB_EVENT_PATH: eventPath,
+          GITHUB_OUTPUT: outputPath, GITHUB_STEP_SUMMARY: summaryPath},
+      });
+    assert.equal(result.status, 1);
+    assert.match(fs.readFileSync(outputPath, "utf8"),
+      /^admitted=false\nreason_code=unrelated_event\n$/u);
+    assert.match(fs.readFileSync(summaryPath, "utf8"),
+      /PR CI admission \[unrelated_event\]/u);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });
