@@ -186,8 +186,7 @@ export function organizerContactTraits(params: {
   referredCheckedIn365DayCount?: number;
 }): OrganizerContactTraitDocument | null {
   const {contact, edges, now} = params;
-  if (contact.deletedAt !== null || contact.identityState === "merged" ||
-      edges.length === 0) {
+  if (contact.deletedAt !== null || contact.identityState === "merged") {
     return null;
   }
   const expected = edges.filter((edge) => edge.expected && !edge.cancelled);
@@ -206,11 +205,11 @@ export function organizerContactTraits(params: {
     .sort(compareTimestamp);
   const firstSeenAt = edges
     .map((edge) => edge.sourceCreatedAt)
-    .sort(compareTimestamp)[0];
+    .sort(compareTimestamp)[0] ?? contact.firstSeenAt;
   const lastSeenAt = edges
     .map((edge) => edge.sourceUpdatedAt)
     .sort(compareTimestamp)
-    .at(-1)!;
+    .at(-1) ?? contact.lastSeenAt;
   const segmentIds: OrganizerContactTraitDocument["segmentIds"] = [];
   if (attended.length === 0) segmentIds.push("new_to_organizer");
   if (attended.length >= 1) segmentIds.push(organizerPastAttendeeSegmentId);

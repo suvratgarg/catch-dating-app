@@ -38,6 +38,7 @@ import {
 } from "../shared/organizerContactOrigins";
 
 import {formAdmissionContactId} from "./organizerFormAdmissionIdentity";
+import {organizerContactProjectedFields} from "./organizerContactFields";
 
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 
@@ -59,7 +60,8 @@ export async function projectEventAttendeeToOrganizerAudience(
   before: EventAttendeeDocument | undefined,
   after: EventAttendeeDocument | undefined,
   projectionEventId?: string,
-  deps: AudienceProjectionDeps = defaultDeps
+  deps: AudienceProjectionDeps = defaultDeps,
+  attempt = 0
 ): Promise<void> {
   if (!before && !after) return;
   const db = deps.firestore();
@@ -76,17 +78,28 @@ export async function projectEventAttendeeToOrganizerAudience(
   if (!after) {
     if (!existingEdge) return;
     affectedContactIds.add(existingEdge.contactId);
-    const evidenceSnap = await db
-      .collection("organizerContactIdentityLinks")
-      .where("attendeeId", "==", attendeeId)
-      .get();
-    const batch = db.batch();
-    batch.delete(edgeRef);
-    for (const evidence of evidenceSnap.docs) batch.delete(evidence.ref);
-    await batch.commit();
+    const removed = await db.runTransaction(async (tx) => {
+      const [currentEdgeSnap, currentAttendeeSnap, evidenceSnap] =
+        await Promise.all([
+          tx.get(edgeRef),
+          tx.get(db.collection("eventAttendees").doc(attendeeId)),
+          tx.get(db.collection("organizerContactIdentityLinks")
+            .where("attendeeId", "==", attendeeId)),
+        ]);
+      const current = currentEdgeSnap.data() as
+        OrganizerContactEventEdgeDocument | undefined;
+      if (!current || currentAttendeeSnap.exists ||
+          current.sourceUpdatedAt.toMillis() > before!.updatedAt.toMillis()) {
+        return null;
+      }
+      tx.delete(edgeRef);
+      for (const evidence of evidenceSnap.docs) tx.delete(evidence.ref);
+      return current.contactId;
+    });
+    if (removed === null) return;
     await rebuildOrganizerContact(
-      existingEdge.contactId,
-      `${receiptBase}|${existingEdge.contactId}`,
+      removed,
+      `${receiptBase}|${removed}`,
       deps
     );
     return;
@@ -238,58 +251,84 @@ export async function projectEventAttendeeToOrganizerAudience(
     preference,
     now,
   });
-  const existingEvidenceSnap = await db
-    .collection("organizerContactIdentityLinks")
-    .where("attendeeId", "==", attendeeId)
-    .get();
   const currentEvidenceIds = new Set(evidence.map((item) =>
     organizerIdentityEvidenceId({
-      attendeeId,
-      kind: item.kind,
-      identityHash: item.identityHash,
+      attendeeId, kind: item.kind, identityHash: item.identityHash,
     })
   ));
-  const batch = db.batch();
-  batch.set(edgeRef, edge);
-  batch.set(existingContactRef, contact);
-  const existingOrigin = originSnap.data() as
-    OrganizerContactOriginDocument | undefined;
-  batch.set(originRef, existingOrigin ? {
-    ...existingOrigin,
-    currentContactId: contactId,
-  } : origin);
-  for (const existingEvidence of existingEvidenceSnap.docs) {
-    if (!currentEvidenceIds.has(existingEvidence.id)) {
-      batch.delete(existingEvidence.ref);
+  const projected = await db.runTransaction(async (tx) => {
+    const [currentSnap, currentEdgeSnap, currentOriginSnap,
+      currentEvidenceSnap] = await Promise.all([
+      tx.get(existingContactRef), tx.get(edgeRef), tx.get(originRef),
+      tx.get(db.collection("organizerContactIdentityLinks")
+        .where("attendeeId", "==", attendeeId)),
+    ]);
+    const current = currentSnap.data() as
+      OrganizerContactDocument | undefined;
+    const currentEdge = currentEdgeSnap.data() as
+      OrganizerContactEventEdgeDocument | undefined;
+    const currentOrigin = currentOriginSnap.data() as
+      OrganizerContactOriginDocument | undefined;
+    const observedOrigin = originSnap.data() as
+      OrganizerContactOriginDocument | undefined;
+    if (currentEdge && currentEdge.sourceUpdatedAt.toMillis() >
+        after.updatedAt.toMillis()) return "superseded";
+    if (currentEdge?.contactId !== existingEdge?.contactId ||
+        currentOrigin?.currentContactId !== observedOrigin?.currentContactId ||
+        current?.identityState === "merged") return "retry";
+    if (current && current.organizerId !== after.organizerId) {
+      return "superseded";
     }
+    if (!current) tx.create(existingContactRef, contact);
+    else if (current.hiddenAt == null) {
+      // Preserve current manager fields and source endpoints.
+      tx.update(existingContactRef, {
+        ambiguousCandidateContactIds: claimResolution.ambiguousContactIds,
+        ...(preference ? {
+          whatsappStatus: effectiveOrganizerCommunicationStatus(
+            preference, "whatsapp"
+          ),
+          smsStatus: effectiveOrganizerCommunicationStatus(preference, "sms"),
+        } : {}),
+        revision: Math.max(current.revision + 1, now.toMillis()),
+        updatedAt: now,
+      });
+    }
+    tx.set(edgeRef, edge);
+    tx.set(originRef, currentOrigin ? {
+      ...currentOrigin, currentContactId: contactId,
+    } : origin);
+    for (const previous of currentEvidenceSnap.docs) {
+      if (!currentEvidenceIds.has(previous.id)) tx.delete(previous.ref);
+    }
+    for (const item of evidence) {
+      const evidenceId = organizerIdentityEvidenceId({
+        attendeeId, kind: item.kind, identityHash: item.identityHash,
+      });
+      const previous = currentEvidenceSnap.docs.find((doc) =>
+        doc.id === evidenceId)?.data() as
+          OrganizerContactIdentityLinkDocument | undefined;
+      const link: OrganizerContactIdentityLinkDocument = {
+        organizerId: after.organizerId, contactId,
+        originContactId: previous?.originContactId ?? contactId,
+        attendeeId, kind: item.kind, identityHash: item.identityHash,
+        hashVersion: "hmac-sha256-v1", confidence: item.confidence,
+        source: after.source, createdAt: after.createdAt, updatedAt: now,
+      };
+      tx.set(db.collection("organizerContactIdentityLinks").doc(evidenceId),
+        link, {merge: true});
+    }
+    return "projected";
+  });
+  if (projected === "retry") {
+    if (attempt >= 2) {
+      throw new Error("Audience source ownership changed during projection.");
+    }
+    return projectEventAttendeeToOrganizerAudience(
+      attendeeId, before, after, projectionEventId, deps, attempt + 1
+    );
   }
-  for (const item of evidence) {
-    const evidenceId = organizerIdentityEvidenceId({
-      attendeeId,
-      kind: item.kind,
-      identityHash: item.identityHash,
-    });
-    const evidenceRef = db.collection("organizerContactIdentityLinks")
-      .doc(evidenceId);
-    const link: OrganizerContactIdentityLinkDocument = {
-      organizerId: after.organizerId,
-      contactId,
-      originContactId: (existingEvidenceSnap.docs.find((doc) =>
-        doc.id === evidenceId
-      )?.data() as OrganizerContactIdentityLinkDocument | undefined)
-        ?.originContactId ?? contactId,
-      attendeeId,
-      kind: item.kind,
-      identityHash: item.identityHash,
-      hashVersion: "hmac-sha256-v1",
-      confidence: item.confidence,
-      source: after.source,
-      createdAt: after.createdAt,
-      updatedAt: now,
-    };
-    batch.set(evidenceRef, link, {merge: true});
-  }
-  await batch.commit();
+  if (projected !== "projected") return;
 
   for (const affectedContactId of affectedContactIds) {
     await rebuildOrganizerContact(
@@ -309,12 +348,7 @@ export async function rebuildOrganizerContact(
   const db = deps.firestore();
   const contactRef = db.collection("organizerContacts").doc(contactId);
   const traitRef = db.collection("organizerContactTraits").doc(contactId);
-  const [contactSnap, edgesSnap] = await Promise.all([
-    contactRef.get(),
-    db.collection("organizerContactEventEdges")
-      .where("contactId", "==", contactId)
-      .get(),
-  ]);
+  const contactSnap = await contactRef.get();
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   if (!contact) return;
   const attributions = db.collection("eventInviteAttributions")
@@ -354,69 +388,91 @@ export async function rebuildOrganizerContact(
       recentAttendanceReversal.data().count
   );
   const now = deps.timestamp();
-  const edges = edgesSnap.docs.map((doc) =>
-    doc.data() as OrganizerContactEventEdgeDocument
-  );
-  if (contact.hiddenAt != null) return;
-  if (edges.length === 0) {
-    await commitContactTraitAndSummary({
-      contactRef,
-      contactPatch: {deletedAt: now, updatedAt: now},
-      traitRef,
-      afterTrait: undefined,
-      organizerId: contact.organizerId,
-      summaryEventId,
-      now,
-      deps,
+  const receiptRef = db.collection("organizerAudienceProjectionReceipts")
+    .doc(`oapr_${createHash("sha256").update(summaryEventId)
+      .digest("hex").slice(0, 48)}`);
+  const summaryRef = db.collection("organizerAudienceSummaries")
+    .doc(contact.organizerId);
+  await db.runTransaction(async (tx) => {
+    const [currentContactSnap, edgesSnap, originsSnap, receiptSnap,
+      summarySnap, traitSnap] = await Promise.all([
+      tx.get(contactRef),
+      tx.get(db.collection("organizerContactEventEdges")
+        .where("contactId", "==", contactId)),
+      tx.get(db.collection("organizerContactOrigins")
+        .where("organizerId", "==", contact.organizerId)
+        .where("currentContactId", "==", contactId)),
+      tx.get(receiptRef), tx.get(summaryRef), tx.get(traitRef),
+    ]);
+    const current = currentContactSnap.data() as
+      OrganizerContactDocument | undefined;
+    if (receiptSnap.exists || !current ||
+        current.organizerId !== contact.organizerId ||
+        current.hiddenAt != null || current.identityState === "merged") return;
+    const edges = edgesSnap.docs.map((doc) =>
+      doc.data() as OrganizerContactEventEdgeDocument
+    ).filter((edge) => edge.organizerId === current.organizerId);
+    const origins = originsSnap.docs.map((doc) =>
+      doc.data() as OrganizerContactOriginDocument);
+    // Origins establish relationship lifetime, not field-specific disclosure.
+    const hasStandaloneOrigin = origins.some((origin) =>
+      origin.sourceEntityKind === "manualEntry" ||
+      origin.sourceEntityKind === "hostFormResponse" ||
+      origin.sourceEntityKind === "hostApplicationResponse"
+    );
+    const active = edges.length > 0 || hasStandaloneOrigin;
+    const fields = organizerContactProjectedFields({
+      contact: current, edges, hasStandaloneOrigin,
     });
-    return;
-  }
-  const preferred = [...edges].sort(compareContactEdges)[0];
-  const linked = edges.find((edge) => edge.linkedUid !== null) ?? preferred;
-  const rebuiltContact: OrganizerContactDocument = {
-    ...contact,
-    displayName: preferred.displayName,
-    searchName: (contact.displayNameOverride ?? preferred.displayName)
-      .toLocaleLowerCase("en"),
-    linkedUid: linked.linkedUid,
-    phoneE164: linked.phoneE164 ?? preferred.phoneE164,
-    email: linked.email ?? preferred.email,
-    identityState: contact.ambiguousCandidateContactIds.length > 0 ?
-      "ambiguous" : linked.linkedUid !== null ? "verified" : "unlinked",
-    identityConfidence: linked.linkedUid !== null ? "verified" :
-      linked.phoneE164 !== null || linked.email !== null ?
-        "proposed" : "eventOnly",
-    primarySource: preferred.source,
-    firstSeenAt: edges.map((edge) => edge.sourceCreatedAt)
-      .sort(compareTimestamp)[0],
-    lastSeenAt: edges.map((edge) => edge.sourceUpdatedAt)
-      .sort(compareTimestamp).at(-1)!,
-    sourceCount: edges.length,
-    revision: Math.max(contact.revision + 1, now.toMillis()),
-    updatedAt: now,
-    deletedAt: null,
-    displayNameOverride: contact.displayNameOverride ?? null,
-    hiddenAt: contact.hiddenAt ?? null,
-    hiddenBy: contact.hiddenBy ?? null,
-    hiddenTraitSnapshot: contact.hiddenTraitSnapshot ?? null,
-  };
-  const traits = organizerContactTraits({
-    contactId,
-    contact: rebuiltContact,
-    edges,
-    now,
-    referredRegistrationCount,
-    referredCheckedInCount,
-    referredCheckedIn365DayCount,
-  });
-  await commitContactTraitAndSummary({
-    contactRef,
-    contact: rebuiltContact,
-    traitRef,
-    afterTrait: traits ?? undefined,
-    summaryEventId,
-    now,
-    deps,
+    const linkedUid = [...edges].sort(compareContactEdges)
+      .find((edge) => edge.linkedUid !== null)?.linkedUid ??
+        (hasStandaloneOrigin ? current.linkedUid : null);
+    const rebuilt: OrganizerContactDocument = {
+      ...current,
+      ...fields,
+      searchName: (current.displayNameOverride ?? fields.displayName)
+        .toLocaleLowerCase("en"),
+      linkedUid,
+      identityState: current.ambiguousCandidateContactIds.length > 0 ?
+        "ambiguous" : linkedUid !== null ? "verified" : "unlinked",
+      identityConfidence: linkedUid !== null ? "verified" :
+        fields.phoneE164 !== null || fields.email !== null ?
+          "proposed" : "eventOnly",
+      firstSeenAt: [current.firstSeenAt,
+        ...edges.map((edge) => edge.sourceCreatedAt)].sort(compareTimestamp)[0],
+      lastSeenAt: [current.lastSeenAt,
+        ...edges.map((edge) => edge.sourceUpdatedAt)]
+        .sort(compareTimestamp).at(-1)!,
+      sourceCount: Math.max(origins.length, edges.length),
+      revision: Math.max(current.revision + 1, now.toMillis()),
+      updatedAt: now,
+      deletedAt: active ? null : now,
+    };
+    const afterTrait = active ? organizerContactTraits({
+      contactId, contact: rebuilt, edges, now,
+      referredRegistrationCount, referredCheckedInCount,
+      referredCheckedIn365DayCount,
+    }) ?? undefined : undefined;
+    const beforeTrait = traitSnap.data() as
+      OrganizerContactTraitDocument | undefined;
+    const summary = audienceSummaryAfterDelta({
+      organizerId: current.organizerId,
+      existing: summarySnap.data() as
+        OrganizerAudienceSummaryDocument | undefined,
+      before: organizerAudienceContribution(beforeTrait),
+      after: organizerAudienceContribution(afterTrait), now,
+    });
+    tx.set(contactRef, rebuilt);
+    if (afterTrait) tx.set(traitRef, afterTrait);
+    else tx.delete(traitRef);
+    tx.set(summaryRef, summary);
+    tx.create(receiptRef, {
+      organizerId: current.organizerId, eventId: summaryEventId,
+      createdAt: now,
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        now.toMillis() + projectionReceiptTtlMillis
+      ),
+    } satisfies OrganizerAudienceProjectionReceiptDocument);
   });
 }
 
@@ -501,64 +557,6 @@ export async function applyOrganizerAudienceSummaryDelta(
         now.toMillis() + projectionReceiptTtlMillis
       ),
     };
-    tx.set(summaryRef, summary);
-    tx.create(receiptRef, receipt);
-  });
-}
-
-async function commitContactTraitAndSummary(params: {
-  contactRef: FirebaseFirestore.DocumentReference;
-  contact?: OrganizerContactDocument;
-  contactPatch?: FirebaseFirestore.UpdateData<OrganizerContactDocument>;
-  traitRef: FirebaseFirestore.DocumentReference;
-  afterTrait: OrganizerContactTraitDocument | undefined;
-  organizerId?: string;
-  summaryEventId: string;
-  now: FirebaseFirestore.Timestamp;
-  deps: AudienceProjectionDeps;
-}): Promise<void> {
-  const organizerId = params.afterTrait?.organizerId ??
-    params.contact?.organizerId ?? params.organizerId;
-  if (!organizerId) return;
-  const db = params.deps.firestore();
-  const receiptId = `oapr_${createHash("sha256")
-    .update(params.summaryEventId).digest("hex").slice(0, 48)}`;
-  const receiptRef = db.collection("organizerAudienceProjectionReceipts")
-    .doc(receiptId);
-  const summaryRef = db.collection("organizerAudienceSummaries")
-    .doc(organizerId);
-  await db.runTransaction(async (tx) => {
-    const [receiptSnap, summarySnap, currentTraitSnap] = await Promise.all([
-      tx.get(receiptRef),
-      tx.get(summaryRef),
-      tx.get(params.traitRef),
-    ]);
-    if (receiptSnap.exists) return;
-    const beforeTrait = currentTraitSnap.data() as
-      OrganizerContactTraitDocument | undefined;
-    const existing = summarySnap.data() as
-      OrganizerAudienceSummaryDocument | undefined;
-    const summary = audienceSummaryAfterDelta({
-      organizerId,
-      existing,
-      before: organizerAudienceContribution(beforeTrait),
-      after: organizerAudienceContribution(params.afterTrait),
-      now: params.now,
-    });
-    const receipt: OrganizerAudienceProjectionReceiptDocument = {
-      organizerId,
-      eventId: params.summaryEventId,
-      createdAt: params.now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        params.now.toMillis() + projectionReceiptTtlMillis
-      ),
-    };
-    if (params.contact) tx.set(params.contactRef, params.contact);
-    else if (params.contactPatch) {
-      tx.update(params.contactRef, params.contactPatch);
-    }
-    if (params.afterTrait) tx.set(params.traitRef, params.afterTrait);
-    else tx.delete(params.traitRef);
     tx.set(summaryRef, summary);
     tx.create(receiptRef, receipt);
   });

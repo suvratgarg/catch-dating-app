@@ -4,6 +4,10 @@ import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
   csvCell,
+  listOrganizerContactsHandler,
+  getOrganizerContactDetailHandler,
+  exportOrganizerContactsHandler,
+  createOrganizerContactRecord,
   buildContactTimeline,
   decodeContactCursor,
   encodeContactCursor,
@@ -16,7 +20,10 @@ import {
   summarizeContactRevenue,
   summarizeContactRevenueFacts,
 } from "./organizerContacts";
+import {AudienceTestStore} from "./organizerAudienceTestStore";
+import {organizerContactTraits} from "./organizerAudienceModel";
 import type {
+  OrganizerContactDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerContactOutreachDocument,
   OrganizerContactTagVocabularyDocument,
@@ -531,4 +538,52 @@ test("attested manual offer payments aggregate as reported revenue",
       factCount: 1,
       allocation: "perAttendee",
     }]);
+  });
+
+test("directory detail and CSV share stored fields across account linking",
+  async () => {
+    const at = admin.firestore.Timestamp.fromMillis(1000);
+    const store = new AudienceTestStore({
+      "organizers/org-1": {ownerUserId: "host-1", hostUserIds: ["host-1"],
+        hostProfiles: []},
+      "users/uid-1": {email: "private@example.test", phone: "+911111111111"},
+    });
+    await createOrganizerContactRecord({db: store.asFirestore(),
+      organizerId: "org-1", actorUid: "host-1", contactId: "person",
+      displayName: "Submitted name", phoneE164: "+919999999999",
+      email: "submitted@example.test", initialNote: null,
+      identitySecret: "x".repeat(32), origin: {kind: "hostManual"}, now: at});
+    const collections: string[] = [];
+    const collection = store.collection.bind(store);
+    store.collection = (name) => {
+      collections.push(name); return collection(name);
+    };
+    const deps = {firestore: () => store.asFirestore(),
+      checkRateLimit: async () => undefined, identitySecret: () => "unused"};
+    const request = (data: object) => ({auth: {uid: "host-1"},
+      data: {organizerId: "org-1", ...data}}) as
+      import("firebase-functions/v2/https").CallableRequest<unknown>;
+    for (const linkedUid of [null, "uid-1"]) {
+      const person = store.docs["organizerContacts/person"] as unknown as
+        OrganizerContactDocument;
+      person.linkedUid = linkedUid;
+      person.displayNameOverride = "Host label";
+      person.identityState = linkedUid ? "verified" : "unlinked";
+      store.docs["organizerContactTraits/person"] = {...organizerContactTraits({
+        contactId: "person", contact: person, edges: [], now: at})!};
+      const list = await listOrganizerContactsHandler(request({}), deps);
+      const detail = await getOrganizerContactDetailHandler(request({
+        contactId: "person", includeHistory: false}), deps);
+      const exported = await exportOrganizerContactsHandler(request({}), deps);
+      assert.equal(list.contacts[0].phoneE164, detail.phoneE164);
+      assert.equal(list.contacts[0].email, detail.email);
+      assert.equal(list.contacts[0].displayName, detail.displayName);
+      assert.equal(detail.phoneE164, "+919999999999");
+      assert.equal(detail.email, "submitted@example.test");
+      assert.equal(detail.sourceDisplayName, "Submitted name");
+      assert.ok(exported.csv.includes(csvCell(detail.phoneE164!)));
+      assert.match(exported.csv, /Host label,.*submitted@example.test/);
+      assert.doesNotMatch(exported.csv, /private@example.test|911111111111/);
+    }
+    assert.equal(collections.includes("users"), false);
   });
