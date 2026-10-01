@@ -394,7 +394,9 @@ Future<void> _edit(WidgetTester tester, Key key, String value) async {
 
 Future<void> _select(WidgetTester tester, Key key, String label) async {
   await _tap(tester, key);
-  await tester.tap(find.text(label).last);
+  final choice = find.text(label).hitTestable();
+  expect(choice, findsOneWidget);
+  await tester.tap(choice);
   await pumpFeatureUi(tester);
 }
 
