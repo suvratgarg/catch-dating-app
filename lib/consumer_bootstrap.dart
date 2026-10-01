@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 typedef CatchBootstrapInitializer = Future<void> Function();
+typedef CatchBootstrapErrorReporter =
+    void Function(Object error, StackTrace stackTrace);
 typedef CatchInitializedAppBuilder = Widget Function(BuildContext context);
 typedef CatchBootFramePreparer =
     Future<void> Function(BuildContext context, String asset);
@@ -26,6 +28,7 @@ class CatchConsumerBootstrap extends StatefulWidget {
     required this.initialize,
     required this.initializedAppBuilder,
     required this.onNativeSplashReady,
+    this.onInitializationError,
     this.playIntro = true,
     this.prepareFirstFrame,
   });
@@ -39,6 +42,7 @@ class CatchConsumerBootstrap extends StatefulWidget {
   final CatchBootstrapInitializer initialize;
   final CatchInitializedAppBuilder initializedAppBuilder;
   final VoidCallback onNativeSplashReady;
+  final CatchBootstrapErrorReporter? onInitializationError;
   final bool playIntro;
   final CatchBootFramePreparer? prepareFirstFrame;
 
@@ -78,8 +82,9 @@ class _CatchConsumerBootstrapState extends State<CatchConsumerBootstrap> {
       setState(() {
         _initializationComplete = true;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
       if (!mounted || attempt != _attempt) return;
+      widget.onInitializationError?.call(error, stackTrace);
       setState(() {
         _initializationError = error;
       });
