@@ -71,6 +71,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   Timer? _searchDebounce;
   String? _query;
   String? _responseQuery;
+  bool _searchExpanded = false;
   Set<HostFormLifecycleStatus> _statuses = const {};
   Set<HostFormPurpose> _purposes = const {};
   late HostAudienceView _view;
@@ -125,6 +126,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       _searchDebounce?.cancel();
       _query = null;
       _responseQuery = null;
+      _searchExpanded = false;
     }
     if (oldWidget.initialResponses != widget.initialResponses) {
       _tabController.animateTo(widget.initialResponses ? 1 : 0);
@@ -305,6 +307,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                       : () => _pickApplicationImport(selectedClub.id),
                 ),
           search: CatchTopBarSearch(
+            fieldKey: ValueKey('host-forms-search-${_view.name}'),
+            expanded:
+                _searchExpanded ||
+                (activeSearchIsForms ? _query : _responseQuery) != null,
+            onExpandedChanged: (expanded) {
+              if (_searchExpanded == expanded) return;
+              setState(() => _searchExpanded = expanded);
+            },
             copy: catchSearchFieldCopy(context.l10n),
             value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
             contract: activeSearchIsForms
@@ -424,6 +434,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     _searchDebounce?.cancel();
     setState(() {
       _view = nextView;
+      _searchExpanded = false;
     });
     _syncRoute();
   }
