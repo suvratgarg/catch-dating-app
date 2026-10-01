@@ -241,32 +241,16 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       accountGeneration: _accountGeneration,
       request: request,
     );
-    final scopedDirectory = catchAsyncStateFromAsyncValue(
-      ref.watch(hostFormsAccountDirectoryProvider(directoryScope)),
+    final accountDirectory = ref.watch(
+      hostFormsAccountDirectoryProvider(directoryScope),
     );
-    if (scopedDirectory.error case final error?) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: [
-          CatchLocalizedSliverErrorState(
-            error,
-            context: AppErrorContext.forms,
-            onRetry: () => ref.invalidate(
-              hostFormsAccountDirectoryProvider(directoryScope),
-            ),
-          ),
-        ],
-      );
-    }
-    if (!scopedDirectory.isSettledData) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
-    }
-    final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
+    final scopedDirectory = catchAsyncStateFromAsyncValue(accountDirectory);
+    // The account gate protects only its Forms page. Responses performs its
+    // own fresh manager read and must not wait for unrelated form metadata.
+    // Until that gate settles, never expose cached source-directory rows.
+    final directory = scopedDirectory.isSettledData
+        ? ref.watch(hostFormsDirectoryControllerProvider(request))
+        : accountDirectory;
     String? responseVersionId;
     if (canMountHostResponseQuery(
       enabled: true,
