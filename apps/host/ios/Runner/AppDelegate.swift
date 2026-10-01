@@ -1,4 +1,5 @@
 import Flutter
+import ContactsUI
 import EventKit
 import EventKitUI
 import FirebaseAuth
@@ -86,6 +87,9 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let contactsRegistrar = engineBridge.pluginRegistry.registrar(forPlugin: "NativePhoneContactsPlugin") {
+      NativePhoneContactsPlugin.register(with: contactsRegistrar)
+    }
     guard let registrar = engineBridge.pluginRegistry.registrar(
       forPlugin: "NativeCalendarPlugin"
     ) else {
@@ -253,5 +257,66 @@ extension NativeCalendarPlugin: EKEventEditViewDelegate {
     didCompleteWith action: EKEventEditViewAction
   ) {
     controller.dismiss(animated: true)
+  }
+}
+
+// Selected records only: CNContactPicker needs no CNContactStore authorization.
+private final class NativePhoneContactsPlugin: NSObject, FlutterPlugin,
+  CNContactPickerDelegate, UIAdaptivePresentationControllerDelegate {
+  private var pending: FlutterResult?
+  private weak var picker: CNContactPickerViewController?
+
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let channel = FlutterMethodChannel(name: "catch/phone_contacts", binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(NativePhoneContactsPlugin(), channel: channel)
+  }
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard call.method == "pickContacts" else { result(FlutterMethodNotImplemented); return }
+    guard pending == nil else { result(["status": "failed"]); return }
+    let root = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }.flatMap { $0.windows }
+      .first { $0.isKeyWindow }?.rootViewController
+    var top = root
+    while let presented = top?.presentedViewController { top = presented }
+    guard let presenter = top, presenter.viewIfLoaded?.window != nil,
+      !presenter.isBeingDismissed else { result(["status": "unavailable"]); return }
+    let controller = CNContactPickerViewController()
+    controller.delegate = self
+    controller.displayedPropertyKeys = [CNContactPhoneNumbersKey]
+    pending = result
+    picker = controller
+    presenter.present(controller, animated: true)
+    controller.presentationController?.delegate = self
+  }
+
+  // Implementing the plural delegate opts into system multi-selection.
+  func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
+    guard contacts.count <= 100 else { finish(["status": "too_many"]); return }
+    let selected: [[String: Any]] = contacts.map { contact in
+      ["id": contact.identifier,
+       "name": CNContactFormatter.string(from: contact, style: .fullName) ?? "",
+       "phones": contact.phoneNumbers.map { number in
+         ["value": number.value.stringValue,
+          "label": number.label.map { CNLabeledValue<CNPhoneNumber>.localizedString(forLabel: $0) } ?? ""]
+       }]
+    }
+    finish(["status": "selected", "contacts": selected])
+  }
+
+  func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
+    finish(["status": "cancelled"])
+  }
+
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    finish(["status": "cancelled"])
+  }
+
+  private func finish(_ response: [String: Any]) {
+    let callback = pending
+    pending = nil
+    picker?.dismiss(animated: true)
+    picker = nil
+    callback?(response)
   }
 }

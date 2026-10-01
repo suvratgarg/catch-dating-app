@@ -8,8 +8,15 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.TimeZone
 
 class MainActivity : FlutterActivity() {
+    private var phoneContacts: NativePhoneContactsPicker? = null
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        phoneContacts = NativePhoneContactsPicker(this)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "catch/phone_contacts")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "pickContacts") phoneContacts?.pick(result)
+                else result.notImplemented()
+            }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "catch/calendar")
             .setMethodCallHandler { call, result ->
@@ -18,6 +25,17 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (phoneContacts?.onActivityResult(requestCode, resultCode, data) == true) return
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        phoneContacts?.dispose()
+        phoneContacts = null
+        super.onDestroy()
     }
 
     private fun addToCalendar(arguments: Any?): Boolean {
