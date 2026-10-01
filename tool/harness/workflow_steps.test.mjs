@@ -267,6 +267,12 @@ test("structural preflight runs from the declared sparse closure and fails close
       "tool/harness/lib/workflow_steps.mjs"]) {
       fs.copyFileSync(path.join(sourceRoot, relativePath), path.join(root, relativePath));
     }
+    // A clean checkout copies identical files. Make the intended changed
+    // source explicit so the planner selects real CI targets in every run.
+    fs.appendFileSync(path.join(root, "tool/harness/verify_local.mjs"),
+      "\n// Sparse preflight test change.\n");
+    assert.equal(git(["diff", "--name-only"]).stdout.trim(),
+      "tool/harness/verify_local.mjs");
     assert.equal(fs.existsSync(path.join(root, "node_modules")), false);
     assert.equal(fs.existsSync(path.join(root, "lib/main.dart")), false);
     const good = run();
