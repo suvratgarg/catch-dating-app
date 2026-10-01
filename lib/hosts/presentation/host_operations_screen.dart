@@ -94,6 +94,7 @@ part 'host_operations/host_team_hosted_clubs_section.dart';
 part 'host_operations/host_club_payments_screen.dart';
 part 'host_operations/host_club_edit_helpers.dart';
 part 'host_operations/host_analytics.dart';
+part 'host_operations/host_analytics_formatters.dart';
 part 'host_operations/host_analytics_period_input.dart';
 part 'host_operations/host_route_providers.dart';
 
