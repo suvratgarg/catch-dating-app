@@ -96019,53 +96019,6 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
-  static const organizerCampaignDocumentAutomationOriginActionId = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.actionId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerCampaignDocumentAutomationOriginContactId = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.contactId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerCampaignDocumentAutomationOriginEventKind = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.eventKind',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
-  );
-
-  static const organizerCampaignDocumentAutomationOriginRuleId = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.ruleId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerCampaignDocumentAutomationOriginRuleRevision = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.ruleRevision',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 9007199254740991,
-  );
-
-  static const organizerCampaignDocumentAutomationOriginSourceId = CatchContractFieldConstraints(
-    path: 'organizerCampaignDocument.automationOrigin.sourceId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const organizerCampaignDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerCampaignDocument.cancelledAt._nanoseconds',
     required: true,
@@ -168659,12 +168612,6 @@ abstract final class CatchContractConstraints {
     'organizerCampaignDocument.audienceCounts.total': organizerCampaignDocumentAudienceCountsTotal,
     'organizerCampaignDocument.audienceCounts.unknown': organizerCampaignDocumentAudienceCountsUnknown,
     'organizerCampaignDocument.audienceCounts.unsupported': organizerCampaignDocumentAudienceCountsUnsupported,
-    'organizerCampaignDocument.automationOrigin.actionId': organizerCampaignDocumentAutomationOriginActionId,
-    'organizerCampaignDocument.automationOrigin.contactId': organizerCampaignDocumentAutomationOriginContactId,
-    'organizerCampaignDocument.automationOrigin.eventKind': organizerCampaignDocumentAutomationOriginEventKind,
-    'organizerCampaignDocument.automationOrigin.ruleId': organizerCampaignDocumentAutomationOriginRuleId,
-    'organizerCampaignDocument.automationOrigin.ruleRevision': organizerCampaignDocumentAutomationOriginRuleRevision,
-    'organizerCampaignDocument.automationOrigin.sourceId': organizerCampaignDocumentAutomationOriginSourceId,
     'organizerCampaignDocument.cancelledAt._nanoseconds': organizerCampaignDocumentCancelledAtNanoseconds,
     'organizerCampaignDocument.cancelledAt._seconds': organizerCampaignDocumentCancelledAtSeconds,
     'organizerCampaignDocument.channel': organizerCampaignDocumentChannel,

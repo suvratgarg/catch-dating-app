@@ -110,6 +110,122 @@ int second(Ref ref) {
     },
   );
 
+  test(
+    'provider graph honors literal function and class name overrides',
+    () async {
+      final root = await _fixtureRoot('''
+@Riverpod(keepAlive: true, name: 'availableProvider')
+bool capability(Ref ref) => true;
+
+@Riverpod(name: r'customControllerProvider')
+class Controller extends _\$Controller {
+  int build() => ref.watch(availableProvider) ? 1 : 0;
+}
+
+@Riverpod(name: null)
+int inferred(Ref ref) => ref.watch(customControllerProvider);
+
+@Riverpod(name: null)
+class DefaultController extends _\$DefaultController {
+  int build() => ref.watch(inferredProvider);
+}
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.providers.map((node) => node.name),
+        unorderedEquals([
+          'availableProvider',
+          'customControllerProvider',
+          'inferredProvider',
+          'defaultControllerProvider',
+        ]),
+      );
+      expect(
+        graph.providers
+            .singleWhere((node) => node.name == 'availableProvider')
+            .keepAlive,
+        isTrue,
+      );
+      expect(
+        graph.providerEdges.map((edge) => (edge.source, edge.target)),
+        unorderedEquals([
+          ('customControllerProvider', 'availableProvider'),
+          ('inferredProvider', 'customControllerProvider'),
+          ('defaultControllerProvider', 'inferredProvider'),
+        ]),
+      );
+      expect(graph.danglingProviderTargets, isEmpty);
+      expect(graph.unresolvedInsideProviders, isEmpty);
+    },
+  );
+
+  test(
+    'custom provider names retain cycle and dangling target detection',
+    () async {
+      final root = await _fixtureRoot('''
+@Riverpod(name: 'renamedFirstProvider')
+int first(Ref ref) => ref.watch(renamedSecondProvider);
+
+@Riverpod(name: 'renamedSecondProvider')
+class Second extends _\$Second {
+  int build() {
+    ref.watch(renamedFirstProvider);
+    return ref.watch(missingProvider);
+  }
+}
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(graph.reactiveCycles, [
+        ['renamedFirstProvider', 'renamedSecondProvider'],
+      ]);
+      expect(graph.danglingProviderTargets, ['missingProvider']);
+      expect(
+        providerGraphCheckFailures(graph),
+        containsAll([
+          'reactive cycle renamedFirstProvider -> renamedSecondProvider',
+          'dangling target missingProvider',
+        ]),
+      );
+      expect(graph.isHealthy, isFalse);
+    },
+  );
+
+  for (final nameExpression in [
+    'customName',
+    "'custom' + 'Provider'",
+    r"'custom${suffix}Provider'",
+  ]) {
+    for (final declaration in [
+      'int sample(Ref ref) => 1;',
+      'class Sample { int build() => 1; }',
+    ]) {
+      test(
+        'provider name expression fails closed: $nameExpression $declaration',
+        () async {
+          final root = await _fixtureRoot('''
+@Riverpod(name: $nameExpression)
+$declaration
+''');
+          addTearDown(() => root.delete(recursive: true));
+          await expectLater(
+            buildProviderGraph(root),
+            throwsA(
+              isA<FormatException>().having(
+                (error) => error.message,
+                'source location',
+                contains(
+                  'Unsupported Riverpod name at lib/sample/data/fixture.dart:1',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
   test('provider graph JSON and summary are deterministic', () async {
     final root = await _fixtureRoot('''
 @riverpod

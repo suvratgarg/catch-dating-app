@@ -32,12 +32,7 @@ import {
  * executor mints the durable delivery intent + moment run inside one
  * transaction so a retried handoff can never split the ownership record
  * from the orchestration record.
- *
- * Cutover: a legacy `automationOrigin` campaign minted for this automation
- * run + action remains the delivery owner until it drains — its document
- * id is deterministic, so the handoff transaction's existence check is the
- * one-executor decision that survives deployment overlap and retries.
- */
+ * */
 
 const RECOVERY_WINDOW_MS = 6 * 3_600_000;
 const INVITE_ATTRIBUTION_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
@@ -71,13 +66,6 @@ export function automationInviteLinkId(
   return `ecil_auto_${createHash("sha256")
     .update([automationRunId, actionId, contactId].join(""))
     .digest("hex").slice(0, 40)}`;
-}
-
-/** Legacy campaign id the retired executor minted for this action. */
-export function automationLegacyCampaignId(
-  automationRunId: string, actionId: string
-): string {
-  return automationHashId("autocampaign", automationRunId, actionId);
 }
 
 type AutomationAction =
@@ -208,9 +196,7 @@ export type AutomationHandoffResult =
   | {kind: "delegated"; momentRunId: string; deliveryMessageId: string;
     /** Business-delay horizon — the caller skips immediate dispatch when
      *  the run is not yet due; the moments sweep fires it at due. */
-    dueAtMillis: number}
-  /** A legacy `automationOrigin` campaign already owns this occurrence. */
-  | {kind: "legacyOwned"; campaignId: string};
+    dueAtMillis: number};
 
 /**
  * Executes the `campaignHandoff` action as a durable Moments send: mints
@@ -236,29 +222,20 @@ export async function handoffAutomationMessage(params: {
   }
   const momentId = automationCompanionMomentId(ruleId, action.actionId);
   const momentRunId = automationMomentRunId(momentId, automationRunId);
-  const legacyCampaignId = automationLegacyCampaignId(
-    automationRunId, action.actionId);
   const recipeId = action.campaignId!;
   const inviteLinkId = automationInviteLinkId(
     automationRunId, action.actionId, contactId);
 
   const result = await db.runTransaction(async (tx) => {
     const ruleRef = db.collection("organizerFormAutomationRules").doc(ruleId);
-    const legacyRef = db.collection("organizerCampaigns")
-      .doc(legacyCampaignId);
     const recipeRef = db.collection("organizerCampaigns").doc(recipeId);
     const momentRef = db.collection(MOMENTS_COLLECTION).doc(momentId);
     const runRef = db.collection(MOMENT_RUNS_COLLECTION).doc(momentRunId);
-    const [legacySnap, ruleSnap, recipeSnap, momentSnap, runSnap] =
+    const [ruleSnap, recipeSnap, momentSnap, runSnap] =
       await Promise.all([
-        tx.get(legacyRef), tx.get(ruleRef), tx.get(recipeRef),
+        tx.get(ruleRef), tx.get(recipeRef),
         tx.get(momentRef), tx.get(runRef),
       ]);
-    // A pre-migration executor already minted its campaign for this
-    // occurrence — it owns the send until the campaign drains.
-    if (legacySnap.exists) {
-      return {kind: "legacyOwned" as const, campaignId: legacyCampaignId};
-    }
     const liveRule = ruleSnap.data() as
       | OrganizerFormAutomationRuleDocument
       | undefined;
@@ -279,7 +256,6 @@ export async function handoffAutomationMessage(params: {
     }
     if (!recipe || recipe.organizerId !== rule.organizerId ||
         recipe.revision !== action.campaignRevision ||
-        recipe.automationOrigin != null ||
         !["draft", "previewed"].includes(recipe.status) ||
         recipe.scheduledAt !== null || !recipe.connectionId ||
         !recipe.templateId) {

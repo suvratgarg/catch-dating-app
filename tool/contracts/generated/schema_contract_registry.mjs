@@ -156012,54 +156012,6 @@ export const organizerCampaignDocumentSchema = {
           "type": "null"
         }
       ]
-    },
-    "automationOrigin": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "ruleId",
-        "ruleRevision",
-        "actionId",
-        "sourceId",
-        "eventKind",
-        "contactId"
-      ],
-      "properties": {
-        "ruleId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        "ruleRevision": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 9007199254740991
-        },
-        "actionId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        "sourceId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        "eventKind": {
-          "type": "string",
-          "enum": [
-            "submitted",
-            "withdrawn",
-            "applicationAccepted",
-            "eventAttended"
-          ]
-        },
-        "contactId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        }
-      }
     }
   },
   "definitions": {

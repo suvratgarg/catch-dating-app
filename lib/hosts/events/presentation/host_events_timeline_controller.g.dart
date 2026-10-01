@@ -9,6 +9,56 @@ part of 'host_events_timeline_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(privateEventSetupTimelineRepository)
+final privateEventSetupTimelineRepositoryProvider =
+    PrivateEventSetupTimelineRepositoryProvider._();
+
+final class PrivateEventSetupTimelineRepositoryProvider
+    extends
+        $FunctionalProvider<
+          PrivateEventSetupRepository,
+          PrivateEventSetupRepository,
+          PrivateEventSetupRepository
+        >
+    with $Provider<PrivateEventSetupRepository> {
+  PrivateEventSetupTimelineRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'privateEventSetupTimelineRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$privateEventSetupTimelineRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<PrivateEventSetupRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  PrivateEventSetupRepository create(Ref ref) {
+    return privateEventSetupTimelineRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PrivateEventSetupRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PrivateEventSetupRepository>(value),
+    );
+  }
+}
+
+String _$privateEventSetupTimelineRepositoryHash() =>
+    r'07c12aa1f178f6fa373446af8bb606075790c5fa';
+
 @ProviderFor(HostEventsTimelineController)
 final hostEventsTimelineControllerProvider =
     HostEventsTimelineControllerFamily._();
@@ -57,7 +107,7 @@ final class HostEventsTimelineControllerProvider
 }
 
 String _$hostEventsTimelineControllerHash() =>
-    r'e609960fba73e3851a6436484f90d6be0b375bb4';
+    r'b29bdfdf334c9f5f8fcf9a59f0d1bafe850e2c22';
 
 final class HostEventsTimelineControllerFamily extends $Family
     with

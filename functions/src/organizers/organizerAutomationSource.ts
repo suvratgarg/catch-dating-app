@@ -1,15 +1,12 @@
-import {HttpsError} from "firebase-functions/v2/https";
 import type {
   EventDocument,
   OrganizerApplicationDocument,
-  OrganizerCampaignDocument,
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactOriginDocument,
   OrganizerFormAutomationRuleDocument,
   OrganizerFormResponseDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import {
   genericFormApplicationId,
@@ -349,70 +346,4 @@ export function organizerAutomationDueMillis(
     Math.max(event.occurredAt.toMillis(), event.eventEndAt?.toMillis() ?? 0) +
     (rule.delayMinutes ?? 0) * 60000
   );
-}
-
-/** Existing campaign delivery calls this again immediately before sending. */
-export async function requireAutomationCampaignAuthority(
-  db: FirebaseFirestore.Firestore,
-  campaign: OrganizerCampaignDocument,
-  nowMillis = Date.now(),
-): Promise<void> {
-  const origin = campaign.automationOrigin;
-  if (!origin) return;
-  const rule = (
-    await db
-      .collection("organizerFormAutomationRules")
-      .doc(origin.ruleId)
-      .get()
-  ).data() as OrganizerFormAutomationRuleDocument | undefined;
-  const action = rule?.actions.find(
-    (item) => item.actionId === origin.actionId,
-  );
-  if (
-    !rule?.enabled ||
-    rule.organizerId !== campaign.organizerId ||
-    rule.revision !== origin.ruleRevision ||
-    action?.kind !== "campaignHandoff" ||
-    !action.campaignId
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Automation was changed or paused.",
-    );
-  }
-  await requireOrganizerManager({
-    db,
-    organizerId: rule.organizerId,
-    actorUid: rule.updatedByUid,
-  });
-  const recipe = (
-    await db.collection("organizerCampaigns").doc(action.campaignId).get()
-  ).data() as OrganizerCampaignDocument | undefined;
-  if (
-    !recipe ||
-    recipe.organizerId !== campaign.organizerId ||
-    recipe.revision !== action.campaignRevision ||
-    !["draft", "previewed"].includes(recipe.status)
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Automation message changed.",
-    );
-  }
-  const event = await readOrganizerAutomationEvent(
-    db,
-    origin.eventKind,
-    origin.sourceId,
-  );
-  if (
-    !event ||
-    event.organizerId !== campaign.organizerId ||
-    event.contactId !== origin.contactId ||
-    organizerAutomationDueMillis(event, rule) > nowMillis
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Automation source is unavailable.",
-    );
-  }
 }

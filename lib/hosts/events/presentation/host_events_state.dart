@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/domain/private_event_setup_inventory.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,11 @@ class HostEventsWorkspaceState {
   factory HostEventsWorkspaceState.fromEvents({
     required Iterable<Event> events,
     required DateTime now,
+    Iterable<PrivateEventSetupInventoryItem> unpublishedUpcoming =
+        const <PrivateEventSetupInventoryItem>[],
+    Iterable<PrivateEventSetupInventoryItem> unpublishedHistory =
+        const <PrivateEventSetupInventoryItem>[],
+    Iterable<Event> cancelledEvents = const <Event>[],
     String? featuredEventId,
     bool hasMoreActive = false,
     bool hasMorePast = false,
@@ -69,32 +76,52 @@ class HostEventsWorkspaceState {
     final past = active.where((event) => !event.endTime.isAfter(now)).toList()
       ..sort((a, b) => b.endTime.compareTo(a.endTime));
     final repeatSource = past.where(_canRepeatEvent).firstOrNull;
-    final currentAndUpcoming =
-        active.where((event) => event.endTime.isAfter(now)).toList()
-          ..sort((a, b) {
-            final aLive = !a.startTime.isAfter(now);
-            final bLive = !b.startTime.isAfter(now);
-            if (aLive != bLive) return aLive ? -1 : 1;
-            return a.startTime.compareTo(b.startTime);
-          });
+    final currentAndUpcoming = active.where(
+      (event) => event.endTime.isAfter(now),
+    );
+    final upcomingRows =
+        <HostEventLifecycleRowData>[
+          for (final event in currentAndUpcoming)
+            HostEventLifecycleRowData.fromEvent(event: event, now: now),
+          for (final setup in unpublishedUpcoming)
+            HostEventLifecycleRowData.fromUnpublished(setup: setup, now: now),
+        ]..sort((a, b) {
+          final aLive = a.event != null && !a.startTime.isAfter(now);
+          final bLive = b.event != null && !b.startTime.isAfter(now);
+          if (aLive != bLive) return aLive ? -1 : 1;
+          return a.startTime.compareTo(b.startTime);
+        });
     final visibleActive = featuredEventId == null
-        ? currentAndUpcoming
-        : currentAndUpcoming.where((event) => event.id != featuredEventId);
+        ? upcomingRows
+        : upcomingRows.where((row) => row.id != featuredEventId).toList();
+
+    final historyRows = <HostEventLifecycleRowData>[
+      for (final event in past)
+        HostEventLifecycleRowData.fromEvent(event: event, now: now),
+      for (final event in cancelledEvents)
+        HostEventLifecycleRowData.fromEvent(event: event, now: now),
+      for (final setup in unpublishedHistory)
+        HostEventLifecycleRowData.fromUnpublished(setup: setup, now: now),
+    ]..sort((a, b) => b.startTime.compareTo(a.startTime));
 
     final activeSections = _eventSections(
       visibleActive,
       now,
       HostEventsGrouping.day,
     );
-    final pastSections = _eventSections(past, now, HostEventsGrouping.month);
+    final pastSections = _eventSections(
+      historyRows,
+      now,
+      HostEventsGrouping.month,
+    );
 
     return HostEventsWorkspaceState(
       // The operational spotlight is the richer representation of the
       // featured event, so the timeline remains populated when it has no
       // additional condensed rows.
       status:
-          currentAndUpcoming.isEmpty &&
-              past.isEmpty &&
+          visibleActive.isEmpty &&
+              historyRows.isEmpty &&
               !hasMoreActive &&
               !hasMorePast &&
               activeLoadMoreError == null &&
@@ -151,28 +178,26 @@ class HostEventsWorkspaceState {
 }
 
 List<HostEventsSection> _eventSections(
-  Iterable<Event> events,
+  Iterable<HostEventLifecycleRowData> rows,
   DateTime now,
   HostEventsGrouping grouping,
 ) {
   final sections = <String, List<HostEventLifecycleRowData>>{};
-  for (final event in events) {
-    final date = event.startTime;
+  for (final row in rows) {
+    final date = row.sectionDate;
     final key = grouping == HostEventsGrouping.day
         ? '${date.year}-${date.month}-${date.day}'
         : '${date.year}-${date.month}';
-    sections
-        .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
-        .add(HostEventLifecycleRowData.fromEvent(event: event, now: now));
+    sections.putIfAbsent(key, () => <HostEventLifecycleRowData>[]).add(row);
   }
   return List<HostEventsSection>.unmodifiable([
     for (final entry in sections.entries)
       HostEventsSection(
         key: entry.key,
-        date: entry.value.first.event.startTime,
+        date: entry.value.first.sectionDate,
         grouping: grouping,
-        isToday: DateUtils.isSameDay(entry.value.first.event.startTime, now),
-        includeYear: entry.value.first.event.startTime.year != now.year,
+        isToday: DateUtils.isSameDay(entry.value.first.sectionDate, now),
+        includeYear: entry.value.first.sectionDate.year != now.year,
         rows: List<HostEventLifecycleRowData>.unmodifiable(entry.value),
       ),
   ]);
@@ -208,20 +233,26 @@ class HostEventsSection {
   }
 }
 
+/// One timeline row — either a published event (rich `Event` document) or
+/// an organizer-only event still in setup (`publicationState: 'private'`,
+/// projected through the light inventory reader). Private and published
+/// share the `events` collection and one list; publication is a state on
+/// the event, not a separate event kind.
 @immutable
 class HostEventLifecycleRowData {
-  const HostEventLifecycleRowData({
-    required this.event,
+  const HostEventLifecycleRowData._({
     required this.isToday,
     required this.isLive,
     required this.isPast,
+    this.event,
+    this.unpublished,
   });
 
   factory HostEventLifecycleRowData.fromEvent({
     required Event event,
     required DateTime now,
   }) {
-    return HostEventLifecycleRowData(
+    return HostEventLifecycleRowData._(
       event: event,
       isToday: DateUtils.isSameDay(event.startTime, now),
       isLive: !event.startTime.isAfter(now) && event.endTime.isAfter(now),
@@ -229,12 +260,74 @@ class HostEventLifecycleRowData {
     );
   }
 
-  final Event event;
+  factory HostEventLifecycleRowData.fromUnpublished({
+    required PrivateEventSetupInventoryItem setup,
+    required DateTime now,
+  }) {
+    final sectionDate = DateTime.tryParse(setup.localDate);
+    return HostEventLifecycleRowData._(
+      unpublished: setup,
+      isToday: sectionDate != null && DateUtils.isSameDay(sectionDate, now),
+      isLive: false,
+      isPast:
+          setup.status == 'cancelled' ||
+          !DateTime.fromMillisecondsSinceEpoch(
+            setup.startTimeMillis,
+          ).isAfter(now),
+    );
+  }
+
+  final Event? event;
+  final PrivateEventSetupInventoryItem? unpublished;
   final bool isToday;
   final bool isLive;
   final bool isPast;
 
+  String get id => event?.id ?? unpublished!.eventId;
+  bool get isUnpublished => unpublished != null;
+  bool get isCancelled =>
+      event?.isCancelled ?? unpublished?.status == 'cancelled';
+
+  /// The instant used for ordering rows inside a scope.
+  DateTime get startTime =>
+      event?.startTime ??
+      DateTime.fromMillisecondsSinceEpoch(unpublished!.startTimeMillis);
+
+  /// The event-local day used for section grouping. Unpublished rows carry
+  /// the authored local date; decoding the instant would group by the
+  /// viewer's timezone instead of the event's.
+  DateTime get sectionDate {
+    final setup = unpublished;
+    if (setup == null) return event!.startTime;
+    return DateTime.tryParse(setup.localDate) ?? startTime;
+  }
+
+  String get title => event?.title ?? unpublished!.name;
+
   List<String> facts(AppLocalizations l10n, {required String time}) {
+    final setup = unpublished;
+    if (setup != null) {
+      final city = defaultCityOptions
+          .where(
+            (option) =>
+                option.effectiveCityId == setup.city.cityId &&
+                option.effectiveMarketId == setup.city.marketId,
+          )
+          .firstOrNull;
+      final schedule = '$time · ${city?.label ?? setup.city.cityId}';
+      return [
+        if (isPast)
+          '${DateFormat.MMMEd(l10n.localeName).format(sectionDate)} · $schedule'
+        else
+          schedule,
+        isCancelled
+            ? l10n.hostEventsRowCancelled
+            : setup.detailsConfigured
+            ? l10n.hostEventsRowUnpublished
+            : l10n.hostEventsRowSetupPending,
+      ];
+    }
+    final event = this.event!;
     final dateTime = isPast
         ? '${DateFormat.MMMEd(l10n.localeName).format(event.startTime)} · $time'
         : time;
@@ -242,7 +335,9 @@ class HostEventLifecycleRowData {
     final schedule = location.isEmpty ? dateTime : '$dateTime · $location';
     return [
       isLive ? l10n.hostEventsLiveSchedule(schedule: schedule) : schedule,
-      if (isPast)
+      if (isCancelled)
+        l10n.hostEventsRowCancelled
+      else if (isPast)
         l10n.hostEventsAttended(count: event.attendedCount)
       else if (event.capacityLimit > 0)
         l10n.hostEventsRegisteredCapacity(

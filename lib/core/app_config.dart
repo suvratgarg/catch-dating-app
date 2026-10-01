@@ -249,6 +249,15 @@ class AppConfig {
     ),
   );
 
+  /// Public marketing/guest site origin — household RSVP links resolve at
+  /// `${publicSiteUrl}/rsvp/<token>`.
+  static final Uri publicSiteUrl = Uri.parse(
+    const String.fromEnvironment(
+      'CATCH_PUBLIC_SITE_URL',
+      defaultValue: 'https://catchdates.com',
+    ),
+  );
+
   /// Owner-approved public legal/support destinations. Empty values keep the
   /// corresponding Settings rows hidden instead of launching dormant routes.
   static const String _privacyPolicyUrl = String.fromEnvironment(

@@ -487,7 +487,12 @@ Future<ProviderGraph> buildProviderGraph(
             declaration.functionExpression.parameters?.parameters.length ?? 0;
         fileProviders.add(
           ProviderGraphNode(
-            name: '${declaration.name.lexeme}Provider',
+            name: _generatedProviderName(
+              declaration.metadata,
+              '${declaration.name.lexeme}Provider',
+              relativePath,
+              lineFor,
+            ),
             kind: 'generated-function',
             path: relativePath,
             line: lineFor(declaration.offset),
@@ -509,7 +514,12 @@ Future<ProviderGraph> buildProviderGraph(
             .firstOrNull;
         fileProviders.add(
           ProviderGraphNode(
-            name: '${_lowerCamelClassName(className)}Provider',
+            name: _generatedProviderName(
+              declaration.metadata,
+              '${_lowerCamelClassName(className)}Provider',
+              relativePath,
+              lineFor,
+            ),
             kind: 'generated-class',
             path: relativePath,
             line: lineFor(declaration.offset),
@@ -1144,6 +1154,35 @@ bool _hasRiverpodAnnotation(List<Annotation> metadata) => metadata.any(
   (annotation) =>
       annotation.name.name == 'riverpod' || annotation.name.name == 'Riverpod',
 );
+
+String _generatedProviderName(
+  List<Annotation> metadata,
+  String inferredName,
+  String path,
+  int Function(int offset) lineFor,
+) {
+  for (final annotation in metadata) {
+    if (annotation.name.name != 'Riverpod' &&
+        annotation.name.name != 'riverpod') {
+      continue;
+    }
+    for (final argument in annotation.arguments?.arguments ?? <Expression>[]) {
+      if (argument is! NamedExpression || argument.name.label.name != 'name') {
+        continue;
+      }
+      final expression = argument.expression;
+      if (expression is NullLiteral) return inferredName;
+      if (expression is StringLiteral && expression.stringValue != null) {
+        return expression.stringValue!;
+      }
+      throw FormatException(
+        'Unsupported Riverpod name at $path:${lineFor(expression.offset)}: '
+        'expected a literal string or null, got ${expression.toSource()}.',
+      );
+    }
+  }
+  return inferredName;
+}
 
 bool _isKeepAlive(List<Annotation> metadata) => metadata.any(
   (annotation) =>

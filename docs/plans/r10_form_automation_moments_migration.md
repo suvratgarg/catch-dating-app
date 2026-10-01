@@ -195,12 +195,14 @@ criteria (none may produce a send):
   dates need no Moments per the decision above); the scheduler now also
   re-drives stalled `resolving`/`sending` leases and `blocked`
   campaigns.
-- `automationOrigin` campaigns minted before the phase-6 cutover remain
-  executable under the campaign worker until they drain — the handoff's
-  deterministic legacy-campaign id check (`autocampaign_<hash>`) assigns
-  ownership inside the run-creation transaction so retries and deploy
-  overlap cannot double-send. Remove the campaign `automationOrigin`
-  branch when no non-terminal automation-origin campaigns exist.
+- `automationOrigin` campaigns minted before the phase-6 cutover were
+  the retained drain path — none existed in production, so the field, the
+  deterministic legacy-campaign id check (`autocampaign_<hash>`), the
+  `legacyOwned` handoff outcome, and the per-occurrence mint
+  (`prepareAutomatedOrganizerCampaign` +
+  `requireAutomationCampaignAuthority`) are removed rather than kept
+  readable. Reintroducing a legacy executor now requires restoring this
+  commit.
 
 ## Acceptance demonstration
 
@@ -285,14 +287,12 @@ executes through Moments + the shared delivery core.
    plus `failed`. A journal row never labels an `unknown` provider outcome
    as sent. Receipts reconcile after run completion; repairing a missing
    journal row never requires another provider submission.
-10. **Cutover enforces one executor.** An occurrence already represented
-    by a legacy `automationOrigin` campaign belongs to that campaign until
-    it drains; new occurrences belong to Moments + the core. Ownership is
-    an explicit decision that survives retries and deploy overlap: the
-    legacy campaign id is deterministic
-    (`autocampaign_<hash(runId, actionId)>`), so the handoff checks for it
-    inside the run-creation transaction — whoever wrote first owns the
-    occurrence. The retirement-ledger note documents removal criteria; it
+10. **Cutover enforces one executor.** Every occurrence belongs to
+    Moments + the shared core. The legacy `automationOrigin` drain branch
+    (deterministic `autocampaign_<hash(runId, actionId)>` ownership check
+    inside the run-creation transaction) was retired once production
+    confirmed zero legacy campaigns — the field, mint path, and
+    `legacyOwned` outcome no longer exist. It
     is not the enforcement mechanism.
 
 ## Explicit non-goals
