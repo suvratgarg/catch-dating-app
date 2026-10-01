@@ -624,3 +624,20 @@ third-party assistant actions. App Check and bounded rate limits apply to
 callables. The Admin host Activity pane shows source history, Pipeline shows
 company totals, and Owner privacy controls are reachable both from a host and
 through a canonical-name lookup in Settings after a Sales companion is removed.
+
+### Organizer advertising settings (local implementation)
+
+`getOrganizerTrackingSettings` and `setOrganizerTrackingSettings` use canonical
+organizer manager authority, strict generated contracts and bounded rates. The
+private server-only `organizerTrackingSettings` document stores validated Meta
+Pixel and GA4 IDs, revision and private edit audit. Writes require a first-party
+organizer or verified claim and the current revision. Direct client access is
+denied. No OAuth grant, credentials, arbitrary JavaScript or GTM is accepted.
+
+`readPublicOrganizerTrackingSettings` verifies published organizer eligibility,
+canonical event ownership and published active events before returning a minimal
+projection. Current immutable publication policy is disabled pending policy and
+live integration review; IDs are never returned publicly. Canonical social,
+singles/mixer and unknown event classifications remain excluded. Saving an ID
+does not constitute connecting a provider or permission to transmit advertising
+activity. These exports do not establish deployment or production enablement.

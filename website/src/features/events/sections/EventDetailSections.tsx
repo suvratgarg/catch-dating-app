@@ -1,3 +1,5 @@
+import {trackOrganizerProviderOutboundClick} from "../../organizers/observeOrganizerProviders";
+import {trackOrganizerAnalytics} from "../../organizers/analytics";
 import type {AppDownloadCtaGroupProps} from "../../../shared/ui/primitives";
 import {
   ActionGroup,
@@ -158,6 +160,7 @@ export function EventDetailHeroSection({
         ) : isExternal && event.sourceHref ? (
           <ActionGroup variant="flow">
             <ButtonLink
+              onClick={() => { trackOrganizerAnalytics(event.listing, "outboundClick", "external_event_booking", event.eventId); trackOrganizerProviderOutboundClick(event.listing.id, event.eventId); }}
               href={event.sourceHref}
               rel="noreferrer"
               target="_blank"
@@ -237,6 +240,7 @@ export function EventDetailProvenanceSection({
   const isExternal = event.supply === "external";
   const sourceValue = isExternal && event.sourceHref ? (
     <EventDetailSourceLink
+      onClick={() => { trackOrganizerAnalytics(event.listing, "outboundClick", "external_event_source", event.eventId); trackOrganizerProviderOutboundClick(event.listing.id, event.eventId); }}
       href={event.sourceHref}
       rel="noreferrer"
       target="_blank"

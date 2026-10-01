@@ -81278,6 +81278,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerTrackingSettingsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerTrackingSettingsCallablePayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const getOrganizerWhatsappThreadCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'getOrganizerWhatsappThreadCallablePayload.organizerId',
     maxLength: 180,
@@ -84622,7 +84629,7 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.analytics.consent.choice',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['accepted', 'essential'],
+    enumValues: <String>['accepted', 'analytics', 'essential'],
   );
 
   static const joinWaitlistHTTPRequestAnalyticsConsentMarketing = CatchContractFieldConstraints(
@@ -114929,6 +114936,111 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerTrackingSettingsCallableResponseCanEdit = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.canEdit',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerTrackingSettingsCallableResponseEditBlockedReason = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.editBlockedReason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'unclaimed'],
+  );
+
+  static const organizerTrackingSettingsCallableResponseEnabled = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerTrackingSettingsCallableResponseGoogleMeasurementId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.googleMeasurementId',
+    valueTypes: <String>['string'],
+    pattern: '^G-[A-Z0-9]{4,20}\$',
+  );
+
+  static const organizerTrackingSettingsCallableResponseMetaPixelId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.metaPixelId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,20}\$',
+  );
+
+  static const organizerTrackingSettingsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const organizerTrackingSettingsCallableResponsePolicyReason = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.policyReason',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerTrackingSettingsCallableResponsePublicationAllowed = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.publicationAllowed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerTrackingSettingsCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerTrackingSettingsDocumentEnabled = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerTrackingSettingsDocumentGoogleMeasurementId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.googleMeasurementId',
+    valueTypes: <String>['string'],
+    pattern: '^G-[A-Z0-9]{4,20}\$',
+  );
+
+  static const organizerTrackingSettingsDocumentMetaPixelId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.metaPixelId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,20}\$',
+  );
+
+  static const organizerTrackingSettingsDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const organizerTrackingSettingsDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerTrackingSettingsDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerTrackingSettingsDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerTrackingSettingsDocument.updatedByUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const organizerWhatsappEndpointStopDocumentConnectionId = CatchContractFieldConstraints(
     path: 'organizerWhatsappEndpointStopDocument.connectionId',
     maxLength: 160,
@@ -128494,6 +128606,32 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const publicOrganizerTrackingSettingsCallableResponseEnabled = CatchContractFieldConstraints(
+    path: 'publicOrganizerTrackingSettingsCallableResponse.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publicOrganizerTrackingSettingsCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'publicOrganizerTrackingSettingsCallableResponse.eventId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const publicOrganizerTrackingSettingsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'publicOrganizerTrackingSettingsCallableResponse.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const publicOrganizerTrackingSettingsCallableResponsePolicyReason = CatchContractFieldConstraints(
+    path: 'publicOrganizerTrackingSettingsCallableResponse.policyReason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['policyReviewRequired', 'sensitiveEvent', 'eventClassificationUnavailable'],
+  );
+
   static const publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
     path: 'publicProfileDocument.activityPreferences.running.paceMaxSecsPerKm',
     required: true,
@@ -129891,6 +130029,19 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const readPublicOrganizerTrackingSettingsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'readPublicOrganizerTrackingSettingsCallablePayload.eventId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const readPublicOrganizerTrackingSettingsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'readPublicOrganizerTrackingSettingsCallablePayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
@@ -142465,6 +142616,39 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const setOrganizerTrackingSettingsCallablePayloadEnabled = CatchContractFieldConstraints(
+    path: 'setOrganizerTrackingSettingsCallablePayload.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setOrganizerTrackingSettingsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setOrganizerTrackingSettingsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setOrganizerTrackingSettingsCallablePayloadGoogleMeasurementId = CatchContractFieldConstraints(
+    path: 'setOrganizerTrackingSettingsCallablePayload.googleMeasurementId',
+    valueTypes: <String>['string'],
+    pattern: '^G-[A-Z0-9]{4,20}\$',
+  );
+
+  static const setOrganizerTrackingSettingsCallablePayloadMetaPixelId = CatchContractFieldConstraints(
+    path: 'setOrganizerTrackingSettingsCallablePayload.metaPixelId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,20}\$',
+  );
+
+  static const setOrganizerTrackingSettingsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'setOrganizerTrackingSettingsCallablePayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const setProgramTravelReadinessCallablePayloadAction = CatchContractFieldConstraints(
@@ -166458,6 +166642,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerFormShareAssetsCallableResponse.embedUrl': getOrganizerFormShareAssetsCallableResponseEmbedUrl,
     'getOrganizerProviderSetupCallablePayload.eventId': getOrganizerProviderSetupCallablePayloadEventId,
     'getOrganizerProviderSetupCallablePayload.organizerId': getOrganizerProviderSetupCallablePayloadOrganizerId,
+    'getOrganizerTrackingSettingsCallablePayload.organizerId': getOrganizerTrackingSettingsCallablePayloadOrganizerId,
     'getOrganizerWhatsappThreadCallablePayload.organizerId': getOrganizerWhatsappThreadCallablePayloadOrganizerId,
     'getOrganizerWhatsappThreadCallablePayload.threadId': getOrganizerWhatsappThreadCallablePayloadThreadId,
     'getOrganizerWhatsappThreadCallableResponse.contactId': getOrganizerWhatsappThreadCallableResponseContactId,
@@ -171124,6 +171309,22 @@ abstract final class CatchContractConstraints {
     'organizerTeamMembershipDocument.role': organizerTeamMembershipDocumentRole,
     'organizerTeamMembershipDocument.status': organizerTeamMembershipDocumentStatus,
     'organizerTeamMembershipDocument.uid': organizerTeamMembershipDocumentUid,
+    'organizerTrackingSettingsCallableResponse.canEdit': organizerTrackingSettingsCallableResponseCanEdit,
+    'organizerTrackingSettingsCallableResponse.editBlockedReason': organizerTrackingSettingsCallableResponseEditBlockedReason,
+    'organizerTrackingSettingsCallableResponse.enabled': organizerTrackingSettingsCallableResponseEnabled,
+    'organizerTrackingSettingsCallableResponse.googleMeasurementId': organizerTrackingSettingsCallableResponseGoogleMeasurementId,
+    'organizerTrackingSettingsCallableResponse.metaPixelId': organizerTrackingSettingsCallableResponseMetaPixelId,
+    'organizerTrackingSettingsCallableResponse.organizerId': organizerTrackingSettingsCallableResponseOrganizerId,
+    'organizerTrackingSettingsCallableResponse.policyReason': organizerTrackingSettingsCallableResponsePolicyReason,
+    'organizerTrackingSettingsCallableResponse.publicationAllowed': organizerTrackingSettingsCallableResponsePublicationAllowed,
+    'organizerTrackingSettingsCallableResponse.revision': organizerTrackingSettingsCallableResponseRevision,
+    'organizerTrackingSettingsDocument.enabled': organizerTrackingSettingsDocumentEnabled,
+    'organizerTrackingSettingsDocument.googleMeasurementId': organizerTrackingSettingsDocumentGoogleMeasurementId,
+    'organizerTrackingSettingsDocument.metaPixelId': organizerTrackingSettingsDocumentMetaPixelId,
+    'organizerTrackingSettingsDocument.organizerId': organizerTrackingSettingsDocumentOrganizerId,
+    'organizerTrackingSettingsDocument.revision': organizerTrackingSettingsDocumentRevision,
+    'organizerTrackingSettingsDocument.updatedAtMillis': organizerTrackingSettingsDocumentUpdatedAtMillis,
+    'organizerTrackingSettingsDocument.updatedByUid': organizerTrackingSettingsDocumentUpdatedByUid,
     'organizerWhatsappEndpointStopDocument.connectionId': organizerWhatsappEndpointStopDocumentConnectionId,
     'organizerWhatsappEndpointStopDocument.endpointHash': organizerWhatsappEndpointStopDocumentEndpointHash,
     'organizerWhatsappEndpointStopDocument.observedAt': organizerWhatsappEndpointStopDocumentObservedAt,
@@ -172973,6 +173174,10 @@ abstract final class CatchContractConstraints {
     'publicEventPaymentDocument.status': publicEventPaymentDocumentStatus,
     'publicEventPaymentDocument.updatedAt._nanoseconds': publicEventPaymentDocumentUpdatedAtNanoseconds,
     'publicEventPaymentDocument.updatedAt._seconds': publicEventPaymentDocumentUpdatedAtSeconds,
+    'publicOrganizerTrackingSettingsCallableResponse.enabled': publicOrganizerTrackingSettingsCallableResponseEnabled,
+    'publicOrganizerTrackingSettingsCallableResponse.eventId': publicOrganizerTrackingSettingsCallableResponseEventId,
+    'publicOrganizerTrackingSettingsCallableResponse.organizerId': publicOrganizerTrackingSettingsCallableResponseOrganizerId,
+    'publicOrganizerTrackingSettingsCallableResponse.policyReason': publicOrganizerTrackingSettingsCallableResponsePolicyReason,
     'publicProfileDocument.activityPreferences.running.paceMaxSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm,
     'publicProfileDocument.activityPreferences.running.paceMinSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMinSecsPerKm,
     'publicProfileDocument.activityPreferences.running.preferredDistances': publicProfileDocumentActivityPreferencesRunningPreferredDistances,
@@ -173166,6 +173371,8 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.updatedAt._nanoseconds': razorpayPendingOrderDocumentUpdatedAtNanoseconds,
     'razorpayPendingOrderDocument.updatedAt._seconds': razorpayPendingOrderDocumentUpdatedAtSeconds,
     'razorpayPendingOrderDocument.userId': razorpayPendingOrderDocumentUserId,
+    'readPublicOrganizerTrackingSettingsCallablePayload.eventId': readPublicOrganizerTrackingSettingsCallablePayloadEventId,
+    'readPublicOrganizerTrackingSettingsCallablePayload.organizerId': readPublicOrganizerTrackingSettingsCallablePayloadOrganizerId,
     'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.clockId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextClockId,
     'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.eventId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextEventId,
     'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.mode': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextMode,
@@ -174901,6 +175108,11 @@ abstract final class CatchContractConstraints {
     'setOrganizerFormLifecycleCallablePayload.organizerId': setOrganizerFormLifecycleCallablePayloadOrganizerId,
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
+    'setOrganizerTrackingSettingsCallablePayload.enabled': setOrganizerTrackingSettingsCallablePayloadEnabled,
+    'setOrganizerTrackingSettingsCallablePayload.expectedRevision': setOrganizerTrackingSettingsCallablePayloadExpectedRevision,
+    'setOrganizerTrackingSettingsCallablePayload.googleMeasurementId': setOrganizerTrackingSettingsCallablePayloadGoogleMeasurementId,
+    'setOrganizerTrackingSettingsCallablePayload.metaPixelId': setOrganizerTrackingSettingsCallablePayloadMetaPixelId,
+    'setOrganizerTrackingSettingsCallablePayload.organizerId': setOrganizerTrackingSettingsCallablePayloadOrganizerId,
     'setProgramTravelReadinessCallablePayload.action': setProgramTravelReadinessCallablePayloadAction,
     'setProgramTravelReadinessCallablePayload.afterObservation.action': setProgramTravelReadinessCallablePayloadAfterObservationAction,
     'setProgramTravelReadinessCallablePayload.afterObservation.clientOperationId': setProgramTravelReadinessCallablePayloadAfterObservationClientOperationId,

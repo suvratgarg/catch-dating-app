@@ -377,6 +377,7 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
                     'accepted',
+                    'analytics',
                     'essential',
                   ],
                 },
@@ -842,6 +843,7 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
                     'accepted',
+                    'analytics',
                     'essential',
                   ],
                 },
@@ -904,6 +906,7 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'accepted',
+            'analytics',
             'essential',
           ],
         },

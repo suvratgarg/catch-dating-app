@@ -6,12 +6,14 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
@@ -122,6 +124,9 @@ class WidgetbookHostShellScope extends StatelessWidget {
         const _NoopHostPaymentAccountActions(),
       ),
       hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
+      hostTrackingSettingsRepositoryProvider.overrideWithValue(
+        const _WidgetbookTrackingSettingsRepository(),
+      ),
     ];
     for (final clubId in eventClubIds) {
       final club = clubsById[clubId];
@@ -354,4 +359,34 @@ final class _NoopHostPaymentAccountActions
     required String defaultCurrency,
     RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {}
+}
+
+class _WidgetbookTrackingSettingsRepository
+    implements HostTrackingSettingsRepository {
+  const _WidgetbookTrackingSettingsRepository();
+  @override
+  Future<HostTrackingSettings> read(String organizerId) async =>
+      HostTrackingSettings(
+        organizerId: organizerId,
+        revision: 0,
+        metaPixelId: null,
+        googleMeasurementId: null,
+        enabled: false,
+        publicationAllowed: false,
+        canEdit: true,
+        editBlockedReason: 'none',
+      );
+  @override
+  Future<HostTrackingSettings> save(
+    SetOrganizerTrackingSettingsCallableRequest request,
+  ) async => HostTrackingSettings(
+    organizerId: request.organizerId,
+    revision: request.expectedRevision + 1,
+    metaPixelId: request.metaPixelId,
+    googleMeasurementId: request.googleMeasurementId,
+    enabled: false,
+    publicationAllowed: false,
+    canEdit: true,
+    editBlockedReason: 'none',
+  );
 }

@@ -1091,6 +1091,9 @@ service cloud.firestore {
     match /eventSetupReceipts/{receiptId} {
       allow read, write: if false;
     }
+    match /organizerTrackingSettings/{organizerId} {
+      allow read, write: if false;
+    }
     match /organizerEventSetupDefaults/{organizerId} {
       allow read, write: if false;
     }

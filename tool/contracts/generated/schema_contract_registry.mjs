@@ -1,6 +1,258 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const getOrganizerTrackingSettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_tracking_settings_payload.schema.json",
+  "title": "GetOrganizerTrackingSettingsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  }
+};
+
+export const setOrganizerTrackingSettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_organizer_tracking_settings_payload.schema.json",
+  "title": "SetOrganizerTrackingSettingsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedRevision",
+    "metaPixelId",
+    "googleMeasurementId",
+    "enabled"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "metaPixelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "googleMeasurementId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^G-[A-Z0-9]{4,20}$"
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const readPublicOrganizerTrackingSettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/read_public_organizer_tracking_settings_payload.schema.json",
+  "title": "ReadPublicOrganizerTrackingSettingsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  }
+};
+
+export const organizerTrackingSettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_tracking_settings_response.schema.json",
+  "title": "OrganizerTrackingSettingsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "revision",
+    "metaPixelId",
+    "googleMeasurementId",
+    "enabled",
+    "publicationAllowed",
+    "policyReason",
+    "canEdit",
+    "editBlockedReason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "metaPixelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "googleMeasurementId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^G-[A-Z0-9]{4,20}$"
+    },
+    "enabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "publicationAllowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "policyReason": {
+      "const": "policyReviewRequired",
+      "type": "string"
+    },
+    "canEdit": {
+      "type": "boolean"
+    },
+    "editBlockedReason": {
+      "type": "string",
+      "enum": [
+        "none",
+        "unclaimed"
+      ]
+    }
+  }
+};
+
+export const publicOrganizerTrackingSettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/public_organizer_tracking_settings_response.schema.json",
+  "title": "PublicOrganizerTrackingSettingsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "enabled",
+    "metaPixelId",
+    "googleMeasurementId",
+    "policyReason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "enabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "metaPixelId": {
+      "type": "null"
+    },
+    "googleMeasurementId": {
+      "type": "null"
+    },
+    "policyReason": {
+      "type": "string",
+      "enum": [
+        "policyReviewRequired",
+        "sensitiveEvent",
+        "eventClassificationUnavailable"
+      ]
+    }
+  }
+};
+
+export const organizerTrackingSettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_tracking_settings.schema.json",
+  "title": "OrganizerTrackingSettingsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "revision",
+    "metaPixelId",
+    "googleMeasurementId",
+    "enabled",
+    "updatedByUid",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "metaPixelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "googleMeasurementId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^G-[A-Z0-9]{4,20}$"
+    },
+    "enabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "updatedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
 export const salesImportHistoryRowDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_import_history_rows.schema.json",
@@ -297453,6 +297705,7 @@ export const joinWaitlistHTTPRequestSchema = {
                   "type": "string",
                   "enum": [
                     "accepted",
+                    "analytics",
                     "essential"
                   ]
                 },
@@ -297918,6 +298171,7 @@ export const joinWaitlistHTTPRequestSchema = {
                   "type": "string",
                   "enum": [
                     "accepted",
+                    "analytics",
                     "essential"
                   ]
                 },
@@ -297980,6 +298234,7 @@ export const joinWaitlistHTTPRequestSchema = {
           "type": "string",
           "enum": [
             "accepted",
+            "analytics",
             "essential"
           ]
         },

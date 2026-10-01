@@ -549,6 +549,16 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface OrganizerTrackingSettingsDocument {
+  organizerId: string;
+  revision: number;
+  metaPixelId: string | null;
+  googleMeasurementId: string | null;
+  enabled: false;
+  updatedByUid: string;
+  updatedAtMillis: number;
+}
+
 export interface SalesImportHistoryRowDocument {
   schemaVersion: 1;
   classification: "sales_private";

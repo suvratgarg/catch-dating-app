@@ -12,6 +12,12 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/getOrganizerTrackingSettingsCallablePayload.ts` |
+| SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload.ts` |
+| ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload.ts` |
+| OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsCallableResponse.ts` |
+| PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse.ts` |
+| OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsDocument.ts` |
 | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `functions/src/shared/generated/salesImportHistoryRowDocument.ts` |
 | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `functions/src/shared/generated/salesImportHistoryRecordDocument.ts` |
 | SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `functions/src/shared/generated/salesPrivacyRestriction.ts` |
@@ -1157,6 +1163,12 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetOrganizerTrackingSettingsCallablePayloadSchema` | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_tracking_settings_callable_payload.g.dart` |
+| `schemaSetOrganizerTrackingSettingsCallablePayloadSchema` | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_organizer_tracking_settings_callable_payload.g.dart` |
+| `schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema` | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/read_public_organizer_tracking_settings_callable_payload.g.dart` |
+| `schemaOrganizerTrackingSettingsCallableResponseSchema` | OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_callable_response.g.dart` |
+| `schemaPublicOrganizerTrackingSettingsCallableResponseSchema` | PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/public_organizer_tracking_settings_callable_response.g.dart` |
+| `schemaOrganizerTrackingSettingsDocumentSchema` | OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_document.g.dart` |
 | `schemaSalesImportHistoryRowDocumentSchema` | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_row_document.g.dart` |
 | `schemaSalesImportHistoryRecordDocumentSchema` | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_record_document.g.dart` |
 | `schemaSalesPrivacyRestrictionSchema` | SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_restriction.g.dart` |
@@ -2302,6 +2314,9 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |
+| SetOrganizerTrackingSettingsCallableRequest | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_organizer_tracking_settings_callable_request.g.dart` |
+| ReadPublicOrganizerTrackingSettingsCallableRequest | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/read_public_organizer_tracking_settings_callable_request.g.dart` |
 | AdminPreviewSalesImportHistoryRequest | AdminPreviewSalesImportHistoryPayload | `callables/admin_sales_import_history_preview_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_preview_sales_import_history_request.g.dart` |
 | AdminApplySalesImportHistoryRequest | AdminApplySalesImportHistoryPayload | `callables/admin_sales_import_history_apply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_apply_sales_import_history_request.g.dart` |
 | AdminListSalesImportHistoryRequest | AdminListSalesImportHistoryPayload | `callables/admin_sales_import_history_list_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_sales_import_history_request.g.dart` |
