@@ -10,7 +10,7 @@ import {
   isOwnerBoundClubDoc,
   publicRefreshPatch,
 } from "./lib/claim_target_sync_core.mjs";
-import {buildReadinessReceipt} from "./sync_claim_targets_to_firestore.mjs";
+import {buildReadinessReceipt, loadPlan} from "./sync_claim_targets_to_firestore.mjs";
 
 test("buildClaimTargetSyncActions creates missing claim targets", () => {
   const actions = buildClaimTargetSyncActions([claimTarget()], new Map());
@@ -113,6 +113,9 @@ test("isOwnerBoundClubDoc detects claimed and verified ownership states", () => 
   assert.equal(isOwnerBoundClubDoc({ownership: {state: "claimed"}}), true);
   assert.equal(isOwnerBoundClubDoc({claim: {state: "verified"}}), true);
   assert.equal(isOwnerBoundClubDoc({claim: {state: "claimPending"}}), false);
+  assert.equal(isOwnerBoundClubDoc({ownership: {state: "userCreated"}}), true);
+  assert.equal(isOwnerBoundClubDoc({hostUserIds: ["manager"]}), true);
+  assert.equal(isOwnerBoundClubDoc({ownership: {primaryHostUserId: "manager"}}), true);
 });
 
 test("buildClaimTargetSyncPreview produces durable review actions", () => {
@@ -159,12 +162,52 @@ test("buildReadinessReceipt binds live state to the exact claim target plan", (t
   assert.equal(receipt.actions[0].status, "create");
 });
 
+
+test("migration plan accepts explicit canonical targets and rejects identity or document aliases", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-canonical-plan-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const planPath = path.join(root, "plan.json");
+  const target = {entityId: "afterfly", path: "organizers/afterfly",
+    claimState: "unclaimed", organizerDocument: canonicalOrganizerDocument()};
+  fs.writeFileSync(planPath, JSON.stringify({schemaVersion: 1, targets: [target]}));
+  const plan = loadPlan(planPath);
+  const actions = buildClaimTargetSyncActions(plan.targets, new Map());
+  assert.equal(actions[0].path, "organizers/afterfly");
+  assert.equal(actions[0].writeData.claim.state, "unclaimed");
+  assert.equal(buildClaimTargetSyncActions(plan.targets,
+    new Map([[target.path, target.organizerDocument]]))[0].status, "in_sync");
+  for (const change of [
+    (target) => {target.path = "organizers/another-id";},
+    (target) => {target.path = "organizers/afterfly/subcollection/doc";},
+    (target) => {target.clubDocument = target.organizerDocument; delete target.organizerDocument;},
+    (target) => {target.organizerDocument.claim.state = "claimed";},
+    (target) => {target.organizerDocument.ownerUserId = "another-owner";},
+  ]) {
+    const invalid = structuredClone(target);
+    change(invalid);
+    fs.writeFileSync(planPath, JSON.stringify({schemaVersion: 1, targets: [invalid]}));
+    assert.throws(() => loadPlan(planPath));
+  }
+});
+
 function claimTarget() {
   return {
     entityId: "afterfly",
     path: "clubs/afterfly",
     clubDocument: clubDocument(),
   };
+}
+
+function canonicalOrganizerDocument() {
+  const document = JSON.parse(fs.readFileSync(new URL(
+    "../../contracts/fixtures/valid/club_doc.json", import.meta.url), "utf8"));
+  delete document.memberCount;
+  Object.assign(document, {organizerType: "eventProducer", organizerPhotos: [], followerCount: 0,
+    hostUserId: null, ownerUserId: null, hostName: null, hostAvatarUrl: null,
+    hostUserIds: [], hostProfiles: [], ownership: {state: "programmatic",
+      ownerUserId: null, primaryHostUserId: null, hostUserIds: [], claimedAt: null, claimedByUid: null},
+    claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null}});
+  return document;
 }
 
 function clubDocument() {
