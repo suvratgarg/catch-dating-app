@@ -42,6 +42,25 @@ test("imported endpoints stay proposed while OTP evidence is verified", () => {
   assert.notEqual(verified[0].identityHash, verified[1].identityHash);
 });
 
+test("zero-event traits retain standalone contacts without attendance", () => {
+  const contact = organizerContact({primarySource: "hostForm"});
+  const traits = organizerContactTraits({
+    contactId: "contact-1", contact, edges: [], now,
+  });
+  assert.ok(traits);
+  assert.equal(traits.expectedEventCount, 0);
+  assert.equal(traits.attendedEventCount, 0);
+  assert.equal(traits.noShowCount, 0);
+  assert.equal(traits.attendanceRate, null);
+  assert.deepEqual(traits.segmentIds, ["new_to_organizer"]);
+  assert.equal(traits.firstSeenAt, contact.firstSeenAt);
+  assert.equal(traits.lastSeenAt, contact.lastSeenAt);
+  assert.equal(traits.sourceCoverage, "exact");
+  assert.equal(organizerContactTraits({contactId: "contact-1",
+    contact: organizerContact({identityState: "merged"}),
+    edges: [], now}), null);
+});
+
 test("contact ids are opaque, deterministic, and organizer scoped", () => {
   const first = organizerContactId("organizer-1", "attendee-1");
   assert.equal(first, organizerContactId("organizer-1", "attendee-1"));

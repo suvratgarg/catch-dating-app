@@ -73,6 +73,23 @@ Future<void> runCatchApp({
               ),
             ),
             onNativeSplashReady: CatchNativeSplash.remove,
+            onInitializationError: (error, stackTrace) {
+              try {
+                container
+                    .read(errorLoggerProvider)
+                    .logError(
+                      error,
+                      stackTrace,
+                      reason: 'Consumer startup initialization failed',
+                    );
+              } catch (reportingError) {
+                // Firebase itself may be the failed startup dependency.
+                debugPrint(
+                  'Consumer startup failure: $error; '
+                  'error reporting unavailable: $reportingError',
+                );
+              }
+            },
           ),
         ),
       ),
