@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -495,7 +496,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
   }
 
   Future<void> _addGuest(BuildContext context) async {
-    final draft = await showDialog<_GuestDraft>(
+    final draft = await showDialog<ProgramGuestEditResult>(
       context: context,
       builder: (_) => ProgramGuestEditDialog(
         households: widget.guestPage.households,
@@ -689,158 +690,6 @@ CatchBadgeTone _guestStatusTone(String status, {required bool isSelected}) {
     'notInvited' => CatchBadgeTone.neutral,
     _ => isSelected ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
   };
-}
-
-class _GuestDraft {
-  const _GuestDraft({
-    required this.displayName,
-    this.householdId,
-    this.groupIds,
-    this.phoneE164,
-    this.email,
-  });
-
-  final String displayName;
-  final String? householdId;
-  final List<String>? groupIds;
-  final String? phoneE164;
-  final String? email;
-}
-
-class ProgramGuestEditDialog extends StatefulWidget {
-  const ProgramGuestEditDialog({
-    super.key,
-    required this.households,
-    required this.groups,
-  });
-
-  final List<ProgramHouseholdRow> households;
-  final List<ProgramGuestGroupRow> groups;
-
-  @override
-  State<ProgramGuestEditDialog> createState() => _ProgramGuestEditDialogState();
-}
-
-class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  String? _householdId;
-  final Set<String> _groupIds = {};
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) return;
-    Navigator.of(context).pop(
-      _GuestDraft(
-        displayName: name,
-        householdId: _householdId,
-        groupIds: _groupIds.isEmpty ? null : (_groupIds.toList()..sort()),
-        phoneE164: _phoneController.text.trim().isEmpty
-            ? null
-            : _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty
-            ? null
-            : _emailController.text.trim(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => CatchDialog<void>(
-    title: context.l10n.programsGuestsAddGuest,
-    actions: [
-      CatchButton(
-        label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-        variant: CatchButtonVariant.secondary,
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      CatchButton(
-        label: context.l10n.programsWorkspaceFunctionSave,
-        onPressed: _submit,
-      ),
-    ],
-    child: CatchSection.containedFieldRows(
-      children: [
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsGuestsNameLabel,
-          controller: _nameController,
-          contract: CatchContractConstraints
-              .upsertProgramGuestCallablePayloadDisplayName,
-          textCapitalization: TextCapitalization.words,
-        ),
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsGuestsPhoneLabel,
-          controller: _phoneController,
-          contract: CatchContractConstraints
-              .upsertProgramGuestCallablePayloadPhoneE164,
-          keyboardType: TextInputType.phone,
-        ),
-        CatchField.input(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.programsGuestsEmailLabel,
-          controller: _emailController,
-          contract:
-              CatchContractConstraints.upsertProgramGuestCallablePayloadEmail,
-          keyboardType: TextInputType.emailAddress,
-        ),
-        if (widget.households.isNotEmpty) ...[
-          gapH8,
-          Text(
-            context.l10n.programsGuestsHouseholdLabel,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          for (final household in widget.households)
-            CatchFieldRow.standard(
-              body: Text(
-                household.label,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              trailing: _householdId == household.householdId
-                  ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
-                  : null,
-              onTap: () => setState(
-                () => _householdId = _householdId == household.householdId
-                    ? null
-                    : household.householdId,
-              ),
-            ),
-        ],
-        if (widget.groups.isNotEmpty) ...[
-          gapH8,
-          Text(
-            context.l10n.programsGuestsGroupsTitle,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          for (final group in widget.groups)
-            CatchFieldRow.standard(
-              body: Text(
-                '${group.label} · ${group.dimension}',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              trailing: _groupIds.contains(group.groupId)
-                  ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
-                  : null,
-              onTap: () => setState(
-                () => _groupIds.contains(group.groupId)
-                    ? _groupIds.remove(group.groupId)
-                    : _groupIds.add(group.groupId),
-              ),
-            ),
-        ],
-      ],
-    ),
-  );
 }
 
 Rect? _shareOrigin(BuildContext context) {

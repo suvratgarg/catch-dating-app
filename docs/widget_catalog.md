@@ -104,7 +104,7 @@ and candidate discussions; this document has no parallel status ledger.
 
 1185 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
-Purpose comes from the first class documentation paragraph, then the registry summary. 804 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
+Purpose comes from the first class documentation paragraph, then the registry summary. 803 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
 ### L2 (23)
 
@@ -1049,10 +1049,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramDoorGuestRow</code> | <code>lib/programs/presentation/program_door_screen.dart:465</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPageBody</code> | <code>lib/programs/presentation/program_door_screen.dart:193</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPartySizeSheet</code> | <code>lib/programs/presentation/program_door_screen.dart:598</code> | — | — | Numeric sheet for `partySizeAdjust`; the controller only enqueues when the sheet returns a new value. |
+| <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guest_edit_dialog.dart:19</code> | — | — | Edits one guest's contact details, household, and group selections. |
 | <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guests_screen.dart:710</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:589</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
-| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:137</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:590</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
+| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:138</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:291</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
 | <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:219</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
@@ -1299,7 +1299,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramDispatchScreen</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:26</code> | — | — | The dispatcher's desk for one pickup station: the deterministic batch suggestions plus the dispatch sheet that captures plate, vendor and class at the moment the vehicle departs — the act that generates the reconciliation record. |
 | <code>ProgramFunctionDoorScreen</code> | <code>lib/programs/presentation/program_door_screen.dart:25</code> | — | — | Door workspace for one program function. `functionCheckIn` and `functionLead` staff land here from the work shell; the durable journal owns every attendance transition and queued work replays through the program operations outbox when the venue network drops. |
 | <code>ProgramGuestDeskScreen</code> | <code>lib/programs/presentation/program_guest_desk_screen.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:22</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
+| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:23</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
 | <code>ProgramHotelDeskScreen</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:18</code> | — | — | The hotel welcome team's inbound view: vehicles on the way with their manifest names and plates, plus parties still expected at the airport. Deliberately narrow — no contact fields, no other hotels. |
 | <code>ProgramHotelRoomsScreen</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:20</code> | — | — | The hotel desk's room board for one property: routed guests still needing a room, every stay with its block/room/status, and the reserved blocks with live capacity. Mutations go through `upsertProgramStay` — the server re-counts block occupancy inside the transaction, so a stale board can never overbook. |
 | <code>ProgramImportScreen</code> | <code>lib/programs/presentation/program_import_screen.dart:19</code> | — | — | Manifest import flow: pick a CSV/XLSX, map its columns to manifest fields, preview server-side counts, then commit. The commit retries are idempotent through `clientOperationId`; preview and commit use separate operation ids because the receipt hash includes the mode. |
