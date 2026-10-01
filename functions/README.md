@@ -73,6 +73,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `getOrganizerTrackingSettings` / `setOrganizerTrackingSettings` / `readPublicOrganizerTrackingSettings` | `src/analytics/organizerTrackingSettings.ts` | Manager-scoped, revision-fenced Meta Pixel and GA4 configuration; bounded public policy lookup returns disabled/null-ID projections until reviewed advertising publication is authorized. |
 | `createRazorpayOrder` | `src/payments/` | Create Razorpay order for paid events |
 | `createRazorpayHostPaymentAccount` / `refreshRazorpayHostPaymentAccount` | `src/payments/razorpayHostAccounts.ts` | Create or continue a Razorpay Route linked account and refresh its activation state |
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | `src/payments/stripeHostAccounts.ts` | Create Stripe Connect hosted onboarding and refresh its account state |

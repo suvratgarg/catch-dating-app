@@ -106,6 +106,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
                 ),
           ),
         ),
+        HostTrackingSettingsSection(organizerId: widget.club.id),
         HostClubOrganizerOverviewController(club: widget.club),
       ],
     );
@@ -394,6 +395,8 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
             ),
           ],
         ),
+        HostAnalyticsPresenceSection(report: widget.report),
+        HostAnalyticsObservedStagesSection(report: widget.report),
         HostAnalyticsTrendPanel(
           points: widget.report.trend,
           granularity: _granularityFor(widget.rangePreset),
@@ -772,7 +775,7 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
         items: [
           CatchMetricValue(
             label: context.l10n.hostsHostAnalyticsLabelNewReviews,
-            value: _compactCount(report.reviewSummary.newReviews),
+            value: HostCountFormatters.compact(report.reviewSummary.newReviews),
           ),
           CatchMetricValue(
             label: context.l10n.hostsHostAnalyticsLabelAverageRating,
@@ -782,11 +785,15 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
           ),
           CatchMetricValue(
             label: context.l10n.hostsHostAnalyticsLabelPublishedReviews,
-            value: _compactCount(report.reviewSummary.publishedReviews),
+            value: HostCountFormatters.compact(
+              report.reviewSummary.publishedReviews,
+            ),
           ),
           CatchMetricValue(
             label: context.l10n.hostsHostAnalyticsLabelResponses,
-            value: _compactCount(report.reviewSummary.ownerResponseCount),
+            value: HostCountFormatters.compact(
+              report.reviewSummary.ownerResponseCount,
+            ),
           ),
         ],
       ),
@@ -1015,7 +1022,9 @@ String _formatMetricValue(
     ),
     HostAnalyticsMetricUnit.rating =>
       metric.value <= 0 ? '—' : metric.value.toStringAsFixed(1),
-    HostAnalyticsMetricUnit.count => _compactCount(metric.value.round()),
+    HostAnalyticsMetricUnit.count => HostCountFormatters.compact(
+      metric.value.round(),
+    ),
   };
 }
 

@@ -1217,6 +1217,23 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps organizer tracking settings server-only", async () => {
+      await seed(["organizerTrackingSettings", "organizer-1"], {
+        organizerId: "organizer-1", revision: 1, metaPixelId: "123456",
+      });
+      for (const db of [authedDb("owner-1"), authedDb("owner-2"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        const ref = doc(db, "organizerTrackingSettings", "organizer-1");
+        await assertFails(getDoc(ref));
+        await assertFails(updateDoc(ref, {revision: 2}));
+        await assertFails(deleteDoc(ref));
+        await assertFails(setDoc(doc(db, "organizerTrackingSettings", "forged"), {
+          organizerId: "organizer-1", revision: 1,
+        }));
+        await assertFails(getDocs(collection(db, "organizerTrackingSettings")));
+      }
+    });
+
     it("keeps organizer event setup defaults and receipts server-only", async () => {
       for (const collectionName of ["organizerEventSetupDefaults",
         "organizerEventSetupDefaultReceipts", "eventSetupPreferences",

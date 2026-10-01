@@ -1,3 +1,5 @@
+import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
+import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
 import type {ManagePublicEventCheckoutCallableResponse} from "../../functions/src/shared/generated/managePublicEventCheckoutCallableResponse";
 import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
@@ -1230,3 +1232,12 @@ export async function subscribePublicCatchEvents(
   return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
 
 }
+
+export async function readPublicOrganizerTrackingSettings(
+  payload: ReadPublicOrganizerTrackingSettingsCallablePayload
+): Promise<PublicOrganizerTrackingSettingsCallableResponse> {
+  return invokeWebsiteCallable("readPublicOrganizerTrackingSettings", payload,
+    publicAnalyticsFirebaseConfigured, "Organizer tracking");
+}
+
+export type {ReadPublicOrganizerTrackingSettingsCallablePayload, PublicOrganizerTrackingSettingsCallableResponse};

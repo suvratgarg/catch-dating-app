@@ -17,6 +17,36 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetOrganizerTrackingSettingsCallablePayload',
+    source: 'callables/get_organizer_tracking_settings_payload.schema.json',
+    schema: schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetOrganizerTrackingSettingsCallablePayload',
+    source: 'callables/set_organizer_tracking_settings_payload.schema.json',
+    schema: schemaSetOrganizerTrackingSettingsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ReadPublicOrganizerTrackingSettingsCallablePayload',
+    source: 'callables/read_public_organizer_tracking_settings_payload.schema.json',
+    schema: schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerTrackingSettingsCallableResponse',
+    source: 'callable_responses/organizer_tracking_settings_response.schema.json',
+    schema: schemaOrganizerTrackingSettingsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PublicOrganizerTrackingSettingsCallableResponse',
+    source: 'callable_responses/public_organizer_tracking_settings_response.schema.json',
+    schema: schemaPublicOrganizerTrackingSettingsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerTrackingSettingsDocument',
+    source: 'firestore/organizer_tracking_settings.schema.json',
+    schema: schemaOrganizerTrackingSettingsDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappWebhookEventDocument',
     source: 'firestore/catch_whatsapp_webhook_events.schema.json',
     schema: schemaCatchWhatsappWebhookEventDocumentSchema,
@@ -5724,6 +5754,12 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetOrganizerTrackingSettingsCallablePayload': schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
+  'SetOrganizerTrackingSettingsCallablePayload': schemaSetOrganizerTrackingSettingsCallablePayloadSchema,
+  'ReadPublicOrganizerTrackingSettingsCallablePayload': schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema,
+  'OrganizerTrackingSettingsCallableResponse': schemaOrganizerTrackingSettingsCallableResponseSchema,
+  'PublicOrganizerTrackingSettingsCallableResponse': schemaPublicOrganizerTrackingSettingsCallableResponseSchema,
+  'OrganizerTrackingSettingsDocument': schemaOrganizerTrackingSettingsDocumentSchema,
   'CatchWhatsappWebhookEventDocument': schemaCatchWhatsappWebhookEventDocumentSchema,
   'SalesImportHistoryRowDocument': schemaSalesImportHistoryRowDocumentSchema,
   'SalesImportHistoryRecordDocument': schemaSalesImportHistoryRecordDocumentSchema,
@@ -6868,6 +6904,12 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_organizer_tracking_settings_payload.schema.json': schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
+  'callables/set_organizer_tracking_settings_payload.schema.json': schemaSetOrganizerTrackingSettingsCallablePayloadSchema,
+  'callables/read_public_organizer_tracking_settings_payload.schema.json': schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema,
+  'callable_responses/organizer_tracking_settings_response.schema.json': schemaOrganizerTrackingSettingsCallableResponseSchema,
+  'callable_responses/public_organizer_tracking_settings_response.schema.json': schemaPublicOrganizerTrackingSettingsCallableResponseSchema,
+  'firestore/organizer_tracking_settings.schema.json': schemaOrganizerTrackingSettingsDocumentSchema,
   'firestore/catch_whatsapp_webhook_events.schema.json': schemaCatchWhatsappWebhookEventDocumentSchema,
   'firestore/sales_import_history_rows.schema.json': schemaSalesImportHistoryRowDocumentSchema,
   'firestore/sales_import_history_records.schema.json': schemaSalesImportHistoryRecordDocumentSchema,

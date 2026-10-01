@@ -3543,6 +3543,25 @@
       "exportedFunctions": []
     },
     {
+      "id": "organizerTrackingSettings",
+      "path": "organizerTrackingSettings/{organizerId}",
+      "rulesMatch": "/organizerTrackingSettings/{organizerId}",
+      "typescriptInterface": "OrganizerTrackingSettingsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer tracking settings server-only"
+      ],
+      "owner": "organizer analytics tracking settings callables",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerTrackingSettings",
+        "setOrganizerTrackingSettings",
+        "readPublicOrganizerTrackingSettings"
+      ]
+    },
+    {
       "id": "catchWhatsappWebhookEvents",
       "path": "catchWhatsappWebhookEvents/{eventId}",
       "rulesMatch": "/catchWhatsappWebhookEvents/{eventId}",
