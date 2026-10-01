@@ -146,12 +146,16 @@ void main() {
     (tester) async {
       var attempts = 0;
       var nativeHandoffs = 0;
+      final reportedErrors = <(Object, StackTrace)>[];
 
       await tester.pumpWidget(
         CatchConsumerBootstrap(
           initialize: () async {
             attempts += 1;
             if (attempts == 1) throw StateError('startup failed');
+          },
+          onInitializationError: (error, stackTrace) {
+            reportedErrors.add((error, stackTrace));
           },
           initializedAppBuilder: (_) =>
               const MaterialApp(home: Text('Initialized app')),
@@ -164,11 +168,15 @@ void main() {
 
       expect(find.byKey(CatchConsumerBootstrap.failureKey), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Try again'), findsOneWidget);
+      expect(reportedErrors, hasLength(1));
+      expect(reportedErrors.single.$1, isA<StateError>());
+      expect(reportedErrors.single.$2.toString(), isNotEmpty);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Try again'));
       await _pumpConsumerBootstrap(tester);
 
       expect(attempts, 2);
+      expect(reportedErrors, hasLength(1));
       expect(nativeHandoffs, 1);
       expect(find.text('Initialized app'), findsOneWidget);
     },
