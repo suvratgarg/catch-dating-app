@@ -111,11 +111,24 @@ export function evaluatePromotionAuthorization(expected, snapshot) {
   function check(name, observed, wanted, passed = observed === wanted) {
     checks[name] = passed;
     // Log only known contract values, ids, SHAs and digests, never API bodies.
-    const safe = (value) => value == null ? "<missing>" :
-      typeof value === "boolean" || Number.isSafeInteger(value) ? value :
-      typeof value === "string" && (shaPattern.test(value) || idPattern.test(value) ||
-        /^sha256:[0-9a-f]{64}$/u.test(value)) ? value :
-      value === wanted ? value : "<mismatch>";
+    const safe = (value) => {
+      if (value == null) return "<missing>";
+      if (typeof value === "boolean") return value;
+      if (Number.isSafeInteger(value) && value >= 0) return value;
+      if (typeof value !== "string") return "<invalid>";
+      if (shaPattern.test(value) || idPattern.test(value) ||
+        /^sha256:[0-9a-f]{64}$/u.test(value)) return value;
+      const constants = [">0 integer", "terminal non-success", "not-applicable",
+        "push", "main", "completed", "failure", "cancelled", "timed_out",
+        "stale", "action_required", "startup_failure", "in_progress", "queued",
+        "Admin Website", "Host Website", "Marketing Website"];
+      if (constants.includes(value) ||
+        /^\.github\/workflows\/(admin|host|marketing)-website\.yml$/u.test(value) ||
+        /^web-hosting-v1-(admin|host|marketing)-[1-9][0-9]*-[1-9][0-9]*-[1-9][0-9]*-[0-9a-f]{40}-[1-9][0-9]*$/u.test(value)) return value;
+      if (value === expected.repository && typeof expected.repository === "string" &&
+        /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/u.test(expected.repository)) return value;
+      return "<mismatch>";
+    };
     observations[name] = {expected: safe(wanted), observed: safe(observed)};
   }
   check("expectedInputContract", ["admin", "host", "marketing"].includes(expected.surface) &&
@@ -146,9 +159,11 @@ export function evaluatePromotionAuthorization(expected, snapshot) {
   }
   check("historicalWorkflowIdPositiveInteger", workflowId, ">0 integer", Number.isSafeInteger(workflowId) && workflowId > 0);
   check("historicalRunNumberPositiveInteger", runNumber, ">0 integer", Number.isSafeInteger(runNumber) && runNumber > 0);
-  check("recoveryTerminalStatus", attempt.status, "completed", !expected.recovery || attempt.status === "completed");
+  check("recoveryTerminalStatus", expected.recovery ? attempt.status : "not-applicable",
+    expected.recovery ? "completed" : "not-applicable", !expected.recovery || attempt.status === "completed");
   const terminal = ["failure", "cancelled", "timed_out", "stale", "action_required", "startup_failure"];
-  check("recoveryTerminalConclusion", attempt.conclusion, "terminal non-success", !expected.recovery || terminal.includes(attempt.conclusion));
+  check("recoveryTerminalConclusion", expected.recovery ? attempt.conclusion : "not-applicable",
+    expected.recovery ? "terminal non-success" : "not-applicable", !expected.recovery || terminal.includes(attempt.conclusion));
   check("canonicalWorkflowPath", typeof canonical.path === "string" ? canonical.path.split("@")[0] : null, expectedPath);
   check("canonicalWorkflowIdPositiveInteger", canonical.id, ">0 integer", Number.isSafeInteger(canonical.id) && canonical.id > 0);
   check("canonicalWorkflowIdentity", canonical.id, workflowId, canonical.id != null && canonical.id === workflowId);
@@ -184,7 +199,7 @@ export function evaluatePromotionAuthorization(expected, snapshot) {
   check("freshestPackagedAttempt", attempts.length ? Math.max(...attempts) : 0, expected.runAttempt);
   const failedChecks = Object.keys(checks).filter(name => !checks[name]);
   return {passed: failedChecks.length === 0, failedChecks, checks, observations,
-    binding: {workflowId, runNumber, artifactName: name}};
+    binding: failedChecks.length === 0 ? {workflowId, runNumber, artifactName: name} : null};
 }
 
 export function readAuthorizationSnapshot(expected, noCache, api) {

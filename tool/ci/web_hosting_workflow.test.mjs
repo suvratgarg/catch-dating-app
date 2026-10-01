@@ -794,3 +794,38 @@ console.log(JSON.stringify(value));
     fs.rmSync(directory, {recursive: true, force: true});
   }
 });
+
+
+test("malformed initial metadata cannot leak API objects or strings through expected diagnostics", () => {
+  for (const poisoned of [{secret: "sentinel-response-body"}, ["sentinel-response-body"], "sentinel-response-body"]) {
+    for (const mutate of [e => {e.snapshot.attempt.workflow_id = poisoned; e.snapshot.canonical.id = poisoned;},
+      e => {e.snapshot.attempt.run_number = poisoned; e.snapshot.latest.workflow_runs[0].run_number = poisoned;},
+      e => {e.snapshot.artifact.name = poisoned;},
+      e => {e.snapshot.repository.id = poisoned; e.snapshot.artifact.workflow_run.repository_id = poisoned;},
+      e => {e.snapshot.attempt.head_sha = poisoned;}]) {
+      const e = initialEvidence(); mutate(e);
+      const result = evaluatePromotionAuthorization(e.expected, e.snapshot);
+      assert.equal(result.passed, false);
+      assert.equal(result.binding, null);
+      assert.doesNotMatch(JSON.stringify(result), /sentinel-response-body|secret/u);
+    }
+  }
+});
+
+test("automatic promotion labels recovery-only diagnostics not applicable while recovery remains terminal-only", () => {
+  const e = initialEvidence();
+  e.snapshot.attempt.status = "in_progress";
+  e.snapshot.attempt.conclusion = null;
+  const automatic = evaluatePromotionAuthorization(e.expected, e.snapshot);
+  assert.equal(automatic.passed, true);
+  for (const key of ["recoveryTerminalStatus", "recoveryTerminalConclusion"]) {
+    assert.equal(automatic.checks[key], true);
+    assert.deepEqual(automatic.observations[key], {expected: "not-applicable", observed: "not-applicable"});
+  }
+  e.expected.recovery = true;
+  const recovery = evaluatePromotionAuthorization(e.expected, e.snapshot);
+  assert.equal(recovery.passed, false);
+  assert.equal(recovery.checks.recoveryTerminalStatus, false);
+  assert.equal(recovery.checks.recoveryTerminalConclusion, false);
+  assert.deepEqual(recovery.observations.recoveryTerminalStatus, {expected: "completed", observed: "in_progress"});
+});
