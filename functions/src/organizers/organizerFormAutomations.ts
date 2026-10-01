@@ -1087,12 +1087,6 @@ async function runAutomationAction(
           action,
           nowMillis: () => deps.timestamp().toMillis(),
         });
-        if (handoff.kind === "legacyOwned") {
-          // A pre-migration executor minted its campaign for this
-          // occurrence — it owns the send until the campaign drains.
-          resultId = handoff.campaignId;
-          break;
-        }
         const dispatch = deps.dispatchMomentRun ??
           ((runId: string) => dispatchMomentRun(
             buildMomentRunnerDeps({firestore: deps.firestore}), runId));

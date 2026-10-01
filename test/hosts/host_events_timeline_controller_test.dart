@@ -5,7 +5,9 @@ import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -297,11 +299,153 @@ void main() {
       expect(container.read(provider).requireValue.loadingMoreActive, isFalse);
     },
   );
+  test(
+    'cancelled-only continuation retry preserves every loaded page',
+    () async {
+      final firstCursor = await _eventCursor('cancelled-cursor-1');
+      final secondCursor = await _eventCursor('cancelled-cursor-2');
+      final repository = _PagedEventRepository(
+        activeSteps: [() async => const _Page(items: [], hasMore: false)],
+        pastSteps: [() async => const _Page(items: [], hasMore: false)],
+        cancelledSteps: [
+          () async => _Page(
+            items: [buildEvent(id: 'c1')],
+            nextCursor: firstCursor,
+            hasMore: true,
+          ),
+          () async => _Page(
+            items: [buildEvent(id: 'c2')],
+            nextCursor: secondCursor,
+            hasMore: true,
+          ),
+          () async => throw StateError('cancelled unavailable'),
+          () async => _Page(items: [buildEvent(id: 'c3')], hasMore: false),
+        ],
+      );
+      final container = _container(repository);
+      final provider = hostEventsTimelineControllerProvider(
+        HostEventsTimelineRequest(
+          organizerId: 'club-1',
+          sessionBoundary: DateTime(2026),
+        ),
+      );
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+      await container.read(provider.future);
+      final notifier = container.read(provider.notifier);
+      await notifier.loadMorePast();
+      await notifier.loadMorePast();
+      expect(
+        container.read(provider).requireValue.pastError,
+        isA<StateError>(),
+      );
+      await notifier.retryPast();
+      expect(
+        container.read(provider).requireValue.cancelledEvents.map((e) => e.id),
+        ['c1', 'c2', 'c3'],
+      );
+      expect(repository.cancelledStartAfterCalls, [
+        null,
+        firstCursor,
+        secondCursor,
+        secondCursor,
+      ]);
+      expect(repository.pastStartAfterCalls, [null]);
+      expect(container.read(provider).requireValue.pastError, isNull);
+    },
+  );
+
+  test(
+    'cancelled bootstrap failure retains successfully loaded published history',
+    () async {
+      final repository = _PagedEventRepository(
+        activeSteps: [() async => const _Page(items: [], hasMore: false)],
+        pastSteps: [
+          () async => _Page(items: [buildEvent(id: 'past')], hasMore: false),
+          () async => _Page(items: [buildEvent(id: 'past')], hasMore: false),
+        ],
+        cancelledSteps: [
+          () async => throw StateError('cancelled unavailable'),
+          () async =>
+              _Page(items: [buildEvent(id: 'cancelled')], hasMore: false),
+        ],
+      );
+      final container = _container(repository);
+      final provider = hostEventsTimelineControllerProvider(
+        HostEventsTimelineRequest(
+          organizerId: 'club-1',
+          sessionBoundary: DateTime(2026),
+        ),
+      );
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+      final initial = await container.read(provider.future);
+      expect(initial.pastEvents.single.id, 'past');
+      expect(initial.historyInitialized, isFalse);
+      await container.read(provider.notifier).retryPast();
+      final result = container.read(provider).requireValue;
+      expect(result.pastEvents.map((e) => e.id), ['past']);
+      expect(result.cancelledEvents.single.id, 'cancelled');
+      expect(result.historyInitialized, isTrue);
+      expect(result.pastError, isNull);
+    },
+  );
+
+  test(
+    'unpublished scopes read bounded pages and continue beyond 200 rows',
+    () async {
+      final repository = _PagedEventRepository(
+        activeSteps: [() async => const _Page(items: [], hasMore: false)],
+        pastSteps: [() async => const _Page(items: [], hasMore: false)],
+      );
+      final setups = _SetupRepository();
+      final container = _container(repository, setups: setups);
+      final provider = hostEventsTimelineControllerProvider(
+        HostEventsTimelineRequest(
+          organizerId: 'club-1',
+          sessionBoundary: DateTime(2026),
+        ),
+      );
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+      final initial = await container.read(provider.future);
+      expect(setups.calls, [
+        (PrivateEventSetupScope.upcoming, null),
+        (PrivateEventSetupScope.past, null),
+        (PrivateEventSetupScope.cancelled, null),
+      ]);
+      expect(initial.unpublishedUpcoming, hasLength(20));
+      expect(initial.hasMoreUpcoming, isTrue);
+      expect(initial.hasMoreHistory, isTrue);
+      final notifier = container.read(provider.notifier);
+      for (var page = 0; page < 10; page++) {
+        await notifier.loadMoreActive();
+        await notifier.loadMorePast();
+      }
+      final result = container.read(provider).requireValue;
+      expect(result.unpublishedUpcoming, hasLength(201));
+      expect(result.unpublishedHistory, hasLength(402));
+      expect(result.unpublishedCursors, isEmpty);
+      expect(result.hasMoreUpcoming, isFalse);
+      expect(result.hasMoreHistory, isFalse);
+      expect(setups.calls, hasLength(33));
+      expect(repository.activeStartAfterCalls, [null]);
+      expect(repository.pastStartAfterCalls, [null]);
+    },
+  );
 }
 
-ProviderContainer _container(EventRepository repository) {
+ProviderContainer _container(
+  EventRepository repository, {
+  _SetupRepository? setups,
+}) {
   final container = ProviderContainer(
-    overrides: [eventRepositoryProvider.overrideWithValue(repository)],
+    overrides: [
+      eventRepositoryProvider.overrideWithValue(repository),
+      privateEventSetupAvailableProvider.overrideWithValue(setups != null),
+      if (setups != null)
+        privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
+    ],
   );
   addTearDown(container.dispose);
   return container;
@@ -322,10 +466,16 @@ Future<DocumentSnapshot<Event>> _eventCursor(String id) async {
 }
 
 class _PagedEventRepository extends Fake implements EventRepository {
-  _PagedEventRepository({required this.activeSteps, required this.pastSteps});
+  _PagedEventRepository({
+    required this.activeSteps,
+    required this.pastSteps,
+    this.cancelledSteps = const [],
+  });
 
   final List<_PageStep> activeSteps;
   final List<_PageStep> pastSteps;
+  final List<_PageStep> cancelledSteps;
+  final List<DocumentSnapshot<Event>?> cancelledStartAfterCalls = [];
   final List<DocumentSnapshot<Event>?> activeStartAfterCalls = [];
   final List<DocumentSnapshot<Event>?> pastStartAfterCalls = [];
 
@@ -349,5 +499,57 @@ class _PagedEventRepository extends Fake implements EventRepository {
   }) {
     pastStartAfterCalls.add(startAfter);
     return pastSteps.removeAt(0)();
+  }
+
+  @override
+  Future<_Page> fetchCancelledEventsPage({
+    required String organizerId,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) {
+    cancelledStartAfterCalls.add(startAfter);
+    return cancelledSteps.isEmpty
+        ? Future.value(const _Page(items: [], hasMore: false))
+        : cancelledSteps.removeAt(0)();
+  }
+}
+
+class _SetupRepository extends Fake implements PrivateEventSetupRepository {
+  final calls = <(PrivateEventSetupScope?, String?)>[];
+
+  @override
+  Future<PrivateEventSetupInventoryPage> list({
+    required String organizerId,
+    PrivateEventSetupScope? scope,
+    int limit = ReadLimitPolicy.privateEventSetupPage,
+    String? cursor,
+  }) async {
+    expect(limit, 20);
+    calls.add((scope, cursor));
+    final offset = cursor == null ? 0 : int.parse(cursor);
+    final end = (offset + limit).clamp(0, 201);
+    return PrivateEventSetupInventoryPage(
+      events: [
+        for (var i = offset; i < end; i++)
+          PrivateEventSetupInventoryItem(
+            eventId: '${scope!.name}-$i',
+            name: 'Setup $i',
+            city: const EventSetupCity(
+              cityId: 'in-mh-mumbai',
+              marketId: 'in-mh-mumbai',
+            ),
+            localDate: '2026-01-01',
+            localStartTime: '19:00',
+            timezone: 'Asia/Kolkata',
+            startTimeMillis: DateTime(2026).millisecondsSinceEpoch,
+            setupRevision: 1,
+            detailsConfigured: false,
+            status: scope == PrivateEventSetupScope.cancelled
+                ? 'cancelled'
+                : 'active',
+          ),
+      ],
+      nextCursor: end < 201 ? '$end' : null,
+    );
   }
 }

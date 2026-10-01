@@ -130,6 +130,10 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
             ],
             hotels: access.hotels,
             guestPage: page,
+            canShareRsvpLinks:
+                access.status != ProgramStatus.archived &&
+                (access.hasDuty(ProgramStaffDuty.guestRelations, now: now) ||
+                    access.hasDuty(ProgramStaffDuty.communications, now: now)),
             canManageGuests:
                 access.isManager ||
                 access.hasDuty(ProgramStaffDuty.programCoordinator, now: now),

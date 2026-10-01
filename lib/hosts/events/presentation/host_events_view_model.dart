@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 
 HostEventsRouteState buildHostEventsRouteState({
@@ -57,6 +58,11 @@ HostEventsRouteState buildHostEventsRouteState({
 HostEventsWorkspaceState buildHostEventsWorkspaceState(
   CatchAsyncState<List<Event>> events, {
   required DateTime now,
+  Iterable<PrivateEventSetupInventoryItem> unpublishedUpcoming =
+      const <PrivateEventSetupInventoryItem>[],
+  Iterable<PrivateEventSetupInventoryItem> unpublishedHistory =
+      const <PrivateEventSetupInventoryItem>[],
+  Iterable<Event> cancelledEvents = const <Event>[],
   String? featuredEventId,
   bool hasMoreActive = false,
   bool hasMorePast = false,
@@ -82,6 +88,9 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
   return HostEventsWorkspaceState.fromEvents(
     events: events.value ?? const <Event>[],
     now: now,
+    unpublishedUpcoming: unpublishedUpcoming,
+    unpublishedHistory: unpublishedHistory,
+    cancelledEvents: cancelledEvents,
     featuredEventId: featuredEventId,
     hasMoreActive: hasMoreActive,
     hasMorePast: hasMorePast,

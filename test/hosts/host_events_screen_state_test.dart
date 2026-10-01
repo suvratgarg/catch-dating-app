@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
@@ -13,6 +14,25 @@ import '../clubs/clubs_test_helpers.dart' show buildEvent;
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  test('repeat selects latest-ended event regardless of input order', () {
+    final now = DateTime(2026, 9);
+    final older = buildEvent(
+      id: 'older',
+      startTime: now.subtract(const Duration(days: 3)),
+      endTime: now.subtract(const Duration(days: 2)),
+    );
+    final latest = buildEvent(
+      id: 'latest',
+      startTime: now.subtract(const Duration(days: 2)),
+      endTime: now.subtract(const Duration(days: 1)),
+    );
+    final state = HostEventsWorkspaceState.fromEvents(
+      events: [older, latest],
+      now: now,
+    );
+    expect(state.repeatSource?.id, 'latest');
+  });
+
   setUpAll(() => initializeDateFormatting('en'));
   test('Host event entry resolves organizer capabilities once', () {
     final draft = EventDraft(
@@ -113,7 +133,7 @@ void main() {
     expect(
       state.activeSections
           .expand((section) => section.rows)
-          .map((row) => row.event.id),
+          .map((row) => row.id),
       ['today', 'july', 'next-year'],
     );
     final todayRow = state.activeSections.first.rows.single;
@@ -203,6 +223,88 @@ void main() {
       );
       expect(continuationState.status, HostEventsWorkspaceStatus.populated);
       expect(continuationState.canLoadMoreActive, isTrue);
+    },
+  );
+
+  test(
+    'Host Events merges unpublished and cancelled events into the timeline',
+    () {
+      final now = DateTime(2026, 6, 15, 12);
+      final published = buildEvent(
+        id: 'published',
+        startTime: DateTime(2026, 6, 16, 18),
+        endTime: DateTime(2026, 6, 16, 21),
+      );
+      final unpublished = PrivateEventSetupInventoryItem(
+        eventId: 'offer-created',
+        name: 'Offer mixer',
+        city: const EventSetupCity(
+          cityId: 'in-mh-mumbai',
+          marketId: 'in-mh-mumbai',
+        ),
+        localDate: '2026-06-16',
+        localStartTime: '19:00',
+        timezone: 'Asia/Kolkata',
+        startTimeMillis: DateTime(2026, 6, 16, 19).millisecondsSinceEpoch,
+        setupRevision: 1,
+        detailsConfigured: false,
+      );
+      final cancelled = buildEvent(
+        id: 'cancelled',
+        startTime: DateTime(2026, 6, 10),
+      ).copyWith(status: EventLifecycleStatus.cancelled);
+      final cancelledSetup = PrivateEventSetupInventoryItem(
+        eventId: 'cancelled-draft',
+        name: 'Shelved mixer',
+        city: const EventSetupCity(
+          cityId: 'in-mh-mumbai',
+          marketId: 'in-mh-mumbai',
+        ),
+        localDate: '2026-06-12',
+        localStartTime: '20:00',
+        timezone: 'Asia/Kolkata',
+        startTimeMillis: DateTime(2026, 6, 12, 20).millisecondsSinceEpoch,
+        setupRevision: 2,
+        detailsConfigured: true,
+        status: 'cancelled',
+      );
+
+      final state = HostEventsWorkspaceState.fromEvents(
+        events: [published],
+        unpublishedUpcoming: [unpublished],
+        unpublishedHistory: [cancelledSetup],
+        cancelledEvents: [cancelled],
+        now: now,
+      );
+
+      // The offer-created unpublished event joins upcoming, ordered by
+      // the authored local date rather than the viewer's timezone.
+      expect(state.activeSections.single.rows.map((row) => row.id), [
+        'published',
+        'offer-created',
+      ]);
+      final setupRow = state.activeSections.single.rows.last;
+      expect(setupRow.isUnpublished, isTrue);
+      expect(setupRow.event, isNull);
+      expect(
+        setupRow.facts(_l10n, time: unpublished.localStartTime).last,
+        'Setup in progress',
+      );
+
+      // Cancelled events — published and unpublished — land in history
+      // newest-first with a cancelled fact instead of attendance counts.
+      expect(state.pastSections.single.rows.map((row) => row.id), [
+        'cancelled-draft',
+        'cancelled',
+      ]);
+      expect(
+        state.pastSections.single.rows.first.facts(_l10n, time: '20:00').last,
+        'Cancelled',
+      );
+      expect(
+        state.pastSections.single.rows.last.facts(_l10n, time: '18:00').last,
+        'Cancelled',
+      );
     },
   );
 }

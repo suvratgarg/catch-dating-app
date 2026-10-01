@@ -53,6 +53,7 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
         title: detail.program.title,
         kind: detail.program.kind,
         status: detail.program.status,
+        revision: detail.program.revision,
       ),
       guestContactsById: Map.unmodifiable({
         for (final guest in page.guests) guest.guestId: guest.contactId,

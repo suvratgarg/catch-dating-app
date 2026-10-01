@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -151,6 +152,8 @@ class ProgramListPageBody extends ConsumerStatefulWidget {
 }
 
 class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
+  String? _pendingProgramId;
+
   @override
   Widget build(BuildContext context) {
     final programsAsync = ref.watch(
@@ -247,11 +250,78 @@ class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
                                         ? CatchBadgeTone.success
                                         : CatchBadgeTone.neutral,
                                   ),
+                                  if (program.anonymizedAt != null)
+                                    CatchBadge(
+                                      label:
+                                          context.l10n.programsListAnonymized,
+                                    ),
                                 ],
                               ),
+                              if (program.isArchived &&
+                                  program.anonymizedAt == null &&
+                                  program.anonymizeAt != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: CatchSpacing.s2,
+                                  ),
+                                  child: Text(
+                                    context.l10n.programsListAnonymizesOn(
+                                      date: AppTimeFormatters.shortDate(
+                                        program.anonymizeAt!,
+                                      ),
+                                    ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ),
                             ],
                           ),
-                          trailing: Icon(CatchIcons.chevronRightRounded),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CatchActionMenu<_ProgramListRowAction>(
+                                tooltip: context.l10n.programsListRowActions,
+                                enabled: _pendingProgramId != program.programId,
+                                items: [
+                                  if (program.isArchived)
+                                    CatchActionMenuItem(
+                                      value: _ProgramListRowAction.unarchive,
+                                      label: context
+                                          .l10n
+                                          .programsListUnarchiveAction,
+                                      icon: CatchIcons.undoRounded,
+                                      enabled: program.canUnarchiveAt(
+                                        DateTime.now(),
+                                      ),
+                                      sublabel: program.anonymizedAt != null
+                                          ? context.l10n.programsListAnonymized
+                                          : program.canUnarchiveAt(
+                                              DateTime.now(),
+                                            )
+                                          ? null
+                                          : context
+                                                .l10n
+                                                .programsListRestoreWindowExpiredReason,
+                                    )
+                                  else
+                                    CatchActionMenuItem(
+                                      value: _ProgramListRowAction.archive,
+                                      label: context
+                                          .l10n
+                                          .programsListArchiveAction,
+                                      icon: CatchIcons.archiveOutlined,
+                                    ),
+                                ],
+                                onSelected: (action) => _runLifecycleAction(
+                                  context,
+                                  program,
+                                  action,
+                                ),
+                              ),
+                              Icon(CatchIcons.chevronRightRounded),
+                            ],
+                          ),
                           onTap: () => context.pushNamed(
                             Routes.hostProgramWorkspaceScreen.name,
                             pathParameters: {'programId': program.programId},
@@ -292,7 +362,79 @@ class _ProgramListPageBodyState extends ConsumerState<ProgramListPageBody> {
       ),
     );
   }
+
+  Future<void> _runLifecycleAction(
+    BuildContext context,
+    OrganizerProgramSummary program,
+    _ProgramListRowAction action,
+  ) async {
+    if (action == _ProgramListRowAction.unarchive &&
+        !program.canUnarchiveAt(DateTime.now())) {
+      return;
+    }
+    final l10n = context.l10n;
+    final archiving = action == _ProgramListRowAction.archive;
+    // Archive starts a fixed 14-day retention clock on the backend.
+    final anonymizeDate = AppTimeFormatters.shortDate(
+      DateTime.now().add(const Duration(days: 14)),
+    );
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => CatchDialog<bool>(
+        title: archiving
+            ? l10n.programsListArchiveConfirmTitle(title: program.title)
+            : l10n.programsListUnarchiveConfirmTitle(title: program.title),
+        actions: [
+          CatchButton(
+            label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+            variant: CatchButtonVariant.secondary,
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          CatchButton(
+            label: archiving
+                ? l10n.programsListArchiveAction
+                : l10n.programsListUnarchiveAction,
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+        child: Text(
+          archiving
+              ? l10n.programsListArchiveConfirmMessage(date: anonymizeDate)
+              : l10n.programsListUnarchiveConfirmMessage,
+        ),
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    setState(() => _pendingProgramId = program.programId);
+    try {
+      final controller = ref.read(programWorkspaceControllerProvider.notifier);
+      await (archiving
+          ? controller.archiveProgram(
+              programId: program.programId,
+              expectedRevision: program.revision,
+            )
+          : controller.unarchiveProgram(
+              programId: program.programId,
+              expectedRevision: program.revision,
+            ));
+      ref.invalidate(organizerProgramListProvider(widget.organizerId));
+      if (!context.mounted) return;
+      showCatchNotice(
+        context,
+        archiving
+            ? l10n.programsListArchiveDone(date: anonymizeDate)
+            : l10n.programsListUnarchiveDone,
+        tone: CatchNoticeTone.success,
+      );
+    } on Object catch (error) {
+      if (context.mounted) showCatchNoticeError(context, error);
+    } finally {
+      if (mounted) setState(() => _pendingProgramId = null);
+    }
+  }
 }
+
+enum _ProgramListRowAction { archive, unarchive }
 
 class ProgramCreateDraft {
   const ProgramCreateDraft({

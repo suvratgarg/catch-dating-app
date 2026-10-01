@@ -209,6 +209,30 @@ class ProgramWorkspaceController extends _$ProgramWorkspaceController {
     required ProgramStaffMember member,
   }) => _repository.revokeStaff(programId: programId, member: member);
 
+  Future<ProgramMutationResult> archiveProgram({
+    required String programId,
+    required int expectedRevision,
+  }) => _repository.archiveProgram(
+    programId: programId,
+    expectedRevision: expectedRevision,
+  );
+
+  Future<ProgramMutationResult> unarchiveProgram({
+    required String programId,
+    required int expectedRevision,
+  }) => _repository.unarchiveProgram(
+    programId: programId,
+    expectedRevision: expectedRevision,
+  );
+
+  Future<({String token, DateTime expiresAt})> issueHouseholdRsvpLink({
+    required String programId,
+    required String householdId,
+  }) => _repository.issueHouseholdRsvpLink(
+    programId: programId,
+    householdId: householdId,
+  );
+
   Future<ProgramManifestImportResult> importManifest({
     required String programId,
     required String mode,

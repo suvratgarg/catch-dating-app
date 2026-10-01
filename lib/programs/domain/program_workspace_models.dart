@@ -4,18 +4,81 @@ part of 'program_models.dart';
 /// class parses only the fields the scoped callable actually returns; the
 /// generated contracts remain the source of truth.
 
+/// One row of `listOrganizerPrograms` — includes the lifecycle fields the
+/// archive affordance needs (`revision` fences the mutation).
+class OrganizerProgramListRow {
+  const OrganizerProgramListRow({
+    required this.programId,
+    required this.title,
+    required this.kind,
+    required this.status,
+    required this.revision,
+    this.archivedAt,
+    this.anonymizeAt,
+    this.anonymizedAt,
+  });
+
+  factory OrganizerProgramListRow.fromMap(Map<Object?, Object?> map) =>
+      OrganizerProgramListRow(
+        programId: requiredString(map, 'programId'),
+        title: requiredString(map, 'title'),
+        kind: requiredString(map, 'kind'),
+        status: requiredString(map, 'status'),
+        revision: requiredInt(map, 'revision'),
+        archivedAt: map['archivedAtMillis'] is num
+            ? DateTime.fromMillisecondsSinceEpoch(
+                (map['archivedAtMillis']! as num).toInt(),
+              )
+            : null,
+        anonymizeAt: map['anonymizeAtMillis'] is num
+            ? DateTime.fromMillisecondsSinceEpoch(
+                (map['anonymizeAtMillis']! as num).toInt(),
+              )
+            : null,
+        anonymizedAt: map['anonymizedAtMillis'] is num
+            ? DateTime.fromMillisecondsSinceEpoch(
+                (map['anonymizedAtMillis']! as num).toInt(),
+              )
+            : null,
+      );
+
+  final String programId;
+  final String title;
+  final String kind;
+  final String status;
+  final int revision;
+  final DateTime? archivedAt;
+  final DateTime? anonymizeAt;
+  final DateTime? anonymizedAt;
+}
+
 class OrganizerProgramSummary {
   const OrganizerProgramSummary({
     required this.programId,
     required this.title,
     required this.kind,
     required this.status,
+    required this.revision,
+    this.archivedAt,
+    this.anonymizeAt,
+    this.anonymizedAt,
   });
 
   final String programId;
   final String title;
   final ProgramKind kind;
   final ProgramStatus status;
+  final int revision;
+  final DateTime? archivedAt;
+  final DateTime? anonymizeAt;
+  final DateTime? anonymizedAt;
+
+  bool get isArchived => status == ProgramStatus.archived;
+
+  bool canUnarchiveAt(DateTime now) =>
+      isArchived &&
+      anonymizedAt == null &&
+      (anonymizeAt == null || anonymizeAt!.isAfter(now));
 }
 
 class OrganizerProgramSettings {

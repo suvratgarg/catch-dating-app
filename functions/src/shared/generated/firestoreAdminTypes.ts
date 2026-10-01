@@ -10226,18 +10226,6 @@ export interface OrganizerCampaignDocument {
   dispatchedAt: FirebaseFirestore.Timestamp | null;
   completedAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
-  automationOrigin?: {
-    ruleId: string;
-    ruleRevision: number;
-    actionId: string;
-    sourceId: string;
-    eventKind:
-      | "submitted"
-      | "withdrawn"
-      | "applicationAccepted"
-      | "eventAttended";
-    contactId: string;
-  };
 }
 
 /**

@@ -4122,9 +4122,9 @@ Message actions pin a draft campaign revision; at handoff the engine mints a
 server-managed companion `organizerMoments` row plus a durable
 `automationDeliveryMessages` intent, and the shared delivery core executes the
 send. Companion Moments carry deterministic `(rule, action)` identity and are
-never organizer-editable. Campaigns created before the cutover still carry
-server-only `automationOrigin` and drain through the campaign executor; client
-campaign upserts cannot forge or remove it.
+never organizer-editable. The pre-cutover `automationOrigin` campaign drain
+path is removed — no legacy campaigns existed, and ordinary campaigns now flow
+only through their own scheduler/worker.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
 
 ### Event Service WhatsApp Consent Contract
