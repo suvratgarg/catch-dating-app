@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import fs from "node:fs";
 import {probePage, productionProbeContracts} from "./probeProduction.mjs";
 
 const contract = {
@@ -50,4 +51,17 @@ test("production probe reports status, metadata, and content drift", async () =>
     "missing canonical: https://catchdates.com/privacy/",
     "missing marker: Privacy policy",
   ]);
+});
+
+
+test("production probes follow the canonical organiser and preserved visitor metadata", () => {
+  const meta = JSON.parse(fs.readFileSync(new URL("../src/content/meta.json", import.meta.url), "utf8"));
+  for (const [path, routeId] of [["/", "home"], ["/explore/", "visitor_discovery"], ["/host/workflows/", "host_workflows"]]) {
+    const probe = productionProbeContracts.find((entry) => entry.path === path);
+    const route = meta.routes[routeId];
+    assert.ok(probe, `missing production probe for ${path}`);
+    assert.equal(probe.title, route.title);
+    assert.equal(probe.canonicalPath, route.canonicalPath);
+    for (const marker of probe.markers) assert.ok(route.description.includes(marker), `marker must exist in the generated ${path} metadata`);
+  }
 });

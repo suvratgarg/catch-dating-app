@@ -5,9 +5,21 @@ const defaultBaseUrl = "https://catchdates.com";
 export const productionProbeContracts = [
   {
     path: "/",
-    title: "Catch | The event before the match",
+    title: "Catch Host | Presence, guests and live events",
     canonicalPath: "/",
+    markers: ["Find your organiser page"],
+  },
+  {
+    path: "/explore/",
+    title: "Catch | The event before the match",
+    canonicalPath: "/explore/",
     markers: ["Mumbai and Indore"],
+  },
+  {
+    path: "/host/workflows/",
+    title: "Workflows | Catch Host content preview",
+    canonicalPath: "/host/workflows/",
+    markers: ["Illustrative capabilities are separate from the supported pilot"],
   },
   {
     path: "/organizers/",
