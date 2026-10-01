@@ -46,8 +46,9 @@ class HostTrackingSettingsSection extends ConsumerWidget {
     );
     final saveMutation = HostTrackingSettingsController.saveMutation(scope);
     ref.listen(authenticatedSessionProvider, (previous, next) {
-      if (!identical(scope.session, next.asData?.value))
+      if (!identical(scope.session, next.asData?.value)) {
         saveMutation.reset(ref);
+      }
     });
     final settings = ref.watch(hostTrackingSettingsProvider(organizerId));
     final settingsState = catchAsyncStateFromAsyncValue(settings);
