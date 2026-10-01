@@ -108,4 +108,3 @@ export function supplyCapabilitiesForAuthority(authority) {
     reviewPolicy: "after_event_end",
   };
 }
-
