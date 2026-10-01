@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {spawnSync} from "node:child_process";
 
@@ -62,6 +64,13 @@ test("skips steps coupled to the Actions runtime, including via env", () => {
   assert.match(byName.Aggregate.skipReason, /GitHub Actions runtime/);
   assert.equal(byName.Upload.runnable, false);
   assert.match(byName.Upload.skipReason, /composite action/);
+});
+
+test("an unsupported run scalar remains an explicit skipped obligation", () => {
+  const steps = extractSteps(`jobs:\n  build:\n    steps:\n      - name: New syntax\n        run: >+\n          echo verify\n`);
+  assert.equal(steps.length, 1);
+  assert.equal(steps[0].runnable, false);
+  assert.match(steps[0].skipReason, /unsupported run block style/u);
 });
 
 test("derives the ciTarget to workflow mapping from the orchestrator", () => {
@@ -222,7 +231,92 @@ test("local verification resolves Tools matrix checks and preserves package test
   const plan = JSON.parse(result.stdout);
   assert.equal(plan.gates.find((gate) => gate.target === "tools").command, "node tool/run.mjs check");
   assert.equal(plan.skipped.some((step) => step.workflow === "tools-ci.yml"), false);
+  assert.deepEqual(plan.localRunnableChecks, plan.gates);
+  assert.ok(plan.githubOnlyObligations.some((item) => item.target === "flutter"));
+  assert.ok(plan.githubOnlyObligations.some((item) => item.workflow === "flutter-ci.yml"));
+  assert.ok(plan.skipped.some((step) => step.reason.startsWith("composite action")));
   for (const directory of ["apps/consumer", "apps/host"]) {
     assert.ok(plan.gates.some((gate) => gate.workingDirectory === directory && gate.command.includes("flutter test")), directory);
+  }
+});
+
+test("structural preflight runs from the declared sparse closure and fails closed", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-shared-preflight-"));
+  const git = (args, options = {}) => spawnSync("git", args, {
+    cwd: root, encoding: "utf8", ...options,
+  });
+  const expectGit = (args, options) => {
+    const result = git(args, options);
+    assert.equal(result.status, 0, result.stderr);
+  };
+  const sourceRoot = process.cwd();
+  const graphPath = "tool/harness/component_graph.json";
+  const manifestPath = "tool/tools_manifest.json";
+  const run = () => spawnSync(process.execPath, [
+    "tool/harness/verify_local.mjs", "--preflight", "--base", "HEAD",
+    "--head", "HEAD", "--mode", "pr", "--json",
+  ], {cwd: root, encoding: "utf8"});
+  try {
+    expectGit(["clone", "--quiet", "--shared", "--no-checkout", sourceRoot, "."]);
+    const graph = JSON.parse(fs.readFileSync(path.join(sourceRoot, graphPath), "utf8"));
+    expectGit(["sparse-checkout", "set", "--no-cone", "--stdin"], {
+      input: `${graph.ciCheckout.planner.paths.join("\n")}\n`,
+    });
+    expectGit(["checkout", "--quiet", "HEAD"]);
+    for (const relativePath of [graphPath, "tool/harness/verify_local.mjs",
+      "tool/harness/lib/workflow_steps.mjs"]) {
+      fs.copyFileSync(path.join(sourceRoot, relativePath), path.join(root, relativePath));
+    }
+    assert.equal(fs.existsSync(path.join(root, "node_modules")), false);
+    assert.equal(fs.existsSync(path.join(root, "lib/main.dart")), false);
+    const good = run();
+    assert.equal(good.status, 0, good.stderr);
+    const report = JSON.parse(good.stdout);
+    assert.deepEqual(report.localRunnableChecks.map((check) => check.status),
+      ["passed", "passed"]);
+    assert.ok(report.githubOnlyObligations.some((item) => item.target === "tools"));
+    assert.equal(report.baseSha, report.headSha);
+
+    const unknownPath = path.join(root, "unowned-preflight-fixture");
+    fs.writeFileSync(unknownPath, "unknown\n");
+    assert.match(run().stderr, /complete, unambiguous Harness plan/u);
+    fs.unlinkSync(unknownPath);
+
+    const originalManifest = fs.readFileSync(path.join(root, manifestPath), "utf8");
+    const manifest = JSON.parse(originalManifest);
+    manifest.tools[0].path = "tool/missing-preflight-script.mjs";
+    fs.writeFileSync(path.join(root, manifestPath), JSON.stringify(manifest));
+    assert.match(run().stderr, /missing path tool\/missing-preflight-script\.mjs/u);
+    manifest.tools[0].path = JSON.parse(originalManifest).tools[0].path;
+    manifest.tools.push({...manifest.tools.at(-1)});
+    fs.writeFileSync(path.join(root, manifestPath), JSON.stringify(manifest));
+    assert.match(run().stderr, /Duplicate tool id/u);
+    fs.writeFileSync(path.join(root, manifestPath), originalManifest);
+
+    graph.classifications.push(...["first", "second"].map((id) => ({
+      id: `preflight-ambiguous-${id}`,
+      paths: {include: ["tool/harness/verify_local.mjs"]},
+      components: ["ci.workflow.flutter"], terminal: true,
+    })));
+    fs.writeFileSync(path.join(root, graphPath), JSON.stringify(graph));
+    assert.match(run().stderr, /complete, unambiguous Harness plan/u);
+
+    const workflows = path.join(root, ".github/workflows");
+    fs.mkdirSync(workflows, {recursive: true});
+    fs.copyFileSync(path.join(sourceRoot, ".github/workflows/ci.yml"),
+      path.join(workflows, "ci.yml"));
+    const flutterSource = fs.readFileSync(
+      path.join(sourceRoot, ".github/workflows/flutter-ci.yml"), "utf8");
+    fs.writeFileSync(path.join(workflows, "flutter-ci.yml"),
+      `${flutterSource}\n  preflight-probe:\n    steps:\n      - name: Unsupported preflight fixture\n        run: >+\n          echo check\n`);
+    const listed = spawnSync(process.execPath, [
+      "tool/harness/verify_local.mjs", "--target", "flutter", "--json",
+    ], {cwd: root, encoding: "utf8"});
+    assert.equal(listed.status, 0, listed.stderr);
+    assert.ok(JSON.parse(listed.stdout).githubOnlyObligations.some((item) =>
+      item.name === "Unsupported preflight fixture" &&
+      item.reason.includes("unsupported run block style")));
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
   }
 });
