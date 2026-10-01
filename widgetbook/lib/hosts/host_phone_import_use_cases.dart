@@ -5,7 +5,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contac
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_fields.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
@@ -35,12 +35,12 @@ Widget hostPhoneImportReviewStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Multiple numbers, no number, and household member',
-  type: PhoneImportGuestFields,
+  type: PhoneImportGuestSection,
   path: '[P1 product surfaces]/Host/Audience/Phone import demo',
 )
 Widget hostPhoneImportGuestStates(BuildContext context) =>
     WidgetbookScrollCatalogFrame(
-      title: 'PhoneImportGuestFields',
+      title: 'PhoneImportGuestSection',
       catalogId: 'host.phone_import_guest_demo',
       children: [
         for (final (index, entry) in _guestEntries.indexed)
@@ -51,7 +51,7 @@ Widget hostPhoneImportGuestStates(BuildContext context) =>
               _ => 'Household member without a phone',
             },
             child: WidgetbookContentFrame(
-              child: PhoneImportGuestFields(
+              child: PhoneImportGuestSection(
                 entry: entry,
                 guestNumber: index + 1,
                 busy: false,

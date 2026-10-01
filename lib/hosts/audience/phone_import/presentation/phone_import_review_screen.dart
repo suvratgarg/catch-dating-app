@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_fields.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +128,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 ],
                 gapH16,
                 for (final (index, entry) in entries.indexed) ...[
-                  PhoneImportGuestFields(
+                  PhoneImportGuestSection(
                     key: ValueKey(entry.id),
                     entry: entry,
                     guestNumber: index + 1,

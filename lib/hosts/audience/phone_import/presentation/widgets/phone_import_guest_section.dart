@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 /// One guest's local review fields. Controller commands own all draft changes;
 /// text-controller lifetime and focus remain Flutter mechanics here.
-class PhoneImportGuestFields extends StatefulWidget {
-  const PhoneImportGuestFields({
+class PhoneImportGuestSection extends StatefulWidget {
+  const PhoneImportGuestSection({
     super.key,
     required this.entry,
     required this.guestNumber,
@@ -31,15 +31,16 @@ class PhoneImportGuestFields extends StatefulWidget {
   final VoidCallback onRemove;
 
   @override
-  State<PhoneImportGuestFields> createState() => _PhoneImportGuestFieldsState();
+  State<PhoneImportGuestSection> createState() =>
+      _PhoneImportGuestSectionState();
 }
 
-class _PhoneImportGuestFieldsState extends State<PhoneImportGuestFields> {
+class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
   late final _name = TextEditingController(text: widget.entry.displayName);
   late final _household = TextEditingController(text: widget.entry.household);
 
   @override
-  void didUpdateWidget(covariant PhoneImportGuestFields oldWidget) {
+  void didUpdateWidget(covariant PhoneImportGuestSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_name.text != widget.entry.displayName) {
       _name.text = widget.entry.displayName;
