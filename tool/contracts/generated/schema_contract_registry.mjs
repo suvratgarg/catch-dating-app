@@ -273680,6 +273680,19 @@ export const beginOrganizerFormResponseCallablePayloadSchema = {
     "requestId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    },
+    "reuseResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Explicit own submitted source selection for compatible same-form answer suggestions; never a claim or grant."
     }
   }
 };
@@ -274798,6 +274811,33 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
               }
             ]
           }
+        },
+        "prefillSource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "responseId",
+            "versionId",
+            "submittedAtMillis"
+          ],
+          "properties": {
+            "responseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "submittedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "description": "Immutable origin of own organizer-answer suggestions offered for review; draft answers and consent remain separate."
         },
         "prefillSuggestions": {
           "type": "object",

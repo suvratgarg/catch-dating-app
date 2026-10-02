@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.158.0
+version: 1.159.0
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -3045,6 +3045,20 @@ one read transaction, cache each immutable version within that transaction,
 and advance subject/source-bound cursors across omitted sources. Answers,
 contact endpoints and Host notes are excluded; a configured event target
 does not prove booking or admission. Anonymous responses remain unowned.
+
+`beginOrganizerFormResponse` may receive an explicit `reuseResponseId` for
+compatible organizer-only answers from the authenticated respondent’s own
+submitted response to the same form. It shares the account source proof inside
+the draft transaction, including exact organizer/form/version, notice,
+withdrawal and deletion checks, before any draft write. Suggestions require
+participant-review prefill on both immutable questions, unchanged semantic
+identity and destination, and the same current answer validator used by manual
+edits. Changed notices, file/signature/acknowledgement questions and unrelated
+forms do not reuse answers. `prefillSource` identifies the immutable origin;
+answers, consent and messaging choices remain unaccepted until reviewed.
+Historical submissions and versions remain unchanged. Portable profile intake
+keeps its existing separate rules; no organizer-answer cache or new person root
+is introduced.
 
 `getParticipantFormProfile` resolves only the verified owner’s designated fields
 and returns current editable core values, core/intake revisions, and selected

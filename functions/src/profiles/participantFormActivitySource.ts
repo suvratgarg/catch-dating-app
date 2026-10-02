@@ -29,13 +29,20 @@ export interface ParticipantFormActivitySource {
  * This internal reader requires the future callable's Auth-derived uid.
  * A caller may share its existing transaction.
  */
-export async function readParticipantFormActivitySource(params: {
+export interface ParticipantFormResponseProof {
+  source: ParticipantFormActivitySource;
+  response: Readonly<Response>;
+  version: Readonly<Version>;
+}
+
+/** Private source evidence; callers must never return it in activity DTOs. */
+export async function readParticipantFormResponseProof(params: {
   db: FirebaseFirestore.Firestore;
   tx?: FirebaseFirestore.Transaction;
   uid: string;
   responseId: string;
   nowMillis?: number;
-}): Promise<ParticipantFormActivitySource | null> {
+}): Promise<ParticipantFormResponseProof | null> {
   const {db, uid, responseId} = params;
   const nowMillis = params.nowMillis ?? Date.now();
   if (!documentId(uid) || !documentId(responseId) ||
@@ -45,10 +52,16 @@ export async function readParticipantFormActivitySource(params: {
       tx.get(db.collection("organizerFormResponses").doc(responseId)),
       accountAvailable(db, tx, uid),
     ]);
-    return available ? readSnapshot({db, tx, uid, responseId,
+    return available ? readOwnedSnapshot({db, tx, uid, responseId,
       nowMillis, value: responseSnap.data()}) : null;
   };
   return params.tx ? read(params.tx) : db.runTransaction(read);
+}
+
+export async function readParticipantFormActivitySource(
+  params: Parameters<typeof readParticipantFormResponseProof>[0]
+): Promise<ParticipantFormActivitySource | null> {
+  return (await readParticipantFormResponseProof(params))?.source ?? null;
 }
 
 /** Bounded internal page; deleted subjects are unavailable. */
@@ -94,7 +107,7 @@ async function accountAvailable(db: FirebaseFirestore.Firestore,
   return !deleted.exists && user.data()?.deleted !== true;
 }
 
-async function readSnapshot(params: {
+async function readOwnedSnapshot(params: {
   db: FirebaseFirestore.Firestore;
   tx: FirebaseFirestore.Transaction;
   uid: string;
@@ -102,7 +115,7 @@ async function readSnapshot(params: {
   value: unknown;
   nowMillis: number;
   versions?: Map<string, Promise<unknown>>;
-}): Promise<ParticipantFormActivitySource | null> {
+}): Promise<ParticipantFormResponseProof | null> {
   const {db, tx, uid, responseId, nowMillis, versions} = params;
   const response = params.value as Response | undefined;
   if (!documentId(responseId) ||
@@ -133,12 +146,19 @@ async function readSnapshot(params: {
       publishedAtMillis > nowMillis) return null;
   // No answers, endpoint snapshots, tokens, review notes or profile pointers.
   // The immutable version describes this submission, not today's live form.
-  return {responseId, organizerId: response.organizerId,
+  return {response, version, source: {responseId,
+    organizerId: response.organizerId,
     formId: response.formId, versionId: response.versionId,
     formTitle: version.definition.title, purpose: version.definition.purpose,
     eventId: version.definition.defaultTargetKind === "event" ?
       version.definition.defaultTargetId : null,
-    submittedAtMillis};
+    submittedAtMillis}};
+}
+
+async function readSnapshot(
+  params: Parameters<typeof readOwnedSnapshot>[0]
+): Promise<ParticipantFormActivitySource | null> {
+  return (await readOwnedSnapshot(params))?.source ?? null;
 }
 
 function cursorScope(uid: string): string {

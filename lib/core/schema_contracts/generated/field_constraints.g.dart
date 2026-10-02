@@ -16329,6 +16329,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{16,120}\$',
   );
 
+  static const beginOrganizerFormResponseCallablePayloadReuseResponseId = CatchContractFieldConstraints(
+    path: 'beginOrganizerFormResponseCallablePayload.reuseResponseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const beginOrganizerFormResponseCallablePayloadSourceToken = CatchContractFieldConstraints(
     path: 'beginOrganizerFormResponseCallablePayload.sourceToken',
     valueTypes: <String>['string'],
@@ -159177,6 +159184,7 @@ abstract final class CatchContractConstraints {
     'automationWhatsappDispatchDocument.templateHash': automationWhatsappDispatchDocumentTemplateHash,
     'beginOrganizerFormResponseCallablePayload.publicFormId': beginOrganizerFormResponseCallablePayloadPublicFormId,
     'beginOrganizerFormResponseCallablePayload.requestId': beginOrganizerFormResponseCallablePayloadRequestId,
+    'beginOrganizerFormResponseCallablePayload.reuseResponseId': beginOrganizerFormResponseCallablePayloadReuseResponseId,
     'beginOrganizerFormResponseCallablePayload.sourceToken': beginOrganizerFormResponseCallablePayloadSourceToken,
     'blockDocument.blockedUserId': blockDocumentBlockedUserId,
     'blockDocument.blockerUserId': blockDocumentBlockerUserId,

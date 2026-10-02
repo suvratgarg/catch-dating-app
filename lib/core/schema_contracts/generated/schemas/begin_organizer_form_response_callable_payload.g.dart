@@ -32,5 +32,18 @@ const schemaBeginOrganizerFormResponseCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Za-z0-9_-]{16,120}\$',
     },
+    'reuseResponseId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Explicit own submitted source selection for compatible same-form answer suggestions; never a claim or grant.',
+    },
   },
 };
