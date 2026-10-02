@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.8
-updated: 2026-09-06
+version: 3.2.0
+updated: 2026-10-02
 owner: agent_operating_model
 status: active
 ---
@@ -132,9 +132,10 @@ This is product architecture state, not agent execution state.
 
 ## Git Preservation And Reconciliation
 
-Working branches are single-use preservation units. Push bounded commits. Do
-not leave unique intended work only in a working tree, stash, reflog, or local
-branch.
+Working branches are single-use preservation units. Commit bounded work and
+push when publication is authorized; otherwise hand the exact commit to the
+integration owner and report that remote preservation is pending. Do not leave
+unique intended work only in a working tree, stash, or reflog.
 
 Before a rebase, reset, amend, history rewrite, or conflict-heavy merge:
 
@@ -162,8 +163,9 @@ lifecycle in source frontmatter. Validate it against Git directly:
 node tool/docs/check_doc_metadata.mjs --base origin/main
 ```
 
-After a squash or merge is proven on `origin/main`, remove its disposable
-worktree and prune its single-use branch. Do not reuse it for another slice.
+After a squash or merge is proven on `origin/main`, follow the manual completion
+and retirement checks below before removing its disposable worktree or pruning
+its single-use branch. Do not reuse it for another slice.
 
 ## Repo-Managed Pre-Commit Hook
 
@@ -257,14 +259,24 @@ existing task worktree; new task creation goes through the guard.
 2. The child confirms its worktree, branch, base SHA, and status before editing.
    When using the guard, `doctor` performs the local safety inspection.
 3. The child edits only its assigned files, runs focused checks sequentially
-   where the toolchain requires it, commits, pushes, and reports the branch,
-   commit SHA, changed files, checks, and blockers.
-4. The parent reviews the Git diff and imports only accepted commits. The
-   parent then runs integration checks and reviews the final diff.
+   where the toolchain requires it, commits, pushes only when authorized, and
+   reports the branch, commit SHA, changed files, checks, and blockers.
+4. The parent reviews the Git diff and imports only accepted commits into an
+   integration worktree created from freshly fetched `origin/main`. Small,
+   compatible ready tasks may share one PR; one task does not require one PR.
+   Batch only when dependencies, source authority, and ownership allow each
+   task to be accepted and reverted independently, and the combined diff stays
+   bounded. Keep high-risk security, schema, and payment changes separate.
+   Review the combined diff and evidence, then derive and run the full required
+   CI and release verification once against the exact integrated tree. Worker
+   checks support that review; stale branch statuses do not prove the result.
+   Every required review, branch protection, and current-source gate still
+   applies. Isolate a failing task and reverify the resulting tree before
+   delivery; do not waive a failure to keep the batch together.
 5. When using the guard, run `finish` after clean, pushed closeout. If the task
    was superseded, use the explicit clean-only `finish --abandon` path. Remove
-   the disposable worktree separately with an explicit Git command when
-   desired.
+   the disposable worktree separately only after the manual retirement checks
+   below.
 
 If a child appears on the parent's worktree or edits an overlapping file set,
 stop it and preserve only a reviewed Git diff. If the parent base advances,
@@ -349,10 +361,68 @@ node tool/run.mjs check agent:context-pack
 
 ## Completion
 
-A task is complete when the intended source and contract changes exist,
-compile-critical generated output is synchronized, relevant deterministic
-checks pass, the final Git diff is bounded, and any required external state is
-verified. No tracked harness evidence is required.
+A local contribution is ready for handoff when its intended source and
+contract changes exist, compile-critical generated output is synchronized,
+relevant deterministic checks pass, and the bounded diff is preserved in an
+exact commit. Report that commit, checks, and remaining blockers to the
+integration owner; local handoff does not establish that the task has shipped.
+
+The task owner performs this manual lifecycle through existing Git, CI, release,
+and connected task tooling, only within the user's authorized scope:
+
+1. Move work from **Ready for execution** into execution with an agreed outcome,
+   scope, and acceptance criteria; use the guarded task worktree.
+2. When publication is authorized, open or update the PR, complete its required
+   reviews and CI gates against the exact head, and obtain any required merge
+   approval. For a batch, retain each task's commit, acceptance criteria,
+   focused test results, and independent revert mapping in the existing PR/task
+   tooling. If squash is required, map each task to its incorporated paths and
+   behavior in the squash commit and record how to revert that task safely.
+   A local commit or green check alone is not merge verification.
+3. Verify the accepted change on fetched `origin/main`, including incorporation
+   after a squash. If acceptance requires a release, follow
+   `docs/release_operations.md` and verify the exact release and required live
+   checks. Keep original task PRs open until their accepted changes are verified
+   equivalent on merged `origin/main`; then link the integrating PR before
+   closing superseded proposals. Report pending authorization, delivery
+   failures, or unverified state.
+4. Only after merge and any required release acceptance are verified, update the
+   task to **Done** in Linear through the existing connected owner tooling, with
+   the PR/commit and verification evidence. Confirm the update succeeded. If the
+   tooling is unavailable or rejects the update, report the status blocker;
+   never claim Linear synchronization or task completion from a local handoff.
+5. Complete the retirement checklist below for the task's own disposable
+   worktree and eligible branches while the task context is fresh. Record the
+   exact retirement result or retention reason in the existing task handoff; do
+   not defer routine closeout to a separate cleanup task. No tracked harness
+   evidence is required.
+
+Retirement is part of closeout, using existing Git and the guard:
+
+1. Fetch and prove the task's accepted source is equivalent on `origin/main`,
+   including after squash or batch integration. Check required CI and release
+   acceptance before treating a proposal as obsolete.
+2. Verify the exact worktree, local/upstream branches and claim belong to this
+   task. Check active owners, other users and running task processes; inspect
+   dirty and untracked files, stashes, unique commits and unpushed work.
+3. Preserve unincorporated work and verify recovery references before removing
+   anything. A merge, Done status or stale claim never permits discarding other
+   work. Retain the worktree when another active owner or dependency needs it.
+4. Run the guard's `doctor`, then `finish` when clean/pushed requirements pass.
+   For a deliberately superseded task, use the existing clean-only
+   `finish --abandon` with a reason; abandonment is not shipped Done. Never
+   release another owner's claim or bypass a refused closeout.
+5. From outside the worktree, remove only the verified obsolete worktree and
+   eligible single-use branches through authorized, non-forced commands:
+   `git worktree remove <path>`, `git branch -d <branch>`, and, when the remote
+   branch has no active owner, open proposal or unique work requiring retention,
+   `git push origin --delete <branch>`. Do not delete main, shared branches or
+   recovery references. Squash incorporation alone may make `branch -d` refuse;
+   preserve the branch and record that retention reason rather than force it.
+6. Verify the resulting worktree/branch/claim state and report it. If ownership,
+   recovery, authorization, dirty state or a Git/guard check blocks any step,
+   preserve the work and name the exact retained path/ref and reason. A blocked
+   retirement remains an explicit closeout item, not a claim of cleanup.
 
 The harness remains healthy when the planner explains affected work without
 writing source, optional context guidance stays stdout-only, parallel work is

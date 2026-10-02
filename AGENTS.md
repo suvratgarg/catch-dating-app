@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.1.0
-updated: 2026-08-27
+version: 3.2.0
+updated: 2026-10-02
 owner: agent_operating_model
 status: active
 ---
@@ -121,7 +121,10 @@ the code. Each was resolved by measuring the thing itself.
 
 ## Completion Standard
 
-A task is complete when its intended source and contract changes are present,
-the relevant focused checks pass, generated compile-critical outputs are
-current, and the exact commit or working diff is preserved. Ordinary product
-work must not recreate or replace the removed evidence layer.
+A local contribution is ready for handoff when its intended source and contract
+changes are present, focused checks pass, compile-critical generated outputs
+are current, and the exact commit is preserved. Shipped task completion and
+retirement of the task's own worktree and branches follow the mandatory
+checklist in `docs/agent_operating_model.md#completion`; record an exact retention
+reason when safe retirement cannot finish. Ordinary product work must not
+recreate or replace the removed evidence layer.
