@@ -10,7 +10,7 @@ const config: CatchReplyConfig = {enabled: true, atomicStopIngressReady: true,
   recipientUid: "participant", recipientE164: "+919000000001",
   credentialVersionResource:
     "projects/demo-catch/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/1",
-  graphVersion: "v23.0"};
+  graphVersion: "v23.0", readinessEvidenceHash: "d".repeat(64)};
 const request = (token: Record<string, unknown> = {support: true,
   auth_time: 1800000000}) => ({auth: {uid: "agent", token}}) as
   unknown as CallableRequest<unknown>;

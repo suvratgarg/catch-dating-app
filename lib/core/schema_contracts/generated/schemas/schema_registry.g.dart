@@ -17,6 +17,41 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'CatchWhatsappReplyOperationDocument',
+    source: 'firestore/catch_whatsapp_reply_operations.schema.json',
+    schema: schemaCatchWhatsappReplyOperationDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappEndpointStopDocument',
+    source: 'firestore/catch_whatsapp_endpoint_stops.schema.json',
+    schema: schemaCatchWhatsappEndpointStopDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappReplyReadinessDocument',
+    source: 'firestore/catch_whatsapp_reply_readiness.schema.json',
+    schema: schemaCatchWhatsappReplyReadinessDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminReviewCatchWhatsappInboundCallablePayload',
+    source: 'callables/admin_review_catch_whatsapp_inbound_payload.schema.json',
+    schema: schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminReviewCatchWhatsappInboundCallableResponse',
+    source: 'callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json',
+    schema: schemaAdminReviewCatchWhatsappInboundCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSendCatchWhatsappReplyCallablePayload',
+    source: 'callables/admin_send_catch_whatsapp_reply_payload.schema.json',
+    schema: schemaAdminSendCatchWhatsappReplyCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSendCatchWhatsappReplyCallableResponse',
+    source: 'callable_responses/admin_send_catch_whatsapp_reply_response.schema.json',
+    schema: schemaAdminSendCatchWhatsappReplyCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetOrganizerTrackingSettingsCallablePayload',
     source: 'callables/get_organizer_tracking_settings_payload.schema.json',
     schema: schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
@@ -5814,6 +5849,13 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'CatchWhatsappReplyOperationDocument': schemaCatchWhatsappReplyOperationDocumentSchema,
+  'CatchWhatsappEndpointStopDocument': schemaCatchWhatsappEndpointStopDocumentSchema,
+  'CatchWhatsappReplyReadinessDocument': schemaCatchWhatsappReplyReadinessDocumentSchema,
+  'AdminReviewCatchWhatsappInboundCallablePayload': schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema,
+  'AdminReviewCatchWhatsappInboundCallableResponse': schemaAdminReviewCatchWhatsappInboundCallableResponseSchema,
+  'AdminSendCatchWhatsappReplyCallablePayload': schemaAdminSendCatchWhatsappReplyCallablePayloadSchema,
+  'AdminSendCatchWhatsappReplyCallableResponse': schemaAdminSendCatchWhatsappReplyCallableResponseSchema,
   'GetOrganizerTrackingSettingsCallablePayload': schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
   'SetOrganizerTrackingSettingsCallablePayload': schemaSetOrganizerTrackingSettingsCallablePayloadSchema,
   'ReadPublicOrganizerTrackingSettingsCallablePayload': schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema,
@@ -6976,6 +7018,13 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/catch_whatsapp_reply_operations.schema.json': schemaCatchWhatsappReplyOperationDocumentSchema,
+  'firestore/catch_whatsapp_endpoint_stops.schema.json': schemaCatchWhatsappEndpointStopDocumentSchema,
+  'firestore/catch_whatsapp_reply_readiness.schema.json': schemaCatchWhatsappReplyReadinessDocumentSchema,
+  'callables/admin_review_catch_whatsapp_inbound_payload.schema.json': schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema,
+  'callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json': schemaAdminReviewCatchWhatsappInboundCallableResponseSchema,
+  'callables/admin_send_catch_whatsapp_reply_payload.schema.json': schemaAdminSendCatchWhatsappReplyCallablePayloadSchema,
+  'callable_responses/admin_send_catch_whatsapp_reply_response.schema.json': schemaAdminSendCatchWhatsappReplyCallableResponseSchema,
   'callables/get_organizer_tracking_settings_payload.schema.json': schemaGetOrganizerTrackingSettingsCallablePayloadSchema,
   'callables/set_organizer_tracking_settings_payload.schema.json': schemaSetOrganizerTrackingSettingsCallablePayloadSchema,
   'callables/read_public_organizer_tracking_settings_payload.schema.json': schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema,

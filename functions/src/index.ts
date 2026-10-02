@@ -10,6 +10,8 @@ setGlobalOptions({
 admin.initializeApp();
 
 export {catchWhatsappWebhook} from "./catchMessaging/whatsappWebhook";
+export {adminReviewCatchWhatsappInbound, adminSendCatchWhatsappReply} from
+  "./catchMessaging/whatsappReplyHandlers";
 export {onCatchWhatsappWebhookEventCreated,
   onCatchWhatsappReplyOperationWritten} from
   "./catchMessaging/whatsappReceiptConsumer";

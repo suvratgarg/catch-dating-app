@@ -4817,3 +4817,42 @@ eligibility. The public projection has a code-owned disabled publication gate
 and null IDs pending reviewed advertising policy. Public organizer and event
 eligibility cannot be supplied by a caller. No new client permissions, provider
 credentials, guest information or advertising transmission are introduced.
+
+
+## Catch-owned controlled support reply (CAT16)
+
+`adminReviewCatchWhatsappInbound` reads one exact immutable inbound text receipt
+for the configured Catch sender and verified recipient. `adminSendCatchWhatsappReply`
+requires the reviewed text hash, `purpose=serviceSupport`, explicit confirmation
+that the inbound requests support, and one bounded reply body. Both require the
+configured current support/adminOwner actor, valid session, App Check and shared
+rate limits. Neither reads organizer/workspace conversations or enrolls marketing.
+The review output is scoped text/hash/deadline; the send output is the saved
+operation ID, provider message ID, delivery status and replay flag.
+
+The canonical private documents are `catchWhatsappReplyOperations/{operationId}`,
+`catchWhatsappEndpointStops/{stopId}` and
+`catchWhatsappReplyReadiness/{readinessId}`. Direct SDK access is denied even to
+staff. Operation and STOP records have no TTL; raw webhook receipts keep their
+original 30-day expiry and immutable payload. Claims are permanent per sender
+and provider inbound ID; changed bodies and uncertain attempts cannot resend.
+Status projection never grants sending, retry, consent or billing authority.
+
+Readiness is a read-only prerequisite in this feature, not an attestation API.
+A separately reviewed record must bind the exact sender, recipient UID/endpoint,
+configured evidence digest, complete historical STOP coverage through verified
+atomic ingress, current owner reviewer and an expiry no later than 24 hours
+after review. Historical coverage starts at epoch to assert the complete sender
+history, including its inception; there is no partial lookback shortcut. An
+empty retained-receipt query, expired receipts or a missing record cannot prove
+clearance. Readiness revocation, recipient deletion, sender-wide withdrawal and
+STOP are read again in the final send-claim transaction after credential loading.
+Future STOP commits block later claims; a claim already committed before STOP
+may have dispatched. Marketing-purpose withdrawal is not service permission.
+
+Both outbound gates and the receipt-consumer gate remain false in the offline
+source milestone. The parameter materializer rejects enablement or provisioning
+of scoped reply values. There is no readiness writer, automatic history repair
+approval, live credential read, provider send, deployment or activation in these
+tests. Runtime history collection and all scoped live approvals remain separate.
+The 24-hour cutoff is a transport eligibility rule, not a verified pricing claim.

@@ -15,6 +15,13 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "CatchWhatsappReplyOperationDocument", "source": "firestore/catch_whatsapp_reply_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts"},
+  {"name": "CatchWhatsappEndpointStopDocument", "source": "firestore/catch_whatsapp_endpoint_stops.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts"},
+  {"name": "CatchWhatsappReplyReadinessDocument", "source": "firestore/catch_whatsapp_reply_readiness.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts"},
+  {"name": "AdminReviewCatchWhatsappInboundCallablePayload", "source": "callables/admin_review_catch_whatsapp_inbound_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts"},
+  {"name": "AdminReviewCatchWhatsappInboundCallableResponse", "source": "callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts"},
+  {"name": "AdminSendCatchWhatsappReplyCallablePayload", "source": "callables/admin_send_catch_whatsapp_reply_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSendCatchWhatsappReplyCallablePayload.ts"},
+  {"name": "AdminSendCatchWhatsappReplyCallableResponse", "source": "callable_responses/admin_send_catch_whatsapp_reply_response.schema.json", "typeOutput": "functions/src/shared/generated/adminSendCatchWhatsappReplyCallableResponse.ts"},
   {"name": "GetOrganizerTrackingSettingsCallablePayload", "source": "callables/get_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/getOrganizerTrackingSettingsCallablePayload.ts"},
   {"name": "SetOrganizerTrackingSettingsCallablePayload", "source": "callables/set_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload.ts"},
   {"name": "ReadPublicOrganizerTrackingSettingsCallablePayload", "source": "callables/read_public_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload.ts"},

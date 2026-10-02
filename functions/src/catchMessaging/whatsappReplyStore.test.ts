@@ -19,7 +19,8 @@ import {catchEndpointHash, catchReplyHash, catchReplyId, catchStopId,
 import type {CatchAuthUser, CatchReplyConfig, CatchReplyInput} from
   "./whatsappReply";
 import {CatchWhatsappReplyStore, CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS,
-  CATCH_REPLY_OPERATIONS, persistCatchStopReceipt, readCatchOperation} from
+  CATCH_REPLY_OPERATIONS, CATCH_REPLY_READINESS, catchReadinessId,
+  persistCatchStopReceipt, readCatchOperation} from
   "./whatsappReplyStore";
 import {consumeCatchReplyStatus} from "./whatsappReceiptConsumer";
 import {prepareCatchReplyProvider} from "./whatsappReplyProvider";
@@ -37,7 +38,7 @@ const config: CatchReplyConfig = {enabled: true, atomicStopIngressReady: true,
   recipientUid: "participant", recipientE164: "+919000000001",
   credentialVersionResource:
     "projects/demo-catch/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/1",
-  graphVersion: "v23.0"};
+  graphVersion: "v23.0", readinessEvidenceHash: "d".repeat(64)};
 
 function incoming(body = "Please help with my account", id = "wamid.inbound") {
   const raw = Buffer.from(JSON.stringify({object: "whatsapp_business_account",
@@ -66,14 +67,26 @@ function fixture(realDb?: Firestore, suffix = "") {
     auth_time: time / 1000}}, data: input} as unknown as
     CallableRequest<unknown>;
   const deps = {config: () => ({...config}), getUser: async (uid: string) =>
-    uid === "agent" ? {disabled, customClaims: {support: true}} :
-      {disabled: false, phoneNumber: config.recipientE164}, now: () => now};
+    uid === "owner" ? {disabled: false, customClaims: {adminOwner: true}} :
+      uid === "agent" ? {disabled, customClaims: {support: true}} :
+        {disabled: false, phoneNumber: config.recipientE164}, now: () => now};
   const store = new CatchWhatsappReplyStore(db, deps);
   const service = {...deps, store, prepare: async () => ({send: async () => {
     sends++; return "wamid.outbound" + suffix;
   }})};
+  const readiness = {schemaVersion: 1, readinessId: catchReadinessId(config),
+    wabaId: config.wabaId, phoneNumberId: config.phoneNumberId,
+    recipientUid: config.recipientUid,
+    endpointHash: catchEndpointHash(config.recipientE164),
+    purpose: "serviceSupport", state: "ready", completeHistory: true,
+    historyFromMillis: 0, coveredThroughMillis: time,
+    atomicIngressStartedAtMillis: time, evidenceSha256: "d".repeat(64),
+    reviewedByUid: "owner", reviewedAtMillis: time,
+    expiresAtMillis: time + CATCH_SUPPORT_WINDOW_MS};
+  fake.records.set(CATCH_REPLY_READINESS + "/" + catchReadinessId(config),
+    readiness);
   fake.records.set(CATCH_RECEIPTS + "/" + event.eventId, doc);
-  return {fake, db, doc, event, input, request, store, service,
+  return {fake, db, doc, event, input, request, store, service, readiness,
     operationId: catchReplyId(config, event.messageId),
     sends: () => sends, setNow: (value: number) => {
       now = value;
@@ -272,7 +285,11 @@ test("Firestore concurrent replies send once and committed STOP blocks claims",
       CATCH_RECEIPTS + "/" + stop.eventId,
       CATCH_ENDPOINT_STOPS + "/" + stopId,
       CATCH_REPLY_OPERATIONS + "/" + f.operationId];
+    const readinessPath = CATCH_REPLY_READINESS + "/" +
+      catchReadinessId(config);
+    paths.push(readinessPath);
     try {
+      await db.doc(readinessPath).set(f.readiness);
       await db.doc(paths[0]).create(f.doc);
       const results = await Promise.allSettled(Array.from({length: 8}, () =>
         sendCatchWhatsappReply(f.request, f.service)));
@@ -359,7 +376,8 @@ test("new Catch state denies SDK clients including privileged staff",
         env.authenticatedContext("host", {organizerId: "org"}),
         env.authenticatedContext("staff", {admin: true, adminOwner: true,
           support: true})];
-      const collections = [CATCH_REPLY_OPERATIONS, CATCH_ENDPOINT_STOPS];
+      const collections = [CATCH_REPLY_OPERATIONS, CATCH_ENDPOINT_STOPS,
+        CATCH_REPLY_READINESS];
       for (const client of clients) {
         for (const collection of collections) {
           const ref = doc(client.firestore(), collection, "private-test");
@@ -384,7 +402,9 @@ test("final claim rechecks scope and current identity after preparation",
       const recipient: CatchAuthUser = {disabled: false,
         phoneNumber: config.recipientE164};
       const deps = {config: () => ({...current}),
-        getUser: async (uid: string) => uid === "agent" ? actor : recipient,
+        getUser: async (uid: string) => uid === "owner" ?
+          {disabled: false, customClaims: {adminOwner: true}} :
+          uid === "agent" ? actor : recipient,
         now: f.service.now};
       const store = new CatchWhatsappReplyStore(f.db, deps);
       let preparations = 0;

@@ -63,13 +63,15 @@ receipts and sender/endpoint suppression commit atomically at ingress even when
 consumers are disabled; retained STOP processing only repairs suppression and
 cannot establish completeness of history lost to TTL. Historical evidence,
 authenticated reply callables, outbound activation and deployment remain
-separately gated work. The private operation/STOP schemas still need canonical
-registration before the full reply workflow is admission-ready.
+separately gated work. The private operation/STOP/readiness contracts are canonical; actual historical
+evidence and scoped live approvals remain prerequisites for activation.
 
 ## Function inventory
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `adminReviewCatchWhatsappInbound` | `src/catchMessaging/whatsappReplyHandlers.ts` | Disabled App-Check/rate-limited exact inbound support review for the configured current staff actor and verified recipient; no organizer/workspace projection. |
+| `adminSendCatchWhatsappReply` | `src/catchMessaging/whatsappReplyHandlers.ts` | Disabled single controlled service reply with current readiness/STOP/withdrawal checks, durable idempotency and saved provider status; no campaigns or templates. |
 | `catchWhatsappWebhook` | `src/catchMessaging/whatsappWebhook.ts` | Separate Catch-owned signed message/status ingress, disabled by default; private immutable receipts and no outgoing messages. |
 | `onCatchWhatsappWebhookEventCreated` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled Catch receipt projection and idempotent STOP repair; scoped to the configured sender, no sends. |
 | `onCatchWhatsappReplyOperationWritten` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled bounded reconciliation of early delivery receipts after provider message ID save; ignores delivery-only writes. |

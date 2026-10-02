@@ -7,9 +7,10 @@ import {validateCatchWhatsappWebhookEventDocument} from
   "../shared/generated/validators/catchWhatsappWebhookEventDocument";
 import {WEBHOOK_RETENTION_MILLIS, type CatchWebhookEvent} from
   "./whatsappWebhookProtocol";
-import {catchEndpointHash, catchStopId, safeMillis, validHash,
-  validProviderId} from "./whatsappReply";
+import {catchEndpointHash, catchStopId, safeMillis} from "./whatsappReply";
 import type {CatchEndpointStop} from "./whatsappReply";
+import {validateCatchWhatsappEndpointStopDocument} from
+  "../shared/generated/validators/catchWhatsappEndpointStopDocument";
 
 export const CATCH_ENDPOINT_STOPS = "catchWhatsappEndpointStops";
 export const CATCH_RECEIPTS = "catchWhatsappWebhookEvents";
@@ -30,20 +31,11 @@ export function readCatchReceipt(value: unknown): CatchReceipt {
 }
 
 export function readCatchStop(value: unknown): CatchEndpointStop {
-  const data = value as CatchEndpointStop | undefined;
-  if (!data || Object.keys(data).sort().join(",") !==
-      "endpointHash,observedAtMillis,payloadHash,phoneNumberId,schemaVersion," +
-      "sourceEventId,sourceMessageId,stopId,wabaId" ||
-      data.schemaVersion !== 1 || !validHash(data.endpointHash) ||
-      !validHash(data.payloadHash) || !safeMillis(data.observedAtMillis) ||
-      !/^[0-9]{1,32}$/u.test(data.wabaId) ||
-      !/^[0-9]{1,32}$/u.test(data.phoneNumberId) ||
-      !/^cwhe_[a-f0-9]{64}$/u.test(data.sourceEventId) ||
-      !validProviderId(data.sourceMessageId) ||
-      data.stopId !== catchStopId(data, data.endpointHash)) {
+  if (!validateCatchWhatsappEndpointStopDocument(value) ||
+      value.stopId !== catchStopId(value, value.endpointHash)) {
     throw new HttpsError("failed-precondition", "Invalid Catch suppression.");
   }
-  return data;
+  return value;
 }
 
 /** Never classify truncated text or interactive display labels as STOP. */

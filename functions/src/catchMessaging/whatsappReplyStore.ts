@@ -1,4 +1,5 @@
-import {Timestamp, type Firestore} from "firebase-admin/firestore";
+import {Timestamp, type Firestore, type Transaction} from
+  "firebase-admin/firestore";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
   "../eventSuccess/operations/transactionCallback";
@@ -6,10 +7,22 @@ import {validateCatchCommunicationPreferenceDocument} from
   "../shared/generated/validators/catchCommunicationPreferenceDocument";
 import {authorizeCatchReply, assertCatchReplyEnabled, catchEndpointHash,
   catchReplyHash, catchReplyId, catchStopId, CATCH_SUPPORT_WINDOW_MS,
-  parseCatchReplyInput, safeMillis, validHash, validProviderId} from
+  parseCatchReplyInput, safeMillis, validProviderId} from
   "./whatsappReply";
 import type {CatchGetUser, CatchReplyConfig,
   CatchReplyInput, CatchReplyOperation} from "./whatsappReply";
+
+import {validateCatchWhatsappReplyOperationDocument} from
+  "../shared/generated/validators/catchWhatsappReplyOperationDocument";
+import {validateCatchWhatsappReplyReadinessDocument} from
+  "../shared/generated/validators/catchWhatsappReplyReadinessDocument";
+import {adminRolesFromToken} from "../admin/adminAuth";
+import type {CatchReceipt} from "./whatsappEndpointStops";
+
+export const CATCH_REPLY_READINESS = "catchWhatsappReplyReadiness";
+export const catchReadinessId = (config: CatchReplyConfig): string =>
+  "cwready_" + catchReplyHash([config.wabaId, config.phoneNumberId,
+    catchEndpointHash(config.recipientE164)]);
 
 export const CATCH_REPLY_OPERATIONS = "catchWhatsappReplyOperations";
 export {CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS, readCatchReceipt,
@@ -29,46 +42,16 @@ function serialized(value: unknown): unknown {
   }
   return value;
 }
-/** Authored domain codecs until the shared schema/codegen owner integrates. */
+/** Canonical shape validation with domain relational invariants. */
 export function readCatchOperation(value: unknown): CatchReplyOperation {
-  const data = value as CatchReplyOperation | undefined;
-  const keys = "actorUid,bodyHash,createdAtMillis,deadlineMillis," +
-    "deliveryAtMillis,deliveryEventId,deliveryStatus,endpointHash," +
-    "inboundEventId,inboundMessageId,inboundTextHash," +
-    "materialHash,operationId," +
-    "phoneNumberId,providerMessageId,purpose,recipientUid,reviewedAtMillis," +
-    "schemaVersion,source,state,updatedAtMillis,wabaId";
-  if (!data || Object.keys(data).sort().join(",") !== keys ||
-      data.schemaVersion !== 1 || data.purpose !== "serviceSupport" ||
-      data.source !== "reviewedInboundSupportRequest" ||
-      !validProviderId(data.actorUid) || !validProviderId(data.recipientUid) ||
-      !/^[0-9]{1,32}$/u.test(data.wabaId) ||
-      !/^[0-9]{1,32}$/u.test(data.phoneNumberId) ||
-      !/^cwhe_[a-f0-9]{64}$/u.test(data.inboundEventId) ||
-      !validProviderId(data.inboundMessageId) ||
-      data.operationId !== catchReplyId(data, data.inboundMessageId) ||
-      ![data.bodyHash, data.materialHash, data.inboundTextHash,
-        data.endpointHash].every(validHash) ||
-      ![data.createdAtMillis, data.updatedAtMillis, data.reviewedAtMillis,
-        data.deadlineMillis].every(safeMillis) ||
-      data.updatedAtMillis < data.createdAtMillis ||
-      data.reviewedAtMillis !== data.createdAtMillis ||
-      data.deadlineMillis <= data.createdAtMillis ||
-      !["claimed", "unknown", "completed"].includes(data.state) ||
-      !["pending", "accepted", "sent", "delivered", "read", "failed"]
-        .includes(data.deliveryStatus) ||
-      (data.state === "completed" ? !validProviderId(data.providerMessageId) :
-        data.providerMessageId !== null) ||
-      (data.state === "completed" ? data.deliveryStatus === "pending" :
-        data.deliveryStatus !== "pending") ||
-      (data.deliveryEventId === null ? data.deliveryAtMillis !== null :
-        !/^cwhe_[a-f0-9]{64}$/u.test(data.deliveryEventId) ||
-        !safeMillis(data.deliveryAtMillis)) ||
-      (["pending", "accepted"].includes(data.deliveryStatus) !==
-        (data.deliveryEventId === null))) {
+  if (!validateCatchWhatsappReplyOperationDocument(value) ||
+      value.operationId !== catchReplyId(value, value.inboundMessageId) ||
+      value.updatedAtMillis < value.createdAtMillis ||
+      value.reviewedAtMillis !== value.createdAtMillis ||
+      value.deadlineMillis <= value.createdAtMillis) {
     throw new HttpsError("failed-precondition", "Invalid Catch reply record.");
   }
-  return data;
+  return value;
 }
 export class CatchWhatsappReplyStore {
   constructor(readonly db: Firestore, private readonly deps: {
@@ -91,50 +74,20 @@ export class CatchWhatsappReplyStore {
       await authorizeCatchReply(request, config, this.deps.getUser);
       const now = this.deps.now();
       if (!safeMillis(now)) throw new Error("Invalid reply clock");
-      const inbound = readCatchReceipt((await tx.get(this.db.collection(
-        CATCH_RECEIPTS).doc(input.inboundEventId))).data());
-      const occurredAt = Number(inbound.providerTimestampSeconds) * 1000;
-      if (inbound.eventId !== input.inboundEventId ||
-          inbound.eventKind !== "inbound" || inbound.messageType !== "text" ||
-          inbound.textTruncated || !inbound.text?.trim() ||
-          isCatchStopReceipt(inbound) || inbound.wabaId !== config.wabaId ||
-          inbound.phoneNumberId !== config.phoneNumberId ||
-          "+" + inbound.participantId !== config.recipientE164 ||
-          catchReplyHash(inbound.text) !== input.reviewedInboundTextHash ||
-          !safeMillis(occurredAt) || occurredAt > inbound.receivedAtMillis ||
-          inbound.receivedAtMillis > now ||
-          inbound.expiresAt.toMillis() <= now) {
+      const inbound = await this.readEligibleInbound(tx, request,
+        input.inboundEventId, config, now);
+      if (catchReplyHash(inbound.text) !== input.reviewedInboundTextHash) {
         throw new HttpsError("failed-precondition", "Inbound review changed.");
       }
+      const occurredAt = Number(inbound.providerTimestampSeconds) * 1000;
       const endpointHash = catchEndpointHash(config.recipientE164);
       const operationId = catchReplyId(config, inbound.messageId);
       const operationRef = this.db.collection(CATCH_REPLY_OPERATIONS)
         .doc(operationId);
-      const [stop, preference, deleted, existing] = await Promise.all([
-        tx.get(this.db.collection(CATCH_ENDPOINT_STOPS)
-          .doc(catchStopId(config, endpointHash))),
-        tx.get(this.db.collection("catchCommunicationPreferences")
-          .doc(config.recipientUid)),
-        tx.get(this.db.collection("deletedUsers").doc(config.recipientUid)),
-        tx.get(operationRef),
-      ]);
-      // STOP presence is enough to deny, even if its record is malformed.
-      // Catch sender-wide withdrawal is independent of marketing opt-in.
-      if (stop.exists || deleted.exists) {
-        throw new HttpsError("failed-precondition",
-          "Catch replies suppressed.");
-      }
-      if (preference.exists) {
-        const value = serialized(preference.data());
-        if (!validateCatchCommunicationPreferenceDocument(value) ||
-            value.uid !== config.recipientUid ||
-            value.whatsapp.status === "optedOut") {
-          throw new HttpsError("failed-precondition",
-            "Catch replies suppressed.");
-        }
-      }
+      const existing = await tx.get(operationRef);
       const materialHash = catchReplyHash([config.wabaId, config.phoneNumberId,
-        config.recipientUid, endpointHash, config.actorUid, input]);
+        config.recipientUid, endpointHash, config.actorUid,
+        config.readinessEvidenceHash, input]);
       if (existing.exists) {
         const operation = readCatchOperation(existing.data());
         if (operation.operationId !== operationId ||
@@ -161,6 +114,7 @@ export class CatchWhatsappReplyStore {
         inboundEventId: inbound.eventId, inboundMessageId: inbound.messageId,
         inboundTextHash: input.reviewedInboundTextHash,
         bodyHash: catchReplyHash(input.body), materialHash,
+        readinessEvidenceHash: config.readinessEvidenceHash,
         reviewedAtMillis: now, deadlineMillis, state: "claimed",
         providerMessageId: null, deliveryStatus: "pending",
         deliveryEventId: null,
@@ -168,6 +122,96 @@ export class CatchWhatsappReplyStore {
       tx.create(operationRef, operation);
       return {operation, replayed: false};
     });
+  }
+
+  async review(request: CallableRequest<unknown>, inboundEventId: string,
+    expectedConfig: CatchReplyConfig) {
+    return transact(this.db, async (tx) => {
+      const config = {...this.deps.config()};
+      if (catchReplyHash(config) !== catchReplyHash(expectedConfig)) {
+        throw new HttpsError("aborted", "Controlled reply scope changed.");
+      }
+      const now = this.deps.now();
+      const inbound = await this.readEligibleInbound(tx, request,
+        inboundEventId, config, now);
+      const deadlineMillis = Number(inbound.providerTimestampSeconds) * 1000 +
+        CATCH_SUPPORT_WINDOW_MS;
+      if (now >= deadlineMillis) {
+        throw new HttpsError("failed-precondition",
+          "Support reply window closed.");
+      }
+      return {purpose: "serviceSupport" as const, inboundEventId,
+        inboundText: inbound.text!, reviewedInboundTextHash:
+          catchReplyHash(inbound.text), deadlineMillis};
+    });
+  }
+
+  private async readEligibleInbound(tx: Transaction,
+    request: CallableRequest<unknown>, inboundEventId: string,
+    config: CatchReplyConfig, now: number): Promise<CatchReceipt> {
+    await authorizeCatchReply(request, config, this.deps.getUser);
+    if (!safeMillis(now)) throw new Error("Invalid reply clock");
+    const inbound = readCatchReceipt((await tx.get(this.db.collection(
+      CATCH_RECEIPTS).doc(inboundEventId))).data());
+    const occurredAt = Number(inbound.providerTimestampSeconds) * 1000;
+    if (inbound.eventId !== inboundEventId ||
+        inbound.eventKind !== "inbound" || inbound.messageType !== "text" ||
+        inbound.textTruncated || !inbound.text?.trim() ||
+        isCatchStopReceipt(inbound) || inbound.wabaId !== config.wabaId ||
+        inbound.phoneNumberId !== config.phoneNumberId ||
+        "+" + inbound.participantId !== config.recipientE164 ||
+        !safeMillis(occurredAt) || occurredAt > inbound.receivedAtMillis ||
+        inbound.receivedAtMillis > now || inbound.expiresAt.toMillis() <= now) {
+      throw new HttpsError("failed-precondition", "Inbound review changed.");
+    }
+    const endpointHash = catchEndpointHash(config.recipientE164);
+    const [stop, preference, deleted, readiness] = await Promise.all([
+      tx.get(this.db.collection(CATCH_ENDPOINT_STOPS)
+        .doc(catchStopId(config, endpointHash))),
+      tx.get(this.db.collection("catchCommunicationPreferences")
+        .doc(config.recipientUid)),
+      tx.get(this.db.collection("deletedUsers").doc(config.recipientUid)),
+      tx.get(this.db.collection(CATCH_REPLY_READINESS)
+        .doc(catchReadinessId(config))),
+    ]);
+    if (stop.exists || deleted.exists) {
+      throw new HttpsError("failed-precondition",
+        "Catch replies suppressed.");
+    }
+    if (preference.exists) {
+      const value = serialized(preference.data());
+      if (!validateCatchCommunicationPreferenceDocument(value) ||
+          value.uid !== config.recipientUid ||
+          value.whatsapp.status === "optedOut") {
+        throw new HttpsError("failed-precondition",
+          "Catch replies suppressed.");
+      }
+    }
+    const proof = readiness.data();
+    if (!validateCatchWhatsappReplyReadinessDocument(proof) ||
+        proof.readinessId !== catchReadinessId(config) ||
+        proof.wabaId !== config.wabaId ||
+        proof.phoneNumberId !== config.phoneNumberId ||
+        proof.recipientUid !== config.recipientUid ||
+        proof.endpointHash !== endpointHash || proof.state !== "ready" ||
+        proof.evidenceSha256 !== config.readinessEvidenceHash ||
+        proof.atomicIngressStartedAtMillis > inbound.receivedAtMillis ||
+        proof.coveredThroughMillis < proof.atomicIngressStartedAtMillis ||
+        proof.coveredThroughMillis > proof.reviewedAtMillis ||
+        proof.reviewedAtMillis > now || proof.expiresAtMillis <= now ||
+        proof.expiresAtMillis <= proof.reviewedAtMillis ||
+        proof.expiresAtMillis - proof.reviewedAtMillis >
+          CATCH_SUPPORT_WINDOW_MS) {
+      throw new HttpsError("failed-precondition",
+        "Catch reply readiness required.");
+    }
+    const reviewer = await this.deps.getUser(proof.reviewedByUid);
+    if (reviewer.disabled ||
+        !adminRolesFromToken(reviewer.customClaims).includes("adminOwner")) {
+      throw new HttpsError("failed-precondition",
+        "Current readiness owner required.");
+    }
+    return inbound;
   }
 
   async complete(claim: CatchReplyOperation, providerMessageId: string):

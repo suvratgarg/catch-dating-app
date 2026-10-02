@@ -32,7 +32,8 @@
     "deliveryEventId",
     "deliveryAtMillis",
     "createdAtMillis",
-    "updatedAtMillis"
+    "updatedAtMillis",
+    "readinessEvidenceHash"
   ],
   "properties": {
     "schemaVersion": {
@@ -189,6 +190,12 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "readinessEvidenceHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
     }
   },
   "allOf": [

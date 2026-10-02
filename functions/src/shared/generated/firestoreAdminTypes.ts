@@ -549,6 +549,79 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+/**
+ * Private one-reply-per-inbound support claim and saved provider delivery projection. Explicit human review of the exact inbound support request is service evidence, never marketing permission. No body, credential or pricing data. No automatic retry or TTL; uncertain and completed claims remain consumed beyond receipt retention. Source-only and disabled pending atomic STOP ingress and scoped activation.
+ */
+export interface CatchWhatsappReplyOperationDocument {
+  schemaVersion: 1;
+  operationId: string;
+  purpose: "serviceSupport";
+  source: "reviewedInboundSupportRequest";
+  wabaId: string;
+  phoneNumberId: string;
+  recipientUid: string;
+  endpointHash: string;
+  actorUid: string;
+  inboundEventId: string;
+  inboundMessageId: string;
+  inboundTextHash: string;
+  bodyHash: string;
+  materialHash: string;
+  reviewedAtMillis: number;
+  deadlineMillis: number;
+  state: "claimed" | "unknown" | "completed";
+  providerMessageId: string | null;
+  deliveryStatus:
+    | "pending"
+    | "accepted"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "failed";
+  deliveryEventId: string | null;
+  deliveryAtMillis: number | null;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+  readinessEvidenceHash: string;
+}
+
+/**
+ * Private permanent Catch sender/endpoint STOP fence, committed atomically with the immutable authenticated inbound STOP receipt. Independent of UID and organizer contact resolution. No raw endpoint, message body, credentials, TTL, reset or automatic re-enrollment. Ingress wiring and historical reconciliation remain required before outbound activation.
+ */
+export interface CatchWhatsappEndpointStopDocument {
+  schemaVersion: 1;
+  stopId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  endpointHash: string;
+  sourceEventId: string;
+  sourceMessageId: string;
+  payloadHash: string;
+  observedAtMillis: number;
+}
+
+/**
+ * Private externally reviewed historical STOP clearance for one Catch sender/recipient endpoint. Complete evidence from sender inception (coverage starts at epoch) through verified atomic STOP ingress is required; empty or expired receipt queries are never proof. This feature only reads the record; it cannot attest, provision, refresh or activate it. No TTL or raw endpoint.
+ */
+export interface CatchWhatsappReplyReadinessDocument {
+  schemaVersion: 1;
+  readinessId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  recipientUid: string;
+  endpointHash: string;
+  purpose: "serviceSupport";
+  state: "ready" | "revoked";
+  completeHistory: true;
+  historyFromMillis: 0;
+  coveredThroughMillis: number;
+  atomicIngressStartedAtMillis: number;
+  evidenceSha256: string;
+  reviewedByUid: string;
+  reviewedAtMillis: number;
+  expiresAtMillis: number;
+}
+
 export interface OrganizerTrackingSettingsDocument {
   organizerId: string;
   revision: number;

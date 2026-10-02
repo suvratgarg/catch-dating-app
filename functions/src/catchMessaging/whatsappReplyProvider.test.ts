@@ -8,7 +8,7 @@ const config: CatchReplyConfig = {enabled: true, atomicStopIngressReady: true,
   recipientUid: "participant", recipientE164: "+919000000001",
   credentialVersionResource:
     "projects/demo-catch/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/1",
-  graphVersion: "v23.0"};
+  graphVersion: "v23.0", readinessEvidenceHash: "d".repeat(64)};
 const envelope = {schema: "catch.whatsapp-sender-token/v1", wabaId: "123",
   phoneNumberId: "456", accessToken: "mock-token-not-a-live-credential"};
 

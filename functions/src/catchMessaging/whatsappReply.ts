@@ -19,51 +19,20 @@ export interface CatchReplyConfig {
   recipientE164: string;
   credentialVersionResource: string;
   graphVersion: string;
+  readinessEvidenceHash: string;
 }
-export interface CatchReplyInput {
-  purpose: typeof CATCH_SUPPORT_PURPOSE;
-  inboundEventId: string;
-  reviewedInboundTextHash: string;
-  confirmSupportRequest: true;
-  body: string;
-}
-export interface CatchReplyOperation {
-  schemaVersion: 1;
-  operationId: string;
-  purpose: typeof CATCH_SUPPORT_PURPOSE;
-  source: "reviewedInboundSupportRequest";
-  wabaId: string;
-  phoneNumberId: string;
-  recipientUid: string;
-  endpointHash: string;
-  actorUid: string;
-  inboundEventId: string;
-  inboundMessageId: string;
-  inboundTextHash: string;
-  bodyHash: string;
-  materialHash: string;
-  reviewedAtMillis: number;
-  deadlineMillis: number;
-  state: "claimed" | "unknown" | "completed";
-  providerMessageId: string | null;
-  deliveryStatus: "pending" | "accepted" | "sent" | "delivered" |
-    "read" | "failed";
-  deliveryEventId: string | null;
-  deliveryAtMillis: number | null;
-  createdAtMillis: number;
-  updatedAtMillis: number;
-}
-export interface CatchEndpointStop {
-  schemaVersion: 1;
-  stopId: string;
-  wabaId: string;
-  phoneNumberId: string;
-  endpointHash: string;
-  sourceEventId: string;
-  sourceMessageId: string;
-  payloadHash: string;
-  observedAtMillis: number;
-}
+export type {AdminSendCatchWhatsappReplyCallablePayload as CatchReplyInput}
+  from "../shared/generated/adminSendCatchWhatsappReplyCallablePayload";
+export type {CatchWhatsappReplyOperationDocument as CatchReplyOperation}
+  from "../shared/generated/catchWhatsappReplyOperationDocument";
+export type {CatchWhatsappEndpointStopDocument as CatchEndpointStop}
+  from "../shared/generated/catchWhatsappEndpointStopDocument";
+import type {AdminSendCatchWhatsappReplyCallablePayload as CatchReplyInput}
+  from "../shared/generated/adminSendCatchWhatsappReplyCallablePayload";
+import type {CatchWhatsappReplyOperationDocument as CatchReplyOperation}
+  from "../shared/generated/catchWhatsappReplyOperationDocument";
+import {validateAdminSendCatchWhatsappReplyCallablePayload} from
+  "../shared/generated/validators/adminSendCatchWhatsappReplyInput";
 export interface CatchAuthUser {
   disabled: boolean;
   phoneNumber?: string;
@@ -103,25 +72,18 @@ export function assertCatchReplyEnabled(config: CatchReplyConfig): void {
       !/^[0-9]{1,32}$/u.test(config.phoneNumberId) ||
       !/^\+[1-9][0-9]{6,14}$/u.test(config.recipientE164) ||
       !/^[A-Za-z0-9_-]{1,128}$/u.test(config.actorUid) ||
-      !/^[A-Za-z0-9_-]{1,128}$/u.test(config.recipientUid)) {
+      !/^[A-Za-z0-9_-]{1,128}$/u.test(config.recipientUid) ||
+      !validHash(config.readinessEvidenceHash)) {
     throw new HttpsError("failed-precondition", "Invalid controlled scope.");
   }
 }
 
 export function parseCatchReplyInput(value: unknown): CatchReplyInput {
-  const data = value as Partial<CatchReplyInput> | null;
-  if (!data || typeof data !== "object" || Array.isArray(data) ||
-      Object.keys(data).sort().join(",") !==
-        "body,confirmSupportRequest,inboundEventId,purpose," +
-        "reviewedInboundTextHash" ||
-      data.purpose !== CATCH_SUPPORT_PURPOSE ||
-      data.confirmSupportRequest !== true ||
-      !/^cwhe_[a-f0-9]{64}$/u.test(data.inboundEventId ?? "") ||
-      !validHash(data.reviewedInboundTextHash) ||
-      typeof data.body !== "string" || !data.body.trim() ||
-      data.body.length > 4096) {
+  if (!validateAdminSendCatchWhatsappReplyCallablePayload(value) ||
+      !value.body.trim()) {
     throw new HttpsError("invalid-argument", "Invalid Catch support reply.");
   }
+  const data = value;
   assertOutboundContentAllowed([data.body], "Reply content is not allowed.");
   return {purpose: data.purpose, inboundEventId: data.inboundEventId!,
     reviewedInboundTextHash: data.reviewedInboundTextHash,
@@ -156,7 +118,7 @@ export async function authorizeCatchReply(request: CallableRequest<unknown>,
 
 /**
  * Offline source owner; intentionally not exported as a deployed callable.
- * The future callable must supply App Check and rate limits. All dependencies
+ * Callable composition supplies App Check and rate limits. All dependencies
  * are mandatory; there is no default credential loader or provider sender.
  */
 export async function sendCatchWhatsappReply(request: CallableRequest<unknown>,

@@ -12,7 +12,8 @@ import {handleCatchWhatsappWebhook, parseCatchWhatsappWebhook,
 import {persistCatchWhatsappWebhookEvents} from "./whatsappWebhook";
 import {CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS, isCatchStopReceipt} from
   "./whatsappEndpointStops";
-import {CatchWhatsappReplyStore, CATCH_REPLY_OPERATIONS} from
+import {CatchWhatsappReplyStore, CATCH_REPLY_OPERATIONS, CATCH_REPLY_READINESS,
+  catchReadinessId} from
   "./whatsappReplyStore";
 import {catchEndpointHash, catchReplyHash, catchReplyId, catchStopId,
   sendCatchWhatsappReply} from "./whatsappReply";
@@ -27,7 +28,7 @@ const reply: CatchReplyConfig = {enabled: true, wabaId: "123",
   recipientE164: "+919000000001",
   credentialVersionResource:
     "projects/demo-catch/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/1",
-  graphVersion: "v23.0"};
+  graphVersion: "v23.0", readinessEvidenceHash: "d".repeat(64)};
 
 function message(id: string, text: string) {
   return {id, from: "919000000001", timestamp: String(now / 1000),
@@ -64,9 +65,10 @@ function service(db: Firestore, inbound: ReturnType<
   typeof parseCatchWhatsappWebhook>[number]) {
   let sends = 0;
   const deps = {config: () => ({...reply}), now: () => now + 1000,
-    getUser: async (uid: string) => uid === "agent" ?
-      {disabled: false, customClaims: {support: true}} :
-      {disabled: false, phoneNumber: reply.recipientE164}};
+    getUser: async (uid: string) => uid === "owner" ?
+      {disabled: false, customClaims: {adminOwner: true}} : uid === "agent" ?
+        {disabled: false, customClaims: {support: true}} :
+        {disabled: false, phoneNumber: reply.recipientE164}};
   const request = {auth: {uid: "agent", token: {support: true,
     auth_time: now / 1000}}, data: {purpose: "serviceSupport",
     inboundEventId: inbound.eventId, reviewedInboundTextHash:
@@ -149,7 +151,18 @@ test("real signed ingress races claims and blocks new reviewed inbound replies",
     const paths = [stopKey, claimKey, laterClaimKey,
       ...[supportEvent, stopEvent, laterEvent].map((event) =>
         CATCH_RECEIPTS + "/" + event.eventId)];
+    const readinessPath = CATCH_REPLY_READINESS + "/" + catchReadinessId(reply);
+    paths.push(readinessPath);
     try {
+      await db.doc(readinessPath).set({schemaVersion: 1,
+        readinessId: catchReadinessId(reply), wabaId: reply.wabaId,
+        phoneNumberId: reply.phoneNumberId, recipientUid: reply.recipientUid,
+        endpointHash: catchEndpointHash(reply.recipientE164),
+        purpose: "serviceSupport", state: "ready", completeHistory: true,
+        historyFromMillis: 0, coveredThroughMillis: now,
+        atomicIngressStartedAtMillis: now, evidenceSha256: "d".repeat(64),
+        reviewedByUid: "owner", reviewedAtMillis: now,
+        expiresAtMillis: now + 24 * 60 * 60 * 1000});
       assert.equal((await receive(db, support)).status, 200);
       const sender = service(db, supportEvent);
       const [claim, stopped] = await Promise.allSettled([

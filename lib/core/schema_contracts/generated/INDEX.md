@@ -12,6 +12,13 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts` |
+| CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts` |
+| CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts` |
+| AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts` |
+| AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts` |
+| AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `functions/src/shared/generated/adminSendCatchWhatsappReplyCallablePayload.ts` |
+| AdminSendCatchWhatsappReplyCallableResponse | `callable_responses/admin_send_catch_whatsapp_reply_response.schema.json` | `functions/src/shared/generated/adminSendCatchWhatsappReplyCallableResponse.ts` |
 | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/getOrganizerTrackingSettingsCallablePayload.ts` |
 | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload.ts` |
 | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload.ts` |
@@ -1176,6 +1183,13 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCatchWhatsappReplyOperationDocumentSchema` | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_operation_document.g.dart` |
+| `schemaCatchWhatsappEndpointStopDocumentSchema` | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_endpoint_stop_document.g.dart` |
+| `schemaCatchWhatsappReplyReadinessDocumentSchema` | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_readiness_document.g.dart` |
+| `schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema` | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_payload.g.dart` |
+| `schemaAdminReviewCatchWhatsappInboundCallableResponseSchema` | AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_response.g.dart` |
+| `schemaAdminSendCatchWhatsappReplyCallablePayloadSchema` | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_send_catch_whatsapp_reply_callable_payload.g.dart` |
+| `schemaAdminSendCatchWhatsappReplyCallableResponseSchema` | AdminSendCatchWhatsappReplyCallableResponse | `callable_responses/admin_send_catch_whatsapp_reply_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_send_catch_whatsapp_reply_callable_response.g.dart` |
 | `schemaGetOrganizerTrackingSettingsCallablePayloadSchema` | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_tracking_settings_callable_payload.g.dart` |
 | `schemaSetOrganizerTrackingSettingsCallablePayloadSchema` | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_organizer_tracking_settings_callable_payload.g.dart` |
 | `schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema` | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/read_public_organizer_tracking_settings_callable_payload.g.dart` |
@@ -2340,6 +2354,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
+| AdminSendCatchWhatsappReplyCallableRequest | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_send_catch_whatsapp_reply_callable_request.g.dart` |
 | GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |
 | SetOrganizerTrackingSettingsCallableRequest | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_organizer_tracking_settings_callable_request.g.dart` |
 | ReadPublicOrganizerTrackingSettingsCallableRequest | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/read_public_organizer_tracking_settings_callable_request.g.dart` |
