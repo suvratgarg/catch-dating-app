@@ -39,6 +39,7 @@ jobs:
     timeout-minutes: 3
     outputs:
       admitted: ${{ github.event_name != 'pull_request' || steps.check.outputs.admitted == 'true' }}
+      reason_code: ${{ steps.check.outputs.reason_code }}
     steps:
       - name: Preserve non-PR validation
         if: ${{ github.event_name != 'pull_request' }}
@@ -685,9 +686,10 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           ADMITTED: ${{ needs.admission.outputs.admitted }}
+          REASON_CODE: ${{ needs.admission.outputs.reason_code }}
         run: |
           if [[ "$ADMITTED" != "true" ]]; then
-            echo "Awaiting admission: full validation did not run."
+            echo "Admission status: ${REASON_CODE:-unavailable}. Full validation did not run."
             exit 1
           fi
       - name: Checkout admission verifier
