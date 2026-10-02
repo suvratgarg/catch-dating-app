@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
+import {validateOrganizerDocument} from "../contracts/generated/schema_contract_validators.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
@@ -16,6 +17,7 @@ import {
 import {
   actionSummary,
   buildClaimTargetSyncActions,
+  isOwnerBoundClubDoc,
   summarizeActions,
 } from "./lib/claim_target_sync_core.mjs";
 
@@ -170,17 +172,27 @@ function writeReadinessReceipt({args, actions, planPath, projectId, summary}) {
   }
 }
 
-function loadPlan(planPath) {
+export function loadPlan(planPath) {
   const plan = JSON.parse(fs.readFileSync(planPath, "utf8"));
   if (plan.schemaVersion !== 1 || !Array.isArray(plan.targets)) {
     throw new Error(`Unsupported claim target plan: ${relativeToRepo(planPath)}`);
   }
   for (const target of plan.targets) {
-    if (!target.path?.startsWith("clubs/")) {
+    const canonical = target.path === `organizers/${target.entityId}`;
+    const compatibility = target.path === `clubs/${target.entityId}`;
+    if (typeof target.entityId !== "string" || !target.entityId || target.entityId.includes("/") || (!canonical && !compatibility)) {
       throw new Error(`Invalid claim target path: ${target.path}`);
     }
-    if (!target.clubDocument || typeof target.clubDocument !== "object") {
-      throw new Error(`Missing clubDocument for ${target.path}`);
+    const document = canonical ? target.organizerDocument : target.clubDocument;
+    if (!document || typeof document !== "object" || Array.isArray(document)) {
+      throw new Error(`Missing ${canonical ? "organizerDocument" : "clubDocument"} for ${target.path}`);
+    }
+    if (canonical && !validateOrganizerDocument(document)) {
+      throw new Error(`${target.path}: organizerDocument must match the canonical contract.`);
+    }
+    if (canonical && (isOwnerBoundClubDoc(document) ||
+        document.ownership?.state !== "programmatic" || document.claim?.state !== "unclaimed")) {
+      throw new Error(`${target.path}: canonical migration targets must be unclaimed and owner-free.`);
     }
     if (target.claimState !== "unclaimed") {
       throw new Error(`${target.path}: claim targets must start unclaimed.`);
@@ -312,7 +324,10 @@ function printHelp() {
 
 Syncs approved organizer-intake claim targets from
 tool/organizer_intake/generated/organizer_claim_targets.json into Firestore
-clubs/{entityId}. Missing docs are created. Existing unclaimed or claim-pending
+organizers/{entityId} when the reviewed plan carries organizerDocument.
+Legacy clubs/{entityId} plans remain explicit compatibility output only.
+This retired migration tool is not the Firestore-native publication pipeline.
+Missing docs are created. Existing unclaimed or claim-pending
 docs only receive public-field refreshes. Owner-bound docs are skipped.
 
 Options:

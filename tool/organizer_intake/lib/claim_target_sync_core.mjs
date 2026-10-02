@@ -38,7 +38,7 @@ export function buildClaimTargetSyncActions(targets, existingDocs) {
         status: "create",
         merge: false,
         reason: "missing_claim_target",
-        writeData: target.clubDocument,
+        writeData: target.organizerDocument ?? target.clubDocument,
       };
     }
     if (isOwnerBoundClubDoc(existing)) {
@@ -51,7 +51,7 @@ export function buildClaimTargetSyncActions(targets, existingDocs) {
         writeData: null,
       };
     }
-    const patch = publicRefreshPatch(target.clubDocument);
+    const patch = publicRefreshPatch(target.organizerDocument ?? target.clubDocument);
     const changedPatch = changedPublicRefreshPatch(patch, existing);
     if (Object.keys(changedPatch).length === 0) {
       return {
@@ -119,7 +119,11 @@ export function buildClaimTargetSyncPreview({
 }
 
 export function isOwnerBoundClubDoc(doc) {
-  return typeof doc.ownerUserId === "string" ||
+  return doc.ownership?.state === "userCreated" ||
+    Boolean(doc.hostUserIds?.length || doc.hostProfiles?.length ||
+      doc.ownership?.ownerUserId || doc.ownership?.primaryHostUserId ||
+      doc.ownership?.hostUserIds?.length) ||
+    typeof doc.ownerUserId === "string" ||
     typeof doc.hostUserId === "string" ||
     doc.ownership?.state === "claimed" ||
     doc.ownership?.state === "transferred" ||
