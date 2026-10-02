@@ -87,6 +87,45 @@ void main() {
     },
   );
 
+  testWidgets('local chosen phone requires explicit international review', (
+    tester,
+  ) async {
+    final controller = PhoneImportController(
+      picker: _Picker([
+        PhoneContactPickerResult(PhoneContactPickerStatus.selected, [
+          PhoneContact(
+            localId: 'synthetic-local',
+            displayName: 'Synthetic guest',
+            numbers: const [
+              PhoneContactNumber(value: '202-555-0100', label: 'Mobile'),
+            ],
+          ),
+        ]),
+      ]),
+    );
+    addTearDown(controller.dispose);
+    await _mount(tester, controller);
+    await _tap(tester, const ValueKey('phone-import-pick'));
+    final id = controller.entries.single.id;
+    await _tap(tester, const ValueKey('phone-import-sharing'));
+    expect(controller.canReview, isFalse);
+    await _edit(
+      tester,
+      ValueKey('phone-import-international-$id'),
+      '+1 202 555 0100',
+    );
+    expect(controller.entries.single.phoneForImport, '+12025550100');
+    expect(controller.sharingConfirmed, isFalse);
+    await _tap(tester, const ValueKey('phone-import-sharing'));
+    expect(controller.canReview, isTrue);
+    await _edit(
+      tester,
+      ValueKey('phone-import-international-$id'),
+      '+0 202 555 0100',
+    );
+    expect(controller.canReview, isFalse);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'no-number contacts require removal; household members need no phone',
     (tester) async {

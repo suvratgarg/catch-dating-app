@@ -197,6 +197,27 @@ void main() {
     },
   );
   test(
+    'local number needs explicit country review and re-selection clears it',
+    () async {
+      await select([
+        contact('local', 'Synthetic guest', ['202-555-0100', '202-555-0101']),
+      ]);
+      final id = controller.entries.single.id;
+      controller.choosePhone(id, '202-555-0100');
+      controller.confirmSharing(true);
+      expect(controller.canReview, false);
+      controller.reviewInternationalPhone(id, '+1 (202) 555-0100');
+      expect(controller.sharingConfirmed, false);
+      controller.confirmSharing(true);
+      expect(controller.canReview, true);
+      expect(controller.entries.single.phoneForImport, '+12025550100');
+      controller.choosePhone(id, '202-555-0101');
+      expect(controller.entries.single.reviewedInternationalPhone, isNull);
+      expect(controller.entries.single.phoneForImport, isNull);
+      expect(controller.sharingConfirmed, false);
+    },
+  );
+  test(
     'invalid number cannot be substituted into a selected contact',
     () async {
       await select([

@@ -30,7 +30,7 @@ class PhoneImportController extends ChangeNotifier {
   Set<String> get sharedPhones {
     final keys = <String, int>{};
     for (final entry in _entries) {
-      if (entry.selectedPhone case final value?) {
+      if ((entry.phoneForImport ?? entry.selectedPhone) case final value?) {
         final key = phoneSelectionKey(value);
         keys[key] = (keys[key] ?? 0) + 1;
       }
@@ -130,9 +130,16 @@ class PhoneImportController extends ChangeNotifier {
   void choosePhone(String id, String? phone) => _update(
     id,
     (entry) => phone == null || entry.numbers.any((n) => n.value == phone)
-        ? entry.copyWith(selectedPhone: phone, clearPhone: phone == null)
+        ? entry.copyWith(
+            selectedPhone: phone,
+            clearPhone: phone == null,
+            clearReviewedPhone: true,
+          )
         : entry,
   );
+  void reviewInternationalPhone(String id, String value) =>
+      _update(id, (entry) => entry.copyWith(reviewedInternationalPhone: value));
+
   void assignFamilySide(String id, PhoneImportFamilySide side) =>
       _update(id, (entry) => entry.copyWith(familySide: side));
   void assignHousehold(String id, String value) =>

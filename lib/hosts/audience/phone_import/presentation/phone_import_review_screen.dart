@@ -136,11 +136,15 @@ class PhoneImportReviewScreen extends StatelessWidget {
                     sharedPhone:
                         entry.selectedPhone != null &&
                         sharedPhones.contains(
-                          phoneSelectionKey(entry.selectedPhone!),
+                          phoneSelectionKey(
+                            entry.phoneForImport ?? entry.selectedPhone!,
+                          ),
                         ),
                     onRename: (value) => controller.rename(entry.id, value),
                     onChoosePhone: (value) =>
                         controller.choosePhone(entry.id, value),
+                    onInternationalPhoneChanged: (value) =>
+                        controller.reviewInternationalPhone(entry.id, value),
                     onFamilySideChanged: (value) =>
                         controller.assignFamilySide(entry.id, value),
                     onHouseholdChanged: (value) =>

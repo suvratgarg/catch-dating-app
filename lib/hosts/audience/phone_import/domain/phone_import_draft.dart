@@ -15,6 +15,7 @@ class PhoneImportEntry {
     this.household = '',
     this.source = PhoneImportEntrySource.systemContactPicker,
     this.originalName = '',
+    this.reviewedInternationalPhone,
   }) : numbers = List.unmodifiable(numbers);
   final String id;
   final String displayName;
@@ -24,6 +25,16 @@ class PhoneImportEntry {
   final String household;
   final PhoneImportEntrySource source;
   final String originalName;
+  final String? reviewedInternationalPhone;
+  String? get phoneForImport {
+    final raw = reviewedInternationalPhone ?? selectedPhone;
+    if (raw == null) return null;
+    final normalized = raw.replaceAll(RegExp(r'[\s().-]'), '');
+    return RegExp(r'^\+[1-9][0-9]{1,14}$').hasMatch(normalized)
+        ? normalized
+        : null;
+  }
+
   bool get nameEdited =>
       source == PhoneImportEntrySource.systemContactPicker &&
       displayName != originalName;
@@ -31,12 +42,15 @@ class PhoneImportEntry {
       displayName.trim().isNotEmpty &&
       (source == PhoneImportEntrySource.manualHouseholdMember ||
           (selectedPhone != null &&
-              numbers.any((number) => number.value == selectedPhone)));
+              numbers.any((number) => number.value == selectedPhone) &&
+              phoneForImport != null));
 
   PhoneImportEntry copyWith({
     String? displayName,
     String? selectedPhone,
     bool clearPhone = false,
+    String? reviewedInternationalPhone,
+    bool clearReviewedPhone = false,
     PhoneImportFamilySide? familySide,
     String? household,
     List<PhoneContactNumber>? numbers,
@@ -49,6 +63,9 @@ class PhoneImportEntry {
     household: household ?? this.household,
     source: source,
     originalName: originalName,
+    reviewedInternationalPhone: clearReviewedPhone
+        ? null
+        : reviewedInternationalPhone ?? this.reviewedInternationalPhone,
   );
 }
 

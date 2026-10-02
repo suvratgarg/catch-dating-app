@@ -18,6 +18,7 @@ class PhoneImportGuestSection extends StatefulWidget {
     required this.onFamilySideChanged,
     required this.onHouseholdChanged,
     required this.onRemove,
+    this.onInternationalPhoneChanged,
   });
 
   final PhoneImportEntry entry;
@@ -29,6 +30,7 @@ class PhoneImportGuestSection extends StatefulWidget {
   final ValueChanged<PhoneImportFamilySide> onFamilySideChanged;
   final ValueChanged<String> onHouseholdChanged;
   final VoidCallback onRemove;
+  final ValueChanged<String>? onInternationalPhoneChanged;
 
   @override
   State<PhoneImportGuestSection> createState() =>
@@ -37,6 +39,12 @@ class PhoneImportGuestSection extends StatefulWidget {
 
 class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
   late final _name = TextEditingController(text: widget.entry.displayName);
+  late final _internationalPhone = TextEditingController(
+    text:
+        widget.entry.reviewedInternationalPhone ??
+        widget.entry.phoneForImport ??
+        '',
+  );
   late final _household = TextEditingController(text: widget.entry.household);
 
   @override
@@ -44,6 +52,12 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
     super.didUpdateWidget(oldWidget);
     if (_name.text != widget.entry.displayName) {
       _name.text = widget.entry.displayName;
+    }
+    if (oldWidget.entry.selectedPhone != widget.entry.selectedPhone) {
+      _internationalPhone.text =
+          widget.entry.reviewedInternationalPhone ??
+          widget.entry.phoneForImport ??
+          '';
     }
     if (_household.text != widget.entry.household) {
       _household.text = widget.entry.household;
@@ -54,6 +68,7 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
   void dispose() {
     _name.dispose();
     _household.dispose();
+    _internationalPhone.dispose();
     super.dispose();
   }
 
@@ -133,6 +148,25 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
             helperTone: widget.sharedPhone
                 ? CatchFieldSupportRowTone.brand
                 : CatchFieldSupportRowTone.neutral,
+          ),
+        if (!manual &&
+            entry.selectedPhone != null &&
+            widget.onInternationalPhoneChanged != null)
+          CatchField.input(
+            key: ValueKey('phone-import-international-${entry.id}'),
+            copy: copy,
+            title: 'International number to share',
+            controller: _internationalPhone,
+            keyboardType: TextInputType.phone,
+            contractExemption:
+                'Explicit country-code review of the chosen phone; no country or ownership is inferred.',
+            states: states,
+            onChanged: widget.onInternationalPhoneChanged,
+            helperText:
+                'Include + and the country code. Check this is the chosen contact number.',
+            errorText: entry.phoneForImport == null
+                ? 'Enter the chosen number with + and its country code.'
+                : null,
           ),
         CatchField<PhoneImportFamilySide>.select(
           key: ValueKey('phone-import-family-${entry.id}'),
