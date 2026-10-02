@@ -24,6 +24,8 @@ Future<void> pumpAuthScreen(
   required ProviderContainer container,
   ThemeMode themeMode = ThemeMode.light,
   AppRole? appRole,
+  double textScale = 1,
+  double keyboardInset = 0,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -32,6 +34,13 @@ Future<void> pumpAuthScreen(
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: themeMode,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            viewInsets: EdgeInsets.only(bottom: keyboardInset),
+          ),
+          child: child!,
+        ),
         home: AuthScreen(appRole: appRole),
       ),
     ),
@@ -41,6 +50,62 @@ Future<void> pumpAuthScreen(
 
 void main() {
   group('AuthScreen', () {
+    for (final role in [AppRole.host, AppRole.consumer]) {
+      for (final theme in [ThemeMode.light, ThemeMode.dark]) {
+        testWidgets(
+          'large text keeps ${role.name} auth usable in ${theme.name}',
+          (tester) async {
+            tester.view.devicePixelRatio = 1;
+            tester.view.physicalSize = const Size(320, 700);
+            addTearDown(tester.view.resetDevicePixelRatio);
+            addTearDown(tester.view.resetPhysicalSize);
+            final repository = FakeAuthRepository()
+              ..onVerifyPhoneNumber =
+                  ({
+                    required verificationCompleted,
+                    required verificationFailed,
+                    required codeSent,
+                    required codeAutoRetrievalTimeout,
+                  }) => codeSent('large-text-verification', 11);
+            final container = _authControllerContainer(repository);
+            addTearDown(repository.dispose);
+            addTearDown(container.dispose);
+            await pumpAuthScreen(
+              tester,
+              container: container,
+              appRole: role,
+              themeMode: theme,
+              textScale: 2,
+              keyboardInset: 260,
+            );
+            await tester.pump(CatchMotion.authContentEntrance);
+            expect(tester.takeException(), isNull);
+            await tester.ensureVisible(find.byKey(AuthFormKeys.phoneField));
+            await tester.enterText(
+              find.descendant(
+                of: find.byKey(AuthFormKeys.phoneField),
+                matching: find.byType(EditableText),
+              ),
+              '9999999999',
+            );
+            await tester.pump();
+            await tester.ensureVisible(find.byKey(AuthFormKeys.sendCode));
+            await tester.tap(find.byKey(AuthFormKeys.sendCode));
+            await pumpFeatureUi(tester);
+            expect(container.read(authControllerProvider).step, AuthStep.otp);
+            expect(tester.takeException(), isNull);
+            await tester.ensureVisible(find.byKey(AuthFormKeys.changeNumber));
+            await tester.tap(find.byKey(AuthFormKeys.changeNumber));
+            await pumpFeatureUi(tester);
+            expect(container.read(authControllerProvider).step, AuthStep.phone);
+            expect(find.text('+91'), findsOneWidget);
+            expect(tester.takeException(), isNull);
+            await tester.pumpWidget(const SizedBox.shrink());
+          },
+        );
+      }
+    }
+
     testWidgets('Host uses the selected inline phone presentation', (
       tester,
     ) async {
