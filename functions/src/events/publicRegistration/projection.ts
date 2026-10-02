@@ -25,13 +25,17 @@ import {
  */
 export async function projectPublicPayment(input: {
   db: FirebaseFirestore.Firestore;
+  tx?: FirebaseFirestore.Transaction;
+  eventId?: string;
+  organizerId?: string;
+  includeCheckout?: boolean;
   paymentId: string;
   uid: string;
   nowMillis: number;
   loadCurrentAuthUser?: LoadRecipientAuth;
 }): Promise<Pick<Response, "payment" | "admission">> {
   const {db, paymentId, uid, nowMillis} = input;
-  return db.runTransaction(async (tx) => {
+  const read = async (tx: FirebaseFirestore.Transaction) => {
     const p = parsePublicPayment(
       (
         await tx.get(
@@ -40,12 +44,16 @@ export async function projectPublicPayment(input: {
       ).data(),
       paymentId,
     );
-    if (p.recipientUid !== uid) {
+    if (p.recipientUid !== uid ||
+        input.eventId !== undefined && p.eventId !== input.eventId ||
+        input.organizerId !== undefined &&
+          p.organizerId !== input.organizerId) {
       throw new HttpsError("permission-denied", "Payment unavailable.");
     }
     let checkout: NonNullable<Response["payment"]>["checkout"] = null;
     let admission: Response["admission"] = null;
     if (
+      input.includeCheckout !== false &&
       ["checkoutReady", "failed"].includes(p.status) &&
       !p.capturedAt &&
       !p.admissionReceiptId &&
@@ -139,7 +147,8 @@ export async function projectPublicPayment(input: {
       payment: paymentProjection(p, paymentId, checkout, cancellationQuote),
       admission,
     };
-  });
+  };
+  return input.tx ? read(input.tx) : db.runTransaction(read);
 }
 
 function paymentProjection(

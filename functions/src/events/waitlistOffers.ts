@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   CallableRequest,
@@ -195,6 +197,7 @@ export async function createEventWaitlistOffersHandler(
       {nowMillis}
     );
 
+    const activePeerIds = participantUids(activeParticipations);
     const targetRows = await Promise.all(userIds.map(async (uid) => {
       const participationRef = db
         .collection("eventParticipations")
@@ -207,11 +210,21 @@ export async function createEventWaitlistOffersHandler(
         tx.get(db.collection("users").doc(uid)),
         tx.get(offerRef),
       ]);
+      const participation = participationSnap.data();
+      const candidate = participation?.status === "waitlisted" &&
+        participation.hostApprovalStatus !== "pending" && userSnap.exists &&
+        !isLiveOffer(offerSnap.data(), nowMillis);
+      const [blocked, hasActiveCommunityMembership] = candidate ?
+        await Promise.all([
+          hasBlockingRelationshipInTransaction(tx, db, uid, activePeerIds),
+          hasEventCommunityMembership({db, tx,
+            organizerId: event.organizerId ?? event.clubId, uid, policy,
+            nowMillis}),
+        ]) : [false, false];
       return {uid, participationRef, participationSnap, userSnap, offerRef,
-        offerSnap};
+        offerSnap, blocked, hasActiveCommunityMembership};
     }));
 
-    const activePeerIds = participantUids(activeParticipations);
     const expiresInMinutes = offerWindowMinutes(event, payload);
     const expiresAtMillis = nowMillis + expiresInMinutes * 60 * 1000;
     const expiresAt = deps.timestampFromMillis(expiresAtMillis);
@@ -257,12 +270,7 @@ export async function createEventWaitlistOffersHandler(
         });
         continue;
       }
-      if (await hasBlockingRelationshipInTransaction(
-        tx,
-        db,
-        row.uid,
-        activePeerIds
-      )) {
+      if (row.blocked) {
         result.skippedCount += 1;
         result.offers.push({
           uid: row.uid,
@@ -282,6 +290,7 @@ export async function createEventWaitlistOffersHandler(
         assertPolicyAllowsSignup({
           policy,
           cohortId: cohortAtOffer,
+          hasActiveCommunityMembership: row.hasActiveCommunityMembership,
           roster: projectedRoster,
           hasValidInvite: true,
           hasHostApproval: true,
@@ -486,6 +495,10 @@ export async function acceptEventWaitlistOfferHandler(
       policy,
       cohortId,
       roster,
+      hasActiveCommunityMembership: await hasEventCommunityMembership({
+        db, tx, organizerId: event.organizerId ?? event.clubId, uid, policy,
+        nowMillis,
+      }),
       hasValidInvite: true,
       hasHostApproval: true,
     });

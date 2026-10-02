@@ -70,6 +70,10 @@
         "email",
         "none"
       ]
+    },
+    "fieldChoices": {
+      "$ref": "../shared/workspace_common.schema.json#/definitions/fieldSelections",
+      "description": "Explicit same-program, same-household field assertions chosen under expectedRevision."
     }
   }
 }

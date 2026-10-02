@@ -23,6 +23,42 @@ const schemaSpecs = [
   {"name": "OrganizerTrackingSettingsDocument", "source": "firestore/organizer_tracking_settings.schema.json", "typeOutput": "functions/src/shared/generated/organizerTrackingSettingsDocument.ts"},
 
   {
+    name: "OrganizerCommunityMembershipDocument",
+    source: "firestore/organizer_community_memberships.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCommunityMembershipDocument.ts",
+  },
+  {
+    name: "OrganizerCommunityMembershipDecisionDocument",
+    source: "firestore/organizer_community_membership_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCommunityMembershipDecisionDocument.ts",
+  },
+  {
+    name: "DecideOrganizerCommunityMembershipCallablePayload",
+    source: "callables/decide_organizer_community_membership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/decideOrganizerCommunityMembershipCallablePayload.ts",
+  },
+  {
+    name: "DecideOrganizerCommunityMembershipCallableResponse",
+    source: "callable_responses/organizer_community_membership_decision_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/decideOrganizerCommunityMembershipCallableResponse.ts",
+  },
+  {
+    name: "WorkspaceFieldAssertionDocument",
+    source: "firestore/workspace_field_assertions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/workspaceFieldAssertionDocument.ts",
+  },
+  {
+    name: "WorkspaceFieldDecisionDocument",
+    source: "firestore/workspace_field_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/workspaceFieldDecisionDocument.ts",
+  },
+  {
     name: "CatchWhatsappWebhookEventDocument",
     source: "firestore/catch_whatsapp_webhook_events.schema.json",
     typeOutput: "functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts",
@@ -1233,6 +1269,26 @@ const schemaSpecs = [
     name: "ClaimParticipantFormProfileCallableResponse",
     source: "callable_responses/claim_participant_form_profile_response.schema.json",
     typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
+  },
+  {
+    name: "ListParticipantActivityCallablePayload",
+    source: "callables/list_participant_activity_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantActivityCallablePayload.ts",
+  },
+  {
+    name: "ListParticipantActivityCallableResponse",
+    source: "callable_responses/list_participant_activity_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantActivityCallableResponse.ts",
+  },
+  {
+    name: "GetParticipantActivityCallablePayload",
+    source: "callables/get_participant_activity_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantActivityCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantActivityCallableResponse",
+    source: "callable_responses/get_participant_activity_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantActivityCallableResponse.ts",
   },
   {
     name: "ListParticipantFormProfilesCallablePayload",

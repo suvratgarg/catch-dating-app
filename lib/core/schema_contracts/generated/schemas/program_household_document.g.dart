@@ -242,5 +242,56 @@ const schemaProgramHouseholdDocumentSchema = <String, Object?>{
       ],
       'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
     },
+    'fieldSelections': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'phoneE164': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'email': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+      },
+    },
+    'fieldConflicts': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+        'phoneE164': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+        'email': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+      },
+    },
   },
 };

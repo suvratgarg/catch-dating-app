@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.157.1
-updated: 2026-09-28
+version: 1.160.0
+updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -3036,6 +3036,30 @@ unavailable; account deletion removes the pointers. Claimed profile updates,
 image transfer, participant-owned cards and explicit event sharing are separate
 operations and must not infer permission from these prepared pointers.
 
+`listParticipantActivity` and `getParticipantActivity` return only the
+authenticated account’s own submitted form metadata, independent of profile
+claims or verified-phone grants. The point and page adapters share exact UID,
+response/version scope, notice, captured identity, timestamps, withdrawal and
+account-deletion proof. Lists query `respondentUid`, scan at most 31 rows in
+one read transaction, cache each immutable version within that transaction,
+and advance subject/source-bound cursors across omitted sources. Answers,
+contact endpoints and Host notes are excluded; a configured event target
+does not prove booking or admission. Anonymous responses remain unowned.
+
+`beginOrganizerFormResponse` may receive an explicit `reuseResponseId` for
+compatible organizer-only answers from the authenticated respondent’s own
+submitted response to the same form. It shares the account source proof inside
+the draft transaction, including exact organizer/form/version, notice,
+withdrawal and deletion checks, before any draft write. Suggestions require
+participant-review prefill on both immutable questions, unchanged semantic
+identity and destination, and the same current answer validator used by manual
+edits. Changed notices, file/signature/acknowledgement questions and unrelated
+forms do not reuse answers. `prefillSource` identifies the immutable origin;
+answers, consent and messaging choices remain unaccepted until reviewed.
+Historical submissions and versions remain unchanged. Portable profile intake
+keeps its existing separate rules; no organizer-answer cache or new person root
+is introduced.
+
 `getParticipantFormProfile` resolves only the verified owner’s designated fields
 and returns current editable core values, core/intake revisions, and selected
 private-card question IDs. `listParticipantFormProfiles` queries the verified
@@ -3249,6 +3273,79 @@ return a bounded JPEG preview rather than a reusable download URL. A second
 transaction rechecks all permissions and selected source revisions after image
 processing. Selection and viewing interfaces must discard stale cached values
 when the signed-in account changes or current permission fails.
+
+### Workspace Field Acquisitions And Community Membership
+
+`workspaceFieldAssertions` and `workspaceFieldDecisions` are private,
+server-owned evidence for the typed `program | community` workspace reference.
+The implemented adapters acquire program guest/household name, phone and email
+from explicit manual writes and stable manifest rows. Organizer, program,
+relationship, source/version, actor and acquisition time are exact; a contact
+pointer, endpoint or Auth UID never supplies field provenance or project access.
+Current guest/household values and selected assertion pointers are projections.
+Imports preserve a valid selected value and bounded alternatives; explicit
+coordinator choices append a revision-bound decision without erasing history.
+Missing, foreign or corrupt evidence restricts reads and sends; no private
+Catch-profile fallback is used. Community/form acquisition adapters remain open.
+
+Manifest preview and each commit chunk require one program-wide
+`guestRelations` assignment, or existing manager/coordinator authority. Separate
+station assignments cannot combine into whole-program access. An explicit
+program grant can authorize a client/parent; a label or organizer follow cannot.
+Manual upserts/conflict choices remain coordinator-owned. Campaign final claims
+recheck selected phone proof, consent and household binding after reservation;
+exact program retention removes both field ledgers and their projection pointers.
+Deleting an acquisition/review actor does not erase another guest's evidence.
+
+`organizerCommunityMemberships` holds one current active/revoked organizer/UID
+grant with revision and exact immutable last-decision pointer.
+`organizerCommunityMembershipDecisions` retains actor, reason, approving source,
+previous/resulting revisions and exact request identity. The explicit
+`decideOrganizerCommunityMembership` callable requires current manager authority
+inside the transaction. A new grant consumes the exact approved native generic
+organizer-target application and UID-owned submitted response/version. Legacy
+application, imported/manual and review-exemption adapters remain open.
+An old grant replay reports its original decision and current state; it cannot
+restore authority after revoke. Following and form-answer access stay independent.
+
+Native booking/checkout, waitlist, review approval, offers and free promotion
+read the current grant and immutable decision for membership-gated events.
+Membership never waives event review, invitation, capacity, cohort/ratio or
+payment. `eventParticipations.communityMembershipAtSignup` retains the grant
+revision/decision used at admission. Revocation fences new bookings; an existing
+signed-up/attended replay and historical paid admission remain intact, with
+cancellation/refund owned separately. Public OTP/form-offer and Cross Paths
+membership-gated continuations remain closed until their owners consume the same
+current authority. The private viewer read source is described below; its callable and client
+integration remain pending.
+
+Account deletion's processing tombstone fences new decisions; cleanup deletes
+membership edges and decision receipts by subject `uid`. Decisions for other
+subjects retain their actor/source proof when their reviewer deletes an account.
+Direct client get/list/create/update/delete is denied for all four collections.
+
+### Authenticated Event Viewer Read Source
+
+`readEventViewerStateSource` is an internal read adapter, not yet an exported
+callable. One transaction reads an Auth-derived UID's public event, deletion
+state, native participation, current grant, review, policy, capacity/holds,
+schedule and seat-identity proof. Membership, review, future eligibility,
+payment, admission and attendance remain separate facts. It shares
+`signupPolicyDecision`, canonical schedule reads and the existing seat planner;
+it never applies plans, creates identity aliases, reserves seats or sends OTPs.
+A native payment pointer does not establish payment. An optional owned public
+payment uses `projectPublicPayment` and its immutable receipt/current roster
+proof in the same transaction, with checkout credentials suppressed. Public
+paid admission requires neither a Consumer profile nor native participation.
+
+Each candidate query reads at most 101 rows; an incomplete source closes future
+booking. Private visibility, external continuations and imported-guest linkage
+need their owning adapters and remain unavailable here. Admission history
+survives revoked membership, while new booking still checks current profile,
+review, invite, capacity, cohort/ratio and schedule. Policy and inventory
+revisions describe an observation, not a reservation or later write authority.
+The final native booking transaction also rechecks persisted host review,
+preventing a stale preflight approval from admitting a declined request.
 
 ### Private Program Functions And Guests
 

@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "node:crypto";
@@ -82,6 +84,8 @@ function seedProgram(db: FakeFirestore): void {
     primaryPhoneE164: "+911234567001", memberGuestIds: ["g1"],
     messagingConsent: {granted: true}, revision: 4,
   });
+  const acquired = seedWorkspaceFieldAssertions(Object.fromEntries(db.docs));
+  for (const [path, doc] of Object.entries(acquired)) db.setDoc(path, doc);
 }
 
 async function deliver(db: FakeFirestore) {

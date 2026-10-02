@@ -74,6 +74,25 @@ export const upsertProgramHouseholdCallablePayloadSchema: Record<string, unknown
         "email",
         "none"
       ]
+    },
+    "fieldChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Explicit same-program, same-household field assertions chosen under expectedRevision."
     }
   }
 } as const;

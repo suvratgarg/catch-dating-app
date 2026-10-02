@@ -141,6 +141,12 @@
   "anonymizedAt": {
    "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
    "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+  },
+  "fieldSelections": {
+   "$ref": "../shared/workspace_common.schema.json#/definitions/fieldSelections"
+  },
+  "fieldConflicts": {
+   "$ref": "../shared/workspace_common.schema.json#/definitions/fieldConflicts"
   }
  }
 }

@@ -1,3 +1,5 @@
+import {readParticipantFormResponseProof} from
+  "../profiles/participantFormActivitySource";
 import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget} from
   "./organizerFormTarget";
 import {formMessagingOffer, formMessagingChoices,
@@ -109,7 +111,8 @@ import {answersForSubmission, reachableFormSections}
   from "./organizerFormLogic";
 import {incrementOrganizerFormFunnel} from "./organizerFormAggregates";
 import {canonicalCityMarketId, publicFormCityOptions,
-  publicFormPrefillSuggestions, reusablePublicFormFields} from
+  publicFormPrefillSuggestions, reusablePublicFormFields,
+  organizerFormAnswerSuggestions} from
   "./organizerFormPublicFields";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
@@ -194,7 +197,7 @@ export async function beginOrganizerFormResponseHandler(
     validateBeginOrganizerFormResponseCallablePayload,
     (value) => normalizePayloadStrings(value, {
       stringFields: ["publicFormId", "requestId"],
-      nullableStringFields: ["sourceToken"],
+      nullableStringFields: ["sourceToken", "reuseResponseId"],
     })
   );
   const db = deps.firestore();
@@ -228,6 +231,40 @@ export async function beginOrganizerFormResponseHandler(
   const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
   const result = await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(draftRef);
+    const reusedSuggestions: AnswerMap = {};
+    let prefillSource: BeginOrganizerFormResponseCallableResponse[
+      "prefillSource"];
+    if (data.reuseResponseId) {
+      const proof = identity.uid ? await readParticipantFormResponseProof({
+        db, tx, uid: identity.uid, responseId: data.reuseResponseId,
+        nowMillis: deps.timestamp().toMillis(),
+      }) : null;
+      if (!proof || proof.source.organizerId !== resolved.form.organizerId ||
+          proof.source.formId !== resolved.formId) {
+        throw new HttpsError("not-found", "Form response unavailable.");
+      }
+      const candidates = organizerFormAnswerSuggestions({
+        sourceDefinition: proof.version.definition,
+        targetDefinition: resolved.version.definition,
+        answers: proof.response.answers,
+      });
+      // Reuse calls the same current answer validator as manual draft edits.
+      for (const [questionId, value] of Object.entries(candidates)) {
+        try {
+          validateAnswerShape(resolved.version.definition,
+            {[questionId]: value}, false);
+          reusedSuggestions[questionId] = value;
+        } catch (error) {
+          if (!(error instanceof HttpsError) ||
+              error.code !== "invalid-argument") throw error;
+        }
+      }
+      if (Object.keys(reusedSuggestions).length > 0) {
+        prefillSource = {responseId: proof.source.responseId,
+          versionId: proof.source.versionId,
+          submittedAtMillis: Math.trunc(proof.source.submittedAtMillis)};
+      }
+    }
     await requireOrganizerFormEventTarget({db, tx,
       organizerId: resolved.form.organizerId,
       kind: resolved.version.definition.defaultTargetKind,
@@ -260,7 +297,8 @@ export async function beginOrganizerFormResponseHandler(
           "This response draft has expired. Start a new response."
         );
       }
-      return {draft: existing, created: false};
+      return {draft: existing, created: false, reusedSuggestions,
+        prefillSource};
     }
     const now = deps.timestamp();
     const created: OrganizerFormResponseDraftDocument = {
@@ -290,7 +328,7 @@ export async function beginOrganizerFormResponseHandler(
         startCount: admin.firestore.FieldValue.increment(1),
       });
     }
-    return {draft: created, created: true};
+    return {draft: created, created: true, reusedSuggestions, prefillSource};
   });
   if (result.created) {
     await incrementOrganizerFormFunnel({
@@ -324,7 +362,8 @@ export async function beginOrganizerFormResponseHandler(
     form: resolved.projection,
     revision: draft.revision,
     answers: draft.answers,
-    prefillSuggestions,
+    prefillSuggestions: {...prefillSuggestions, ...result.reusedSuggestions},
+    ...(result.prefillSource ? {prefillSource: result.prefillSource} : {}),
     consentAccepted: draft.consentAccepted,
     ...(draft.messagingDecision ?
       {messagingChoices: formMessagingChoices(draft.messagingDecision)} : {}),

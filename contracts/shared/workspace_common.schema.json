@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/workspace_common.schema.json",
+  "title": "WorkspaceCommon",
+  "description": "Existing-root workspace references and bounded field projection pointers. Navigation metadata never grants access.",
+  "definitions": {
+    "workspaceRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "program"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "community"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        }
+      ]
+    },
+    "fieldSelections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      }
+    },
+    "fieldConflicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "phoneE164": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "email": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "fieldState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "assertionId",
+        "sourceKind",
+        "alternativeAssertionIds",
+        "alternatives"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "available",
+            "cleared",
+            "unknown",
+            "restricted"
+          ]
+        },
+        "assertionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "sourceKind": {
+          "enum": [
+            "manualEntry",
+            "manifestRow",
+            null
+          ]
+        },
+        "alternativeAssertionIds": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "alternatives": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "assertionId",
+              "value",
+              "sourceKind",
+              "sourceId",
+              "sourceVersion",
+              "observedAtMillis"
+            ],
+            "properties": {
+              "assertionId": {
+                "type": "string",
+                "pattern": "^wfa_[a-f0-9]{64}$"
+              },
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 320
+              },
+              "sourceKind": {
+                "enum": [
+                  "manualEntry",
+                  "manifestRow"
+                ]
+              },
+              "sourceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "sourceVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "observedAtMillis": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      }
+    },
+    "fieldAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "phoneE164",
+        "email"
+      ],
+      "properties": {
+        "displayName": {
+          "$ref": "#/definitions/fieldState"
+        },
+        "phoneE164": {
+          "$ref": "#/definitions/fieldState"
+        },
+        "email": {
+          "$ref": "#/definitions/fieldState"
+        }
+      }
+    }
+  }
+}

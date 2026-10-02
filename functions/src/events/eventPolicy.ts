@@ -6,6 +6,9 @@ import type {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
+import {requiresCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
+
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
   womenInterestedInMen: "womenInterestedInMen",
@@ -369,26 +372,80 @@ export function quoteAttendeeCancellation(params: {
   };
 }
 
-export function assertPolicyAllowsSignup(params: {
+/** Entitlement never waives event review, invitation, inventory or payment. */
+export function assertPolicyAllowsMembership(params: {
+  policy: EventPolicyBundleDocument;
+  hasActiveCommunityMembership?: boolean;
+}): void {
+  if (!membershipAllowsSignup(params)) {
+    throw new HttpsError("failed-precondition",
+      signupRestrictionCopy.membershipRequired);
+  }
+}
+
+export interface SignupPolicyInput {
   policy: EventPolicyBundleDocument;
   cohortId: string;
   roster: EventRosterSnapshot;
   hasValidInvite?: boolean;
   hasHostApproval?: boolean;
+  hasActiveCommunityMembership?: boolean;
   admissionMode?: "general" | "crossPathsPair";
-}) {
+}
+
+export type SignupPolicyRestriction =
+  | "membershipRequired"
+  | "inviteRequired"
+  | "reviewRequired"
+  | "full"
+  | "pairCapacityUnavailable"
+  | "generalCapacityUnavailable"
+  | "cohortCapacityUnavailable"
+  | "outOfRatioReviewRequired"
+  | "balanceUnavailable";
+
+export type SignupPolicyDecision = {allowed: true} |
+  {allowed: false; reason: SignupPolicyRestriction};
+
+const signupRestrictionCopy: Record<SignupPolicyRestriction, string> = {
+  membershipRequired:
+    "Approved community membership is required to book this event.",
+  inviteRequired:
+    "Enter a valid invite code to book this event.",
+  reviewRequired:
+    "Request to join this event before booking.",
+  full:
+    "This event is now full.",
+  pairCapacityUnavailable:
+    "A Cross Paths pair spot is not available right now.",
+  generalCapacityUnavailable:
+    "General admission is full. Reserved Cross Paths spots remain separate.",
+  cohortCapacityUnavailable:
+    "A matching spot is not available right now. Join the waitlist.",
+  outOfRatioReviewRequired:
+    "This booking needs host review.",
+  balanceUnavailable:
+    "A balanced spot is not available right now. Join the waitlist.",
+};
+
+function membershipAllowsSignup(params: Pick<SignupPolicyInput,
+  "policy" | "hasActiveCommunityMembership">): boolean {
+  return !requiresCommunityMembership(params.policy) ||
+    params.hasActiveCommunityMembership === true;
+}
+
+/** The shared read outcome and mutation check have one policy owner. */
+export function signupPolicyDecision(params: SignupPolicyInput):
+  SignupPolicyDecision {
   const admission = params.policy.admission;
+  if (!membershipAllowsSignup(params)) {
+    return {allowed: false, reason: "membershipRequired"};
+  }
   if (admission.inviteRequired && params.hasValidInvite !== true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Enter a valid invite code to book this event."
-    );
+    return {allowed: false, reason: "inviteRequired"};
   }
   if (admission.manualApprovalRequired && params.hasHostApproval !== true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Request to join this event before booking."
-    );
+    return {allowed: false, reason: "reviewRequired"};
   }
 
   const pairInventory = admission.crossPathsPairInventory ?? {
@@ -400,7 +457,7 @@ export function assertPolicyAllowsSignup(params: {
   const pairHeldCount = params.roster.crossPathsPairHeldCount ?? 0;
   const pairConfirmedCount = params.roster.crossPathsPairConfirmedCount ?? 0;
   if (params.roster.totalBooked >= admission.capacityLimit) {
-    throw new HttpsError("failed-precondition", "This event is now full.");
+    return {allowed: false, reason: "full"};
   }
   if (admissionMode === "crossPathsPair") {
     if (
@@ -409,10 +466,7 @@ export function assertPolicyAllowsSignup(params: {
       pairHeldCount + pairConfirmedCount >=
         pairInventory.reservedPairCapacity
     ) {
-      throw new HttpsError(
-        "failed-precondition",
-        "A Cross Paths pair spot is not available right now."
-      );
+      return {allowed: false, reason: "pairCapacityUnavailable"};
     }
   } else if (pairInventory.enabled) {
     const generalOccupied = params.roster.totalBooked -
@@ -422,10 +476,7 @@ export function assertPolicyAllowsSignup(params: {
       admission.capacityLimit - pairInventory.reservedPairCapacity
     );
     if (generalOccupied >= generalCapacity) {
-      throw new HttpsError(
-        "failed-precondition",
-        "General admission is full. Reserved Cross Paths spots remain separate."
-      );
+      return {allowed: false, reason: "generalCapacityUnavailable"};
     }
   }
 
@@ -433,25 +484,19 @@ export function assertPolicyAllowsSignup(params: {
   if (cohortLimit != null &&
       (params.roster.bookedCountsByCohort[params.cohortId] ?? 0) >=
         cohortLimit) {
-    throw new HttpsError(
-      "failed-precondition",
-      "A matching spot is not available right now. Join the waitlist."
-    );
+    return {allowed: false, reason: "cohortCapacityUnavailable"};
   }
 
   const ratio = admission.balancedRatioPolicy;
-  if (admission.format !== "balancedRatio" || !ratio) return;
+  if (admission.format !== "balancedRatio" || !ratio) return {allowed: true};
 
   const applies = params.cohortId === ratio.leftCohortId ||
     params.cohortId === ratio.rightCohortId;
   if (!applies) {
     if (ratio.outOfRatioCohortPolicy === "admitWithinGeneralCapacity") {
-      return;
+      return {allowed: true};
     }
-    throw new HttpsError(
-      "failed-precondition",
-      "This booking needs host review."
-    );
+    return {allowed: false, reason: "outOfRatioReviewRequired"};
   }
 
   const counterpartId = params.cohortId === ratio.leftCohortId ?
@@ -465,14 +510,21 @@ export function assertPolicyAllowsSignup(params: {
 
   if (counterpartCount === 0 &&
       currentCount < ratio.openingBufferPerCohort) {
-    return;
+    return {allowed: true};
   }
-  if (nextCount <= counterpartCount + ratio.maxSkew) return;
+  if (nextCount <= counterpartCount + ratio.maxSkew) return {allowed: true};
 
-  throw new HttpsError(
-    "failed-precondition",
-    "A balanced spot is not available right now. Join the waitlist."
-  );
+  return {allowed: false, reason: "balanceUnavailable"};
+}
+
+/** Existing mutation callers retain their code, copy and check order. */
+export function assertPolicyAllowsSignup(params: SignupPolicyInput):
+  void {
+  const decision = signupPolicyDecision(params);
+  if (!decision.allowed) {
+    throw new HttpsError("failed-precondition",
+      signupRestrictionCopy[decision.reason]);
+  }
 }
 
 export async function rosterWithReservedWaitlistOffers(
@@ -504,18 +556,28 @@ export async function rosterWithReservedWaitlistOffers(
   });
 }
 
+/** Bounded read adapters must not treat a truncated offer set as inventory. */
+export class EventRosterReadLimitError extends Error {}
+
 export async function rosterWithReservedWaitlistOffersInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
   eventId: string,
   baseRoster: EventRosterSnapshot,
-  options: {excludeUid?: string; nowMillis?: number} = {}
+  options: {excludeUid?: string; nowMillis?: number; readLimit?: number} = {}
 ): Promise<EventRosterSnapshot> {
-  const offerQuery = db
+  let offerQuery = db
     .collection("eventWaitlistOffers")
     .where("eventId", "==", eventId)
     .where("status", "in", ["active", "accepted"]);
+  if (options.readLimit !== undefined) {
+    offerQuery = offerQuery.limit(options.readLimit + 1);
+  }
   const offerSnap = await tx.get(offerQuery);
+  if (options.readLimit !== undefined &&
+      offerSnap.docs.length > options.readLimit) {
+    throw new EventRosterReadLimitError();
+  }
   if (offerSnap.empty) return baseRoster;
 
   const offers = offerSnap.docs.map((doc) => doc.data());
@@ -535,6 +597,7 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
 
 export async function hasValidInviteForEvent(params: {
   db: FirebaseFirestore.Firestore;
+  tx?: FirebaseFirestore.Transaction;
   eventId: string;
   policy: EventPolicyBundleDocument;
   inviteCode?: string | null;
@@ -543,10 +606,8 @@ export async function hasValidInviteForEvent(params: {
   const submittedCode = normalizeInviteCode(params.inviteCode);
   if (!submittedCode) return false;
 
-  const accessSnap = await params.db
-    .collection("eventPrivateAccess")
-    .doc(params.eventId)
-    .get();
+  const ref = params.db.collection("eventPrivateAccess").doc(params.eventId);
+  const accessSnap = params.tx ? await params.tx.get(ref) : await ref.get();
   if (!accessSnap.exists) return false;
 
   const storedCode = normalizeInviteCode(accessSnap.data()?.inviteCode);
@@ -682,9 +743,10 @@ function paidCancellationPolicyId(
  * @return {boolean} Whether the request was approved by a host.
  */
 export function hasHostApprovedJoinRequest(
-  participation: unknown
+  participation: unknown,
+  nowMillis = Date.now()
 ): boolean {
-  if (hasAcceptedWaitlistOfferAccess(participation)) return true;
+  if (hasAcceptedWaitlistOfferAccess(participation, nowMillis)) return true;
   return typeof participation === "object" &&
     participation !== null &&
     (participation as {hostApprovalStatus?: unknown})

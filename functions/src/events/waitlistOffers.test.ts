@@ -1,3 +1,5 @@
+import {communityMembershipRows} from
+  "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -160,6 +162,8 @@ class FakeTransaction {
   async get(
     ref: FakeDocRef | FakeCollectionRef
   ): Promise<FakeSnapshot | {docs: FakeSnapshot[]; empty: boolean}> {
+    assert.equal(this.writes.length, 0,
+      "no transaction read after first write");
     if (ref instanceof FakeCollectionRef) return ref.get();
     return new FakeSnapshot(this.firestore, ref.path);
   }
@@ -516,3 +520,85 @@ export function isHttpsError(expectedCode: string, expectedMessage: string) {
     error.code === expectedCode &&
     error.message === expectedMessage;
 }
+
+
+test("offer issue reads every candidate before writing", async () => {
+  const h = harness({
+    "events/event-1": event({
+      eventPolicy: {
+        version: 2,
+        admission: {
+          format: "membersOnly",
+          membershipRequired: true,
+          capacityLimit: 10,
+        },
+      },
+    }),
+    "organizers/organizer-1": {
+      ownerUserId: "host-1",
+      hostUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [],
+    },
+    "users/booked": user(),
+    "users/runner-2": user(),
+    "users/runner-3": user(),
+    "eventParticipations/event-1_booked": participation("booked", "signedUp"),
+    "eventParticipations/event-1_runner-2": participation(
+      "runner-2",
+      "waitlisted"
+    ),
+    "eventParticipations/event-1_runner-3": participation(
+      "runner-3",
+      "waitlisted"
+    ),
+    ...communityMembershipRows("organizer-1", "runner-2"),
+    ...communityMembershipRows("organizer-1", "runner-3"),
+  });
+  h.deps.nowMillis = () => 2000;
+  const result = await createEventWaitlistOffersHandler(
+    request({eventId: "event-1", userIds: ["runner-2", "runner-3"]}),
+    h.deps
+  );
+  assert.equal(result.createdCount, 2);
+});
+
+test("revoked members cannot accept paid or free waitlist offers", async () => {
+  for (const basePriceInPaise of [0, 25000]) {
+    const h = harness({
+      "events/event-1": event({
+        eventPolicy: {
+          version: 2,
+          admission: {
+            format: "membersOnly",
+            membershipRequired: true,
+            capacityLimit: 10,
+          },
+          pricing: {basePriceInPaise},
+        },
+      }),
+      "users/runner-2": user(),
+      "eventParticipations/event-1_runner-2": participation(
+        "runner-2",
+        "waitlisted"
+      ),
+      "eventWaitlistOffers/event-1_runner-2": offer({
+        expiresAt: timestamp(60000),
+      }),
+      ...communityMembershipRows("organizer-1", "runner-2", "revoked"),
+    });
+    h.deps.nowMillis = () => 2000;
+    await assert.rejects(
+      acceptEventWaitlistOfferHandler(
+        request({eventId: "event-1"}, "runner-2"),
+        h.deps
+      ),
+      /Approved community membership/
+    );
+    assert.equal(h.signUps.length, 0);
+    assert.equal(
+      h.firestore.get("eventWaitlistOffers/event-1_runner-2")?.status,
+      "active"
+    );
+  }
+});

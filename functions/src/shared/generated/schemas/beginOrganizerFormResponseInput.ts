@@ -29,6 +29,19 @@ export const beginOrganizerFormResponseCallablePayloadSchema: Record<string, unk
     "requestId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    },
+    "reuseResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Explicit own submitted source selection for compatible same-form answer suggestions; never a claim or grant."
     }
   }
 } as const;

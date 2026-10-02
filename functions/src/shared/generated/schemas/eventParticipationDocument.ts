@@ -532,6 +532,32 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "communityMembershipAtSignup": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.",
+      "x-catch-ownership": "callable-owned",
+      "required": [
+        "membershipId",
+        "revision",
+        "decisionId"
+      ],
+      "properties": {
+        "membershipId": {
+          "type": "string",
+          "pattern": "^ocm_[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        },
+        "decisionId": {
+          "type": "string",
+          "pattern": "^ocmd_[a-f0-9]{64}$"
+        }
+      }
     }
   }
 } as const;

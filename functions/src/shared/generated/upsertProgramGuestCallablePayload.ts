@@ -21,4 +21,12 @@ export interface UpsertProgramGuestCallablePayload {
   email?: string | null;
   externalReference?: string | null;
   rsvpStatus?: "pending" | "attending" | "declined" | "maybe";
+  /**
+   * Review an existing same-program, same-guest field assertion. expectedRevision fences the selection; endpoints cannot simultaneously provide a scalar and a choice.
+   */
+  fieldChoices?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
 }

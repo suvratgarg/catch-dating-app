@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_activity_response.schema.json",
+  "title": "ListParticipantActivityCallableResponse",
+  "description": "Metadata only after exact account, response and immutable-version proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "$ref": "../shared/participant_activity_common.schema.json#/definitions/formResponseItem"
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 8192
+    }
+  }
+}

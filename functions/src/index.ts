@@ -241,6 +241,8 @@ export {
   publishOrganizerApplicationForm,
   reviewOrganizerApplication,
 } from "./organizers/organizerApplications";
+export {decideOrganizerCommunityMembership} from
+  "./memberships/communityMembership";
 export {listOrganizerAttentionItems} from
   "./organizers/organizerAttention";
 export {
@@ -440,6 +442,8 @@ export {
 } from "./profiles/syncPublicProfile";
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
+export {listParticipantActivity, getParticipantActivity}
+  from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
