@@ -89,35 +89,37 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ref.read(authControllerProvider.notifier).setCountryCode(code);
         },
       );
-      final phoneInput = CatchField.input(
-        copy: catchFieldCopy(context.l10n),
-        key: AuthFormKeys.phoneField,
-        title: l10n.authPhoneFieldLabel,
-        contract: CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
-        labelMode: CatchFieldLabelTextMode.hidden,
-        controller: _phoneController,
-        states: <WidgetState>{
-          if (!viewState.requestControlsEnabled) WidgetState.disabled,
-        },
-        keyboardType: TextInputType.phone,
-        textInputAction: TextInputAction.done,
-        autofillHints: const [AutofillHints.telephoneNumberNational],
-        onSubmitted: (_) => _submit(),
-        onChanged: (_) {
-          ref.read(authControllerProvider.notifier).clearSendOtpErrorIfIdle();
-          setState(() {});
-        },
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
-        ],
-        placeholder: reflowPhoneInput
-            ? l10n.authPhoneFieldLabel
-            : l10n.authPhoneFieldPlaceholder,
-        variant: CatchFieldVariant.bare,
-        onValidate: (value) => AuthInput.phoneNumberIssue(value) == null
-            ? null
-            : l10n.authInvalidPhoneNumber,
+      final phoneInput = CatchFieldLanes.single(
+        child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
+          key: AuthFormKeys.phoneField,
+          title: l10n.authPhoneFieldLabel,
+          contract: CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
+          labelMode: CatchFieldLabelTextMode.hidden,
+          controller: _phoneController,
+          states: <WidgetState>{
+            if (!viewState.requestControlsEnabled) WidgetState.disabled,
+          },
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.done,
+          autofillHints: const [AutofillHints.telephoneNumberNational],
+          onSubmitted: (_) => _submit(),
+          onChanged: (_) {
+            ref.read(authControllerProvider.notifier).clearSendOtpErrorIfIdle();
+            setState(() {});
+          },
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
+          ],
+          placeholder: reflowPhoneInput
+              ? l10n.authPhoneFieldLabel
+              : l10n.authPhoneFieldPlaceholder,
+          variant: CatchFieldVariant.bare,
+          onValidate: (value) => AuthInput.phoneNumberIssue(value) == null
+              ? null
+              : l10n.authInvalidPhoneNumber,
+        ),
       );
       final canSubmit =
           AuthInput.phoneNumberIssue(_phoneController.text) == null &&
