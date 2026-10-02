@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import ts from "typescript";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const toolPath = fileURLToPath(import.meta.url);
@@ -562,10 +563,8 @@ function scanFormProvenanceContract(root) {
     },
     {
       path: "functions/src/organizers/organizerFormConversions.ts",
-      anchors: [
-        'params.data.kind !== "crmContact"',
-        "origin: target.origin",
-      ],
+      anchors: [],
+      validate: protectedFormContactProvenance,
     },
     {
       path: "functions/src/shared/organizerContactOrigins.ts",
@@ -583,6 +582,12 @@ function scanFormProvenanceContract(root) {
       continue;
     }
     const source = fs.readFileSync(file, "utf8");
+    if (item.validate && !item.validate(source)) findings.push({
+      path: item.path,
+      line: 1,
+      reason: "Host Form contact provenance must use the canonical writer for " +
+        "every new or matched contact inside its source-authorized destination transaction.",
+    });
     for (const anchor of item.anchors) {
       if (!source.includes(anchor)) findings.push({
         path: item.path,
@@ -592,6 +597,177 @@ function scanFormProvenanceContract(root) {
     }
   }
   return findings;
+}
+
+// This is a conservative check of the canonical straight-line creation branch,
+// not a general control-flow prover. Receipt recovery is a separate branch;
+// matching a contact must never create another path around its provenance write.
+function protectedFormContactProvenance(source) {
+  const file = ts.createSourceFile("conversion.ts", source,
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  if (file.parseDiagnostics.length) return false;
+  const unwrap = (node) => {
+    while (node && (ts.isAwaitExpression(node) || ts.isParenthesizedExpression(node) ||
+        ts.isAsExpression(node) || ts.isNonNullExpression(node))) node = node.expression;
+    return node;
+  };
+  const id = (node, name) => node && ts.isIdentifier(node) && node.text === name;
+  const member = (node, name) => node && ts.isPropertyAccessExpression(node) &&
+    node.name.text === name ? node.expression : null;
+  const call = (node, name) => {
+    node = unwrap(node);
+    return node && ts.isCallExpression(node) && id(node.expression, name) ? node : null;
+  };
+  const property = (node, name) => {
+    if (!node || !ts.isObjectLiteralExpression(node) ||
+        node.properties.some(ts.isSpreadAssignment)) return null;
+    const properties = node.properties.filter((item) => item.name &&
+      (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && item.name.text === name);
+    if (properties.length !== 1) return null;
+    const item = properties[0];
+    return ts.isPropertyAssignment(item) ? item.initializer :
+      ts.isShorthandPropertyAssignment(item) ? item.name : null;
+  };
+  const nodes = (root, predicate, skipFunctions = false) => {
+    const found = [];
+    const visit = (node) => {
+      if (skipFunctions && node !== root && ts.isFunctionLike(node)) return;
+      if (predicate(node)) found.push(node);
+      ts.forEachChild(node, visit);
+    };
+    visit(root);
+    return found;
+  };
+  const declaration = (name, use, callback) => {
+    if (!name || !ts.isIdentifier(name)) return null;
+    for (let scope = use.parent; scope && scope !== callback; scope = scope.parent) {
+      if (!ts.isBlock(scope)) continue;
+      for (const statement of [...scope.statements].reverse()) {
+        if (statement.pos >= use.pos || !ts.isVariableStatement(statement)) continue;
+        const found = statement.declarationList.declarations.find((item) =>
+          item.pos < use.pos && id(item.name, name.text));
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+  const within = (node, ancestor) => {
+    for (; node; node = node.parent) if (node === ancestor) return true;
+    return false;
+  };
+  const equals = (node, field, value) => ts.isBinaryExpression(node) &&
+    node.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
+    ts.isStringLiteral(node.right) && node.right.text === value ?
+      member(node.left, field) : null;
+  const documentIn = (ref, use, scope, collectionName, identity) => {
+    const binding = declaration(ref, use, scope);
+    const reference = unwrap(binding?.initializer);
+    const collection = reference && ts.isCallExpression(reference) ?
+      member(reference.expression, "doc") : null;
+    return collection && ts.isCallExpression(collection) &&
+      member(collection.expression, "collection") && collection.arguments[0] &&
+      ts.isStringLiteral(collection.arguments[0]) &&
+      collection.arguments[0].text === collectionName &&
+      call(reference.arguments[0] && ts.isIdentifier(reference.arguments[0]) ?
+        declaration(reference.arguments[0], binding, scope)?.initializer :
+        reference.arguments[0], identity);
+  };
+  const writers = nodes(file, (node) => ts.isCallExpression(node) &&
+    id(node.expression, "createOrganizerContactInTransaction"));
+  return writers.length > 0 && writers.every((writer) => {
+    let callback = writer.parent;
+    while (callback && !ts.isFunctionLike(callback)) callback = callback.parent;
+    const transaction = callback?.parent;
+    if (!callback || !ts.isArrowFunction(callback) || !ts.isBlock(callback.body) ||
+        !transaction || !ts.isCallExpression(transaction) ||
+        !member(transaction.expression, "runTransaction") ||
+        transaction.arguments[0] !== callback) return false;
+    let returned = transaction.parent;
+    if (ts.isAwaitExpression(returned)) returned = returned.parent;
+    if (!ts.isReturnStatement(returned) || !ts.isBlock(returned.parent) ||
+        !ts.isFunctionLike(returned.parent.parent)) return false;
+    const owner = returned.parent.parent;
+    // No preflight result may bypass the returned destination transaction.
+    if (nodes(owner.body, ts.isReturnStatement, true).some((node) => node !== returned)) return false;
+    const tx = callback.parameters[0]?.name;
+    if (!tx || !ts.isIdentifier(tx)) return false;
+
+    // The awaited writer must be unconditional in the absent-origin branch.
+    const awaited = writer.parent;
+    const result = awaited?.parent;
+    const statement = result?.parent?.parent;
+    const block = statement?.parent;
+    const branch = block?.parent;
+    if (!awaited || !ts.isAwaitExpression(awaited) ||
+        !result || !ts.isVariableDeclaration(result) || result.initializer !== awaited ||
+        !statement || !ts.isVariableStatement(statement) || !block || !ts.isBlock(block) ||
+        !branch || !ts.isIfStatement(branch) || branch.elseStatement !== block) return false;
+    const originName = member(unwrap(branch.expression), "exists");
+    const origin = declaration(originName, branch, callback);
+    const read = unwrap(origin?.initializer);
+    if (!read || !ts.isCallExpression(read) ||
+        !id(member(read.expression, "get"), tx.text)) return false;
+    if (!documentIn(read.arguments[0], origin, owner, "organizerContactOrigins",
+      "organizerContactOriginId")) return false;
+    // CRM/application dispatch may surround this branch; an endpoint match
+    // or another conditional must not make the entire origin path optional.
+    for (let ancestor = branch.parent; ancestor !== callback.body; ancestor = ancestor.parent) {
+      if (ts.isBlock(ancestor)) continue;
+      if (!ts.isIfStatement(ancestor) || !(
+        equals(ancestor.expression, "kind", "application") && within(branch, ancestor.elseStatement) ||
+        equals(ancestor.expression, "kind", "crmContact") && within(branch, ancestor.thenStatement)
+      )) return false;
+    }
+    // A successful early return needs a transaction-read completion receipt
+    // or this exact origin's recovery branch, never just a matching contact.
+    const earlyReturns = nodes(callback.body, ts.isReturnStatement, true)
+      .filter((node) => node.pos < writer.pos && !within(node, branch.thenStatement));
+    for (const early of earlyReturns) {
+      let proven = false;
+      for (let parent = early.parent; parent !== callback; parent = parent.parent) {
+        if (!ts.isIfStatement(parent) || !within(early, parent.thenStatement)) continue;
+        const receipt = declaration(equals(parent.expression, "status", "completed"), parent, callback);
+        const value = unwrap(receipt?.initializer);
+        if (!value || !ts.isConditionalExpression(value)) continue;
+        const decoded = call(value.whenTrue, "requireDoc");
+        const snapshotName = member(value.condition, "exists");
+        if (!snapshotName || !ts.isIdentifier(snapshotName) ||
+            !id(decoded?.arguments[0], snapshotName.text)) continue;
+        const snapshot = declaration(snapshotName, receipt, callback);
+        const receiptRead = unwrap(snapshot?.initializer);
+        if (receiptRead && ts.isCallExpression(receiptRead) &&
+            id(member(receiptRead.expression, "get"), tx.text) &&
+            documentIn(receiptRead.arguments[0], snapshot, owner,
+              "organizerFormConversionReceipts", "formConversionReceiptId")) proven = true;
+      }
+      if (!proven) return false;
+    }
+
+    const args = writer.arguments[0];
+    const targetName = member(property(args, "origin"), "origin");
+    if (!targetName || !ts.isIdentifier(targetName) ||
+        !id(property(args, "transaction"), tx.text) ||
+        !id(member(property(args, "contactId"), "contactId"), targetName.text)) return false;
+    const target = declaration(targetName, writer, callback);
+    const targetCall = call(target?.initializer, "crmContactConversionTarget");
+    let match = property(targetCall?.arguments[0], "existingResultId");
+    if (match && ts.isIdentifier(match)) match = declaration(match, target, callback)?.initializer;
+    const lookup = call(match, "findExistingContact");
+    if (!lookup || !id(lookup.arguments[3], tx.text)) return false;
+
+    const prefix = block.statements.slice(0, block.statements.indexOf(statement));
+    const checks = prefix.filter(ts.isExpressionStatement).map((item) =>
+      call(item.expression, "assertConversionAllowed"));
+    if (prefix.some((item) => !ts.isVariableStatement(item) &&
+        !(ts.isExpressionStatement(item) && call(item.expression, "assertConversionAllowed"))) ||
+        !checks.some((check) => {
+          const context = declaration(check?.arguments[0], writer, callback);
+          return id(call(context?.initializer, "conversionContext")?.arguments[2], tx.text);
+        })) return false;
+    return nodes(callback.body, (node) => ts.isCallExpression(node) &&
+      id(node.expression, "authorizeFormMutation"), true).some((authorize) =>
+      authorize.pos < writer.pos && id(property(authorize.arguments[0], "tx"), tx.text));
+  });
 }
 
 function collectionMutations(source, collectionName, operations) {
