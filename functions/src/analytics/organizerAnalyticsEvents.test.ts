@@ -94,10 +94,11 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
   assert.equal(bigQuery.inserted[0].datasetId, "catch_analytics");
   assert.equal(bigQuery.inserted[0].tableId, "host_analytics_events");
   assert.deepEqual(bigQuery.inserted[0].rows[0], {
-    insertId: "club-1_event-1_eventView_1781776800000_event-id-1",
+    insertId:
+      "26f055038bed355adaf5b3e100f9223bc8e7561a81a4f25b7ef7c6a4d52ceb8a",
     json: {
       analytics_event_id:
-        "club-1_event-1_eventView_1781776800000_event-id-1",
+        "26f055038bed355adaf5b3e100f9223bc8e7561a81a4f25b7ef7c6a4d52ceb8a",
       occurred_at: "2026-06-18T10:00:00.000Z",
       event_date: "2026-06-18",
       event_name: "eventView",
@@ -106,7 +107,7 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
       page_path: "/organizers/saket-run-club/",
       source: "catch_event_card",
       session_hash:
-        "ef003991504917232e858519f5d90e2b814b2c54d6d4d7c62256ac937b83f99e",
+        "a72e68b65309f769c0fb5d5ddc58c7b8be63dde169a26211745881ec1710b3eb",
       platform: "web",
       ingested_at: "2026-06-18T10:00:00.000Z",
     },
@@ -210,6 +211,135 @@ test("recordOrganizerAnalyticsEvent rejects rate-limited clients", async () => {
   );
 });
 
+for (const overrides of [
+  {publicationState: "private", status: "active"},
+  {publicationState: "published", status: "cancelled"},
+]) {
+  test(`rejects unavailable event ${JSON.stringify(overrides)}`, async () => {
+    const bigQuery = new FakeBigQuery();
+    await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
+      callableRequest({organizerId: "club-1", eventId: "event-1",
+        eventName: "eventView", pagePath: "/events/event-1/"}),
+      deps(new FakeFirestore({...baseDocs(), "events/event-1": {
+        clubId: "club-1", ...overrides,
+      }}), bigQuery)
+    ), {code: "failed-precondition"});
+    assert.equal(bigQuery.inserted.length, 0);
+  });
+}
+
+test("external event scope excludes raw URLs", async () => {
+  const bigQuery = new FakeBigQuery();
+  await recordOrganizerAnalyticsEventHandler(callableRequest({
+    organizerId: "club-1", eventId: "external-1", eventName: "outboundClick",
+    pagePath: "/events/external-1/?token=secret#private", source: "https://private/",
+    platform: "private-value",
+  }), deps(new FakeFirestore({...baseDocs(), "externalEvents/external-1": {
+    canonicalHostId: "club-1", publicationStatus: "public", status: "active",
+  }}), bigQuery));
+  const row = bigQuery.inserted[0].rows[0].json;
+  assert.equal(row.page_path, "/events/external-1/");
+  assert.equal(row.source, null);
+  assert.equal(row.platform, "web");
+  assert.equal(JSON.stringify(row).includes("secret"), false);
+});
+
+for (const external of [
+  {canonicalHostId: "club-2", publicationStatus: "public"},
+  {canonicalHostId: "club-1", publicationStatus: "draft"},
+  {canonicalHostId: "club-1", publicationStatus: "removed"},
+]) {
+  test(`rejects external ${JSON.stringify(external)}`, async () => {
+    const bigQuery = new FakeBigQuery();
+    await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
+      callableRequest({organizerId: "club-1", eventId: "external-1",
+        eventName: "eventView", pagePath: "/events/external-1/"}),
+      deps(new FakeFirestore({...baseDocs(), "externalEvents/external-1": {
+        status: "active", ...external,
+      }}), bigQuery)
+    ));
+    assert.equal(bigQuery.inserted.length, 0);
+  });
+}
+
+test("organizer preview excludes visitor metrics", async () => {
+  const bigQuery = new FakeBigQuery();
+  const request = callableRequest({organizerId: "club-1",
+    eventName: "listingView", pagePath: "/organizers/saket-run-club/"});
+  request.auth = {uid: "owner-1", token: {}} as CallableRequest["auth"];
+  assert.deepEqual(await recordOrganizerAnalyticsEventHandler(request,
+    deps(new FakeFirestore({...baseDocs(), "organizers/club-1": {
+      ...clubDoc(), ownerUserId: "owner-1",
+    }}), bigQuery)), {accepted: true});
+  assert.equal(bigQuery.inserted.length, 0);
+});
+
+test("event activity needs event identity", async () => {
+  await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
+    callableRequest({organizerId: "club-1", eventName: "eventView",
+      pagePath: "/organizers/saket-run-club/"}),
+    deps(new FakeFirestore(baseDocs()), new FakeBigQuery())
+  ), {code: "invalid-argument"});
+});
+
+test("presence retry identity excludes raw session", async () => {
+  const bigQuery = new FakeBigQuery();
+  const payload = {organizerId: "club-1", eventId: "event-1",
+    eventName: "eventView", pagePath: "/events/event-1/",
+    sessionId: "opaque-random-tab-session"};
+  for (let index = 0; index < 2; index++) {
+    await recordOrganizerAnalyticsEventHandler(callableRequest(payload),
+      deps(new FakeFirestore(baseDocs()), bigQuery));
+  }
+  assert.equal(bigQuery.inserted[0].rows[0].insertId,
+    bigQuery.inserted[1].rows[0].insertId);
+  assert.equal(
+    JSON.stringify(bigQuery.inserted).includes(payload.sessionId), false
+  );
+});
+
+for (const status of ["active", "removed"]) {
+  test(`team member preview respects ${status} membership`, async () => {
+    const bigQuery = new FakeBigQuery();
+    const request = callableRequest({organizerId: "club-1",
+      eventName: "listingView",
+      pagePath: "/organizers/saket-run-club/"});
+    request.auth = {uid: "manager-1", token: {}} as CallableRequest["auth"];
+    await recordOrganizerAnalyticsEventHandler(request,
+      deps(new FakeFirestore({...baseDocs(),
+        "organizerTeamMemberships/club-1_manager-1": {
+          organizerId: "club-1", uid: "manager-1", role: "manager", status,
+        },
+      }), bigQuery));
+    assert.equal(bigQuery.inserted.length, status === "active" ? 0 : 1);
+  });
+}
+
+for (const payload of [
+  {organizerId: "club-1", clubId: "club-2"},
+  {organizerId: "club-1/private"},
+  {organizerId: "club-1", eventId: "event-1/private"},
+]) {
+  test(`rejects invalid scope ${JSON.stringify(payload)}`, async () => {
+    await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
+      callableRequest({...payload, eventName: "listingView",
+        pagePath: "/organizers/saket-run-club/"}),
+      deps(new FakeFirestore(baseDocs()), new FakeBigQuery())
+    ), {code: "invalid-argument"});
+  });
+}
+
+for (const source of ["listing_page", "external_event_source"]) {
+  test(`preserves bounded first-party source ${source}`, async () => {
+    const bigQuery = new FakeBigQuery();
+    await recordOrganizerAnalyticsEventHandler(callableRequest({
+      organizerId: "club-1", eventName: "listingView", source,
+      pagePath: "/organizers/saket-run-club/",
+    }), deps(new FakeFirestore(baseDocs()), bigQuery));
+    assert.equal(bigQuery.inserted[0].rows[0].json.source, source);
+  });
+}
+
 function deps(
   firestore: FakeFirestore,
   bigQuery: FakeBigQuery,
@@ -228,7 +358,9 @@ function deps(
 function baseDocs(): Record<string, FakeData> {
   return {
     "organizers/club-1": clubDoc(),
-    "events/event-1": {clubId: "club-1"},
+    "events/event-1": {
+      clubId: "club-1", publicationState: "published", status: "active",
+    },
   };
 }
 

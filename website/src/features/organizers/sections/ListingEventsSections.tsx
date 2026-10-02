@@ -49,11 +49,7 @@ export function ListingEventsRailSection({listing}: {listing: HostListing}) {
 export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
   const events = listing.catchEvents ?? [];
   const eventCards = events.map((event) =>
-    withCatchEventActionTracking(
-      listing,
-      event.id,
-      eventActionCardForListing(listing, event)
-    )
+    eventActionCardForListing(listing, event)
   );
   const appDownloadCtas = useAppDownloadCtas({
     placement: `listing-events-${listing.slug}`,
@@ -137,41 +133,6 @@ function trackListingEventActionClick(action: EventActionCardAction) {
   });
 }
 
-function withCatchEventActionTracking(
-  listing: HostListing,
-  eventId: string,
-  card: EventActionCardModel
-): EventActionCardModel {
-  return {
-    ...card,
-    actions: card.actions.map((action) => {
-      if (action.trackingLabel === "listing_event_success") {
-        return {
-          ...action,
-          onClick: () => trackOrganizerAnalytics(
-            listing,
-            "eventView",
-            "event_success_panel",
-            eventId
-          ),
-        };
-      }
-      if (action.trackingLabel?.startsWith("listing_event_open_")) {
-        return {
-          ...action,
-          onClick: () => trackOrganizerAnalytics(
-            listing,
-            "eventView",
-            "catch_event_card",
-            eventId
-          ),
-        };
-      }
-      return action;
-    }),
-  };
-}
-
 function withExternalEventActionTracking(
   listing: HostListing,
   eventId: string,
@@ -179,29 +140,10 @@ function withExternalEventActionTracking(
 ): EventActionCardModel {
   return {
     ...card,
-    actions: card.actions.map((action) => {
-      if (action.trackingLabel === "external_event_open_details") {
-        return {
-          ...action,
-          onClick: () => trackOrganizerAnalytics(
-            listing,
-            "eventView",
-            "external_event_card",
-            eventId
-          ),
-        };
-      }
-      if (action.trackingLabel !== "external_event_source") return action;
-      return {
-        ...action,
-        onClick: () => trackOrganizerAnalytics(
-          listing,
-          "outboundClick",
-          "external_event_card",
-          eventId
-        ),
-      };
-    }),
+    actions: card.actions.map((action) => action.trackingLabel === "external_event_source" ? {
+      ...action,
+      onClick: () => trackOrganizerAnalytics(listing, "outboundClick", "external_event_booking", eventId),
+    } : action),
   };
 }
 

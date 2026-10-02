@@ -82,19 +82,25 @@ class _HostCrmAudienceCard extends StatelessWidget {
                 CatchMetricSection.grid(
                   items: [
                     CatchMetricValue(
-                      value: _compactCount(data.contactCount),
+                      value: HostCountFormatters.compact(data.contactCount),
                       label: context.l10n.hostsHostOrganizerCrmContacts,
                     ),
                     CatchMetricValue(
-                      value: _compactCount(data.pastAttendeeCount),
+                      value: HostCountFormatters.compact(
+                        data.pastAttendeeCount,
+                      ),
                       label: context.l10n.hostsHostOrganizerCrmPastAttendees,
                     ),
                     CatchMetricValue(
-                      value: _compactCount(data.repeatAttendeeCount),
+                      value: HostCountFormatters.compact(
+                        data.repeatAttendeeCount,
+                      ),
                       label: context.l10n.hostsHostOrganizerCrmRepeatAttendees,
                     ),
                     CatchMetricValue(
-                      value: _compactCount(data.importedContactCount),
+                      value: HostCountFormatters.compact(
+                        data.importedContactCount,
+                      ),
                       label: context.l10n.hostsHostOrganizerCrmImportedContacts,
                     ),
                   ],
@@ -223,7 +229,7 @@ class HostOrganizerMetricGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       HostOrganizerMetricItem(
-        value: _compactCount(club.memberCount),
+        value: HostCountFormatters.compact(club.memberCount),
         label: context.l10n.hostsHostOrganizerLabelMembers,
       ),
       HostOrganizerMetricItem(
@@ -235,11 +241,13 @@ class HostOrganizerMetricGrid extends StatelessWidget {
             : context.l10n.hostsHostOrganizerLabelRating,
       ),
       HostOrganizerMetricItem(
-        value: eventsLoaded ? _compactCount(eventCount) : '-',
+        value: eventsLoaded ? HostCountFormatters.compact(eventCount) : '-',
         label: context.l10n.hostsHostOrganizerLabelEventsHosted,
       ),
       HostOrganizerMetricItem(
-        value: eventsLoaded ? _compactCount(activeEventCount) : '-',
+        value: eventsLoaded
+            ? HostCountFormatters.compact(activeEventCount)
+            : '-',
         label: context.l10n.hostsHostOrganizerLabelUpcoming,
       ),
     ];
@@ -269,12 +277,6 @@ class HostOrganizerMetricRow extends StatelessWidget {
       ],
     );
   }
-}
-
-String _compactCount(int count) {
-  if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-  if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
-  return '$count';
 }
 
 String _ratingValue(Club club) {

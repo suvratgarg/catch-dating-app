@@ -893,3 +893,40 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
+
+// Opt-in local render evidence; ordinary test runs do not write artifacts.
+Future<void> _captureHostPresencePreview(
+  WidgetTester tester,
+  String state, {
+  bool scrollToPresence = false,
+  String? scrollTarget,
+}) async {
+  const output = String.fromEnvironment('HOST_PRESENCE_PREVIEW_DIR');
+  if (output.isEmpty) return;
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  for (final viewport in <String, Size>{
+    'mobile': const Size(390, 844),
+    'desktop': const Size(1200, 900),
+  }.entries) {
+    await tester.binding.setSurfaceSize(viewport.value);
+    await tester.pump();
+    if (scrollToPresence || scrollTarget != null) {
+      await tester.ensureVisible(
+        find.byKey(ValueKey(scrollTarget ?? 'host-analytics-presence')),
+      );
+      await tester.pump();
+    }
+    final boundary = tester.renderObject<RenderRepaintBoundary>(
+      find.byKey(const ValueKey('presence-preview-boundary')),
+    );
+    await tester.runAsync(() async {
+      final image = await boundary.toImage();
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      await Directory(output).create(recursive: true);
+      await File(
+        '$output/$state-${viewport.key}.png',
+      ).writeAsBytes(bytes!.buffer.asUint8List());
+    });
+  }
+}

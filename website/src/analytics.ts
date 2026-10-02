@@ -1,4 +1,4 @@
-type ConsentChoice = "accepted" | "essential";
+type ConsentChoice = "accepted" | "analytics" | "essential";
 type FormVariant = "member" | "host";
 
 export const marketingContentVersion = "website_copy_v2" as const;
@@ -42,10 +42,12 @@ declare global {
   }
 }
 
-const attributionStorageKey = "catch_marketing_attribution_v1";
+const legacyAttributionStorageKey = "catch_marketing_attribution_v1";
+const attributionStorageKey = "catch_marketing_attribution_v2";
+const attributionMaxAgeMs = 24 * 60 * 60 * 1000;
+export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
 const consentStorageKey = "catch_marketing_consent_v1";
 const trackedPageViews = new Set<string>();
-let gtmLoaded = false;
 let clientErrorMonitoringInstalled = false;
 
 const attributionKeys = [
@@ -54,14 +56,6 @@ const attributionKeys = [
   "utm_campaign",
   "utm_content",
   "utm_term",
-  "gclid",
-  "gbraid",
-  "wbraid",
-  "fbclid",
-  "ttclid",
-  "msclkid",
-  "li_fat_id",
-  "rdt_cid",
 ];
 
 function dataLayer() {
@@ -74,11 +68,12 @@ function gtag(...args: unknown[]) {
 }
 
 export function initializeMarketingAnalytics() {
-  if (isPrivateEventUpdate()) return;
+  clearLegacyAttribution();
   captureAttribution();
+  if (isPrivateEventUpdate()) return;
   installConsentDefaults();
   installClientErrorMonitoring();
-  maybeLoadGtm();
+  // Arbitrary GTM is deferred. Only the isolated, typed organizer adapters may load providers.
 }
 
 export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_rejection") {
@@ -92,9 +87,14 @@ export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_
 
 export function getMarketingConsent(): MarketingConsent | null {
   const stored = readJson<MarketingConsent>(consentStorageKey);
-  if (!stored || !stored.choice || typeof stored.updatedAt !== "string") {
+  if (!stored || !["accepted", "analytics", "essential"].includes(stored.choice) ||
+    typeof stored.updatedAt !== "string" || !Number.isFinite(Date.parse(stored.updatedAt)) ||
+    stored.analytics !== (stored.choice !== "essential") ||
+    stored.marketing !== (stored.choice === "accepted")) {
+    clearAttribution();
     return null;
   }
+  if (!stored.analytics) clearAttribution();
   return stored;
 }
 
@@ -107,17 +107,20 @@ export function shouldShowMarketingConsentBanner(
 export function setMarketingConsent(choice: ConsentChoice) {
   const consent: MarketingConsent = {
     choice,
-    analytics: choice === "accepted",
+    analytics: choice !== "essential",
     marketing: choice === "accepted",
     updatedAt: new Date().toISOString(),
   };
   writeJson(consentStorageKey, consent);
   updateConsentMode(consent);
-  maybeLoadGtm();
+  captureAttribution();
   trackMarketingEvent("consent_updated", {
     analytics_consent: consent.analytics,
     marketing_consent: consent.marketing,
   });
+  if (typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event(marketingConsentChangedEvent));
+  }
   return consent;
 }
 
@@ -186,14 +189,14 @@ export function waitlistAnalyticsPayload(
 }
 
 function installConsentDefaults() {
-  window.gtag = window.gtag ?? gtag;
+  // Keep consent compatibility events local; never call an externally supplied gtag.
   const consent = getMarketingConsent();
   if (consent) {
     updateConsentMode(consent);
     return;
   }
 
-  window.gtag("consent", "default", {
+  gtag("consent", "default", {
     ad_personalization: "denied",
     ad_storage: "denied",
     ad_user_data: "denied",
@@ -202,35 +205,13 @@ function installConsentDefaults() {
 }
 
 function updateConsentMode(consent: MarketingConsent) {
-  window.gtag = window.gtag ?? gtag;
-  window.gtag("consent", "update", {
+  // Keep consent compatibility events local; never call an externally supplied gtag.
+  gtag("consent", "update", {
     ad_personalization: consent.marketing ? "granted" : "denied",
     ad_storage: consent.marketing ? "granted" : "denied",
     ad_user_data: consent.marketing ? "granted" : "denied",
     analytics_storage: consent.analytics ? "granted" : "denied",
   });
-}
-
-function maybeLoadGtm() {
-  if (isPrivateEventUpdate() || gtmLoaded) return;
-  const gtmId = import.meta.env?.VITE_GTM_ID;
-  if (!gtmId) return;
-
-  const consent = getMarketingConsent();
-  if (!consent?.analytics && !consent?.marketing) return;
-
-  gtmLoaded = true;
-  dataLayer().push({
-    event: "gtm.js",
-    "gtm.start": Date.now(),
-  });
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(
-    gtmId
-  )}`;
-  document.head.appendChild(script);
 }
 
 function installClientErrorMonitoring() {
@@ -244,31 +225,70 @@ function installClientErrorMonitoring() {
   });
 }
 
+const attributionPaths = new Set([
+  "/", "/host/", "/host/overview/", "/host/platform/", "/host/planners/",
+  "/host/mixers/", "/host/clubs/", "/host/directory/", "/host/claim/",
+  "/host/apply/", "/host/stack/", "/host/workflows/",
+]);
+
+function canCaptureAttribution() {
+  return attributionPaths.has(window.location.pathname) && getMarketingConsent()?.analytics === true;
+}
+
+function clearLegacyAttribution() {
+  try { window.localStorage.removeItem(legacyAttributionStorageKey); } catch { /* Optional storage. */ }
+}
+
+function clearAttribution() {
+  clearLegacyAttribution();
+  try { window.sessionStorage?.removeItem(attributionStorageKey); } catch { /* Optional storage. */ }
+}
+
 function captureAttribution() {
+  clearLegacyAttribution();
+  if (!canCaptureAttribution()) { clearAttribution(); return; }
   const current = currentAttributionTouch();
   const stored = readAttribution();
-  if (!stored) {
-    writeJson(attributionStorageKey, {
-      firstTouch: current,
-      lastTouch: current,
-    });
-    return;
-  }
-
-  if (Object.keys(current.values).length === 0 && !current.referrer) {
-    return;
-  }
-
-  writeJson(attributionStorageKey, {
-    firstTouch: stored.firstTouch,
-    lastTouch: current,
-  });
+  if (stored && Object.keys(current.values).length === 0) return;
+  try {
+    window.sessionStorage.setItem(attributionStorageKey, JSON.stringify({
+      firstTouch: stored?.firstTouch ?? current, lastTouch: current,
+    }));
+  } catch { /* Attribution must not block a submission. */ }
 }
 
 function readAttribution(): StoredAttribution | null {
-  const stored = readJson<StoredAttribution>(attributionStorageKey);
-  if (!stored?.firstTouch || !stored?.lastTouch) return null;
-  return stored;
+  clearLegacyAttribution();
+  if (!canCaptureAttribution()) { clearAttribution(); return null; }
+  try {
+    const stored = JSON.parse(window.sessionStorage.getItem(attributionStorageKey) ?? "null") as StoredAttribution | null;
+    const firstTouch = safeStoredTouch(stored?.firstTouch);
+    const lastTouch = safeStoredTouch(stored?.lastTouch);
+    if (!firstTouch || !lastTouch) { clearAttribution(); return null; }
+    return {firstTouch, lastTouch};
+  } catch { clearAttribution(); return null; }
+}
+
+function campaignValues(values: Record<string, unknown>): Record<string, string> {
+  const safe: Record<string, string> = {};
+  for (const key of attributionKeys) {
+    const value = values[key];
+    // Campaign labels only: reject addresses, URLs, whitespace, and free-text values.
+    if (typeof value === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/u.test(value)) safe[key] = value;
+  }
+  return safe;
+}
+
+function attributionTouch(capturedAt: string, landingPath: string, values: Record<string, string>): AttributionTouch {
+  return {capturedAt, landingPath, landingUrl: `${new URL(window.location.href).origin}${landingPath}`, referrer: null, values};
+}
+
+function safeStoredTouch(touch?: AttributionTouch): AttributionTouch | null {
+  if (!touch || typeof touch.capturedAt !== "string" || !attributionPaths.has(touch.landingPath) ||
+    !touch.values || typeof touch.values !== "object" || Array.isArray(touch.values)) return null;
+  const age = Date.now() - Date.parse(touch.capturedAt);
+  if (!Number.isFinite(age) || age < 0 || age > attributionMaxAgeMs) return null;
+  return attributionTouch(touch.capturedAt, touch.landingPath, campaignValues(touch.values));
 }
 
 function currentAttributionTouch(): AttributionTouch {
@@ -276,16 +296,9 @@ function currentAttributionTouch(): AttributionTouch {
   const values: Record<string, string> = {};
   for (const key of attributionKeys) {
     const value = params.get(key);
-    if (value) values[key] = value.slice(0, 240);
+    if (value !== null) values[key] = value;
   }
-
-  return {
-    capturedAt: new Date().toISOString(),
-    landingPath: `${window.location.pathname}${window.location.search}`,
-    landingUrl: window.location.href,
-    referrer: document.referrer || null,
-    values,
-  };
+  return attributionTouch(new Date().toISOString(), window.location.pathname, campaignValues(values));
 }
 
 function sanitizeAnalyticsUrlParameter(
