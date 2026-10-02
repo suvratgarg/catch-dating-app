@@ -1777,7 +1777,7 @@
         "hostHomeScreen",
         "hostTodayScreen"
       ],
-      "device": "claude-phone-390x812",
+      "device": "iphone-17-pro",
       "themes": [
         "light",
         "dark"
@@ -1786,6 +1786,9 @@
         "light": "light/host_home_dashboard.png",
         "dark": "dark/host_home_dashboard.png"
       },
+      "marketingFixtureKeys": [
+        "hostMarketingIndia.host.todayDashboard"
+      ],
       "whatItIs": "Host Home Dashboard",
       "keepChangeNotes": ""
     },
@@ -5055,7 +5058,7 @@
         "dark": "dark/host_event_setup.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.eventSetup"
+        "hostMarketingIndia.host.eventSetup"
       ],
       "whatItIs": "Host Event Setup",
       "keepChangeNotes": ""
@@ -5160,7 +5163,7 @@
         "dark": "dark/host_create_basics.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.createBasics"
+        "hostMarketingIndia.host.createBasics"
       ],
       "whatItIs": "Host Create Basics",
       "keepChangeNotes": ""
@@ -5180,7 +5183,7 @@
         "dark": "dark/host_create_location.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.createLocation"
+        "hostMarketingIndia.host.createLocation"
       ],
       "whatItIs": "Host Create Location",
       "keepChangeNotes": ""
@@ -5217,7 +5220,7 @@
         "dark": "dark/host_create_schedule.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.createSchedule"
+        "hostMarketingIndia.host.createSchedule"
       ],
       "whatItIs": "Host Create Schedule",
       "keepChangeNotes": ""
@@ -5254,7 +5257,7 @@
         "dark": "dark/host_create_policy.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.createPolicy"
+        "hostMarketingIndia.host.createPolicy"
       ],
       "whatItIs": "Host Create Policy",
       "keepChangeNotes": ""
@@ -5359,7 +5362,7 @@
         "dark": "dark/host_create_guide.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.createGuide"
+        "hostMarketingIndia.host.createGuide"
       ],
       "whatItIs": "Host Create Guide",
       "keepChangeNotes": ""
@@ -6654,7 +6657,7 @@
         "dark": "dark/host_live_console.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.liveConsole"
+        "hostMarketingIndia.host.liveConsole"
       ],
       "whatItIs": "Host Live Console",
       "keepChangeNotes": ""
@@ -6708,7 +6711,7 @@
         "dark": "dark/host_post_event_report.png"
       },
       "marketingFixtureKeys": [
-        "salesDemo.host.postEventReport"
+        "hostMarketingIndia.host.postEventReport"
       ],
       "whatItIs": "Host Post Event Report",
       "keepChangeNotes": ""
