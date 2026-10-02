@@ -415,6 +415,10 @@ import {
   participantProfileClaimReceiptDocumentSchema,
   claimParticipantFormProfileCallablePayloadSchema,
   claimParticipantFormProfileCallableResponseSchema,
+  listParticipantActivityCallablePayloadSchema,
+  listParticipantActivityCallableResponseSchema,
+  getParticipantActivityCallablePayloadSchema,
+  getParticipantActivityCallableResponseSchema,
   listParticipantFormProfilesCallablePayloadSchema,
   listParticipantFormProfilesCallableResponseSchema,
   getParticipantFormPhotoCallablePayloadSchema,
@@ -1592,6 +1596,10 @@ export const validateParticipantOrganizerCardDocument = ajv.compile(participantO
 export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
 export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
 export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateListParticipantActivityCallablePayload = ajv.compile(listParticipantActivityCallablePayloadSchema);
+export const validateListParticipantActivityCallableResponse = ajv.compile(listParticipantActivityCallableResponseSchema);
+export const validateGetParticipantActivityCallablePayload = ajv.compile(getParticipantActivityCallablePayloadSchema);
+export const validateGetParticipantActivityCallableResponse = ajv.compile(getParticipantActivityCallableResponseSchema);
 export const validateListParticipantFormProfilesCallablePayload = ajv.compile(listParticipantFormProfilesCallablePayloadSchema);
 export const validateListParticipantFormProfilesCallableResponse = ajv.compile(listParticipantFormProfilesCallableResponseSchema);
 export const validateGetParticipantFormPhotoCallablePayload = ajv.compile(getParticipantFormPhotoCallablePayloadSchema);

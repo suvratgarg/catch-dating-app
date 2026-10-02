@@ -133057,6 +133057,252 @@ export const claimParticipantFormProfileCallableResponseSchema = {
   }
 };
 
+export const listParticipantActivityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_activity_payload.schema.json",
+  "title": "ListParticipantActivityCallablePayload",
+  "description": "Read the authenticated account's owned form submissions without profile claiming.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceKind",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "sourceKind": {
+      "type": "string",
+      "const": "formResponse"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 8192
+    }
+  }
+};
+
+export const listParticipantActivityCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_activity_response.schema.json",
+  "title": "ListParticipantActivityCallableResponse",
+  "description": "Metadata only after exact account, response and immutable-version proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceKind",
+          "sourceId",
+          "organizerId",
+          "eventId",
+          "formId",
+          "versionId",
+          "formTitle",
+          "purpose",
+          "submittedAtMillis"
+        ],
+        "properties": {
+          "sourceKind": {
+            "type": "string",
+            "const": "formResponse"
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "application",
+              "registration",
+              "intake",
+              "waiver",
+              "feedback",
+              "survey"
+            ]
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 8192
+    }
+  }
+};
+
+export const getParticipantActivityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_participant_activity_payload.schema.json",
+  "title": "GetParticipantActivityCallablePayload",
+  "description": "Read the authenticated account's owned form submissions without profile claiming.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceKind",
+    "sourceId"
+  ],
+  "properties": {
+    "sourceKind": {
+      "type": "string",
+      "const": "formResponse"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getParticipantActivityCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_participant_activity_response.schema.json",
+  "title": "GetParticipantActivityCallableResponse",
+  "description": "Metadata only after exact account, response and immutable-version proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item"
+  ],
+  "properties": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceKind",
+        "sourceId",
+        "organizerId",
+        "eventId",
+        "formId",
+        "versionId",
+        "formTitle",
+        "purpose",
+        "submittedAtMillis"
+      ],
+      "properties": {
+        "sourceKind": {
+          "type": "string",
+          "const": "formResponse"
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "submittedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
 export const listParticipantFormProfilesCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_participant_form_profiles_payload.schema.json",

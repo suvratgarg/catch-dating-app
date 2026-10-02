@@ -1271,6 +1271,26 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
   },
   {
+    name: "ListParticipantActivityCallablePayload",
+    source: "callables/list_participant_activity_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantActivityCallablePayload.ts",
+  },
+  {
+    name: "ListParticipantActivityCallableResponse",
+    source: "callable_responses/list_participant_activity_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantActivityCallableResponse.ts",
+  },
+  {
+    name: "GetParticipantActivityCallablePayload",
+    source: "callables/get_participant_activity_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantActivityCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantActivityCallableResponse",
+    source: "callable_responses/get_participant_activity_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantActivityCallableResponse.ts",
+  },
+  {
     name: "ListParticipantFormProfilesCallablePayload",
     source: "callables/list_participant_form_profiles_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantFormProfilesCallablePayload.ts",

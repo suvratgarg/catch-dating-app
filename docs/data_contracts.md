@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.157.2
-updated: 2026-10-01
+version: 1.158.0
+updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -3035,6 +3035,16 @@ tombstone in one transaction. Withdrawing the source response makes it
 unavailable; account deletion removes the pointers. Claimed profile updates,
 image transfer, participant-owned cards and explicit event sharing are separate
 operations and must not infer permission from these prepared pointers.
+
+`listParticipantActivity` and `getParticipantActivity` return only the
+authenticated account’s own submitted form metadata, independent of profile
+claims or verified-phone grants. The point and page adapters share exact UID,
+response/version scope, notice, captured identity, timestamps, withdrawal and
+account-deletion proof. Lists query `respondentUid`, scan at most 31 rows in
+one read transaction, cache each immutable version within that transaction,
+and advance subject/source-bound cursors across omitted sources. Answers,
+contact endpoints and Host notes are excluded; a configured event target
+does not prove booking or admission. Anonymous responses remain unowned.
 
 `getParticipantFormProfile` resolves only the verified owner’s designated fields
 and returns current editable core values, core/intake revisions, and selected

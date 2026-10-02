@@ -417,6 +417,10 @@ export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrgan
 export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
 export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {listParticipantActivityCallablePayloadSchema} from "./schemas/listParticipantActivityInput";
+export {listParticipantActivityCallableResponseSchema} from "./schemas/listParticipantActivityOutput";
+export {getParticipantActivityCallablePayloadSchema} from "./schemas/getParticipantActivityInput";
+export {getParticipantActivityCallableResponseSchema} from "./schemas/getParticipantActivityOutput";
 export {listParticipantFormProfilesCallablePayloadSchema} from "./schemas/listParticipantFormProfilesInput";
 export {listParticipantFormProfilesCallableResponseSchema} from "./schemas/listParticipantFormProfilesOutput";
 export {getParticipantFormPhotoCallablePayloadSchema} from "./schemas/getParticipantFormPhotoInput";

@@ -942,10 +942,13 @@
       "read": "server only; public and manager surfaces receive purpose-built projections",
       "write": "immutable server-created version only",
       "exportedFunctions": [
-        "publishOrganizerForm"
+        "publishOrganizerForm",
+        "listParticipantActivity",
+        "getParticipantActivity"
       ],
       "migrationNotes": [
-        "sourceDraftRevision makes publish retries idempotent and every historical definition immutable."
+        "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
+        "Own-account activity reads only immutable version metadata after exact respondent, notice and source proof; no profile claim or event admission is implied."
       ]
     },
     {

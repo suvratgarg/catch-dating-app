@@ -8,6 +8,9 @@ import {validateOrganizerFormResponseDocument} from
 import {validateOrganizerFormVersionDocument} from
   "../shared/generated/validators/organizerFormVersionDocument";
 
+/** Distinguishes malformed caller paging input from infrastructure errors. */
+export class ParticipantActivityInputError extends RangeError {}
+
 /** Internal source proof, not a callable DTO or an editable activity record. */
 export interface ParticipantFormActivitySource {
   responseId: string;
@@ -61,7 +64,7 @@ export async function readParticipantFormActivityPageSource(params: {
   const nowMillis = params.nowMillis ?? Date.now();
   if (!documentId(uid) || !Number.isInteger(limit) || limit < 1 || limit > 30 ||
       !Number.isFinite(nowMillis) || nowMillis < 0) {
-    throw new RangeError("Invalid form activity page.");
+    throw new ParticipantActivityInputError("Invalid form activity page.");
   }
   const after = decodeCursor(params.cursor, uid);
   return db.runTransaction(async (tx) => {
@@ -162,7 +165,7 @@ function decodeCursor(value: string | null, uid: string): string | null {
         decoded.after.includes("/")) throw new Error();
     return decoded.after;
   } catch {
-    throw new RangeError("Invalid form activity cursor.");
+    throw new ParticipantActivityInputError("Invalid form activity cursor.");
   }
 }
 

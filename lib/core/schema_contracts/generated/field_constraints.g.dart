@@ -81652,6 +81652,88 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getParticipantActivityCallablePayloadSourceId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallablePayload.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallablePayloadSourceKind = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallablePayload.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemEventId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemFormId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemFormTitle = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemOrganizerId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemPurpose = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const getParticipantActivityCallableResponseItemSourceId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemSourceKind = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantActivityCallableResponseItemSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.submittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getParticipantActivityCallableResponseItemVersionId = CatchContractFieldConstraints(
+    path: 'getParticipantActivityCallableResponse.item.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getParticipantFormPhotoCallablePayloadAssetId = CatchContractFieldConstraints(
     path: 'getParticipantFormPhotoCallablePayload.assetId',
     maxLength: 180,
@@ -90942,6 +91024,110 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallablePayload.cursor',
+    maxLength: 8192,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 30,
+  );
+
+  static const listParticipantActivityCallablePayloadSourceKind = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallablePayload.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 30,
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsEventId = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsFormId = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsFormTitle = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsPurpose = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['application', 'registration', 'intake', 'waiver', 'feedback', 'survey'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsSourceId = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsSourceKind = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.submittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listParticipantActivityCallableResponseItemsItemsVersionId = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.items.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantActivityCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listParticipantActivityCallableResponse.nextCursor',
+    maxLength: 8192,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -167765,6 +167951,17 @@ abstract final class CatchContractConstraints {
     'getOrganizerWhatsappThreadCallableResponse.serviceWindowExpiresAtMillis': getOrganizerWhatsappThreadCallableResponseServiceWindowExpiresAtMillis,
     'getOrganizerWhatsappThreadCallableResponse.serviceWindowOpen': getOrganizerWhatsappThreadCallableResponseServiceWindowOpen,
     'getOrganizerWhatsappThreadCallableResponse.threadId': getOrganizerWhatsappThreadCallableResponseThreadId,
+    'getParticipantActivityCallablePayload.sourceId': getParticipantActivityCallablePayloadSourceId,
+    'getParticipantActivityCallablePayload.sourceKind': getParticipantActivityCallablePayloadSourceKind,
+    'getParticipantActivityCallableResponse.item.eventId': getParticipantActivityCallableResponseItemEventId,
+    'getParticipantActivityCallableResponse.item.formId': getParticipantActivityCallableResponseItemFormId,
+    'getParticipantActivityCallableResponse.item.formTitle': getParticipantActivityCallableResponseItemFormTitle,
+    'getParticipantActivityCallableResponse.item.organizerId': getParticipantActivityCallableResponseItemOrganizerId,
+    'getParticipantActivityCallableResponse.item.purpose': getParticipantActivityCallableResponseItemPurpose,
+    'getParticipantActivityCallableResponse.item.sourceId': getParticipantActivityCallableResponseItemSourceId,
+    'getParticipantActivityCallableResponse.item.sourceKind': getParticipantActivityCallableResponseItemSourceKind,
+    'getParticipantActivityCallableResponse.item.submittedAtMillis': getParticipantActivityCallableResponseItemSubmittedAtMillis,
+    'getParticipantActivityCallableResponse.item.versionId': getParticipantActivityCallableResponseItemVersionId,
     'getParticipantFormPhotoCallablePayload.assetId': getParticipantFormPhotoCallablePayloadAssetId,
     'getParticipantFormPhotoCallablePayload.questionId': getParticipantFormPhotoCallablePayloadQuestionId,
     'getParticipantFormPhotoCallablePayload.responseId': getParticipantFormPhotoCallablePayloadResponseId,
@@ -169048,6 +169245,20 @@ abstract final class CatchContractConstraints {
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.serviceWindowExpiresAtMillis': listOrganizerWhatsappThreadsCallableResponseThreadsItemsServiceWindowExpiresAtMillis,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.serviceWindowOpen': listOrganizerWhatsappThreadsCallableResponseThreadsItemsServiceWindowOpen,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.threadId': listOrganizerWhatsappThreadsCallableResponseThreadsItemsThreadId,
+    'listParticipantActivityCallablePayload.cursor': listParticipantActivityCallablePayloadCursor,
+    'listParticipantActivityCallablePayload.limit': listParticipantActivityCallablePayloadLimit,
+    'listParticipantActivityCallablePayload.sourceKind': listParticipantActivityCallablePayloadSourceKind,
+    'listParticipantActivityCallableResponse.items': listParticipantActivityCallableResponseItems,
+    'listParticipantActivityCallableResponse.items.items.eventId': listParticipantActivityCallableResponseItemsItemsEventId,
+    'listParticipantActivityCallableResponse.items.items.formId': listParticipantActivityCallableResponseItemsItemsFormId,
+    'listParticipantActivityCallableResponse.items.items.formTitle': listParticipantActivityCallableResponseItemsItemsFormTitle,
+    'listParticipantActivityCallableResponse.items.items.organizerId': listParticipantActivityCallableResponseItemsItemsOrganizerId,
+    'listParticipantActivityCallableResponse.items.items.purpose': listParticipantActivityCallableResponseItemsItemsPurpose,
+    'listParticipantActivityCallableResponse.items.items.sourceId': listParticipantActivityCallableResponseItemsItemsSourceId,
+    'listParticipantActivityCallableResponse.items.items.sourceKind': listParticipantActivityCallableResponseItemsItemsSourceKind,
+    'listParticipantActivityCallableResponse.items.items.submittedAtMillis': listParticipantActivityCallableResponseItemsItemsSubmittedAtMillis,
+    'listParticipantActivityCallableResponse.items.items.versionId': listParticipantActivityCallableResponseItemsItemsVersionId,
+    'listParticipantActivityCallableResponse.nextCursor': listParticipantActivityCallableResponseNextCursor,
     'listParticipantFormProfilesCallablePayload.cursor': listParticipantFormProfilesCallablePayloadCursor,
     'listParticipantFormProfilesCallablePayload.limit': listParticipantFormProfilesCallablePayloadLimit,
     'listParticipantFormProfilesCallableResponse.items': listParticipantFormProfilesCallableResponseItems,

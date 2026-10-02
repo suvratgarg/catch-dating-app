@@ -417,6 +417,10 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateListParticipantActivityCallablePayload} from "./validators/listParticipantActivityInput";
+export {validateListParticipantActivityCallableResponse} from "./validators/listParticipantActivityOutput";
+export {validateGetParticipantActivityCallablePayload} from "./validators/getParticipantActivityInput";
+export {validateGetParticipantActivityCallableResponse} from "./validators/getParticipantActivityOutput";
 export {validateListParticipantFormProfilesCallablePayload} from "./validators/listParticipantFormProfilesInput";
 export {validateListParticipantFormProfilesCallableResponse} from "./validators/listParticipantFormProfilesOutput";
 export {validateGetParticipantFormPhotoCallablePayload} from "./validators/getParticipantFormPhotoInput";
