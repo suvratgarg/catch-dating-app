@@ -1,19 +1,19 @@
 # Analytics Warehouse
 
-Host/admin analytics are served from BigQuery marts. Firestore remains the
-operational database; Firestore documents are exported to BigQuery and joined
-with GA4/direct behavioral events here.
+The warehouse layer serves host/admin historical aggregates from BigQuery marts.
+Firestore remains the operational database; its exported documents join
+first-party behavioral observations here. The host callable also reads bounded,
+projected current internal registration outcomes directly from Firestore; those
+separate stage counts are not historical cohort conversions.
 
 ## Host Inputs
 
 - `catch_analytics.host_analytics_events`: aggregate-safe public organizer
   discovery events written by `recordOrganizerAnalyticsEvent`.
-- `analytics_526484083.events_*`: GA4 daily export for organizer behavior
-  events emitted through GTM/dataLayer as `organizer_<eventName>`. The mart
-  uses GA4 as a backup/source for behavioral counts when those export tables
-  exist, and de-duplicates against direct callable events by taking the larger
-  daily count for the same organizer/event/event-name key. Canonical
-  `organizer_id` takes precedence over historical `club_id` GA4 parameters.
+- `analytics_526484083.events_*`: optional historical GA4 organizer behavior
+  diagnostics. The refresh can stage these exports, but host discovery counters
+  read only `host_analytics_events`; GA4 is neither a fallback nor a larger-count
+  override. Advertising-provider events do not increase first-party counters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
   `organizers`, `events`, `eventParticipations`, `payments`, `reviews`,
   `savedEvents`, `eventInviteLinks`, and `matches`. The retained
@@ -32,10 +32,37 @@ with GA4/direct behavioral events here.
   they do not make the legacy Firestore collection authoritative. Event/review
   JSON prefers nonempty `organizerId` and falls back to historical `clubId`.
 
+Host behavioral counts use `COUNT(DISTINCT analytics_event_id)` at the
+organizer/event/name/day grain. Streaming insert IDs alone are best-effort;
+the distinct event ID also prevents retries from inflating the refreshed mart.
+`outbound_booking_clicks` counts distinct `outboundClick` events only from
+`external_event_card` and `external_event_booking`. These are provider handoffs,
+not external purchases or confirmed bookings; ordinary source/contact links
+are not provider booking clicks.
+
+Website views are consented observations, deduplicated per page, tab session
+and UTC day. The callable scopes session hashes to organizer/day and uses a
+stable view event ID for repeated session views. Counts are not unique people
+or all visits: new tabs, days, storage loss and clients without session IDs can
+produce additional observations; denied consent and failed ingestion omit
+activity. Authenticated canonical staff previews are excluded, but signed-out
+owner previews cannot be recognised. App Check and rate protection limit abuse;
+there is no complete bot or human-visitor classification. Never infer identity,
+true visitor uniqueness, or external conversion from these counters.
+
 Deploy order:
 
 1. Run `node tool/run.mjs check analytics:check-host-bigquery`.
 2. Run `ddl/host_analytics_events.sql` and `ddl/mart_host_event_daily.sql`.
+   Apply the additive `outbound_booking_clicks` column before enabling the new
+   refresh SQL, then explicitly refresh its window. The reader extracts this
+   optional field from row JSON, so old schemas and unrefreshed null rows retain
+   the other metrics while provider booking clicks remain unavailable. A grouped
+   day with any unknown value also stays unavailable; unknown is not measured
+   zero. Checked-in DDL/SQL and local tests do not update a live table or schedule.
+   This compatibility uses BigQuery's documented [row range variables](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#range_variables)
+   and [JSON functions](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/json_functions),
+   without a query that directly references the optional column.
 3. For a new warehouse, deploy its planned Firestore-to-BigQuery instances.
    Existing club exports require the bounded organizer cutover below before
    running the current host refresh; do not deploy all extensions as a shortcut.

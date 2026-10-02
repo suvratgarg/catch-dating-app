@@ -156,3 +156,31 @@ test("no-ops need no API review but cannot bypass mixed-stage or snapshot policy
   assert.equal((await f.check()).productionPromotion.environment, "prod");
   assert.equal(f.calls.length, 0);
 });
+
+
+test("a removed human review environment retains protected production", async () => {
+  const f = fixture();
+  const result = await reviewedBackendPromotion({plan: f.plan, repository: "owner/repo", sourceTreeSha: tree,
+    request: async (endpoint) => {
+      if (endpoint.includes("/environments/backend-review")) throw new Error("HTTP 404");
+      assert.ok(Object.hasOwn(f.values, endpoint), endpoint);
+      return f.values[endpoint];
+    }});
+  assert.equal(result.productionPromotion.environment, "prod");
+  assert.match(result.productionPromotion.reason, /Source review evidence unavailable: HTTP 404/u);
+  assert.deepEqual(result.targets, f.plan.targets);
+});
+
+test("successful automated PR CI without a human review job retains protected production", async () => {
+  const f = fixture();
+  f.values[`${f.prefix}/actions/runs/11/jobs?filter=latest&per_page=100`].jobs = [
+    {name: "Required CI", status: "completed", conclusion: "success"},
+    {name: "Functions", status: "completed", conclusion: "success"},
+  ];
+  // Even historical approval data cannot replace the completed human gate.
+  const result = await f.check();
+  assert.equal(result.productionPromotion.environment, "prod");
+  assert.deepEqual(result.targets, f.plan.targets);
+  f.values[`${f.prefix}/actions/runs/11/approvals`] = [];
+  assert.equal((await f.check()).productionPromotion.environment, "prod");
+});

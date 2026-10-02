@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {evaluatePromotionFreshness} from "./web_hosting_freshness.mjs";
+import {authorizePromotion, evaluatePromotionAuthorization, evaluatePromotionFreshness} from "./web_hosting_freshness.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -37,6 +37,8 @@ function finalFreshnessGateScript() {
 function runFinalFreshnessGate(mode) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "web-hosting-freshness-"));
   const bin = path.join(directory, "bin");
+  fs.mkdirSync(path.join(directory, "web-hosting-control"));
+  fs.copyFileSync(path.join(repoRoot, "tool/ci/web_hosting_freshness.mjs"), path.join(directory, "web-hosting-control/web_hosting_freshness.mjs"));
   fs.mkdirSync(bin);
   const trace = path.join(directory, "calls.log");
   const sha = "a".repeat(40);
@@ -78,6 +80,7 @@ esac
       encoding: "utf8",
       env: {
         ...process.env,
+        RUNNER_TEMP: directory,
         PATH: `${bin}${path.delimiter}${process.env.PATH}`,
         GATE_TRACE: trace,
         GATE_MODE: mode,
@@ -175,7 +178,7 @@ test("standalone Host web uses the same immutable build and promotion authority"
   assert.match(build,
     /Build the exact production Host web bytes once[\s\S]*flutter_with_env\.sh prod --role host build web --release/u);
   const promote = workflow("_web-hosting-promote.yml");
-  assert.match(promote, /expected_name="Host Website"/u);
+  assert.match(fs.readFileSync(path.join(repoRoot, "tool/ci/web_hosting_freshness.mjs"), "utf8"), /expectedName =/u);
   assert.match(promote, /https:\/\/catchdates-host\.web\.app\//u);
 });
 
@@ -388,22 +391,11 @@ test("build credentials are isolated to a read-only marketing snapshot job", () 
 
 test("promotion downloads only the immutable artifact id and verifies bytes before credentials", () => {
   const promote = workflow("_web-hosting-promote.yml");
-  for (const predicate of [
-    '.name == $expected_name',
-    '(.path | split("@")[0]) == $expected_path',
-    '.event == "push"',
-    '.head_branch == "main"',
-    '.head_repository.full_name == $repository',
-    ".workflow_id",
-    ".run_number",
-    ".workflow_run.repository_id == $repository_id",
-    ".workflow_run.head_repository_id == $repository_id",
-    '.workflow_run.head_sha == $source_sha',
-  ]) assert.ok(promote.includes(predicate), `missing promotion binding ${predicate}`);
+  assert.match(promote, /web_hosting_freshness.mjs" authorize/u);
   assert.match(promote, /actions\/artifacts\/\$ARTIFACT_ID\/zip/u);
   assert.match(promote,
     /sha256:\$\(sha256sum build\/web-delivery\/source\.zip \| awk '\{print \$1\}'\)/u);
-  assert.match(promote, /\.digest == \$digest/u);
+
   assert.ok(promote.includes("unzip -Z1 build/web-delivery/source.zip"));
   assert.ok(promote.includes("awk '/(^\\/|(^|\\/)\\.\\.($|\\/))/ { exit 64 }'"));
   assert.ok(promote.includes('tar -tzf "$archive"'));
@@ -440,17 +432,12 @@ test("recovery is exact, reasoned, terminal-only, and separate from validation d
   assert.match(promote, /GITHUB_RUN_ATTEMPT > 1[\s\S]*fresh manual dispatch/u);
   assert.match(promote, /RECOVERY_REASON\/\/\[\[:space:\]\]\//u);
   assert.match(promote, /test "\$SOURCE_CI_RUN_ID" != "\$GITHUB_RUN_ID"/u);
-  assert.match(promote, /\.status == "completed"/u);
-  for (const terminal of [
-    "failure",
-    "cancelled",
-    "timed_out",
-    "stale",
-    "action_required",
-    "startup_failure",
-  ]) assert.match(promote, new RegExp(`\\.conclusion == "${terminal}"`));
-  assert.doesNotMatch(promote,
-    /\.conclusion == "success" or|\.conclusion == "neutral"|\.conclusion == "skipped"/u);
+  const helper = fs.readFileSync(path.join(repoRoot, "tool/ci/web_hosting_freshness.mjs"), "utf8");
+  assert.match(helper, /attempt.status === "completed"/u);
+  for (const terminal of ["failure", "cancelled", "timed_out", "stale", "action_required", "startup_failure"]) {
+    assert.ok(helper.includes(`"${terminal}"`));
+  }
+  assert.doesNotMatch(helper, /terminal = .*"(?:success|neutral|skipped)"/u);
 
   for (const surface of ["admin", "marketing"]) {
     const source = caller(surface);
@@ -467,39 +454,13 @@ test("recovery is exact, reasoned, terminal-only, and separate from validation d
 
 test("stale recovery and an older partial-rerun artifact fail before mutation", () => {
   const promote = workflow("_web-hosting-promote.yml");
-  assert.match(promote,
-    /actions\/workflows\/\$\{SURFACE\}-website\.yml/u);
-  assert.match(promote, /test "\$canonical_workflow_id" = "\$workflow_id"/u);
-  assert.equal(
-    (promote.match(/actions\/workflows\/\$[A-Z_a-z]+\/runs\?branch=main&event=push&per_page=1/gu) ?? []).length,
-    2,
-    "authorization and final freshness each use the exact latest-run endpoint",
-  );
-  assert.match(promote,
-    /latest_surface_push_path="repos\/\$GITHUB_REPOSITORY\/actions\/workflows\/\$SOURCE_CI_WORKFLOW_ID\/runs\?branch=main&event=push&per_page=1"/u,
-    "the final freshness gate checks the same exact latest-run endpoint");
-  assert.match(promote,
-    /actions\/runs\/\$SOURCE_CI_RUN_ID\/artifacts\?per_page=100/u);
-  assert.equal(
-    (promote.match(/actions\/runs\/\$SOURCE_CI_RUN_ID"\)/gu) ?? []).length,
-    1,
-    "authorization checks the source run directly",
-  );
-  assert.match(promote,
-    /source_run_path="repos\/\$GITHUB_REPOSITORY\/actions\/runs\/\$SOURCE_CI_RUN_ID"/u,
-    "the final freshness gate rereads the same source run");
-  assert.ok((promote.match(/\.run_attempt == \$run_attempt/gu) ?? []).length >= 2,
-    "historical binding and pre-mutation producer attempt must stay enforced");
-  const freshness = fs.readFileSync(
-    path.join(repoRoot, "tool", "ci", "web_hosting_freshness.mjs"),
-    "utf8",
-  );
-  assert.match(freshness,
-    /producerAttempt: sourceRun\.runAttempt === expectedAttempt/u);
-  assert.match(promote,
-    /freshest_attempt[\s\S]*max \/\/ 0[\s\S]*freshest_attempt" != "\$SOURCE_CI_RUN_ATTEMPT/u);
-  assert.match(promote,
-    /not the unique freshest package for its producing run/u);
+  const helper = fs.readFileSync(path.join(repoRoot, "tool/ci/web_hosting_freshness.mjs"), "utf8");
+  assert.match(helper, /actions\/workflows\/\$\{expected.surface\}-website.yml/u);
+  assert.match(helper, /canonicalWorkflowIdentity/u);
+  assert.match(helper, /freshestPackagedAttempt/u);
+  assert.match(helper, /uniqueSelectedArtifact/u);
+  assert.match(helper, /actions\/runs\/\$\{expected.runId\}\/artifacts\?per_page=100/u);
+  assert.match(helper, /producerAttempt: sourceRun\.runAttempt === expectedAttempt/u);
   assert.equal(
     (promote.match(/test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/gu) ?? []).length,
     1,
@@ -678,4 +639,193 @@ test("marketing production postconditions run only after exact promotion", () =>
     /probeProduction\.mjs --base-url https:\/\/catchdates\.com --json/u);
   assert.match(promote,
     /if: \$\{\{ inputs\.surface == 'marketing' \}\}/u);
+});
+
+function initialEvidence() {
+  const sha = "a".repeat(40);
+  const expected = {surface: "marketing", repository: "owner/repo", runId: "101",
+    runAttempt: 2, sourceSha: sha, recovery: false, artifactId: 901,
+    artifactDigest: `sha256:${"b".repeat(64)}`};
+  const run = {id: 101, run_attempt: 2, head_sha: sha, name: "Marketing Website",
+    path: ".github/workflows/marketing-website.yml@main", event: "push", head_branch: "main",
+    head_repository: {full_name: "owner/repo"}, workflow_id: 55, run_number: 73,
+    status: "completed", conclusion: "failure"};
+  const artifact = {id: 901, expired: false,
+    name: `web-hosting-v1-marketing-55-73-101-${sha}-2`, digest: expected.artifactDigest,
+    workflow_run: {id: 101, repository_id: 12, head_repository_id: 12,
+      head_branch: "main", head_sha: sha}};
+  return {expected, snapshot: {attempt: {...run}, current: {...run},
+    canonical: {id: 55, path: run.path}, latest: {workflow_runs: [run]},
+    artifact, repository: {id: 12}, pages: [{artifacts: [artifact]}]}};
+}
+
+test("initial authorization requires every original metadata predicate and fails closed for absent fields", () => {
+  const valid = initialEvidence();
+  assert.equal(evaluatePromotionAuthorization(valid.expected, valid.snapshot).passed, true);
+  for (const field of Object.keys(valid.expected)) {
+    const e = structuredClone(valid); delete e.expected[field];
+    assert.equal(evaluatePromotionAuthorization(e.expected, e.snapshot).passed, false, `missing expected ${field}`);
+  }
+  // Each actual scalar in the original conjunction is independently required.
+  const paths = [
+    ...["attempt", "current"].flatMap(key => ["id", "run_attempt", "head_sha", "name", "path", "event", "head_branch", "head_repository.full_name"].map(field => `${key}.${field}`)),
+    "attempt.workflow_id", "attempt.run_number", "canonical.id", "canonical.path",
+    "latest.workflow_runs.0.id", "latest.workflow_runs.0.run_number", "latest.workflow_runs.0.head_sha",
+    "latest.workflow_runs.0.head_branch", "latest.workflow_runs.0.event", "repository.id",
+    ...["id", "expired", "name", "digest", "workflow_run.id", "workflow_run.repository_id", "workflow_run.head_repository_id", "workflow_run.head_branch", "workflow_run.head_sha"].map(field => `artifact.${field}`),
+  ];
+  for (const field of paths) for (const missing of [false, true]) {
+    const evidence = structuredClone(valid);
+    const parts = field.split(".");
+    const key = parts.pop();
+    const target = parts.reduce((object, part) => object[part], evidence.snapshot);
+    if (missing) delete target[key]; else target[key] = "invalid-response-secret";
+    assert.equal(evaluatePromotionAuthorization(evidence.expected, evidence.snapshot).passed, false, `${field} ${missing}`);
+  }
+  for (const field of ["status", "conclusion"]) {
+    const e = initialEvidence(); e.expected.recovery = true;
+    delete e.snapshot.attempt[field];
+    assert.equal(evaluatePromotionAuthorization(e.expected, e.snapshot).passed, false);
+  }
+  for (const mutate of [e => {e.snapshot.pages = [];},
+    e => {e.snapshot.pages[0].artifacts.push({...e.snapshot.artifact});},
+    e => {e.snapshot.pages[0].artifacts.push({...e.snapshot.artifact, name: e.snapshot.artifact.name.slice(0, -1) + "3"});},
+    e => {e.snapshot.pages[0].artifacts.push({...e.snapshot.artifact, name: e.snapshot.artifact.name.slice(0, -1) + "invalid"});}]) {
+    const e = initialEvidence(); mutate(e);
+    assert.equal(evaluatePromotionAuthorization(e.expected, e.snapshot).passed, false);
+  }
+});
+
+test("initial authorization rereads the entire snapshot exactly once without mixing metadata", () => {
+  for (const mode of ["valid", "stale-then-valid", "persistent", "invalid", "unavailable"]) {
+    const {expected, snapshot} = initialEvidence();
+    const calls = []; const logs = [];
+    const api = (endpoint, options) => {
+      calls.push({endpoint, ...options});
+      if (mode === "unavailable") throw Error("TOKEN SECRET response body");
+      let value = endpoint.includes("/attempts/") ? snapshot.attempt :
+        endpoint.endsWith("/runs/101") ? snapshot.current :
+        endpoint.includes("marketing-website.yml") ? snapshot.canonical :
+        endpoint.includes("/workflows/55/runs?") ? snapshot.latest :
+        endpoint.includes("/artifacts/901") ? snapshot.artifact :
+        endpoint.includes("/runs/101/artifacts?") ? snapshot.pages : snapshot.repository;
+      value = structuredClone(value);
+      if (endpoint.includes("/workflows/55/runs?") && mode !== "valid" && !(mode === "stale-then-valid" && options.noCache)) {
+        value.workflow_runs[0].id = 102;
+      }
+      if (mode === "invalid" && endpoint.endsWith("/artifacts/901")) value.digest = "TOKEN SECRET response body";
+      return value;
+    };
+    if (["valid", "stale-then-valid"].includes(mode)) assert.equal(authorizePromotion(expected, api, x => logs.push(x)).workflowId, 55);
+    else assert.throws(() => authorizePromotion(expected, api, x => logs.push(x)), /refusing deployment/u);
+    const retries = mode === "valid" ? 0 : 1;
+    assert.equal(logs.length, 1 + retries);
+    assert.equal(calls.filter(x => x.noCache).length, mode === "unavailable" ? 1 : retries * 7);
+    if (mode !== "unavailable") {
+      assert.equal(calls.length, 7 * (1 + retries));
+      assert.deepEqual(calls.slice(0, 7).map(x => x.endpoint), calls.slice(7).map(x => x.endpoint).length ? calls.slice(7).map(x => x.endpoint) : calls.slice(0, 7).map(x => x.endpoint));
+      for (const call of calls.filter(x => x.endpoint.includes("/artifacts"))) assert.equal(call.artifact, true);
+      assert.equal(calls.filter(x => x.paginate).length, 1 + retries);
+    }
+    assert.doesNotMatch(JSON.stringify(logs), /TOKEN|SECRET|response body/u);
+  }
+});
+
+test("initial helper is immutable control-plane code; candidate checkout and cloud auth follow authorization", () => {
+  const promote = workflow("_web-hosting-promote.yml");
+  const control = promote.indexOf("Checkout immutable workflow control plane");
+  const authorization = promote.indexOf("- id: authorize");
+  const source = promote.indexOf("Checkout the exact producing source");
+  const cloud = promote.indexOf("google-github-actions/auth@v3");
+  assert.ok(control >= 0 && control < authorization && authorization < source && source < cloud);
+  assert.match(promote, /ref: \$\{\{ github.workflow_sha \}\}/u);
+  assert.match(promote, /sparse-checkout: tool\/ci\/web_hosting_freshness.mjs/u);
+  assert.match(promote, /persist-credentials: false/u);
+  assert.equal((promote.match(/node "\$RUNNER_TEMP\/web-hosting-control\/web_hosting_freshness.mjs"/gu) ?? []).length, 3);
+  assert.match(promote, /test "\$\(git -C .hosting-control rev-parse HEAD\)" = "\$CONTROL_SHA"/u);
+  const initial = promote.slice(authorization, source);
+  assert.match(initial, /test "\$SOURCE_SHA" = "\$GITHUB_SHA"/u);
+  assert.match(initial, /test "\$SOURCE_CI_RUN_ATTEMPT" = "\$GITHUB_RUN_ATTEMPT"/u);
+  assert.doesNotMatch(initial, /inputs.source_sha \}\}[\s\S]*actions\/checkout|google-github-actions|npm|zip|tar /u);
+});
+
+test("initial authorization CLI preserves API headers, coherent retry and body-free logging", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "web-hosting-initial-cli-"));
+  try {
+    const {expected, snapshot} = initialEvidence();
+    const fixture = path.join(directory, "snapshot.json");
+    const trace = path.join(directory, "trace.jsonl");
+    fs.writeFileSync(fixture, JSON.stringify(snapshot));
+    fs.writeFileSync(path.join(directory, "gh"), `#!/usr/bin/env node
+const fs = require("node:fs");
+const args = process.argv.slice(2);
+fs.appendFileSync(process.env.GATE_TRACE, JSON.stringify(args) + "\\n");
+const s = JSON.parse(fs.readFileSync(process.env.GATE_FIXTURE, "utf8"));
+const endpoint = args.at(-1);
+let value = endpoint.includes("/attempts/") ? s.attempt :
+  endpoint.endsWith("/runs/101") ? s.current :
+  endpoint.includes("marketing-website.yml") ? s.canonical :
+  endpoint.includes("/workflows/55/runs?") ? s.latest :
+  endpoint.includes("/artifacts/901") ? s.artifact :
+  endpoint.includes("/runs/101/artifacts?") ? s.pages : s.repository;
+if (endpoint.includes("/workflows/55/runs?") && !args.includes("Cache-Control: no-cache")) value.workflow_runs[0].id = 102;
+process.stderr.write("SECRET-TOKEN arbitrary response body\\n");
+console.log(JSON.stringify(value));
+`, {mode: 0o755});
+    const result = spawnSync(process.execPath, ["tool/ci/web_hosting_freshness.mjs", "authorize"], {
+      cwd: repoRoot, encoding: "utf8", env: {...process.env,
+        PATH: `${directory}${path.delimiter}${process.env.PATH}`,
+        GATE_FIXTURE: fixture, GATE_TRACE: trace, SURFACE: expected.surface,
+        GITHUB_REPOSITORY: expected.repository, SOURCE_CI_RUN_ID: expected.runId,
+        SOURCE_CI_RUN_ATTEMPT: "2", SOURCE_SHA: expected.sourceSha, IS_RECOVERY: "false",
+        ARTIFACT_ID: "901", ARTIFACT_DIGEST: expected.artifactDigest},
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).workflowId, 55);
+    assert.doesNotMatch(result.stderr + result.stdout, /SECRET-TOKEN|arbitrary response body/u);
+    const calls = fs.readFileSync(trace, "utf8").trim().split("\n").map(line => JSON.parse(line));
+    assert.equal(calls.length, 14);
+    assert.equal(calls.filter(call => call.includes("Cache-Control: no-cache")).length, 7);
+    for (const call of calls.filter(call => call.at(-1).includes("/artifacts"))) {
+      assert.ok(call.includes("X-GitHub-Api-Version: 2026-03-10"));
+    }
+    assert.equal(calls.filter(call => call.includes("--paginate") && call.includes("--slurp")).length, 2);
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
+});
+
+
+test("malformed initial metadata cannot leak API objects or strings through expected diagnostics", () => {
+  for (const poisoned of [{secret: "sentinel-response-body"}, ["sentinel-response-body"], "sentinel-response-body"]) {
+    for (const mutate of [e => {e.snapshot.attempt.workflow_id = poisoned; e.snapshot.canonical.id = poisoned;},
+      e => {e.snapshot.attempt.run_number = poisoned; e.snapshot.latest.workflow_runs[0].run_number = poisoned;},
+      e => {e.snapshot.artifact.name = poisoned;},
+      e => {e.snapshot.repository.id = poisoned; e.snapshot.artifact.workflow_run.repository_id = poisoned;},
+      e => {e.snapshot.attempt.head_sha = poisoned;}]) {
+      const e = initialEvidence(); mutate(e);
+      const result = evaluatePromotionAuthorization(e.expected, e.snapshot);
+      assert.equal(result.passed, false);
+      assert.equal(result.binding, null);
+      assert.doesNotMatch(JSON.stringify(result), /sentinel-response-body|secret/u);
+    }
+  }
+});
+
+test("automatic promotion labels recovery-only diagnostics not applicable while recovery remains terminal-only", () => {
+  const e = initialEvidence();
+  e.snapshot.attempt.status = "in_progress";
+  e.snapshot.attempt.conclusion = null;
+  const automatic = evaluatePromotionAuthorization(e.expected, e.snapshot);
+  assert.equal(automatic.passed, true);
+  for (const key of ["recoveryTerminalStatus", "recoveryTerminalConclusion"]) {
+    assert.equal(automatic.checks[key], true);
+    assert.deepEqual(automatic.observations[key], {expected: "not-applicable", observed: "not-applicable"});
+  }
+  e.expected.recovery = true;
+  const recovery = evaluatePromotionAuthorization(e.expected, e.snapshot);
+  assert.equal(recovery.passed, false);
+  assert.equal(recovery.checks.recoveryTerminalStatus, false);
+  assert.equal(recovery.checks.recoveryTerminalConclusion, false);
+  assert.deepEqual(recovery.observations.recoveryTerminalStatus, {expected: "completed", observed: "in_progress"});
 });

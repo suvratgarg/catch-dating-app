@@ -7,6 +7,7 @@
  *   node tool/harness/verify_local.mjs --base origin/main --list     # show them
  *   node tool/harness/verify_local.mjs --base origin/main --json
  *   node tool/harness/verify_local.mjs --target flutter --list       # one target
+ *   node tool/harness/verify_local.mjs --preflight --base origin/main # cheap structural gates
  *
  * Motivation: every prompt, checklist and doc in this repository that restated
  * "the gates to run" has drifted from CI at least once, and each drift cost a
@@ -22,34 +23,46 @@
 
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
+import {pathToFileURL} from "node:url";
 import path from "node:path";
 import process from "node:process";
 
-import {deriveTargetWorkflows, extractSteps, workflowForTarget} from "./lib/workflow_steps.mjs";
+import {deriveTargetWorkflows, extractSteps, planCodegenFreshness, workflowForTarget} from "./lib/workflow_steps.mjs";
 import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
 
 const WORKFLOW_DIR = ".github/workflows";
 
 function parseArgs(argv) {
-  const args = {base: "origin/main", head: "HEAD", list: false, json: false, targets: []};
+  const args = {base: "origin/main", head: "HEAD", mode: "pr", full: false,
+    commitWindow: false, preflight: false, list: false, json: false, targets: []};
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--list") args.list = true;
     else if (arg === "--json") args.json = true;
+    else if (arg === "--preflight") args.preflight = true;
+    else if (arg === "--full") args.full = true;
+    else if (arg === "--commit-window") args.commitWindow = true;
     else if (arg === "--base") args.base = argv[++i];
     else if (arg === "--head") args.head = argv[++i];
+    else if (arg === "--mode") args.mode = argv[++i];
     else if (arg === "--target") args.targets.push(argv[++i]);
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
   }
+  if (args.preflight && (args.list || args.targets.length > 0)) {
+    throw new Error("--preflight requires a base/head plan and cannot use --list or --target.");
+  }
   return args;
 }
 
-function resolveTargets({base, head}) {
+function resolveTargets({base, head, mode, full, commitWindow}) {
   const result = spawnSync(
-    "node",
-    ["tool/harness.mjs", "plan", "--base", base, "--head", head, "--json"],
-    {encoding: "utf8"},
+    process.execPath,
+    ["tool/harness.mjs", "plan", "--base", base, "--head", head,
+      "--mode", mode, ...(full ? ["--full"] : []),
+      ...(commitWindow ? ["--commit-window"] : []), "--json"],
+    {encoding: "utf8", maxBuffer: 32 * 1024 * 1024},
   );
   // The planner exits non-zero when it cannot map every changed path, but it
   // still emits a usable plan. Treat that as "incomplete", not "unavailable":
@@ -64,14 +77,118 @@ function resolveTargets({base, head}) {
       `${result.stderr || result.stdout}`,
     );
   }
+  if (result.status !== 0 && plan.complete === true) {
+    throw new Error(`harness plan failed (exit ${result.status}): ${result.stderr}`);
+  }
   return {
     targets: plan.operations?.ciTargets ?? [],
+    codegenIds: plan.operations?.codegenIds,
     changedPaths: plan.changedPaths ?? [],
     complete: plan.complete === true,
     mode: plan.mode,
     full: plan.full,
     unknownPaths: plan.unknownPaths ?? [],
+    ambiguousPaths: plan.ambiguousPaths ?? [],
   };
+}
+
+function commitSha(ref) {
+  const result = spawnSync("git", ["rev-parse", "--verify", "--end-of-options",
+    `${ref}^{commit}`], {encoding: "utf8"});
+  if (result.status !== 0 || !/^[0-9a-f]{40}\s*$/u.test(result.stdout)) {
+    throw new Error(`Unable to resolve commit ${ref}: ${result.stderr}`);
+  }
+  return result.stdout.trim();
+}
+
+function runPreflight(args, context) {
+  if (!context.complete || context.unknownPaths.length || context.ambiguousPaths.length) {
+    throw new Error("Structural preflight requires a complete, unambiguous Harness plan: " +
+      JSON.stringify({unknownPaths: context.unknownPaths,
+        ambiguousPaths: context.ambiguousPaths}));
+  }
+  const localRunnableChecks = [];
+  for (const command of [
+    ["tool/harness.mjs", "validate"],
+    ["tool/run.mjs", "check", "--manifest-only"],
+  ]) {
+    const result = spawnSync(process.execPath, command, {encoding: "utf8"});
+    localRunnableChecks.push({command: `node ${command.join(" ")}`,
+      status: result.status === 0 ? "passed" : "failed"});
+    if (result.status !== 0) {
+      throw new Error(`Structural preflight failed: node ${command.join(" ")}\n` +
+        (result.stderr || result.stdout));
+    }
+  }
+  const graph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const inventory = spawnSync("git", ["ls-files", "-t", "--cached", "--others",
+    "--exclude-standard", "-z"], {encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
+  if (inventory.status !== 0) throw new Error("Cannot inspect freshness source materialization.");
+  const files = inventory.stdout.split("\0").filter(Boolean);
+  const runtimes = new Map();
+  const freshnessChecks = planCodegenFreshness({graph, codegenIds: context.codegenIds,
+    repositoryPaths: files.map((file) => file.slice(2)),
+    sparsePaths: files.filter((file) => file.startsWith("S ")).map((file) => file.slice(2)),
+    fileAvailable: (file) => fs.existsSync(file) && fs.statSync(file).isFile(),
+    executableAvailable(executable) {
+      if (!runtimes.has(executable)) {
+        runtimes.set(executable, spawnSync(executable, ["--version"], {
+          encoding: "utf8", timeout: 15_000}).status === 0);
+      }
+      return runtimes.get(executable);
+    },
+    packageAvailable(dependency) {
+      try {
+        if (dependency.kind === "node") {
+          createRequire(path.resolve(dependency.from)).resolve(dependency.name);
+          return true;
+        }
+        const config = JSON.parse(fs.readFileSync(dependency.from, "utf8"));
+        const entry = config.packages.find((candidate) => candidate.name === dependency.name);
+        return entry && fs.existsSync(new URL(entry.rootUri,
+          pathToFileURL(path.resolve(dependency.from))));
+      } catch {
+        return false;
+      }
+    },
+  });
+  for (const check of freshnessChecks) {
+    if (!check.runnable) { check.status = "ci-only"; continue; }
+    const [executable, ...commandArgs] = check.command.trim().split(/\s+/u);
+    const result = spawnSync(executable, commandArgs, {encoding: "utf8",
+      timeout: check.timeoutSeconds * 1000, maxBuffer: 32 * 1024 * 1024});
+    check.status = result.status === 0 ? "passed" : "failed";
+    localRunnableChecks.push({codegenId: check.codegenId, command: check.command,
+      status: check.status});
+    if (result.status !== 0) {
+      throw new Error(`Freshness preflight failed for ${check.codegenId}: ${check.command}\n` +
+        (result.error?.message || result.stderr || result.stdout) +
+        `\nRegenerate with: ${check.writeCommand}`);
+    }
+  }
+  const report = {
+    baseSha: commitSha(args.base), headSha: commitSha(args.head),
+    mode: context.mode, full: context.full, commitWindow: args.commitWindow,
+    complete: true, changedPaths: context.changedPaths, targets: context.targets,
+    codegenIds: context.codegenIds, freshnessChecks,
+    freshnessComplete: freshnessChecks.every((check) => check.status === "passed"),
+    validationComplete: false,
+    localRunnableChecks,
+    githubOnlyObligations: [
+      ...freshnessChecks.filter((check) => check.status === "ci-only").map((check) => ({
+        codegenId: check.codegenId, command: check.command,
+        reason: check.reasons.join("; "),
+      })),
+      ...context.targets.map((target) => ({target,
+        reason: "Selected CI lane and its runtime checks require GitHub Actions."})),
+    ],
+  };
+  if (args.json) console.log(JSON.stringify(report, null, 2));
+  else {
+    console.log(`Structural preflight passed for ${report.baseSha}..${report.headSha} (${report.mode}).`);
+    console.log(`${localRunnableChecks.length} available structural/freshness checks passed; ` +
+      `${report.githubOnlyObligations.length} required check/lane(s) remain GitHub obligations.`);
+  }
 }
 
 function collectGates(targets, context) {
@@ -83,6 +200,7 @@ function collectGates(targets, context) {
   const unresolved = [];
   const skipped = [];
   const seen = new Set();
+  const seenSkipped = new Set();
 
   for (const target of targets) {
     if (target === "tools") {
@@ -113,19 +231,21 @@ function collectGates(targets, context) {
         unresolved.push(`${target} (no steps parsed from ${workflow})`);
         continue;
       }
-      for (const step of steps) {
+      for (const [index, step] of steps.entries()) {
+        if (!step.runnable) {
+          const key = `${workflow}::${index}`;
+          if (!seenSkipped.has(key)) {
+            seenSkipped.add(key);
+            skipped.push({workflow, name: step.name, reason: step.skipReason});
+          }
+          continue;
+        }
         // Targets share workflows (android/ios/web all route to the build
         // matrix); running a gate once per target would multiply the cost of
         // a full verification for no additional coverage.
         const key = `${step.workingDirectory}::${step.run}`;
         if (seen.has(key)) continue;
         seen.add(key);
-        if (!step.runnable) {
-          // Composite-action setup steps are noise; a shell step that cannot
-          // run locally is a real coverage gap and must be reported as one.
-          if (step.run) skipped.push({workflow, name: step.name, reason: step.skipReason});
-          continue;
-        }
         gates.push({target, workflow, name: step.name, command: step.run, workingDirectory: step.workingDirectory});
       }
     }
@@ -156,12 +276,22 @@ function main() {
 
   let targets;
   let context = {};
-  if (args.targets.length > 0) {
-    targets = args.targets;
-  } else {
-    const resolved = resolveTargets(args);
-    targets = resolved.targets;
-    context = resolved;
+  try {
+    if (args.targets.length > 0) {
+      targets = args.targets;
+    } else {
+      const resolved = resolveTargets(args);
+      targets = resolved.targets;
+      context = resolved;
+    }
+    if (args.preflight) {
+      runPreflight(args, context);
+      return;
+    }
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+    return;
   }
 
   const {gates, unresolved, skipped} = collectGates(targets, context);
@@ -176,7 +306,12 @@ function main() {
   }
 
   if (args.json) {
-    console.log(JSON.stringify({targets, gates, skipped, ...context}, null, 2));
+    console.log(JSON.stringify({targets, gates, skipped,
+      localRunnableChecks: gates, githubOnlyObligations: [
+        ...skipped,
+        ...targets.map((target) => ({target,
+          reason: "Full selected CI lane still requires GitHub Actions."})),
+      ], ...context}, null, 2));
     return;
   }
 

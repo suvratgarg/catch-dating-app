@@ -53,6 +53,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_club_ed
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_publication_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_count_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
@@ -60,7 +61,10 @@ import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_con
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
@@ -90,6 +94,7 @@ part 'host_operations/host_team_hosted_clubs_section.dart';
 part 'host_operations/host_club_payments_screen.dart';
 part 'host_operations/host_club_edit_helpers.dart';
 part 'host_operations/host_analytics.dart';
+part 'host_operations/host_analytics_formatters.dart';
 part 'host_operations/host_analytics_period_input.dart';
 part 'host_operations/host_route_providers.dart';
 

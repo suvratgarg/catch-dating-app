@@ -3,6 +3,12 @@
 
 import {createRequire} from "node:module";
 import {
+  getOrganizerTrackingSettingsCallablePayloadSchema,
+  setOrganizerTrackingSettingsCallablePayloadSchema,
+  readPublicOrganizerTrackingSettingsCallablePayloadSchema,
+  organizerTrackingSettingsCallableResponseSchema,
+  publicOrganizerTrackingSettingsCallableResponseSchema,
+  organizerTrackingSettingsDocumentSchema,
   catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
@@ -1168,6 +1174,12 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetOrganizerTrackingSettingsCallablePayload = ajv.compile(getOrganizerTrackingSettingsCallablePayloadSchema);
+export const validateSetOrganizerTrackingSettingsCallablePayload = ajv.compile(setOrganizerTrackingSettingsCallablePayloadSchema);
+export const validateReadPublicOrganizerTrackingSettingsCallablePayload = ajv.compile(readPublicOrganizerTrackingSettingsCallablePayloadSchema);
+export const validateOrganizerTrackingSettingsCallableResponse = ajv.compile(organizerTrackingSettingsCallableResponseSchema);
+export const validatePublicOrganizerTrackingSettingsCallableResponse = ajv.compile(publicOrganizerTrackingSettingsCallableResponseSchema);
+export const validateOrganizerTrackingSettingsDocument = ajv.compile(organizerTrackingSettingsDocumentSchema);
 export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);

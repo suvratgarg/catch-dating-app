@@ -1,3 +1,5 @@
+import {observeOrganizerProviders} from "../organizers/observeOrganizerProviders";
+import {observeOrganizerPageView} from "../organizers/analytics";
 import {useEffect} from "react";
 import {eventDetailCopy} from "../../content/events";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
@@ -19,6 +21,8 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
   const appDownloadCtas = useAppDownloadCtas({
     placement: `event-detail-${event.eventId}`,
   });
+  useEffect(() => observeOrganizerPageView(event.listing, "eventView", "event_detail", event.eventId), [event.listing, event.eventId]);
+  useEffect(() => observeOrganizerProviders(event.listing, event.eventId), [event.listing, event.eventId]);
   const inviteToken = eventInviteTokenFromLocation();
   useEffect(() => {
     if (!inviteToken) return;

@@ -5,6 +5,8 @@ import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import vm from "node:vm";
+// Keep the actual Required CI policy exercised by the registered Harness suite.
+import "../ci/required_ci_policy.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -505,6 +507,8 @@ test("planner sparse checkout contains its recursive local module closure", () =
   );
   const pending = [
     "tool/harness.mjs",
+    "tool/harness/verify_local.mjs",
+    "tool/run.mjs",
     "tool/design/build_host_feature_responsibilities.mjs",
   ];
   const visited = new Set();
@@ -935,7 +939,7 @@ test("identical registered checks execute once while preserving first-owner orde
 test("scheduled and manual CI resolve revision expressions before binding lane inputs", () => {
   const ci = workflow("ci.yml");
   const start = ci.indexOf('          if [[ -z "$base_sha"');
-  const end = ci.indexOf("          mkdir -p build/ci", start);
+  const end = ci.indexOf("          node tool/harness/verify_local.mjs --preflight", start);
   assert.ok(start >= 0 && end > start);
   const resolve = ci.slice(start, end).replace(/^          /gmu, "");
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-base-"));
@@ -997,16 +1001,27 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
   assert.match(ci, /queue: max\n  cancel-in-progress: false/u);
   assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
+  assert.match(ci, /reason_code: \$\{\{ steps\.check\.outputs\.reason_code \}\}/u);
   assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
   assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ always\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
   assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
   assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
   assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"),
+    /REASON_CODE: \$\{\{ needs\.admission\.outputs\.reason_code \}\}/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"),
+    /Admission status: \$\{REASON_CODE:-unavailable\}/u);
   assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
-  assert.match(ci, /name: Backend source review/u);
+  assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   const feedback = workflow("pr-feedback.yml");
   const plan = namedStep(feedback, "Plan affected checks");
-  assert.match(plan, /node tool\/harness\.mjs plan --base "\$BASE_SHA" --head HEAD --mode pr --json/u);
+  assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --base "\$BASE_SHA" --head HEAD --mode pr/u);
+  assert.match(ci, /node tool\/harness\/verify_local\.mjs --preflight \\\n\s+--base "\$base_sha" --head "\$HEAD_SHA" --mode "\$event_mode"/u);
+  for (const source of [ci, feedback]) {
+    assert.match(source, /uses: \.\/\.github\/actions\/load-toolchain/u);
+    assert.match(source, /uses: actions\/setup-node@v6/u);
+    assert.match(source, /node-version: \$\{\{ steps\.toolchain\.outputs\.node-version \}\}/u);
+  }
   assert.doesNotMatch(feedback, /git diff --check/u);
   assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
   assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);

@@ -328,6 +328,7 @@
           "type": "string",
           "enum": [
             "accepted",
+            "analytics",
             "essential"
           ]
         },

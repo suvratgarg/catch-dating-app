@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily` (
   contact_clicks INT64,
   claim_clicks INT64,
   outbound_clicks INT64,
+  outbound_booking_clicks INT64,
   refreshed_at TIMESTAMP NOT NULL
 )
 PARTITION BY date
@@ -64,4 +65,9 @@ ADD COLUMN IF NOT EXISTS checkout_started_count INT64
 EXECUTE IMMEDIATE FORMAT("""
 ALTER TABLE `%s.%s.mart_host_event_daily`
 ADD COLUMN IF NOT EXISTS checkout_dropoff_count INT64
+""", analytics_project, analytics_dataset);
+
+EXECUTE IMMEDIATE FORMAT("""
+ALTER TABLE `%s.%s.mart_host_event_daily`
+ADD COLUMN IF NOT EXISTS outbound_booking_clicks INT64
 """, analytics_project, analytics_dataset);

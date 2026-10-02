@@ -13,6 +13,8 @@
  * dropped — a verifier that quietly omits gates is worse than no verifier.
  */
 
+import {matchesCodegenInput, matchesGlob, validateComponentGraph} from "./component_graph.mjs";
+
 const STEP_INDENT = "      - ";
 const KEY_INDENT = "        ";
 
@@ -141,6 +143,10 @@ function applyKey(step, text) {
       step.blockKey = "run";
       step.blockStyle = "folded";
       step.blockLines = [];
+    } else if (/^[|>]/u.test(value)) {
+      // A new YAML block modifier needs deliberate parser support. Running
+      // its marker as shell text would advertise a gate that never ran.
+      step.unsupportedRunStyle = value;
     } else {
       step.run = value;
     }
@@ -157,7 +163,9 @@ function applyKey(step, text) {
 function classify(step) {
   let skipReason = null;
   if (!step.run) {
-    skipReason = step.uses
+    skipReason = step.unsupportedRunStyle
+      ? `unsupported run block style (${step.unsupportedRunStyle})`
+      : step.uses
       ? `composite action (${step.uses})`
       : "no run block";
   } else if (GITHUB_COUPLED.test(step.raw ?? step.run)) {
@@ -241,4 +249,50 @@ export function workflowForTarget(target, availableFiles, derived) {
     `${target.replace(/_/g, "-")}.yml`,
   ].find((file) => availableFiles.includes(file));
   return conventional ? [conventional] : [];
+}
+
+/** Select declared freshness checks from the same graph plan as CI. Runtime
+ * probes are injected so selection never guesses dependencies from shell text.
+ * Missing source, tooling, or packages remain explicit required obligations.
+ */
+export function planCodegenFreshness({graph, codegenIds, repositoryPaths, sparsePaths = [],
+  fileAvailable, executableAvailable, packageAvailable, platform = process.platform}) {
+  const errors = validateComponentGraph(graph);
+  if (errors.length) throw new Error(errors.join("\n"));
+  if (!Array.isArray(codegenIds) || codegenIds.some((id) => typeof id !== "string")) {
+    throw new Error("Freshness selection requires graph-declared codegenIds.");
+  }
+  const omitted = new Set(sparsePaths);
+  const byId = new Map(graph.compileCodegen.map((entry) => [entry.id, entry]));
+  const checks = [];
+  for (const id of [...new Set(codegenIds)].sort()) {
+    const entry = byId.get(id);
+    if (!entry) throw new Error(`Unknown required compile-codegen id "${id}".`);
+    const reasons = [];
+    if (!entry.platforms.includes(platform)) reasons.push(`unsupported platform ${platform}`);
+    for (const executable of entry.checkRequirements.executables) {
+      if (!executableAvailable(executable)) reasons.push(`missing runtime ${executable}`);
+    }
+    for (const dependency of entry.checkRequirements.packages) {
+      if (!packageAvailable(dependency)) {
+        reasons.push(`missing ${dependency.kind} package ${dependency.name} from ${dependency.from}`);
+      }
+    }
+    // Generators use ordinary filesystem reads, unlike index-safe structural
+    // checks. Only index-marked sparse omissions defer a check. A missing file
+    // in a full checkout must run the generator and fail its freshness check.
+    for (const pattern of [...entry.inputs, ...entry.outputs]) {
+      const output = entry.outputs.includes(pattern);
+      const paths = /[*?]/u.test(pattern) ? repositoryPaths.filter((candidate) =>
+        matchesGlob(candidate, pattern) && (output || matchesCodegenInput(candidate, entry))) :
+        [pattern];
+      if (paths.some((candidate) => omitted.has(candidate) && !fileAvailable(candidate))) {
+        reasons.push(`unmaterialized ${output ? "output" : "input"} ${pattern}`);
+      }
+    }
+    checks.push({codegenId: id, command: entry.checkCommand,
+      writeCommand: entry.writeCommand, timeoutSeconds: entry.timeoutSeconds,
+      runnable: reasons.length === 0, reasons});
+  }
+  return checks;
 }

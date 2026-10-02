@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.1.5
-updated: 2026-08-10
+version: 0.1.6
+updated: 2026-09-30
 owner: marketing_website
 status: active
 ---
@@ -16,23 +16,41 @@ Reddit, LinkedIn, and later MMP or server-side conversion pipelines.
 
 Website:
 
-- `website/src/analytics.ts` captures first-touch and last-touch attribution.
-- The tracked keys include `utm_source`, `utm_medium`, `utm_campaign`,
-  `utm_content`, `utm_term`, `gclid`, `gbraid`, `wbraid`, `fbclid`, `ttclid`,
-  `msclkid`, `li_fat_id`, and `rdt_cid`.
-- GTM loads only when `VITE_GTM_ID` is set and the visitor accepts analytics or
-  marketing consent.
-- `website/src/App.tsx` emits waitlist, host lead, claim, review, store CTA,
-  organizer, and generic CTA events into `dataLayer`.
-- Direct organizer analytics is classified as analytics/marketing telemetry.
-  `website/src/features/organizers/analytics.ts` suppresses the Firebase
-  callable, local organizer session id, and `dataLayer` mirror until the visitor
-  accepts analytics consent.
-- `functions/src/waitlist/joinWaitlist.ts` normalizes marketing attribution and
-  analytics metadata into Firestore.
-- Every website `dataLayer` event carries
-  `content_version: "website_copy_v2"`; the central analytics adapter owns the
-  field so individual call sites cannot omit or override it.
+- `website/src/analytics.ts` maintains consent and local compatibility events.
+  Arbitrary GTM loading and external `window.gtag` forwarding are disabled.
+- Analytics-only, all-consent and essential-only choices are distinct; the
+  persistent Privacy choices control allows revocation. First-party organiser
+  telemetry also requires analytics consent; it is not essential collection.
+- Attribution is consented, tab-scoped and expires after 24 hours. Only five
+  bounded UTM labels (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
+  `utm_term`) are retained. Click IDs, raw queries, referrers and private or
+  transactional paths are excluded. Revocation clears retained attribution.
+- `website/src/features/organizers/analytics.ts` owns direct listing/event views
+  and outbound clicks. It never mirrors organiser events to advertising tags.
+  Views deduplicate per organiser/event/tab/UTC day after accepted ingestion.
+- `recordOrganizerAnalyticsEvent` verifies public scope, suppresses known owner
+  previews, rate-limits ingestion, and stores a scoped session hash rather than
+  the browser session ID. Anonymous previews and bots remain measurement limits.
+- `observeOrganizerProviders.ts` separately owns page lifecycle for controlled
+  GA4 and Meta adapters. GA4 requires analytics consent; Meta requires marketing
+  consent. Revocation/navigation destroys the isolated provider iframe. Only
+  public page views and outbound booking clicks are exposed; no purchase API,
+  answers, guest lists, identity, private paths or arbitrary scripts are exposed.
+- Per-organiser settings use generated contracts, server-side manager authority,
+  revision checks and server-only Firestore storage. Hosts can save disabled
+  validated IDs. Public publication is blocked by code and response schema until
+  Catch advertising policy and provider delivery are reviewed. Private, sensitive,
+  unclaimed and unknown contexts fail closed.
+- Provider tests use fake transport/scripts only. The opaque iframe intentionally
+  prevents access to Catch storage/DOM; live cookie support, GA4 cookieless
+  delivery and Meta page attribution are unverified activation requirements.
+- Existing lead/local compatibility events retain `content_version:
+  "website_copy_v2"`. The historical event map below is a planning inventory,
+  not evidence that a vendor currently receives those events.
+- Server-authoritative Host reporting reads retained form/payment/admission facts
+  as separate observed stages. Form fees are not admission; provider clicks are
+  not purchases. Free confirmation and linked cohort attribution require further
+  contracts; frontend success pages never establish paid conversion authority.
 
 App:
 
@@ -55,9 +73,9 @@ Warehouse:
 - Keep platform-specific click ids in attribution payloads, not ad hoc event
   parameters.
 - Prefer product outcome names over legacy activity-specific names.
-- Preserve the existing `organizer_<eventName>` GA4 compatibility names until
-  the host analytics mart is migrated, because `analytics/sql` currently maps
-  exact names such as `organizer_claimClick` and `organizer_outboundClick`.
+- Historical `organizer_<eventName>` GA4 names remain in legacy SQL preparation
+  for diagnosis; direct first-party events now own Host presence counts. Do not
+  restore advertising mirrors to inflate those counts.
 
 ## Website Event Map
 
@@ -80,7 +98,7 @@ Warehouse:
 | `claim_flow_submitted` | Yes | Claim page flow | `club_id`, `claim_role` when available | Organizer claim conversion. |
 | `listing_claim_submitted` | Yes | Organizer listing claim flow | `club_id`, `claim_role` when available | Organizer claim conversion. |
 | `listing_public_review_submitted` | No | Organizer listing reviews | `club_id`, `rating` when available | Review contribution signal. |
-| `organizer_listingView` | No | Direct organizer analytics callable mirror | `club_id`, `page_path`, `source` | Organizer page denominator. |
+| `organizer_listingView` | No | Direct organizer analytics callable (no ad mirror) | `club_id`, `page_path`, `source` | Organizer page denominator. |
 | `organizer_claimClick` | No | Organizer claim CTA | `club_id`, `page_path`, `source` | Claim-intent retargeting. |
 | `organizer_outboundClick` | No | Organizer external links | `club_id`, `page_path`, `platform` | Host demand proof. |
 | `cta_click` | No | Shared CTA helper | `cta_label`, `cta_href`, `page_path`, `content_version` | Debug and audience learning. |
@@ -147,18 +165,18 @@ funnel diagnostics, not optimization goals.
 
 ## Consent And Audience Rules
 
-- GTM tags that set ad storage or marketing cookies must require accepted
-  marketing consent.
+- Arbitrary GTM and custom JavaScript are outside the controlled integration
+  scope. Any future marketing adapter must require marketing consent.
 - Analytics-only behavior should respect the current Consent Mode defaults.
 - Organizer listing analytics is not essential telemetry. Public organizer page
   views, search appearances, saves, source clicks, event-card clicks, and claim
   clicks are recorded only after accepted analytics consent. Essential-only or
   unset consent must not create a local organizer analytics session id, call the
-  organizer analytics callable, or mirror organizer events into the dataLayer.
+  organizer analytics callable. Organiser events are never mirrored to dataLayer.
 - Server-side organizer analytics retention starts only after a consented client
   event reaches `recordOrganizerAnalyticsEvent`; the server hashes the
-  browser-generated session id before writing `session_hash` to BigQuery and
-  stores no raw session id.
+  browser-generated session id with organiser and UTC-day scope before writing
+  `session_hash` to BigQuery and stores no raw session id.
 - Do not upload first-party data to ad platforms without explicit legal and
   policy review.
 - Do not build dating/singles lookalike or custom audiences until platform
@@ -189,18 +207,32 @@ Server-side conversion forwarding should use:
 
 ## Verification Checklist
 
-Before launch:
+Local automated gates:
 
-- [ ] In a local or staging build with `VITE_GTM_ID`, accept all consent and submit one member waitlist lead.
-- [ ] Confirm `waitlist_started`, `waitlist_submitted`, and `generate_lead` are visible in the GTM preview and GA4 DebugView.
-- [ ] Submit one host lead and confirm `host_lead_started`, `host_lead_submitted`, and `generate_lead`.
-- [ ] Submit one organizer claim and confirm `listing_claim_submitted` or `claim_flow_submitted`.
-- [ ] Confirm Firestore stores marketing attribution and analytics metadata for the lead.
-- [ ] Confirm Google Ads receives a test conversion before real spend.
-- [ ] Confirm no tag fires when the visitor chooses essential-only consent, except consent/default analytics behavior allowed by the consent policy.
-- [ ] Confirm organizer listing views, source clicks, saves, and search
-  appearances do not call `recordOrganizerAnalyticsEvent` or push
-  `organizer_*` dataLayer events before accepted analytics consent.
+- [ ] Validate generated callable/storage contracts and cross-organiser manager
+  authority, revision fencing and explicit Firestore client deny rules.
+- [ ] Verify essential/unset/invalid consent creates no analytics identifier or
+  provider request; analytics-only never starts Meta; revocation removes tags.
+- [ ] Verify public organiser/event rendered views deduplicate, wrong scope and
+  private/unclaimed/unknown advertising contexts fail closed, and external clicks
+  never become purchase or free-registration conversions.
+- [ ] Verify populated, zero, missing and denied states in the existing Host tab,
+  with partial/current-state stage captions rather than cohort conversion rates.
+
+Before separately authorised live activation:
+
+- [ ] Approve advertising policy, consent text, sensitive-category exclusions,
+  retention/deletion rules and allowable provider attribution.
+- [ ] Verify isolated runtime delivery with provider-owned test IDs in a reviewed
+  staging setup; confirm cookieless GA4 limitations and Meta public-path reporting.
+- [ ] Review any publication schema/gate change together with authority tests.
+- [ ] Apply reviewed warehouse DDL/refresh changes and verify exact deployed
+  schedule/source, freshness and complete source exports before claiming counts.
+- [ ] Define server-authoritative conversion receipts and per-organiser sharing
+  permission before forwarding paid/free booking outcomes to advertising vendors.
+
+No live credentials, provider transmission or deployment is part of the current
+local implementation or automated fake-provider tests.
 
 ## Open Decisions
 

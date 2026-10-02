@@ -94,6 +94,168 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Meta Pixel and Google Analytics'**
+  String get hostsTrackingSettingsTitle;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking is disabled pending policy review. Saving these IDs does not activate scripts or send data to either provider.'**
+  String get hostsTrackingSettingsPolicyBlocked;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'This organiser is not eligible to edit tracking settings. Complete the verified ownership or claim process first.'**
+  String get hostsTrackingSettingsUnclaimed;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Meta Pixel ID'**
+  String get hostsTrackingSettingsMetaId;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Google measurement ID'**
+  String get hostsTrackingSettingsGoogleId;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable provider tracking'**
+  String get hostsTrackingSettingsEnabled;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid provider ID or leave this field blank.'**
+  String get hostsTrackingSettingsInvalidId;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensitive social, dating and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.'**
+  String get hostsTrackingSettingsPrivacy;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Save disabled configuration'**
+  String get hostsTrackingSettingsSaveDisabled;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload settings'**
+  String get hostsTrackingSettingsReload;
+
+  /// Organiser provider tracking settings in Host Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'If another manager updated these settings, reload the current revision before saving again.'**
+  String get hostsTrackingSettingsReloadForConflict;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed booking stages'**
+  String get hostsHostAnalyticsLabelObservedStages;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider booking clicks'**
+  String get hostsHostAnalyticsLabelProviderBookingClicks;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Form drafts'**
+  String get hostsHostAnalyticsLabelFormDrafts;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Form submissions'**
+  String get hostsHostAnalyticsLabelFormSubmissions;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Form fee checkout attempts'**
+  String get hostsHostAnalyticsLabelFormCheckoutAttempts;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Form fees captured'**
+  String get hostsHostAnalyticsLabelFormFeesCaptured;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct checkout attempts'**
+  String get hostsHostAnalyticsLabelDirectCheckoutAttempts;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct payments captured'**
+  String get hostsHostAnalyticsLabelDirectPaymentsCaptured;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct paid admissions'**
+  String get hostsHostAnalyticsLabelDirectPaidAdmissions;
+
+  /// Host insights observed period stage counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate counts observed in this period, not a linked cohort or conversion rate. A form fee payment does not confirm admission. Direct bookings can skip forms and approval. Provider clicks do not confirm an external purchase. Missing stages are shown as —; partial stages may be incomplete.'**
+  String get hostsHostAnalyticsTextObservedStageLimits;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Public presence'**
+  String get hostsHostAnalyticsLabelPublicPresence;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound source clicks'**
+  String get hostsHostAnalyticsLabelOutboundSourceClicks;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Presence data is unavailable for this range. Missing data is shown as —.'**
+  String get hostsHostAnalyticsTextPresenceUnavailable;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'No public views or outbound clicks were observed in this range.'**
+  String get hostsHostAnalyticsTextPresenceEmpty;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed totals, not unique visitors or a linked conversion funnel. Repeat visits, owner previews and automated traffic may affect these counts.'**
+  String get hostsHostAnalyticsTextPresenceObservedTotals;
+
+  /// Host insights public presence readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound source clicks include source and provider links. They do not confirm a booking or payment on another website.'**
+  String get hostsHostAnalyticsTextPresenceExternalLimits;
+
   /// Consumer app title shown by the operating system and Flutter app shell.
   ///
   /// In en, this message translates to:

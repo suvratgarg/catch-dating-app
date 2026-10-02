@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "node:crypto";
 import {
   buildHostAnalyticsFromRecords,
+  getHostAnalyticsHandler,
   hostAnalyticsSnapshotId,
   hostAnalyticsSnapshotTtlMs,
   isHostAnalyticsSnapshotFresh,
@@ -9,6 +11,9 @@ import {
   resolveAnalyticsRange,
   writeHostAnalyticsSnapshot,
 } from "./hostAnalytics";
+
+import {validateHostAnalyticsCallableResponse} from
+  "../shared/generated/validators/hostAnalyticsOutput";
 
 type AnalyticsRecords = Parameters<typeof buildHostAnalyticsFromRecords>[0];
 
@@ -100,6 +105,18 @@ test("host snapshot identity pins authorized scope and local-day range", () => {
     clubs
   );
 
+  const previousHash = createHash("sha256").update(JSON.stringify({
+    registrationReadoutVersion: 1,
+    organizerId: payload.clubId,
+    eventId: null,
+    clubIds: clubs.map((club) => club.id).sort(),
+    start: range.start.toISOString(),
+    endExclusive: range.endExclusive.toISOString(),
+    granularity: range.granularity,
+    preset: range.preset,
+    timezone: range.timezone,
+  })).digest("hex");
+  assert.notEqual(first, `host-1_${previousHash}`);
   assert.match(first, /^host-1_[a-f0-9]{64}$/u);
   assert.equal(reordered, first);
   assert.notEqual(utc, first);
@@ -521,3 +538,174 @@ function martRow(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+
+test("getHostAnalytics verifies fresh manager " +
+  "authority before any cached aggregate read", async () => {
+  const fixture = hostCallableFixture();
+  fixture.organizer.hostProfiles = [{uid: "manager", role: "host"}];
+  fixture.organizer.hostUserIds = [];
+  const result = await getHostAnalyticsHandler(
+    fixture.request("manager", {organizerId: "org"}),
+    fixture.deps
+  );
+  assert.deepEqual(result.scope.organizerIds, ["org"]);
+  assert.equal(
+    result.summaryCards.find(
+      (card) => card.id === "internalDirectPaidAdmissions"
+    )?.status,
+    "ready"
+  );
+  assert.equal(validateHostAnalyticsCallableResponse(result), true,
+    JSON.stringify(validateHostAnalyticsCallableResponse.errors));
+  const firstReads = fixture.factReads();
+  await getHostAnalyticsHandler(
+    fixture.request("manager", {organizerId: "org"}), fixture.deps
+  );
+  assert.equal(fixture.factReads(), firstReads);
+  fixture.organizer.hostProfiles = [];
+  await assert.rejects(
+    getHostAnalyticsHandler(
+      fixture.request("manager", {organizerId: "org"}),
+      fixture.deps
+    ),
+    (error: unknown) =>
+      (error as { code: string }).code === "permission-denied"
+  );
+});
+
+test("getHostAnalytics denies cross-tenant, " +
+  "unknown and contradictory event scopes", async () => {
+  const fixture = hostCallableFixture();
+  for (const [uid, payload, code] of [
+    ["foreign", {organizerId: "org"}, "permission-denied"],
+    ["owner", {organizerId: "unknown"}, "not-found"],
+    ["owner", {eventId: "unknown"}, "not-found"],
+    ["owner", {eventId: "e", organizerId: "other"}, "permission-denied"],
+  ] as const) {
+    await assert.rejects(
+      getHostAnalyticsHandler(fixture.request(uid, payload), fixture.deps),
+      (error: unknown) => (error as { code: string }).code === code
+    );
+  }
+  assert.equal(fixture.factReads(), 0);
+});
+
+function hostCallableFixture(moveEvent = false) {
+  let facts = 0;
+  let eventReads = 0;
+  const cached = new Map<string, unknown>();
+  const organizer: {
+    name: string;
+    ownerUserId: string;
+    hostUserId: null;
+    hostUserIds: string[];
+    hostProfiles: Array<{ uid: string; role: string }>;
+  } = {
+    name: "Organizer",
+    ownerUserId: "owner",
+    hostUserId: null,
+    hostUserIds: [],
+    hostProfiles: [],
+  };
+  const db = {
+    collection(name: string) {
+      const query = {
+        where() {
+          return query;
+        },
+        select() {
+          return query;
+        },
+        limit() {
+          return query;
+        },
+        async get() {
+          if (name !== "events") facts++;
+          return {docs: []};
+        },
+        doc(id: string) {
+          return {
+            async get() {
+              const data =
+                name === "organizers" && id === "org" ?
+                  organizer :
+                  name === "events" && id === "e" ?
+                    {organizerId: moveEvent && ++eventReads > 1 ?
+                      "other" : "org"} :
+                    cached.get(`${name}/${id}`);
+              return {exists: data !== undefined, id, data: () => data};
+            },
+            async set(data: unknown) {
+              cached.set(`${name}/${id}`, data);
+            },
+          };
+        },
+      };
+      return query;
+    },
+  } as unknown as FirebaseFirestore.Firestore;
+  const now = new Date("2026-06-18T12:00:00Z");
+  const deps = {
+    firestore: () => db,
+    now: () => now,
+    serverTimestamp: () => ({}) as FirebaseFirestore.FieldValue,
+    timestampFromDate: fakeTimestamp,
+    bigQuerySource: {loadRows: async () => []},
+    checkRateLimit: async () => {},
+  };
+  const request = (uid: string, data: Record<string, unknown>) =>
+    ({auth: {uid}, data}) as unknown as Parameters<
+      typeof getHostAnalyticsHandler
+    >[0];
+  return {organizer, deps, request, factReads: () => facts};
+}
+
+test("provider booking clicks disclose missing " +
+  "mart coverage and never imply purchases", () => {
+  const input = records();
+  const range = resolveAnalyticsRange(
+    {rangePreset: "30d"},
+    new Date("2026-06-18T12:00:00Z")
+  );
+  const missing = buildHostAnalyticsFromRecords(input, range, new Date());
+  assert.equal(metric(missing, "outboundBookingClicks").status, "missing");
+  input.martRows = [martRow({outboundBookingClicks: 8})];
+  const observed = buildHostAnalyticsFromRecords(input, range, new Date());
+  assert.equal(metric(observed, "outboundBookingClicks").value, 8);
+  assert.equal(metric(observed, "outboundBookingClicks").status, "ready");
+  assert.match(
+    metric(observed, "outboundBookingClicks").caption ?? "",
+    /does not observe external purchases/
+  );
+});
+
+
+test("selected event moved to another organizer " +
+  "is denied on scope reload", async () => {
+  const fixture = hostCallableFixture(true);
+  await assert.rejects(getHostAnalyticsHandler(
+    fixture.request("owner", {eventId: "e"}), fixture.deps),
+  (error: unknown) => (error as {code: string}).code === "permission-denied");
+  assert.equal(fixture.factReads(), 0);
+});
+
+
+test("external-only organizer retains presence without native report links",
+  async () => {
+    const fixture = hostCallableFixture();
+    const response = await getHostAnalyticsHandler(
+      fixture.request("owner", {organizerId: "org"}),
+      {...fixture.deps, bigQuerySource: {loadRows: async () => [martRow({
+        clubId: "org", eventId: "external-only", listingViews: 12,
+        eventViews: 9, outboundBookingClicks: 4, bookedCount: 0,
+        paymentCompletedCount: 0, grossRevenueMinor: 0,
+      })]}},
+    );
+    assert.equal(response.discoverySummary.listingViews, 12);
+    assert.equal(response.discoverySummary.eventViews, 9);
+    assert.equal(metric(response, "outboundBookingClicks").value, 4);
+    assert.deepEqual(response.topEvents, []);
+    assert.match(metric(response, "outboundBookingClicks").caption ?? "",
+      /does not observe external purchases/);
+  });
