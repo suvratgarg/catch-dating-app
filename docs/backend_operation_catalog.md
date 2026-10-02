@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.88.1
-updated: 2026-09-28
+version: 1.88.2
+updated: 2026-10-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -384,6 +384,33 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `ChatController.sendImage` / `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Shared `ImageUploadRepository` picks/compresses/uploads the chat image; repository writes the image message. | Storage rules prove match participation from `user1Id`/`user2Id` with legacy `participantIds` fallback; message create rules prove active match participation before Firestore write. | Yes. Media picking/compression is centralized with profile/onboarding/event-club image upload policy. |
 | `MatchRepository.resetUnread` | `matches/{matchId}.unreadCounts.{uid}` | Reset own unread count to zero. | Participant narrow update. | Yes. |
 | `EventSuccessRepository.savePlan` | `eventSuccessPlans/{eventId}` | Revision-checked partial update of setup-owned plan fields before the event is live. | Host-only setup update; participant activity, event start, live status, or `frozenAt` freezes setup fields. | Yes. The transaction rejects stale/frozen plans and never overwrites live-control fields. |
+
+## Workspace field and community membership operations
+
+Program guest/household upserts and manifest imports acquire exact immutable
+`workspaceFieldAssertions`; explicit coordinator conflict choices append
+`workspaceFieldDecisions`. Lists and message delivery resolve selected evidence
+through `workspaces/workspaceFieldAuthority`. Final delivery rechecks phone proof,
+consent and household binding. Program retention owns erasure; imported phone/name
+acquisition proves no account identity, membership or attendance. Whole-program
+manifest preview/commit requires one program-wide guestRelations assignment;
+manual edits/choices retain coordinator authority.
+
+`decideOrganizerCommunityMembership` is a manager-only, App-Check-protected,
+rate-limited transaction using the application-review budget. Grant consumes
+current approved native generic organizer-target application evidence for the
+exact UID. Revoke requires an active grant; exact retries report decision/current
+revisions without restoring an old grant. The callable owns the current
+`organizerCommunityMemberships` edge and immutable decision receipts. Native
+booking/waitlist/checkout owners read that authority without duplicating it.
+Participation stores historical grant evidence; revoke is prospective and never
+initiates paid-booking cancellation/refund. Subject account deletion erases these
+roots; actor deletion leaves other subjects' immutable authority intact.
+
+Account/viewer read projections, legacy/manual/exemption sources and gated
+public OTP/external continuations remain future adapters, with existing payment,
+seat, offer and attendance owners retained. All four new roots deny direct client
+reads/writes; grants do not publish a profile or disclose private endpoints.
 
 ## Backend-Owned Collections And Fields
 

@@ -28,6 +28,9 @@ import {whatsappEndpointHash} from
 import {validateProgramWhatsappDispatchDocument} from
   "../shared/generated/validators/programWhatsappDispatchDocument";
 
+import {readProgramGuestFields, readProgramHouseholdFields} from
+  "../workspaces/workspaceFieldAuthority";
+
 /** Claim-time submission evidence for webhook status correlation. */
 export const PROGRAM_WHATSAPP_DISPATCHES = "programWhatsappDispatches";
 
@@ -94,13 +97,18 @@ async function readRecipientEndpoint(
       .data() as ProgramHouseholdDocument | undefined;
   if (kind === "household") {
     const household = await readHousehold(recipientKey);
-    if (!household || household.programId !== intent.programId) {
+    if (!household || household.programId !== intent.programId ||
+        household.organizerId !== intent.context.organizerId) {
       return {e164: null, endpointId: null, consent: null,
         withdrawn: true};
     }
-    return {e164: household.primaryPhoneE164,
-      endpointId: household.primaryPhoneE164 ?
-        endpointRef(household.primaryPhoneE164) : null,
+    const fields = await readProgramHouseholdFields({db, tx,
+      programId: intent.programId, organizerId: intent.context.organizerId,
+      householdId: recipientKey, household,
+      fields: ["phoneE164"], includeAlternatives: false});
+    return {e164: fields.values.phoneE164,
+      endpointId: fields.values.phoneE164 ?
+        endpointRef(fields.values.phoneE164) : null,
       consent: household.messagingConsent ?
         {granted: household.messagingConsent.granted,
           revision: household.revision} : null,
@@ -109,14 +117,25 @@ async function readRecipientEndpoint(
   if (kind === "guest") {
     const guest = (await tx.get(db.collection("programGuests")
       .doc(recipientKey))).data() as ProgramGuestDocument | undefined;
-    if (!guest || guest.programId !== intent.programId) {
+    if (!guest || guest.programId !== intent.programId ||
+        guest.organizerId !== intent.context.organizerId) {
       return {e164: null, endpointId: null, consent: null,
         withdrawn: true};
     }
     const household = guest.householdId ?
       await readHousehold(guest.householdId) : undefined;
-    return {e164: guest.phoneE164,
-      endpointId: guest.phoneE164 ? endpointRef(guest.phoneE164) : null,
+    if (guest.householdId && (!household ||
+        household.programId !== intent.programId ||
+        household.organizerId !== intent.context.organizerId)) {
+      return {e164: null, endpointId: null, consent: null, withdrawn: true};
+    }
+    const fields = await readProgramGuestFields({db, tx,
+      programId: intent.programId, organizerId: intent.context.organizerId,
+      guestId: recipientKey, guest,
+      fields: ["phoneE164"], includeAlternatives: false});
+    return {e164: fields.values.phoneE164,
+      endpointId: fields.values.phoneE164 ?
+        endpointRef(fields.values.phoneE164) : null,
       consent: household?.messagingConsent ?
         {granted: household.messagingConsent.granted,
           revision: household.revision} : null,
@@ -314,7 +333,8 @@ async function dispatchProgramWhatsapp(
         OrganizerMessageTemplateDocument | undefined;
         const endpointHash = recipient.e164 ?
           whatsappEndpointHash(recipient.e164) : null;
-        if (!recipient.e164 || !endpointHash || recipient.endpointId !==
+        if (recipient.withdrawn || recipient.consent?.granted === false ||
+          !recipient.e164 || !endpointHash || recipient.endpointId !==
           liveAttempt.binding.recipientEndpointId ||
           !conn || conn.status !== "active" || !conn.phoneNumberId ||
           !conn.secretVersionResource || !conn.wabaId ||

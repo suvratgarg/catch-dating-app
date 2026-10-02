@@ -77,5 +77,24 @@ const schemaUpsertProgramHouseholdCallablePayloadSchema = <String, Object?>{
         'none',
       ],
     },
+    'fieldChoices': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'phoneE164': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'email': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+      },
+      'description': 'Explicit same-program, same-household field assertions chosen under expectedRevision.',
+    },
   },
 };

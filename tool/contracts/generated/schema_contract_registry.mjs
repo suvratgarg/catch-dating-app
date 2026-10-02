@@ -253,6 +253,847 @@ export const organizerTrackingSettingsDocumentSchema = {
   }
 };
 
+export const organizerCommunityMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_community_memberships.schema.json",
+  "title": "OrganizerCommunityMembershipDocument",
+  "description": "Current manager-controlled organizer community entitlement. Following, contact linkage, booking and attendance are separate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "uid",
+    "state",
+    "revision",
+    "source",
+    "lastDecisionId",
+    "activatedAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "state": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId",
+        "responseId",
+        "formVersionId",
+        "applicationRevision"
+      ],
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "applicationRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    },
+    "lastDecisionId": {
+      "type": "string",
+      "pattern": "^ocmd_[a-f0-9]{64}$"
+    },
+    "activatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "definitions": {
+    "approvalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId",
+        "responseId",
+        "formVersionId",
+        "applicationRevision"
+      ],
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "applicationRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerCommunityMemberships",
+  "x-firestore-path": "organizerCommunityMemberships/{membershipId}",
+  "x-owner": "decideOrganizerCommunityMembership"
+};
+
+export const organizerCommunityMembershipDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_community_membership_decisions.schema.json",
+  "title": "OrganizerCommunityMembershipDecisionDocument",
+  "description": "Immutable exact-request membership decision; replay never restores an older current entitlement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "uid",
+    "membershipId",
+    "requestId",
+    "requestHash",
+    "actorUid",
+    "action",
+    "reason",
+    "previousState",
+    "expectedRevision",
+    "resultingRevision",
+    "source",
+    "decidedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^ocm_[a-f0-9]{64}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "enum": [
+        "grant",
+        "revoke"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "previousState": {
+      "enum": [
+        "none",
+        "active",
+        "revoked"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740989
+    },
+    "resultingRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId",
+        "responseId",
+        "formVersionId",
+        "applicationRevision"
+      ],
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "applicationRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    },
+    "decidedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "organizerCommunityMembershipDecisions",
+  "x-firestore-path": "organizerCommunityMembershipDecisions/{decisionId}",
+  "x-owner": "decideOrganizerCommunityMembership"
+};
+
+export const decideOrganizerCommunityMembershipCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/decide_organizer_community_membership_payload.schema.json",
+  "title": "DecideOrganizerCommunityMembershipCallablePayload",
+  "description": "Explicit manager decision bound to an approved organizer-target native application and a reviewed membership revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "requestId",
+    "action",
+    "expectedRevision",
+    "applicationId",
+    "expectedApplicationRevision",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "enum": [
+        "grant",
+        "revoke"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740989
+    },
+    "applicationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedApplicationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "grant"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "expectedApplicationRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740990
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "applicationId": {
+            "type": "null"
+          },
+          "expectedApplicationRevision": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const decideOrganizerCommunityMembershipCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_community_membership_decision_response.schema.json",
+  "title": "DecideOrganizerCommunityMembershipCallableResponse",
+  "description": "Sanitized decision result and current entitlement; an exact replay may refer to an older decision revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "membershipId",
+    "decisionId",
+    "decisionRevision",
+    "currentRevision",
+    "currentState",
+    "replayed"
+  ],
+  "properties": {
+    "membershipId": {
+      "type": "string",
+      "pattern": "^ocm_[a-f0-9]{64}$"
+    },
+    "decisionId": {
+      "type": "string",
+      "pattern": "^ocmd_[a-f0-9]{64}$"
+    },
+    "decisionRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "currentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "currentState": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const workspaceFieldAssertionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/workspace_field_assertions.schema.json",
+  "title": "WorkspaceFieldAssertionDocument",
+  "description": "Immutable per-field acquisition evidence, explicitly scoped to an existing program or community relationship. A contact pointer or UID does not disclose fields or verify endpoint ownership.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "workspaceFieldAssertions",
+  "x-firestore-path": "workspaceFieldAssertions/{assertionId}",
+  "x-document-id-field": "assertionId",
+  "x-owner": "workspace-scoped contact writers and reviewed field selection",
+  "required": [
+    "schemaVersion",
+    "workspaceRef",
+    "organizerId",
+    "relationshipRef",
+    "fieldKey",
+    "value",
+    "sourceKind",
+    "sourceId",
+    "sourceVersion",
+    "actorUid",
+    "observedAtMillis",
+    "disclosureBasis",
+    "identityEvidenceRef",
+    "programId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "workspaceRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "program"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "community"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        }
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "programGuest",
+            "programHousehold",
+            "communityContact"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    "fieldKey": {
+      "enum": [
+        "displayName",
+        "phoneE164",
+        "email"
+      ]
+    },
+    "value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "sourceKind": {
+      "enum": [
+        "manualEntry",
+        "manifestRow"
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "disclosureBasis": {
+      "const": "workspaceHostAcquisition"
+    },
+    "identityEvidenceRef": {
+      "type": "null"
+    },
+    "programId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Exact program retention index; null for community assertions. Must agree with workspaceRef.id in the domain writer."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "fieldKey": {
+            "const": "displayName"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 140
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "fieldKey": {
+            "const": "phoneE164"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workspaceRef": {
+            "properties": {
+              "kind": {
+                "const": "program"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "programId": {
+            "type": "string"
+          },
+          "relationshipRef": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "programGuest",
+                  "programHousehold"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "programId": {
+            "type": "null"
+          },
+          "relationshipRef": {
+            "properties": {
+              "kind": {
+                "const": "communityContact"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const workspaceFieldDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/firestore/workspace_field_decisions.schema.json",
+  "title": "WorkspaceFieldDecisionDocument",
+  "description": "Immutable explicit field-selection decision. Records the authorized reviewer and exact before/after assertion pointers without copying field values or granting identity proof.",
+  "x-firestore-collection": "workspaceFieldDecisions",
+  "x-firestore-path": "workspaceFieldDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "workspace scoped reviewed field selection",
+  "required": [
+    "schemaVersion",
+    "workspaceRef",
+    "organizerId",
+    "programId",
+    "relationshipRef",
+    "fieldKey",
+    "actorUid",
+    "observedAtMillis",
+    "selectedAssertionId",
+    "previousAssertionId",
+    "relationshipRevision"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "workspaceRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "program"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "community"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        }
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Exact program retention index; null for community assertions. Must agree with workspaceRef.id in the domain writer."
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "programGuest",
+            "programHousehold",
+            "communityContact"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    "fieldKey": {
+      "enum": [
+        "displayName",
+        "phoneE164",
+        "email"
+      ]
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "selectedAssertionId": {
+      "type": "string",
+      "pattern": "^wfa_[a-f0-9]{64}$"
+    },
+    "previousAssertionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^wfa_[a-f0-9]{64}$"
+    },
+    "relationshipRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "workspaceRef": {
+            "properties": {
+              "kind": {
+                "const": "program"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "programId": {
+            "type": "string"
+          },
+          "relationshipRef": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "programGuest",
+                  "programHousehold"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "programId": {
+            "type": "null"
+          },
+          "relationshipRef": {
+            "properties": {
+              "kind": {
+                "const": "communityContact"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
 export const catchWhatsappWebhookEventDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_webhook_events.schema.json",
@@ -163829,6 +164670,32 @@ export const eventParticipationDocumentSchema = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "communityMembershipAtSignup": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.",
+      "x-catch-ownership": "callable-owned",
+      "required": [
+        "membershipId",
+        "revision",
+        "decisionId"
+      ],
+      "properties": {
+        "membershipId": {
+          "type": "string",
+          "pattern": "^ocm_[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740990
+        },
+        "decisionId": {
+          "type": "string",
+          "pattern": "^ocmd_[a-f0-9]{64}$"
+        }
+      }
     }
   }
 };
@@ -166072,6 +166939,59 @@ export const programGuestDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "fieldSelections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Current values are a projection of these exact immutable same-program assertions. Absent fields have unknown acquisition provenance."
+    },
+    "fieldConflicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "phoneE164": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "email": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger."
     }
   }
 };
@@ -166456,6 +167376,57 @@ export const programHouseholdDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "fieldSelections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      }
+    },
+    "fieldConflicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "phoneE164": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "email": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        }
+      }
     }
   }
 };
@@ -178073,6 +179044,25 @@ export const upsertProgramGuestCallablePayloadSchema = {
         "declined",
         "maybe"
       ]
+    },
+    "fieldChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Review an existing same-program, same-guest field assertion. expectedRevision fences the selection; endpoints cannot simultaneously provide a scalar and a choice."
     }
   }
 };
@@ -178683,6 +179673,25 @@ export const upsertProgramHouseholdCallablePayloadSchema = {
         "email",
         "none"
       ]
+    },
+    "fieldChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Explicit same-program, same-household field assertions chosen under expectedRevision."
     }
   }
 };
@@ -182178,7 +183187,7 @@ export const programGuestListCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json",
   "title": "ProgramGuestListCallableResponse",
-  "description": "Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.",
+  "description": "Program-authorized guest inventory. Name and endpoints resolve only from selected same-program field acquisition evidence; private organizer-wide contact fields are never dereferenced.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -182293,6 +183302,296 @@ export const programGuestListCallableResponseSchema = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "fieldAuthority": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "displayName",
+              "phoneE164",
+              "email"
+            ],
+            "properties": {
+              "displayName": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "phoneE164": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "email": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

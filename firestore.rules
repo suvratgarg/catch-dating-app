@@ -1753,6 +1753,20 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Relationship acquisition and membership authority are server-owned.
+    match /workspaceFieldAssertions/{assertionId} {
+      allow read, write: if false;
+    }
+    match /workspaceFieldDecisions/{decisionId} {
+      allow read, write: if false;
+    }
+    match /organizerCommunityMemberships/{membershipId} {
+      allow read, write: if false;
+    }
+    match /organizerCommunityMembershipDecisions/{decisionId} {
+      allow read, write: if false;
+    }
+
     match /programGuests/{guestId} {
       allow read, write: if false;
     }

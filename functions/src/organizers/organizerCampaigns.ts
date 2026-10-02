@@ -1,3 +1,5 @@
+import {readProgramGuestFields} from
+  "../workspaces/workspaceFieldAuthority";
 import * as admin from "firebase-admin";
 import {
   CallableRequest,
@@ -901,6 +903,11 @@ async function loadProgramSelectionRows(params: {
   const functions = new Map<string, FunctionLike>();
   for (const doc of functionsSnap.docs) {
     const fn = doc.data() as ProgramFunctionDocument;
+    if (fn.programId !== programId ||
+        fn.organizerId !== params.organizerId) {
+      throw new HttpsError("failed-precondition",
+        "Program audience ownership needs reconciliation.");
+    }
     functions.set(doc.id, {
       functionId: doc.id,
       status: fn.status,
@@ -913,13 +920,21 @@ async function loadProgramSelectionRows(params: {
     guests.push({
       guestId: doc.id,
       householdId: guest.householdId,
-      phoneE164: guest.phoneE164,
+      phoneE164: (await readProgramGuestFields({db: params.db, tx: params.tx,
+        programId, organizerId: params.organizerId, guestId: doc.id,
+        guest, fields: ["phoneE164"], includeAlternatives: false}))
+        .values.phoneE164,
       invitationStatus: guest.invitationStatus,
     });
   }
   const rows: FunctionGuestRowLike[] = [];
   for (const doc of rowsSnap.docs) {
     const row = doc.data() as ProgramFunctionGuestDocument;
+    if (row.programId !== programId ||
+        row.organizerId !== params.organizerId) {
+      throw new HttpsError("failed-precondition",
+        "Program audience ownership needs reconciliation.");
+    }
     rows.push({
       functionId: row.functionId,
       guestId: row.guestId,
@@ -932,6 +947,11 @@ async function loadProgramSelectionRows(params: {
     ProgramAudienceRecipient["messagingConsent"]>();
   for (const doc of householdsSnap.docs) {
     const household = doc.data() as ProgramHouseholdDocument;
+    if (household.programId !== programId ||
+        household.organizerId !== params.organizerId) {
+      throw new HttpsError("failed-precondition",
+        "Program audience ownership needs reconciliation.");
+    }
     consentByHousehold.set(doc.id, household.messagingConsent ? {
       granted: household.messagingConsent.granted,
       grantedAt: household.messagingConsent.grantedAt,

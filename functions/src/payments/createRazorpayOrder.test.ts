@@ -1,3 +1,5 @@
+import {communityMembershipRows} from
+  "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
@@ -486,10 +488,21 @@ function createEventFirestore(
     hostApprovalStatus?: string;
   }> = [],
   eventPrivateAccess: Record<string, Record<string, unknown>> = {},
-  pendingOrderWrites: Array<{docId: string; data: Record<string, unknown>}> = []
+  pendingOrderWrites: Array<{
+    docId: string; data: Record<string, unknown>
+  }> = [],
+  extraDocs: Record<string, Record<string, unknown>> = {}
 ): FirebaseFirestore.Firestore {
   return {
     collection: (collectionName: string) => {
+      if (["organizerCommunityMemberships",
+        "organizerCommunityMembershipDecisions",
+        "crossPathsPairHolds"].includes(collectionName)) {
+        return {doc: (id: string) => ({get: async () => {
+          const data = extraDocs[`${collectionName}/${id}`];
+          return {exists: data !== undefined, data: () => data};
+        }})};
+      }
       if (collectionName === "razorpayPendingOrders") {
         return {
           doc: (docId: string) => ({
@@ -689,3 +702,72 @@ function isHttpsError(expectedCode: string, expectedMessage: string) {
     error.code === expectedCode &&
     error.message === expectedMessage;
 }
+
+
+test("Razorpay preflight requires active membership", async () => {
+  for (const rows of [
+    {},
+    communityMembershipRows("club-1", "runner-1", "revoked"),
+  ]) {
+    const policy = demandPricedPolicy();
+    policy.admission.membershipRequired = true;
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({data: {eventId: "event-1"}, auth: {uid: "runner-1"}}),
+        {
+          firestore: () =>
+            createEventFirestore(
+              buildEventDoc({eventPolicy: policy}),
+              [],
+              {},
+              [],
+              rows
+            ),
+          createClient: failOnClientUse,
+          clientKeyId: () => "unused",
+          now: () => 2000,
+          serverTimestamp: () => "unused",
+        }
+      ),
+      /Approved community membership/
+    );
+  }
+});
+
+test("pair hold cannot bypass Razorpay membership checks", async () => {
+  const policy = demandPricedPolicy();
+  policy.admission.membershipRequired = true;
+  const rows = {
+    "crossPathsPairHolds/hold1": {
+      eventId: "event-1",
+      requesterUid: "runner-1",
+      status: "active",
+      requesterBookingStatus: "held",
+      expiresAt: {toMillis: () => Date.now() + 60000},
+      requesterPriceInPaise: 25000,
+    },
+  };
+  await assert.rejects(
+    createRazorpayOrderHandler(
+      buildRequest({
+        data: {eventId: "event-1", crossPathsPairHoldId: "hold1"},
+        auth: {uid: "runner-1"},
+      }),
+      {
+        firestore: () =>
+          createEventFirestore(
+            buildEventDoc({eventPolicy: policy}),
+            [],
+            {},
+            [],
+            rows
+          ),
+        createClient: failOnClientUse,
+        clientKeyId: () => "unused",
+        now: () => 2000,
+        serverTimestamp: () => "unused",
+      }
+    ),
+    /Approved community membership/
+  );
+});

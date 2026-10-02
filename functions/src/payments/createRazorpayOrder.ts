@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {
   CallableRequest,
   HttpsError,
@@ -36,6 +38,7 @@ import {requireCatchBookingAuthority} from "../events/eventOrigin";
 import {requirePublicConfiguredEvent} from "../events/configuredEvent";
 import {
   assertPolicyAllowsSignup,
+  assertPolicyAllowsMembership,
   cohortIdForUser,
   eventPolicyFromEvent,
   hasAcceptedWaitlistOfferAccess,
@@ -192,8 +195,14 @@ export async function createRazorpayOrderHandler(
     },
     {excludeUid: uid}
   );
+  const hasActiveCommunityMembership = await hasEventCommunityMembership({
+    db, organizerId: event.organizerId ?? event.clubId, uid, policy,
+  });
+  // Pair holds are inventory, never community entitlement.
+  assertPolicyAllowsMembership({policy, hasActiveCommunityMembership});
   if (!pairHold) {
     assertPolicyAllowsSignup({
+      hasActiveCommunityMembership,
       policy,
       cohortId,
       roster: admissionRoster,

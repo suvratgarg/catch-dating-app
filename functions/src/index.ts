@@ -241,6 +241,8 @@ export {
   publishOrganizerApplicationForm,
   reviewOrganizerApplication,
 } from "./organizers/organizerApplications";
+export {decideOrganizerCommunityMembership} from
+  "./memberships/communityMembership";
 export {listOrganizerAttentionItems} from
   "./organizers/organizerAttention";
 export {

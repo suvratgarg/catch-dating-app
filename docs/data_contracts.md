@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.157.1
-updated: 2026-09-28
+version: 1.157.2
+updated: 2026-10-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -3249,6 +3249,55 @@ return a bounded JPEG preview rather than a reusable download URL. A second
 transaction rechecks all permissions and selected source revisions after image
 processing. Selection and viewing interfaces must discard stale cached values
 when the signed-in account changes or current permission fails.
+
+### Workspace Field Acquisitions And Community Membership
+
+`workspaceFieldAssertions` and `workspaceFieldDecisions` are private,
+server-owned evidence for the typed `program | community` workspace reference.
+The implemented adapters acquire program guest/household name, phone and email
+from explicit manual writes and stable manifest rows. Organizer, program,
+relationship, source/version, actor and acquisition time are exact; a contact
+pointer, endpoint or Auth UID never supplies field provenance or project access.
+Current guest/household values and selected assertion pointers are projections.
+Imports preserve a valid selected value and bounded alternatives; explicit
+coordinator choices append a revision-bound decision without erasing history.
+Missing, foreign or corrupt evidence restricts reads and sends; no private
+Catch-profile fallback is used. Community/form acquisition adapters remain open.
+
+Manifest preview and each commit chunk require one program-wide
+`guestRelations` assignment, or existing manager/coordinator authority. Separate
+station assignments cannot combine into whole-program access. An explicit
+program grant can authorize a client/parent; a label or organizer follow cannot.
+Manual upserts/conflict choices remain coordinator-owned. Campaign final claims
+recheck selected phone proof, consent and household binding after reservation;
+exact program retention removes both field ledgers and their projection pointers.
+Deleting an acquisition/review actor does not erase another guest's evidence.
+
+`organizerCommunityMemberships` holds one current active/revoked organizer/UID
+grant with revision and exact immutable last-decision pointer.
+`organizerCommunityMembershipDecisions` retains actor, reason, approving source,
+previous/resulting revisions and exact request identity. The explicit
+`decideOrganizerCommunityMembership` callable requires current manager authority
+inside the transaction. A new grant consumes the exact approved native generic
+organizer-target application and UID-owned submitted response/version. Legacy
+application, imported/manual and review-exemption adapters remain open.
+An old grant replay reports its original decision and current state; it cannot
+restore authority after revoke. Following and form-answer access stay independent.
+
+Native booking/checkout, waitlist, review approval, offers and free promotion
+read the current grant and immutable decision for membership-gated events.
+Membership never waives event review, invitation, capacity, cohort/ratio or
+payment. `eventParticipations.communityMembershipAtSignup` retains the grant
+revision/decision used at admission. Revocation fences new bookings; an existing
+signed-up/attended replay and historical paid admission remain intact, with
+cancellation/refund owned separately. Public OTP/form-offer and Cross Paths
+membership-gated continuations remain closed until their owners consume the same
+current authority. Viewer/profile linkage is a separate read-contract follow-up.
+
+Account deletion's processing tombstone fences new decisions; cleanup deletes
+membership edges and decision receipts by subject `uid`. Decisions for other
+subjects retain their actor/source proof when their reviewer deletes an account.
+Direct client get/list/create/update/delete is denied for all four collections.
 
 ### Private Program Functions And Guests
 

@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {Firestore} from "firebase-admin/firestore";
@@ -70,9 +72,11 @@ function seedProgram(db: FakeFirestore): void {
     primaryPhoneE164: "+911234567001", memberGuestIds: ["g1"],
     messagingConsent: {granted: true}, revision: 4,
   });
+  const acquired = seedWorkspaceFieldAssertions(Object.fromEntries(db.docs));
+  for (const [path, doc] of Object.entries(acquired)) db.setDoc(path, doc);
 }
 
-function harness(db: FakeFirestore) {
+function harness(db: FakeFirestore, resolved = recipient) {
   const calls: Array<{toE164: string; phoneNumberId: string}> = [];
   const clock = {now: NOW};
   const provider = {
@@ -84,7 +88,7 @@ function harness(db: FakeFirestore) {
   const credentials = {accessBound: async () => "token-1"};
   const deliver = () => deliverProgramReminder({
     db: db as unknown as Firestore,
-    provider, credentials, moment, run, facts, recipient, action,
+    provider, credentials, moment, run, facts, recipient: resolved, action,
     now: () => clock.now,
   });
   return {calls, clock, deliver};
@@ -187,3 +191,77 @@ test("a post-acceptance interruption leaves an unknown attempt, " +
   assert.equal(doc.attempts.length, 1);
   assert.equal(doc.attempts[0].state.kind, "unknown");
 });
+
+for (const modification of ["missingAssertion", "foreignScope", "unassigned"]) {
+  test(`household phone evidence ${modification} prevents provider I/O`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedProgram(db);
+      const selected = (db.getDoc("programHouseholds/hh1")!.fieldSelections as
+        {phoneE164: string}).phoneE164;
+      if (modification === "missingAssertion") {
+        db.deleteDoc(`workspaceFieldAssertions/${selected}`);
+      } else if (modification === "foreignScope") {
+        db.updateDoc(`workspaceFieldAssertions/${selected}`, {
+          workspaceRef: {kind: "program", id: "another-wedding"}});
+      } else {
+        db.updateDoc("programHouseholds/hh1", {fieldSelections: {}});
+      }
+      const h = harness(db);
+      await h.deliver();
+      assert.equal(h.calls.length, 0);
+      assert.equal(record(db).attempts.length, 0);
+    });
+}
+
+test("household evidence cannot authorize an unassigned guest phone",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    db.setDoc("programGuests/g1", {programId: "prog", organizerId: "org-1",
+      householdId: "hh1", phoneE164: "+911234567001"});
+    const h = harness(db, {...recipient, recipientKey: "guest:g1"});
+    await h.deliver();
+    assert.equal(h.calls.length, 0);
+  });
+
+for (const change of ["assertionDeleted", "consentRevoked"]) {
+  test(`program reminder ${change} between reserve and claim never sends`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedProgram(db);
+      let changed = false;
+      let sends = 0;
+      const outcome = await deliverProgramReminder({
+        db: db as unknown as Firestore, moment, run, facts, recipient, action,
+        credentials: {accessBound: async () => "synthetic-token"},
+        provider: {sendTemplate: async () => {
+          sends++;
+          return {providerMessageId: "unexpected-send"};
+        }},
+        now: () => {
+          const doc = [...db.docs.entries()].find(([path]) =>
+            path.startsWith("programDeliveryMessages/"))?.[1] as
+            ProgramDeliveryMessageDocument | undefined;
+          if (!changed && doc?.attempts.some((attempt) =>
+            attempt.state.kind === "reserved")) {
+            changed = true;
+            if (change === "consentRevoked") {
+              db.updateDoc("programHouseholds/hh1", {
+                messagingConsent: {granted: false}});
+            } else {
+              const id = (db.getDoc("programHouseholds/hh1")!
+                .fieldSelections as {phoneE164: string}).phoneE164;
+              db.deleteDoc(`workspaceFieldAssertions/${id}`);
+            }
+          }
+          return NOW;
+        },
+      });
+      assert.equal(changed, true);
+      assert.equal(sends, 0);
+      assert.equal(outcome.kind, "retry");
+      assert.equal([...db.docs.keys()].filter((path) =>
+        path.startsWith("programWhatsappDispatches/")).length, 0);
+    });
+}

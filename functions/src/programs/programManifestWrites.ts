@@ -9,13 +9,17 @@ import {nextFlightRefreshAt} from "../transport/flightRefreshPolicy";
 import {reconcileTravelLegState} from
   "../transport/travelLegState";
 import type {
-  ProgramGuestDocument, ProgramGuestGroupDocument,
+  ProgramGuestGroupDocument,
   ProgramHouseholdDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   buildManifestPlans, normalizeManifestFlightNumber,
 } from "./programManifestPlan";
+
+import {planWorkspaceFieldWrite, programGuestFieldContext,
+  type ScopedProgramGuest, type ScopedProgramHousehold} from
+  "../workspaces/workspaceFieldAuthority";
 
 /** Materialize one transaction's plan using the documents it just read. */
 export function buildManifestWrites(
@@ -27,6 +31,7 @@ export function buildManifestWrites(
   legs: Map<string, ProgramTravelLegDocument>,
   groups: Map<string, ProgramGuestGroupDocument>,
   now: FirebaseFirestore.Timestamp,
+  source: {operationId: string; actorUid: string; rowIndices: number[]},
 ): Array<{path: string; data: object}> {
   const {plans, newHouseholds, newParties, newLabels, newGroups,
     newGroupMeta} = planned;
@@ -44,15 +49,33 @@ export function buildManifestWrites(
       throw new HttpsError("failed-precondition",
         "Guest ownership needs reconciliation.");
     }
-    const guestDoc: ProgramGuestDocument = {
+    const context = programGuestFieldContext(programId, organizerId,
+      plan.guestId, existing ?? {programId, organizerId});
+    const fields = planWorkspaceFieldWrite({context,
+      previous: (existing as ScopedProgramGuest | undefined) ??
+        {displayName: null, phoneE164: null, email: null},
+      supplied: {displayName: row.displayName.trim(),
+        ...(row.phoneE164 === undefined ? {} : {phoneE164: row.phoneE164}),
+        ...(row.email === undefined ? {} : {email: row.email})},
+      source: {sourceKind: "manifestRow",
+        sourceId: `${source.operationId}:${source.rowIndices[plan.index]}`,
+        sourceVersion: 1, actorUid: source.actorUid,
+        observedAtMillis: now.toMillis()}});
+    for (const fact of fields.assertions) {
+      writes.push({path: `workspaceFieldAssertions/${fact.id}`,
+        data: fact.data});
+    }
+    const guestDoc: ScopedProgramGuest = {
+      ...existing,
       programId,
       organizerId,
-      displayName: row.displayName.trim(),
+      displayName: fields.values.displayName!,
       householdId: plan.householdId ?? existing?.householdId ?? null,
       contactId: existing?.contactId ?? null,
-      phoneE164: row.phoneE164 === undefined ?
-        existing?.phoneE164 ?? null : row.phoneE164,
-      email: row.email === undefined ? existing?.email ?? null : row.email,
+      phoneE164: fields.values.phoneE164,
+      email: fields.values.email,
+      fieldSelections: fields.fieldSelections,
+      fieldConflicts: fields.fieldConflicts,
       externalReference: row.externalReference ||
         existing?.externalReference || null,
       groupIds: [...new Set([...(existing?.groupIds ?? []),
@@ -149,13 +172,35 @@ export function buildManifestWrites(
     const label = newLabels.get(householdId) ?? normalizedLabel;
     const firstMember = plans.find((plan) =>
       plan.householdId === householdId);
-    const householdDoc: ProgramHouseholdDocument = {
+    if (!firstMember) {
+      throw new HttpsError("internal",
+        "A new household must have an explicit manifest source row.");
+    }
+    const fields = planWorkspaceFieldWrite({context: {
+      workspaceRef: {kind: "program", id: programId}, organizerId,
+      relationshipRef: {kind: "programHousehold", id: householdId}},
+    previous: {displayName: null, phoneE164: null, email: null},
+    supplied: {displayName: firstMember.row.displayName.trim(),
+      ...(firstMember.row.phoneE164 === undefined ? {} :
+        {phoneE164: firstMember.row.phoneE164}),
+      ...(firstMember.row.email === undefined ? {} :
+        {email: firstMember.row.email})},
+    source: {sourceKind: "manifestRow", sourceVersion: 1,
+      sourceId: `${source.operationId}:${source.rowIndices[firstMember.index]}`,
+      actorUid: source.actorUid, observedAtMillis: now.toMillis()}});
+    for (const fact of fields.assertions) {
+      writes.push({path: `workspaceFieldAssertions/${fact.id}`,
+        data: fact.data});
+    }
+    const householdDoc: ScopedProgramHousehold = {
       programId,
       organizerId,
       label,
-      primaryContactName: firstMember?.row.displayName.trim() ?? label,
-      primaryPhoneE164: firstMember?.row.phoneE164 ?? null,
-      primaryEmail: firstMember?.row.email ?? null,
+      primaryContactName: fields.values.displayName,
+      primaryPhoneE164: fields.values.phoneE164,
+      primaryEmail: fields.values.email,
+      fieldSelections: fields.fieldSelections,
+      fieldConflicts: fields.fieldConflicts,
       memberGuestIds: [],
       deliveryPreference: "none",
       createdAt: now,

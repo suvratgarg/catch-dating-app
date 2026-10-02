@@ -196,6 +196,59 @@ export const programGuestDocumentSchema: Record<string, unknown> = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "fieldSelections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Current values are a projection of these exact immutable same-program assertions. Absent fields have unknown acquisition provenance."
+    },
+    "fieldConflicts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "phoneE164": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        },
+        "email": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^wfa_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger."
     }
   }
 } as const;

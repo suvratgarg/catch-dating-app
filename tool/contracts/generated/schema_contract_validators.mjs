@@ -9,6 +9,12 @@ import {
   organizerTrackingSettingsCallableResponseSchema,
   publicOrganizerTrackingSettingsCallableResponseSchema,
   organizerTrackingSettingsDocumentSchema,
+  organizerCommunityMembershipDocumentSchema,
+  organizerCommunityMembershipDecisionDocumentSchema,
+  decideOrganizerCommunityMembershipCallablePayloadSchema,
+  decideOrganizerCommunityMembershipCallableResponseSchema,
+  workspaceFieldAssertionDocumentSchema,
+  workspaceFieldDecisionDocumentSchema,
   catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
@@ -1180,6 +1186,12 @@ export const validateReadPublicOrganizerTrackingSettingsCallablePayload = ajv.co
 export const validateOrganizerTrackingSettingsCallableResponse = ajv.compile(organizerTrackingSettingsCallableResponseSchema);
 export const validatePublicOrganizerTrackingSettingsCallableResponse = ajv.compile(publicOrganizerTrackingSettingsCallableResponseSchema);
 export const validateOrganizerTrackingSettingsDocument = ajv.compile(organizerTrackingSettingsDocumentSchema);
+export const validateOrganizerCommunityMembershipDocument = ajv.compile(organizerCommunityMembershipDocumentSchema);
+export const validateOrganizerCommunityMembershipDecisionDocument = ajv.compile(organizerCommunityMembershipDecisionDocumentSchema);
+export const validateDecideOrganizerCommunityMembershipCallablePayload = ajv.compile(decideOrganizerCommunityMembershipCallablePayloadSchema);
+export const validateDecideOrganizerCommunityMembershipCallableResponse = ajv.compile(decideOrganizerCommunityMembershipCallableResponseSchema);
+export const validateWorkspaceFieldAssertionDocument = ajv.compile(workspaceFieldAssertionDocumentSchema);
+export const validateWorkspaceFieldDecisionDocument = ajv.compile(workspaceFieldDecisionDocumentSchema);
 export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);

@@ -18,6 +18,12 @@ Do not edit it by hand.
 | OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsCallableResponse.ts` |
 | PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse.ts` |
 | OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsDocument.ts` |
+| OrganizerCommunityMembershipDocument | `firestore/organizer_community_memberships.schema.json` | `functions/src/shared/generated/organizerCommunityMembershipDocument.ts` |
+| OrganizerCommunityMembershipDecisionDocument | `firestore/organizer_community_membership_decisions.schema.json` | `functions/src/shared/generated/organizerCommunityMembershipDecisionDocument.ts` |
+| DecideOrganizerCommunityMembershipCallablePayload | `callables/decide_organizer_community_membership_payload.schema.json` | `functions/src/shared/generated/decideOrganizerCommunityMembershipCallablePayload.ts` |
+| DecideOrganizerCommunityMembershipCallableResponse | `callable_responses/organizer_community_membership_decision_response.schema.json` | `functions/src/shared/generated/decideOrganizerCommunityMembershipCallableResponse.ts` |
+| WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `functions/src/shared/generated/workspaceFieldAssertionDocument.ts` |
+| WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `functions/src/shared/generated/workspaceFieldDecisionDocument.ts` |
 | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts` |
 | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `functions/src/shared/generated/salesImportHistoryRowDocument.ts` |
 | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `functions/src/shared/generated/salesImportHistoryRecordDocument.ts` |
@@ -1170,6 +1176,12 @@ Do not edit it by hand.
 | `schemaOrganizerTrackingSettingsCallableResponseSchema` | OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_callable_response.g.dart` |
 | `schemaPublicOrganizerTrackingSettingsCallableResponseSchema` | PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/public_organizer_tracking_settings_callable_response.g.dart` |
 | `schemaOrganizerTrackingSettingsDocumentSchema` | OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_document.g.dart` |
+| `schemaOrganizerCommunityMembershipDocumentSchema` | OrganizerCommunityMembershipDocument | `firestore/organizer_community_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_community_membership_document.g.dart` |
+| `schemaOrganizerCommunityMembershipDecisionDocumentSchema` | OrganizerCommunityMembershipDecisionDocument | `firestore/organizer_community_membership_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_community_membership_decision_document.g.dart` |
+| `schemaDecideOrganizerCommunityMembershipCallablePayloadSchema` | DecideOrganizerCommunityMembershipCallablePayload | `callables/decide_organizer_community_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_organizer_community_membership_callable_payload.g.dart` |
+| `schemaDecideOrganizerCommunityMembershipCallableResponseSchema` | DecideOrganizerCommunityMembershipCallableResponse | `callable_responses/organizer_community_membership_decision_response.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_organizer_community_membership_callable_response.g.dart` |
+| `schemaWorkspaceFieldAssertionDocumentSchema` | WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_assertion_document.g.dart` |
+| `schemaWorkspaceFieldDecisionDocumentSchema` | WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_decision_document.g.dart` |
 | `schemaCatchWhatsappWebhookEventDocumentSchema` | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_webhook_event_document.g.dart` |
 | `schemaSalesImportHistoryRowDocumentSchema` | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_row_document.g.dart` |
 | `schemaSalesImportHistoryRecordDocumentSchema` | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_record_document.g.dart` |
@@ -2729,6 +2741,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| DecideOrganizerCommunityMembershipCallablePayload | cannot map field "action" (no type) |
 | AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |
 | AdminReviewSalesOutreachDraftRequest | cannot map field "factualValidity" (no type) |
 | AdminAttestSalesHostSettlementPayload | cannot map field "purpose" (no type) |

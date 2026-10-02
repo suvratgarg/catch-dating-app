@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -256,6 +258,10 @@ export async function decideEventJoinRequestHandler(
       cohortId,
       roster,
       hasHostApproval: true,
+      hasActiveCommunityMembership: await hasEventCommunityMembership({
+        db, tx, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        policy,
+      }),
     });
     const amountInPaise = quotePriceInPaise({policy, cohortId, roster});
 
