@@ -1,8 +1,14 @@
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {type ReactNode, useLayoutEffect, useState} from "react";
+import {CancelledError, MutationCache, QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {type ReactNode, useLayoutEffect, useRef, useState} from "react";
 
-function createAdminQueryClient() {
+function createAdminQueryClient(requireCurrentSession: () => void) {
   return new QueryClient({
+    mutationCache: new MutationCache({
+      // Clearing MutationCache does not cancel an already-running mutation.
+      // Fence its result and any follow-up mutation after this client retires.
+      onMutate: requireCurrentSession,
+      onSuccess: requireCurrentSession,
+    }),
     defaultOptions: {
       mutations: {
         retry: 0,
@@ -19,20 +25,35 @@ function createAdminQueryClient() {
 
 // The route shell supplies principal + authorization epoch. Remount the entire
 // private subtree so query observers and controller-local state rotate together.
-export function AdminQueryProvider({children, sessionKey}: {
+export function AdminQueryProvider({children, sessionKey, isCurrentSession}: {
   children: ReactNode;
   sessionKey: string;
+  isCurrentSession: () => boolean;
 }) {
-  return <SessionQueryProvider key={sessionKey}>{children}</SessionQueryProvider>;
+  return <SessionQueryProvider key={sessionKey} isCurrentSession={isCurrentSession}>
+    {children}
+  </SessionQueryProvider>;
 }
 
-function SessionQueryProvider({children}: {children: ReactNode}) {
-  const [client] = useState(createAdminQueryClient);
-  useLayoutEffect(() => () => {
-    // Cancellation fences promises even when the callable transport cannot
-    // abort. A late completion can never populate the next session's client.
-    void client.cancelQueries();
-    client.clear();
+function SessionQueryProvider({children, isCurrentSession}: {
+  children: ReactNode;
+  isCurrentSession: () => boolean;
+}) {
+  const active = useRef(true);
+  const [client] = useState(() => createAdminQueryClient(() => {
+    if (!active.current || !isCurrentSession()) {
+      throw new CancelledError({silent: true});
+    }
+  }));
+  useLayoutEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+      // Cancellation fences promises even when the callable transport cannot
+      // abort. A late completion can never populate the next session's client.
+      void client.cancelQueries();
+      client.clear();
+    };
   }, [client]);
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

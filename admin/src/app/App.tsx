@@ -306,13 +306,37 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 export function App() {
   const [router] = useState(() => createBrowserRouter([{
     path: "*",
-    element: (
-      <AdminPendingOperationProvider>
-        <AdminRouteApp />
-      </AdminPendingOperationProvider>
-    ),
+    element: <AdminRouteApp />,
   }]));
   return <RouterProvider router={router} />;
+}
+
+// Async controller continuations may outlive their query provider. Their old
+// feedback callbacks must not display private identifiers in a newer session.
+function useSessionFeedback({epoch, isCurrent}: ReturnType<typeof useAdminSession>) {
+  const [feedback, setFeedback] = useState<{
+    epoch: number;
+    error: string | null;
+    notice: string | null;
+  }>({epoch, error: null, notice: null});
+  const setError = useCallback((error: string | null) => {
+    if (!isCurrent()) return;
+    setFeedback((current) => ({
+      epoch, error, notice: current.epoch === epoch ? current.notice : null,
+    }));
+  }, [epoch, isCurrent]);
+  const setNotice = useCallback((notice: string | null) => {
+    if (!isCurrent()) return;
+    setFeedback((current) => ({
+      epoch, notice, error: current.epoch === epoch ? current.error : null,
+    }));
+  }, [epoch, isCurrent]);
+  return {
+    error: feedback.epoch === epoch ? feedback.error : null,
+    notice: feedback.epoch === epoch ? feedback.notice : null,
+    setError,
+    setNotice,
+  };
 }
 
 function AdminRouteApp() {
@@ -322,8 +346,7 @@ function AdminRouteApp() {
   const adminEnvironment = String(
     import.meta.env.VITE_ADMIN_FIREBASE_ENV ?? "dev"
   );
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthActionPending, setIsAuthActionPending] = useState(false);
   const [phoneCode, setPhoneCode] = useState("");
@@ -331,6 +354,7 @@ function AdminRouteApp() {
   const [phoneSignInStage, setPhoneSignInStage] =
     useState<PhoneSignInStage>("phone");
   const session = useAdminSession(mode);
+  const {error, notice, setError, setNotice} = useSessionFeedback(session);
   const {user, roles: adminRoles, resolved: rolesResolved} = session;
   const isRoleCheckPending = Boolean(user && !rolesResolved);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
@@ -362,7 +386,7 @@ function AdminRouteApp() {
       setPhoneNumber("");
       setPhoneSignInStage("phone");
     }
-  }, [session.epoch, user]);
+  }, [session.epoch, setError, setNotice, user]);
 
   const visibleNavigation = useMemo(
     () => navigation.filter((item) =>
@@ -471,7 +495,7 @@ function AdminRouteApp() {
     } finally {
       setIsAuthActionPending(false);
     }
-  }, [session.clearSession]);
+  }, [session.clearSession, setError, setNotice]);
 
   const handleRefreshAdminClaims = useCallback(async () => {
     setAuthError(null);
@@ -512,7 +536,7 @@ function AdminRouteApp() {
       return;
     }
     setActiveNav(destination);
-  }, [navigate, setActiveNav, visibleNavigation]);
+  }, [navigate, setActiveNav, setError, setNotice, visibleNavigation]);
 
   const topbarTitle = titleForAdminSection(currentNav, location.pathname);
 
@@ -561,8 +585,13 @@ function AdminRouteApp() {
     );
   }
 
+  const sessionKey = JSON.stringify([mode, user?.uid, session.epoch]);
   return (
-    <AdminQueryProvider sessionKey={JSON.stringify([mode, user?.uid, session.epoch])}>
+    <AdminPendingOperationProvider key={sessionKey}>
+    <AdminQueryProvider
+      sessionKey={sessionKey}
+      isCurrentSession={session.isCurrent}
+    >
     <AdminAppShell
       intakeMode={currentNav === "organizer-intake"}
       sidebarCollapsed={isSidebarCollapsed}
@@ -877,6 +906,7 @@ function AdminRouteApp() {
       </AdminWorkspace>
     </AdminAppShell>
     </AdminQueryProvider>
+    </AdminPendingOperationProvider>
   );
 }
 

@@ -60,5 +60,7 @@ export function useAdminSession(mode: DataMode) {
     resolveClaims(session.user, true), [resolveClaims, session.user]);
   const clearSession = useCallback(() => resolveClaims(null), [resolveClaims]);
 
-  return {...session, refreshClaims, clearSession};
+  const isCurrent = useCallback(() => epoch.current === session.epoch, [session.epoch]);
+
+  return {...session, refreshClaims, clearSession, isCurrent};
 }

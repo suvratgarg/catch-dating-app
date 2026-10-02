@@ -198,10 +198,13 @@ export function useFinanceOpsController({
   }, [canLoadHostAnalytics, hostAnalyticsQuery, overviewQuery]);
 
   const refresh = useCallback(async () => {
-    const overviewResult = await overviewQuery.refetch();
-    if (!canLoadHostAnalytics) return !overviewResult.error;
-    const analyticsResult = await hostAnalyticsQuery.refetch();
-    return !overviewResult.error || !analyticsResult.error;
+    // Start independent reads together. Cancellation of the first read must
+    // not resume an old closure that starts analytics in a later session.
+    const [overviewResult, analyticsResult] = await Promise.all([
+      overviewQuery.refetch(),
+      canLoadHostAnalytics ? hostAnalyticsQuery.refetch() : undefined,
+    ]);
+    return !overviewResult.error || Boolean(analyticsResult && !analyticsResult.error);
   }, [canLoadHostAnalytics, hostAnalyticsQuery, overviewQuery]);
 
   const filteredRows = useMemo(
