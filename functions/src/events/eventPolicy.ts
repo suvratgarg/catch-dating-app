@@ -377,14 +377,13 @@ export function assertPolicyAllowsMembership(params: {
   policy: EventPolicyBundleDocument;
   hasActiveCommunityMembership?: boolean;
 }): void {
-  if (requiresCommunityMembership(params.policy) &&
-      params.hasActiveCommunityMembership !== true) {
+  if (!membershipAllowsSignup(params)) {
     throw new HttpsError("failed-precondition",
-      "Approved community membership is required to book this event.");
+      signupRestrictionCopy.membershipRequired);
   }
 }
 
-export function assertPolicyAllowsSignup(params: {
+export interface SignupPolicyInput {
   policy: EventPolicyBundleDocument;
   cohortId: string;
   roster: EventRosterSnapshot;
@@ -392,20 +391,61 @@ export function assertPolicyAllowsSignup(params: {
   hasHostApproval?: boolean;
   hasActiveCommunityMembership?: boolean;
   admissionMode?: "general" | "crossPathsPair";
-}) {
+}
+
+export type SignupPolicyRestriction =
+  | "membershipRequired"
+  | "inviteRequired"
+  | "reviewRequired"
+  | "full"
+  | "pairCapacityUnavailable"
+  | "generalCapacityUnavailable"
+  | "cohortCapacityUnavailable"
+  | "outOfRatioReviewRequired"
+  | "balanceUnavailable";
+
+export type SignupPolicyDecision = {allowed: true} |
+  {allowed: false; reason: SignupPolicyRestriction};
+
+const signupRestrictionCopy: Record<SignupPolicyRestriction, string> = {
+  membershipRequired:
+    "Approved community membership is required to book this event.",
+  inviteRequired:
+    "Enter a valid invite code to book this event.",
+  reviewRequired:
+    "Request to join this event before booking.",
+  full:
+    "This event is now full.",
+  pairCapacityUnavailable:
+    "A Cross Paths pair spot is not available right now.",
+  generalCapacityUnavailable:
+    "General admission is full. Reserved Cross Paths spots remain separate.",
+  cohortCapacityUnavailable:
+    "A matching spot is not available right now. Join the waitlist.",
+  outOfRatioReviewRequired:
+    "This booking needs host review.",
+  balanceUnavailable:
+    "A balanced spot is not available right now. Join the waitlist.",
+};
+
+function membershipAllowsSignup(params: Pick<SignupPolicyInput,
+  "policy" | "hasActiveCommunityMembership">): boolean {
+  return !requiresCommunityMembership(params.policy) ||
+    params.hasActiveCommunityMembership === true;
+}
+
+/** The shared read outcome and mutation check have one policy owner. */
+export function signupPolicyDecision(params: SignupPolicyInput):
+  SignupPolicyDecision {
   const admission = params.policy.admission;
-  assertPolicyAllowsMembership(params);
+  if (!membershipAllowsSignup(params)) {
+    return {allowed: false, reason: "membershipRequired"};
+  }
   if (admission.inviteRequired && params.hasValidInvite !== true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Enter a valid invite code to book this event."
-    );
+    return {allowed: false, reason: "inviteRequired"};
   }
   if (admission.manualApprovalRequired && params.hasHostApproval !== true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Request to join this event before booking."
-    );
+    return {allowed: false, reason: "reviewRequired"};
   }
 
   const pairInventory = admission.crossPathsPairInventory ?? {
@@ -417,7 +457,7 @@ export function assertPolicyAllowsSignup(params: {
   const pairHeldCount = params.roster.crossPathsPairHeldCount ?? 0;
   const pairConfirmedCount = params.roster.crossPathsPairConfirmedCount ?? 0;
   if (params.roster.totalBooked >= admission.capacityLimit) {
-    throw new HttpsError("failed-precondition", "This event is now full.");
+    return {allowed: false, reason: "full"};
   }
   if (admissionMode === "crossPathsPair") {
     if (
@@ -426,10 +466,7 @@ export function assertPolicyAllowsSignup(params: {
       pairHeldCount + pairConfirmedCount >=
         pairInventory.reservedPairCapacity
     ) {
-      throw new HttpsError(
-        "failed-precondition",
-        "A Cross Paths pair spot is not available right now."
-      );
+      return {allowed: false, reason: "pairCapacityUnavailable"};
     }
   } else if (pairInventory.enabled) {
     const generalOccupied = params.roster.totalBooked -
@@ -439,10 +476,7 @@ export function assertPolicyAllowsSignup(params: {
       admission.capacityLimit - pairInventory.reservedPairCapacity
     );
     if (generalOccupied >= generalCapacity) {
-      throw new HttpsError(
-        "failed-precondition",
-        "General admission is full. Reserved Cross Paths spots remain separate."
-      );
+      return {allowed: false, reason: "generalCapacityUnavailable"};
     }
   }
 
@@ -450,25 +484,19 @@ export function assertPolicyAllowsSignup(params: {
   if (cohortLimit != null &&
       (params.roster.bookedCountsByCohort[params.cohortId] ?? 0) >=
         cohortLimit) {
-    throw new HttpsError(
-      "failed-precondition",
-      "A matching spot is not available right now. Join the waitlist."
-    );
+    return {allowed: false, reason: "cohortCapacityUnavailable"};
   }
 
   const ratio = admission.balancedRatioPolicy;
-  if (admission.format !== "balancedRatio" || !ratio) return;
+  if (admission.format !== "balancedRatio" || !ratio) return {allowed: true};
 
   const applies = params.cohortId === ratio.leftCohortId ||
     params.cohortId === ratio.rightCohortId;
   if (!applies) {
     if (ratio.outOfRatioCohortPolicy === "admitWithinGeneralCapacity") {
-      return;
+      return {allowed: true};
     }
-    throw new HttpsError(
-      "failed-precondition",
-      "This booking needs host review."
-    );
+    return {allowed: false, reason: "outOfRatioReviewRequired"};
   }
 
   const counterpartId = params.cohortId === ratio.leftCohortId ?
@@ -482,14 +510,21 @@ export function assertPolicyAllowsSignup(params: {
 
   if (counterpartCount === 0 &&
       currentCount < ratio.openingBufferPerCohort) {
-    return;
+    return {allowed: true};
   }
-  if (nextCount <= counterpartCount + ratio.maxSkew) return;
+  if (nextCount <= counterpartCount + ratio.maxSkew) return {allowed: true};
 
-  throw new HttpsError(
-    "failed-precondition",
-    "A balanced spot is not available right now. Join the waitlist."
-  );
+  return {allowed: false, reason: "balanceUnavailable"};
+}
+
+/** Existing mutation callers retain their code, copy and check order. */
+export function assertPolicyAllowsSignup(params: SignupPolicyInput):
+  void {
+  const decision = signupPolicyDecision(params);
+  if (!decision.allowed) {
+    throw new HttpsError("failed-precondition",
+      signupRestrictionCopy[decision.reason]);
+  }
 }
 
 export async function rosterWithReservedWaitlistOffers(
