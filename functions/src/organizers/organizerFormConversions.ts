@@ -17,6 +17,7 @@ import type {
   OrganizerApplicationDocument,
   OrganizerApplicationResponseDocument,
   OrganizerContactDocument,
+  OrganizerContactOriginDocument,
   OrganizerFormConversionReceiptDocument,
   OrganizerFormDocument,
   OrganizerFormResponseDocument,
@@ -39,7 +40,10 @@ import {requireOrganizerManager} from
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
-import {createOrganizerContactRecord} from "./organizerContacts";
+import {createOrganizerContactInTransaction} from "./organizerContacts";
+import {resolveOrganizerAudienceCoverage} from "./organizerAudienceCoverage";
+import {organizerContactOriginId} from "../shared/organizerContactOrigins";
+import {authorizeFormMutation} from "./organizerFormTarget";
 import {
   eventAttendeeId,
   importEventAttendeesForHost,
@@ -138,6 +142,9 @@ export async function convertOrganizerFormResponseHandler(
       actorUid,
     });
   }
+  if (data.kind === "crmContact" || data.kind === "application") {
+    return convertResponseInTransaction({db, data, actorUid, deps});
+  }
   const context = await conversionContext(db, data);
   if (!context.allowed) {
     throw new HttpsError(
@@ -197,14 +204,15 @@ export async function convertOrganizerFormResponseHandler(
   });
   if (receipt.status === "pending") {
     try {
-      const resultId = await applyConversion({
-        db,
-        data,
-        actorUid,
-        context,
-        identitySecret: deps.identitySecret(),
-        now: deps.timestamp(),
-      });
+      const resultId = context.existingResultId ??
+        await applyEventAttendeeConversion({
+          db,
+          data,
+          actorUid,
+          context,
+          identitySecret: deps.identitySecret(),
+          now: deps.timestamp(),
+        });
       const now = deps.timestamp();
       await receiptRef.update({
         status: "completed",
@@ -235,10 +243,14 @@ export async function convertOrganizerFormResponseHandler(
 async function conversionContext(
   db: FirebaseFirestore.Firestore,
   data: Pick<PreviewOrganizerFormConversionCallablePayload,
-    "organizerId" | "responseId" | "kind" | "eventId" | "overrides">
+    "organizerId" | "responseId" | "kind" | "eventId" | "overrides">,
+  tx?: FirebaseFirestore.Transaction,
+  reviewedFields?: ConversionFields
 ): Promise<ConversionContext> {
-  const responseSnap = await db.collection("organizerFormResponses")
-    .doc(data.responseId).get();
+  const read = (ref: FirebaseFirestore.DocumentReference) =>
+    tx ? tx.get(ref) : ref.get();
+  const responseSnap = await read(db.collection("organizerFormResponses")
+    .doc(data.responseId));
   if (!responseSnap.exists) {
     throw new HttpsError("not-found", "Form response not found.");
   }
@@ -250,11 +262,11 @@ async function conversionContext(
     throw new HttpsError("not-found", "Form response not found.");
   }
   const [formSnap, versionSnap, receiptSnap] = await Promise.all([
-    db.collection("organizerForms").doc(response.formId).get(),
-    db.collection("organizerFormVersions").doc(response.versionId).get(),
-    db.collection("organizerFormConversionReceipts")
+    read(db.collection("organizerForms").doc(response.formId)),
+    read(db.collection("organizerFormVersions").doc(response.versionId)),
+    read(db.collection("organizerFormConversionReceipts")
       .doc(formConversionReceiptId(
-        data.responseId, data.kind, data.eventId)).get(),
+        data.responseId, data.kind, data.eventId))),
   ]);
   const form = requireDoc<OrganizerFormDocument>(
     formSnap,
@@ -269,13 +281,14 @@ async function conversionContext(
       version.formId !== response.formId) {
     throw new HttpsError("not-found", "Form response not found.");
   }
-  const fields = conversionFields(response, version, data.overrides);
+  const fields = reviewedFields ??
+    conversionFields(response, version, data.overrides);
   if (data.kind === "eventAttendeeProposal" && data.eventId) {
     fields.push({destinationField: "eventId", label: "Event",
       value: data.eventId, origin: "hostOverride", conflict: null});
   }
   const warnings: string[] = [];
-  let allowed = response.status === "submitted";
+  let allowed = response.status === "submitted" && !response.withdrawnAt;
   if (!allowed) warnings.push("Withdrawn responses cannot be converted.");
   if (data.kind === "followUp") {
     warnings.push(organizerFormFollowUpUnavailableMessage);
@@ -287,7 +300,7 @@ async function conversionContext(
     allowed = false;
   }
   if (data.kind === "crmContact" && !response.identity.displayName &&
-      !data.overrides.displayName) {
+      !fieldValue(fields, "displayName")) {
     warnings.push("Add a display name before creating a CRM contact.");
     allowed = false;
   }
@@ -336,8 +349,8 @@ async function conversionContext(
   let existingResultId = receiptSnap.exists ?
     (receiptSnap.data() as OrganizerFormConversionReceiptDocument).resultId :
     null;
-  if (!existingResultId && data.kind === "crmContact") {
-    existingResultId = await findExistingContact(db, response, fields);
+  if (!existingResultId && data.kind === "crmContact" && !tx) {
+    existingResultId = await findExistingContact(db, response, fields, tx);
     if (existingResultId) {
       warnings.push("An existing CRM contact matches this response.");
     }
@@ -353,53 +366,118 @@ async function conversionContext(
   };
 }
 
-async function applyConversion(params: {
+/** Source authority, destination and completion share a single commit. */
+async function convertResponseInTransaction(params: {
   db: FirebaseFirestore.Firestore;
   data: ConvertOrganizerFormResponseCallablePayload;
   actorUid: string;
-  context: ConversionContext;
-  identitySecret: string;
-  now: FirebaseFirestore.Timestamp;
-}): Promise<string> {
-  if (params.context.existingResultId && params.data.kind !== "crmContact") {
-    return params.context.existingResultId;
-  }
-  switch (params.data.kind) {
-  case "crmContact": {
-    const target = crmContactConversionTarget({
-      existingResultId: params.context.existingResultId,
-      responseId: params.data.responseId,
-      formId: params.context.response.formId,
-      submittedAt: params.context.response.submittedAt,
-    });
-    const displayName = fieldValue(params.context.fields, "displayName") ??
-      params.context.response.identity.displayName ?? "Form respondent";
-    const result = await createOrganizerContactRecord({
-      db: params.db,
-      organizerId: params.data.organizerId,
-      actorUid: params.actorUid,
-      displayName: String(displayName).slice(0, 120),
-      phoneE164: stringField(params.context.fields, "phoneNumber") ??
-        params.context.response.identity.phoneE164,
-      email: stringField(params.context.fields, "email") ??
-        params.context.response.identity.email,
-      initialNote: `Created from form response ${params.data.responseId}.`,
-      identitySecret: params.identitySecret,
-      contactId: target.contactId,
-      origin: target.origin,
-      now: params.now,
-    });
-    return result.contactId;
-  }
-  case "application":
-    return applyApplicationConversion(params);
-  case "eventAttendeeProposal":
-    return applyEventAttendeeConversion(params);
-  case "followUp":
-    throw new HttpsError(
-      "failed-precondition",
-      organizerFormFollowUpUnavailableMessage
-    );
+  deps: FormConversionDeps;
+}): Promise<ConvertOrganizerFormResponseCallableResponse> {
+  const {db, data, actorUid, deps} = params;
+  const receiptId = formConversionReceiptId(
+    data.responseId, data.kind, data.eventId);
+  const receiptRef = db.collection("organizerFormConversionReceipts")
+    .doc(receiptId);
+  const initialSourceCoverage = data.kind === "crmContact" ?
+    await resolveOrganizerAudienceCoverage({
+      db, organizerId: data.organizerId, storedCoverage: null,
+    }) : "partial";
+  return db.runTransaction(async (tx) => {
+    // The internal application-purpose projector has no manager actor.
+    // Its submitted-source authority still participates in this transaction.
+    if (deps.requireManagerAuthority !== false) {
+      await authorizeFormMutation({db, tx, actorUid,
+        organizerId: data.organizerId});
+    }
+    const receiptSnap = await tx.get(receiptRef);
+    const existing = receiptSnap.exists ?
+      requireDoc<OrganizerFormConversionReceiptDocument>(receiptSnap,
+        "OrganizerFormConversionReceiptDocument") : null;
+    if (existing && (existing.organizerId !== data.organizerId ||
+        existing.responseId !== data.responseId ||
+        existing.kind !== data.kind)) {
+      throw new HttpsError("already-exists", "Conversion receipt conflict.");
+    }
+    // A completed conversion may be replayed after source withdrawal, but
+    // never by an actor whose current manager/account authority was lost.
+    if (existing?.status === "completed") {
+      return conversionProjection(receiptId, existing);
+    }
+    const context = await conversionContext(db, data, tx, existing?.fields);
+    const now = deps.timestamp();
+    let resultId: string;
+    if (data.kind === "application") {
+      resultId = await applyApplicationConversion({db, data, actorUid,
+        context, now, tx});
+    } else {
+      const originRef = db.collection("organizerContactOrigins")
+        .doc(organizerContactOriginId({organizerId: data.organizerId,
+          sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
+          sourceEntityId: data.responseId}));
+      const originSnap = await tx.get(originRef);
+      if (originSnap.exists) {
+        // Recover an older destination-success / receipt-failure attempt.
+        // Provenance, not an endpoint match, proves this response completed.
+        const origin = requireDoc<OrganizerContactOriginDocument>(originSnap,
+          "OrganizerContactOriginDocument");
+        if (origin.organizerId !== data.organizerId ||
+            origin.formId !== context.response.formId ||
+            origin.responseId !== data.responseId ||
+            origin.sourceEntityId !== data.responseId ||
+            origin.sourceKind !== "hostForm" ||
+            origin.sourceEntityKind !== "hostFormResponse") {
+          throw new HttpsError("already-exists", "Conversion origin conflict.");
+        }
+        const contact = await tx.get(db.collection("organizerContacts")
+          .doc(origin.currentContactId));
+        if (!contact.exists ||
+            contact.data()?.organizerId !== data.organizerId) {
+          throw new HttpsError("failed-precondition",
+            "Converted contact is unavailable.");
+        }
+        resultId = origin.currentContactId;
+      } else {
+        assertConversionAllowed(context);
+        const target = crmContactConversionTarget({
+          existingResultId: await findExistingContact(
+            db, context.response, context.fields, tx),
+          responseId: data.responseId, formId: context.response.formId,
+          submittedAt: context.response.submittedAt,
+        });
+        const displayName = fieldValue(context.fields, "displayName") ??
+          context.response.identity.displayName ?? "Form respondent";
+        const result = await createOrganizerContactInTransaction({
+          db, transaction: tx, initialSourceCoverage,
+          organizerId: data.organizerId, actorUid,
+          displayName: String(displayName).slice(0, 120),
+          phoneE164: stringField(context.fields, "phoneNumber") ??
+            context.response.identity.phoneE164,
+          email: stringField(context.fields, "email") ??
+            context.response.identity.email,
+          initialNote: `Created from form response ${data.responseId}.`,
+          identitySecret: deps.identitySecret(),
+          contactId: target.contactId, origin: target.origin, now,
+        });
+        resultId = result.contactId;
+      }
+    }
+    const receipt: OrganizerFormConversionReceiptDocument = {
+      organizerId: data.organizerId, formId: context.response.formId,
+      responseId: data.responseId, kind: data.kind,
+      requestId: existing?.requestId ?? data.requestId,
+      actorUid: existing?.actorUid ?? actorUid, fields: context.fields,
+      status: "completed", resultId, undoStatus: "notAvailable",
+      createdAt: existing?.createdAt ?? now, updatedAt: now, completedAt: now,
+    };
+    tx.set(receiptRef, receipt);
+    return conversionProjection(receiptId, receipt);
+  });
+}
+
+function assertConversionAllowed(context: ConversionContext): void {
+  if (!context.allowed) {
+    throw new HttpsError("failed-precondition",
+      context.warnings[0] ?? "This response cannot be converted.");
   }
 }
 
@@ -503,6 +581,7 @@ async function applyApplicationConversion(params: {
   actorUid: string;
   context: ConversionContext;
   now: FirebaseFirestore.Timestamp;
+  tx: FirebaseFirestore.Transaction;
 }): Promise<string> {
   const applicationId = deterministicResultId(
     "formapplication",
@@ -517,66 +596,85 @@ async function applyApplicationConversion(params: {
     fieldValue(params.context.fields, "displayName") ??
     params.context.response.identity.displayName ?? "Form respondent"
   ).slice(0, 160);
-  await params.db.runTransaction(async (tx) => {
-    const existing = await tx.get(applicationRef);
-    if (existing.exists) return;
-    const source = {
-      kind: "native" as const,
-      providerId: null,
-      externalFormId: null,
-      externalResponseId: params.data.responseId,
-      importReceiptId: null,
-    };
-    const application: OrganizerApplicationDocument = {
-      organizerId: params.data.organizerId,
-      formId: params.context.response.formId,
-      formVersionId: params.context.response.versionId,
-      targetKind: params.context.version.definition.defaultTargetKind,
-      targetId: params.context.version.definition.defaultTargetId,
-      linkedUid: params.context.response.respondentUid,
-      contactId: null,
-      applicantDisplayName: displayName,
-      applicantDisplayNameNormalized: displayName.toLowerCase(),
-      reviewStatus: "submitted",
-      latestResponseId: params.data.responseId,
-      source,
-      assignedReviewerUid: null,
-      reviewNote: null,
-      revision: Math.max(1, params.now.toMillis()),
-      submittedAt: params.context.response.submittedAt,
-      updatedAt: params.now,
-      reviewedAt: null,
-    };
-    const questions = new Map(params.context.version.definition.sections
-      .flatMap((section) => section.questions)
-      .map((question) => [question.questionId, question]));
-    const compatibility: OrganizerApplicationResponseDocument = {
-      organizerId: params.data.organizerId,
-      applicationId,
-      formId: params.context.response.formId,
-      formVersionId: params.context.response.versionId,
-      linkedUid: params.context.response.respondentUid,
-      answers: params.context.response.answerSnapshots.flatMap((answer) => {
-        const question = questions.get(answer.questionId);
-        return question ? [{
-          questionId: answer.questionId,
-          questionKey: answer.key,
-          questionLabel: answer.label,
-          questionKind: compatibilityQuestionKind(question.kind),
-          canonicalFieldId: question.canonicalFieldId,
-          privacyClass: question.privacyClass,
-          hostPresentation: question.hostPresentation,
-          value: compatibilityAnswer(question.kind, answer.answer),
-        }] : [];
-      }).slice(0, 100),
-      source,
-      consentVersion: params.context.response.consentVersion,
-      grantId: null,
-      submittedAt: params.context.response.submittedAt,
-    };
-    tx.create(applicationRef, application);
-    tx.create(compatibilityResponseRef, compatibility);
-  });
+  const {tx} = params;
+  const [existing, response] = await Promise.all([
+    tx.get(applicationRef), tx.get(compatibilityResponseRef),
+  ]);
+  if (existing.exists) {
+    const application = existing.data() as OrganizerApplicationDocument;
+    const snapshot = response.data() as
+      OrganizerApplicationResponseDocument | undefined;
+    if (application.organizerId !== params.data.organizerId ||
+        application.formId !== params.context.response.formId ||
+        application.formVersionId !== params.context.response.versionId ||
+        application.latestResponseId !== params.data.responseId ||
+        application.source.kind !== "native" ||
+        application.source.externalResponseId !== params.data.responseId ||
+        snapshot?.organizerId !== params.data.organizerId ||
+        snapshot.applicationId !== applicationId ||
+        snapshot.formId !== application.formId ||
+        snapshot.formVersionId !== application.formVersionId) {
+      throw new HttpsError("already-exists", "Conversion result conflict.");
+    }
+    return applicationId;
+  }
+  assertConversionAllowed(params.context);
+  const source = {
+    kind: "native" as const,
+    providerId: null,
+    externalFormId: null,
+    externalResponseId: params.data.responseId,
+    importReceiptId: null,
+  };
+  const application: OrganizerApplicationDocument = {
+    organizerId: params.data.organizerId,
+    formId: params.context.response.formId,
+    formVersionId: params.context.response.versionId,
+    targetKind: params.context.version.definition.defaultTargetKind,
+    targetId: params.context.version.definition.defaultTargetId,
+    linkedUid: params.context.response.respondentUid,
+    contactId: null,
+    applicantDisplayName: displayName,
+    applicantDisplayNameNormalized: displayName.toLowerCase(),
+    reviewStatus: "submitted",
+    latestResponseId: params.data.responseId,
+    source,
+    assignedReviewerUid: null,
+    reviewNote: null,
+    revision: Math.max(1, params.now.toMillis()),
+    submittedAt: params.context.response.submittedAt,
+    updatedAt: params.now,
+    reviewedAt: null,
+  };
+  const questions = new Map(params.context.version.definition.sections
+    .flatMap((section) => section.questions)
+    .map((question) => [question.questionId, question]));
+  const compatibility: OrganizerApplicationResponseDocument = {
+    organizerId: params.data.organizerId,
+    applicationId,
+    formId: params.context.response.formId,
+    formVersionId: params.context.response.versionId,
+    linkedUid: params.context.response.respondentUid,
+    answers: params.context.response.answerSnapshots.flatMap((answer) => {
+      const question = questions.get(answer.questionId);
+      return question ? [{
+        questionId: answer.questionId,
+        questionKey: answer.key,
+        questionLabel: answer.label,
+        questionKind: compatibilityQuestionKind(question.kind),
+        canonicalFieldId: question.canonicalFieldId,
+        privacyClass: question.privacyClass,
+        hostPresentation: question.hostPresentation,
+        value: compatibilityAnswer(question.kind, answer.answer),
+      }] : [];
+    }).slice(0, 100),
+    source,
+    consentVersion: params.context.response.consentVersion,
+    grantId: null,
+    submittedAt: params.context.response.submittedAt,
+  };
+  tx.create(applicationRef, application);
+  tx.create(compatibilityResponseRef, compatibility);
   return applicationId;
 }
 
@@ -636,7 +734,8 @@ function conversionFields(
 async function findExistingContact(
   db: FirebaseFirestore.Firestore,
   response: OrganizerFormResponseDocument,
-  fields: ConversionFields
+  fields: ConversionFields,
+  tx?: FirebaseFirestore.Transaction
 ): Promise<string | null> {
   const clauses: ["phoneE164" | "email", string][] = [];
   const phone = normalizeRosterPhone(stringField(fields, "phoneNumber")).value;
@@ -645,11 +744,11 @@ async function findExistingContact(
   if (email) clauses.push(["email", email]);
   const candidates = new Set<string>();
   for (const [field, value] of clauses) {
-    const snapshot = await db.collection("organizerContacts")
+    const query = db.collection("organizerContacts")
       .where("organizerId", "==", response.organizerId)
       .where(field, "==", value)
-      .limit(10)
-      .get();
+      .limit(10);
+    const snapshot = tx ? await tx.get(query) : await query.get();
     if (snapshot.size === 10) {
       throw new HttpsError("failed-precondition",
         "Review duplicate contacts before converting this response.");
