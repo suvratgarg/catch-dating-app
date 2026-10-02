@@ -6,7 +6,7 @@ import {App} from "./App";
 const mocks = vi.hoisted(() => ({
   dataMode: vi.fn(),
   getIdTokenResult: vi.fn(),
-  onAuthStateChanged: vi.fn(),
+  onIdTokenChanged: vi.fn(),
   confirmPhoneSignInCode: vi.fn(),
   requestPhoneSignInCode: vi.fn(),
   resetPhoneSignIn: vi.fn(),
@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("firebase/auth", () => ({
   getIdTokenResult: mocks.getIdTokenResult,
-  onAuthStateChanged: mocks.onAuthStateChanged,
+  onIdTokenChanged: mocks.onIdTokenChanged,
 }));
 
 vi.mock("../shared/api/dataMode", () => ({
@@ -71,7 +71,7 @@ describe("App live deep-link ownership", () => {
   beforeEach(() => {
     mocks.dataMode.mockReturnValue("live");
     mocks.getIdTokenResult.mockReset();
-    mocks.onAuthStateChanged.mockReset();
+    mocks.onIdTokenChanged.mockReset();
     mocks.confirmPhoneSignInCode.mockReset();
     mocks.requestPhoneSignInCode.mockReset();
     mocks.resetPhoneSignIn.mockReset();
@@ -81,7 +81,7 @@ describe("App live deep-link ownership", () => {
 
   it("supports only phone OTP and completes the sign-in flow", async () => {
     const user = userEvent.setup();
-    mocks.onAuthStateChanged.mockImplementation(() => () => undefined);
+    mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
     mocks.requestPhoneSignInCode.mockResolvedValue(undefined);
     mocks.confirmPhoneSignInCode.mockResolvedValue(undefined);
 
@@ -110,7 +110,7 @@ describe("App live deep-link ownership", () => {
   });
 
   it("preserves a requested route while Firebase authentication resolves", async () => {
-    mocks.onAuthStateChanged.mockImplementation(() => () => undefined);
+    mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
     window.history.replaceState({}, "", "/safety/reports%2Freport-1");
 
     render(<App />);
@@ -126,7 +126,7 @@ describe("App live deep-link ownership", () => {
     const user = {email: "admin@catch.local", uid: "admin-uid"};
     let resolveClaims: ((value: {claims: Record<string, unknown>}) => void) |
       null = null;
-    mocks.onAuthStateChanged.mockImplementation((
+    mocks.onIdTokenChanged.mockImplementation((
       _auth: unknown,
       callback: (nextUser: typeof user) => void
     ) => {

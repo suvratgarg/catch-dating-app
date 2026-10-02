@@ -116,6 +116,69 @@ describe("useFinanceOpsController", () => {
     expect(result.current.isUnavailable).toBe(false);
   });
 
+  it("withholds cached owner analytics from a later Finance identity", async () => {
+    const wrapper = createWrapper();
+    const onError = vi.fn();
+    const owner = renderHook(() => useFinanceOpsController({
+      adminRoles: ["adminOwner"], onError,
+    }), {wrapper});
+    await waitFor(() => expect(owner.result.current.isLoading).toBe(false));
+    const event = owner.result.current.rows.find((row) => row.kind === "event")!;
+    expect(event).toBeDefined();
+    owner.unmount();
+    mocks.loadFinanceHostAnalytics.mockClear();
+
+    const finance = renderHook(() => useFinanceOpsController({
+      adminRoles: ["finance"], onError, selectedIssueId: event.id,
+    }), {wrapper});
+    await waitFor(() => expect(finance.result.current.isLoading).toBe(false));
+    expect(mocks.loadFinanceHostAnalytics).not.toHaveBeenCalled();
+    expect(finance.result.current.sources[1]?.status).toBe("restricted");
+    expect(finance.result.current.rows.filter((row) => row.kind === "event")).toEqual([]);
+    expect(finance.result.current.metrics.eventIssueCount30d).toBeNull();
+    expect(finance.result.current.selected).toBeNull();
+    expect(finance.result.current.selectedReview).toBeNull();
+    expect(finance.result.current.sources[1]).toMatchObject({
+      generatedAt: null, loadedAt: null,
+    });
+  });
+
+  it("withholds cached rows immediately after revocation even after a failed refresh", async () => {
+    const onError = vi.fn();
+    const {result, rerender} = renderHook(({roles}) => useFinanceOpsController({
+      adminRoles: roles, onError,
+    }), {wrapper: createWrapper(), initialProps: {roles: ["adminOwner"]}});
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.rows.some((row) => row.kind === "event")).toBe(true);
+    mocks.loadFinanceHostAnalytics.mockRejectedValue(new Error("access denied"));
+    await act(async () => { await result.current.retrySource("hostAnalytics"); });
+    await waitFor(() => expect(result.current.sources[1]?.status).toBe("error"));
+    rerender({roles: ["finance"]});
+    expect(result.current.rows.filter((row) => row.kind === "event")).toEqual([]);
+    expect(result.current.metrics.eventIssueCount30d).toBeNull();
+    expect(result.current.sources[1]).toMatchObject({
+      status: "restricted", generatedAt: null, loadedAt: null,
+    });
+    const count = mocks.loadFinanceHostAnalytics.mock.calls.length;
+    await act(async () => { expect(await result.current.retrySource("hostAnalytics")).toBe(false); });
+    expect(mocks.loadFinanceHostAnalytics).toHaveBeenCalledTimes(count);
+  });
+
+  it("withholds analytics that complete after an in-place role revocation", async () => {
+    let finish!: (value: typeof sampleHostAnalytics) => void;
+    mocks.loadFinanceHostAnalytics.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
+    const onError = vi.fn();
+    const {result, rerender} = renderHook(({roles}) => useFinanceOpsController({
+      adminRoles: roles, onError,
+    }), {wrapper: createWrapper(), initialProps: {roles: ["adminOwner"]}});
+    await waitFor(() => expect(mocks.loadFinanceHostAnalytics).toHaveBeenCalledOnce());
+    rerender({roles: ["finance"]});
+    await act(async () => { finish(sampleHostAnalytics); });
+    expect(result.current.rows.filter((row) => row.kind === "event")).toEqual([]);
+    expect(result.current.metrics.eventIssueCount30d).toBeNull();
+    expect(result.current.sources[1]).toMatchObject({status: "restricted", generatedAt: null, loadedAt: null});
+  });
+
   it("omits malformed source records and reports their count", () => {
     const result = buildFinanceRows({
       overview: {
