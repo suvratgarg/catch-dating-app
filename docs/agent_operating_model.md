@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.1.0
-updated: 2026-10-01
+version: 3.2.0
+updated: 2026-10-02
 owner: agent_operating_model
 status: active
 ---
@@ -261,8 +261,18 @@ existing task worktree; new task creation goes through the guard.
 3. The child edits only its assigned files, runs focused checks sequentially
    where the toolchain requires it, commits, pushes only when authorized, and
    reports the branch, commit SHA, changed files, checks, and blockers.
-4. The parent reviews the Git diff and imports only accepted commits. The
-   parent then runs integration checks and reviews the final diff.
+4. The parent reviews the Git diff and imports only accepted commits into an
+   integration worktree created from freshly fetched `origin/main`. Small,
+   compatible ready tasks may share one PR; one task does not require one PR.
+   Batch only when dependencies, source authority, and ownership allow each
+   task to be accepted and reverted independently, and the combined diff stays
+   bounded. Keep high-risk security, schema, and payment changes separate.
+   Review the combined diff and evidence, then derive and run the full required
+   CI and release verification once against the exact integrated tree. Worker
+   checks support that review; stale branch statuses do not prove the result.
+   Every required review, branch protection, and current-source gate still
+   applies. Isolate a failing task and reverify the resulting tree before
+   delivery; do not waive a failure to keep the batch together.
 5. When using the guard, run `finish` after clean, pushed closeout. If the task
    was superseded, use the explicit clean-only `finish --abandon` path. Remove
    the disposable worktree separately only after the manual retirement checks
@@ -364,11 +374,18 @@ and connected task tooling, only within the user's authorized scope:
    scope, and acceptance criteria; use the guarded task worktree.
 2. When publication is authorized, open or update the PR, complete its required
    reviews and CI gates against the exact head, and obtain any required merge
-   approval. A local commit or green check alone is not merge verification.
+   approval. For a batch, retain each task's commit, acceptance criteria,
+   focused test results, and independent revert mapping in the existing PR/task
+   tooling. If squash is required, map each task to its incorporated paths and
+   behavior in the squash commit and record how to revert that task safely.
+   A local commit or green check alone is not merge verification.
 3. Verify the accepted change on fetched `origin/main`, including incorporation
    after a squash. If acceptance requires a release, follow
    `docs/release_operations.md` and verify the exact release and required live
-   checks. Report pending authorization, delivery failures, or unverified state.
+   checks. Keep original task PRs open until their accepted changes are verified
+   equivalent on merged `origin/main`; then link the integrating PR before
+   closing superseded proposals. Report pending authorization, delivery
+   failures, or unverified state.
 4. Only after merge and any required release acceptance are verified, update the
    task to **Done** in Linear through the existing connected owner tooling, with
    the PR/commit and verification evidence. Confirm the update succeeded. If the
@@ -380,7 +397,8 @@ and connected task tooling, only within the user's authorized scope:
 Before retirement, verify the exact worktree, branch, and claim belong to this
 completed task and have no active owner or running task process. Inspect dirty
 and untracked files, local stashes, and unique or unpushed commits; preserve any
-unincorporated work in a recoverable location before proceeding. Prove the
+unincorporated work in a recoverable location and retain recovery refs before
+proceeding. Prove the
 intended changes were incorporated even when squash history differs. A merge,
 Done status, or stale claim is never permission to discard other work.
 
