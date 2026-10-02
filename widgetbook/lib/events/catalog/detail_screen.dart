@@ -1,11 +1,15 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
+import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
@@ -220,6 +224,34 @@ class _RouteFrame extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: [
           uidProvider.overrideWithValue(AsyncData(uid)),
+          // Override the consumed reads directly: unscoped provider dependencies
+          // otherwise resolve above this synthetic actor's fixture scope.
+          eventPaidBookingSupportProvider(
+            widgetbookEvent.currency,
+          ).overrideWithValue(true),
+          if (uid != null)
+            watchCrossPathsEventConsentProvider(
+              widgetbookEvent.id,
+              uid,
+            ).overrideWith((ref) => Stream.value(null)),
+          eventChatAccessProvider(widgetbookEvent.id).overrideWithValue(
+            AsyncData(
+              EventChatAccess(
+                eventId: widgetbookEvent.id,
+                title: 'Widgetbook event chat',
+                organizerId: widgetbookEvent.organizerId,
+                roomStatus: 'closed',
+                roomRevision: 0,
+                membershipStatus: 'none',
+                membershipRevision: 0,
+                canManage: false,
+                canJoin: false,
+                canReadMessages: false,
+                profileClaimRequired: false,
+                termsVersion: 'widgetbook',
+              ),
+            ),
+          ),
           if (uid != null && model != null && !model.isHost)
             eventViewerStateProvider(model.event.id, uid).overrideWithValue(
               AsyncData(
