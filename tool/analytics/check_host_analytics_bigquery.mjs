@@ -40,6 +40,7 @@ const expectedMartColumns = [
   "contact_clicks",
   "claim_clicks",
   "outbound_clicks",
+  "outbound_booking_clicks",
   "refreshed_at",
 ];
 
@@ -113,7 +114,9 @@ requireText(refresh, "CREATE TEMP TABLE ga4_host_analytics_events");
 requireText(refresh, "organizer_listingView");
 requireText(refresh, "direct_discovery_counts");
 requireText(refresh, "ga4_discovery_counts");
-requireText(refresh, "GREATEST(");
+requireText(refresh, "COUNT(DISTINCT analytics_event_id)");
+requireText(refresh, "FROM direct_discovery_counts");
+forbidText(refresh, "FULL OUTER JOIN ga4_discovery_counts", "Ad events must not inflate first-party counters");
 
 requireText(deploy, "ddl/host_analytics_events.sql");
 requireText(deploy, "ddl/mart_host_event_daily.sql");

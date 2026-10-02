@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -28,12 +30,14 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
@@ -71,6 +75,7 @@ import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_mod
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
@@ -100,6 +105,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart';
+import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
@@ -115,6 +121,7 @@ part 'host_operations_customer_communications_tests.dart';
 part 'host_operations_customers_test_support.dart';
 part 'host_operations_customer_state_tests.dart';
 part 'host_operations_analytics_team_tests.dart';
+part 'host_operations_presence_tests.dart';
 part 'host_operations_team_failures_tests.dart';
 part 'support/host_operations_screen_test_support.dart';
 
@@ -122,6 +129,11 @@ const _hostUid = 'host-1';
 
 void main() {
   setUpAll(() => initializeDateFormatting('en'));
+  setUpAll(() async {
+    if (const String.fromEnvironment('HOST_PRESENCE_PREVIEW_DIR').isNotEmpty) {
+      await loadCatchTestFonts();
+    }
+  });
   setUp(() {
     AppConfig.configureEntrypointRole(AppRole.host);
   });
@@ -141,6 +153,7 @@ void main() {
   _registerHostOperationsCustomerCommunicationsTests();
   _registerHostOperationsCustomerStateTests();
   _registerHostOperationsAnalyticsTeamTests();
+  _registerHostOperationsPresenceTests();
   _registerHostOperationsTeamFailuresTests();
 }
 
@@ -308,6 +321,18 @@ Future<void> _pumpHostScreen(
         ),
         hostTodayRoadmapProvider.overrideWith(
           (ref, scope) => const HostTodayRoadmapEvidence(),
+        ),
+        hostTrackingSettingsProvider.overrideWith(
+          (ref, organizerId) async => HostTrackingSettings(
+            organizerId: organizerId,
+            revision: 0,
+            metaPixelId: null,
+            googleMeasurementId: null,
+            enabled: false,
+            publicationAllowed: false,
+            canEdit: true,
+            editBlockedReason: 'none',
+          ),
         ),
         ...overrides,
       ].cast(),

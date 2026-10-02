@@ -57,11 +57,13 @@ jobs:
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Validate Firestore data
+        shell: bash
         env:
           TARGET_ENV: ${{ github.event.inputs.environment || 'prod' }}
           MAX_DOCS: ${{ github.event.inputs.max_docs || '5000' }}
           FAIL_ON_WARNING: ${{ github.event.inputs.fail_on_warning || false }}
         run: |
+          set -euo pipefail
           args=(--env "$TARGET_ENV" --json --max-docs "$MAX_DOCS")
           if [[ "$FAIL_ON_WARNING" == "true" ]]; then
             args+=(--fail-on-warning)

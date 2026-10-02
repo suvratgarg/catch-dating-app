@@ -54,6 +54,7 @@ export interface HostAnalyticsMartRow {
   contactClicks: number;
   claimClicks: number;
   outboundClicks: number;
+  outboundBookingClicks?: number;
 }
 
 export interface HostAnalyticsBigQuerySource {
@@ -100,6 +101,7 @@ interface RawHostAnalyticsMartRow {
   contactClicks: string | number | null;
   claimClicks: string | number | null;
   outboundClicks: string | number | null;
+  outboundBookingClicks?: string | number | null;
 }
 
 export class BigQueryHostAnalyticsSource
@@ -132,6 +134,10 @@ export const defaultHostAnalyticsBigQuerySource =
   new BigQueryHostAnalyticsSource();
 
 export function hostAnalyticsRowsSql(table: string): string {
+  // Serialize the range variable rather than reference the additive column:
+  // pre-migration schemas and unrefreshed NULL rows remain unknown, not zero.
+  const optionalBookingClicks = "SAFE_CAST(JSON_VALUE(" +
+    "TO_JSON_STRING(martRow), '$.outbound_booking_clicks') AS INT64)";
   return `
 SELECT
   CAST(date AS STRING) AS date,
@@ -169,8 +175,11 @@ SELECT
   SUM(event_saves) AS eventSaves,
   SUM(contact_clicks) AS contactClicks,
   SUM(claim_clicks) AS claimClicks,
-  SUM(outbound_clicks) AS outboundClicks
-FROM \`${table}\`
+  SUM(outbound_clicks) AS outboundClicks,
+  CASE WHEN COUNT(*) = COUNT(${optionalBookingClicks})
+    THEN SUM(${optionalBookingClicks})
+    ELSE NULL END AS outboundBookingClicks
+FROM \`${table}\` AS martRow
 WHERE date >= @startDate
   AND date <= @endDate
   AND club_id IN UNNEST(@clubIds)
@@ -220,6 +229,8 @@ function normalizeMartRow(
     contactClicks: numberValue(row.contactClicks),
     claimClicks: numberValue(row.claimClicks),
     outboundClicks: numberValue(row.outboundClicks),
+    outboundBookingClicks: row.outboundBookingClicks == null ?
+      undefined : numberValue(row.outboundBookingClicks),
   };
 }
 

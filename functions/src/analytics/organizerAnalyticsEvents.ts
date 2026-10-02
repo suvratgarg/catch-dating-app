@@ -19,6 +19,7 @@ import {
   "../shared/generated/validators/recordOrganizerAnalyticsEventInput";
 import {
   assertPublicOrganizerPageEligible,
+  normalizePublicWebsitePath,
 } from "../shared/publicOrganizerPage";
 
 interface OrganizerAnalyticsDeps {
@@ -59,6 +60,11 @@ export async function recordOrganizerAnalyticsEventHandler(
     validateRecordOrganizerAnalyticsEventCallablePayload,
     normalizePayload
   );
+  if (!isPublicId(payload.organizerId) ||
+      (payload.eventId && !isPublicId(payload.eventId)) ||
+      (payload.clubId && payload.clubId !== payload.organizerId)) {
+    throw new HttpsError("invalid-argument", "Invalid analytics scope.");
+  }
   const clientIp = clientIpFromRequest(request);
   if (!deps.checkIpRateLimit(clientIp, 120, 60 * 1000)) {
     throw new HttpsError(
@@ -68,17 +74,33 @@ export async function recordOrganizerAnalyticsEventHandler(
   }
 
   const db = deps.firestore();
-  await assertOrganizerScope(db, payload);
+  const organizer = await assertOrganizerScope(db, payload);
+  // Preview by authenticated canonical staff is never visitor activity.
+  if (request.auth && await isOrganizerPreview(db, organizer,
+    payload.organizerId, request.auth.uid)) {
+    return {accepted: true};
+  }
   const organizerId = payload.organizerId;
 
   const occurredAt = deps.now();
-  const analyticsEventId = [
-    organizerId,
-    payload.eventId ?? "organizer",
-    payload.eventName,
-    occurredAt.getTime(),
-    deps.randomId(),
-  ].join("_");
+  const scopedSessionHash = sessionHash(
+    payload.sessionId ?? null, organizerId, utcDateKey(occurredAt)
+  );
+  // BigQuery streaming insertId is best effort; the mart must also deduplicate
+  // analytics_event_id. Counts are observations, never a purchase authority.
+  const isPresenceView = payload.eventName === "listingView" ||
+    payload.eventName === "eventView";
+  const analyticsEventId = isPresenceView && scopedSessionHash ?
+    crypto.createHash("sha256").update(JSON.stringify([
+      organizerId, payload.eventId ?? "organizer", payload.eventName,
+      utcDateKey(occurredAt), scopedSessionHash,
+    ])).digest("hex") : [
+      organizerId,
+      payload.eventId ?? "organizer",
+      payload.eventName,
+      occurredAt.getTime(),
+      deps.randomId(),
+    ].join("_");
   await deps.bigQuery.insertRows(
     hostAnalyticsDataset(),
     hostAnalyticsEventsTable(),
@@ -91,10 +113,11 @@ export async function recordOrganizerAnalyticsEventHandler(
         event_name: payload.eventName,
         club_id: organizerId,
         target_event_id: payload.eventId ?? null,
-        page_path: payload.pagePath,
-        source: payload.source ?? null,
-        session_hash: sessionHash(payload.sessionId ?? null),
-        platform: payload.platform ?? "web",
+        page_path: normalizePublicWebsitePath(payload.pagePath),
+        source: boundedSource(payload.source),
+        session_hash: scopedSessionHash,
+        platform: ["web", "android", "ios"].includes(payload.platform ?? "") ?
+          payload.platform : "web",
         ingested_at: occurredAt.toISOString(),
       },
     }]
@@ -111,7 +134,7 @@ export const recordOrganizerAnalyticsEvent = onCall(
 async function assertOrganizerScope(
   db: FirebaseFirestore.Firestore,
   payload: RecordOrganizerAnalyticsEventCallablePayload
-): Promise<void> {
+): Promise<OrganizerDocument> {
   const organizerId = payload.organizerId;
   const organizerRef = db.collection("organizers").doc(organizerId);
   const eventRef = payload.eventId ?
@@ -124,24 +147,50 @@ async function assertOrganizerScope(
   if (!organizerSnapshot.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
+  const organizer = organizerSnapshot.data() as OrganizerDocument;
+  const eventPage = payload.eventId ?
+    `/events/${encodeURIComponent(payload.eventId)}/` : null;
+  const isEventPage = eventPage !== null &&
+    normalizePublicWebsitePath(payload.pagePath) === eventPage;
   assertPublicOrganizerPageEligible(
-    organizerSnapshot.data() as OrganizerDocument,
+    organizer,
     {
       allowDirectorySearchPath: payload.eventName === "searchAppearance",
-      pagePath: payload.pagePath,
+      pagePath: isEventPage ? undefined : payload.pagePath,
     }
   );
-  if (eventSnapshot && !eventSnapshot.exists) {
-    throw new HttpsError("not-found", "Event not found.");
+  if ((payload.eventName === "eventView" ||
+       payload.eventName === "eventSave") && !payload.eventId) {
+    throw new HttpsError("invalid-argument", "Event activity needs an event.");
   }
-  if (eventSnapshot &&
-      (eventSnapshot.get("organizerId") ?? eventSnapshot.get("clubId")) !==
-        organizerId) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Event does not belong to that organizer."
-    );
+  if (eventSnapshot) {
+    const externalSnapshot = !eventSnapshot.exists ?
+      await db.collection("externalEvents").doc(payload.eventId!).get() : null;
+    const snapshot = eventSnapshot.exists ? eventSnapshot : externalSnapshot!;
+    if (!snapshot.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const ownerId = eventSnapshot.exists ?
+      snapshot.get("organizerId") ?? snapshot.get("clubId") :
+      snapshot.get("canonicalHostId");
+    if (ownerId !== organizerId ||
+        (eventSnapshot.exists && snapshot.get("organizerId") &&
+         snapshot.get("clubId") &&
+         snapshot.get("organizerId") !== snapshot.get("clubId"))) {
+      throw new HttpsError(
+        "invalid-argument", "Event does not belong to that organizer."
+      );
+    }
+    const published = eventSnapshot.exists ?
+      snapshot.get("publicationState") === "published" :
+      snapshot.get("publicationStatus") === "public";
+    if (!published || snapshot.get("status") !== "active") {
+      throw new HttpsError(
+        "failed-precondition", "This event is not accepting public activity."
+      );
+    }
   }
+  return organizer;
 }
 
 function normalizePayload(data: unknown): unknown {
@@ -162,9 +211,12 @@ function normalizePayload(data: unknown): unknown {
   };
 }
 
-function sessionHash(value: string | null): string | null {
+function sessionHash(
+  value: string | null, organizerId: string, date: string
+): string | null {
   if (!value) return null;
-  return crypto.createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256")
+    .update(JSON.stringify([organizerId, date, value])).digest("hex");
 }
 
 function utcDateKey(date: Date): string {
@@ -197,4 +249,42 @@ function hostAnalyticsDataset(): string {
 
 function hostAnalyticsEventsTable(): string {
   return process.env.HOST_ANALYTICS_EVENTS_TABLE || "host_analytics_events";
+}
+
+// Do not persist caller supplied URLs, search text, campaign values or PII.
+const publicSources = new Set([
+  "directory_result", "organizer_page", "organizer_rail", "listing_page",
+  "claim_unlocks_panel", "event_success_panel", "catch_event_card",
+  "external_event_card", "event_evidence", "event_detail",
+  "external_event_source",
+  "event_detail_booking", "external_event_booking", "source_socialProfile",
+  "source_bookingPlatform",
+  "source_website", "source_eventListing", "source_eventPlatform",
+]);
+
+function boundedSource(value: string | null | undefined): string | null {
+  return value && publicSources.has(value) ? value : null;
+}
+
+function organizerManagerIds(organizer: OrganizerDocument): string[] {
+  return [organizer.ownerUserId, organizer.hostUserId,
+    ...(organizer.hostUserIds ?? []),
+    ...(organizer.hostProfiles ?? []).map((host) => host.uid)]
+    .filter((uid): uid is string => typeof uid === "string");
+}
+
+function isPublicId(value: string): boolean {
+  return /^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u.test(value);
+}
+
+async function isOrganizerPreview(
+  db: FirebaseFirestore.Firestore, organizer: OrganizerDocument,
+  organizerId: string, uid: string
+): Promise<boolean> {
+  if (organizerManagerIds(organizer).includes(uid)) return true;
+  const membership = await db.collection("organizerTeamMemberships")
+    .doc(`${organizerId}_${uid}`).get();
+  return membership.exists && membership.get("organizerId") === organizerId &&
+    membership.get("uid") === uid && membership.get("status") === "active" &&
+    ["owner", "manager"].includes(membership.get("role"));
 }

@@ -9332,6 +9332,51 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host operations',
         children: [
           _widgetbook.WidgetbookFolder(
+            name: 'Analytics',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAnalyticsObservedStagesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Observed stages and missing coverage',
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostAnalyticsObservedStagesSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAnalyticsPresenceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Observed totals and unavailable source',
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostAnalyticsPresenceSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTrackingSettingsInputSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Policy blocked and unclaimed configuration',
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostTrackingSettingsInputSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTrackingSettingsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Mocked private settings read and save',
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostTrackingSettingsSectionState,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Club settings spokes',
             children: [
               _widgetbook.WidgetbookComponent(
