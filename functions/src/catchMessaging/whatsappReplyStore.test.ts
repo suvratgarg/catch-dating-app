@@ -16,11 +16,13 @@ import {parseCatchWhatsappWebhook, WEBHOOK_RETENTION_MILLIS} from
   "./whatsappWebhookProtocol";
 import {catchEndpointHash, catchReplyHash, catchReplyId, catchStopId,
   CATCH_SUPPORT_WINDOW_MS, sendCatchWhatsappReply} from "./whatsappReply";
-import type {CatchReplyConfig, CatchReplyInput} from "./whatsappReply";
+import type {CatchAuthUser, CatchReplyConfig, CatchReplyInput} from
+  "./whatsappReply";
 import {CatchWhatsappReplyStore, CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS,
   CATCH_REPLY_OPERATIONS, persistCatchStopReceipt, readCatchOperation} from
   "./whatsappReplyStore";
 import {consumeCatchReplyStatus} from "./whatsappReceiptConsumer";
+import {prepareCatchReplyProvider} from "./whatsappReplyProvider";
 
 // Match the existing CJS rules lane: load the client-only rules harness at
 // runtime without adding its optional Temporal types to the backend compiler.
@@ -368,4 +370,129 @@ test("new Catch state denies SDK clients including privileged staff",
     } finally {
       await env.cleanup();
     }
+  });
+
+
+test("final claim rechecks scope and current identity after preparation",
+  async () => {
+    for (const change of ["sender", "recipient", "actor", "gate", "phone",
+      "recipientDisabled", "role", "session", "deleted", "deadline"] as const) {
+      const f = fixture();
+      const current = {...config};
+      const actor: CatchAuthUser = {disabled: false,
+        customClaims: {support: true}};
+      const recipient: CatchAuthUser = {disabled: false,
+        phoneNumber: config.recipientE164};
+      const deps = {config: () => ({...current}),
+        getUser: async (uid: string) => uid === "agent" ? actor : recipient,
+        now: f.service.now};
+      const store = new CatchWhatsappReplyStore(f.db, deps);
+      let preparations = 0;
+      const service = {...deps, store, prepare: async () => {
+        preparations++;
+        if (change === "sender") current.phoneNumberId = "999";
+        if (change === "recipient") current.recipientUid = "foreign";
+        if (change === "actor") current.actorUid = "foreign";
+        if (change === "gate") current.enabled = false;
+        if (change === "phone") recipient.phoneNumber = "+919000000002";
+        if (change === "recipientDisabled") recipient.disabled = true;
+        if (change === "role") actor.customClaims = {support: false};
+        if (change === "session") {
+          actor.tokensValidAfterTime =
+          new Date(time + 1000).toISOString();
+        }
+        if (change === "deleted") {
+          f.fake.records.set("deletedUsers/participant", {});
+        }
+        if (change === "deadline") f.setNow(time + CATCH_SUPPORT_WINDOW_MS);
+        return f.service.prepare();
+      }};
+      await assert.rejects(sendCatchWhatsappReply(f.request, service), change);
+      assert.equal(preparations, 1, change);
+      assert.equal(f.sends(), 0, change);
+      assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" +
+        f.operationId), false, change);
+    }
+  });
+
+test("credential and claim failures cannot dispatch or persist a send claim",
+  async () => {
+    for (const failure of ["credential", "claim"] as const) {
+      const f = fixture();
+      if (failure === "claim") f.fake.failNextCommit = true;
+      const service = {...f.service, prepare: async () => {
+        if (failure === "credential") throw new Error("private token material");
+        return f.service.prepare();
+      }};
+      await assert.rejects(sendCatchWhatsappReply(f.request, service),
+        (error: Error) => !error.message.includes("private token material"));
+      assert.equal(f.sends(), 0);
+      assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" +
+        f.operationId), false);
+      // A definitely failed pre-dispatch claim has not consumed this inbound.
+      await sendCatchWhatsappReply(f.request, f.service);
+      assert.equal(f.sends(), 1);
+    }
+  });
+
+test("malformed suppression and preference evidence fail closed before claim",
+  async () => {
+    for (const key of [CATCH_ENDPOINT_STOPS + "/" + catchStopId(config,
+      catchEndpointHash(config.recipientE164)),
+    "catchCommunicationPreferences/participant", "deletedUsers/participant"]) {
+      const f = fixture();
+      f.fake.records.set(key, {unexpected: true});
+      await assert.rejects(sendCatchWhatsappReply(f.request, f.service));
+      assert.equal(f.sends(), 0);
+      assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" +
+        f.operationId), false);
+    }
+  });
+
+test("service, store and mocked Meta adapter return saved delivery on replay",
+  async () => {
+    const f = fixture();
+    let calls = 0;
+    const service = {...f.service, prepare: (controlled: CatchReplyConfig) =>
+      prepareCatchReplyProvider(controlled, {
+        readCredential: async (version) => {
+          assert.equal(version, config.credentialVersionResource);
+          return JSON.stringify({schema: "catch.whatsapp-sender-token/v1",
+            wabaId: "123", phoneNumberId: "456", accessToken: "mock-token"});
+        }, now: f.service.now,
+        fetch: async (url, init) => {
+          calls++;
+          assert.equal(url.toString(),
+            "https://graph.facebook.com/v23.0/456/messages");
+          const body = JSON.parse(init!.body as string);
+          assert.equal(body.to, "919000000001");
+          assert.equal(body.text.body, f.input.body);
+          assert.equal(f.fake.records.get(CATCH_REPLY_OPERATIONS + "/" +
+            f.operationId)?.state, "claimed");
+          return new Response(JSON.stringify({
+            messages: [{id: "wamid.saved"}],
+          }));
+        },
+      })};
+    const first = await sendCatchWhatsappReply(f.request, service);
+    assert.equal(first.providerMessageId, "wamid.saved");
+    const raw = Buffer.from(JSON.stringify({object: "whatsapp_business_account",
+      entry: [{id: "123", changes: [{field: "messages", value: {
+        messaging_product: "whatsapp", metadata: {phone_number_id: "456"},
+        statuses: [{id: "wamid.saved", status: "delivered",
+          timestamp: String(time / 1000 + 1), recipient_id: "919000000001"}],
+      }}]}]}));
+    const event = parseCatchWhatsappWebhook(raw, config)[0];
+    f.fake.records.set(CATCH_RECEIPTS + "/" + event.eventId, {...event,
+      receivedAtMillis: time + 1000, expiresAt:
+        Timestamp.fromMillis(time + WEBHOOK_RETENTION_MILLIS)});
+    assert.equal(await consumeCatchReplyStatus(f.db, f.operationId,
+      event.eventId, time + 1000), "applied");
+    const replay = await sendCatchWhatsappReply(f.request, service);
+    assert.deepEqual(replay, {...first, replayed: true,
+      deliveryStatus: "delivered"});
+    assert.equal(calls, 1);
+    await persistCatchStopReceipt(f.db, incoming("stop", "wamid.stop"), time);
+    await assert.rejects(sendCatchWhatsappReply(f.request, service));
+    assert.equal(calls, 1);
   });
