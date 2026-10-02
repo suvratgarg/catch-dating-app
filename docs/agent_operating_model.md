@@ -391,24 +391,38 @@ and connected task tooling, only within the user's authorized scope:
    the PR/commit and verification evidence. Confirm the update succeeded. If the
    tooling is unavailable or rejects the update, report the status blocker;
    never claim Linear synchronization or task completion from a local handoff.
-5. Retire only the task's own disposable branch/worktree after completion, using
-   the manual safety checks below. No tracked harness evidence is required.
+5. Complete the retirement checklist below for the task's own disposable
+   worktree and eligible branches while the task context is fresh. Record the
+   exact retirement result or retention reason in the existing task handoff; do
+   not defer routine closeout to a separate cleanup task. No tracked harness
+   evidence is required.
 
-Before retirement, verify the exact worktree, branch, and claim belong to this
-completed task and have no active owner or running task process. Inspect dirty
-and untracked files, local stashes, and unique or unpushed commits; preserve any
-unincorporated work in a recoverable location and retain recovery refs before
-proceeding. Prove the
-intended changes were incorporated even when squash history differs. A merge,
-Done status, or stale claim is never permission to discard other work.
+Retirement is part of closeout, using existing Git and the guard:
 
-Run the guard's `doctor`, then `finish` only when its clean/pushed requirements
-pass. For a deliberately superseded task, use only the existing clean-only
-`finish --abandon` procedure with a reason; abandonment is not shipped Done.
-Remove the verified disposable worktree and branch separately with ordinary,
-non-forced Git commands when authorized. If a guard or Git check refuses
-closeout, preserve the work and report the blocker rather than bypassing it,
-forcing deletion, or releasing another owner's claim.
+1. Fetch and prove the task's accepted source is equivalent on `origin/main`,
+   including after squash or batch integration. Check required CI and release
+   acceptance before treating a proposal as obsolete.
+2. Verify the exact worktree, local/upstream branches and claim belong to this
+   task. Check active owners, other users and running task processes; inspect
+   dirty and untracked files, stashes, unique commits and unpushed work.
+3. Preserve unincorporated work and verify recovery references before removing
+   anything. A merge, Done status or stale claim never permits discarding other
+   work. Retain the worktree when another active owner or dependency needs it.
+4. Run the guard's `doctor`, then `finish` when clean/pushed requirements pass.
+   For a deliberately superseded task, use the existing clean-only
+   `finish --abandon` with a reason; abandonment is not shipped Done. Never
+   release another owner's claim or bypass a refused closeout.
+5. From outside the worktree, remove only the verified obsolete worktree and
+   eligible single-use branches through authorized, non-forced commands:
+   `git worktree remove <path>`, `git branch -d <branch>`, and, when the remote
+   branch has no active owner, open proposal or unique work requiring retention,
+   `git push origin --delete <branch>`. Do not delete main, shared branches or
+   recovery references. Squash incorporation alone may make `branch -d` refuse;
+   preserve the branch and record that retention reason rather than force it.
+6. Verify the resulting worktree/branch/claim state and report it. If ownership,
+   recovery, authorization, dirty state or a Git/guard check blocks any step,
+   preserve the work and name the exact retained path/ref and reason. A blocked
+   retirement remains an explicit closeout item, not a claim of cleanup.
 
 The harness remains healthy when the planner explains affected work without
 writing source, optional context guidance stays stdout-only, parallel work is
