@@ -1,8 +1,11 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
@@ -206,6 +209,8 @@ class _RouteFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = value.asData?.value;
+    final uid = model?.isAuthenticated == true ? model?.userProfile?.uid : null;
     final avatarQuery = EventHypeAvatarQuery(
       eventId: widgetbookEvent.id,
       limit: 7,
@@ -214,6 +219,18 @@ class _RouteFrame extends StatelessWidget {
     return WidgetbookEventDeviceFrame(
       child: WidgetbookFixtureScope(
         overrides: [
+          uidProvider.overrideWithValue(AsyncData(uid)),
+          if (uid != null && model != null && !model.isHost)
+            eventViewerStateProvider(model.event.id, uid).overrideWithValue(
+              AsyncData(
+                widgetbookEventViewerSnapshot(
+                  model.event,
+                  admission: model.participation == null
+                      ? EventViewerAdmission.none
+                      : EventViewerAdmission.nativeParticipation,
+                ),
+              ),
+            ),
           eventDetailViewModelProvider(
             widgetbookEvent.id,
           ).overrideWithValue(value),

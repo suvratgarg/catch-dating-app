@@ -417,6 +417,8 @@ export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrgan
 export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
 export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {getEventViewerStateCallablePayloadSchema} from "./schemas/getEventViewerStateInput";
+export {getEventViewerStateCallableResponseSchema} from "./schemas/getEventViewerStateOutput";
 export {listParticipantActivityCallablePayloadSchema} from "./schemas/listParticipantActivityInput";
 export {listParticipantActivityCallableResponseSchema} from "./schemas/listParticipantActivityOutput";
 export {getParticipantActivityCallablePayloadSchema} from "./schemas/getParticipantActivityInput";

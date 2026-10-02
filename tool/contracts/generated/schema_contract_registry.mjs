@@ -133057,6 +133057,333 @@ export const claimParticipantFormProfileCallableResponseSchema = {
   }
 };
 
+export const getEventViewerStateCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publicPaymentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_viewer_state_payload.schema.json",
+  "title": "GetEventViewerStateCallablePayload",
+  "description": "Read current account-scoped event facts using an Auth-derived subject; never reserve or grant admission.",
+  "x-callable-aliases": [
+    "getEventViewerState"
+  ]
+};
+
+export const getEventViewerStateCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "viewer"
+  ],
+  "properties": {
+    "viewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "organizerId",
+        "observedAtMillis",
+        "membership",
+        "review",
+        "admission",
+        "attendance",
+        "waitlisted",
+        "payment",
+        "futureBooking",
+        "route",
+        "quotedPriceInPaise",
+        "basis"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "observedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "membership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "revision",
+            "decisionId"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "notRequired",
+                "none",
+                "active",
+                "revoked",
+                "unavailable"
+              ]
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "review": {
+          "type": "string",
+          "enum": [
+            "none",
+            "pending",
+            "approved"
+          ]
+        },
+        "admission": {
+          "type": "string",
+          "enum": [
+            "none",
+            "nativeParticipation",
+            "publicPaidRoster"
+          ]
+        },
+        "attendance": {
+          "type": "string",
+          "enum": [
+            "notRecorded",
+            "attended"
+          ]
+        },
+        "waitlisted": {
+          "type": "boolean"
+        },
+        "payment": {
+          "type": "string",
+          "enum": [
+            "notRead",
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "admitted",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "futureBooking": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowed",
+                "reason"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": true
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowed",
+                "reason"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": false
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "membershipRequired",
+                    "inviteRequired",
+                    "reviewRequired",
+                    "full",
+                    "pairCapacityUnavailable",
+                    "generalCapacityUnavailable",
+                    "cohortCapacityUnavailable",
+                    "outOfRatioReviewRequired",
+                    "balanceUnavailable",
+                    "bookingDetailsRequired",
+                    "runPreferencesRequired",
+                    "ageRestricted",
+                    "scheduleConflict",
+                    "eventUnavailable",
+                    "past",
+                    "cancelled",
+                    "unsupportedRoute"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "catchFreeBooking",
+                "catchCheckout",
+                "catchWaitlistOffer"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quotedPriceInPaise": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyHash",
+            "inventoryRevision",
+            "capacityRevision",
+            "migrationRevision"
+          ],
+          "properties": {
+            "policyHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "inventoryRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "capacityRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "migrationRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_viewer_state_response.schema.json",
+  "title": "GetEventViewerStateCallableResponse",
+  "description": "Current eligibility is separate from retained payment, admission and attendance evidence. Observation only; final mutations revalidate authority."
+};
+
 export const listParticipantActivityCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_participant_activity_payload.schema.json",

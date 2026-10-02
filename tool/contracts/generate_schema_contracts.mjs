@@ -1271,6 +1271,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
   },
   {
+    name: "GetEventViewerStateCallablePayload",
+    source: "callables/get_event_viewer_state_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventViewerStateCallablePayload.ts",
+  },
+  {
+    name: "GetEventViewerStateCallableResponse",
+    source: "callable_responses/get_event_viewer_state_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventViewerStateCallableResponse.ts",
+  },
+  {
     name: "ListParticipantActivityCallablePayload",
     source: "callables/list_participant_activity_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantActivityCallablePayload.ts",

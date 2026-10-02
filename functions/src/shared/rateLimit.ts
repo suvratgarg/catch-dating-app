@@ -474,6 +474,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   },
   listParticipantActivity: {maxRequests: 60, windowMs: 60 * 1000},
   getParticipantActivity: {maxRequests: 60, windowMs: 60 * 1000},
+  getEventViewerState: {maxRequests: 60, windowMs: 60 * 1000},
   listParticipantFormProfiles: {maxRequests: 60, windowMs: 60 * 1000},
   getParticipantFormPhoto: {maxRequests: 30, windowMs: 60 * 1000},
   getParticipantFormProfile: {maxRequests: 60, windowMs: 60 * 1000},
