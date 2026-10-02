@@ -417,6 +417,8 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateGetEventViewerStateCallablePayload} from "./validators/getEventViewerStateInput";
+export {validateGetEventViewerStateCallableResponse} from "./validators/getEventViewerStateOutput";
 export {validateListParticipantActivityCallablePayload} from "./validators/listParticipantActivityInput";
 export {validateListParticipantActivityCallableResponse} from "./validators/listParticipantActivityOutput";
 export {validateGetParticipantActivityCallablePayload} from "./validators/getParticipantActivityInput";

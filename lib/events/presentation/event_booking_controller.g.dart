@@ -164,7 +164,7 @@ final class EventBookingControllerProvider
 }
 
 String _$eventBookingControllerHash() =>
-    r'c775c73303b7348f9d60c1b141a35bf44772944c';
+    r'e4cc5db9f2b9e2dd02f40835f9643d2d71a5472e';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

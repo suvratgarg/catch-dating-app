@@ -1,7 +1,9 @@
 import 'dart:async';
-
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -123,6 +125,41 @@ class EventDetailCta extends ConsumerWidget {
       eventPaidBookingSupportProvider(event.currency),
     );
 
+    final authState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final uid = authState.isSettledData ? authState.value : null;
+    final viewerState = uid == null
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(
+              eventViewerStateProvider(event.id, uid, inviteCode: inviteCode),
+            ),
+          );
+    if (viewerState?.isSettledData != true || uid != userProfile.uid) {
+      final error = viewerState?.error ?? authState.error;
+      final pending = error == null;
+      return EventBookingDock(
+        label: pending
+            ? context.l10n.eventsEventViewerCheckingBooking
+            : context.l10n.eventsEventViewerRetryBooking,
+        isLoading: pending,
+        onPressed: pending || uid == null
+            ? null
+            : () => ref.invalidate(
+                eventViewerStateProvider(event.id, uid, inviteCode: inviteCode),
+              ),
+        errorMessage: error == null
+            ? null
+            : appErrorMessage(
+                error,
+                l10n: context.l10n,
+                context: AppErrorContext.event,
+              ),
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+      );
+    }
+    final viewer = viewerState!.value!;
+
     final bookMutation = ref.watch(EventBookingController.bookMutation);
     final cancelMutation = ref.watch(EventBookingController.cancelMutation);
     final joinWMutation = ref.watch(
@@ -149,6 +186,22 @@ class EventDetailCta extends ConsumerWidget {
     final mutationError = errorMutation.hasError
         ? (errorMutation as MutationError).error
         : null;
+    for (final mutation in [
+      EventBookingController.bookMutation,
+      EventBookingController.cancelMutation,
+      EventBookingController.joinWaitlistMutation,
+      EventBookingController.leaveWaitlistMutation,
+      EventBookingController.acceptWaitlistOfferMutation,
+      EventBookingController.declineWaitlistOfferMutation,
+    ]) {
+      ref.listen(mutation, (previous, next) {
+        if (previous?.isPending == true && !next.isPending) {
+          ref.invalidate(
+            eventViewerStateProvider(event.id, uid!, inviteCode: inviteCode),
+          );
+        }
+      });
+    }
     final dockState = eventDetailBookingDockStateFrom(
       l10n: context.l10n,
       event: event,
@@ -156,7 +209,7 @@ class EventDetailCta extends ConsumerWidget {
       participation: participation,
       isSaved: isSaved,
       isHosted: isHosted,
-      isClubMember: isClubMember,
+      currentViewer: viewer,
       now: referenceNow,
       hasInviteCode: inviteCode?.trim().isNotEmpty ?? false,
       supportsPaidBookings: supportsPaid,
@@ -203,6 +256,7 @@ class EventDetailCta extends ConsumerWidget {
             .book(
               event: event,
               user: userProfile,
+              quotedPriceInPaise: viewer.quotedPriceInPaise,
               inviteCode: inviteCode,
               inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
             );

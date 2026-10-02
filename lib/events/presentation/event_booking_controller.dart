@@ -57,12 +57,14 @@ class EventBookingController extends _$EventBookingController {
     required UserProfile user,
     String? inviteCode,
     String? inviteLinkId,
+    int? quotedPriceInPaise,
   }) async {
     _requireSignedIn(action: 'book an event');
     final paymentRepo = ref.read(paymentRepositoryProvider);
-    final quotedPriceInPaise = event.priceInPaiseFor(user);
+    final currentPriceInPaise =
+        quotedPriceInPaise ?? event.priceInPaiseFor(user);
 
-    if (quotedPriceInPaise == 0) {
+    if (currentPriceInPaise == 0) {
       await paymentRepo.bookFreeEvent(
         eventId: event.id,
         inviteCode: inviteCode,

@@ -442,6 +442,7 @@ export {
 } from "./profiles/syncPublicProfile";
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
+export {getEventViewerState} from "./events/eventViewerState";
 export {listParticipantActivity, getParticipantActivity}
   from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}

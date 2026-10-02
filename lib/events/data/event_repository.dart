@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
@@ -12,6 +14,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         CreateEventWaitlistOffersCallableRequest,
         DisableEventInviteLinkCallableRequest,
         EventIdCallableRequest,
+        GetEventViewerStateCallableRequest,
         EventJoinRequestDecisionCallableRequest,
         GetEventInviteLinkTokenCallableRequest,
         MarkEventAttendanceCallableRequest,
@@ -28,6 +31,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/event_venue_session.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -78,6 +82,35 @@ class EventRepository with EventRepositoryActions {
       );
 
   // ── Read ──────────────────────────────────────────────────────────────────
+
+  Future<EventViewerState> fetchViewerState({
+    required String eventId,
+    String? inviteCode,
+    String? publicPaymentId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('getEventViewerState')
+          .call<Object?>(
+            GetEventViewerStateCallableRequest(
+              eventId: eventId,
+              inviteCode: inviteCode,
+              publicPaymentId: publicPaymentId,
+            ).toJson(),
+          );
+      final viewer = EventViewerState.fromResponse(result.data);
+      if (viewer.eventId != eventId) {
+        throw const FormatException('Mismatched event viewer scope');
+      }
+      return viewer;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'read event viewer state',
+      resource: 'getEventViewerState',
+    ),
+    mapper: mapMissingCallableAsUnavailable,
+  );
 
   Future<Event?> fetchEvent(String id) => withBackendErrorContext(
     () async {
@@ -511,3 +544,21 @@ Future<List<Event>> recommendedEvents(Ref ref, RecommendedEventsQuery query) =>
     ref
         .watch(eventRepositoryProvider)
         .fetchUpcomingEventsForClubs(query.followedClubIds);
+
+/// The UID isolates the local provider generation; it is never sent as authority.
+@riverpod
+Future<EventViewerState> eventViewerState(
+  Ref ref,
+  String eventId,
+  String uid, {
+  String? inviteCode,
+}) async {
+  final currentUid = await ref.watch(uidProvider.future);
+  if (currentUid != uid) throw StateError('Event viewer account changed');
+  ref.watch(watchEventProvider(eventId));
+  final refresh = Timer(const Duration(minutes: 1), ref.invalidateSelf);
+  ref.onDispose(refresh.cancel);
+  return ref
+      .watch(eventRepositoryProvider)
+      .fetchViewerState(eventId: eventId, inviteCode: inviteCode);
+}

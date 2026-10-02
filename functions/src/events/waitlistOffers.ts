@@ -866,7 +866,7 @@ function assertEventCanReceiveOffers(
   }
 }
 
-function isLiveOffer(
+export function isLiveOffer(
   offer: FirebaseFirestore.DocumentData | undefined,
   nowMillis: number
 ): boolean {
