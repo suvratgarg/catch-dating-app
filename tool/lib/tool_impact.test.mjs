@@ -48,6 +48,56 @@ function manifest(tools, overrides = {}) {
   };
 }
 
+test("Admin pending inputs select the registered scanner without a full Tools fallback", () => {
+  const scanner = productionManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
+  // The graph suite derives and reconciles this scope from frozen feature cases.
+  const inputs = productionGraph.classifications.find((entry) => entry.id === "admin-pending-input").paths.include;
+  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs].sort());
+  assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --self-test"));
+  assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --check --summary"));
+  const cat50Paths = [
+    "admin/src/app/App.mutationSession.test.tsx", "admin/src/app/App.session.test.tsx",
+    "admin/src/app/App.test.tsx", "admin/src/app/App.tsx", "admin/src/app/sessionRequests.test.tsx",
+    "admin/src/app/useAdminSession.test.tsx", "admin/src/app/useAdminSession.ts",
+    "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
+    "admin/src/features/finance/controllers/useFinanceOpsController.ts", "admin/src/main.tsx",
+    "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
+    "admin/src/shared/query/queryKeys.ts",
+  ];
+  const expectedIds = [...productionManifest.ciImpact.mandatoryCheckIds, scanner.id].sort();
+  const cases = [...inputs.map((file) => [file]), cat50Paths,
+    [...cat50Paths, "tool/docs/check_doc_metadata.mjs"]];
+  for (const changedPaths of cases) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const graphPlan = planAffected({changedPaths, graph: productionGraph, mode});
+      assert.equal(graphPlan.complete, true);
+      assert.deepEqual(graphPlan.operations.ciTargets, ["admin", "tools"]);
+      const result = planAffectedToolChecks({changedPaths, manifest: productionManifest,
+        componentGraph: productionGraph, mode});
+      assert.equal(result.mode, "affected", `${changedPaths} ${mode}`);
+      assert.deepEqual(result.fullReasons, []);
+      assert.deepEqual(result.toolIds, expectedIds);
+      assert.ok(result.setupRequirements.includes("root-npm"), "TypeScript must be installed");
+    }
+  }
+});
+
+test("Admin pending owner removal fails closed and unrelated Admin changes stay narrow", () => {
+  const broken = structuredClone(productionManifest);
+  delete broken.tools.find((entry) => entry.id === "web:admin-pending-operations").impactPaths;
+  const result = planAffectedToolChecks({changedPaths: ["admin/src/app/App.tsx"],
+    manifest: broken, componentGraph: productionGraph});
+  assert.equal(result.mode, "full");
+  assert.deepEqual(result.unmappedPaths, ["admin/src/app/App.tsx"]);
+  const unrelated = "admin/src/shared/query/queryKeys.ts";
+  assert.deepEqual(planAffected({changedPaths: [unrelated], graph: productionGraph, mode: "pr"})
+    .operations.ciTargets, ["admin"]);
+  const mixed = planAffectedToolChecks({changedPaths: [unrelated, "tool/docs/check_doc_metadata.mjs"],
+    manifest: productionManifest, componentGraph: productionGraph});
+  assert.equal(mixed.mode, "affected");
+  assert.deepEqual(mixed.toolIds, [...productionManifest.ciImpact.mandatoryCheckIds].sort());
+});
+
 test("primary and declared impact paths select their active owner plus guards", () => {
   const fixture = manifest([
     {
