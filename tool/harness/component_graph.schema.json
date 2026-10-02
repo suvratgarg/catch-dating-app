@@ -231,7 +231,8 @@
         "platforms",
         "deterministic",
         "network",
-        "timeoutSeconds"
+        "timeoutSeconds",
+        "checkRequirements"
       ],
       "properties": {
         "id": {"type": "string", "minLength": 1},
@@ -258,7 +259,62 @@
         },
         "deterministic": {"const": true},
         "network": {"const": false},
-        "timeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 600}
+        "timeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 600},
+        "inputExcludes": {"$ref": "#/$defs/stringSet"},
+        "checkRequirements": {"$ref": "#/$defs/codegenRequirements"}
+      }
+    },
+    "codegenRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executables",
+        "packages"
+      ],
+      "properties": {
+        "executables": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "node",
+              "npm",
+              "dart",
+              "flutter",
+              "bash"
+            ]
+          }
+        },
+        "packages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "name",
+              "from"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "node",
+                  "dart"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "from": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
       }
     }
   }

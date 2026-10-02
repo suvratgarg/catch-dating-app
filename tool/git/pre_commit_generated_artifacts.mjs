@@ -28,7 +28,12 @@ export function planPreCommitActions({graph, stagedPaths}) {
     matchesGlobPath(candidate, "lib/l10n/*.arb") ||
       (l10n?.inputs ?? []).some((pattern) => matchesGlobPath(candidate, pattern)));
   return {
-    dartPaths: paths.filter((candidate) => candidate.endsWith(".dart")),
+    // Schema outputs have an exact canonical generator format. Formatting them
+    // again would invalidate the freshness check that runs in this same hook.
+    dartPaths: paths.filter((candidate) => candidate.endsWith(".dart") &&
+      !generators.some((generator) =>
+        generator.id === "contracts.schema-projections" &&
+        generator.outputs.some((pattern) => matchesGlobPath(candidate, pattern)))),
     l10nInputChanged,
     l10nOutputs: l10n?.outputs ?? [],
     l10nWriteCommand: l10n?.writeCommand ?? null,
