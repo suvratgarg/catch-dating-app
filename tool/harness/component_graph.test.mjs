@@ -31,6 +31,87 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function adminPendingInputs() {
+  const inputs = new Set([
+    "admin/src/app/App.tsx",
+    "admin/src/shared/pendingOperation.tsx",
+    "admin/src/shared/pendingOperation.test.tsx",
+    "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+    "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+  ]);
+  // Derive the controller closure from the scanner's frozen action bindings,
+  // so adding a guarded controller requires routing it without a second list.
+  const directory = new URL("../../design/features/", import.meta.url);
+  for (const name of fs.readdirSync(directory).filter((name) => /^admin_.+\.feature\.json$/u.test(name))) {
+    const contract = JSON.parse(fs.readFileSync(new URL(name, directory), "utf8"));
+    for (const surface of contract.surfaces ?? []) {
+      const actions = new Map((surface.actions ?? []).map((action) => [action.id, action]));
+      const owners = new Map((surface.bindings?.actionOwners ?? []).map((owner) => [owner.id, owner]));
+      for (const scenario of surface.scenarios ?? []) {
+        for (const actionCase of scenario.actionCases ?? []) {
+          if (!actionCase.id.includes("pending_frozen_workspace") &&
+              actionCase.id !== "loading_frozen_query") continue;
+          for (const id of actionCase.disabledActions ?? []) {
+            const owner = owners.get(actions.get(id)?.owner);
+            if (!owner?.file?.includes("/controllers/")) continue;
+            const file = new URL(`../../${owner.file}`, import.meta.url);
+            if (!fs.existsSync(file)) continue;
+            if (fs.readFileSync(file, "utf8").includes(".mutateAsync(") ||
+                owner.file.endsWith("useUserAnalyticsController.ts")) inputs.add(owner.file);
+          }
+        }
+      }
+    }
+  }
+  assert.ok(inputs.size > 5, "frozen controller bindings must not be empty");
+  return [...inputs].sort();
+}
+
+test("Admin pending inputs add exact validation while preserving every source operation", () => {
+  const inputs = adminPendingInputs();
+  const classification = graph.classifications.find((entry) => entry.id === "admin-pending-input");
+  assert.deepEqual([...classification.paths.include].sort(), inputs);
+  const scanner = toolsManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
+  assert.deepEqual([...scanner.impactPaths].sort(), inputs);
+  const before = clone(graph);
+  before.classifications = before.classifications.filter((entry) => entry.id !== classification.id);
+  before.components = before.components.filter((entry) => entry.id !== "web.admin-pending-input");
+  delete before.operationProfiles["admin-pending-input"];
+  for (const file of inputs) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const baseline = plan(file, mode, before);
+      const actual = plan(file, mode);
+      assert.equal(actual.complete, true, `${file} ${mode}`);
+      assert.deepEqual(actual.operations, {...baseline.operations,
+        ciTargets: [...new Set([...baseline.operations.ciTargets, "tools"])].sort(),
+        checkIds: [...new Set([...baseline.operations.checkIds, scanner.id])].sort(),
+      }, `${file} ${mode}`);
+    }
+    assert.deepEqual(plan(file, "release").operations, plan(file, "release", before).operations);
+  }
+  for (const file of ["admin/src/shared/query/queryKeys.ts", "design/features/admin_finance_ops.feature.json"]) {
+    for (const mode of graph.modes) {
+      assert.deepEqual(plan(file, mode).operations, plan(file, mode, before).operations);
+    }
+  }
+});
+
+test("Admin pending routing proof rejects the former Admin-only selection", () => {
+  const broken = clone(graph);
+  broken.classifications = broken.classifications.filter((entry) => entry.id !== "admin-pending-input");
+  broken.components = broken.components.filter((entry) => entry.id !== "web.admin-pending-input");
+  delete broken.operationProfiles["admin-pending-input"];
+  for (const file of adminPendingInputs()) {
+    const requireScanner = (sourceGraph) => {
+      const result = plan(file, "pr", sourceGraph);
+      assert.ok(result.operations.ciTargets.includes("tools"), `${file}: missing Tools lane`);
+      assert.ok(result.operations.checkIds.includes("web:admin-pending-operations"));
+    };
+    requireScanner(graph);
+    assert.throws(() => requireScanner(broken), /missing Tools lane/u);
+  }
+});
+
 test("iOS policy inputs and outputs retain native builds and generated freshness", () => {
   const generator = graph.compileCodegen.find((entry) => entry.id === "platform.ios-pod-policy");
   assert.ok(generator);

@@ -285,6 +285,15 @@
         "nightly": {"ciTargets": ["firestore_rules"]}
       }
     },
+    "admin-pending-input": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "tools"], "checkIds": ["web:admin-pending-operations"]},
+        "merge_group": {"ciTargets": ["admin", "tools"], "checkIds": ["web:admin-pending-operations"]},
+        "main": {"ciTargets": ["admin", "tools"], "checkIds": ["web:admin-pending-operations"]},
+        "nightly": {"ciTargets": ["admin", "tools"], "checkIds": ["web:admin-pending-operations"]}
+      },
+      "affected": {}
+    },
     "admin-source": {
       "direct": {
         "pr": {"ciTargets": ["admin"]},
@@ -692,6 +701,29 @@
   },
   "classifications": [
     {
+      "id": "admin-pending-input",
+      "paths": {"include": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/pendingOperation.tsx",
+        "admin/src/shared/pendingOperation.test.tsx",
+        "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+        "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "admin/src/features/access/controllers/useAccessReviewController.ts",
+        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/events/controllers/useEventPublishingController.ts",
+        "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
+        "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+        "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+        "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
+        "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
+        "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts"
+      ]},
+      "components": ["web.admin-pending-input"],
+      "terminal": true
+    },
+    {
       "id": "backend-delivery-control",
       "paths": {"include": [
         ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
@@ -922,6 +954,7 @@
     {"id": "backend.storage-rules", "owner": "backend_platform", "risk": "high", "operationProfile": "storage-rules-source", "pathType": "component", "ownedPaths": {"include": ["storage.rules"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Cloud Storage authorization policy."},
     {"id": "infra.firebase.extensions", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-config", "pathType": "component", "ownedPaths": {"include": ["extensions/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Firebase extension configuration is validation-only until an explicit extension delivery adapter exists."},
     {"id": "web.shared", "owner": "web_platform", "risk": "standard", "operationProfile": "web-shared", "pathType": "component", "ownedPaths": {"include": ["tool/web/check_storybook_visuals.mjs", "packages/web-config/**", "packages/web-ui/**", "design/web-ui/**", "design/components/**"], "exclude": ["design/components/flutter_field_surface_adoption.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared React primitives and configuration consumed by admin and marketing."},
+    {"id": "web.admin-pending-input", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-pending-input", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Admin pending-operation scanner inputs retain Admin validation and select their exact integrity gate."},
     {"id": "web.admin", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-source", "pathType": "component", "ownedPaths": {"include": ["admin/**", "design/admin/**"], "exclude": ["admin/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Admin React surface."},
     {"id": "web.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "component", "ownedPaths": {"include": ["website/**", "design/website/**"], "exclude": ["website/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared", "app.shared", "app.host", "app.consumer", "app.tests", "app.dependencies", "app.l10n-source", "app.generated.l10n", "contracts.generated.flutter", "repo.flutter-tooling", "repo.other-packages"], "alsoAffects": [], "description": "Marketing React surface."},
     {"id": "marketing.capture-docs", "owner": "marketing_website", "risk": "standard", "operationProfile": "docs", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["web.marketing"], "description": "Markdown in capture input scopes retains Docs validation and requires Marketing freshness, including declared asset-directory membership."},
