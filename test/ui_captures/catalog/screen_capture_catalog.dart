@@ -185,6 +185,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
@@ -296,7 +297,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderContainer,
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
-    show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
+    show Fake, Finder, WidgetTester, expect, find, findsNothing, findsOneWidget;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -4041,7 +4042,9 @@ class _CaptureHostAttendanceOutboxStore extends Fake
     Future<void> Function(HostAttendanceOutboxEntry) execute,
   ) async {
     if (entries.isNotEmpty) {
-      throw StateError('Seed an explicit replay result for pending attendance.');
+      throw StateError(
+        'Seed an explicit replay result for pending attendance.',
+      );
     }
   }
 }
@@ -12522,6 +12525,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.eventSetup'],
+    drive: (tester) async {
+      await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Needs information'), findsNothing);
+    },
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
@@ -12594,6 +12602,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.createLocation'],
+    drive: (tester) => tester.ensureVisible(find.byType(WhereStep)),
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
@@ -12703,9 +12712,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_create_guide',
-    drive: (tester) => tester.ensureVisible(
-      find.byKey(const ValueKey('host.create_event.customize_guide')),
-    ),
+    drive: (tester) =>
+        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.createGuide'],

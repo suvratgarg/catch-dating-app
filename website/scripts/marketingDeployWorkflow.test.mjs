@@ -120,3 +120,21 @@ test("production snapshot materializes organizer projections before its one uncr
   assert.doesNotMatch(exactPromoteWorkflow,
     /materialize:organizer-listings:deploy|vite build|web:marketing:build/u);
 });
+
+
+test("marketing validates committed media whenever canonical app capture inputs change", () => {
+  for (const input of [
+    "lib/**", "test/**", "assets/**", "pubspec.yaml", "pubspec.lock",
+    "packages/*/pubspec.yaml", "packages/*/lib/**", "packages/*/assets/**",
+    "artifacts/marketing/app-screenshots/**", "tool/ui_capture/**",
+    "tool/lib/repo_paths.mjs", "tool/marketing/**", "tool/ci/toolchain.env",
+    "tool/demo/demo_seed/scenarios/**", "tool/demo/demo_seed/personas/**",
+  ]) {
+    assert.ok(workflow.includes(`      - "${input}"`), `Missing capture input trigger: ${input}`);
+  }
+  const mediaStep = surfaceValidationWorkflow.split(/\n      - /u)
+    .find(step => step.startsWith("name: Check marketing media\n"));
+  assert.match(mediaStep, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
+  assert.doesNotMatch(mediaStep, /continue-on-error|--update|--update-goldens/u);
+  assert.doesNotMatch(workflow, /export_app_screenshots\.mjs --update|--update-goldens/u);
+});
