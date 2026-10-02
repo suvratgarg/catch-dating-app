@@ -198,9 +198,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            HostAuthHeader(
-              title: l10n.authHostPhoneTitle,
-              subtitle: l10n.authHostPhoneSubtitle,
+            Text(
+              l10n.authOtpTitle,
+              style: CatchTextStyles.sectionTitle(context),
             ),
             gapH16,
             if (reflowPhoneSummary) ...[
@@ -216,13 +216,6 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                 ],
               ),
             gapH16,
-            const CatchDivider.section(),
-            gapH12,
-            Text(
-              l10n.authOtpTitle,
-              style: CatchTextStyles.fieldLabel(context, color: t.ink),
-            ),
-            gapH8,
             CatchCodeInput(
               semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
               inputKey: AuthFormKeys.otpField,

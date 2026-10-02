@@ -18,12 +18,17 @@ const _consumerLaunchScreenPath =
 const _hostLaunchScreenPath =
     'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard';
 
-// Host launch geometry mirrors CatchLayout.startupLogoExtent and
-// CatchLayout.startupLogoTopInset. The same transparent mark canvas is then
-// painted at the same safe-area anchor by the native launch screen, Flutter
-// startup surface, and Host auth surface.
-const _hostLaunchImageExtent = 96;
-const _hostLaunchImageTopInset = 8;
+// Host launch geometry mirrors CatchLayout.hostStartupLogo* and the shared
+// maxContentWidth. A clamped reading lane preserves the same transparent mark
+// canvas and safe-area anchor across native launch, Flutter startup and auth.
+const _hostLaunchImageExtent = 224;
+const _hostLaunchImageTopInset = 72;
+const _hostLaunchImageLeadingInset = 16;
+const _hostLaunchReadingLaneWidth = 600;
+const _hostLaunchImageCenterOffset =
+    _hostLaunchImageLeadingInset +
+    _hostLaunchImageExtent / 2 -
+    _hostLaunchReadingLaneWidth / 2;
 
 // Consumer LaunchImage is a 256pt transparent square. Its generated Catch_
 // alpha bounds begin at x=42/y=102. These geometry values mirror the Welcome
@@ -560,7 +565,9 @@ void _writeHostLaunchScreen() {
                             <constraint firstAttribute="trailing" secondItem="tWc-Dq-wcI" secondAttribute="trailing" id="2Lw-Bg-Tr"/>
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="3Lw-Bg-Tp"/>
                             <constraint firstAttribute="bottom" secondItem="tWc-Dq-wcI" secondAttribute="bottom" id="4Lw-Bg-Bt"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5Hs-Cx"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="$_hostLaunchImageLeadingInset" id="5Hs-Lmin"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="$_hostLaunchImageLeadingInset" priority="749" id="5Hs-Ledge"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" constant="$_hostLaunchImageCenterOffset" priority="750" id="5Hs-Cx"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="$_hostLaunchImageTopInset" id="6Hs-Tp"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="$_hostLaunchImageExtent" id="7Hs-Wd"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="$_hostLaunchImageExtent" id="8Hs-Ht"/>

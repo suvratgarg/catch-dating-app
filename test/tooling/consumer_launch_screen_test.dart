@@ -52,7 +52,7 @@ void main() {
     expect(
       hostLaunch,
       contains(
-        'firstAttribute="centerX" secondItem="Ze5-6b-2t3" '
+        'firstAttribute="centerX" secondItem="6Tk-OE-BBY" '
         'secondAttribute="centerX"',
       ),
     );
@@ -60,11 +60,11 @@ void main() {
       hostLaunch,
       contains(
         'firstAttribute="top" secondItem="6Tk-OE-BBY" '
-        'secondAttribute="top" constant="8"',
+        'secondAttribute="top" constant="72"',
       ),
     );
-    expect(hostLaunch, contains('firstAttribute="width" constant="96"'));
-    expect(hostLaunch, contains('firstAttribute="height" constant="96"'));
+    expect(hostLaunch, contains('firstAttribute="width" constant="224"'));
+    expect(hostLaunch, contains('firstAttribute="height" constant="224"'));
     expect(
       hostLaunch,
       isNot(

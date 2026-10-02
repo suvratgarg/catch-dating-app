@@ -120,11 +120,11 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.s6,
   );
 
-  /// Host authentication stage: compact separation below the persistent brand
-  /// anchor, standard screen gutters, and scroll-end breathing room.
+  /// Inset Host authentication card below the shared brand stage. The whole
+  /// stage scrolls when needed to keep focused controls clear of the keyboard.
   static const EdgeInsets hostAuthStage = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
-    CatchSpacing.s2,
+    CatchSpacing.s4,
     CatchSpacing.screenPx,
     CatchSpacing.s5,
   );

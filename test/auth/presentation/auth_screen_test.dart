@@ -26,6 +26,7 @@ Future<void> pumpAuthScreen(
   AppRole? appRole,
   double textScale = 1,
   double keyboardInset = 0,
+  bool disableAnimations = false,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -38,6 +39,7 @@ Future<void> pumpAuthScreen(
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(textScale),
             viewInsets: EdgeInsets.only(bottom: keyboardInset),
+            disableAnimations: disableAnimations,
           ),
           child: child!,
         ),
@@ -50,6 +52,122 @@ Future<void> pumpAuthScreen(
 
 void main() {
   group('AuthScreen', () {
+    for (final size in [const Size(390, 844), const Size(1024, 1366)]) {
+      for (final theme in [ThemeMode.light, ThemeMode.dark]) {
+        testWidgets(
+          'Host card and brand stay anchored at $size in ${theme.name}',
+          (tester) async {
+            tester.view.devicePixelRatio = 1;
+            tester.view.physicalSize = size;
+            addTearDown(tester.view.resetDevicePixelRatio);
+            addTearDown(tester.view.resetPhysicalSize);
+            final repository = FakeAuthRepository();
+            final container = _authControllerContainer(repository);
+            addTearDown(repository.dispose);
+            addTearDown(container.dispose);
+            await pumpAuthScreen(
+              tester,
+              container: container,
+              appRole: AppRole.host,
+              themeMode: theme,
+              disableAnimations: true,
+            );
+            final brand = tester.getRect(
+              find.byKey(CatchStartupBrandStage.markKey),
+            );
+            final card = tester.getRect(find.byType(HostAuthCard));
+            final laneLeft = size.width > CatchLayout.maxContentWidth
+                ? (size.width - CatchLayout.maxContentWidth) / 2
+                : 0.0;
+            expect(
+              brand.left,
+              laneLeft + CatchLayout.hostStartupLogoLeadingInset,
+            );
+            expect(brand.top, CatchLayout.hostStartupLogoTopInset);
+            expect(brand.width, CatchLayout.hostStartupLogoExtent);
+            expect(
+              card.top,
+              CatchLayout.hostStartupBrandStageExtent +
+                  CatchInsets.hostAuthStage.top,
+            );
+            expect(card.left, greaterThan(0));
+            expect(card.right, lessThan(size.width));
+            container
+                .read(authControllerProvider.notifier)
+                .goToStep(AuthStep.otp);
+            await tester.pump();
+            expect(
+              tester.getRect(find.byKey(CatchStartupBrandStage.markKey)),
+              brand,
+            );
+            expect(tester.getRect(find.byType(HostAuthCard)).top, card.top);
+            expect(find.text('Sign in with your phone'), findsNothing);
+            expect(find.text('Enter the code'), findsOneWidget);
+            expect(tester.takeException(), isNull);
+            await tester.pumpWidget(const SizedBox.shrink());
+          },
+        );
+      }
+    }
+
+    for (final theme in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets(
+        'Host short screen reveals scaled controls above keyboard in ${theme.name}',
+        (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = const Size(320, 480);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          addTearDown(tester.view.resetPhysicalSize);
+          final repository = FakeAuthRepository()
+            ..onVerifyPhoneNumber =
+                ({
+                  required verificationCompleted,
+                  required verificationFailed,
+                  required codeSent,
+                  required codeAutoRetrievalTimeout,
+                }) => codeSent('short-screen', 11);
+          final container = _authControllerContainer(repository);
+          addTearDown(repository.dispose);
+          addTearDown(container.dispose);
+          await pumpAuthScreen(
+            tester,
+            container: container,
+            appRole: AppRole.host,
+            themeMode: theme,
+            textScale: 2,
+            keyboardInset: 220,
+            disableAnimations: true,
+          );
+          final phone = find.descendant(
+            of: find.byKey(AuthFormKeys.phoneField),
+            matching: find.byType(EditableText),
+          );
+          await tester.ensureVisible(phone);
+          expect(tester.getRect(phone).top, greaterThanOrEqualTo(0));
+          expect(tester.getRect(phone).bottom, lessThanOrEqualTo(260));
+          await tester.enterText(phone, '9999999999');
+          await tester.pump();
+          await tester.ensureVisible(find.byKey(AuthFormKeys.sendCode));
+          final send = tester.getRect(find.byKey(AuthFormKeys.sendCode));
+          expect(send.top, greaterThanOrEqualTo(0));
+          expect(send.bottom, lessThanOrEqualTo(260));
+          await tester.tap(find.byKey(AuthFormKeys.sendCode));
+          await pumpFeatureUi(tester);
+          expect(container.read(authControllerProvider).step, AuthStep.otp);
+          await tester.ensureVisible(find.byType(CatchCodeInput));
+          final code = tester.getRect(find.byType(CatchCodeInput));
+          expect(code.top, greaterThanOrEqualTo(0));
+          expect(code.bottom, lessThanOrEqualTo(260));
+          await tester.ensureVisible(find.byKey(AuthFormKeys.changeNumber));
+          await tester.tap(find.byKey(AuthFormKeys.changeNumber));
+          await pumpFeatureUi(tester);
+          expect(container.read(authControllerProvider).step, AuthStep.phone);
+          expect(tester.takeException(), isNull);
+          await tester.pumpWidget(const SizedBox.shrink());
+        },
+      );
+    }
+
     for (final role in [AppRole.host, AppRole.consumer]) {
       for (final theme in [ThemeMode.light, ThemeMode.dark]) {
         testWidgets(

@@ -1,10 +1,55 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xml/xml.dart';
 import 'package:image/image.dart' as image;
 
 void main() {
+  test('Host native launch matches the shared safe-area reading lane', () {
+    final document = XmlDocument.parse(
+      File(
+        'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard',
+      ).readAsStringSync(),
+    );
+    final constraints = {
+      for (final element in document.findAllElements('constraint'))
+        element.getAttribute('id'): element,
+    };
+    expect(
+      double.parse(constraints['7Hs-Wd']!.getAttribute('constant')!),
+      CatchLayout.hostStartupLogoExtent,
+    );
+    expect(
+      double.parse(constraints['8Hs-Ht']!.getAttribute('constant')!),
+      CatchLayout.hostStartupLogoExtent,
+    );
+    expect(
+      double.parse(constraints['6Hs-Tp']!.getAttribute('constant')!),
+      CatchLayout.hostStartupLogoTopInset,
+    );
+    expect(constraints['6Hs-Tp']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(
+      double.parse(constraints['5Hs-Lmin']!.getAttribute('constant')!),
+      CatchLayout.hostStartupLogoLeadingInset,
+    );
+    expect(
+      constraints['5Hs-Lmin']!.getAttribute('relation'),
+      'greaterThanOrEqual',
+    );
+    expect(constraints['5Hs-Lmin']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(constraints['5Hs-Ledge']!.getAttribute('priority'), '749');
+    expect(constraints['5Hs-Cx']!.getAttribute('priority'), '750');
+    expect(constraints['5Hs-Cx']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(
+      double.parse(constraints['5Hs-Cx']!.getAttribute('constant')!),
+      CatchLayout.hostStartupLogoLeadingInset +
+          CatchLayout.hostStartupLogoExtent / 2 -
+          CatchLayout.maxContentWidth / 2,
+    );
+  });
+
   test(
     'Host wordmarks use the locked Archivo axes and singular product name',
     () {
