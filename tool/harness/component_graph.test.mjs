@@ -199,6 +199,111 @@ test("shared React validation runs both callers and retains Hosting and policy c
   }
 });
 
+test("Hosting promotion controls select only their React callers and affected Tools", () => {
+  const paths = [".github/workflows/_web-hosting-promote.yml",
+    "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
+  const classification = graph.classifications.find((entry) =>
+    entry.id === "web-hosting-promotion-control");
+  assert.deepEqual(classification.paths.include, paths);
+  for (const file of paths) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.directComponents, ["ci.workflow.react"]);
+      assert.deepEqual(result.operations.ciTargets,
+        ["admin", "marketing", "policy_docs", "tools"]);
+      for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
+        assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
+      }
+      const tools = planAffectedToolChecks({changedPaths: [file],
+        manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected", `${file} ${mode}`);
+      assert.deepEqual(tools.fullReasons, []);
+      assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
+        "ci:web-hosting-freshness", "docs:metadata", "meta:enforcement-integrity",
+        "meta:repository-root-hygiene"]);
+      assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
+      assert.equal(tools.repositoryView, "full");
+    }
+    const combined = planAffected({changedPaths: [file, "apps/host/lib/main.dart",
+      "functions/src/payments/razorpay.ts"], graph, mode: "main"});
+    assert.deepEqual(combined.operations.deployGroups, ["functions"]);
+    assert.deepEqual(combined.operations.releaseTargets, ["host-android", "host-ios"]);
+    assert.deepEqual(combined.operations.releaseRoles, ["host"]);
+    const release = plan(file, "release");
+    assert.deepEqual(release.operations.ciTargets, []);
+    assert.deepEqual(release.operations.deployGroups, []);
+    assert.deepEqual(release.operations.releaseTargets, []);
+  }
+});
+
+test("Hosting promotion control routing preserves mixed Host and Functions ownership", () => {
+  const controls = [".github/workflows/_web-hosting-promote.yml",
+    "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
+  for (const control of controls) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      for (const companion of ["apps/host/lib/main.dart", "functions/src/payments/razorpay.ts"]) {
+        const own = plan(companion, mode);
+        const result = planAffected({changedPaths: [control, companion], graph, mode});
+        assert.equal(result.complete, true);
+        assert.deepEqual(result.operations.ciTargets,
+          [...new Set(["admin", "marketing", "policy_docs", "tools",
+            ...own.operations.ciTargets])].sort());
+        for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
+          assert.deepEqual(result.operations[key], own.operations[key], `${control} ${mode} ${key}`);
+        }
+        const tools = planAffectedToolChecks({changedPaths: [control, companion],
+          manifest: toolsManifest, componentGraph: graph, mode});
+        assert.equal(tools.mode, "affected");
+        assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
+        assert.ok(tools.toolIds.includes("ci:web-hosting-freshness"));
+        assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
+        if (companion.startsWith("apps/host/") && ["pr", "merge_group"].includes(mode)) {
+          assert.ok(result.operations.ciTargets.includes("flutter"));
+          assert.ok(result.operations.ciTargets.includes("flutter_web_smoke"));
+          assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
+          assert.deepEqual(deriveAppRoles(result), ["host"]);
+        }
+        if (companion.startsWith("functions/") && mode === "main") {
+          assert.deepEqual(result.operations.deployGroups, ["functions"]);
+        }
+      }
+    }
+  }
+});
+
+test("Hosting promotion exceptions leave shared, admission, and unknown controls full", () => {
+  const controls = [".github/workflows/_web-hosting-promote.yml",
+    "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
+  const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
+    ".github/workflows/unknown-hosting.yml", ".github/workflows/_web-hosting-build.yml",
+    ".github/workflows/host-website.yml", "tool/ci/unknown_hosting.mjs",
+    "tool/ci/pr_ci_admission.mjs", "tool/ci/pr_ci_admission.test.mjs",
+    "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
+    ".github/workflows/_web-hosting-promote-other.yml",
+    "tool/ci/web_hosting_freshness_other.mjs",
+    "tool/ci/toolchain.env", "tool/harness/component_graph.json"];
+  for (const control of controls) {
+    for (const companion of broad) {
+      for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+        const changedPaths = [control, companion];
+        const result = planAffected({changedPaths, graph, mode});
+        assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), companion);
+        assert.deepEqual(result.operations.deployGroups, []);
+        assert.deepEqual(result.operations.releaseTargets, []);
+        const tools = planAffectedToolChecks({changedPaths,
+          manifest: toolsManifest, componentGraph: graph, mode});
+        assert.equal(tools.mode, "full", companion);
+        assert.deepEqual(tools.setupRequirements,
+          ["node", "flutter", "ripgrep", "flutter-pub", "root-npm", "functions-npm", "playwright"]);
+      }
+    }
+    const explicit = planAffectedToolChecks({changedPaths: [control],
+      manifest: toolsManifest, componentGraph: graph, mode: "nightly", full: true});
+    assert.equal(explicit.mode, "full");
+  }
+});
+
 test("native build controls validate their callers with Node-only toolchain setup", () => {
   const cases = [
     [".github/workflows/app-build-matrix.yml", ["flutter_build_android",
@@ -689,6 +794,7 @@ test("authored contracts expand to every declared validation consumer", () => {
     "operations",
   ]);
   assert.deepEqual(result.operations.codegenIds, [
+    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
@@ -956,5 +1062,55 @@ test("Flutter UI package selects both app builds and visual coverage without Rea
   }
   for (const target of ["admin", "marketing", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
+  }
+});
+
+
+test("freshness routing includes declared indirect inputs and preserves output obligations", () => {
+  const cases = [
+    ["tool/admin/callable_inventory.mjs", ["admin.callable-validators"]],
+    ["contracts/admin/admin_action_catalog.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/operations/common.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/embedded/event_offer_row.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["contracts/firestore/sales_quotes.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
+    ["admin/src/features/sales/api/salesRepository.ts", ["admin.callable-validators"]],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", ["admin.callable-validators"]],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.test.tsx", []],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.stories.tsx", []],
+    ["admin/src/generated/validators/adminCallableValidators.ts", ["admin.callable-validators"]],
+    ["website/src/shared/contracts/generated/joinWaitlistSchemas.ts", ["contracts.schema-projections"]],
+    ["tool/lib/repo_paths.mjs", ["copy.native", "copy.notification"]],
+    ["functions/package-lock.json", ["contracts.schema-projections"]],
+    ["pubspec.lock", ["copy.structured-domain"]],
+  ];
+  for (const [file, ids] of cases) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, file);
+      assert.deepEqual(result.operations.codegenIds, ids, `${file} ${mode}`);
+    }
+  }
+  const unknown = plan("unowned/generator-input.json");
+  assert.equal(unknown.complete, false);
+  assert.deepEqual(unknown.unknownPaths, ["unowned/generator-input.json"]);
+  assert.deepEqual(planAffected({graph, changedPaths: [], mode: "nightly", full: true})
+    .operations.codegenIds, graph.compileCodegen.map((entry) => entry.id).sort());
+});
+
+test("every generator requires explicit runtimes and package dependencies", () => {
+  assert.ok(graphSchema.$defs.codegen.required.includes("checkRequirements"));
+  assert.deepEqual(graphSchema.$defs.codegenRequirements.required, ["executables", "packages"]);
+  const cases = [
+    (entry) => { delete entry.checkRequirements; },
+    (entry) => { delete entry.checkRequirements.packages; },
+    (entry) => { entry.checkRequirements.executables = []; },
+    (entry) => { entry.checkRequirements.packages = [{kind: "node", name: "example", from: "../package.json"}]; },
+    (entry) => { entry.checkRequirements.executables = ["unsupported"]; },
+  ];
+  for (const mutate of cases) {
+    const invalid = clone(graph);
+    mutate(invalid.compileCodegen[0]);
+    assert.ok(validateComponentGraph(invalid).some((error) => error.includes("checkRequirements")));
+    assert.throws(() => planAffected({graph: invalid, changedPaths: []}), /checkRequirements/u);
   }
 });

@@ -352,9 +352,8 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
     const matchedPath = full
       ? "<nightly-full>"
       : normalizedChangedPaths.find((changedPath) =>
-          [...entry.inputs, ...entry.outputs].some((pattern) =>
-            matchesGlob(changedPath, pattern)
-          )
+          matchesCodegenInput(changedPath, entry) ||
+          entry.outputs.some((pattern) => matchesGlob(changedPath, pattern))
         );
     if (!matchedPath) continue;
     if (!operations.codegenIds.includes(entry.id)) operations.codegenIds.push(entry.id);
@@ -659,12 +658,67 @@ function cloneCheckoutRequirement(requirement) {
   };
 }
 
+export function matchesCodegenInput(changedPath, entry) {
+  return entry.inputs.some((pattern) => matchesGlob(changedPath, pattern)) &&
+    !(entry.inputExcludes ?? []).some((pattern) => matchesGlob(changedPath, pattern));
+}
+
+function validateCodegenRequirements(entry, errors) {
+  const location = `${entry.id}.checkRequirements`;
+  const requirements = entry.checkRequirements;
+  if (!requirements || typeof requirements !== "object" || Array.isArray(requirements)) {
+    errors.push(`${location} must declare executables and packages.`);
+    return;
+  }
+  for (const key of Object.keys(requirements)) {
+    if (!["executables", "packages"].includes(key)) errors.push(`${location} uses unknown key "${key}".`);
+  }
+  const executables = uniqueStringSet(requirements.executables,
+    `${location}.executables`, errors, {required: true});
+  for (const executable of executables) {
+    if (!["node", "npm", "dart", "flutter", "bash"].includes(executable)) {
+      errors.push(`${location} uses unsupported executable "${executable}".`);
+    }
+  }
+  if (typeof entry.checkCommand === "string" &&
+      !executables.has(entry.checkCommand.trim().split(/\s+/u)[0])) {
+    errors.push(`${location} must include the checkCommand executable.`);
+  }
+  if (!Array.isArray(requirements.packages)) {
+    errors.push(`${location}.packages must be an array, including when empty.`);
+    return;
+  }
+  const seen = new Set();
+  for (const dependency of requirements.packages) {
+    if (!dependency || typeof dependency !== "object" || Array.isArray(dependency) ||
+        !["node", "dart"].includes(dependency.kind) ||
+        typeof dependency.name !== "string" ||
+        !/^(?:@[a-z0-9._-]+\/)?[a-zA-Z0-9._-]+$/u.test(dependency.name) ||
+        typeof dependency.from !== "string" ||
+        dependency.from.startsWith("/") || dependency.from !== normalizePath(dependency.from) ||
+        dependency.from.split("/").some((segment) => ["", ".", "..", ".git"].includes(segment)) ||
+        /[\u0000-\u001f*?\[\]]/u.test(dependency.from) ||
+        Object.keys(dependency).some((key) => !["kind", "name", "from"].includes(key))) {
+      errors.push(`${location}.packages contains an invalid package dependency.`);
+      continue;
+    }
+    if (!executables.has(dependency.kind)) {
+      errors.push(`${location} must include executable "${dependency.kind}" for ${dependency.name}.`);
+    }
+    const key = JSON.stringify([dependency.kind, dependency.name, dependency.from]);
+    if (seen.has(key)) errors.push(`${location}.packages contains duplicate ${dependency.name}.`);
+    seen.add(key);
+  }
+}
+
 function validateCodegen(entry, errors) {
   if (!entry || typeof entry !== "object" || Array.isArray(entry)) return;
   const location = entry.id ?? "<missing compileCodegen entry>";
   if (!entry.owner) errors.push(`${location} must declare owner.`);
   uniqueStringSet(entry.inputs, `${location}.inputs`, errors, {required: true});
   uniqueStringSet(entry.outputs, `${location}.outputs`, errors, {required: true});
+  uniqueStringSet(entry.inputExcludes, `${location}.inputExcludes`, errors);
+  validateCodegenRequirements(entry, errors);
   uniqueStringSet(entry.platforms, `${location}.platforms`, errors, {required: true});
   if (entry.deterministic !== true) errors.push(`${location}.deterministic must be true.`);
   if (entry.network !== false) errors.push(`${location}.network must be false.`);
