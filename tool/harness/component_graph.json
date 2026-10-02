@@ -34,14 +34,21 @@
       "timeoutMinutes": 3,
       "paths": [
         "/tool/harness.mjs",
+        "/tool/harness/verify_local.mjs",
         "/tool/ci/main_ci_baseline.mjs",
+        "/tool/ci/toolchain.env",
         "/tool/harness/component_graph.json",
         "/tool/harness/lib/component_graph.mjs",
         "/tool/harness/lib/git_changes.mjs",
+        "/tool/harness/lib/workflow_steps.mjs",
         "/tool/lib/path_glob.mjs",
         "/tool/lib/repo_paths.mjs",
+        "/tool/lib/repository_snapshot.mjs",
         "/tool/lib/tool_impact.mjs",
+        "/tool/lib/tool_platform.mjs",
+        "/tool/run.mjs",
         "/tool/tools_manifest.json",
+        "/.github/actions/load-toolchain/action.yml",
         "/tool/design/build_host_feature_responsibilities.mjs",
         "/design/features/host_feature_responsibilities.json"
       ]
