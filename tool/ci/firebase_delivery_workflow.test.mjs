@@ -1003,6 +1003,109 @@ process.stdout.write(JSON.stringify(value));
   });
 });
 
+test("rebaseline defaults to DEV and validates the target before authorizing source", (t) => {
+  const caller = workflow("backend-rebaseline.yml");
+  const worker = workflow("_backend-rebaseline.yml");
+  assert.match(caller, /target_environment:\n(?:        [^\n]*\n)*        default: dev\n(?:        [^\n]*\n)*        options: \[dev, prod\]/);
+  assert.match(worker, /target_environment:\n(?:        [^\n]*\n)*        default: dev/);
+  assert.ok(ciJob(caller, "snapshot").includes("target_environment: ${{ inputs.target_environment }}"));
+  const authorize = ciJob(worker, "authorize");
+  assert.ok(authorize.includes("target_environment: ${{ steps.inputs.outputs.target_environment }}"));
+  assert.ok(authorize.includes("TARGET_ENVIRONMENT: ${{ inputs.target_environment }}"));
+  const script = extractSteps(authorize).find((step) => step.name === "Require an explicit exact-current-main authorization").run;
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rebaseline-target-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(directory, "git"), '#!/bin/sh\ntouch "$GIT_CALLED"\nif [ "$1" = rev-parse ]; then printf "%s\\n" "$SOURCE_SHA"; fi\n', {mode: 0o755});
+  const output = path.join(directory, "output");
+  const called = path.join(directory, "git-called");
+  for (const target of ["dev", "prod", "", "staging", "DEV", "prod\ndev", "true"]) {
+    fs.writeFileSync(output, "");
+    fs.rmSync(called, {force: true});
+    const sha = "a".repeat(40);
+    const result = spawnSync("bash", ["-c", script], {encoding: "utf8", env: {
+      ...process.env, PATH: `${directory}${path.delimiter}${process.env.PATH}`,
+      GIT_CALLED: called, GITHUB_OUTPUT: output, TARGET_ENVIRONMENT: target,
+      SOURCE_SHA: sha, GITHUB_SHA: sha, GITHUB_WORKFLOW_SHA: sha, GITHUB_REF: "refs/heads/main",
+      CONFIRM_FULL_BACKEND_REBASELINE: "true", REASON: "Approved bounded snapshot",
+    }});
+    if (["dev", "prod"].includes(target)) {
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(fs.readFileSync(output, "utf8"), new RegExp(`^target_environment=${target}$`, "m"));
+    } else {
+      assert.notEqual(result.status, 0, `Accepted invalid target ${JSON.stringify(target)}`);
+      assert.equal(fs.readFileSync(output, "utf8"), "");
+      assert.equal(fs.existsSync(called), false, "Invalid scope must fail before consulting source state");
+    }
+  }
+});
+
+test("DEV rebaseline cannot schedule production or finalization even without environment protection", () => {
+  const worker = workflow("_backend-rebaseline.yml");
+  const condition = (source, job) => {
+    const expression = ciJob(source, job).match(/^    if: \$\{\{ (.+) \}\}$/m)?.[1];
+    assert.ok(expression, `Missing explicit ${job} job condition`);
+    return new Function("needs", "always", `return Boolean(${expression});`);
+  };
+  const assertScope = (source, job) => {
+    const evaluate = condition(source, job);
+    for (const target of [undefined, "", "dev", "prod", "staging"]) {
+      for (const authorize of ["success", "failure", "skipped"]) {
+        for (const dev of ["success", "failure", "cancelled", "skipped"]) {
+          for (const prod of ["success", "failure", "skipped"]) {
+            const needs = {authorize: {result: authorize, outputs: {target_environment: target}},
+              dev: {result: dev}, prod: {result: prod}};
+            const expected = target === "prod" && authorize === "success" && dev === "success" &&
+              (job === "prod" || prod === "success");
+            assert.equal(evaluate(needs, () => true), expected,
+              `${job}: target=${target}, authorize=${authorize}, dev=${dev}, prod=${prod}`);
+          }
+        }
+      }
+    }
+  };
+  for (const job of ["prod", "finalize"]) {
+    assertScope(worker, job);
+    const original = ciJob(worker, job);
+    const unsafe = original.replace("needs.authorize.outputs.target_environment == 'prod' && ", "");
+    assert.notEqual(unsafe, original, `Missing ${job} scope guard`);
+    assert.throws(() => assertScope(worker.replace(original, unsafe), job), /target=/,
+      `Removing ${job}'s scope guard must fail the safety test`);
+  }
+  const finalizer = ciJob(worker, "finalize");
+  const beforeFinalizer = worker.slice(0, worker.indexOf(finalizer));
+  assert.doesNotMatch(beforeFinalizer, /gh api --method POST|event_type=backend-delivery-drain/);
+  assert.match(finalizer, /name: backend-delivery-cursor-v4-/);
+  assert.match(finalizer, /event_type=backend-delivery-drain/);
+});
+
+test("rebaseline impact plan binds the validated environment without changing backend stages", (t) => {
+  const authorize = ciJob(workflow("_backend-rebaseline.yml"), "authorize");
+  assert.ok(authorize.includes("TARGET_ENVIRONMENT: ${{ steps.inputs.outputs.target_environment }}"));
+  const script = extractSteps(authorize).find((step) => step.name === "Create the graph-authorized all-backend impact plan").run;
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rebaseline-plan-target-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(directory, "git"), "#!/bin/sh\nexit 0\n", {mode: 0o755});
+  const plan = {complete: true, graphStatus: "required", mode: "main", operations: {
+    deployGroups: ["functions", "firestore-indexes", "firestore-rules", "storage-rules"],
+    ciTargets: ["functions", "contracts", "firestore_rules"],
+  }};
+  fs.writeFileSync(path.join(directory, "node"), `#!/bin/sh\nprintf '%s\\n' '${JSON.stringify(plan)}'\n`, {mode: 0o755});
+  for (const target of ["dev", "prod"]) {
+    const result = spawnSync("bash", ["-c", script], {cwd: directory, encoding: "utf8", env: {
+      ...process.env, PATH: `${directory}${path.delimiter}${process.env.PATH}`,
+      BASE_SHA: "b".repeat(40), SOURCE_SHA: "a".repeat(40), TARGET_ENVIRONMENT: target,
+      GITHUB_RUN_ID: "123", GITHUB_RUN_ATTEMPT: "1", REBASELINE_REASON: "Approved bounded snapshot",
+    }});
+    assert.equal(result.status, 0, result.stderr);
+    const bound = JSON.parse(fs.readFileSync(path.join(directory, "build/rebaseline/impact-plan.json"), "utf8"));
+    assert.equal(bound.rebaseline.targetEnvironment, target);
+    assert.equal(bound.sourceSha, "a".repeat(40));
+    assert.equal(bound.sourceCiRunId, "123");
+    assert.equal(bound.sourceCiRunAttempt, "1");
+    assert.deepEqual(bound.operations, plan.operations);
+  }
+});
+
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
   const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
