@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -321,6 +322,38 @@ void main() {
         'externalReference': 'phone-household:$id',
       });
       expect(await f.retryStore.load('client', 'wedding'), isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'production holds phone entry and direct route until backend rollout',
+    (tester) async {
+      AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
+      addTearDown(AppConfig.resetEntrypointEnvironmentOverrideForTesting);
+      final access = ProgramWorkAccess.fromCallableData(
+        _access(role: 'manager'),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: ProgramWorkPageBody(access: access, now: _now),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(
+        find.byKey(const ValueKey('program-work-phone-import')),
+        findsNothing,
+      );
+
+      final f = _Fixture();
+      addTearDown(() => f.close(tester));
+      await f.mount(tester);
+      expect(find.byType(PhoneImportReviewScreen), findsNothing);
+      expect(find.byKey(const ValueKey('phone-import-pick')), findsNothing);
+      expect(f.assignments.calls, 0);
+      expect(f.functions.calls.map((call) => call.name), [
+        'getProgramWorkAccess',
+      ]);
       expect(tester.takeException(), isNull);
     },
   );

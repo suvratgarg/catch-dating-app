@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.18
-updated: 2026-09-23
+version: 2.7.19
+updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -1750,6 +1750,24 @@ stage. Keep Functions ahead of tighter rules when a release moves writes behind
 new callables, and keep indexes ahead of Functions that may immediately depend
 on new queries. Do not use Remote Config as a schema migration tool; use it only
 to block older app builds after the compatible build is available.
+
+Wedding phone import remains held in production by
+`canImportWeddingPhoneContacts`: both the work-page entry and direct route
+access use this gate. Dev and staging retain the native review flow for
+validation. Remove the production hold only in a reviewed follow-on after:
+
+1. Ordered Delivery proves the merged membership, guest-source authority and
+   manifest-import Functions and Firestore rules in dev and production.
+2. A synthetic wedding proves current work access, native-selected contact
+   preview and request-bound commit/replay against the deployed contract,
+   including the new source revision/hash fields and revoked-grant rejection.
+3. The release owner accepts that exact backend compatibility evidence before
+   enabling phone import in a production Host binary.
+
+Production backend baseline/rebaseline, data migrations or resets, provider
+activation, and real contact/message operations require their own approval;
+merging the held client does not authorize those actions. Callable reachability
+alone does not prove the manifest-import wire contract is compatible.
 
 The 2026-07-10 event-scoped Host inquiry change is a concrete two-phase case:
 deploy the updated `startClubHostConversation` Function and generated payload
