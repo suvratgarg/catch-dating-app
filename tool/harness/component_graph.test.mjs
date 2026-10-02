@@ -779,6 +779,7 @@ test("authored contracts expand to every declared validation consumer", () => {
     "backend.firestore-indexes",
     "backend.firestore-rules",
     "backend.functions",
+    "backend.organizer-authority",
     "backend.storage-rules",
     "operations.contract-consumer",
     "web.admin",
@@ -813,6 +814,58 @@ test("generated Flutter bindings validate Flutter and Marketing without expandin
   assert.deepEqual(result.affectedComponents, ["web.marketing"]);
   assert.deepEqual(result.operations.ciTargets, ["flutter", "marketing"]);
   assert.deepEqual(result.operations.codegenIds, ["contracts.schema-projections"]);
+});
+
+const formConversionEmulatorPaths = [
+  "functions/package.json",
+  "functions/src/organizers/organizerFormConversions.ts",
+  "functions/src/organizers/organizerFormConversions.test.ts",
+  "functions/src/events/eventAttendees.ts",
+  "functions/src/events/eventAttendees.test.ts",
+];
+
+test("form conversion authority selects emulator validation in every CI mode", () => {
+  for (const file of formConversionEmulatorPaths) {
+    for (const mode of graph.modes) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets,
+        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+      assert.deepEqual(result.operations.deployGroups,
+        ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
+      for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
+        assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
+      }
+    }
+  }
+});
+
+test("form conversion routing preserves unrelated Functions and mixed lanes", () => {
+  assert.deepEqual(plan("functions/src/events/cancelEventSignUp.ts")
+    .operations.ciTargets, ["functions"]);
+  const mixed = planAffected({graph, mode: "pr", changedPaths: [
+    formConversionEmulatorPaths[1], "admin/src/App.tsx",
+  ]});
+  assert.equal(mixed.complete, true);
+  assert.deepEqual(mixed.operations.ciTargets,
+    ["admin", "firestore_rules", "functions"]);
+  assert.deepEqual(mixed.operations.deployGroups, []);
+});
+
+test("rules command executes both form conversion and attendee regressions", () => {
+  const packageJson = JSON.parse(fs.readFileSync(
+    new URL("../../functions/package.json", import.meta.url), "utf8"));
+  const command = packageJson.scripts["test:rules"];
+  assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+  for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
+    "lib/events/eventAttendees.test.js"]) {
+    assert.equal(command.split(/\s+/u).filter((part) => part === compiled).length,
+      1, `${compiled} must run exactly once in test:rules`);
+  }
+  const workflow = fs.readFileSync(new URL(
+    "../../.github/workflows/firestore-rules-ci.yml", import.meta.url), "utf8");
+  assert.match(workflow,
+    /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
 });
 
 test("only direct ownership can authorize deploy groups", () => {
