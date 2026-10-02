@@ -1,6 +1,7 @@
 {
   "version": 1,
   "updated": "2026-10-02",
+  "previewDisclosure": "Fictional app preview.",
   "description": "Marketing website image slots sourced from deterministic app UI captures. Active entries are regenerated from synthetic demo fixtures and synced into website assets; placeholders remain only for future pending slots.",
   "captures": [
     {

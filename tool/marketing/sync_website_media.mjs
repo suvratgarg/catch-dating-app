@@ -109,6 +109,9 @@ function validateSourceManifest(manifest) {
   if (!Number.isInteger(manifest.version)) {
     errors.push("Manifest version must be an integer.");
   }
+  if (typeof manifest.previewDisclosure !== "string" || manifest.previewDisclosure.trim() === "") {
+    errors.push("Manifest previewDisclosure is required for synthetic app previews.");
+  }
   if (!Array.isArray(manifest.captures)) {
     errors.push("Manifest captures must be an array.");
     return errors;
@@ -183,7 +186,7 @@ function buildWebsiteManifest(manifest) {
         device: capture.device,
         webPath,
         alt: capture.alt,
-        caption: capture.caption,
+        caption: `${manifest.previewDisclosure} ${capture.caption}`,
         walkthroughStep: capture.walkthroughStep,
       };
     });

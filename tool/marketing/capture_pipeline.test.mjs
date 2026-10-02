@@ -28,7 +28,7 @@ function fixture(t) {
     placeholderPath: 'website/public/assets/app-screenshots/placeholders/sample.svg',
     alt: 'Synthetic Today screen', caption: 'Today', walkthroughStep: '1',
   };
-  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', captures: [capture]}));
+  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', previewDisclosure: 'Fictional app preview.', captures: [capture]}));
   write(capture.sourcePath, png());
   write('packages/sample/pubspec.yaml', 'name: sample\nflutter:\n  assets:\n    - assets/\n');
   write('packages/sample/assets/image.txt', 'asset fixture');
@@ -178,4 +178,21 @@ test('ambiguous fixture mappings fail instead of choosing the first entry', t =>
   f.write(catalog, fs.readFileSync(path.join(f.root, catalog), 'utf8') + `ScreenCaptureEntry(id: 'duplicate', marketingFixtureKeys: const <String>['salesDemo.sample'])`);
   const result = f.run('tool/marketing/export_app_screenshots.mjs', '--check');
   assert.equal(result.status, 1); assert.match(result.stderr, /exactly one catalog entry/);
+});
+
+
+test('website captions disclose synthetic previews without changing captured pixels or source copy', t => {
+  const f = fixture(t);
+  assert.equal(f.run(sync, '--update').status, 0);
+  const output = JSON.parse(fs.readFileSync(path.join(f.root, 'website/public/assets/app-screenshots/manifest.json'), 'utf8'));
+  assert.equal(output.captures[0].caption, 'Fictional app preview. Today');
+  const manifestPath = path.join(f.root, 'tool/marketing/capture_manifest.json');
+  const source = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  assert.equal(source.captures[0].caption, 'Today');
+  assert.deepEqual(fs.readFileSync(path.join(f.root, f.capture.websitePath)), fs.readFileSync(path.join(f.root, f.capture.sourcePath)));
+  delete source.previewDisclosure;
+  fs.writeFileSync(manifestPath, JSON.stringify(source));
+  const result = f.run(sync, '--check');
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /previewDisclosure is required/);
 });
