@@ -5,6 +5,8 @@ import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import vm from "node:vm";
+// Keep the actual Required CI policy exercised by the registered Harness suite.
+import "../ci/required_ci_policy.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -999,13 +1001,18 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
   assert.match(ci, /queue: max\n  cancel-in-progress: false/u);
   assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
+  assert.match(ci, /reason_code: \$\{\{ steps\.check\.outputs\.reason_code \}\}/u);
   assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
   assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ always\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
   assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
   assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
   assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"),
+    /REASON_CODE: \$\{\{ needs\.admission\.outputs\.reason_code \}\}/u);
+  assert.match(namedStep(ci, "Refuse deferred PR validation"),
+    /Admission status: \$\{REASON_CODE:-unavailable\}/u);
   assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
-  assert.match(ci, /name: Backend source review/u);
+  assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   const feedback = workflow("pr-feedback.yml");
   const plan = namedStep(feedback, "Plan affected checks");
   assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --base "\$BASE_SHA" --head HEAD --mode pr/u);
