@@ -921,3 +921,32 @@ test("revocation preserves a booking and blocks new admission", async () => {
   );
   assert.equal(state.get("eventParticipations/event-1_runner-2"), undefined);
 });
+
+test("a stale approved preflight cannot admit a declined request", async () => {
+  const manual = pairInventoryPolicy();
+  (manual.admission as FakeData).manualApprovalRequired = true;
+  const records = {"events/event-1": event({eventPolicy: manual}),
+    "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+      eventId: "event-1", clubId: "club-1", uid: "runner-1",
+      status: "cancelled", hostApprovalStatus: "declined"}};
+  const db = firestore(records);
+  await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+    undefined, {hasHostApproval: true}), /Request to join/);
+  assert.equal(records["events/event-1"].bookedCount, 0);
+  assert.equal(records["eventParticipations/event-1_runner-1"].status,
+    "cancelled");
+});
+
+test("current persisted approval supplies the transactional review check",
+  async () => {
+    const manual = pairInventoryPolicy();
+    (manual.admission as FakeData).manualApprovalRequired = true;
+    const records = {"events/event-1": event({eventPolicy: manual}),
+      "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+        eventId: "event-1", clubId: "club-1", uid: "runner-1",
+        status: "waitlisted", hostApprovalStatus: "approved"}};
+    const db = firestore(records);
+    await signUpUserForEvent(db, "event-1", "runner-1");
+    assert.equal(records["eventParticipations/event-1_runner-1"].status,
+      "signedUp");
+  });

@@ -44,6 +44,7 @@ import {
   cohortIdForUser,
   decrementCount,
   eventPolicyFromEvent,
+  hasHostApprovedJoinRequest,
   incrementCount,
   rosterFromEvent,
   rosterWithReservedWaitlistOffersInTransaction,
@@ -89,6 +90,7 @@ export async function signUpUserForEvent(
   options: {
     paidBooking?: NativePaidBooking;
     hasValidInvite?: boolean;
+    /** Caller hint only; the write transaction rechecks persisted review. */
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
     crossPathsPairHoldId?: string | null;
@@ -376,7 +378,7 @@ export async function signUpUserForEvent(
       cohortId,
       roster: admissionRoster,
       hasValidInvite: options.hasValidInvite,
-      hasHostApproval: options.hasHostApproval,
+      hasHostApproval: hasHostApprovedJoinRequest(participationSnap.data()),
       admissionMode: pairHold ? "crossPathsPair" : "general",
       hasActiveCommunityMembership: membership?.state === "active",
     });
