@@ -1,8 +1,9 @@
 import {websiteCopy} from "@content/generated";
 import {marketingConsentPreferencesCopy} from "../../content/marketingConsent";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
   getMarketingConsent,
+  marketingConsentChangedEvent,
   setMarketingConsent,
   shouldShowMarketingConsentBanner,
 } from "../../analytics";
@@ -11,8 +12,13 @@ import {Button, MarketingConsentBannerShell} from "../../shared/ui/primitives";
 export function MarketingConsentBanner() {
   const [consent, setConsent] = useState(() => getMarketingConsent());
 
+  useEffect(() => {
+    const changed = () => setConsent(getMarketingConsent());
+    window.addEventListener(marketingConsentChangedEvent, changed);
+    return () => window.removeEventListener(marketingConsentChangedEvent, changed);
+  }, []);
   const [editing, setEditing] = useState(false);
-  const choose = (choice: "analytics" | "essential") => {
+  const choose = (choice: "accepted" | "analytics" | "essential") => {
     setConsent(setMarketingConsent(choice));
     setEditing(false);
   };
@@ -34,6 +40,9 @@ export function MarketingConsentBanner() {
             type="button"
             onClick={() => choose("analytics")}
           >{marketingConsentPreferencesCopy.allowAnalytics}</Button>
+          <Button size="small" type="button" onClick={() => choose("accepted")}>
+            {marketingConsentPreferencesCopy.allowMarketing}
+          </Button>
           <Button
             size="small"
             type="button"

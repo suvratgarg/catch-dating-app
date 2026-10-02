@@ -5,10 +5,14 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 const createMarketingEventId = vi.hoisted(() => vi.fn());
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
+const getMarketingConsent = vi.hoisted(() => vi.fn());
+const trackAcceptedMarketingLead = vi.hoisted(() => vi.fn());
 const waitlistAnalyticsPayload = vi.hoisted(() => vi.fn());
 
 vi.mock("../../../analytics", () => ({
   createMarketingEventId,
+  getMarketingConsent,
+  trackAcceptedMarketingLead,
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 }));
@@ -25,6 +29,7 @@ function wrapper() {
 describe("useHostApplicationController", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getMarketingConsent.mockReturnValue({version: 2, analytics: true, marketing: true, updatedAt: "2026-10-02T00:00:00Z"});
     createMarketingEventId.mockReturnValue("host_lead_event-1");
     waitlistAnalyticsPayload.mockReturnValue({attribution: null, analytics: {eventId: "host_lead_event-1"}});
   });
@@ -61,6 +66,8 @@ describe("useHostApplicationController", () => {
 
     await waitFor(() => expect(result.current.submitted).toBe(true));
     expect(result.current.status.tone).toBe("is-success");
+    expect(trackAcceptedMarketingLead).toHaveBeenCalledExactlyOnceWith("host_lead_event-1", "host_application",
+      false, getMarketingConsent());
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
       fullName: "A Host",
       email: "host@example.com",
@@ -90,6 +97,7 @@ describe("useHostApplicationController", () => {
     const event = {preventDefault: vi.fn()} as never;
     await act(async () => result.current.handleSubmit(event));
     expect(result.current.status.tone).toBe("is-error");
+    expect(trackAcceptedMarketingLead).not.toHaveBeenCalled();
     expect(result.current.draft.organizationName).toBe("Example Club");
     await act(async () => result.current.handleSubmit(event));
     expect(fetchMock.mock.calls[1][1].body).toBe(fetchMock.mock.calls[0][1].body);
