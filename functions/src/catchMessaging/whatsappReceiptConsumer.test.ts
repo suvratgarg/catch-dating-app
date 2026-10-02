@@ -5,11 +5,13 @@ import {FormPaymentTestStore} from
   "../payments/formPayments/formPaymentTestStore";
 import {parseCatchWhatsappWebhook, WEBHOOK_RETENTION_MILLIS} from
   "./whatsappWebhookProtocol";
-import {catchEndpointHash, catchReplyId, CATCH_SUPPORT_WINDOW_MS} from
+import {catchEndpointHash, catchReplyHash, catchReplyId,
+  CATCH_SUPPORT_WINDOW_MS} from
   "./whatsappReply";
 import {CATCH_RECEIPTS, CATCH_REPLY_OPERATIONS, readCatchOperation} from
   "./whatsappReplyStore";
-import {consumeCatchReplyStatus, advanceCatchDelivery} from
+import {consumeCatchReplyStatus, advanceCatchDelivery,
+  processCatchWhatsappReceipt, reconcileCatchReplyStatuses} from
   "./whatsappReceiptConsumer";
 
 const time = 1800000000000;
@@ -105,4 +107,55 @@ test("arrival order and failure cannot override delivery proof",
     assert.equal(advanceCatchDelivery("failed", "sent"), "failed");
     assert.equal(advanceCatchDelivery("failed", "delivered"), "delivered");
     assert.equal(advanceCatchDelivery("read", "failed"), "read");
+  });
+
+test("receipt dispatcher and saved-operation reconciliation close early race",
+  async () => {
+    const f = fixture();
+    f.fake.records.set(f.key, {...f.operation, state: "claimed",
+      providerMessageId: null, deliveryStatus: "pending"});
+    const eventId = f.receipt("delivered");
+    assert.equal(await processCatchWhatsappReceipt(f.db, eventId, scope,
+      time + 3000), "deferred");
+    f.fake.records.set(f.key, {...f.operation});
+    assert.equal(await reconcileCatchReplyStatuses(f.db, f.operationId,
+      scope, time + 3000), 1);
+    assert.equal(await processCatchWhatsappReceipt(f.db, eventId, scope,
+      time + 3000), "unchanged");
+    assert.equal(await reconcileCatchReplyStatuses(f.db, f.operationId,
+      scope, time + 3000), 0);
+    assert.equal(await processCatchWhatsappReceipt(f.db, f.receipt("read"),
+      scope, time + 3000), "applied");
+    assert.equal(f.fake.records.get(f.key)?.deliveryStatus, "read");
+  });
+
+test("dispatch lookup is scoped and rejects ambiguous ownership",
+  async () => {
+    const f = fixture(); const eventId = f.receipt("delivered");
+    f.fake.records.set(CATCH_REPLY_OPERATIONS + "/foreign-sender", {
+      ...f.operation, phoneNumberId: "999",
+    });
+    f.fake.records.set(CATCH_REPLY_OPERATIONS + "/foreign-endpoint", {
+      ...f.operation, endpointHash: catchEndpointHash("+919000000002"),
+    });
+    assert.equal(await processCatchWhatsappReceipt(f.db, eventId,
+      {...scope, phoneNumberId: "999"}, time + 3000), "unmatched");
+    assert.equal(await processCatchWhatsappReceipt(f.db, eventId, scope,
+      time + 3000), "applied");
+    f.fake.records.set(CATCH_REPLY_OPERATIONS + "/ambiguous", {...f.operation});
+    await assert.rejects(processCatchWhatsappReceipt(f.db, eventId, scope,
+      time + 3000), /Ambiguous/);
+  });
+
+test("reconciliation overflow fails before publishing a partial projection",
+  async () => {
+    const f = fixture(); const eventId = f.receipt("delivered");
+    const receipt = f.fake.records.get(CATCH_RECEIPTS + "/" + eventId)!;
+    for (let index = 0; index < 50; index++) {
+      const id = "cwhe_" + catchReplyHash(index);
+      f.fake.records.set(CATCH_RECEIPTS + "/" + id, {...receipt, eventId: id});
+    }
+    await assert.rejects(reconcileCatchReplyStatuses(f.db, f.operationId,
+      scope, time + 3000), /exceeds bounded scope/);
+    assert.equal(f.fake.records.get(f.key)?.deliveryStatus, "accepted");
   });

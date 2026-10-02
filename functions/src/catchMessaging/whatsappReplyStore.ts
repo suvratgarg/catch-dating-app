@@ -2,26 +2,20 @@ import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
   "../eventSuccess/operations/transactionCallback";
-import {isWhatsappStopCommand} from "../organizers/organizerCampaignModel";
-import {validateCatchWhatsappWebhookEventDocument} from
-  "../shared/generated/validators/catchWhatsappWebhookEventDocument";
 import {validateCatchCommunicationPreferenceDocument} from
   "../shared/generated/validators/catchCommunicationPreferenceDocument";
-import {WEBHOOK_RETENTION_MILLIS, type CatchWebhookEvent} from
-  "./whatsappWebhookProtocol";
 import {authorizeCatchReply, assertCatchReplyEnabled, catchEndpointHash,
   catchReplyHash, catchReplyId, catchStopId, CATCH_SUPPORT_WINDOW_MS,
   parseCatchReplyInput, safeMillis, validHash, validProviderId} from
   "./whatsappReply";
-import type {CatchEndpointStop, CatchGetUser, CatchReplyConfig,
+import type {CatchGetUser, CatchReplyConfig,
   CatchReplyInput, CatchReplyOperation} from "./whatsappReply";
 
 export const CATCH_REPLY_OPERATIONS = "catchWhatsappReplyOperations";
-export const CATCH_ENDPOINT_STOPS = "catchWhatsappEndpointStops";
-export const CATCH_RECEIPTS = "catchWhatsappWebhookEvents";
-export type CatchReceipt = CatchWebhookEvent & {
-  receivedAtMillis: number; expiresAt: Timestamp;
-};
+export {CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS, readCatchReceipt,
+  persistCatchStopReceipt} from "./whatsappEndpointStops";
+import {CATCH_ENDPOINT_STOPS, CATCH_RECEIPTS, readCatchReceipt,
+  isCatchStopReceipt} from "./whatsappEndpointStops";
 
 function serialized(value: unknown): unknown {
   if (value instanceof Timestamp) {
@@ -35,15 +29,6 @@ function serialized(value: unknown): unknown {
   }
   return value;
 }
-export function readCatchReceipt(value: unknown): CatchReceipt {
-  const data = value as CatchReceipt | undefined;
-  if (!data || !(data.expiresAt instanceof Timestamp) ||
-      !validateCatchWhatsappWebhookEventDocument(serialized(data))) {
-    throw new HttpsError("failed-precondition", "Invalid Catch receipt.");
-  }
-  return data;
-}
-
 /** Authored domain codecs until the shared schema/codegen owner integrates. */
 export function readCatchOperation(value: unknown): CatchReplyOperation {
   const data = value as CatchReplyOperation | undefined;
@@ -85,76 +70,6 @@ export function readCatchOperation(value: unknown): CatchReplyOperation {
   }
   return data;
 }
-export function readCatchStop(value: unknown): CatchEndpointStop {
-  const data = value as CatchEndpointStop | undefined;
-  if (!data || Object.keys(data).sort().join(",") !==
-      "endpointHash,observedAtMillis,payloadHash,phoneNumberId,schemaVersion," +
-      "sourceEventId,sourceMessageId,stopId,wabaId" ||
-      data.schemaVersion !== 1 || !validHash(data.endpointHash) ||
-      !validHash(data.payloadHash) || !safeMillis(data.observedAtMillis) ||
-      !/^[0-9]{1,32}$/u.test(data.wabaId) ||
-      !/^[0-9]{1,32}$/u.test(data.phoneNumberId) ||
-      !/^cwhe_[a-f0-9]{64}$/u.test(data.sourceEventId) ||
-      !validProviderId(data.sourceMessageId) ||
-      data.stopId !== catchStopId(data, data.endpointHash)) {
-    throw new HttpsError("failed-precondition", "Invalid Catch suppression.");
-  }
-  return data;
-}
-
-/** Never classify truncated text or interactive display labels as STOP. */
-export function isCatchStopReceipt(event: CatchWebhookEvent): boolean {
-  return event.eventKind === "inbound" && event.messageType === "text" &&
-    !event.textTruncated && typeof event.text === "string" &&
-    /^[1-9][0-9]{6,14}$/u.test(event.participantId) &&
-    isWhatsappStopCommand(event.text);
-}
-
-/**
- * Future ingress hook ONLY AFTER signature and exact configured sender checks.
- * Not yet called by whatsappWebhook.ts: sending must remain gated until the
- * receiver owner wires this and reconciles historical STOP receipts. Existing
- * receipt bytes/TTL never change. The separate suppression has no TTL/reset.
- */
-export async function persistCatchStopReceipt(db: Firestore,
-  event: CatchWebhookEvent, nowMillis: number): Promise<void> {
-  if (!safeMillis(nowMillis) || !isCatchStopReceipt(event)) {
-    throw new Error("Expected a verified Catch text STOP");
-  }
-  const incoming = readCatchReceipt({...event, receivedAtMillis: nowMillis,
-    expiresAt: Timestamp.fromMillis(nowMillis + WEBHOOK_RETENTION_MILLIS)});
-  await transact(db, async (tx) => {
-    const ref = db.collection(CATCH_RECEIPTS).doc(event.eventId);
-    const previous = await tx.get(ref);
-    const receipt = previous.exists ? readCatchReceipt(previous.data()) :
-      incoming;
-    if (!isCatchStopReceipt(receipt) || receipt.eventId !== event.eventId ||
-        receipt.wabaId !== event.wabaId ||
-        receipt.phoneNumberId !== event.phoneNumberId ||
-        receipt.participantId !== event.participantId ||
-        receipt.messageId !== event.messageId || receipt.text !== event.text ||
-        receipt.providerTimestampSeconds !== event.providerTimestampSeconds) {
-      throw new Error("Catch STOP receipt identity conflict");
-    }
-    const endpointHash = catchEndpointHash("+" + receipt.participantId);
-    const stopId = catchStopId(receipt, endpointHash);
-    const stopRef = db.collection(CATCH_ENDPOINT_STOPS).doc(stopId);
-    const stop = await tx.get(stopRef);
-    if (stop.exists) {
-      if (readCatchStop(stop.data()).stopId !== stopId) {
-        throw new Error("Catch suppression identity conflict");
-      }
-    } else {
-      tx.create(stopRef, readCatchStop({schemaVersion: 1, stopId,
-        wabaId: receipt.wabaId, phoneNumberId: receipt.phoneNumberId,
-        endpointHash, sourceEventId: receipt.eventId,
-        sourceMessageId: receipt.messageId, payloadHash: receipt.payloadHash,
-        observedAtMillis: receipt.receivedAtMillis}));
-    }
-    if (!previous.exists) tx.create(ref, incoming);
-  });
-}
-
 export class CatchWhatsappReplyStore {
   constructor(readonly db: Firestore, private readonly deps: {
     config: () => CatchReplyConfig;
