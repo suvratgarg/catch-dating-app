@@ -253,38 +253,96 @@ jobs:
           SOURCE_SHA: ${{ steps.inputs.outputs.source_sha }}
         run: |
           set -euo pipefail
-          successful_pages="$(gh api --paginate --slurp \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=100")"
-          source_run="$(jq -c \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson workflow_id "$SOURCE_CI_WORKFLOW_ID" '
-              [.[].workflow_runs[] |
-                select(
-                  .name == "CI" and
-                  (.path | split("@")[0]) == ".github/workflows/ci.yml" and
-                  .workflow_id == $workflow_id and
-                  .event == "push" and
-                  .head_branch == "main" and
-                  .head_repository.full_name == $repository and
-                  .head_sha == $source_sha and
-                  .status == "completed" and
-                  .conclusion == "success"
-                )
-              ] |
-              sort_by([.run_number, .run_attempt]) |
-              if length == 0 then null else last end
-            ' <<< "$successful_pages")"
-          if [[ "$source_run" == "null" ]]; then
-            echo "Current main does not have a successful immutable CI authority."
+          # Listings discover candidate identities only. Canonical run and attempt
+          # metadata must independently prove every original authorization predicate.
+          verify_source_run() {
+            jq -e \
+              --arg repository "$GITHUB_REPOSITORY" \
+              --arg source_sha "$SOURCE_SHA" \
+              --argjson workflow_id "$SOURCE_CI_WORKFLOW_ID" \
+              --argjson run_id "$source_ci_run_id" \
+              --argjson run_attempt "$source_ci_run_attempt" \
+              --argjson run_number "$source_ci_run_number" '
+                .name == "CI" and
+                (.path | split("@")[0]) == ".github/workflows/ci.yml" and
+                .workflow_id == $workflow_id and
+                .event == "push" and
+                .head_branch == "main" and
+                .head_repository.full_name == $repository and
+                .head_sha == $source_sha and
+                .status == "completed" and
+                .conclusion == "success" and
+                .id == $run_id and
+                .run_attempt == $run_attempt and
+                .run_number == $run_number
+              ' > /dev/null
+          }
+          source_verified=false
+          for discovery_attempt in 1 2 3; do
+            if (( discovery_attempt > 1 )); then sleep 5; fi
+            echo "CI authority discovery attempt $discovery_attempt/3."
+            if ! run_pages="$(gh api --paginate --slurp \
+              -H 'Cache-Control: no-cache' \
+              "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&event=push&head_sha=$SOURCE_SHA&per_page=100")"; then
+              echo "CI authority listing request failed."
+              continue
+            fi
+            if ! jq -e 'type == "array" and length > 0 and all(.[]; (.workflow_runs | type) == "array")' \
+              <<< "$run_pages" > /dev/null; then
+              echo "CI authority listing has an invalid page shape."
+              continue
+            fi
+            if ! source_run="$(jq -c \
+              --arg source_sha "$SOURCE_SHA" \
+              --argjson workflow_id "$SOURCE_CI_WORKFLOW_ID" '
+                def positive_integer: type == "number" and . > 0 and floor == .;
+                [.[].workflow_runs[] |
+                  select(.workflow_id == $workflow_id and .head_sha == $source_sha) |
+                  select((.id | positive_integer) and (.run_attempt | positive_integer) and
+                    (.run_number | positive_integer))
+                ] | sort_by([.run_number, .run_attempt]) |
+                if length == 0 then null else last end
+              ' <<< "$run_pages")"; then
+              echo "CI authority listing contains malformed candidate metadata."
+              continue
+            fi
+            if [[ "$source_run" == "null" ]]; then
+              echo "CI authority listing contains no exact-source candidate."
+              continue
+            fi
+            source_ci_run_id="$(jq -er '.id | tostring' <<< "$source_run")"
+            source_ci_run_attempt="$(jq -er '.run_attempt | tostring' <<< "$source_run")"
+            source_ci_run_number="$(jq -er '.run_number | tostring' <<< "$source_run")"
+            [[ "$source_ci_run_id" =~ ^[1-9][0-9]*$ ]]
+            [[ "$source_ci_run_attempt" =~ ^[1-9][0-9]*$ ]]
+            [[ "$source_ci_run_number" =~ ^[1-9][0-9]*$ ]]
+            echo "Verifying CI run $source_ci_run_id attempt $source_ci_run_attempt (number $source_ci_run_number)."
+            if ! current_run="$(gh api -H 'Cache-Control: no-cache' \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$source_ci_run_id")" ||
+              ! verify_source_run <<< "$current_run"; then
+              echo "Canonical CI run did not prove the discovered identity and successful attempt."
+              continue
+            fi
+            if ! attempt_run="$(gh api -H 'Cache-Control: no-cache' \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$source_ci_run_id/attempts/$source_ci_run_attempt")" ||
+              ! verify_source_run <<< "$attempt_run"; then
+              echo "Exact CI attempt did not prove the source authority."
+              continue
+            fi
+            # Refuse a rerun that advanced while the exact-attempt proof was fetched.
+            if ! current_run="$(gh api -H 'Cache-Control: no-cache' \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$source_ci_run_id")" ||
+              ! verify_source_run <<< "$current_run"; then
+              echo "Canonical CI run changed or became unavailable during attempt verification."
+              continue
+            fi
+            source_verified=true
+            break
+          done
+          if [[ "$source_verified" != "true" ]]; then
+            echo "Current main does not have a successful immutable CI authority after 3 discovery attempts."
             exit 64
           fi
-          source_ci_run_id="$(jq -er '.id | tostring' <<< "$source_run")"
-          source_ci_run_attempt="$(jq -er '.run_attempt | tostring' <<< "$source_run")"
-          source_ci_run_number="$(jq -er '.run_number | tostring' <<< "$source_run")"
-          [[ "$source_ci_run_id" =~ ^[1-9][0-9]*$ ]]
-          [[ "$source_ci_run_attempt" =~ ^[1-9][0-9]*$ ]]
-          [[ "$source_ci_run_number" =~ ^[1-9][0-9]*$ ]]
           echo "source_ci_run_id=$source_ci_run_id" >> "$GITHUB_OUTPUT"
           echo "source_ci_run_attempt=$source_ci_run_attempt" >> "$GITHUB_OUTPUT"
           echo "source_ci_run_number=$source_ci_run_number" >> "$GITHUB_OUTPUT"
