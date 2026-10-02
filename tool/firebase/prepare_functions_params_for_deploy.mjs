@@ -22,6 +22,7 @@ export const materializedNonSecretParams = [
   "META_WHATSAPP_GRAPH_VERSION",
   "META_WHATSAPP_ENABLED",
   "CATCH_WHATSAPP_WEBHOOK_ENABLED",
+  "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
   "CATCH_WHATSAPP_WABA_ID",
   "CATCH_WHATSAPP_PHONE_NUMBER_ID",
   "EVENT_ASSISTANCE_RCS_ENABLED",
@@ -85,6 +86,12 @@ function normalizedProviderParams(environment = process.env, projectId) {
 
   const catchWebhookEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_WEBHOOK_ENABLED");
+  // Offline consumer milestone: ordinary Delivery must not activate workers.
+  // Reject attempted enablement rather than silently accepting an override.
+  const catchConsumersEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
+  assert(catchConsumersEnabled === "false",
+    "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED must remain false in this milestone");
   const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
   const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
     ?.trim() ?? "";
@@ -135,6 +142,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
     CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookEnabled,
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "false",
     CATCH_WHATSAPP_WABA_ID: catchWabaId || " ",
     CATCH_WHATSAPP_PHONE_NUMBER_ID: catchPhoneNumberId || " ",
     ...eventAssistance,
