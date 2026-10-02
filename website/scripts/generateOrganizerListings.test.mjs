@@ -10,6 +10,8 @@ import {
   validateWebsiteHostListingProjection,
 } from "../../tool/contracts/generated/schema_contract_validators.mjs";
 
+import "./organizerListingReadiness.test.mjs";
+
 const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", import.meta.url));
 
 test("listing schema rejects stale publication and review target contradictions", () => {
@@ -103,7 +105,7 @@ test("approved organizer intake projections render canonical listings", () => {
   assert.deepEqual(listings[0].publicApi, {
     state: "disabled",
     reason: "Claiming is not available until target readiness is verified against Firestore.",
-    claimTargetSyncStatus: "write_needed",
+    claimTargetSyncStatus: "unknown",
   });
   assert.deepEqual(listings[0].capabilities.publicReviews, {
     targetState: "disabled",
@@ -256,12 +258,40 @@ test("approved organizer intake projections render canonical listings", () => {
   assert.equal(compatibilityTargetListings[0].publicApi.state, "disabled");
   assert.equal(
     compatibilityTargetListings[0].capabilities.publicReviews.targetState,
-    "enabled"
+    "disabled"
   );
   assert.equal(
     compatibilityTargetListings[0].capabilities.publicReviews.writeState,
-    "enabled"
+    "disabled"
   );
+});
+
+
+test("legacy receipts reject stale, fixture, wrong-project and contradictory evidence", (t) => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-invalid-readiness-"));
+  t.after(() => fs.rmSync(tmpRoot, {recursive: true, force: true}));
+  const projection = path.join(tmpRoot, "projection.json");
+  const plan = path.join(tmpRoot, "plan.json");
+  const receiptPath = path.join(tmpRoot, "receipt.json");
+  fs.writeFileSync(projection, JSON.stringify(approvedProjectionPlan()));
+  fs.writeFileSync(plan, JSON.stringify(claimTargetPlan()));
+  for (const change of [
+    (receipt) => {receipt.generatedAt = "2026-07-11T00:00:00.000Z";},
+    (receipt) => {receipt.mode.source = "fixture";},
+    (receipt) => {receipt.projectId = "wrong-project";},
+    (receipt) => {receipt.plan.sha256 = "wrong-plan";},
+    (receipt) => {receipt.actions[0].path = "organizers/other-id";},
+    (receipt) => {receipt.actions.push({...receipt.actions[0]});},
+  ]) {
+    const receipt = claimTargetReadinessReceipt(plan);
+    change(receipt);
+    fs.writeFileSync(receiptPath, JSON.stringify(receipt));
+    assert.throws(() => execFileSync(process.execPath, [scriptPath,
+      "--projection-plan", projection, "--claim-target-plan", plan,
+      "--claim-target-readiness-receipt", receiptPath,
+      "--output", path.join(tmpRoot, "out.json")], {stdio: "pipe",
+      env: {...process.env, ORGANIZER_CLAIM_TARGET_PROJECT_ID: "catch-dating-app-64e51"}}));
+  }
 });
 
 function claimTargetPlan(targetPath = "organizers/afterfly") {
@@ -285,7 +315,7 @@ function claimTargetReadinessReceipt(
   return {
     schemaVersion: 1,
     receiptType: "organizer_claim_target_readiness",
-    generatedAt: "2026-07-11T00:00:00.000Z",
+    generatedAt: new Date().toISOString(),
     mode: {source: "firestore_read", remoteWrites: 0},
     projectId: "catch-dating-app-64e51",
     plan: {

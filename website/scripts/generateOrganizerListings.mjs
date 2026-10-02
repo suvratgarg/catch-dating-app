@@ -2,7 +2,12 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
+import {fileURLToPath, pathToFileURL} from "node:url";
+import {
+  organizerListingReadiness,
+  supplyCapabilitiesForAuthority,
+  buildOrganizerListingReadinessReceipt,
+} from "./organizerListingReadiness.mjs";
 import {
   schemaErrorMessages,
   validateWebsiteHostListingProjection,
@@ -12,7 +17,15 @@ import {inMarket} from "../src/content/markets/in.ts";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
 const repoRoot = path.resolve(websiteRoot, "..");
-const args = parseArgs(process.argv.slice(2));
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+const args = parseArgs(isMain ? process.argv.slice(2) : []);
+if (args.readinessReceipt && !args.firestoreProject) {
+  fail("--readiness-receipt requires a current --firestore-project snapshot.");
+}
+if (args.firestoreProject && (args.claimTargetReadinessReceipt ||
+    process.env.ORGANIZER_CLAIM_TARGET_RECEIPT)) {
+  fail("Firestore-native materialization cannot consume a legacy plan readiness receipt.");
+}
 if (args.help) {
   printHelp();
   process.exit(0);
@@ -104,6 +117,7 @@ const firestoreListings = firestoreWebsiteDocuments ?
       )
     )
     .map((document) => listingFromFirestoreOrganizer(document))
+    .filter(Boolean)
     .filter((listing) => args.includeDemo || listingHasLiveMarket(listing)) :
   null;
 const publicExternalEventsByHostId =
@@ -119,23 +133,36 @@ const listings = [
 ]
   .map(withPublicExternalEvents)
   .sort((a, b) => compareText(a.name, b.name));
-validateListingProjections(listings);
-const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
+if (isMain) {
+  validateListingProjections(listings);
+  const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
 
-if (checkOnly) {
-  if (!fs.existsSync(generatedPath)) {
-    console.error(`Missing generated organizer listings: ${generatedPath}`);
-    process.exit(1);
+  if (checkOnly) {
+    if (!fs.existsSync(generatedPath)) {
+      console.error(`Missing generated organizer listings: ${generatedPath}`);
+      process.exit(1);
+    }
+    const currentListings = fs.readFileSync(generatedPath, "utf8");
+    if (currentListings !== renderedListings) {
+      console.error("website/src/generated/hostListings.json is stale.");
+      console.error("Run: npm --workspace catch-marketing run generate:organizer-listings");
+      process.exit(1);
+    }
+  } else {
+    fs.mkdirSync(path.dirname(generatedPath), {recursive: true});
+    fs.writeFileSync(generatedPath, renderedListings);
   }
-  const currentListings = fs.readFileSync(generatedPath, "utf8");
-  if (currentListings !== renderedListings) {
-    console.error("website/src/generated/hostListings.json is stale.");
-    console.error("Run: npm --workspace catch-marketing run generate:organizer-listings");
-    process.exit(1);
+
+  if (args.readinessReceipt) {
+    const receipt = buildOrganizerListingReadinessReceipt({
+      projectId: args.firestoreProject,
+      documents: firestoreWebsiteDocuments.organizers,
+      listings,
+    });
+    const receiptPath = path.resolve(args.readinessReceipt);
+    fs.mkdirSync(path.dirname(receiptPath), {recursive: true});
+    fs.writeFileSync(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
   }
-} else {
-  fs.mkdirSync(path.dirname(generatedPath), {recursive: true});
-  fs.writeFileSync(generatedPath, renderedListings);
 }
 
 function organizerIntakeProjectionEntries() {
@@ -200,7 +227,7 @@ async function readFirestoreWebsiteDocuments(projectId) {
     // Mutable Catch events are read live by the website, never exported.
     const organizers = await app.firestore().collection("organizers").get();
     return {organizers: organizers.docs
-      .map((document) => ({id: document.id, data: document.data()}))
+      .map((document) => ({id: document.id, path: document.ref.path, data: document.data()}))
       .sort((a, b) => compareText(a.id, b.id))};
   } finally {
     await app.delete();
@@ -220,6 +247,14 @@ function readAndValidateClaimTargetReadinessReceipt(filePath) {
       receipt.mode?.remoteWrites !== 0) {
     fail("Organizer claim-target readiness must come from a read-only Firestore receipt.");
   }
+  const receiptTime = Date.parse(receipt.generatedAt);
+  const ageMs = Date.now() - receiptTime;
+  if (!Number.isFinite(receiptTime) || ageMs < -5 * 60 * 1000 || ageMs > 24 * 60 * 60 * 1000) {
+    fail("Organizer claim-target readiness receipt is stale or has an invalid timestamp.");
+  }
+  if (typeof receipt.projectId !== "string" || !receipt.projectId.trim()) {
+    fail("Organizer claim-target readiness receipt project is missing.");
+  }
   const expectedProjectId =
     process.env.ORGANIZER_CLAIM_TARGET_PROJECT_ID?.trim() || null;
   if (expectedProjectId && receipt.projectId !== expectedProjectId) {
@@ -236,6 +271,14 @@ function readAndValidateClaimTargetReadinessReceipt(filePath) {
   }
   if (!Array.isArray(receipt.actions)) {
     fail("Organizer claim-target readiness receipt actions are missing.");
+  }
+  const identities = new Set();
+  for (const action of receipt.actions) {
+    if (!action?.entityId || identities.has(action.entityId) ||
+        ![`organizers/${action.entityId}`, `clubs/${action.entityId}`].includes(action.path)) {
+      fail("Organizer claim-target readiness receipt has contradictory target identities.");
+    }
+    identities.add(action.entityId);
   }
   return receipt;
 }
@@ -430,7 +473,6 @@ function publicReviewTargetForOrganizerIntake(entityId) {
     action?.status === "in_sync" &&
     [
       `organizers/${entityId}`,
-      `clubs/${entityId}`,
     ].includes(action.path)
   ) {
     return {
@@ -448,9 +490,8 @@ function publicReviewTargetForOrganizerIntake(entityId) {
 
 function claimTargetAction(readiness, entityId) {
   return (readiness?.actions ?? []).find((item) =>
-    item?.entityId === entityId ||
-    item?.path === `organizers/${entityId}` ||
-    item?.path === `clubs/${entityId}`
+    item?.entityId === entityId &&
+    item?.path === `organizers/${entityId}`
   );
 }
 
@@ -558,34 +599,6 @@ function listingCapabilities(
         "Public reviews are available for this published organizer page.",
     },
     supply: supplyCapabilitiesForAuthority(authority),
-  };
-}
-
-function supplyCapabilitiesForAuthority(authority) {
-  const managed =
-    ["userCreated", "claimed", "transferred"].includes(
-      authority.ownershipState
-    ) ||
-    ["claimed", "verified"].includes(authority.claimState);
-  if (managed) {
-    return {
-      mode: "claimed_managed",
-      bookable: true,
-      paymentsEnabled: true,
-      waitlistEnabled: true,
-      hostContactEnabled: true,
-      claimable: false,
-      reviewPolicy: "attended_event_only",
-    };
-  }
-  return {
-    mode: "unclaimed_read_only",
-    bookable: false,
-    paymentsEnabled: false,
-    waitlistEnabled: false,
-    hostContactEnabled: false,
-    claimable: authority.claimState === "unclaimed",
-    reviewPolicy: "after_event_end",
   };
 }
 
@@ -737,12 +750,14 @@ function listingFromOrganizerDocument(wrapper) {
   };
 }
 
-function listingFromFirestoreOrganizer({id, data: club}) {
-  const wrapper = {path: `organizers/${id}`, data: club};
+export function listingFromFirestoreOrganizer({id, path = `organizers/${id}`, data: club}) {
+  const readiness = organizerListingReadiness({id, path, data: club});
+  if (!readiness.documentValid || club.archived || club.status === "archived" ||
+      club.claim?.state === "suppressed") return null;
+  const wrapper = {path, data: club};
   const listing = listingFromOrganizerDocument(wrapper);
   if (!listing) return null;
-  const publicApi = publicApiForOrganizerIntake(id);
-  const publicReviewTarget = publicReviewTargetForOrganizerIntake(id);
+  const {publicApi, publicReviewTarget} = readiness;
   const authority = organizerAuthority({
     ownershipState: club.ownership?.state,
     claimState: club.claim?.state,
@@ -753,6 +768,14 @@ function listingFromFirestoreOrganizer({id, data: club}) {
     publishStatus: club.publicPage?.publishStatus,
     indexStatus: club.publicPage?.indexStatus,
   });
+  const capabilities = listingCapabilities(authority, publicApi, publicReviewTarget);
+  if (capabilities.supply.reviewPolicy === "after_event_end") {
+    capabilities.publicReviews.writeState = "disabled";
+    if (publicReviewTarget.state === "enabled") {
+      capabilities.publicReviews.reason =
+        "Public reviews can be read here; unclaimed organizer reviews require a finished event.";
+    }
+  }
   return {
     ...listing,
     dataOrigin: club.provenance?.origin === "userCreated" ?
@@ -761,11 +784,7 @@ function listingFromFirestoreOrganizer({id, data: club}) {
     legacyPaths: club.publicPage?.legacyPaths ?? [],
     publicApi,
     authority,
-    capabilities: listingCapabilities(
-      authority,
-      publicApi,
-      publicReviewTarget
-    ),
+    capabilities,
   };
 }
 
@@ -1312,6 +1331,7 @@ function parseArgs(argv) {
     claimTargetPlan: null,
     claimTargetReadinessReceipt: null,
     firestoreProject: null,
+    readinessReceipt: null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -1334,6 +1354,8 @@ function parseArgs(argv) {
       parsed.claimTargetPlan = requiredValue(argv, ++index, arg);
     } else if (arg === "--claim-target-readiness-receipt") {
       parsed.claimTargetReadinessReceipt = requiredValue(argv, ++index, arg);
+    } else if (arg === "--readiness-receipt") {
+      parsed.readinessReceipt = requiredValue(argv, ++index, arg);
     } else if (arg === "--firestore-project") {
       parsed.firestoreProject = requiredValue(argv, ++index, arg);
     } else {
@@ -1363,7 +1385,9 @@ Options:
   --claim-target-plan <path>       Read a specific claim target plan for receipt validation.
   --claim-target-readiness-receipt <path>
                                   Read a Firestore readiness receipt for public claim APIs.
-  --firestore-project <project>    Read canonical organizer listing content from Firestore.
+  --firestore-project <project>    Read canonical content and readiness in one Firestore snapshot.
+  --readiness-receipt <path>       Save project/target/projection-bound read-only evidence.
+                                  This evidence cannot be reused to enable capabilities.
   --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
   --output <path>                  Write or check a specific output file.
   --include-demo                  Include app-created demo listings (Storybook/sales fixtures only).

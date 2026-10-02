@@ -331,6 +331,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
         {step === "submitted" && listing ? (
           <ClaimFlowStage>
             <ProcessStatusPanel
+              reveal={false}
               mark="✓"
               eyebrow={websiteCopy["claimpagesections_0045"]}
               title={websiteTemplates.listingOwnerPending(listing.name)}
