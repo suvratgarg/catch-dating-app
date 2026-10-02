@@ -29,6 +29,8 @@
   z-index: 80;
   display: grid;
   width: min(420px, calc(100vw - (var(--website-gutter) * 2)));
+  max-height: calc(100dvh - (var(--website-gutter) * 2) - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
   gap: 14px;
   padding: 16px;
   border: 1px solid var(--website-line);
