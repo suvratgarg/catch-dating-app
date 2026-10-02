@@ -94,6 +94,465 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Review phone contacts'**
+  String get phoneImportTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone import demo · sharing unavailable'**
+  String get phoneImportDemoTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.'**
+  String get phoneImportDemoMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed guests shared'**
+  String get phoneImportCompletedTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved review needs confirmation'**
+  String get phoneImportRetryTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to share'**
+  String get phoneImportReadyTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing reviewed guests'**
+  String get phoneImportSharingTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved review needs recovery'**
+  String get phoneImportRecoveryTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Only reviewed guests are shared'**
+  String get phoneImportPrivacyTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'A request may already have applied. Retry this exact saved review to confirm its outcome. Nothing retries automatically.'**
+  String get phoneImportRetryMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved review is preserved. Return to this wedding and retry loading it before starting a new import.'**
+  String get phoneImportRecoveryMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this review unchanged while its result is checked.'**
+  String get phoneImportSharingMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.'**
+  String get phoneImportPrivacyMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose only the guests you want to include. Review their names and phone numbers before sharing with this wedding.'**
+  String get phoneImportChooseMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Select guests'**
+  String get phoneImportSelectGuests;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose phone contacts'**
+  String get phoneImportChooseContacts;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Add phone contacts'**
+  String get phoneImportAddContacts;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact selection opens in the native Catch Host app. On older Android phones, add contacts one at a time and repeat this action.'**
+  String get phoneImportPickerHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests selected'**
+  String get phoneImportEmptyTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose phone contacts or add a household member who does not have a phone contact.'**
+  String get phoneImportEmptyMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'A chosen number is shared by several guests. They stay separate; check their household assignments.'**
+  String get phoneImportSharedNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Add household member without a phone'**
+  String get phoneImportAddMember;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Review sharing'**
+  String get phoneImportReviewSharing;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'A phone number does not prove ownership or verification and does not give permission to send messages. These contacts are not used for Catch discovery or marketing.'**
+  String get phoneImportNoOwnership;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter every guest name, choose a phone for each selected contact and review its international country code. Remove contacts without a number, or add them as household members.'**
+  String get phoneImportNeedsReview;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Check reviewed guests'**
+  String get phoneImportPreview;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Share reviewed guests'**
+  String get phoneImportShare;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing is unavailable until wedding member access and the workspace import service are connected.'**
+  String get phoneImportUnavailable;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard local review'**
+  String get phoneImportDiscard;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload saved review'**
+  String get phoneImportReload;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry saved sharing'**
+  String get phoneImportRetry;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss saved review'**
+  String get phoneImportDismiss;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed guests'**
+  String get phoneImportConfirmedGuests;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Household member · no phone contact'**
+  String get phoneImportManualSource;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss saved review?'**
+  String get phoneImportDismissTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'An already-issued request may have applied to the wedding. Dismissing this local review does not remove shared guests. Check the guest list before importing them again.'**
+  String get phoneImportDismissMessage;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get phoneImportSource;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected phone contact · name edited for this review'**
+  String get phoneImportEditedSource;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected phone contact'**
+  String get phoneImportPickerSource;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest name'**
+  String get phoneImportGuestName;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a guest name.'**
+  String get phoneImportNameRequired;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneImportPhoneNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone needed for this household member.'**
+  String get phoneImportNoPhoneNeeded;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'This contact has no phone number. Remove it and add a household member without a phone instead.'**
+  String get phoneImportNoContactNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen phone number'**
+  String get phoneImportChosenNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one phone number'**
+  String get phoneImportChooseNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Also chosen for another guest. Keep guests separate.'**
+  String get phoneImportSharedGuest;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the number you want to share for this guest.'**
+  String get phoneImportChooseNumberHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this number before sharing.'**
+  String get phoneImportReviewNumberHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'International number to share'**
+  String get phoneImportInternationalNumber;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Include + and the country code. Check this is the chosen contact number.'**
+  String get phoneImportInternationalHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the chosen number with + and its country code.'**
+  String get phoneImportInternationalRequired;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Family side / cohort'**
+  String get phoneImportFamilySide;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get phoneImportSideNone;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner one’s side'**
+  String get phoneImportSideOne;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner two’s side'**
+  String get phoneImportSideTwo;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Both sides'**
+  String get phoneImportSideBoth;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get phoneImportHousehold;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same label for guests grouped together.'**
+  String get phoneImportHouseholdHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selection cancelled. Your review is unchanged.'**
+  String get phoneImportCancelled;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact selection was not allowed. You can add a household member manually.'**
+  String get phoneImportDenied;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact selection is available in the native Catch Host app.'**
+  String get phoneImportPickerUnavailable;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact selection could not be read. Try again when you are ready.'**
+  String get phoneImportPickerFailed;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Select up to 100 contacts at a time.'**
+  String get phoneImportPickerLimit;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Review up to 100 guests at a time. Remove guests before adding more.'**
+  String get phoneImportReviewLimit;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts selected. Your review is unchanged.'**
+  String get phoneImportEmptySelection;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Import phone contacts'**
+  String get phoneImportEntryTitle;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose guests to review and share with this wedding.'**
+  String get phoneImportEntryHelp;
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'These reviewed guests were shared with {wedding} and {planner}.'**
+  String phoneImportCompletedMessage({
+    required String wedding,
+    required String planner,
+  });
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected planner: {planner}'**
+  String phoneImportSelectedPlanner({required String planner});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest {number}: {message}'**
+  String phoneImportGuestIssue({required int number, required String message});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest} other{{count} guests}} in this local review'**
+  String phoneImportReviewCount({required int count});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to share only these reviewed guests with {wedding} and {planner}.'**
+  String phoneImportConsent({required String wedding, required String planner});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest {number}'**
+  String phoneImportGuestTitle({required int number});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove guest {number}'**
+  String phoneImportRemoveGuest({required int number});
+
+  /// Native phone guest import review and explicit workspace sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from this review'**
+  String phoneImportRemoveNamedGuest({required String name});
+
   /// Organiser provider tracking settings in Host Insights.
   ///
   /// In en, this message translates to:

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
@@ -259,6 +260,22 @@ class ProgramWorkPageBody extends StatelessWidget {
               ),
             ),
           ),
+          if (snapshotAt == null && canImportWeddingPhoneContacts(access, now))
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.phoneImportEntryTitle,
+                subtitle: context.l10n.phoneImportEntryHelp,
+                child: CatchButton(
+                  key: const ValueKey('program-work-phone-import'),
+                  label: context.l10n.phoneImportChooseContacts,
+                  onPressed: () => context.pushNamed(
+                    Routes.hostWorkPhoneImportScreen.name,
+                    pathParameters: {'programId': access.programId},
+                  ),
+                  fullWidth: true,
+                ),
+              ),
+            ),
           if (canSeeCommunications)
             CatchSectionListItem(
               child: CatchSection.contained(

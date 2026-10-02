@@ -82,6 +82,25 @@ export const upsertProgramGuestCallablePayloadSchema: Record<string, unknown> = 
         "declined",
         "maybe"
       ]
+    },
+    "fieldChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^wfa_[a-f0-9]{64}$"
+        }
+      },
+      "description": "Review an existing same-program, same-guest field assertion. expectedRevision fences the selection; endpoints cannot simultaneously provide a scalar and a choice."
     }
   }
 } as const;

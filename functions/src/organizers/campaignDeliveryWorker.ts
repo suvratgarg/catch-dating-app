@@ -1,3 +1,5 @@
+import {readProgramGuestFields} from
+  "../workspaces/workspaceFieldAuthority";
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../operations/durableActions";
@@ -275,10 +277,22 @@ async function readCampaignFacts(
     ) :
     [];
   const now = admin.firestore.Timestamp.fromMillis(nowMillis);
+  const scopedGuest = program && endpointGuest &&
+      endpointGuest.programId === program.programId &&
+      endpointGuest.organizerId === intent.context.organizerId ? {
+      ...endpointGuest,
+      phoneE164: (await readProgramGuestFields({db, tx,
+        programId: program.programId,
+        organizerId: intent.context.organizerId,
+        guestId: program.endpointGuestId, guest: endpointGuest,
+        fields: ["phoneE164"], includeAlternatives: false}))
+        .values.phoneE164,
+    } : undefined;
   const suppression = program ?
     programSuppressionReason({
       organizerId: intent.context.organizerId,
-      campaign, recipient, endpointGuest, household, endpointHistory,
+      campaign, recipient, endpointGuest: scopedGuest, household,
+      endpointHistory,
       connection, template, now,
     }) :
     finalSuppressionReason({
@@ -427,6 +441,16 @@ export function programSuppressionReason(params: {
 }): OrganizerCampaignRecipientDocument["exclusionReason"] {
   if (
     !params.endpointGuest ||
+    params.endpointGuest.organizerId !== params.organizerId ||
+    params.endpointGuest.programId !==
+      params.recipient.programRecipient?.programId ||
+    params.endpointGuest.householdId !==
+      params.recipient.programRecipient?.householdId ||
+    params.recipient.programRecipient?.householdId != null &&
+      !params.household ||
+    params.household !== undefined &&
+      (params.household.programId !== params.endpointGuest.programId ||
+        params.household.organizerId !== params.organizerId) ||
     !params.endpointGuest.phoneE164 ||
     hashEndpoint(params.endpointGuest.phoneE164) !==
       params.recipient.endpointHash
@@ -503,6 +527,8 @@ async function dispatchCampaignWhatsapp(
           recipient.leaseExpiresAt !== null &&
           recipient.leaseExpiresAt.toMillis() <= now;
         if (!recipient ||
+            recipient.campaignId !== intent.context.campaignId ||
+            recipient.organizerId !== intent.context.organizerId ||
             (recipient.status !== "pending" && !reclaimable) ||
             !recipient.endpointE164 ||
             !recipient.endpointHash ||
@@ -515,8 +541,39 @@ async function dispatchCampaignWhatsapp(
             conn.organizerId !== intent.context.organizerId ||
             conn.revision !== liveAttempt.binding.bindingRevision ||
             intent.whatsapp.connectionId !== liveAttempt.binding.senderId ||
-            !tpl || tpl.status !== "APPROVED") {
+            !tpl || tpl.status !== "APPROVED" ||
+            tpl.organizerId !== intent.context.organizerId) {
           return {kind: "withheld"};
+        }
+        // Reservation evidence may be up to two minutes old. Re-read the
+        // program field selection and consent in the final claim transaction.
+        if (recipient.programRecipient) {
+          const program = recipient.programRecipient;
+          const guestSnap = await tx.get(db.collection("programGuests")
+            .doc(program.endpointGuestId));
+          const guest = guestSnap.data() as ProgramGuestDocument | undefined;
+          const householdSnap = program.householdId ?
+            await tx.get(db.collection("programHouseholds")
+              .doc(program.householdId)) : null;
+          const household = householdSnap?.data() as
+            ProgramHouseholdDocument | undefined;
+          if (!guest || guest.programId !== program.programId ||
+              guest.organizerId !== intent.context.organizerId) {
+            return {kind: "withheld"};
+          }
+          const fields = await readProgramGuestFields({db, tx,
+            programId: program.programId,
+            organizerId: intent.context.organizerId,
+            guestId: program.endpointGuestId, guest,
+            fields: ["phoneE164"], includeAlternatives: false});
+          if (fields.values.phoneE164 !== recipient.endpointE164 ||
+              guest.householdId !== program.householdId ||
+              program.householdId !== null && (!household ||
+                household.programId !== program.programId ||
+                household.organizerId !== intent.context.organizerId) ||
+              household?.messagingConsent?.granted === false) {
+            return {kind: "withheld"};
+          }
         }
         const endpointHash = recipient.endpointHash;
         const payloadHash = operationContentHash([

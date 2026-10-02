@@ -6,7 +6,7 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json",
   "title": "ProgramGuestListCallableResponse",
-  "description": "Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.",
+  "description": "Program-authorized guest inventory. Name and endpoints resolve only from selected same-program field acquisition evidence; private organizer-wide contact fields are never dereferenced.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -121,6 +121,296 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "fieldAuthority": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "displayName",
+              "phoneE164",
+              "email"
+            ],
+            "properties": {
+              "displayName": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "phoneE164": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "email": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "assertionId",
+                  "sourceKind",
+                  "alternativeAssertionIds",
+                  "alternatives"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "available",
+                      "cleared",
+                      "unknown",
+                      "restricted"
+                    ]
+                  },
+                  "assertionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^wfa_[a-f0-9]{64}$"
+                  },
+                  "sourceKind": {
+                    "enum": [
+                      "manualEntry",
+                      "manifestRow",
+                      null
+                    ]
+                  },
+                  "alternativeAssertionIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^wfa_[a-f0-9]{64}$"
+                    }
+                  },
+                  "alternatives": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionId",
+                        "value",
+                        "sourceKind",
+                        "sourceId",
+                        "sourceVersion",
+                        "observedAtMillis"
+                      ],
+                      "properties": {
+                        "assertionId": {
+                          "type": "string",
+                          "pattern": "^wfa_[a-f0-9]{64}$"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 320
+                        },
+                        "sourceKind": {
+                          "enum": [
+                            "manualEntry",
+                            "manifestRow"
+                          ]
+                        },
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "sourceVersion": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "observedAtMillis": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

@@ -1,3 +1,5 @@
+import {communityMembershipRows} from
+  "../memberships/communityMembershipFixture";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -853,3 +855,98 @@ test("another paid booking cannot claim an existing seat", async () => {
   assert.equal((db as unknown as FakeFirestore).get("payments/pay_one"),
     undefined);
 });
+
+
+test("following does not grant a members-only seat", async () => {
+  const sourceEvent = event({
+    eventPolicy: {
+      ...pairInventoryPolicy(),
+      admission: {
+        format: "membersOnly",
+        membershipRequired: true,
+        capacityLimit: 20,
+      },
+    },
+  });
+  const db = firestore({
+    "events/event-1": sourceEvent,
+    "users/runner-1": user(),
+    "organizerFollows/club-1_runner-1": {
+      organizerId: "club-1",
+      uid: "runner-1",
+      status: "active",
+    },
+  });
+  await assert.rejects(
+    signUpUserForEvent(db, "event-1", "runner-1"),
+    /Approved community membership/
+  );
+  const state = db as unknown as FakeFirestore;
+  assert.equal(state.get("eventParticipations/event-1_runner-1"), undefined);
+  assert.equal(state.get("events/event-1")?.bookedCount, 0);
+});
+
+test("revocation preserves a booking and blocks new admission", async () => {
+  const sourceEvent = event({
+    eventPolicy: {
+      ...pairInventoryPolicy(),
+      admission: {
+        format: "membersOnly",
+        membershipRequired: true,
+        capacityLimit: 20,
+      },
+    },
+  });
+  const db = firestore({
+    "events/event-1": sourceEvent,
+    "users/runner-1": user(),
+    "users/runner-2": user(),
+    ...communityMembershipRows("club-1", "runner-1"),
+    ...communityMembershipRows("club-1", "runner-2", "revoked"),
+  });
+  await signUpUserForEvent(db, "event-1", "runner-1");
+  const state = db as unknown as FakeFirestore;
+  const booked = state.get("eventParticipations/event-1_runner-1");
+  assert.equal((booked?.communityMembershipAtSignup as FakeData).revision, 1);
+  for (const [path, value] of Object.entries(
+    communityMembershipRows("club-1", "runner-1", "revoked")
+  )) {
+    state.set(path, value);
+  }
+  await signUpUserForEvent(db, "event-1", "runner-1");
+  assert.deepEqual(state.get("eventParticipations/event-1_runner-1"), booked);
+  await assert.rejects(
+    signUpUserForEvent(db, "event-1", "runner-2"),
+    /Approved community membership/
+  );
+  assert.equal(state.get("eventParticipations/event-1_runner-2"), undefined);
+});
+
+test("a stale approved preflight cannot admit a declined request", async () => {
+  const manual = pairInventoryPolicy();
+  (manual.admission as FakeData).manualApprovalRequired = true;
+  const records = {"events/event-1": event({eventPolicy: manual}),
+    "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+      eventId: "event-1", clubId: "club-1", uid: "runner-1",
+      status: "cancelled", hostApprovalStatus: "declined"}};
+  const db = firestore(records);
+  await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
+    undefined, {hasHostApproval: true}), /Request to join/);
+  assert.equal(records["events/event-1"].bookedCount, 0);
+  assert.equal(records["eventParticipations/event-1_runner-1"].status,
+    "cancelled");
+});
+
+test("current persisted approval supplies the transactional review check",
+  async () => {
+    const manual = pairInventoryPolicy();
+    (manual.admission as FakeData).manualApprovalRequired = true;
+    const records = {"events/event-1": event({eventPolicy: manual}),
+      "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
+        eventId: "event-1", clubId: "club-1", uid: "runner-1",
+        status: "waitlisted", hostApprovalStatus: "approved"}};
+    const db = firestore(records);
+    await signUpUserForEvent(db, "event-1", "runner-1");
+    assert.equal(records["eventParticipations/event-1_runner-1"].status,
+      "signedUp");
+  });

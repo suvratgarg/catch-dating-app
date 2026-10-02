@@ -6,6 +6,7 @@ import {
   cohortIds,
   EventPolicyBundleDocument,
   assertPolicyAllowsSignup,
+  signupPolicyDecision,
   quotePriceInPaise,
   quoteAttendeeCancellation,
   normalizePolicy,
@@ -251,3 +252,89 @@ function policy(
     settlement: {hostPayoutTiming: "afterEventCompletion"},
   };
 }
+
+
+test("membership does not waive per-event review or capacity", () => {
+  const gated = policy("standard");
+  gated.admission.membershipRequired = true;
+  gated.admission.manualApprovalRequired = true;
+  const roster = {
+    totalBooked: 0,
+    bookedCountsByCohort: {},
+    waitlistedCountsByCohort: {},
+  };
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster,
+        hasActiveCommunityMembership: true,
+      }),
+    /Request to join/
+  );
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster: {...roster, totalBooked: 20},
+        hasActiveCommunityMembership: true,
+        hasHostApproval: true,
+      }),
+    /now full/
+  );
+  gated.admission.membershipRequired = false;
+  gated.admission.format = "membersOnly";
+  assert.throws(
+    () =>
+      assertPolicyAllowsSignup({
+        policy: gated,
+        cohortId: "menInterestedInWomen",
+        roster,
+        hasHostApproval: true,
+      }),
+    /Approved community membership/
+  );
+});
+
+test("typed decisions preserve membership and review precedence", () => {
+  const gated = policy("standard");
+  gated.admission.membershipRequired = true;
+  gated.admission.manualApprovalRequired = true;
+  const params = {policy: gated, cohortId: "menInterestedInWomen",
+    roster: {totalBooked: 20, bookedCountsByCohort: {},
+      waitlistedCountsByCohort: {}}};
+  assert.deepEqual(signupPolicyDecision({...params, hasHostApproval: true}),
+    {allowed: false, reason: "membershipRequired"});
+  assert.deepEqual(signupPolicyDecision({...params,
+    hasActiveCommunityMembership: true}),
+  {allowed: false, reason: "reviewRequired"});
+  assert.deepEqual(signupPolicyDecision({...params, hasHostApproval: true,
+    hasActiveCommunityMembership: true}), {allowed: false, reason: "full"});
+  assert.deepEqual(signupPolicyDecision({...params, hasHostApproval: true,
+    hasActiveCommunityMembership: true,
+    roster: {...params.roster, totalBooked: 0}}), {allowed: true});
+});
+
+test("grants cannot waive invite, cohort or balance restrictions", () => {
+  const gated = policy("standard");
+  gated.admission.membershipRequired = true;
+  gated.admission.inviteRequired = true;
+  const params = {policy: gated, cohortId: "menInterestedInWomen",
+    hasActiveCommunityMembership: true,
+    roster: {totalBooked: 2, bookedCountsByCohort: {menInterestedInWomen: 2},
+      waitlistedCountsByCohort: {}}};
+  assert.deepEqual(signupPolicyDecision(params),
+    {allowed: false, reason: "inviteRequired"});
+  gated.admission.cohortCapacityLimits = {menInterestedInWomen: 2};
+  assert.deepEqual(signupPolicyDecision({...params, hasValidInvite: true}),
+    {allowed: false, reason: "cohortCapacityUnavailable"});
+  gated.admission.cohortCapacityLimits = {};
+  gated.admission.format = "balancedRatio";
+  gated.admission.balancedRatioPolicy = {leftCohortId: "menInterestedInWomen",
+    rightCohortId: "womenInterestedInMen", maxSkew: 1,
+    openingBufferPerCohort: 1, outOfRatioCohortPolicy: "manualReview"};
+  assert.deepEqual(signupPolicyDecision({...params, hasValidInvite: true}),
+    {allowed: false, reason: "balanceUnavailable"});
+});

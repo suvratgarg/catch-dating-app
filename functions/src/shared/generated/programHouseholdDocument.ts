@@ -64,4 +64,23 @@ export interface ProgramHouseholdDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  fieldSelections?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
+  fieldConflicts?: {
+    /**
+     * @maxItems 20
+     */
+    displayName?: string[];
+    /**
+     * @maxItems 20
+     */
+    phoneE164?: string[];
+    /**
+     * @maxItems 20
+     */
+    email?: string[];
+  };
 }

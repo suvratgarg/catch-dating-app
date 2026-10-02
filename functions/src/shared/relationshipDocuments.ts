@@ -131,13 +131,15 @@ export async function eventParticipationsByStatusInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  statuses: EventParticipationStatus[]
+  statuses: EventParticipationStatus[],
+  options: {limit?: number} = {}
 ): Promise<EventParticipationSnapshot[]> {
   if (statuses.length === 0) return [];
-  const query = db
+  let query = db
     .collection("eventParticipations")
     .where("eventId", "==", eventId)
     .where("status", "in", statuses);
+  if (options.limit !== undefined) query = query.limit(options.limit);
   const snap = await tx.get(query);
   return snap.docs.map((doc) => ({
     ref: doc.ref,

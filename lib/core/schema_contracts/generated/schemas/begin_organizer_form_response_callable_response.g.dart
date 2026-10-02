@@ -1119,6 +1119,33 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
             ],
           },
         },
+        'prefillSource': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'responseId',
+            'versionId',
+            'submittedAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'responseId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'versionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'submittedAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+          },
+          'description': 'Immutable origin of own organizer-answer suggestions offered for review; draft answers and consent remain separate.',
+        },
         'prefillSuggestions': <String, Object?>{
           'type': 'object',
           'maxProperties': 4000,
