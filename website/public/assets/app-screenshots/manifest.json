@@ -89,7 +89,7 @@
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-guide.png",
       "alt": "Catch expanded Event Success guide settings within step 3 of 3",
-      "caption": "Customize the Event Success guide within the booking and live guide step.",
+      "caption": "Configure the host-led welcome and safety guide for this fictional event.",
       "walkthroughStep": "Guide"
     },
     {
@@ -99,7 +99,7 @@
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-live-console.png",
       "alt": "Catch host live console with roster and check-in controls",
-      "caption": "Check in guests, manage waitlist movement, and run Event Success modules from one screen.",
+      "caption": "Confirm guest arrivals and follow the host-led run of show.",
       "walkthroughStep": "Live"
     },
     {
@@ -109,8 +109,18 @@
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-post-event-report.png",
       "alt": "Catch event recap with public reviews, guest help, message delivery, and aggregate feedback",
-      "caption": "Review attendee feedback and follow up on public reviews, guest-help requests, and message delivery.",
+      "caption": "Review the event recap and available feedback after the event.",
       "walkthroughStep": "Report"
+    },
+    {
+      "id": "host-today-dashboard",
+      "audience": "host",
+      "surface": "Host Today",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-today-dashboard.png",
+      "alt": "Catch Host Today showing the fictional Saturday Trivia Social at Harbour Room",
+      "caption": "See the next event and its guest count before arrivals begin.",
+      "walkthroughStep": "Today"
     }
   ]
 }
