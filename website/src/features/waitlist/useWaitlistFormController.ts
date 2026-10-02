@@ -3,6 +3,9 @@ import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useMemo, useRef, useState} from "react";
 import {
   createMarketingEventId,
+  getMarketingConsent,
+  trackAcceptedMarketingLead,
+  type MarketingConsent,
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 } from "../../analytics";
@@ -95,6 +98,7 @@ export function useWaitlistFormController(variant: FormVariant) {
     const eventId = createMarketingEventId(
       variant === "host" ? "host_lead" : "waitlist"
     );
+    const submissionConsent = getMarketingConsent();
     const conversionPayload = waitlistAnalyticsPayload(eventId, variant);
     const fullName = String(payload.get("fullName") || "").trim();
     const email = String(payload.get("email") || "").trim();
@@ -146,6 +150,8 @@ export function useWaitlistFormController(variant: FormVariant) {
           role: body.role,
         }
       );
+      trackAcceptedMarketingLead(eventId, variant === "host" ? "host_lead" : "member_waitlist",
+        data.alreadyJoined, submissionConsent);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

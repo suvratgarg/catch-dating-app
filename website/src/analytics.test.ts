@@ -1,5 +1,5 @@
 import {beforeEach, expect, test, vi} from "vitest";
-import {initializeMarketingAnalytics, setMarketingConsent,
+import {initializeMarketingAnalytics, setMarketingConsent, createMarketingEventId, shouldShowMarketingConsentBanner, trackAcceptedMarketingLead,
   getMarketingConsent, trackClientErrorSignal, trackMarketingEvent, trackPageView, waitlistAnalyticsPayload} from "./analytics";
 
 beforeEach(() => {
@@ -76,18 +76,18 @@ test.each(["/events/social-event/", "/organizers/dating-host/", "/f/private-form
 
 test("invalid consent flags fail closed and delete previous attribution", () => {
   setMarketingConsent("analytics");
-  localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toBeNull();
   expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
-  localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
+  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
   expect(getMarketingConsent()).toBeNull();
 });
 
 test("legacy raw attribution is discarded, expired touches are not reused", () => {
-  window.history.replaceState(null, "", "/host/?utm_campaign=safe");
+  window.history.replaceState(null, "", "/host/?utm_campaign=synthetic_launch");
   setMarketingConsent("accepted");
   localStorage.setItem(legacyKey, JSON.stringify({firstTouch: {landingUrl: "https://private.test/?email=secret#token"}}));
-  expect(attribution()?.firstTouch.values).toEqual({utm_campaign: "safe"});
+  expect(attribution()?.firstTouch.values).toEqual({utm_campaign: "synthetic_launch"});
   expect(localStorage.getItem(legacyKey)).toBeNull();
   const touch = {...attribution()!.firstTouch, capturedAt: "2020-01-01T00:00:00Z"};
   sessionStorage.setItem(ephemeralKey, JSON.stringify({firstTouch: touch, lastTouch: touch}));
@@ -107,4 +107,62 @@ test("an environment GTM ID cannot load a script or call an external global gtag
   expect(append).not.toHaveBeenCalled();
   expect(window.dataLayer?.some((entry) => entry.event === "gtm.js")).toBe(false);
   delete window.gtag; vi.unstubAllEnvs();
+});
+
+
+test("legacy analytics-only UI choices cannot authorize marketing and request a fresh versioned choice", () => {
+  localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "accepted", analytics: true,
+    marketing: true, version: 2, updatedAt: new Date().toISOString()}));
+  expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
+  expect(shouldShowMarketingConsentBanner()).toBe(true);
+  setMarketingConsent("accepted");
+  expect(getMarketingConsent()).toMatchObject({version: 2, analytics: true, marketing: true});
+  expect(shouldShowMarketingConsentBanner()).toBe(false);
+  expect(localStorage.getItem("catch_marketing_consent_v1")).toBeNull();
+});
+
+test.each(["/claim", "/claim/"])("approved labels survive host to actual CTA %s", (claimPath) => {
+  window.history.replaceState(null, "", "/host/?utm_source=google&utm_medium=cpc&utm_campaign=launch_2026");
+  setMarketingConsent("analytics");
+  initializeMarketingAnalytics();
+  window.history.replaceState(null, "", claimPath + "?organizerId=private&email=private@example.test#grant=secret");
+  initializeMarketingAnalytics();
+  const payload = waitlistAnalyticsPayload("test", "host");
+  expect(payload.attribution?.firstTouch.values).toEqual({utm_source: "google", utm_medium: "cpc", utm_campaign: "launch_2026"});
+  expect(payload.analytics.pagePath).toBe("/claim/");
+  expect(payload.analytics.pageTitle).toBe("Catch");
+  expect(JSON.stringify(payload)).not.toMatch(/private|secret|grant|organizerId/u);
+});
+
+test("lead success requires submission-time permission with no mid-request accept/revoke replay", () => {
+  const id = createMarketingEventId("host_lead");
+  expect(trackAcceptedMarketingLead(id, "host_application", false, null)).toBe(false);
+  const permission = setMarketingConsent("accepted");
+  expect(trackAcceptedMarketingLead(id, "host_application", true, permission)).toBe(false);
+  setMarketingConsent("essential");
+  setMarketingConsent("accepted");
+  expect(trackAcceptedMarketingLead(id, "host_application", false, permission)).toBe(false);
+  const current = getMarketingConsent();
+  expect(trackAcceptedMarketingLead(id, "host_application", false, current)).toBe(true);
+  expect(trackAcceptedMarketingLead(id, "host_lead", false, current)).toBe(false);
+});
+
+test("closed HTTP consent stays analytics-only until a versioned server handoff exists", () => {
+  setMarketingConsent("accepted");
+  expect(waitlistAnalyticsPayload("test", "host").analytics.consent).toMatchObject({
+    choice: "analytics", analytics: true, marketing: false,
+  });
+  expect(waitlistAnalyticsPayload("test", "host").analytics.consent).not.toHaveProperty("version");
+});
+
+test("SPA views deduplicate a lifecycle render and count a real return visit without replay on accept", () => {
+  initializeMarketingAnalytics();
+  trackPageView("home", "visit-a");
+  trackPageView("home", "visit-a");
+  expect(window.dataLayer?.filter((entry) => entry.event === "page_view")).toHaveLength(1);
+  setMarketingConsent("accepted");
+  expect(window.dataLayer?.filter((entry) => entry.event === "page_view")).toHaveLength(1);
+  window.history.replaceState(null, "", "/host/"); initializeMarketingAnalytics(); trackPageView("host", "visit-b");
+  window.history.replaceState(null, "", "/"); initializeMarketingAnalytics(); trackPageView("home", "visit-c");
+  expect(window.dataLayer?.filter((entry) => entry.event === "page_view")).toHaveLength(3);
 });

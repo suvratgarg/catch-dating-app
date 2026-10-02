@@ -5,10 +5,14 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 const createMarketingEventId = vi.hoisted(() => vi.fn());
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
+const getMarketingConsent = vi.hoisted(() => vi.fn());
+const trackAcceptedMarketingLead = vi.hoisted(() => vi.fn());
 const waitlistAnalyticsPayload = vi.hoisted(() => vi.fn());
 
 vi.mock("../../analytics", () => ({
   createMarketingEventId,
+  getMarketingConsent,
+  trackAcceptedMarketingLead,
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 }));
@@ -36,6 +40,7 @@ function form(values: Record<string, string>) {
 describe("useWaitlistFormController", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getMarketingConsent.mockReturnValue({version: 2, analytics: true, marketing: true, updatedAt: "2026-10-02T00:00:00Z"});
     createMarketingEventId.mockReturnValue("waitlist_event-1");
     waitlistAnalyticsPayload.mockReturnValue({attribution: null, analytics: {eventId: "waitlist_event-1"}});
   });
@@ -76,6 +81,8 @@ describe("useWaitlistFormController", () => {
     await act(async () => result.current.handleSubmit({preventDefault: vi.fn(), currentTarget: element} as never));
 
     await waitFor(() => expect(result.current.status.tone).toBe("is-success"));
+    expect(trackAcceptedMarketingLead).toHaveBeenCalledExactlyOnceWith("waitlist_event-1", "member_waitlist",
+      false, getMarketingConsent());
     const request = fetchMock.mock.calls[0][1];
     expect(JSON.parse(request.body)).toMatchObject({
       fullName: "Member Name",
