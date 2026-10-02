@@ -26,6 +26,7 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
@@ -561,6 +562,12 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostWorkGuestsScreen.name,
       builder: (context, state) =>
           ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkPhoneImportScreen.path,
+      name: Routes.hostWorkPhoneImportScreen.name,
+      builder: (context, state) =>
+          PhoneImportScreen(programId: state.pathParameters['programId']!),
     ),
     GoRoute(
       path: Routes.hostWorkImportScreen.path,

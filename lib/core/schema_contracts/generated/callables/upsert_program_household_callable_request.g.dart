@@ -17,6 +17,7 @@ final class UpsertProgramHouseholdCallableRequest {
     this.primaryEmail,
     required this.memberGuestIds,
     this.deliveryPreference,
+    this.fieldChoices,
   });
 
   final String programId;
@@ -28,6 +29,7 @@ final class UpsertProgramHouseholdCallableRequest {
   final String? primaryEmail;
   final List<String> memberGuestIds;
   final String? deliveryPreference;
+  final Map<String, Object?>? fieldChoices;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
@@ -39,5 +41,6 @@ final class UpsertProgramHouseholdCallableRequest {
     'primaryEmail': ?primaryEmail,
     'memberGuestIds': memberGuestIds,
     'deliveryPreference': ?deliveryPreference,
+    'fieldChoices': ?fieldChoices,
   };
 }

@@ -8,7 +8,7 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json',
   'title': 'ProgramGuestListCallableResponse',
-  'description': 'Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.',
+  'description': 'Program-authorized guest inventory. Name and endpoints resolve only from selected same-program field acquisition evidence; private organizer-wide contact fields are never dereferenced.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -123,6 +123,296 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
           'revision': <String, Object?>{
             'type': 'integer',
             'minimum': 1,
+          },
+          'fieldAuthority': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'displayName',
+              'phoneE164',
+              'email',
+            ],
+            'properties': <String, Object?>{
+              'displayName': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'state',
+                  'assertionId',
+                  'sourceKind',
+                  'alternativeAssertionIds',
+                  'alternatives',
+                ],
+                'properties': <String, Object?>{
+                  'state': <String, Object?>{
+                    'enum': <Object?>[
+                      'available',
+                      'cleared',
+                      'unknown',
+                      'restricted',
+                    ],
+                  },
+                  'assertionId': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'pattern': '^wfa_[a-f0-9]{64}\$',
+                  },
+                  'sourceKind': <String, Object?>{
+                    'enum': <Object?>[
+                      'manualEntry',
+                      'manifestRow',
+                      null,
+                    ],
+                  },
+                  'alternativeAssertionIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^wfa_[a-f0-9]{64}\$',
+                    },
+                  },
+                  'alternatives': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'assertionId',
+                        'value',
+                        'sourceKind',
+                        'sourceId',
+                        'sourceVersion',
+                        'observedAtMillis',
+                      ],
+                      'properties': <String, Object?>{
+                        'assertionId': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^wfa_[a-f0-9]{64}\$',
+                        },
+                        'value': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 320,
+                        },
+                        'sourceKind': <String, Object?>{
+                          'enum': <Object?>[
+                            'manualEntry',
+                            'manifestRow',
+                          ],
+                        },
+                        'sourceId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'sourceVersion': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                        'observedAtMillis': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              'phoneE164': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'state',
+                  'assertionId',
+                  'sourceKind',
+                  'alternativeAssertionIds',
+                  'alternatives',
+                ],
+                'properties': <String, Object?>{
+                  'state': <String, Object?>{
+                    'enum': <Object?>[
+                      'available',
+                      'cleared',
+                      'unknown',
+                      'restricted',
+                    ],
+                  },
+                  'assertionId': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'pattern': '^wfa_[a-f0-9]{64}\$',
+                  },
+                  'sourceKind': <String, Object?>{
+                    'enum': <Object?>[
+                      'manualEntry',
+                      'manifestRow',
+                      null,
+                    ],
+                  },
+                  'alternativeAssertionIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^wfa_[a-f0-9]{64}\$',
+                    },
+                  },
+                  'alternatives': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'assertionId',
+                        'value',
+                        'sourceKind',
+                        'sourceId',
+                        'sourceVersion',
+                        'observedAtMillis',
+                      ],
+                      'properties': <String, Object?>{
+                        'assertionId': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^wfa_[a-f0-9]{64}\$',
+                        },
+                        'value': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 320,
+                        },
+                        'sourceKind': <String, Object?>{
+                          'enum': <Object?>[
+                            'manualEntry',
+                            'manifestRow',
+                          ],
+                        },
+                        'sourceId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'sourceVersion': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                        'observedAtMillis': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              'email': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'state',
+                  'assertionId',
+                  'sourceKind',
+                  'alternativeAssertionIds',
+                  'alternatives',
+                ],
+                'properties': <String, Object?>{
+                  'state': <String, Object?>{
+                    'enum': <Object?>[
+                      'available',
+                      'cleared',
+                      'unknown',
+                      'restricted',
+                    ],
+                  },
+                  'assertionId': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'pattern': '^wfa_[a-f0-9]{64}\$',
+                  },
+                  'sourceKind': <String, Object?>{
+                    'enum': <Object?>[
+                      'manualEntry',
+                      'manifestRow',
+                      null,
+                    ],
+                  },
+                  'alternativeAssertionIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^wfa_[a-f0-9]{64}\$',
+                    },
+                  },
+                  'alternatives': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'assertionId',
+                        'value',
+                        'sourceKind',
+                        'sourceId',
+                        'sourceVersion',
+                        'observedAtMillis',
+                      ],
+                      'properties': <String, Object?>{
+                        'assertionId': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^wfa_[a-f0-9]{64}\$',
+                        },
+                        'value': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 320,
+                        },
+                        'sourceKind': <String, Object?>{
+                          'enum': <Object?>[
+                            'manualEntry',
+                            'manifestRow',
+                          ],
+                        },
+                        'sourceId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'sourceVersion': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                        'observedAtMillis': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },

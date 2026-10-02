@@ -1117,6 +1117,33 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
             ]
           }
         },
+        "prefillSource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "responseId",
+            "versionId",
+            "submittedAtMillis"
+          ],
+          "properties": {
+            "responseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "submittedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "description": "Immutable origin of own organizer-answer suggestions offered for review; draft answers and consent remain separate."
+        },
         "prefillSuggestions": {
           "type": "object",
           "maxProperties": 4000,

@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -17,7 +19,7 @@ const household = (members: string[]): FakeData => ({
   primaryEmail: null, memberGuestIds: members, deliveryPreference: "none",
   createdAt: now, updatedAt: now, revision: 1,
 });
-const seed = () => ({...baseSeed(),
+const seed = () => seedWorkspaceFieldAssertions({...baseSeed(),
   "programHouseholds/first": household(["guest-1"]),
   "programHouseholds/second": household(["guest-2"]),
   "programGuests/guest-1": {...baseSeed()["programGuests/guest-1"],
@@ -255,10 +257,12 @@ test("corrupt function guest rows fail closed on ownership", async () => {
 
 test("equal-name guests remain visible across every page boundary",
   async () => {
-    const db = new FakeFirestore(baseSeed());
-    db.updateDoc("programGuests/guest-1", {displayName: "Same Name"});
-    db.updateDoc("programGuests/guest-2", {displayName: "Same Name"});
-    db.setDoc("programGuests/guest-3", {...db.getDoc("programGuests/guest-1")});
+    const equalSeed = baseSeed();
+    equalSeed["programGuests/guest-1"].displayName = "Same Name";
+    equalSeed["programGuests/guest-2"].displayName = "Same Name";
+    equalSeed["programGuests/guest-3"] =
+      {...equalSeed["programGuests/guest-1"]};
+    const db = new FakeFirestore(seedWorkspaceFieldAssertions(equalSeed));
     const seen: string[] = [];
     let cursor: string | null = null;
     do {

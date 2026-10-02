@@ -278,6 +278,14 @@ export type BeginOrganizerFormResponseCallableResponse = {
     [k: string]: string | number | boolean | null | string[];
   };
   /**
+   * Immutable origin of own organizer-answer suggestions offered for review; draft answers and consent remain separate.
+   */
+  prefillSource?: {
+    responseId: string;
+    versionId: string;
+    submittedAtMillis: number;
+  };
+  /**
    * Private values offered only to the verified respondent for review; never written to draft answers until accepted.
    */
   prefillSuggestions?: {

@@ -57,4 +57,29 @@ export interface ProgramGuestDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Current values are a projection of these exact immutable same-program assertions. Absent fields have unknown acquisition provenance.
+   */
+  fieldSelections?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
+  /**
+   * Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger.
+   */
+  fieldConflicts?: {
+    /**
+     * @maxItems 20
+     */
+    displayName?: string[];
+    /**
+     * @maxItems 20
+     */
+    phoneE164?: string[];
+    /**
+     * @maxItems 20
+     */
+    email?: string[];
+  };
 }

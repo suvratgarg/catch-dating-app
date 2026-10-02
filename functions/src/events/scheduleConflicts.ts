@@ -204,18 +204,13 @@ export async function prepareUserEventScheduleClaimInTransaction(
   db: FirebaseFirestore.Firestore,
   params: ClaimUserScheduleParams
 ): Promise<{apply: () => void}> {
-  assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
-  await assertNoUserConflictByParticipationQuery(tx, db, params);
-  const refs = userLockRefs(db, params.uid, params);
-  const snaps = await Promise.all(refs.map(({ref}) => tx.get(ref)));
-  for (const snap of snaps) {
-    const existing = snap.exists ?
-      snap.data() as ScheduleLockDocument : null;
-    if (existing && existing.eventId !== params.eventId) {
-      throw new HttpsError("failed-precondition",
-        "You are already booked or waitlisted for another event at that time.");
-    }
+  const conflict = await readUserEventScheduleConflictInTransaction(tx, db,
+    params);
+  if (conflict !== false) {
+    throw new HttpsError("failed-precondition",
+      "You are already booked or waitlisted for another event at that time.");
   }
+  const refs = userLockRefs(db, params.uid, params);
   let applied = false;
   return {apply: () => {
     if (applied) throw new Error("Schedule claim already applied.");
@@ -388,16 +383,25 @@ async function assertNoClubConflictByEventsQuery(
   }
 }
 
-async function assertNoUserConflictByParticipationQuery(
+/** Read-only counterpart of the schedule claim. Null means the bounded source
+ * is incomplete, never an assertion that a slot is free.
+ */
+export async function readUserEventScheduleConflictInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  params: ClaimUserScheduleParams
-) {
-  const participationSnap = await tx.get(db
-    .collection("eventParticipations")
+  params: ClaimUserScheduleParams,
+  options: {readLimit?: number} = {}
+): Promise<boolean | null> {
+  assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
+  let query = db.collection("eventParticipations")
     .where("uid", "==", params.uid)
-    .where("status", "in", USER_SCHEDULE_STATUSES));
-
+    .where("status", "in", USER_SCHEDULE_STATUSES);
+  if (options.readLimit !== undefined) {
+    query = query.limit(options.readLimit + 1);
+  }
+  const participationSnap = await tx.get(query);
+  if (options.readLimit !== undefined &&
+      participationSnap.docs.length > options.readLimit) return null;
   for (const participation of participationSnap.docs) {
     const eventId = participation.data().eventId;
     if (typeof eventId !== "string" || eventId === params.eventId) continue;
@@ -405,12 +409,13 @@ async function assertNoUserConflictByParticipationQuery(
     if (!eventSnap.exists) continue;
     const event = eventSnap.data() as EventDocument;
     if (eventDocOverlaps(event, params.startTimeMillis, params.endTimeMillis)) {
-      throw new HttpsError(
-        "failed-precondition",
-        "You are already booked or waitlisted for another event at that time."
-      );
+      return true;
     }
   }
+  const refs = userLockRefs(db, params.uid, params);
+  const snaps = await Promise.all(refs.map(({ref}) => tx.get(ref)));
+  return snaps.some((snap) => snap.exists &&
+    (snap.data() as ScheduleLockDocument).eventId !== params.eventId);
 }
 
 function eventDocOverlaps(

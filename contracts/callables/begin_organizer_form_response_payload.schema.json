@@ -9,6 +9,7 @@
   "properties": {
     "publicFormId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
     "sourceToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{20,160}$"},
-    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,120}$"}
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,120}$"},
+    "reuseResponseId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "description": "Explicit own submitted source selection for compatible same-form answer suggestions; never a claim or grant."}
   }
 }

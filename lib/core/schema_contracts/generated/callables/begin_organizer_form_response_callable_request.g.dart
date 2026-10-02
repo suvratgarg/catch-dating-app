@@ -11,15 +11,18 @@ final class BeginOrganizerFormResponseCallableRequest {
     required this.publicFormId,
     required this.sourceToken,
     required this.requestId,
+    this.reuseResponseId,
   });
 
   final String publicFormId;
   final String? sourceToken;
   final String requestId;
+  final String? reuseResponseId;
 
   Map<String, Object?> toJson() => {
     'publicFormId': publicFormId,
     'sourceToken': sourceToken,
     'requestId': requestId,
+    'reuseResponseId': ?reuseResponseId,
   };
 }

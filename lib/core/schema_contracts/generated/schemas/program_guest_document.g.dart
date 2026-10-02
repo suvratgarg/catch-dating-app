@@ -199,5 +199,58 @@ const schemaProgramGuestDocumentSchema = <String, Object?>{
       ],
       'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
     },
+    'fieldSelections': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'phoneE164': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+        'email': <String, Object?>{
+          'type': 'string',
+          'pattern': '^wfa_[a-f0-9]{64}\$',
+        },
+      },
+      'description': 'Current values are a projection of these exact immutable same-program assertions. Absent fields have unknown acquisition provenance.',
+    },
+    'fieldConflicts': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'displayName': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+        'phoneE164': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+        'email': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^wfa_[a-f0-9]{64}\$',
+          },
+        },
+      },
+      'description': 'Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger.',
+    },
   },
 };

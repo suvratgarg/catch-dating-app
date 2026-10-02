@@ -11,6 +11,12 @@ export {validateReadPublicOrganizerTrackingSettingsCallablePayload} from "./vali
 export {validateOrganizerTrackingSettingsCallableResponse} from "./validators/organizerTrackingSettingsOutput";
 export {validatePublicOrganizerTrackingSettingsCallableResponse} from "./validators/publicOrganizerTrackingSettingsOutput";
 export {validateOrganizerTrackingSettingsDocument} from "./validators/organizerTrackingSettingsDocument";
+export {validateOrganizerCommunityMembershipDocument} from "./validators/organizerCommunityMembershipDocument";
+export {validateOrganizerCommunityMembershipDecisionDocument} from "./validators/organizerCommunityMembershipDecisionDocument";
+export {validateDecideOrganizerCommunityMembershipCallablePayload} from "./validators/decideOrganizerCommunityMembershipInput";
+export {validateDecideOrganizerCommunityMembershipCallableResponse} from "./validators/decideOrganizerCommunityMembershipOutput";
+export {validateWorkspaceFieldAssertionDocument} from "./validators/workspaceFieldAssertionDocument";
+export {validateWorkspaceFieldDecisionDocument} from "./validators/workspaceFieldDecisionDocument";
 export {validateCatchWhatsappWebhookEventDocument} from "./validators/catchWhatsappWebhookEventDocument";
 export {validateSalesImportHistoryRowDocument} from "./validators/salesImportHistoryRowDocument";
 export {validateSalesImportHistoryRecordDocument} from "./validators/salesImportHistoryRecordDocument";
@@ -411,6 +417,10 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateListParticipantActivityCallablePayload} from "./validators/listParticipantActivityInput";
+export {validateListParticipantActivityCallableResponse} from "./validators/listParticipantActivityOutput";
+export {validateGetParticipantActivityCallablePayload} from "./validators/getParticipantActivityInput";
+export {validateGetParticipantActivityCallableResponse} from "./validators/getParticipantActivityOutput";
 export {validateListParticipantFormProfilesCallablePayload} from "./validators/listParticipantFormProfilesInput";
 export {validateListParticipantFormProfilesCallableResponse} from "./validators/listParticipantFormProfilesOutput";
 export {validateGetParticipantFormPhotoCallablePayload} from "./validators/getParticipantFormPhotoInput";

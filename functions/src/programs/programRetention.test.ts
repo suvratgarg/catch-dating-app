@@ -1,3 +1,5 @@
+import {seedWorkspaceFieldAssertions} from
+  "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -297,7 +299,7 @@ function retentionSeed(): Record<string, FakeData> {
     updatedAt: now,
     revision: 1,
   };
-  return seed;
+  return seedWorkspaceFieldAssertions(seed);
 }
 
 function archived(db: FakeFirestore) {
@@ -733,4 +735,61 @@ test("attendance and counts reconcile identically after anonymization",
     const after = await getProgramAttendanceReportHandler(
       request({programId: "program-1"}, "manager-1"), deps);
     assert.deepEqual(after, before);
+  });
+
+test("retention isolates program field assertions and decisions",
+  async () => {
+    const synthetic = retentionSeed();
+    synthetic["organizerPrograms/program-2"] = {
+      ...synthetic["organizerPrograms/program-1"]};
+    synthetic["programGuests/other-wedding"] = {
+      ...synthetic["programGuests/guest-1"], programId: "program-2",
+      householdId: null, fieldSelections: {}, fieldConflicts: {}};
+    const db = new FakeFirestore(seedWorkspaceFieldAssertions(synthetic));
+    const otherFacts = [...db.docs].filter(([path, doc]) =>
+      path.startsWith("workspaceFieldAssertions/") &&
+        doc.programId === "program-2");
+    const selected = (db.getDoc("programGuests/guest-1")!.fieldSelections as
+      {phoneE164: string}).phoneE164;
+    db.setDoc("workspaceFieldDecisions/synthetic-review", {
+      schemaVersion: 1, programId: "program-1", organizerId: "org-1",
+      workspaceRef: {kind: "program", id: "program-1"},
+      relationshipRef: {kind: "programGuest", id: "guest-1"},
+      fieldKey: "phoneE164", selectedAssertionId: selected,
+      previousAssertionId: null, relationshipRevision: 1,
+      actorUid: "synthetic-reviewer", observedAtMillis: T0});
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const retention = retentionDeps(db, {now: () => pastGrace, pageLimit: 1});
+    const result = await anonymizeProgram(db as never, "program-1", retention,
+      pastGrace.toMillis() + 60_000);
+    assert.equal(result, "completed");
+    assert.equal([...db.docs].some(([path, doc]) =>
+      /workspaceField(Assertions|Decisions)\//u.test(path) &&
+        doc.programId === "program-1"), false);
+    for (const [path, doc] of otherFacts) {
+      assert.deepEqual(db.getDoc(path),
+        doc);
+    }
+    assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
+    assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
+      Array<{collection: string}>).length, 16);
+  });
+
+test("mismatched evidence scope blocks retention completion",
+  async () => {
+    const db = new FakeFirestore(retentionSeed());
+    db.setDoc("workspaceFieldAssertions/corrupt-fixture",
+      {programId: "program-1",
+        organizerId: "org-1", workspaceRef: {kind: "program", id: "program-2"},
+        value: "synthetic-conflicting-scope"});
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const result = await anonymizeProgram(db as never, "program-1",
+      retentionDeps(db, {now: () => pastGrace}), pastGrace.toMillis() + 60_000);
+    assert.equal(result, "failed");
+    assert.equal(db.getDoc("organizerPrograms/program-1")!.anonymizedAt,
+      null);
+    assert.ok(db.getDoc("workspaceFieldAssertions/corrupt-fixture"));
+    assert.equal(db.getDoc("programRetentionRuns/program-1")!.status, "failed");
   });

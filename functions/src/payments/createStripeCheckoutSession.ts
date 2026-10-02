@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {
   CallableRequest,
   HttpsError,
@@ -22,6 +24,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {organizerOwnerUserId} from "../shared/organizerHosts";
 import {
   assertPolicyAllowsSignup,
+  assertPolicyAllowsMembership,
   cohortIdForUser,
   eventPolicyFromEvent,
   hasAcceptedWaitlistOfferAccess,
@@ -197,8 +200,14 @@ export async function createStripeCheckoutSessionHandler(
     },
     {excludeUid: uid}
   );
+  const hasActiveCommunityMembership = await hasEventCommunityMembership({
+    db, organizerId: event.organizerId ?? event.clubId, uid, policy,
+  });
+  // Pair holds are inventory, never community entitlement.
+  assertPolicyAllowsMembership({policy, hasActiveCommunityMembership});
   if (!pairHold) {
     assertPolicyAllowsSignup({
+      hasActiveCommunityMembership,
       policy,
       cohortId,
       roster: admissionRoster,
