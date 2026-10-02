@@ -185,6 +185,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
@@ -296,7 +297,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderContainer,
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
-    show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
+    show Fake, Finder, WidgetTester, expect, find, findsNothing, findsOneWidget;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -3598,24 +3599,26 @@ class _InlineDialogCapture extends StatelessWidget {
 }
 
 List<Object> _hostCreateEventProviderOverrides({
+  Club? club,
   AsyncValue<Club?>? clubValue,
   List<EventDraft> drafts = const <EventDraft>[],
   String? uid = _captureViewerUid,
 }) {
+  final resolvedClub = club ?? _dashboardHostClub;
   return [
     uidProvider.overrideWithValue(AsyncData<String?>(uid)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream.value(_captureViewer),
     ),
     fetchClubProvider(
-      _dashboardHostClub.id,
-    ).overrideWithValue(clubValue ?? AsyncData<Club?>(_dashboardHostClub)),
+      resolvedClub.id,
+    ).overrideWithValue(clubValue ?? AsyncData<Club?>(resolvedClub)),
     deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
     watchOrganizerEventVenuesProvider(
-      _dashboardHostClub.id,
+      resolvedClub.id,
     ).overrideWith((ref) => Stream.value(const <OrganizerEventVenue>[])),
     watchOrganizerEventSuccessLayoutsProvider(
-      _dashboardHostClub.id,
+      resolvedClub.id,
     ).overrideWith((ref) => Stream.value(const <EventSuccessLayout>[])),
     eventDraftRepositoryProvider.overrideWithValue(
       HostFixtureEventDraftRepository(drafts: drafts),
@@ -4041,7 +4044,9 @@ class _CaptureHostAttendanceOutboxStore extends Fake
     Future<void> Function(HostAttendanceOutboxEntry) execute,
   ) async {
     if (entries.isNotEmpty) {
-      throw StateError('Seed an explicit replay result for pending attendance.');
+      throw StateError(
+        'Seed an explicit replay result for pending attendance.',
+      );
     }
   }
 }
@@ -6518,6 +6523,104 @@ final _hostLiveWindowEvent = _hostEvent.copyWith(
   startTime: _hostLiveWindowNow.subtract(const Duration(minutes: 45)),
   endTime: _hostLiveWindowNow.add(const Duration(minutes: 45)),
 );
+
+final _marketingHostClub = hostMarketingIndiaScenario.club(_captureFixtures);
+final _marketingHostSetupDraft = hostMarketingIndiaScenario.setupDraft(
+  _captureFixtures,
+);
+final _marketingHostTodayEvent = hostMarketingIndiaScenario.event(
+  _captureFixtures,
+  'hostToday',
+);
+final _marketingHostLiveEvent = hostMarketingIndiaScenario.event(
+  _captureFixtures,
+  'hostLiveConsole',
+);
+final _marketingHostReportEvent = hostMarketingIndiaScenario.event(
+  _captureFixtures,
+  'hostPostEventReport',
+);
+final _marketingHostParticipationRepository = FakeEventParticipationRepository()
+  ..eventParticipations[_marketingHostLiveEvent.id] = const [];
+final _marketingHostPublicProfileRepository = FakePublicProfileRepository();
+final _marketingHostLiveAttendees = List<EventAttendee>.generate(
+  _marketingHostLiveEvent.signedUpCount,
+  (index) => EventAttendee(
+    id: 'marketing-india-attendee-$index',
+    eventId: _marketingHostLiveEvent.id,
+    clubId: _marketingHostClub.id,
+    organizerId: _captureViewerUid,
+    displayName: 'Guest ${index + 1}',
+    searchName: 'guest ${index + 1}',
+    source: EventAttendeeSource.catchBooking,
+    status: index < _marketingHostLiveEvent.attendedCount
+        ? EventAttendeeStatus.checkedIn
+        : EventAttendeeStatus.registered,
+    createdAt: hostMarketingIndiaScenario.clock('today'),
+    updatedAt: hostMarketingIndiaScenario.clock('live'),
+    checkedInAt: index < _marketingHostLiveEvent.attendedCount
+        ? hostMarketingIndiaScenario.clock('live')
+        : null,
+  ),
+);
+EventSuccessPlan _marketingHostPlan(Event event, {bool complete = false}) =>
+    EventSuccessPlan.fromDraft(
+      id: event.id,
+      eventId: event.id,
+      clubId: event.clubId,
+      draft: hostMarketingIndiaScenario.guideDefaults.toDraft(
+        targetAttendeeCount: event.capacityLimit,
+      ),
+      createdAt: hostMarketingIndiaScenario.clock('planning'),
+      updatedAt: hostMarketingIndiaScenario.clock(
+        complete ? 'followUp' : 'live',
+      ),
+      activeStepIndex: 1,
+      status: complete
+          ? EventSuccessPlanStatus.complete
+          : EventSuccessPlanStatus.live,
+      frozenAt: hostMarketingIndiaScenario.clock('live'),
+      completedAt: complete ? event.endTime : null,
+    );
+List<Object> _marketingHostManageOverrides(
+  Event event, {
+  bool complete = false,
+}) => [
+  uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+  watchUserProfileProvider.overrideWith((ref) => Stream.value(_captureViewer)),
+  watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+  watchReviewsForEventProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(const <Review>[])),
+  eventParticipationRepositoryProvider.overrideWithValue(
+    _marketingHostParticipationRepository,
+  ),
+  watchEventAttendeesProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(_marketingHostLiveAttendees)),
+  publicProfileRepositoryProvider.overrideWithValue(
+    _marketingHostPublicProfileRepository,
+  ),
+  watchEventSuccessPlanProvider(event.id).overrideWith(
+    (ref) => Stream.value(_marketingHostPlan(event, complete: complete)),
+  ),
+  watchEventSuccessScorecardProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(null)),
+  watchEventSuccessAssignmentsProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
+  watchEventSuccessRotationAssignmentsProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
+  watchEventSuccessPreferencesProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(const <EventSuccessPreference>[])),
+  watchEventSuccessWingmanRequestsProvider(
+    event.id,
+  ).overrideWith((ref) => Stream.value(const <EventSuccessWingmanRequest>[])),
+];
+
 final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   id: 'host-event-setup-capture-draft',
   club: _dashboardHostClub,
@@ -6878,45 +6981,6 @@ final _hostEventsSpotlightEvent = _hostManageReferenceEvent.copyWith(
   ),
 );
 final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
-final _hostTodayReferenceEvents = <Event>[
-  _hostEventsSpotlightEvent.copyWith(
-    startTime: DateTime(2026, 6, 17, 20),
-    endTime: DateTime(2026, 6, 17, 22),
-    bookedCount: 24,
-    checkedInCount: 18,
-    waitlistedCount: 2,
-    capacityLimit: 30,
-  ),
-  HostOperationsFixtures.upcomingEvent.copyWith(
-    id: 'host-today-reference-run',
-    clubId: _hostEventsReferenceClub.id,
-    startTime: DateTime(2026, 6, 19, 6, 30),
-    endTime: DateTime(2026, 6, 19, 8),
-    bookedCount: 16,
-    waitlistedCount: 0,
-    capacityLimit: 24,
-  ),
-  HostOperationsFixtures.fullEvent.copyWith(
-    id: 'host-today-reference-dinner',
-    clubId: _hostEventsReferenceClub.id,
-    startTime: DateTime(2026, 6, 21, 20),
-    endTime: DateTime(2026, 6, 21, 22),
-    bookedCount: 10,
-    checkedInCount: 0,
-    waitlistedCount: 0,
-    capacityLimit: 15,
-  ),
-  HostOperationsFixtures.upcomingEvent.copyWith(
-    id: 'host-today-reference-padel',
-    clubId: _hostEventsReferenceClub.id,
-    startTime: DateTime(2026, 6, 23, 9),
-    endTime: DateTime(2026, 6, 23, 10, 30),
-    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
-    bookedCount: 5,
-    waitlistedCount: 0,
-    capacityLimit: 16,
-  ),
-];
 final _hostEventsReferenceEvents = <Event>[
   _hostEventsSpotlightEvent.copyWith(
     id: 'host-events-reference-trivia',
@@ -7391,74 +7455,6 @@ final _hostReportPlan = _hostLivePlan.copyWith(
   activeStepIndex: 3,
   completedAt: _captureNow.add(const Duration(hours: 2)),
 );
-final _hostReportScorecard = _hostDemoScorecard(
-  salesDemoHostScenario.eventByRole('hostPostEventReport').scorecard!,
-);
-
-EventSuccessScorecard _hostDemoScorecard(
-  SalesDemoHostScorecardFixture fixture,
-) {
-  return EventSuccessScorecard(
-    bookedCount: fixture.intValue('bookedCount'),
-    checkedInCount: fixture.intValue('checkedInCount'),
-    attendeesWhoMetTwoPlusPeople: fixture.intValue(
-      'attendeesWhoMetTwoPlusPeople',
-    ),
-    mutualMatchCount: fixture.intValue('mutualMatchCount'),
-    chatStartedCount: fixture.intValue('chatStartedCount'),
-    averageWelcomeRating: fixture.doubleValue('averageWelcomeRating'),
-    averageStructureRating: fixture.doubleValue('averageStructureRating'),
-    safetyIncidentCount: fixture.intValue('safetyIncidentCount'),
-    catchSentCount: fixture.intValue('catchSentCount'),
-    attendeesWhoCaughtSomeone: fixture.intValue('attendeesWhoCaughtSomeone'),
-    catchRecipientCount: fixture.intValue('catchRecipientCount'),
-    catchRate: fixture.doubleValue('catchRate'),
-    feedbackResponseCount: fixture.intValue('feedbackResponseCount'),
-    assignmentParticipantCount: fixture.intValue('assignmentParticipantCount'),
-    assignmentOptOutCount: fixture.intValue('assignmentOptOutCount'),
-    wingmanRequestCount: fixture.intValue('wingmanRequestCount'),
-    funnel: _hostDemoFunnel(fixture.mapValue('funnel')),
-  );
-}
-
-EventSuccessHostFunnel _hostDemoFunnel(Map<String, Object?>? json) {
-  if (json == null) return EventSuccessHostFunnel.empty;
-  return EventSuccessHostFunnel(
-    inviteLinkCount: _fixtureInt(json, 'inviteLinkCount'),
-    inviteOpenCount: _fixtureInt(json, 'inviteOpenCount'),
-    totalDemandCount: _fixtureInt(json, 'totalDemandCount'),
-    requestCount: _fixtureInt(json, 'requestCount'),
-    pendingRequestCount: _fixtureInt(json, 'pendingRequestCount'),
-    approvedRequestCount: _fixtureInt(json, 'approvedRequestCount'),
-    declinedRequestCount: _fixtureInt(json, 'declinedRequestCount'),
-    directSignupCount: _fixtureInt(json, 'directSignupCount'),
-    waitlistJoinCount: _fixtureInt(json, 'waitlistJoinCount'),
-    waitlistOfferCount: _fixtureInt(json, 'waitlistOfferCount'),
-    waitlistOfferActiveCount: _fixtureInt(json, 'waitlistOfferActiveCount'),
-    waitlistOfferAcceptedCount: _fixtureInt(json, 'waitlistOfferAcceptedCount'),
-    waitlistOfferDeclinedCount: _fixtureInt(json, 'waitlistOfferDeclinedCount'),
-    waitlistOfferExpiredCount: _fixtureInt(json, 'waitlistOfferExpiredCount'),
-    checkoutStartedCount: _fixtureInt(json, 'checkoutStartedCount'),
-    paymentPendingCount: _fixtureInt(json, 'paymentPendingCount'),
-    paymentCompletedCount: _fixtureInt(json, 'paymentCompletedCount'),
-    paymentFailedCount: _fixtureInt(json, 'paymentFailedCount'),
-    paymentRefundedCount: _fixtureInt(json, 'paymentRefundedCount'),
-    bookedCount: _fixtureInt(json, 'bookedCount'),
-    checkedInCount: _fixtureInt(json, 'checkedInCount'),
-    noShowCount: _fixtureInt(json, 'noShowCount'),
-    catchSentCount: _fixtureInt(json, 'catchSentCount'),
-    attendeesWhoCaughtSomeone: _fixtureInt(json, 'attendeesWhoCaughtSomeone'),
-    mutualMatchCount: _fixtureInt(json, 'mutualMatchCount'),
-    chatStartedCount: _fixtureInt(json, 'chatStartedCount'),
-    repeatAttendeeCount: _fixtureInt(json, 'repeatAttendeeCount'),
-  );
-}
-
-int _fixtureInt(Map<String, Object?> json, String key) {
-  final value = json[key];
-  return value is num ? value.round() : 0;
-}
-
 final _hostEventSuccessProviderOverrides = [
   watchEventSuccessAssignmentsProvider(
     _hostEvent.id,
@@ -10160,16 +10156,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'host_home_dashboard',
     routeIds: const <String>['hostHomeScreen', 'hostTodayScreen'],
-    device: CaptureDevice.claudePhone390,
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.todayDashboard',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
-        hostedClubs: [_hostEventsReferenceClub],
-        ownedClubs: [_hostEventsReferenceClub],
+        hostedClubs: [_marketingHostClub],
+        ownedClubs: [_marketingHostClub],
         clubEvents: {
-          _hostEventsReferenceClub.id: AsyncData<List<Event>>(
-            _hostTodayReferenceEvents,
-          ),
+          _marketingHostClub.id: AsyncData<List<Event>>([
+            _marketingHostTodayEvent,
+          ]),
         },
       ),
     ],
@@ -10177,8 +10176,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       initialLocation: '/host/today',
       activeIndex: 0,
       child: HostTodayScreen(
-        initialOrganizerId: 'host-home-reference-bandra-social',
-        now: _hostEventsReferenceNow,
+        initialOrganizerId: _marketingHostClub.id,
+        now: hostMarketingIndiaScenario.clock('today'),
       ),
     ),
   ),
@@ -12521,14 +12520,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_event_setup',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.eventSetup'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.eventSetup'],
+    drive: (tester) async {
+      await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Needs information'), findsNothing);
+    },
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       initialStep: 2,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
@@ -12580,27 +12586,36 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_create_basics',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.createBasics'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.createBasics',
+    ],
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_create_location',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.createLocation'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.createLocation',
+    ],
+    drive: (tester) => tester.ensureVisible(find.byType(WhereStep)),
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       initialStep: 1,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
@@ -12621,14 +12636,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_create_schedule',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.createSchedule'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.createSchedule',
+    ],
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       initialStep: 1,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
@@ -12643,14 +12662,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_create_policy',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.createPolicy'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.createPolicy',
+    ],
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       initialStep: 2,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
@@ -12703,19 +12726,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_create_guide',
-    drive: (tester) => tester.ensureVisible(
-      find.byKey(const ValueKey('host.create_event.customize_guide')),
-    ),
+    drive: (tester) async {
+      await _driveCreateDisclosure(tester, 'host.create_event.customize_guide');
+      expect(find.text('Trivia social'), findsOneWidget);
+      expect(find.textContaining('A team-based format'), findsNothing);
+    },
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.createGuide'],
-    providerOverrides: _hostCreateEventProviderOverrides(),
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.createGuide'],
+    providerOverrides: _hostCreateEventProviderOverrides(
+      club: _marketingHostClub,
+    ),
     builder: (context) => CreateEventScreen(
-      club: _dashboardHostClub,
-      initialDraft: _hostEventGuideDraft,
+      club: _marketingHostClub,
+      initialDraft: _marketingHostSetupDraft,
       initialStep: 2,
       loadMapTiles: false,
-      now: () => _captureNow,
+      now: () => hostMarketingIndiaScenario.clock('planning'),
     ),
   ),
   ScreenCaptureEntry(
@@ -13758,40 +13785,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_console',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.liveConsole'],
-    providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
-      ),
-      watchEventProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostLiveReferenceEvent)),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _hostLiveReferenceParticipationRepository,
-      ),
-      watchEventAttendeesProvider(_hostLiveReferenceEvent.id).overrideWith(
-        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
-      ),
-      publicProfileRepositoryProvider.overrideWithValue(
-        _hostLiveReferencePublicProfileRepository,
-      ),
-      watchEventSuccessPlanProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostLiveReferencePlan)),
-      watchEventSuccessScorecardProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(null)),
-      ..._hostEventSuccessProviderOverrides,
-    ],
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveConsole'],
+    providerOverrides: _marketingHostManageOverrides(_marketingHostLiveEvent),
     builder: (context) => HostEventManageScreen(
-      club: _hostLiveReferenceClub,
-      event: _hostLiveReferenceEvent,
+      club: _marketingHostClub,
+      event: _marketingHostLiveEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.live,
-      referenceNow: _hostLiveReferenceEvent.startTime.add(
-        const Duration(minutes: 30),
-      ),
+      referenceNow: hostMarketingIndiaScenario.clock('live'),
     ),
   ),
   ScreenCaptureEntry(
@@ -13910,38 +13911,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_post_event_report',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.host.postEventReport'],
-    providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
-      ),
-      watchEventProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostEvent)),
-      watchReviewsForEventProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(const <Review>[])),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _hostParticipationRepository,
-      ),
-      publicProfileRepositoryProvider.overrideWithValue(
-        _hostPublicProfileRepository,
-      ),
-      watchEventSuccessPlanProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostReportPlan)),
-      watchEventSuccessScorecardProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostReportScorecard)),
-      ..._hostEventSuccessProviderOverrides,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.postEventReport',
     ],
+    providerOverrides: _marketingHostManageOverrides(
+      _marketingHostReportEvent,
+      complete: true,
+    ),
     builder: (context) => HostEventManageScreen(
-      club: _dashboardHostClub,
-      event: _hostEvent,
+      club: _marketingHostClub,
+      event: _marketingHostReportEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.report,
-      referenceNow: _hostEvent.endTime.add(const Duration(minutes: 1)),
+      referenceNow: hostMarketingIndiaScenario.clock('followUp'),
     ),
   ),
   ScreenCaptureEntry(
