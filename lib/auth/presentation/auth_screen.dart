@@ -35,7 +35,7 @@ class AuthScreen extends ConsumerWidget {
           switchInCurve: CatchMotion.standardCurve,
           switchOutCurve: CatchMotion.standardCurve,
           layoutBuilder: (currentChild, previousChildren) => Stack(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.topCenter,
             children: [...previousChildren, ?currentChild],
           ),
           transitionBuilder: (child, animation) {
@@ -77,8 +77,9 @@ class AuthScreen extends ConsumerWidget {
   }
 }
 
-/// Host auth frame whose top brand stage is geometrically identical to the
-/// Flutter startup surface. Only the lower content is animated.
+/// Host auth frame shares its initial brand anchor with Flutter startup.
+/// The inset card enters below it, and one scroll owner can reveal any focused
+/// control on short screens or when the keyboard reduces the available height.
 class HostAuthFlowFrame extends StatelessWidget {
   const HostAuthFlowFrame({super.key, required this.child});
 
@@ -92,17 +93,16 @@ class HostAuthFlowFrame extends StatelessWidget {
     return CatchScaffold.standalone(
       backgroundColor: t.bg,
       resizeToAvoidBottomInset: true,
-      body: Column(
-        children: [
-          const CatchStartupBrandStage(appRole: AppRole.host),
-          Expanded(
-            child: SingleChildScrollView(
-              key: contentKey,
-              reverse: true,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      body: SingleChildScrollView(
+        key: contentKey,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(
+          children: [
+            const CatchStartupBrandStage(appRole: AppRole.host),
+            Padding(
               padding: CatchInsets.hostAuthStage,
               child: Align(
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
                     maxWidth: CatchLayout.maxContentWidth,
@@ -111,8 +111,8 @@ class HostAuthFlowFrame extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

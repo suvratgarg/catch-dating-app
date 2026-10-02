@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-/// The outlined lower-stage container shared by every Catch Host auth state.
+/// The inset card shared by every Catch Host authentication state.
 class HostAuthCard extends StatelessWidget {
   const HostAuthCard({super.key, required this.child});
 

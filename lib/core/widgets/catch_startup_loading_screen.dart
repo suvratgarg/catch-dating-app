@@ -53,6 +53,39 @@ class CatchStartupBrandStage extends StatelessWidget {
       appRole: resolvedRole,
     );
 
+    if (resolvedRole == AppRole.host) {
+      return SizedBox(
+        width: double.infinity,
+        height: CatchLayout.hostStartupBrandStageExtent,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: CatchLayout.hostStartupLogoTopInset,
+                  left: CatchLayout.hostStartupLogoLeadingInset,
+                ),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Image.asset(
+                    iconAsset,
+                    key: markKey,
+                    width: CatchLayout.hostStartupLogoExtent,
+                    height: CatchLayout.hostStartupLogoExtent,
+                    semanticLabel: context.l10n.appTitleHost,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       height: CatchLayout.startupBrandStageExtent,
