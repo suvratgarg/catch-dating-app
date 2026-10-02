@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
+import {initializeApp, deleteApp} from "firebase-admin/app";
+import {getFirestore} from "firebase-admin/firestore";
 import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {FormPaymentTestStore} from
   "../payments/formPayments/formPaymentTestStore";
@@ -11,7 +13,9 @@ import {catchEndpointHash, catchReplyHash, catchReplyId,
 import {CATCH_RECEIPTS, CATCH_REPLY_OPERATIONS, readCatchOperation} from
   "./whatsappReplyStore";
 import {consumeCatchReplyStatus, advanceCatchDelivery,
-  processCatchWhatsappReceipt, reconcileCatchReplyStatuses} from
+  processCatchWhatsappReceipt, reconcileCatchReplyStatuses,
+  needsCatchStatusReconciliation, onCatchWhatsappWebhookEventCreated,
+  onCatchWhatsappReplyOperationWritten} from
   "./whatsappReceiptConsumer";
 
 const time = 1800000000000;
@@ -158,4 +162,92 @@ test("reconciliation overflow fails before publishing a partial projection",
     await assert.rejects(reconcileCatchReplyStatuses(f.db, f.operationId,
       scope, time + 3000), /exceeds bounded scope/);
     assert.equal(f.fake.records.get(f.key)?.deliveryStatus, "accepted");
+  });
+
+
+test("operation trigger only reconciles newly saved provider identity", () => {
+  const {operation} = fixture();
+  assert.equal(needsCatchStatusReconciliation(undefined, {...operation}), true);
+  assert.equal(needsCatchStatusReconciliation({...operation, state: "claimed",
+    providerMessageId: null}, {...operation}), true);
+  assert.equal(needsCatchStatusReconciliation({...operation},
+    {...operation, deliveryStatus: "read"}), false);
+  assert.equal(needsCatchStatusReconciliation({...operation},
+    undefined), false);
+  assert.equal(needsCatchStatusReconciliation(undefined,
+    {...operation, state: "unknown"}), false);
+});
+
+test("exported triggers default disabled without database initialization",
+  async () => {
+    const key = "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED";
+    const previous = process.env[key];
+    delete process.env[key];
+    try {
+      const data = new Proxy({}, {get: () => {
+        throw new Error("Disabled trigger accessed event data");
+      }});
+      await onCatchWhatsappWebhookEventCreated.run({data} as never);
+      await onCatchWhatsappReplyOperationWritten.run({data} as never);
+    } finally {
+      if (previous === undefined) delete process.env[key];
+      else process.env[key] = previous;
+    }
+  });
+
+test("exported trigger callbacks reconcile early status and replay safely",
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async (t) => {
+    assert.match(process.env.FIRESTORE_EMULATOR_HOST!,
+      /^(localhost|127\.0\.0\.1):[0-9]+$/u);
+    const keys = ["CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
+      "CATCH_WHATSAPP_WABA_ID", "CATCH_WHATSAPP_PHONE_NUMBER_ID"];
+    const previous = keys.map((key) => process.env[key]);
+    keys.forEach((key, i) => {
+      process.env[key] = ["true", "123", "456"][i];
+    });
+    const app = initializeApp({projectId: "demo-catch-cat16-consumers"});
+    const db = getFirestore(app);
+    const f = fixture();
+    const eventId = f.receipt("delivered");
+    const receiptRef = db.collection(CATCH_RECEIPTS).doc(eventId);
+    const operationRef = db.doc(f.key);
+    t.mock.method(Date, "now", () => time + 3000);
+    try {
+      const original = f.fake.records.get(CATCH_RECEIPTS + "/" + eventId)!;
+      await receiptRef.set(original);
+      await operationRef.set({...f.operation, state: "claimed",
+        providerMessageId: null, deliveryStatus: "pending"});
+      const before = await operationRef.get();
+      const receiptEvent = {params: {eventId}, data: await receiptRef.get()};
+      await onCatchWhatsappWebhookEventCreated.run(receiptEvent as never);
+      assert.equal((await operationRef.get()).get("deliveryStatus"), "pending");
+      await operationRef.set(f.operation);
+      const completedEvent = {params: {operationId: f.operationId},
+        data: {before, after: await operationRef.get()}};
+      await onCatchWhatsappReplyOperationWritten.run(completedEvent as never);
+      await onCatchWhatsappReplyOperationWritten.run(completedEvent as never);
+      await onCatchWhatsappWebhookEventCreated.run(receiptEvent as never);
+      assert.equal((await operationRef.get()).get("deliveryStatus"),
+        "delivered");
+      assert.deepEqual((await receiptRef.get()).data(), original);
+      process.env[keys[2]] = "999";
+      const readId = f.receipt("read");
+      const readRef = db.collection(CATCH_RECEIPTS).doc(readId);
+      try {
+        await readRef.set(f.fake.records.get(CATCH_RECEIPTS + "/" + readId)!);
+        await onCatchWhatsappWebhookEventCreated.run({params: {eventId: readId},
+          data: await readRef.get()} as never);
+        assert.equal((await operationRef.get()).get("deliveryStatus"),
+          "delivered");
+      } finally {
+        await readRef.delete();
+      }
+    } finally {
+      await receiptRef.delete(); await operationRef.delete();
+      await deleteApp(app);
+      keys.forEach((key, i) => {
+        if (previous[i] === undefined) delete process.env[key];
+        else process.env[key] = previous[i];
+      });
+    }
   });

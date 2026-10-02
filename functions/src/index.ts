@@ -10,6 +10,9 @@ setGlobalOptions({
 admin.initializeApp();
 
 export {catchWhatsappWebhook} from "./catchMessaging/whatsappWebhook";
+export {onCatchWhatsappWebhookEventCreated,
+  onCatchWhatsappReplyOperationWritten} from
+  "./catchMessaging/whatsappReceiptConsumer";
 
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";

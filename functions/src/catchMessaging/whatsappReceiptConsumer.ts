@@ -1,3 +1,7 @@
+import {getFirestore} from "firebase-admin/firestore";
+import {defineBoolean, defineString} from "firebase-functions/params";
+import {onDocumentCreated, onDocumentWritten} from
+  "firebase-functions/v2/firestore";
 import type {Firestore} from "firebase-admin/firestore";
 import {runAssistanceTransaction as transact} from
   "../eventSuccess/operations/transactionCallback";
@@ -83,8 +87,8 @@ export async function reconcileCatchReplyStatuses(db: Firestore,
 
 /**
  * Bounded trusted-worker boundary. Reads the immutable receipt itself, never
- * a caller-supplied status. The future worker must supply/retry an exact
- * operation ID; no discovery index or deployed trigger is added in this slice.
+ * a caller-supplied status. Workers supply an exact operation ID after
+ * bounded, sender-scoped correlation.
  * Early receipts stay untouched and return deferred until message ID is saved.
  */
 export async function consumeCatchReplyStatus(db: Firestore,
@@ -143,3 +147,49 @@ export function advanceCatchDelivery(current: CatchReplyOperation[
     delivered: 4, read: 5};
   return rank[proposed] > rank[current] ? proposed : current;
 }
+
+// This gate enables receipt projection only. It grants no sending authority.
+const consumersEnabled = defineBoolean(
+  "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED", {default: false});
+const consumerWaba = defineString("CATCH_WHATSAPP_WABA_ID", {default: ""});
+const consumerPhone = defineString("CATCH_WHATSAPP_PHONE_NUMBER_ID",
+  {default: ""});
+function configuredConsumerScope(): CatchReceiptScope | null {
+  if (!consumersEnabled.value()) return null;
+  const scope = {wabaId: consumerWaba.value().trim(),
+    phoneNumberId: consumerPhone.value().trim()};
+  if (!inScope(scope, scope)) throw new Error("Invalid Catch consumer scope");
+  return scope;
+}
+
+/** Only newly saved provider identity needs the early-receipt companion. */
+export function needsCatchStatusReconciliation(
+  before: Record<string, unknown> | undefined,
+  after: Record<string, unknown> | undefined): boolean {
+  return after?.state === "completed" &&
+    typeof after.providerMessageId === "string" &&
+    after.providerMessageId.length > 0 &&
+    (before?.state !== "completed" ||
+      before.providerMessageId !== after.providerMessageId);
+}
+
+export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
+  document: CATCH_RECEIPTS + "/{eventId}",
+  maxInstances: 2, concurrency: 10, retry: true,
+}, async (event) => {
+  const scope = configuredConsumerScope();
+  if (!scope || !event.data) return;
+  await processCatchWhatsappReceipt(getFirestore(), event.params.eventId,
+    scope, Date.now());
+});
+
+export const onCatchWhatsappReplyOperationWritten = onDocumentWritten({
+  document: CATCH_REPLY_OPERATIONS + "/{operationId}",
+  maxInstances: 2, concurrency: 10, retry: true,
+}, async (event) => {
+  const scope = configuredConsumerScope();
+  if (!scope || !event.data || !needsCatchStatusReconciliation(
+    event.data.before.data(), event.data.after.data())) return;
+  await reconcileCatchReplyStatuses(getFirestore(), event.params.operationId,
+    scope, Date.now());
+});
