@@ -1,12 +1,42 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xml/xml.dart';
 import 'package:image/image.dart' as image;
+import 'package:xml/xml.dart';
 
 void main() {
+  test('Host native launch background matches Flutter in each appearance', () {
+    const directory =
+        'apps/host/ios/Runner/Assets.xcassets/LaunchBackground.imageset';
+    final contents =
+        jsonDecode(File('$directory/Contents.json').readAsStringSync())
+            as Map<String, dynamic>;
+    for (final item in contents['images'] as List<dynamic>) {
+      final entry = item as Map<String, dynamic>;
+      final dark =
+          (entry['appearances'] as List<dynamic>?)?.any(
+            (dynamic appearance) =>
+                (appearance as Map<String, dynamic>)['value'] == 'dark',
+          ) ??
+          false;
+      final color = (dark ? AppTheme.dark : AppTheme.light)
+          .extension<CatchTokens>()!
+          .bg;
+      final bitmap = image.decodePng(
+        File('$directory/${entry['filename']}').readAsBytesSync(),
+      )!;
+      final pixel = bitmap.getPixel(0, 0);
+      expect(pixel.a, 255);
+      expect(pixel.r, (color.toARGB32() >> 16) & 255);
+      expect(pixel.g, (color.toARGB32() >> 8) & 255);
+      expect(pixel.b, color.toARGB32() & 255);
+    }
+  });
+
   test('Host native launch matches the shared safe-area reading lane', () {
     final document = XmlDocument.parse(
       File(
