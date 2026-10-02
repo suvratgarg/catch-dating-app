@@ -20,7 +20,9 @@
       "today": "2026-10-17T16:00:00",
       "live": "2026-10-17T19:00:00",
       "followUp": "2026-10-18T10:00:00"
-    }
+    },
+    "customActivityLabel": "Trivia social",
+    "hostGoal": "Welcome guests and explain the trivia format."
   },
   "salesDemo": {
     "referenceNow": "2026-10-16T12:00:00",
@@ -49,7 +51,7 @@
     "events": [
       {
         "id": "event-host-trivia-store-demo",
-        "activityKind": "pubQuiz",
+        "activityKind": "openActivity",
         "startTime": "2026-10-17T18:30:00",
         "endTime": "2026-10-17T20:30:00",
         "meetingPoint": "Harbour Room",
@@ -66,7 +68,7 @@
       },
       {
         "id": "event-host-trivia-store-demo",
-        "activityKind": "pubQuiz",
+        "activityKind": "openActivity",
         "startTime": "2026-10-17T18:30:00",
         "endTime": "2026-10-17T20:30:00",
         "meetingPoint": "Harbour Room",
@@ -83,7 +85,7 @@
       },
       {
         "id": "event-host-trivia-store-demo",
-        "activityKind": "pubQuiz",
+        "activityKind": "openActivity",
         "startTime": "2026-10-17T18:30:00",
         "endTime": "2026-10-17T20:30:00",
         "meetingPoint": "Harbour Room",
@@ -100,7 +102,7 @@
       },
       {
         "id": "event-host-trivia-store-demo",
-        "activityKind": "pubQuiz",
+        "activityKind": "openActivity",
         "startTime": "2026-10-17T18:30:00",
         "endTime": "2026-10-17T20:30:00",
         "meetingPoint": "Harbour Room",

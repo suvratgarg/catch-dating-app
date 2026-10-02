@@ -12726,8 +12726,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_create_guide',
-    drive: (tester) =>
-        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
+    drive: (tester) async {
+      await _driveCreateDisclosure(tester, 'host.create_event.customize_guide');
+      expect(find.text('Trivia social'), findsOneWidget);
+      expect(find.textContaining('A team-based format'), findsNothing);
+    },
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['hostMarketingIndia.host.createGuide'],

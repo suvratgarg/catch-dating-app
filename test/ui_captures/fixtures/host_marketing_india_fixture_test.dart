@@ -74,6 +74,8 @@ void main() {
           event.eventFormat.interactionModel,
           EventInteractionModel.hostLedProgram,
         );
+        expect(event.eventFormat.activityKind, ActivityKind.openActivity);
+        expect(event.eventFormat.customActivityLabel, 'Trivia social');
         expect(event.capacityLimit, 30);
         expect(event.priceInPaise, 0);
         expect(event.currency, 'INR');
@@ -154,6 +156,20 @@ void main() {
       final defaults = story.guideDefaults;
       final draft = defaults.toDraft(targetAttendeeCount: 30);
       expect(draft.playbook.id, 'host_led_social');
+      final restored = CreateEventDraftRestoreState.fromDraft(
+        story.setupDraft(fixtures),
+        now: story.clock('planning'),
+      );
+      final restoredFormat = EventFormatSnapshot.custom(
+        label: restored.customActivityLabelText,
+        interactionModel: restored.interactionModel,
+      );
+      expect(
+        defaults
+            .normalizedForFormat(restoredFormat, targetAttendeeCount: 30)
+            .playbookId,
+        'host_led_social',
+      );
       expect(
         draft.selectedModuleIds,
         containsAll(['qr_check_in', 'host_script', 'safety_controls']),
@@ -167,8 +183,8 @@ void main() {
         expect(draft.selectedModuleIds, isNot(contains(id)));
       }
       expect(defaults.compatibilityAffectsRanking, isFalse);
-      expect(defaults.wingmanRequestsEnabled, isFalse);
-      expect(defaults.contextualOpenersEnabled, isFalse);
+      expect(defaults.wingmanRequestsEnabled, isTrue);
+      expect(defaults.contextualOpenersEnabled, isTrue);
       final event = story.event(fixtures, 'hostLiveConsole');
       final plan = EventSuccessPlan.fromDraft(
         id: event.id,

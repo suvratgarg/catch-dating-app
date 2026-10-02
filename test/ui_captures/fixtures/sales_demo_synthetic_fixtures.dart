@@ -83,6 +83,7 @@ class HostMarketingIndiaScenarioFixture {
   EventFormatSnapshot get format => EventFormatSnapshot(
     activityKind: scenario.eventByRole('hostEventSetup').activityKind,
     interactionModel: EventInteractionModel.hostLedProgram,
+    customActivityLabel: _requiredStringFrom(_narrative, 'customActivityLabel'),
     defaultPlaybookId: 'host_led_social',
   );
 
@@ -98,8 +99,7 @@ class HostMarketingIndiaScenarioFixture {
         selectedModuleIds: _list(
           _narrative['selectedModuleIds'],
         ).whereType<String>().toList(),
-        wingmanRequestsEnabled: false,
-        contextualOpenersEnabled: false,
+        hostGoal: _requiredStringFrom(_narrative, 'hostGoal'),
         compatibilityAffectsRanking: false,
       );
 
@@ -151,6 +151,10 @@ class HostMarketingIndiaScenarioFixture {
           eventLocalDate: civilDate,
           eventLocalStartTime: _requiredStringFrom(_narrative, 'startTime'),
           eventTimezone: timeZone,
+          customActivityLabel: _requiredStringFrom(
+            _narrative,
+            'customActivityLabel',
+          ),
           interactionModel: _requiredStringFrom(_narrative, 'interactionModel'),
           minAge: null,
           maxAge: null,

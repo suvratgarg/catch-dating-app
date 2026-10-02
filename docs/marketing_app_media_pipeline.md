@@ -102,7 +102,9 @@ live 17 October 19:00 and follow-up 18 October 10:00, all Asia/Kolkata. Producti
 so the fixture constructs those fields in the capture process's local
 representation instead of converting a UTC epoch. The focused restore test is
 run under UTC, America/Los_Angeles and Asia/Kolkata. These values are never
-submitted to a backend. The Guide selects the existing welcome and safety
+submitted to a backend. The production fixed Pub quiz activity selects a team playbook, so this host-led
+story uses the existing custom activity control labelled Trivia social with
+`hostLedProgram`. The Guide selects the existing welcome and safety
 modules, alongside mandatory platform modules (including attendance, guest
 help, feedback and analytics); compatibility, reveal and
 automated assignments are not selected. Production price/capacity/admission
