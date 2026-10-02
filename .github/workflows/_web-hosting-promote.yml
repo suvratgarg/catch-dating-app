@@ -52,6 +52,28 @@ jobs:
       queue: max
 
     steps:
+      # workflow_sha is the immutable, main-bound caller/control-plane SHA.
+      # source_sha and artifact contents remain unauthorized until authorize passes.
+      - name: Checkout immutable workflow control plane before source authorization
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .hosting-control
+          sparse-checkout: tool/ci/web_hosting_freshness.mjs
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Preserve trusted freshness helper across producing-source checkout
+        env:
+          CONTROL_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git -C .hosting-control rev-parse HEAD)" = "$CONTROL_SHA"
+          mkdir -p "$RUNNER_TEMP/web-hosting-control"
+          cp .hosting-control/tool/ci/web_hosting_freshness.mjs \
+            "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs"
+
       - id: authorize
         name: Authorize one exact producing workflow attempt and artifact
         env:
@@ -72,14 +94,6 @@ jobs:
           [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_CI_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          expected_path=".github/workflows/${SURFACE}-website.yml"
-          if [[ "$SURFACE" == "admin" ]]; then
-            expected_name="Admin Website"
-          elif [[ "$SURFACE" == "host" ]]; then
-            expected_name="Host Website"
-          else
-            expected_name="Marketing Website"
-          fi
 
           if [[ "$IS_RECOVERY" == "true" ]]; then
             test "$GITHUB_EVENT_NAME" = "workflow_dispatch"
@@ -101,138 +115,9 @@ jobs:
             test "$SOURCE_SHA" = "$GITHUB_SHA"
           fi
 
-          source_attempt="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID/attempts/$SOURCE_CI_RUN_ATTEMPT")"
-          source_binding="$(jq -ce \
-            --arg expected_name "$expected_name" \
-            --arg expected_path "$expected_path" \
-            --arg is_recovery "$IS_RECOVERY" \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
-              select(
-                (.id | tostring) == $run_id and
-                .run_attempt == $run_attempt and
-                .head_sha == $source_sha and
-                .name == $expected_name and
-                (.path | split("@")[0]) == $expected_path and
-                .event == "push" and
-                .head_branch == "main" and
-                .head_repository.full_name == $repository and
-                (.workflow_id | type == "number" and . > 0 and floor == .) and
-                (.run_number | type == "number" and . > 0 and floor == .) and
-                (
-                  $is_recovery != "true" or
-                  (
-                    .status == "completed" and
-                    (
-                      .conclusion == "failure" or
-                      .conclusion == "cancelled" or
-                      .conclusion == "timed_out" or
-                      .conclusion == "stale" or
-                      .conclusion == "action_required" or
-                      .conclusion == "startup_failure"
-                    )
-                  )
-                )
-              ) |
-              {workflowId: .workflow_id, runNumber: .run_number}
-            ' <<< "$source_attempt")"
-          workflow_id="$(jq -er '.workflowId' <<< "$source_binding")"
-          run_number="$(jq -er '.runNumber' <<< "$source_binding")"
-          current_source_run="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"
-          jq -e \
-            --arg expected_name "$expected_name" \
-            --arg expected_path "$expected_path" \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
-              (.id | tostring) == $run_id and
-              .run_attempt == $run_attempt and
-              .head_sha == $source_sha and
-              .name == $expected_name and
-              (.path | split("@")[0]) == $expected_path and
-              .event == "push" and
-              .head_branch == "main" and
-              .head_repository.full_name == $repository
-            ' <<< "$current_source_run" > /dev/null
-          canonical_workflow="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/${SURFACE}-website.yml")"
-          canonical_workflow_id="$(jq -er \
-            --arg expected_path "$expected_path" '
-              select(
-                (.path | split("@")[0]) == $expected_path and
-                (.id | type == "number" and . > 0 and floor == .)
-              ) |
-              .id
-            ' <<< "$canonical_workflow")"
-          test "$canonical_workflow_id" = "$workflow_id"
-          latest_surface_push="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_id/runs?branch=main&event=push&per_page=1")"
-          jq -e \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_number "$run_number" '
-              .workflow_runs | length == 1 and
-              (.[0].id | tostring) == $run_id and
-              .[0].run_number == $run_number and
-              .[0].head_sha == $source_sha and
-              .[0].head_branch == "main" and
-              .[0].event == "push"
-            ' <<< "$latest_surface_push" > /dev/null
-          expected_artifact_name="web-hosting-v1-${SURFACE}-${workflow_id}-${run_number}-${SOURCE_CI_RUN_ID}-${SOURCE_SHA}-${SOURCE_CI_RUN_ATTEMPT}"
-
-          artifact="$(gh api \
-            -H "X-GitHub-Api-Version: 2026-03-10" \
-            "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID")"
-          repository_id="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.id')"
-          jq -e \
-            --arg digest "$ARTIFACT_DIGEST" \
-            --arg name "$expected_artifact_name" \
-            --arg run_id "$SOURCE_CI_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson artifact_id "$ARTIFACT_ID" \
-            --argjson repository_id "$repository_id" '
-              .id == $artifact_id and
-              .expired == false and
-              .name == $name and
-              .digest == $digest and
-              (.workflow_run.id | tostring) == $run_id and
-              .workflow_run.repository_id == $repository_id and
-              .workflow_run.head_repository_id == $repository_id and
-              .workflow_run.head_branch == "main" and
-              .workflow_run.head_sha == $source_sha
-            ' <<< "$artifact" > /dev/null
-
-          run_artifacts="$(gh api --paginate --slurp \
-            -H "X-GitHub-Api-Version: 2026-03-10" \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID/artifacts?per_page=100")"
-          artifact_prefix="web-hosting-v1-${SURFACE}-${workflow_id}-${run_number}-${SOURCE_CI_RUN_ID}-${SOURCE_SHA}-"
-          selected_count="$(jq -r \
-            --arg name "$expected_artifact_name" '
-              [.[].artifacts[] | select(.expired == false and .name == $name)] | length
-            ' <<< "$run_artifacts")"
-          freshest_attempt="$(jq -r \
-            --arg prefix "$artifact_prefix" '
-              [
-                .[].artifacts[] |
-                select(.expired == false and (.name | startswith($prefix))) |
-                .name |
-                capture("-(?<attempt>[1-9][0-9]*)$").attempt |
-                tonumber
-              ] |
-              max // 0
-            ' <<< "$run_artifacts")"
-          if [[ "$selected_count" != "1" || "$freshest_attempt" != "$SOURCE_CI_RUN_ATTEMPT" ]]; then
-            echo "The selected artifact is not the unique freshest package for its producing run. Refusing stale recovery or a partial-rerun artifact."
-            exit 64
-          fi
-          echo "workflow_id=$workflow_id" >> "$GITHUB_OUTPUT"
-          echo "run_number=$run_number" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=$expected_artifact_name" >> "$GITHUB_OUTPUT"
+          authorization="$(node "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs" authorize)"
+          jq -r '"workflow_id=\(.workflowId)", "run_number=\(.runNumber)", "artifact_name=\(.artifactName)"' \
+            <<< "$authorization" >> "$GITHUB_OUTPUT"
 
       - name: Checkout the exact producing source
         uses: actions/checkout@v6
@@ -468,12 +353,12 @@ jobs:
           }
 
           first_evaluation="$(read_freshness_evidence cached | \
-            node tool/ci/web_hosting_freshness.mjs evaluate)"
+            node "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs" evaluate)"
           echo "Final source/freshness predicates (initial read): $first_evaluation"
           if ! jq -e '.passed == true' <<< "$first_evaluation" > /dev/null; then
             echo "::warning::Initial source/freshness read did not satisfy every predicate; taking one no-cache read."
             retry_evaluation="$(read_freshness_evidence no-cache | \
-              node tool/ci/web_hosting_freshness.mjs evaluate)"
+              node "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs" evaluate)"
             echo "Final source/freshness predicates (single no-cache read): $retry_evaluation"
             if ! jq -e '.passed == true' <<< "$retry_evaluation" > /dev/null; then
               echo "::error::Source/freshness gate remains unsatisfied after one no-cache read; refusing deployment."
