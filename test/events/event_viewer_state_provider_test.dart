@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
@@ -54,7 +55,7 @@ void main() {
         review: 'approved',
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Members only'));
     expect(find.text('Members only'), findsOneWidget);
     expect(
       tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
@@ -143,7 +144,7 @@ void main() {
         }),
       ],
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Join approved event'));
     expect(find.text('Join approved event'), findsOneWidget);
     final container = ProviderScope.containerOf(
       tester.element(find.byType(EventDetailCta)),
@@ -161,7 +162,7 @@ void main() {
     pending.complete(
       viewerFixture(reason: 'membershipRequired', membership: 'revoked'),
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Members only'));
     expect(find.text('Members only'), findsOneWidget);
   });
 
@@ -211,7 +212,7 @@ void main() {
     second.complete(
       viewerFixture(reason: 'membershipRequired', membership: 'revoked'),
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Members only'));
     expect(find.text('Members only'), findsOneWidget);
     expect(
       tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
@@ -251,9 +252,9 @@ void main() {
         }),
       ],
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Cancel booking'));
     await tester.tap(find.text('Cancel booking'));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Members only'));
     expect(repository.cancelledEventId, event.id);
     expect(reads, 2);
     expect(find.text('Cancel booking'), findsNothing);
