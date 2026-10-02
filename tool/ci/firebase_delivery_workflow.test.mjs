@@ -905,6 +905,104 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
   assert.doesNotMatch(rebaseline, /functions:delete|firestore:delete|storage:delete|--force|firebase deploy --only extensions/);
 });
 
+test("rebaseline authority discovery requires canonical current-attempt proof and bounded recovery", async (t) => {
+  const worker = workflow("_backend-rebaseline.yml");
+  const block = worker.split("      - id: authority\n")[1].split("\n      - name:")[0];
+  const script = block.split("        run: |\n")[1].split("\n").map((line) => line.slice(10)).join("\n");
+  const sha = "a".repeat(40);
+  const run = {id: 123, name: "CI", path: ".github/workflows/ci.yml", workflow_id: 77,
+    event: "push", head_branch: "main", head_repository: {full_name: "owner/catch"},
+    head_sha: sha, status: "completed", conclusion: "success", run_number: 99, run_attempt: 1};
+  const pages = (runs) => [{workflow_runs: runs}];
+  const cases = [
+    {name: "complete listing", lists: [pages([run])], ok: true},
+    {name: "partial listing fields are discovery only", lists: [pages([{id: 123, workflow_id: 77,
+      head_sha: sha, run_number: 99, run_attempt: 1}])], ok: true},
+    {name: "stale list status is not authority", lists: [pages([{...run, status: "in_progress", conclusion: null}])], ok: true},
+    {name: "stale listing recovers", lists: [pages([{...run, head_sha: "b".repeat(40)}]), pages([run])], ok: true, reads: 2},
+    {name: "omitted run recovers", lists: [pages([]), pages([run])], ok: true, reads: 2},
+    {name: "paginated run is discovered", lists: [[{workflow_runs: []}, {workflow_runs: [run]}]], ok: true},
+    {name: "transient list API error recovers", lists: [null, pages([run])], ok: true, reads: 2},
+    {name: "permanent list API error", lists: [null], reads: 3},
+    {name: "permanent omission", lists: [pages([])], reads: 3},
+    {name: "malformed listing", lists: [[{unexpected: []}]], reads: 3},
+    {name: "malformed candidate", lists: [pages(["invalid"])], reads: 3},
+    {name: "foreign workflow listing", lists: [pages([{...run, workflow_id: 78}])], reads: 3},
+    {name: "foreign source listing", lists: [pages([{...run, head_sha: "b".repeat(40)}])], reads: 3},
+    {name: "invalid numeric identity", lists: [pages([{...run, run_attempt: 1.5}])], reads: 3},
+    {name: "canonical API error", lists: [pages([run])], canonical: null, reads: 3},
+    {name: "attempt API error", lists: [pages([run])], attempt: null, reads: 3},
+    {name: "new attempt cannot reuse stale listing", lists: [pages([run])], canonical: {...run, run_attempt: 2}},
+    {name: "fresh new attempt binds exact proof", lists: [pages([{...run, run_attempt: 2}])],
+      canonical: {...run, run_attempt: 2}, attempt: {...run, run_attempt: 2}, ok: true, expectedAttempt: 2},
+    {name: "new attempt discovered on retry", lists: [pages([run]), pages([{...run, run_attempt: 2}])],
+      canonical: {...run, run_attempt: 2}, attempt: {...run, run_attempt: 2}, ok: true, reads: 2, expectedAttempt: 2},
+    {name: "canonical attempt advances during proof", lists: [pages([run])], canonicalFinal: {...run, run_attempt: 2}},
+    {name: "attempt proof belongs to another attempt", lists: [pages([run])], attempt: {...run, run_attempt: 2}},
+  ];
+  for (const [field, value] of [
+    ["id", 124], ["run_number", 100], ["name", "Other"], ["path", ".github/workflows/other.yml"],
+    ["workflow_id", 78], ["event", "pull_request"], ["head_branch", "feature"],
+    ["head_repository", {full_name: "foreign/catch"}], ["head_sha", "b".repeat(40)],
+    ["status", "in_progress"], ["conclusion", "failure"],
+  ]) {
+    cases.push({name: `canonical rejects ${field}`, lists: [pages([run])], canonical: {...run, [field]: value}});
+    cases.push({name: `attempt rejects ${field}`, lists: [pages([run])], attempt: {...run, [field]: value}});
+  }
+  for (const fixture of cases) await t.test(fixture.name, () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rebaseline-authority-"));
+    try {
+      const output = path.join(directory, "output");
+      const log = path.join(directory, "calls.jsonl");
+      const fixturePath = path.join(directory, "fixture.json");
+      fs.writeFileSync(fixturePath, JSON.stringify({canonical: run, attempt: run, ...fixture}));
+      fs.writeFileSync(output, "");
+      fs.writeFileSync(path.join(directory, "gh"), `#!${process.execPath}
+const fs = require("node:fs");
+const fixture = JSON.parse(fs.readFileSync(process.env.AUTHORITY_FIXTURE, "utf8"));
+const endpoint = process.argv.at(-1);
+const log = process.env.AUTHORITY_LOG;
+const calls = fs.existsSync(log) ? fs.readFileSync(log, "utf8").trim().split("\\n").map(JSON.parse) : [];
+const isList = endpoint.includes("/runs?") || endpoint.includes("/ci.yml/runs?");
+const kind = isList ? "list" : endpoint.includes("/attempts/") ? "attempt" : "canonical";
+fs.appendFileSync(log, JSON.stringify({kind, endpoint, args: process.argv.slice(2)}) + "\\n");
+let value;
+if (isList) value = fixture.lists[Math.min(calls.filter((x) => x.kind === "list").length, fixture.lists.length - 1)];
+else if (kind === "attempt") {
+  if (endpoint !== "repos/owner/catch/actions/runs/123/attempts/" + (fixture.expectedAttempt ?? 1)) process.exit(65);
+  value = fixture.attempt;
+} else {
+  if (endpoint !== "repos/owner/catch/actions/runs/123") process.exit(65);
+  value = calls.at(-1)?.kind === "attempt" && Object.hasOwn(fixture, "canonicalFinal") ? fixture.canonicalFinal : fixture.canonical;
+}
+if (value === null) process.exit(1);
+process.stdout.write(JSON.stringify(value));
+`, {mode: 0o755});
+      fs.writeFileSync(path.join(directory, "sleep"), "#!/bin/sh\nexit 0\n", {mode: 0o755});
+      const result = spawnSync("bash", ["-c", script], {encoding: "utf8", timeout: 15000, env: {
+        ...process.env, PATH: `${directory}${path.delimiter}${process.env.PATH}`,
+        AUTHORITY_FIXTURE: fixturePath, AUTHORITY_LOG: log, GITHUB_OUTPUT: output,
+        GITHUB_REPOSITORY: "owner/catch", SOURCE_SHA: sha, SOURCE_CI_WORKFLOW_ID: "77",
+      }});
+      assert.equal(result.status, fixture.ok ? 0 : 64, result.stdout + result.stderr);
+      const calls = fs.readFileSync(log, "utf8").trim().split("\n").map(JSON.parse);
+      assert.equal(calls.filter((x) => x.kind === "list").length, fixture.reads ?? (fixture.ok ? 1 : 3));
+      assert.ok(calls.length <= 12, "API retries must be bounded");
+      assert.ok(calls.every((x) => x.args.includes("Cache-Control: no-cache")));
+      assert.ok(calls.filter((x) => x.kind === "list").every((x) =>
+        x.args.includes("--paginate") && x.args.includes("--slurp")));
+      if (fixture.ok) {
+        assert.equal(fs.readFileSync(output, "utf8"), `source_ci_run_id=123\nsource_ci_run_attempt=${fixture.expectedAttempt ?? 1}\nsource_ci_run_number=99\n`);
+        assert.ok(calls.some((x) => x.kind === "list" && x.endpoint ===
+          `repos/owner/catch/actions/runs?branch=main&event=push&head_sha=${sha}&per_page=100`));
+        assert.deepEqual(calls.slice(-3).map((x) => x.kind), ["canonical", "attempt", "canonical"]);
+      } else assert.equal(fs.readFileSync(output, "utf8"), "", "failed proof cannot publish authority outputs");
+    } finally {
+      fs.rmSync(directory, {recursive: true, force: true});
+    }
+  });
+});
+
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
   const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
