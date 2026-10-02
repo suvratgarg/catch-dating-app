@@ -64,7 +64,8 @@ The exporter embeds one `caPt` ancillary chunk in each framed PNG. It records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
 byte hash, and capture input hash. Inputs include the capture runner/catalog,
 local transitive Dart imports/exports/parts (including production widgets and
-fixtures), canonical scenario/persona JSON, declared assets/fonts, package manifests/lock, framing/export tools,
+fixtures), canonical scenario/persona JSON, declared assets/fonts, package
+manifests/lock, framing/export tools,
 and pinned toolchain configuration. The catalog is shared, so an input change
 can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
@@ -73,7 +74,11 @@ bytes are distributed.
 This check proves the recorded render still matches its inputs and rejects
 stale committed copies; it does not perform a fresh render in Linux CI or
 automatically approve a visual change. Native-font rendering and review remain
-explicit local operations. The revision identifies the capture source commit;
+explicit local operations. The Marketing Website workflow also triggers on app
+source, test/capture support, local package source/assets, dependency manifests,
+synthetic scenario/persona inputs, and framed source PNGs. Its existing media
+check rejects stale inputs before packaging; it does not silently regenerate or
+accept golden baselines. The revision identifies the capture source commit;
 input hashes also cover edits made before capture and survive unrelated
 commits. Do not manually stamp old PNGs. Regenerate and inspect affected
 captures, then sync. Raw selected outputs are cleared before rendering to
@@ -119,7 +124,8 @@ and website sync as distinct explicit operations.
 
 The six create-event slots are views of the current three-step production
 wizard: Basics, schedule and meeting-location views within When & where, booking
-policy and expanded guide views within Booking & live guide, plus the final review summary.
+policy and expanded guide views within Booking & live guide, plus the final
+review summary.
 They are not six wizard steps. Location scrolls to `WhereStep`; Guide opens the
 production customization disclosure. Catalog ids and website slot ids remain
 stable so existing consumers keep their coverage.

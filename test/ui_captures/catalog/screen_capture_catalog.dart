@@ -182,9 +182,9 @@ import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dar
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
@@ -297,7 +297,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderContainer,
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
-    show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
+    show Fake, Finder, WidgetTester, expect, find, findsNothing, findsOneWidget;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
