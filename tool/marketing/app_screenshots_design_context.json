@@ -366,7 +366,7 @@
       "id": "host-create-policy",
       "status": "active",
       "audience": "host",
-      "surface": "Guest rules",
+      "surface": "Booking & live guide",
       "fixtureKey": "salesDemo.host.createPolicy",
       "captureId": "host_create_policy",
       "routeIds": [
@@ -407,9 +407,9 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-policy.svg"
       },
       "copy": {
-        "alt": "Catch guest rules, capacity, pricing, and admission in step 3 of 3",
+        "alt": "Catch booking and live guide settings, step 3 of 3",
         "caption": "Set capacity, pricing, admission, and cancellation rules.",
-        "walkthroughStep": "Guests"
+        "walkthroughStep": "Booking rules"
       }
     },
     {
@@ -458,8 +458,8 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-guide.svg"
       },
       "copy": {
-        "alt": "Catch expanded Event Success guide settings in the Guests step",
-        "caption": "Customize the Event Success guide within the guest setup step.",
+        "alt": "Catch expanded Event Success guide settings within step 3 of 3",
+        "caption": "Customize the Event Success guide within the booking and live guide step.",
         "walkthroughStep": "Guide"
       }
     },
@@ -519,7 +519,7 @@
       "id": "host-post-event-report",
       "status": "active",
       "audience": "host",
-      "surface": "Host post-event report",
+      "surface": "Event recap",
       "fixtureKey": "salesDemo.host.postEventReport",
       "captureId": "host_post_event_report",
       "routeIds": [
@@ -560,8 +560,8 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.svg"
       },
       "copy": {
-        "alt": "Catch host post-event report screen",
-        "caption": "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.",
+        "alt": "Catch event recap with public reviews, guest help, message delivery, and aggregate feedback",
+        "caption": "Review attendee feedback and follow up on public reviews, guest-help requests, and message delivery.",
         "walkthroughStep": "Report"
       }
     }

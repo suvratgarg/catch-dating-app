@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {fromRepo, repoRoot} from '../lib/repo_paths.mjs';
+import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
 const chunkType = 'caPt';
@@ -13,7 +13,7 @@ const roots = [
   'test/ui_captures/flutter_test_config.dart',
   'tool/marketing/frame_device_capture.dart',
   'tool/marketing/export_app_screenshots.mjs',
-  'tool/marketing/capture_provenance.mjs',
+  'tool/marketing/lib/capture_provenance.mjs',
   'tool/ui_capture/run_captures.mjs',
   'tool/lib/repo_paths.mjs',
   'pubspec.yaml', 'pubspec.lock', 'tool/ci/toolchain.env',
@@ -22,6 +22,8 @@ const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
 export function captureInputHash(capture) {
   const inputs = new Set(roots);
+  // These canonical fixtures load JSON at runtime rather than through imports.
+  for (const directory of ['tool/demo/demo_seed/scenarios', 'tool/demo/demo_seed/personas']) addTree(directory, inputs);
   const packages = new Map();
   const pubspecs = ['pubspec.yaml'];
   for (const dir of fs.readdirSync(fromRepo('packages'), {withFileTypes: true})) {

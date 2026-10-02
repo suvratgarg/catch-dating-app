@@ -104,16 +104,16 @@
     {
       "id": "host-create-policy",
       "audience": "host",
-      "surface": "Guest rules",
+      "surface": "Booking & live guide",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "salesDemo.host.createPolicy",
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-policy.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-policy.svg",
-      "alt": "Catch guest rules, capacity, pricing, and admission in step 3 of 3",
+      "alt": "Catch booking and live guide settings, step 3 of 3",
       "caption": "Set capacity, pricing, admission, and cancellation rules.",
-      "walkthroughStep": "Guests"
+      "walkthroughStep": "Booking rules"
     },
     {
       "id": "host-create-guide",
@@ -125,8 +125,8 @@
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-guide.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-guide.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-guide.svg",
-      "alt": "Catch expanded Event Success guide settings in the Guests step",
-      "caption": "Customize the Event Success guide within the guest setup step.",
+      "alt": "Catch expanded Event Success guide settings within step 3 of 3",
+      "caption": "Customize the Event Success guide within the booking and live guide step.",
       "walkthroughStep": "Guide"
     },
     {
@@ -146,15 +146,15 @@
     {
       "id": "host-post-event-report",
       "audience": "host",
-      "surface": "Host post-event report",
+      "surface": "Event recap",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "salesDemo.host.postEventReport",
       "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
       "websitePath": "website/public/assets/app-screenshots/host-post-event-report.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.svg",
-      "alt": "Catch host post-event report screen",
-      "caption": "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.",
+      "alt": "Catch event recap with public reviews, guest help, message delivery, and aggregate feedback",
+      "caption": "Review attendee feedback and follow up on public reviews, guest-help requests, and message delivery.",
       "walkthroughStep": "Report"
     }
   ]

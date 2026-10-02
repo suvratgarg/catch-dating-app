@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import {captureInputHash, stampCapture, validateCapture} from "./capture_provenance.mjs";
+import {captureInputHash, stampCapture, validateCapture} from "./lib/capture_provenance.mjs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";

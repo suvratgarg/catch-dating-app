@@ -17,7 +17,7 @@ function fixture(t) {
     return file;
   };
   for (const name of ['tool/lib/repo_paths.mjs', 'tool/marketing/sync_website_media.mjs',
-    'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/capture_provenance.mjs', 'tool/ui_capture/run_captures.mjs']) {
+    'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/lib/capture_provenance.mjs', 'tool/ui_capture/run_captures.mjs']) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   const capture = {
@@ -35,6 +35,8 @@ function fixture(t) {
   write('pubspec.yaml', 'name: catch_dating_app\n');
   write('pubspec.lock', 'pinned dependencies');
   write('tool/ci/toolchain.env', 'FLUTTER_VERSION=fixture');
+  write('tool/demo/demo_seed/scenarios/sample.json', '{}');
+  write('tool/demo/demo_seed/personas/sample.json', '{}');
   write('test/ui_captures/capture_runner_test.dart', "import 'package:catch_dating_app/parent.dart';\n");
   write('lib/parent.dart', "export 'leaf.dart';\n");
   write('lib/leaf.dart', 'const title = \'Today\';\n');
@@ -57,7 +59,7 @@ function fixture(t) {
   const git = write('bin/git', `#!${process.execPath}\nprocess.stdout.write('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n');\n`);
   fs.chmodSync(git, 0o755);
   const font = write('fonts/native.ttf', 'native font fixture');
-  write('stamp.mjs', `import {stampCapture} from './tool/marketing/capture_provenance.mjs'; import fs from 'node:fs'; stampCapture(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures[0], 'sample_screen', 'fonts/native.ttf');`);
+  write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; stampCapture(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures[0], 'sample_screen', 'fonts/native.ttf');`);
   const run = (script, ...args) => spawnSync(process.execPath, [path.join(root, script), ...args], {
     encoding: 'utf8', cwd: root,
     env: {...process.env, PATH: `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`, CAPTURE_TEST_CALLS: calls, CAPTURE_TEST_PNG: png().toString('base64')},
@@ -149,6 +151,10 @@ test('committed copies cannot hide changed transitive render or asset inputs', t
   f.stamp();
   assert.equal(f.run(sync, '--update').status, 0);
   f.write('packages/sample/assets/new.txt', 'new asset membership');
+  assert.equal(f.run(sync, '--check').status, 1);
+  f.stamp();
+  assert.equal(f.run(sync, '--update').status, 0);
+  f.write('tool/demo/demo_seed/personas/sample.json', '{"persona":"changed"}');
   assert.equal(f.run(sync, '--check').status, 1);
 });
 

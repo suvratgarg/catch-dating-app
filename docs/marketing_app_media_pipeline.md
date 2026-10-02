@@ -64,7 +64,7 @@ The exporter embeds one `caPt` ancillary chunk in each framed PNG. It records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
 byte hash, and capture input hash. Inputs include the capture runner/catalog,
 local transitive Dart imports/exports/parts (including production widgets and
-fixtures), declared assets/fonts, package manifests/lock, framing/export tools,
+fixtures), canonical scenario/persona JSON, declared assets/fonts, package manifests/lock, framing/export tools,
 and pinned toolchain configuration. The catalog is shared, so an input change
 can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
@@ -118,8 +118,8 @@ requiring the UI to match an old image. Keep export, review, baseline updates,
 and website sync as distinct explicit operations.
 
 The six create-event slots are views of the current three-step production
-wizard: Basics, schedule and meeting-location views within When & where, guest
-policy and expanded guide views within Guests, plus the final review summary.
+wizard: Basics, schedule and meeting-location views within When & where, booking
+policy and expanded guide views within Booking & live guide, plus the final review summary.
 They are not six wizard steps. Location scrolls to `WhereStep`; Guide opens the
 production customization disclosure. Catalog ids and website slot ids remain
 stable so existing consumers keep their coverage.

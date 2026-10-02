@@ -451,6 +451,7 @@ class SalesDemoSyntheticFixtures {
       id: id,
       clubId: club.id,
       savedAt: savedAt,
+      name: '${resolvedScenario.club.name} ${setupEvent.activityKind.label}',
       activityKind: setupEvent.activityKind.name,
       capacity: setupEvent.capacityLimit.toString(),
       price: (setupEvent.priceInPaise ~/ 100).toString(),

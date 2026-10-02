@@ -12528,6 +12528,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     drive: (tester) async {
       await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
       await pumpFeatureUi(tester);
+      expect(find.text('Needs information'), findsNothing);
     },
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => CreateEventScreen(
