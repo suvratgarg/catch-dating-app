@@ -535,6 +535,8 @@ export 'get_event_success_conversation_graph_callable_response.g.dart';
 export 'get_event_success_presence_summary_callable_response.g.dart';
 export 'get_event_success_spatial_layout_callable_payload.g.dart';
 export 'get_event_success_spatial_layout_callable_response.g.dart';
+export 'get_event_viewer_state_callable_payload.g.dart';
+export 'get_event_viewer_state_callable_response.g.dart';
 export 'get_event_whatsapp_preference_callable_payload.g.dart';
 export 'get_event_whatsapp_withdrawal_callable_payload.g.dart';
 export 'get_organizer_application_detail_callable_payload.g.dart';

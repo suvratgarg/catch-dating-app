@@ -198,6 +198,7 @@ export 'callables/get_event_rehearsal_summary_callable_request.g.dart';
 export 'callables/get_event_roster_insights_callable_request.g.dart';
 export 'callables/get_event_runtime_bootstrap_callable_request.g.dart';
 export 'callables/get_event_success_spatial_layout_callable_request.g.dart';
+export 'callables/get_event_viewer_state_callable_request.g.dart';
 export 'callables/get_event_whatsapp_preference_callable_request.g.dart';
 export 'callables/get_event_whatsapp_withdrawal_callable_request.g.dart';
 export 'callables/get_organizer_application_detail_callable_request.g.dart';

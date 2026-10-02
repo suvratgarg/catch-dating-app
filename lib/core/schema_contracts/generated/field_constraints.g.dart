@@ -79101,6 +79101,160 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
   );
 
+  static const getEventViewerStateCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallablePayloadInviteCode = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallablePayload.inviteCode',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallablePayloadPublicPaymentId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallablePayload.publicPaymentId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerAdmission = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.admission',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'nativeParticipation', 'publicPaidRoster'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerAttendance = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.attendance',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notRecorded', 'attended'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerBasisCapacityRevision = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.basis.capacityRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerBasisInventoryRevision = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.basis.inventoryRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerBasisMigrationRevision = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.basis.migrationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerBasisPolicyHash = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.basis.policyHash',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerEventId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerFutureBookingAllowed = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.futureBooking.allowed',
+    required: true,
+  );
+
+  static const getEventViewerStateCallableResponseViewerFutureBookingReason = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.futureBooking.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['membershipRequired', 'inviteRequired', 'reviewRequired', 'full', 'pairCapacityUnavailable', 'generalCapacityUnavailable', 'cohortCapacityUnavailable', 'outOfRatioReviewRequired', 'balanceUnavailable', 'bookingDetailsRequired', 'runPreferencesRequired', 'ageRestricted', 'scheduleConflict', 'eventUnavailable', 'past', 'cancelled', 'unsupportedRoute'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerMembershipDecisionId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.membership.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerMembershipRevision = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.membership.revision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerMembershipState = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.membership.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notRequired', 'none', 'active', 'revoked', 'unavailable'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerObservedAtMillis = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerPayment = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.payment',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notRead', 'creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'admitted', 'expired', 'refundPending', 'refunded', 'reviewRequired', 'failed', 'cancelled'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerQuotedPriceInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.quotedPriceInPaise',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerReview = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.review',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pending', 'approved'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerRoute = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.route',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchFreeBooking', 'catchCheckout', 'catchWaitlistOffer'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerWaitlisted = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.waitlisted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const getEventWhatsappPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'getEventWhatsappPreferenceCallablePayload.attendeeId',
     maxLength: 160,
@@ -167610,6 +167764,28 @@ abstract final class CatchContractConstraints {
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
+    'getEventViewerStateCallablePayload.eventId': getEventViewerStateCallablePayloadEventId,
+    'getEventViewerStateCallablePayload.inviteCode': getEventViewerStateCallablePayloadInviteCode,
+    'getEventViewerStateCallablePayload.publicPaymentId': getEventViewerStateCallablePayloadPublicPaymentId,
+    'getEventViewerStateCallableResponse.viewer.admission': getEventViewerStateCallableResponseViewerAdmission,
+    'getEventViewerStateCallableResponse.viewer.attendance': getEventViewerStateCallableResponseViewerAttendance,
+    'getEventViewerStateCallableResponse.viewer.basis.capacityRevision': getEventViewerStateCallableResponseViewerBasisCapacityRevision,
+    'getEventViewerStateCallableResponse.viewer.basis.inventoryRevision': getEventViewerStateCallableResponseViewerBasisInventoryRevision,
+    'getEventViewerStateCallableResponse.viewer.basis.migrationRevision': getEventViewerStateCallableResponseViewerBasisMigrationRevision,
+    'getEventViewerStateCallableResponse.viewer.basis.policyHash': getEventViewerStateCallableResponseViewerBasisPolicyHash,
+    'getEventViewerStateCallableResponse.viewer.eventId': getEventViewerStateCallableResponseViewerEventId,
+    'getEventViewerStateCallableResponse.viewer.futureBooking.allowed': getEventViewerStateCallableResponseViewerFutureBookingAllowed,
+    'getEventViewerStateCallableResponse.viewer.futureBooking.reason': getEventViewerStateCallableResponseViewerFutureBookingReason,
+    'getEventViewerStateCallableResponse.viewer.membership.decisionId': getEventViewerStateCallableResponseViewerMembershipDecisionId,
+    'getEventViewerStateCallableResponse.viewer.membership.revision': getEventViewerStateCallableResponseViewerMembershipRevision,
+    'getEventViewerStateCallableResponse.viewer.membership.state': getEventViewerStateCallableResponseViewerMembershipState,
+    'getEventViewerStateCallableResponse.viewer.observedAtMillis': getEventViewerStateCallableResponseViewerObservedAtMillis,
+    'getEventViewerStateCallableResponse.viewer.organizerId': getEventViewerStateCallableResponseViewerOrganizerId,
+    'getEventViewerStateCallableResponse.viewer.payment': getEventViewerStateCallableResponseViewerPayment,
+    'getEventViewerStateCallableResponse.viewer.quotedPriceInPaise': getEventViewerStateCallableResponseViewerQuotedPriceInPaise,
+    'getEventViewerStateCallableResponse.viewer.review': getEventViewerStateCallableResponseViewerReview,
+    'getEventViewerStateCallableResponse.viewer.route': getEventViewerStateCallableResponseViewerRoute,
+    'getEventViewerStateCallableResponse.viewer.waitlisted': getEventViewerStateCallableResponseViewerWaitlisted,
     'getEventWhatsappPreferenceCallablePayload.attendeeId': getEventWhatsappPreferenceCallablePayloadAttendeeId,
     'getEventWhatsappPreferenceCallablePayload.eventId': getEventWhatsappPreferenceCallablePayloadEventId,
     'getEventWhatsappPreferenceCallablePayload.senderId': getEventWhatsappPreferenceCallablePayloadSenderId,

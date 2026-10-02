@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.160.0
+version: 1.161.0
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -3316,8 +3316,8 @@ revision/decision used at admission. Revocation fences new bookings; an existing
 signed-up/attended replay and historical paid admission remain intact, with
 cancellation/refund owned separately. Public OTP/form-offer and Cross Paths
 membership-gated continuations remain closed until their owners consume the same
-current authority. The private viewer read source is described below; its callable and client
-integration remain pending.
+current authority. The authenticated viewer callable below exposes current
+facts for Consumer booking actions.
 
 Account deletion's processing tombstone fences new decisions; cleanup deletes
 membership edges and decision receipts by subject `uid`. Decisions for other
@@ -3326,8 +3326,10 @@ Direct client get/list/create/update/delete is denied for all four collections.
 
 ### Authenticated Event Viewer Read Source
 
-`readEventViewerStateSource` is an internal read adapter, not yet an exported
-callable. One transaction reads an Auth-derived UID's public event, deletion
+`getEventViewerState` is an Auth/App-Check-protected, rate-limited callable over
+`readEventViewerStateSource`. Its strict request accepts no subject UID or
+organizer override; its response includes no private fields or checkout keys.
+One transaction reads the Auth-derived UID's public event, deletion
 state, native participation, current grant, review, policy, capacity/holds,
 schedule and seat-identity proof. Membership, review, future eligibility,
 payment, admission and attendance remain separate facts. It shares

@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.92.0
+version: 1.93.0
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -156,12 +156,12 @@ promotion command creates only a blocked review receipt; it does not create an
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncClubMemberStats` recomputes `memberCount` from active membership edges, and `syncClubNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
 | P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only. Dev is 146/146 structured. The refreshed 2026-07-16 production dry run found 272 events: 125 valid, 138 deterministically repairable, and 9 unresolved coordinate blockers with no warnings; no production writes were applied. Keep `Event.meetingLocation` nullable until the production repair and follow-up validation complete, as tracked in `contracts/migrations/event_meeting_location.json`. |
 
-`readEventViewerStateSource` is currently an internal read source; no viewer
-callable is exported. It shares policy, schedule, membership, inventory and
+`getEventViewerState` exposes the private account-scoped
+`readEventViewerStateSource`. It shares policy, schedule, membership, inventory and
 owned paid-admission readers in one read transaction. It keeps retained
 admission and attendance separate from present eligibility, never applies seat
 or identity plans, and returns unavailable for incomplete bounded sources.
-Callable registration and Consumer/website adapters remain pending.
+Consumer/website adapters are the next integration boundary.
 
 ## Cloud Functions Inventory
 
@@ -180,6 +180,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads show independently recorded organizer operations, organizer marketing and Catch marketing. A withdrawal can stop one purpose or the whole sender; optimistic receipt fences and idempotent retries return the current canonical projection, including a newer opt-in after an old STOP. No opt-in, dispatch, booking, or profile mutation. |
 | `promoteFormCommunicationIntent` | Callable | Submitted public form completion after phone verification | Private pending form intent, owned response and withdrawal bearer, canonical purpose receipts/preferences | App Check, UID rate limit and exact verified phone endpoint; rechecks organizer/form/version/response ownership, reviewed copy hash and decision order. Promotes only selected source-bound purposes, cannot revive a later STOP or withdrawn response, and replays without widening consent. New form-originated WhatsApp delivery remains provider-disabled. |
+| `getEventViewerState` | Callable | Authenticated Consumer event detail | No domain writes; canonical private viewer read source | Auth/App Check/rate limits; current grant/review/policy/inventory checks, independent retained admission/attendance, strict response and bounded incomplete-source rejection. |
 | `listParticipantActivity` / `getParticipantActivity` | Callable | Own account form activity | No domain writes; bounded UID query and exact immutable response/version proof | Auth-derived account only, including email/account-only submissions. No profile claim, answers, private Host notes or admission inference. Subject/source-bound cursors advance over omitted rows. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create and increments the server profile revision; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
