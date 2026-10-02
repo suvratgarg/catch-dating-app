@@ -399,12 +399,17 @@ class CountryCodeSelector extends StatelessWidget {
           : null,
     );
 
-    return SizedBox(
+    return ConstrainedBox(
       key: AuthFormKeys.countryCode,
-      width: embedded
-          ? CatchLayout.authCountryCodeEmbeddedWidth
-          : CatchLayout.countryCodeSelectorWidth,
-      height: CatchField.mdControlHeight,
+      constraints: embedded
+          ? const BoxConstraints(
+              minWidth: CatchLayout.authCountryCodeEmbeddedWidth,
+              minHeight: CatchField.mdControlHeight,
+            )
+          : const BoxConstraints(
+              minWidth: CatchLayout.countryCodeSelectorWidth,
+              minHeight: CatchField.mdControlHeight,
+            ),
       child: embedded
           ? IgnorePointer(ignoring: !enabled, child: picker)
           : CatchControlSurface(
