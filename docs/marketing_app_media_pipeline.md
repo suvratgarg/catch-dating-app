@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.3.0
-updated: 2026-09-21
+version: 1.4.0
+updated: 2026-10-02
 owner: marketing_website
 status: active
 ---
@@ -39,8 +39,11 @@ Website pages render React `CaptureCard` components keyed by
 `/assets/app-screenshots/manifest.json` and swaps in the active asset path,
 caption, alt text, walkthrough step, and status label.
 
-The Host vertical at `/host/` and the homepage hero consume these slots through
+The capture cards on `/explore/` consume these slots through
 `useMarketingCaptures()`. Capture selection and copy belong to the manifest.
+The homepage hero and `/host/` currently use authored React illustrations;
+regenerating app captures does not update those illustrations. Replacing them
+requires a separate content decision.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
@@ -51,11 +54,30 @@ owned by `dart run tool/design_tokens.dart`.
 `tool/tools_manifest.json` registers `marketing:app-media-sync`, so
 `node tool/run.mjs check` runs the marketing media check with the rest of tool
 CI. Pending captures pass only if their placeholders exist and the generated
-website manifest is current. Active captures fail if the app-generated source image is missing, the website
-image is missing or has different bytes, or the generated manifest is out of
-sync. This proves copy consistency; it does not prove that an old source PNG
-reflects current app code. Regenerate and review affected captures after UI
-changes.
+website manifest is current. Active captures fail if the source image is missing, is not a framed
+1020×1964 iPhone 17 Pro PNG, lacks canonical render provenance, has changed
+image bytes or capture inputs, or differs from its website copy. The generated
+website manifest must also be current. Both sync commands run the exporter
+check before copying or accepting any active image.
+
+The exporter embeds one `caPt` ancillary chunk in each framed PNG. It records
+the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
+byte hash, and capture input hash. Inputs include the capture runner/catalog,
+local transitive Dart imports/exports/parts (including production widgets and
+fixtures), declared assets/fonts, package manifests/lock, framing/export tools,
+and pinned toolchain configuration. The catalog is shared, so an input change
+can conservatively invalidate multiple slots. Adding an asset to a declared
+directory also invalidates captures. No machine-specific font path or font
+bytes are distributed.
+
+This check proves the recorded render still matches its inputs and rejects
+stale committed copies; it does not perform a fresh render in Linux CI or
+automatically approve a visual change. Native-font rendering and review remain
+explicit local operations. The revision identifies the capture source commit;
+input hashes also cover edits made before capture and survive unrelated
+commits. Do not manually stamp old PNGs. Regenerate and inspect affected
+captures, then sync. Raw selected outputs are cleared before rendering to
+prevent accidentally reusing an earlier run.
 
 ## Fixture Boundary
 
@@ -94,3 +116,10 @@ An existing golden is not authority for spacing, typography, or an invalid
 configuration. Product exports reuse production widgets and fixtures, without
 requiring the UI to match an old image. Keep export, review, baseline updates,
 and website sync as distinct explicit operations.
+
+The six create-event slots are views of the current three-step production
+wizard: Basics, schedule and meeting-location views within When & where, guest
+policy and expanded guide views within Guests, plus the final review summary.
+They are not six wizard steps. Location scrolls to `WhereStep`; Guide opens the
+production customization disclosure. Catalog ids and website slot ids remain
+stable so existing consumers keep their coverage.

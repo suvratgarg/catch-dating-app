@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {captureInputHash, stampCapture, validateCapture} from "./capture_provenance.mjs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
@@ -176,6 +177,7 @@ function updateExports() {
   const selected = selectedCaptures.map((capture) => ({
     capture,
     entry: findCatalogEntry(catalog, capture.fixtureKey),
+    inputHash: captureInputHash(capture),
   }));
   for (const item of selected) {
     if (!item.entry) {
@@ -188,6 +190,9 @@ function updateExports() {
   const groups = groupBy(selected, (item) => item.capture.device);
   for (const [device, items] of groups) {
     const captureIds = [...new Set(items.map((item) => item.entry.id))];
+    for (const id of captureIds) {
+      fs.rmSync(fromRepo(path.join(rawOutputDir, id)), {recursive: true, force: true});
+    }
     const result = spawnSync(
       "node",
       [
@@ -210,8 +215,9 @@ function updateExports() {
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
   }
 
-  for (const {capture, entry} of selected) {
+  for (const {capture, entry, inputHash} of selected) {
     const inputPath = path.join(rawOutputDir, entry.id, "light.png");
+    fs.rmSync(fromRepo(capture.sourcePath), {force: true});
     const result = spawnSync(
       "dart",
       [
@@ -227,6 +233,10 @@ function updateExports() {
       {cwd: repoRoot, stdio: "inherit"}
     );
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+    if (captureInputHash(capture) !== inputHash) {
+      fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
+    }
+    stampCapture(capture, entry.id, sfFont);
   }
 }
 
@@ -243,7 +253,9 @@ function validateExports(manifest, catalog, {requireSources}) {
       );
     }
 
-    const entry = findCatalogEntry(catalog, capture.fixtureKey);
+    const matches = catalog.filter(entry => entry.marketingFixtureKeys.includes(capture.fixtureKey));
+    if (matches.length > 1) errors.push(`${capture.id}: fixtureKey must map to exactly one catalog entry.`);
+    const entry = matches[0];
     if (!entry) {
       errors.push(
         `${capture.id}: fixtureKey ${capture.fixtureKey} has no capture catalog entry.`
@@ -255,6 +267,9 @@ function validateExports(manifest, catalog, {requireSources}) {
       errors.push(`${capture.id}: fixtureKey ${capture.fixtureKey} must map once.`);
     }
 
+    if (requireSources && fs.existsSync(fromRepo(capture.sourcePath))) {
+      errors.push(...validateCapture(capture, entry.id));
+    }
     if (requireSources && !fs.existsSync(fromRepo(capture.sourcePath))) {
       errors.push(
         `${capture.id}: sourcePath is missing at ${capture.sourcePath}; run node tool/marketing/export_app_screenshots.mjs --update.`
@@ -563,7 +578,7 @@ function printHelp() {
 Commands:
   --list             Show marketing slots and catalog mapping.
   --update           Render active app captures and write framed source PNGs.
-  --check            Verify active marketing captures have source PNGs.
+  --check            Verify frame, render provenance, and current capture inputs.
   --design-json      Print Figma/AI-friendly capture metadata and frame geometry.
   --update-design-json
                      Write checked capture metadata to tool/marketing.

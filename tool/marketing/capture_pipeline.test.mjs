@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {deflateSync} from 'node:zlib';
 import test from 'node:test';
 import {fromRepo} from '../lib/repo_paths.mjs';
 
@@ -16,7 +17,7 @@ function fixture(t) {
     return file;
   };
   for (const name of ['tool/lib/repo_paths.mjs', 'tool/marketing/sync_website_media.mjs',
-    'tool/marketing/export_app_screenshots.mjs', 'tool/ui_capture/run_captures.mjs']) {
+    'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/capture_provenance.mjs', 'tool/ui_capture/run_captures.mjs']) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   const capture = {
@@ -28,7 +29,17 @@ function fixture(t) {
     alt: 'Synthetic Today screen', caption: 'Today', walkthroughStep: '1',
   };
   write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', captures: [capture]}));
-  write(capture.sourcePath, 'first image bytes');
+  write(capture.sourcePath, png());
+  write('packages/sample/pubspec.yaml', 'name: sample\nflutter:\n  assets:\n    - assets/\n');
+  write('packages/sample/assets/image.txt', 'asset fixture');
+  write('pubspec.yaml', 'name: catch_dating_app\n');
+  write('pubspec.lock', 'pinned dependencies');
+  write('tool/ci/toolchain.env', 'FLUTTER_VERSION=fixture');
+  write('test/ui_captures/capture_runner_test.dart', "import 'package:catch_dating_app/parent.dart';\n");
+  write('lib/parent.dart', "export 'leaf.dart';\n");
+  write('lib/leaf.dart', 'const title = \'Today\';\n');
+  write('test/ui_captures/flutter_test_config.dart', '');
+  write('tool/marketing/frame_device_capture.dart', '');
   write('test/ui_captures/catalog/screen_capture_catalog.dart', `
     ScreenCaptureEntry(id: 'sample_screen', routeIds: const <String>['today'],
       marketingFixtureKeys: const <String>['salesDemo.sample'], device: CaptureDevice.iphone17Pro)
@@ -37,17 +48,24 @@ function fixture(t) {
   // Stub only external render/frame executables. The actual Node wrappers run.
   const fakeCommand = name => {
     const file = write(`bin/${name}`, `#!${process.execPath}\n` +
+      (name === 'dart' ? `const args=process.argv.slice(2); const output=args[args.indexOf('--output')+1]; require('node:fs').writeFileSync(output,Buffer.from(process.env.CAPTURE_TEST_PNG,'base64'));\n` : '') +
       `require('node:fs').appendFileSync(process.env.CAPTURE_TEST_CALLS, JSON.stringify({name: ${JSON.stringify(name)}, args: process.argv.slice(2)})+'\\n');\n`);
     fs.chmodSync(file, 0o755);
   };
   fakeCommand('flutter');
   fakeCommand('dart');
+  const git = write('bin/git', `#!${process.execPath}\nprocess.stdout.write('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n');\n`);
+  fs.chmodSync(git, 0o755);
+  const font = write('fonts/native.ttf', 'native font fixture');
+  write('stamp.mjs', `import {stampCapture} from './tool/marketing/capture_provenance.mjs'; import fs from 'node:fs'; stampCapture(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures[0], 'sample_screen', 'fonts/native.ttf');`);
   const run = (script, ...args) => spawnSync(process.execPath, [path.join(root, script), ...args], {
     encoding: 'utf8', cwd: root,
-    env: {...process.env, PATH: `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`, CAPTURE_TEST_CALLS: calls},
+    env: {...process.env, PATH: `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`, CAPTURE_TEST_CALLS: calls, CAPTURE_TEST_PNG: png().toString('base64')},
   });
   const readCalls = () => fs.readFileSync(calls, 'utf8').trim().split('\n').map(JSON.parse);
-  return {root, write, capture, run, readCalls};
+  const stamp = () => { const result = run('stamp.mjs'); assert.equal(result.status, 0, result.stderr); };
+  stamp();
+  return {root, write, capture, run, readCalls, stamp};
 }
 
 const sync = 'tool/marketing/sync_website_media.mjs';
@@ -64,7 +82,8 @@ test('sync checks image bytes, catches replacement and missing files, and repair
   assert.equal(result.status, 1);
   assert.match(result.stderr, /website image is missing/);
   assert.equal(f.run(sync, '--update').status, 0);
-  f.write(f.capture.sourcePath, 'new reviewed source image');
+  f.write(f.capture.sourcePath, png(1020, 1964, 1));
+  f.stamp();
   assert.equal(f.run(sync, '--check').status, 1);
   assert.equal(f.run(sync, '--update').status, 0);
   assert.equal(f.run(sync, '--check').status, 0);
@@ -96,4 +115,61 @@ test('review CLI preserves default renderer and rejects invalid platform or font
   assert.equal(f.run(cli, '--platform', 'android', '--sf-font', font).status, 64);
   assert.equal(f.run('tool/marketing/export_app_screenshots.mjs', '--update', '--sf-font', path.join(f.root, 'absent.ttf')).status, 1);
   assert.equal(f.readCalls().length, 1, 'invalid requests must not run a renderer');
+});
+
+// Small valid raster fixtures exercise the wrappers without a Flutter process.
+function png(width = 1020, height = 1964, red = 0) {
+  function chunk(type, data) {
+    const payload = Buffer.concat([Buffer.from(type), data]);
+    let crc = 0xffffffff;
+    for (const byte of payload) {
+      crc ^= byte;
+      for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+    }
+    const length = Buffer.alloc(4); length.writeUInt32BE(data.length);
+    const checksum = Buffer.alloc(4); checksum.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
+    return Buffer.concat([length, payload, checksum]);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width); header.writeUInt32BE(height, 4); header[8] = 8; header[9] = 6;
+  const pixels = Buffer.alloc((width * 4 + 1) * height);
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) pixels[y * (width * 4 + 1) + 1 + x * 4] = red;
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header), chunk('IDAT', deflateSync(pixels)), chunk('IEND', Buffer.alloc(0))]);
+}
+
+test('committed copies cannot hide changed transitive render or asset inputs', t => {
+  const f = fixture(t);
+  assert.equal(f.run(sync, '--update').status, 0);
+  f.write('lib/leaf.dart', 'const title = \'Updated Today\';\n');
+  for (const command of ['--check', '--update']) {
+    const result = f.run(sync, command);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Capture inputs changed/);
+  }
+  f.stamp();
+  assert.equal(f.run(sync, '--update').status, 0);
+  f.write('packages/sample/assets/new.txt', 'new asset membership');
+  assert.equal(f.run(sync, '--check').status, 1);
+});
+
+test('unframed, unstamped, and altered PNGs fail before website copy', t => {
+  const f = fixture(t);
+  f.write(f.capture.sourcePath, png(402, 874));
+  let result = f.run(sync, '--update');
+  assert.equal(result.status, 1); assert.match(result.stderr, /1020x1964/);
+  f.write(f.capture.sourcePath, png());
+  result = f.run(sync, '--update');
+  assert.equal(result.status, 1); assert.match(result.stderr, /render provenance/);
+  f.stamp();
+  const bytes = fs.readFileSync(path.join(f.root, f.capture.sourcePath)); bytes[50] ^= 1;
+  f.write(f.capture.sourcePath, bytes);
+  assert.equal(f.run(sync, '--check').status, 1);
+});
+
+test('ambiguous fixture mappings fail instead of choosing the first entry', t => {
+  const f = fixture(t);
+  const catalog = 'test/ui_captures/catalog/screen_capture_catalog.dart';
+  f.write(catalog, fs.readFileSync(path.join(f.root, catalog), 'utf8') + `ScreenCaptureEntry(id: 'duplicate', marketingFixtureKeys: const <String>['salesDemo.sample'])`);
+  const result = f.run('tool/marketing/export_app_screenshots.mjs', '--check');
+  assert.equal(result.status, 1); assert.match(result.stderr, /exactly one catalog entry/);
 });
