@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -20,6 +21,152 @@ final salesDemoSyntheticFixtures = SalesDemoSyntheticFixtures.load();
 final salesDemoHostScenario = SalesDemoHostScenarioFixture.load();
 
 final _ageReferenceDate = DateTime(2026, 5, 31);
+
+// This named capture story reuses the canonical reader and fixture builders.
+// It does not change the global host-demo seed world or persona projection.
+final hostMarketingIndiaScenario = HostMarketingIndiaScenarioFixture.load();
+
+class HostMarketingIndiaScenarioFixture {
+  const HostMarketingIndiaScenarioFixture._(this.scenario, this._narrative);
+
+  factory HostMarketingIndiaScenarioFixture.load({
+    String path = 'tool/demo/demo_seed/scenarios/host-marketing-india.json',
+  }) {
+    final root = _stringMap(
+      jsonDecode(File(path).readAsStringSync()),
+      context: path,
+    );
+    final narrative = _stringMap(
+      root['captureNarrative'],
+      context: '$path.captureNarrative',
+    );
+    if (narrative['timeZone'] != 'Asia/Kolkata' ||
+        narrative['currency'] != 'INR' ||
+        narrative['admissionPreset'] != 'openCapacity' ||
+        narrative['interactionModel'] != 'hostLedProgram') {
+      throw const FormatException(
+        'India marketing captures require the reviewed free/open host-led story.',
+      );
+    }
+    return HostMarketingIndiaScenarioFixture._(
+      SalesDemoHostScenarioFixture.load(path: path),
+      Map.unmodifiable(narrative),
+    );
+  }
+
+  final SalesDemoHostScenarioFixture scenario;
+  final Map<String, Object?> _narrative;
+  String get eventName => _requiredStringFrom(_narrative, 'eventName');
+  String get civilDate => _requiredStringFrom(_narrative, 'civilDate');
+  String get timeZone => _requiredStringFrom(_narrative, 'timeZone');
+
+  // Production draft restore consumes local civil fields. Construct those
+  // fields in the capture host's local representation rather than converting
+  // a UTC epoch into the host timezone. Asia/Kolkata is the story's timezone;
+  // these display-only fixtures are never sent to a backend.
+  DateTime clock(String phase) => _civilTime(
+    _requiredStringFrom(
+      _stringMap(_narrative['phaseClocks'], context: 'phaseClocks'),
+      phase,
+    ),
+  );
+
+  static DateTime _civilTime(String value) {
+    if (!RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$').hasMatch(value)) {
+      throw FormatException(
+        'Capture clocks require explicit civil fields: $value',
+      );
+    }
+    return DateTime.parse(value);
+  }
+
+  EventFormatSnapshot get format => EventFormatSnapshot(
+    activityKind: scenario.eventByRole('hostEventSetup').activityKind,
+    interactionModel: EventInteractionModel.hostLedProgram,
+    defaultPlaybookId: 'host_led_social',
+  );
+
+  EventSuccessDefaults get guideDefaults =>
+      EventSuccessDefaults.recommendedForFormat(
+        format,
+        enabled: true,
+        targetAttendeeCount: scenario
+            .eventByRole('hostEventSetup')
+            .capacityLimit,
+      ).copyWith(
+        moduleSelectionConfigured: true,
+        selectedModuleIds: _list(
+          _narrative['selectedModuleIds'],
+        ).whereType<String>().toList(),
+        wingmanRequestsEnabled: false,
+        contextualOpenersEnabled: false,
+        compatibilityAffectsRanking: false,
+      );
+
+  Club club(SalesDemoSyntheticFixtures fixtures) =>
+      fixtures.hostDemoClub(scenario: scenario);
+
+  Event event(SalesDemoSyntheticFixtures fixtures, String role) {
+    final clubValue = club(fixtures);
+    final source = scenario.eventByRole(role);
+    if (source.priceInPaise != 0 || source.waitlistedCount != 0) {
+      throw const FormatException(
+        'India marketing captures require free registration with no waitlist.',
+      );
+    }
+    return fixtures
+        .hostDemoEvent(role: role, club: clubValue, scenario: scenario)
+        .copyWith(
+          name: eventName,
+          synthetic: true,
+          currency: _requiredStringFrom(_narrative, 'currency'),
+          startTime: _civilTime(
+            '$civilDate'
+            'T${_requiredStringFrom(_narrative, 'startTime')}:00',
+          ),
+          endTime: _civilTime(
+            '$civilDate'
+            'T${_requiredStringFrom(_narrative, 'endTime')}:00',
+          ),
+          eventFormat: format,
+          eventPolicy: EventPolicyBundle.openEvent(
+            capacityLimit: source.capacityLimit,
+            basePriceInPaise: source.priceInPaise,
+          ),
+        );
+  }
+
+  EventDraft setupDraft(SalesDemoSyntheticFixtures fixtures) {
+    final setup = event(fixtures, 'hostEventSetup');
+    return fixtures
+        .hostSetupDraft(
+          id: 'host-marketing-india-setup-draft',
+          club: club(fixtures),
+          savedAt: clock('planning'),
+          eventDate: setup.startTime,
+          scenario: scenario,
+        )
+        .copyWith(
+          name: eventName,
+          eventLocalDate: civilDate,
+          eventLocalStartTime: _requiredStringFrom(_narrative, 'startTime'),
+          eventTimezone: timeZone,
+          interactionModel: _requiredStringFrom(_narrative, 'interactionModel'),
+          minAge: null,
+          maxAge: null,
+          maxMen: null,
+          maxWomen: null,
+          inviteCode: null,
+          admissionPreset: _requiredStringFrom(_narrative, 'admissionPreset'),
+          dynamicPricingEnabled: false,
+          dynamicPricingStep: null,
+          dynamicPricingMax: null,
+          crossPathsPairInventoryEnabled: false,
+          crossPathsPairCapacity: null,
+          eventSuccessDefaults: guideDefaults,
+        );
+  }
+}
 
 class SalesDemoHostScenarioFixture {
   const SalesDemoHostScenarioFixture._({

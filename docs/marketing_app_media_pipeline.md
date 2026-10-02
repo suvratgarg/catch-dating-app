@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.4.0
+version: 1.5.0
 updated: 2026-10-02
 owner: marketing_website
 status: active
@@ -86,9 +86,33 @@ prevent accidentally reusing an earlier run.
 
 ## Fixture Boundary
 
-The manifest names fixture keys such as `salesDemo.host.liveConsole`, but it
-does not create that synthetic data. The screenshot harness should treat those
-keys as an input contract owned by the sales-grade demo data workstream.
+Host slots use the named `host-marketing-india.json` scenario through the existing
+`SalesDemoHostScenarioFixture` reader and synthetic builders. The shared
+`host-demo.json` NYC seed world and persona projection remain independent.
+The named scenario has no `seedWorld` configuration and is display-only capture
+input: fictional Evening Club in Mumbai, Saturday Trivia Social at Harbour
+Room, free INR 0 registration with open capacity 30, and one event id across
+setup, Today, live, and recap. Planning is 0 booked/0 checked in; Today is 24/0;
+live and follow-up are 24/18, with no waitlist. Recap has no fabricated scorecard
+or reviews. The existing Host Today catalog entry has its own canonical slot.
+
+The scenario explicitly records 17 October 2026, 18:30–20:30 Asia/Kolkata and
+civil phase clocks: planning 16 October 12:00, Today 17 October 16:00,
+live 17 October 19:00 and follow-up 18 October 10:00, all Asia/Kolkata. Production draft restore consumes local civil fields,
+so the fixture constructs those fields in the capture process's local
+representation instead of converting a UTC epoch. The focused restore test is
+run under UTC, America/Los_Angeles and Asia/Kolkata. These values are never
+submitted to a backend. The Guide selects the existing welcome and safety
+modules, alongside mandatory platform modules (including attendance, guest
+help, feedback and analytics); compatibility, reveal and
+automated assignments are not selected. Production price/capacity/admission
+controls remain visible without retouching.
+
+These are draft synthetic render assets. Source support for free/open mode and
+passing source tests does not establish the exact target build's route, flags,
+backend configuration or public/store availability. Publication remains an
+owner decision after target-build verification. `active` describes the local
+media pipeline, not approval of a product availability claim.
 
 ## Rendering And Review
 

@@ -1,0 +1,152 @@
+{
+  "id": "host-marketing-india",
+  "label": "India Host Marketing Draft",
+  "description": "Fictional India host capture narrative. Draft evidence, conditional on target-build capability review; never a seed-world or availability claim.",
+  "captureNarrative": {
+    "eventName": "Saturday Trivia Social",
+    "civilDate": "2026-10-17",
+    "startTime": "18:30",
+    "endTime": "20:30",
+    "timeZone": "Asia/Kolkata",
+    "currency": "INR",
+    "admissionPreset": "openCapacity",
+    "interactionModel": "hostLedProgram",
+    "selectedModuleIds": [
+      "host_script",
+      "safety_controls"
+    ],
+    "phaseClocks": {
+      "planning": "2026-10-16T12:00:00",
+      "today": "2026-10-17T16:00:00",
+      "live": "2026-10-17T19:00:00",
+      "followUp": "2026-10-18T10:00:00"
+    }
+  },
+  "salesDemo": {
+    "referenceNow": "2026-10-16T12:00:00",
+    "host": {
+      "uid": "sales-demo-host",
+      "displayName": "Demo Host",
+      "firstName": "Host",
+      "phoneNumber": "+919000000001",
+      "email": "host@example.test",
+      "personaId": "nyc_jordan_ellis_002"
+    },
+    "club": {
+      "id": "club-host-marketing-india",
+      "name": "Evening Club",
+      "description": "Fictional Mumbai organizer for a host workflow demonstration.",
+      "location": "mumbai",
+      "area": "Bandra West",
+      "tags": [
+        "trivia",
+        "hosted"
+      ],
+      "memberCount": 0,
+      "rating": 0,
+      "reviewCount": 0
+    },
+    "events": [
+      {
+        "id": "event-host-trivia-store-demo",
+        "activityKind": "pubQuiz",
+        "startTime": "2026-10-17T18:30:00",
+        "endTime": "2026-10-17T20:30:00",
+        "meetingPoint": "Harbour Room",
+        "locationDetails": "Meet the host at the entrance.",
+        "startingPointLat": 19.0607,
+        "startingPointLng": 72.8362,
+        "capacityLimit": 30,
+        "waitlistedCount": 0,
+        "priceInPaise": 0,
+        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
+        "role": "hostEventSetup",
+        "bookedCount": 0,
+        "checkedInCount": 0
+      },
+      {
+        "id": "event-host-trivia-store-demo",
+        "activityKind": "pubQuiz",
+        "startTime": "2026-10-17T18:30:00",
+        "endTime": "2026-10-17T20:30:00",
+        "meetingPoint": "Harbour Room",
+        "locationDetails": "Meet the host at the entrance.",
+        "startingPointLat": 19.0607,
+        "startingPointLng": 72.8362,
+        "capacityLimit": 30,
+        "waitlistedCount": 0,
+        "priceInPaise": 0,
+        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
+        "role": "hostToday",
+        "bookedCount": 24,
+        "checkedInCount": 0
+      },
+      {
+        "id": "event-host-trivia-store-demo",
+        "activityKind": "pubQuiz",
+        "startTime": "2026-10-17T18:30:00",
+        "endTime": "2026-10-17T20:30:00",
+        "meetingPoint": "Harbour Room",
+        "locationDetails": "Meet the host at the entrance.",
+        "startingPointLat": 19.0607,
+        "startingPointLng": 72.8362,
+        "capacityLimit": 30,
+        "waitlistedCount": 0,
+        "priceInPaise": 0,
+        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
+        "role": "hostLiveConsole",
+        "bookedCount": 24,
+        "checkedInCount": 18
+      },
+      {
+        "id": "event-host-trivia-store-demo",
+        "activityKind": "pubQuiz",
+        "startTime": "2026-10-17T18:30:00",
+        "endTime": "2026-10-17T20:30:00",
+        "meetingPoint": "Harbour Room",
+        "locationDetails": "Meet the host at the entrance.",
+        "startingPointLat": 19.0607,
+        "startingPointLng": 72.8362,
+        "capacityLimit": 30,
+        "waitlistedCount": 0,
+        "priceInPaise": 0,
+        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
+        "role": "hostPostEventReport",
+        "bookedCount": 24,
+        "checkedInCount": 18
+      }
+    ],
+    "rosterPersonaIds": [
+      "nyc_maya_shah_001",
+      "nyc_jordan_ellis_002",
+      "nyc_sofia_martinez_003",
+      "nyc_ethan_brooks_004",
+      "nyc_aisha_williams_005",
+      "nyc_daniel_kim_006",
+      "nyc_priya_desai_007",
+      "nyc_marcus_chen_008",
+      "nyc_chloe_bennett_009",
+      "nyc_noah_patel_010",
+      "nyc_olivia_nguyen_011",
+      "nyc_caleb_johnson_012",
+      "nyc_emma_rodriguez_013",
+      "nyc_liam_oconnor_014",
+      "nyc_nia_okafor_015",
+      "nyc_arjun_mehta_016",
+      "nyc_grace_liu_017",
+      "nyc_miles_anderson_018",
+      "nyc_hannah_cohen_019",
+      "nyc_andre_baptiste_020",
+      "nyc_isabella_romano_021",
+      "nyc_samir_khan_022",
+      "nyc_taylor_reed_023",
+      "nyc_victor_alvarez_024"
+    ],
+    "eventSuccess": {
+      "defaultCheckedInCount": 18,
+      "defaultWaitlistedCount": 0,
+      "viewerPersonaId": "nyc_maya_shah_001",
+      "wingmanTargetPersonaId": "nyc_sofia_martinez_003"
+    }
+  }
+}
