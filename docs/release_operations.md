@@ -264,7 +264,9 @@ Configure GitHub branch protection for `main` to require the single stable
 `CI / Required CI` result. That aggregate always exists for pull requests,
 pushes, and merge queues. It fails when planning fails or any selected lane
 fails; unaffected lanes are explicit skips, so path scoping never leaves a
-required check permanently pending.
+required check permanently pending. Required CI has no mandatory human backend
+source-review job; it retains the latest live PR admission and exact tested-source
+recheck before the automated aggregate can succeed.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -593,11 +595,14 @@ accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
 
 Keep required reviewers on shared `prod` for production data operations,
 non-Functions stages, snapshots, recovery, and older source without review proof.
-Same-repository pull requests whose plan selects Functions require the
-credential-free `backend-review` environment after selected validation passes.
-Its reviewer explicitly reviews the whole backend change, including permissions,
-secrets, migrations, initialization and trigger settings, before merge. Required
-CI includes this gate. A new PR head requires a new reviewed CI run.
+Functions pull requests complete Required CI after the selected automated
+validation and live admission recheck; CI no longer creates or requires the
+credential-free `backend-review` job. That environment no longer has required
+reviewers; its identity, `refs/pull/*/merge` branch policy and prohibition on
+administrator bypass remain. Successful automated CI alone is never human
+approval. Non-no-op Functions source now retains protected `prod` review after
+dev delivery, including older source whose historical approvals cannot satisfy
+the unchanged helper's current reviewer-protection check.
 
 For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
 merged PR, successful pre-merge CI, required-reviewer approval history, completed
@@ -611,13 +616,11 @@ must preserve exact merge identity before changing this pin.
 Evidence that is missing, expired, unavailable or bound
 to different source retains `prod` review. Source pattern matching cannot prove
 that business logic is free of permission changes and is not used as approval.
-Verified Functions no-ops need no runtime approval. `backend-review` has no
-secrets, variables or cloud federation, allows the sole maintainer to review
-self-authored PRs, restricts branches to `refs/pull/*/merge`, and forbids
-administrator bypass. Its approval is recorded by
-GitHub, not a checked-in receipt. Reviewing before merge keeps human waiting time
-outside the shared deployment queue; after dev succeeds, reviewed Functions-only
-source uses `prod-backend` automatically.
+Verified Functions no-ops need no runtime approval. `backend-review` retains no
+secrets, variables or cloud federation. Historical GitHub approval records do
+not bypass the helper's current environment protections. Delivery and the
+promoter keep that safeguard; removing the PR source gate does not authorize
+automated CI to select `prod-backend` for a runtime mutation.
 Both production approval paths keep the same `firebase-prod` lock and production
 cursor. Dev and production drain independently: dev release B may run while
 production release A is waiting for review or deploying. Each environment still
