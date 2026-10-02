@@ -1,4 +1,5 @@
 import {createHash} from "crypto";
+import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -313,7 +314,7 @@ async function conversionContext(
   }
   if (data.kind === "eventAttendeeProposal") {
     const crm = await conversionContext(db, {...data,
-      kind: "crmContact", eventId: null});
+      kind: "crmContact", eventId: null}, tx);
     if (!crm.allowed) {
       allowed = false;
       warnings.push(...crm.warnings);
@@ -322,10 +323,9 @@ async function conversionContext(
       warnings.push("Choose an event for this attendee proposal.");
       allowed = false;
     } else {
-      const eventSnap = await db.collection("events").doc(data.eventId).get();
+      const eventSnap = await read(db.collection("events").doc(data.eventId));
       if (!eventSnap.exists ||
-          eventSnap.data()?.organizerId !== data.organizerId &&
-          eventSnap.data()?.clubId !== data.organizerId) {
+          eventSnap.data()?.organizerId !== data.organizerId) {
         warnings.push("The selected event is not managed by this organizer.");
         allowed = false;
       } else {
@@ -334,8 +334,8 @@ async function conversionContext(
         const email = stringField(fields, "email")?.trim().toLowerCase();
         const key = phone ? `phone:${phone}` : email ? `email:${email}` :
           `external:${data.responseId.toLowerCase()}`;
-        const edge = await db.collection("organizerContactEventEdges")
-          .doc(eventAttendeeId(data.eventId, key)).get();
+        const edge = await read(db.collection("organizerContactEventEdges")
+          .doc(eventAttendeeId(data.eventId, key)));
         const target = crmContactConversionTarget({
           existingResultId: crm.existingResultId, responseId: data.responseId,
           formId: response.formId, submittedAt: response.submittedAt,
@@ -553,6 +553,18 @@ async function applyEventAttendeeConversion(params: {
     email ? `email:${email}` : `external:${params.data.responseId}`;
   const result = await importEventAttendeesForHost({
     hostUid: params.actorUid,
+    authorizeSource: async (tx, replayed) => {
+      await authorizeFormMutation({db: params.db, tx,
+        actorUid: params.actorUid, organizerId: params.data.organizerId});
+      if (replayed) return;
+      const current = await conversionContext(params.db, params.data, tx);
+      assertConversionAllowed(current);
+      if (!isDeepStrictEqual(current.response, params.context.response) ||
+          !isDeepStrictEqual(current.version, params.context.version)) {
+        throw new HttpsError("aborted",
+          "The form response changed. Review it before admission.");
+      }
+    },
     payload: {
       eventId,
       importKey: `form_${params.data.responseId}`.slice(0, 120),

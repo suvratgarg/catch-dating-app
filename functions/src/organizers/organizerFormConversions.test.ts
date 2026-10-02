@@ -5,6 +5,8 @@ import {crmContactConversionTarget, convertOrganizerFormResponseHandler} from
   "./organizerFormConversions";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
+import {withdrawOrganizerFormResponseHandler} from "./organizerFormResponses";
+import {deriveEventSeatPolicy} from "../events/seatAuthority/firestoreAdapter";
 
 const submittedAt = admin.firestore.Timestamp.fromMillis(1_000);
 
@@ -113,8 +115,9 @@ function conversionFixture(kind: "application" | "crmContact") {
     "organizerFormVersions/version1": {organizerId: "org1", formId: "form1",
       definition: {purpose: "application", defaultTargetKind: "organizer",
         defaultTargetId: null, sections: [{questions: [{questionId: "answer",
-          kind: "shortText", canonicalFieldId: null, privacyClass: "private",
-          hostPresentation: "answer"}]}]}},
+          kind: "shortText", canonicalFieldId: null,
+          privacyClass: "organizerCustom",
+          hostPresentation: "detailOnly"}]}]}},
     "organizerFormResponses/response1": {organizerId: "org1", formId: "form1",
       versionId: "version1", status: "submitted", withdrawnAt: null,
       respondentUid: "person", submittedAt, consentVersion: "v1",
@@ -368,3 +371,283 @@ for (const status of ["completed", "pending", "failed"] as const) {
       assert.equal(h.records("organizerContactOrigins").length, 1);
     });
 }
+
+for (const change of ["withdraw", "revoke", "delete", "move"] as const) {
+  test(`attendee handoff fences ${change} in the destination transaction`,
+    async () => {
+      const h = conversionFixture("crmContact");
+      await h.convert();
+      h.store.docs["events/event1"] = {organizerId: "org1", clubId: "org1",
+        status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.docs["organizers/other"] = {ownerUserId: "manager",
+        hostUserIds: [], hostProfiles: []};
+      const original = h.store.runTransaction.bind(h.store);
+      let transactions = 0;
+      h.store.runTransaction = async (body) => {
+        if (++transactions === 3) {
+          if (change === "withdraw") h.withdraw();
+          else if (change === "delete") {
+            h.store.docs["deletedUsers/manager"] = {status: "deleted"};
+          } else if (change === "move") {
+            Object.assign(h.store.docs["events/event1"],
+              {organizerId: "other"});
+          } else h.store.docs["organizers/org1"].hostUserIds = [];
+        }
+        return original(body);
+      };
+      await assert.rejects(convertOrganizerFormResponseHandler({
+        auth: {uid: "manager", token: {}}, data: {organizerId: "org1",
+          responseId: "response1", kind: "eventAttendeeProposal",
+          eventId: "event1", overrides: {}, requestId: "handoff-request"},
+      } as CallableRequest<unknown>, h.deps), {code:
+        change === "withdraw" || change === "move" ?
+          "failed-precondition" : "permission-denied"});
+      assert.equal(h.records("eventAttendees").length, 0);
+      assert.equal(h.records("eventAttendeeImports").length, 0);
+      assert.equal(h.records("organizerContactOrigins").length, 1);
+    });
+}
+
+type ConversionKind = "crmContact" | "application" | "eventAttendeeProposal";
+
+/** Real SDK transaction scheduling; every read/write still uses Firestore. */
+function conversionEmulatorBarrier(db: FirebaseFirestore.Firestore, hooks: {
+  before?: (transaction: number, attempt: number) => Promise<void>;
+  after?: (transaction: number, attempt: number) => Promise<void>;
+}): FirebaseFirestore.Firestore {
+  let transactions = 0;
+  return {
+    collection: db.collection.bind(db),
+    runTransaction: async <T>(
+      body: (tx: FirebaseFirestore.Transaction) => Promise<T>
+    ): Promise<T> => {
+      const transaction = ++transactions;
+      let attempts = 0;
+      return db.runTransaction(async (tx) => {
+        const attempt = ++attempts;
+        await hooks.before?.(transaction, attempt);
+        const result = await body(tx);
+        await hooks.after?.(transaction, attempt);
+        return result;
+      }, {maxAttempts: 5});
+    },
+  } as FirebaseFirestore.Firestore;
+}
+
+const conversionEmulator = process.env.FIRESTORE_EMULATOR_HOST;
+test("Firestore conversion authority, receipts and attendee handoff",
+  {skip: !conversionEmulator}, async (t) => {
+    assert.match(conversionEmulator!, /^(127\.0\.0\.1|localhost):[0-9]+$/u);
+    const app = admin.initializeApp({projectId: "demo-catch-form-conversions"},
+      `form-conversions-${Date.now()}`);
+    const db = admin.firestore(app);
+    const collections = ["organizers", "organizerForms",
+      "organizerFormVersions", "organizerFormResponses",
+      "organizerFormConversionReceipts", "organizerApplications",
+      "organizerApplicationResponses", "organizerContacts",
+      "organizerContactOrigins", "organizerContactTraits",
+      "organizerContactIdentityLinks", "organizerContactNotes",
+      "organizerAudienceSummaries", "organizerContactEventEdges",
+      "events", "eventAttendees", "eventAttendeeImports", "deletedUsers",
+      "eventSeatMigrationFences", "eventSeatLedgers", "eventSeatReservations",
+      "eventSeatIdentityAliases", "eventSeatRequestReceipts",
+      "payments"];
+    const records = async (name: string) => (await db.collection(name)
+      .get()).docs;
+    const snapshot = async () => Object.fromEntries(await Promise.all(
+      collections.map(async (name) => [name, (await records(name))
+        .map((doc) => [doc.id, doc.data()])])));
+    async function fixture(kind: ConversionKind) {
+      for (const name of collections) {
+        await db.recursiveDelete(db.collection(name));
+      }
+      const h = conversionFixture("crmContact");
+      const event = {organizerId: "org1", clubId: "org1", status: "active",
+        eventFormat: {activityKind: "singlesMixer"},
+        capacityLimit: 2, bookedCount: 0,
+        constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+      const policy = deriveEventSeatPolicy(event);
+      const seed = db.batch();
+      for (const [path, data] of Object.entries(h.store.docs)) {
+        seed.set(db.doc(path), data);
+      }
+      seed.update(db.doc("organizerForms/form1"), {submittedResponseCount: 1});
+      seed.set(db.doc("events/event1"), event);
+      seed.set(db.doc("eventSeatMigrationFences/event1"), {eventId: "event1",
+        migrationRevision: 1, state: "ready"});
+      seed.set(db.doc("eventSeatLedgers/event1"), {eventId: "event1",
+        capacity: 2,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+        migrationRevision: 1, state: "ready"});
+      seed.set(db.doc("payments/control"), {synthetic: true,
+        status: "captured"});
+      await seed.commit();
+      const deps = {...h.deps, firestore: () => db,
+        storageBucket: (): never => {
+          throw new Error("No storage in the conversion fixture.");
+        }};
+      const run = (overrides: Data = {}, database = db,
+        requestedKind = kind) => convertOrganizerFormResponseHandler({
+          auth: {uid: "manager", token: {}}, data: {organizerId: "org1",
+            responseId: "response1", kind: requestedKind,
+            eventId: requestedKind === "eventAttendeeProposal" ?
+              "event1" : null,
+            overrides, requestId: "emulator-conversion"},
+        } as CallableRequest<unknown>, {...deps, firestore: () => database});
+      const loseAuthority = async (loss: "withdraw" | "revoke" | "delete") => {
+        if (loss === "withdraw") {
+          await withdrawOrganizerFormResponseHandler({
+            auth: {uid: "person", token: {}}, data: {responseId: "response1",
+              withdrawalToken: null, requestId: "withdraw-emulator"},
+          } as CallableRequest<unknown>, deps);
+        } else {
+          await db.runTransaction(async (tx) => {
+            const ref = db.doc(loss === "delete" ?
+              "deletedUsers/manager" : "organizers/org1");
+            await tx.get(ref);
+            if (loss === "delete") tx.set(ref, {status: "deleted"});
+            else tx.update(ref, {hostUserIds: [], hostProfiles: []});
+          });
+        }
+      };
+      if (kind === "eventAttendeeProposal") await run({}, db, "crmContact");
+      return {run, loseAuthority};
+    }
+    try {
+      for (const kind of ["crmContact", "application",
+        "eventAttendeeProposal"] as const) {
+        const targetTransaction = kind === "eventAttendeeProposal" ? 3 : 1;
+        for (const loss of ["withdraw", "revoke", "delete"] as const) {
+          for (const retry of [false, true]) {
+            await t.test(`${kind}: ${loss} before ${retry ? "retry" : "write"}`,
+              async () => {
+                const h = await fixture(kind);
+                let fenced = false;
+                const database = conversionEmulatorBarrier(db, {
+                  before: async (transaction, attempt) => {
+                    if (transaction === targetTransaction &&
+                        attempt === (retry ? 2 : 1)) {
+                      await h.loseAuthority(loss);
+                      fenced = true;
+                    }
+                  },
+                  after: async (transaction, attempt) => {
+                    if (retry && transaction === targetTransaction &&
+                        attempt === 1) {
+                      // Exercise SDK rollback/retry after destination writes
+                      // are staged, with authority lost before fresh reads.
+                      throw Object.assign(new Error("Retry staged writes"),
+                        {code: 10});
+                    }
+                  },
+                });
+                await assert.rejects(h.run({}, database), {code:
+                  loss === "withdraw" ? "failed-precondition" :
+                    "permission-denied"});
+                assert.equal(fenced, true);
+                assert.equal((await records("eventAttendees")).length, 0);
+                assert.equal((await records("eventAttendeeImports")).length, 0);
+                assert.equal((await records("organizerApplications"))
+                  .length, 0);
+                assert.equal((await records("organizerApplicationResponses"))
+                  .length, 0);
+                assert.equal((await records("organizerContactOrigins")).length,
+                  kind === "eventAttendeeProposal" ? 1 : 0);
+                assert.equal((await db.doc("eventSeatLedgers/event1").get())
+                  .get("occupied"), 0);
+                assert.equal((await db.doc("events/event1").get())
+                  .get("bookedCount"), 0);
+                assert.deepEqual((await db.doc("payments/control").get())
+                  .data(), {synthetic: true, status: "captured"});
+              });
+          }
+        }
+
+        await t.test(`${kind}: simultaneous retries retain one destination`,
+          async () => {
+            const h = await fixture(kind);
+            const [first, second] = await Promise.all([h.run(), h.run()]);
+            assert.deepEqual(first, second);
+            assert.deepEqual(await h.run({displayName: "Changed"}), first);
+            const destination = kind === "crmContact" ? "organizerContacts" :
+              kind === "application" ? "organizerApplications" :
+                "eventAttendees";
+            assert.equal((await records(destination)).length, 1);
+            if (kind === "eventAttendeeProposal") {
+              assert.equal((await db.doc("eventSeatLedgers/event1").get())
+                .get("occupied"), 1);
+              const prior = await snapshot();
+              await h.loseAuthority("withdraw");
+              // Withdrawal is source revocation, never an attendee cancel.
+              assert.deepEqual((await records("eventAttendees"))
+                .map((doc) => [doc.id, doc.data()]), prior.eventAttendees);
+              assert.deepEqual((await records("eventSeatReservations"))
+                .map((doc) => [doc.id, doc.data()]),
+              prior.eventSeatReservations);
+              assert.equal((await db.doc("eventSeatLedgers/event1").get())
+                .get("occupied"), 1);
+            } else {
+              await h.loseAuthority("withdraw");
+              const prior = await snapshot();
+              assert.deepEqual(await h.run({displayName: "Changed"}), first);
+              assert.deepEqual(await snapshot(), prior);
+            }
+          });
+      }
+
+      for (const changed of ["response", "version"] as const) {
+        await t.test(`attendee handoff rejects a changed ${changed}`,
+          async () => {
+            const h = await fixture("eventAttendeeProposal");
+            let changedBeforeImport = false;
+            const database = conversionEmulatorBarrier(db, {
+              before: async (transaction) => {
+                if (transaction !== 3) return;
+                changedBeforeImport = true;
+                if (changed === "response") {
+                  await db.doc("organizerFormResponses/response1").update({
+                    "identity.displayName": "Revised identity",
+                  });
+                } else {
+                  const ref = db.doc("organizerFormVersions/version1");
+                  const definition = (await ref.get()).get("definition");
+                  definition.sections[0].questions[0].canonicalFieldId =
+                    "displayName";
+                  await ref.update({definition});
+                }
+              },
+            });
+            await assert.rejects(h.run({}, database), {code: "aborted"});
+            assert.equal(changedBeforeImport, true);
+            assert.equal((await records("eventAttendees")).length, 0);
+            assert.equal((await records("eventAttendeeImports")).length, 0);
+            assert.equal((await records("organizerContactOrigins")).length, 1);
+            assert.equal((await db.doc("eventSeatLedgers/event1").get())
+              .get("occupied"), 0);
+          });
+      }
+
+      for (const kind of ["crmContact", "application"] as const) {
+        for (const status of ["pending", "failed"] as const) {
+          await t.test(`${kind}: legacy ${status} receipt recovers after loss`,
+            async () => {
+              const h = await fixture(kind);
+              const original = await h.run({displayName: "Saved review"});
+              const [receipt] = await records(
+                "organizerFormConversionReceipts");
+              await receipt.ref.update({status, resultId: null,
+                completedAt: null});
+              await h.loseAuthority("withdraw");
+              assert.deepEqual(await h.run({displayName: "Changed retry"}),
+                original);
+              await h.loseAuthority("revoke");
+              await assert.rejects(h.run(), {code: "permission-denied"});
+            });
+        }
+      }
+    } finally {
+      await db.terminate();
+      await app.delete();
+    }
+  });
