@@ -1,9 +1,13 @@
+import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementController,
+  type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
+
 type ConsentChoice = "accepted" | "analytics" | "essential";
 type FormVariant = "member" | "host";
 
 export const marketingContentVersion = "website_copy_v2" as const;
 
-interface MarketingConsent {
+export interface MarketingConsent extends MeasurementConsent {
+  version: 1 | 2;
   choice: ConsentChoice;
   analytics: boolean;
   marketing: boolean;
@@ -26,7 +30,7 @@ interface StoredAttribution {
 export interface WaitlistAnalyticsPayload {
   attribution: StoredAttribution | null;
   analytics: {
-    consent: MarketingConsent | null;
+    consent: Omit<MarketingConsent, "version"> | null;
     eventId: string;
     formVariant: FormVariant;
     pagePath: string;
@@ -46,8 +50,11 @@ const legacyAttributionStorageKey = "catch_marketing_attribution_v1";
 const attributionStorageKey = "catch_marketing_attribution_v2";
 const attributionMaxAgeMs = 24 * 60 * 60 * 1000;
 export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
-const consentStorageKey = "catch_marketing_consent_v1";
-const trackedPageViews = new Set<string>();
+const legacyConsentStorageKey = "catch_marketing_consent_v1";
+const consentStorageKey = "catch_marketing_consent_v2";
+const measurement = createCatchMeasurementController();
+let lastPageKey: string | null = null;
+let consentRevisionMs = 0;
 let clientErrorMonitoringInstalled = false;
 
 const attributionKeys = [
@@ -70,10 +77,11 @@ function gtag(...args: unknown[]) {
 export function initializeMarketingAnalytics() {
   clearLegacyAttribution();
   captureAttribution();
+  refreshMeasurementContext();
   if (isPrivateEventUpdate()) return;
   installConsentDefaults();
   installClientErrorMonitoring();
-  // Arbitrary GTM is deferred. Only the isolated, typed organizer adapters may load providers.
+  // Arbitrary GTM and live Catch transports stay disabled; this bus is local only.
 }
 
 export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_rejection") {
@@ -87,56 +95,80 @@ export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_
 
 export function getMarketingConsent(): MarketingConsent | null {
   const stored = readJson<MarketingConsent>(consentStorageKey);
-  if (!stored || !["accepted", "analytics", "essential"].includes(stored.choice) ||
-    typeof stored.updatedAt !== "string" || !Number.isFinite(Date.parse(stored.updatedAt)) ||
-    stored.analytics !== (stored.choice !== "essential") ||
-    stored.marketing !== (stored.choice === "accepted")) {
-    clearAttribution();
-    return null;
+  if (stored) {
+    if (stored.version !== 2 || !validConsent(stored)) { clearAttribution(); return null; }
+    if (!stored.analytics) clearAttribution();
+    return stored;
   }
-  if (!stored.analytics) clearAttribution();
-  return stored;
+  const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
+  if (!legacy || !validConsent(legacy)) { clearAttribution(); return null; }
+  // Previous accept-all choices came from an analytics-only UI. Never escalate them.
+  return {version: 1, ...legacy, choice: legacy.analytics ? "analytics" : "essential", marketing: false};
 }
 
-export function shouldShowMarketingConsentBanner(
-  consent: MarketingConsent | null = getMarketingConsent()
-) {
-  return consent === null;
+function validConsent(stored: Omit<MarketingConsent, "version">) {
+  return ["accepted", "analytics", "essential"].includes(stored.choice) &&
+    typeof stored.updatedAt === "string" && Number.isFinite(Date.parse(stored.updatedAt)) &&
+    stored.analytics === (stored.choice !== "essential") &&
+    stored.marketing === (stored.choice === "accepted");
+}
+
+export function shouldShowMarketingConsentBanner(consent = getMarketingConsent()) {
+  return consent?.version !== 2;
 }
 
 export function setMarketingConsent(choice: ConsentChoice) {
+  // A new revision cancels in-flight conversion permission, including same-ms revoke/accept.
+  consentRevisionMs = Math.max(Date.now(), consentRevisionMs + 1);
   const consent: MarketingConsent = {
-    choice,
-    analytics: choice !== "essential",
+    version: 2, choice,
+    analytics: choice === "analytics" || choice === "accepted",
     marketing: choice === "accepted",
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date(consentRevisionMs).toISOString(),
   };
   writeJson(consentStorageKey, consent);
+  try { window.localStorage.removeItem(legacyConsentStorageKey); } catch { /* Optional storage. */ }
   updateConsentMode(consent);
   captureAttribution();
+  refreshMeasurementContext();
   trackMarketingEvent("consent_updated", {
-    analytics_consent: consent.analytics,
-    marketing_consent: consent.marketing,
+    analytics_consent: consent.analytics, marketing_consent: consent.marketing,
   });
-  if (typeof window.dispatchEvent === "function") {
-    window.dispatchEvent(new Event(marketingConsentChangedEvent));
-  }
+  if (typeof window.dispatchEvent === "function") window.dispatchEvent(new Event(marketingConsentChangedEvent));
   return consent;
 }
 
-export function trackPageView(pageName: string) {
-  if (isPrivateEventUpdate()) return;
+export function trackPageView(pageName: string, visitKey?: string) {
+  refreshMeasurementContext();
+  if (isPrivateEventUpdate()) { lastPageKey = null; return; }
   const pagePath = window.location.pathname;
-  const pageKey = `${pageName}:${pagePath}`;
-  if (trackedPageViews.has(pageKey)) return;
-  trackedPageViews.add(pageKey);
-
+  const pageKey = `${visitKey ?? ""}:${pageName}:${pagePath}`;
+  if (lastPageKey === pageKey) return;
+  lastPageKey = pageKey;
+  measurement.track({name: "page_view", visitId: createMarketingEventId("catch")});
   trackMarketingEvent("page_view", {
-    page_name: pageName,
-    page_path: pagePath,
-    page_location: window.location.href,
-    page_title: document.title,
+    page_name: pageName, page_path: pagePath,
+    page_location: window.location.href, page_title: document.title,
   });
+}
+
+function refreshMeasurementContext() {
+  measurement.update({path: window.location.pathname, consent: getMarketingConsent(),
+    campaign: readAttribution()?.lastTouch.values});
+}
+
+export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
+  refreshMeasurementContext();
+  return measurement.track(event);
+}
+
+export function trackAcceptedMarketingLead(eventId: string | undefined,
+  form: Exclude<AcquisitionForm, "claim">, alreadyJoined: boolean, submissionConsent: MarketingConsent | null) {
+  const current = getMarketingConsent();
+  if (!eventId || submissionConsent?.version !== 2 || !submissionConsent.analytics ||
+      current?.version !== 2 || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
+  return trackCatchAcquisitionEvent({name: "lead_accepted", eventId, form,
+    receipt: {ok: true, alreadyJoined: false}});
 }
 
 export function trackMarketingEvent(
@@ -144,6 +176,19 @@ export function trackMarketingEvent(
   parameters: Record<string, unknown> = {}
 ) {
   if (isPrivateEventUpdate()) return;
+  // Diagnostics have a deliberately small projection. Successes use explicit receipt seams.
+  if (eventName === "cta_click" && typeof parameters.cta_href === "string") {
+    try {
+      const target = new URL(parameters.cta_href, window.location.href);
+      const route = target.origin === window.location.origin ? acquisitionRoute(target.pathname) : null;
+      if (route) trackCatchAcquisitionEvent({name: "cta_click", target: route});
+    } catch { /* Unknown CTA targets remain local. */ }
+  }
+  const starts: Record<string, AcquisitionForm> = {
+    waitlist_started: "member_waitlist", host_lead_started: "host_lead",
+    host_operating_application_started: "host_application",
+  };
+  if (starts[eventName]) trackCatchAcquisitionEvent({name: "acquisition_start", form: starts[eventName]});
   const sanitizedParameters = {...parameters};
   sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_path");
   sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_location");
@@ -178,14 +223,20 @@ export function waitlistAnalyticsPayload(
   return {
     attribution: readAttribution(),
     analytics: {
-      consent: getMarketingConsent(),
+      consent: submissionWireConsent(),
       eventId,
       formVariant,
-      pagePath: window.location.pathname,
-      pageTitle: document.title,
+      pagePath: acquisitionRoute(window.location.pathname) ?? "/",
+      pageTitle: "Catch",
       submittedAt: new Date().toISOString(),
     },
   };
+}
+
+function submissionWireConsent(): WaitlistAnalyticsPayload["analytics"]["consent"] {
+  const consent = getMarketingConsent();
+  return consent ? {choice: consent.analytics ? "analytics" : "essential", analytics: consent.analytics,
+    marketing: false, updatedAt: consent.updatedAt} : null;
 }
 
 function installConsentDefaults() {
@@ -217,6 +268,12 @@ function updateConsentMode(consent: MarketingConsent) {
 function installClientErrorMonitoring() {
   if (clientErrorMonitoringInstalled) return;
   clientErrorMonitoringInstalled = true;
+  window.addEventListener("storage", (event) => {
+    if (event.key === consentStorageKey || event.key === legacyConsentStorageKey || event.key === null) {
+      captureAttribution(); refreshMeasurementContext();
+      window.dispatchEvent(new Event(marketingConsentChangedEvent));
+    }
+  });
   window.addEventListener("error", () => {
     trackClientErrorSignal("window_error");
   });
@@ -225,14 +282,8 @@ function installClientErrorMonitoring() {
   });
 }
 
-const attributionPaths = new Set([
-  "/", "/host/", "/host/overview/", "/host/platform/", "/host/planners/",
-  "/host/mixers/", "/host/clubs/", "/host/directory/", "/host/claim/",
-  "/host/apply/", "/host/stack/", "/host/workflows/",
-]);
-
 function canCaptureAttribution() {
-  return attributionPaths.has(window.location.pathname) && getMarketingConsent()?.analytics === true;
+  return acquisitionRoute(window.location.pathname) !== null && getMarketingConsent()?.analytics === true;
 }
 
 function clearLegacyAttribution() {
@@ -269,26 +320,16 @@ function readAttribution(): StoredAttribution | null {
   } catch { clearAttribution(); return null; }
 }
 
-function campaignValues(values: Record<string, unknown>): Record<string, string> {
-  const safe: Record<string, string> = {};
-  for (const key of attributionKeys) {
-    const value = values[key];
-    // Campaign labels only: reject addresses, URLs, whitespace, and free-text values.
-    if (typeof value === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/u.test(value)) safe[key] = value;
-  }
-  return safe;
-}
-
 function attributionTouch(capturedAt: string, landingPath: string, values: Record<string, string>): AttributionTouch {
-  return {capturedAt, landingPath, landingUrl: `${new URL(window.location.href).origin}${landingPath}`, referrer: null, values};
+  return {capturedAt, landingPath, landingUrl: `https://catchdates.com${landingPath}`, referrer: null, values};
 }
 
 function safeStoredTouch(touch?: AttributionTouch): AttributionTouch | null {
-  if (!touch || typeof touch.capturedAt !== "string" || !attributionPaths.has(touch.landingPath) ||
+  if (!touch || typeof touch.capturedAt !== "string" || !acquisitionRoute(touch.landingPath) ||
     !touch.values || typeof touch.values !== "object" || Array.isArray(touch.values)) return null;
   const age = Date.now() - Date.parse(touch.capturedAt);
   if (!Number.isFinite(age) || age < 0 || age > attributionMaxAgeMs) return null;
-  return attributionTouch(touch.capturedAt, touch.landingPath, campaignValues(touch.values));
+  return attributionTouch(touch.capturedAt, touch.landingPath, approvedCampaignLabels(touch.values));
 }
 
 function currentAttributionTouch(): AttributionTouch {
@@ -298,7 +339,7 @@ function currentAttributionTouch(): AttributionTouch {
     const value = params.get(key);
     if (value !== null) values[key] = value;
   }
-  return attributionTouch(new Date().toISOString(), window.location.pathname, campaignValues(values));
+  return attributionTouch(new Date().toISOString(), acquisitionRoute(window.location.pathname)!, approvedCampaignLabels(values));
 }
 
 function sanitizeAnalyticsUrlParameter(

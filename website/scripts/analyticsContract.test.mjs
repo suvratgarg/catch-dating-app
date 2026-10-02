@@ -52,7 +52,7 @@ test("analytics URL parameters omit query strings and attribution requires conse
   analytics.setMarketingConsent("analytics");
   const consented = analytics.waitlistAnalyticsPayload("waitlist_event-2", "member");
   assert.equal(consented.attribution?.firstTouch.landingPath, "/host/");
-  assert.equal(consented.attribution?.firstTouch.landingUrl, "https://catchdates.test/host/");
+  assert.equal(consented.attribution?.firstTouch.landingUrl, "https://catchdates.com/host/");
   assert.equal(consented.attribution?.firstTouch.referrer, null);
   assert.deepEqual(consented.attribution?.firstTouch.values, {});
 });

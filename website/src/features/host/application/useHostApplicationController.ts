@@ -3,6 +3,9 @@ import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useRef, useState} from "react";
 import {
   createMarketingEventId,
+  getMarketingConsent,
+  trackAcceptedMarketingLead,
+  type MarketingConsent,
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 } from "../../../analytics";
@@ -42,7 +45,7 @@ export function useHostApplicationController() {
   const submissionInFlight =
     useRef<Promise<JoinWaitlistHTTPSuccessResponse> | null>(null);
   const retrySubmission = useRef<{
-    signature: string; body: JoinWaitlistHTTPRequest;
+    signature: string; body: JoinWaitlistHTTPRequest; consent: MarketingConsent | null;
   } | null>(null);
   usePendingRequestRegistration(submitMutation.isPending);
 
@@ -145,10 +148,11 @@ export function useHostApplicationController() {
     if (retrySubmission.current?.signature !== signature) {
       const eventId = createMarketingEventId("host_lead");
       retrySubmission.current = {
-        signature,
+        signature, consent: getMarketingConsent(),
         body: {...operatingPacket, ...waitlistAnalyticsPayload(eventId, "host")},
       };
     }
+    const submissionConsent = retrySubmission.current.consent;
     const body = retrySubmission.current.body;
     const eventId = body.analytics?.eventId;
 
@@ -179,6 +183,7 @@ export function useHostApplicationController() {
         format_count: draft.formats.length,
         module_count: draft.eventSuccessModules.length,
       });
+      trackAcceptedMarketingLead(eventId, "host_application", data.alreadyJoined, submissionConsent);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

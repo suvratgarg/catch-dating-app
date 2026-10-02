@@ -28,9 +28,8 @@ export function useDocumentMeta(meta: PageMeta) {
 
 export function useMarketingAnalytics(page: PageKey, routeKey?: string) {
   useEffect(() => {
-    if (page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking") return;
     initializeMarketingAnalytics();
-    trackPageView(page);
+    trackPageView(page, routeKey);
   }, [page, routeKey]);
 }
 
