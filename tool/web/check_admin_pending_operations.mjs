@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import ts from "typescript";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 
@@ -166,8 +167,10 @@ function inspectCentralSources({
   testSource,
   onViolation,
 }) {
+  if (!hasMountedPendingProvider(appSource)) {
+    onViolation("admin/src/app/App.tsx: provider is not mounted around the rendered Admin shell");
+  }
   const required = [
-    [appSource, "<AdminPendingOperationProvider>", "admin/src/app/App.tsx: provider is not mounted"],
     [pendingSource, "if (activeOperation.current) return null", "admin/src/shared/pendingOperation.tsx: lease is not exclusive"],
     [pendingSource, "beforeunload", "admin/src/shared/pendingOperation.tsx: browser unload is not guarded"],
     [actionSource, "useAdminOperationPending", "admin actions do not consume global pending state"],
@@ -179,6 +182,41 @@ function inspectCentralSources({
   for (const [source, token, message] of required) {
     if (!source.includes(token)) onViolation(message);
   }
+}
+
+function hasMountedPendingProvider(source) {
+  const file = ts.createSourceFile(
+    "App.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX,
+  );
+  if (file.parseDiagnostics.length > 0) return false;
+  const renderedShells = [];
+  function visit(node) {
+    const tag = ts.isJsxElement(node) ? node.openingElement.tagName :
+      ts.isJsxSelfClosingElement(node) ? node.tagName : null;
+    if (tag && ts.isIdentifier(tag) && tag.text === "AdminAppShell") {
+      let guarded = false;
+      for (let child = node, parent = node.parent; parent;
+        child = parent, parent = parent.parent) {
+        if (ts.isReturnStatement(parent) ||
+            (ts.isArrowFunction(parent) && parent.body === child)) {
+          renderedShells.push(guarded);
+          break;
+        }
+        // JSX in a prop, an unused variable, or a callback does not prove that
+        // the provider wraps the returned shell and its navigation/workspace.
+        if (ts.isFunctionLike(parent) || ts.isJsxAttribute(parent) ||
+            ts.isJsxSpreadAttribute(parent)) break;
+        if (ts.isJsxElement(parent) &&
+            ts.isIdentifier(parent.openingElement.tagName) &&
+            parent.openingElement.tagName.text === "AdminPendingOperationProvider") {
+          guarded = true;
+        }
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(file);
+  return renderedShells.length > 0 && renderedShells.every(Boolean);
 }
 
 function occurrences(source, token) {
@@ -208,6 +246,46 @@ function parseArgs(argv) {
 }
 
 function runSelfTest() {
+  const shell = "<AdminAppShell><AdminWorkspace /></AdminAppShell>";
+  const provider = (children = shell) =>
+    `<AdminPendingOperationProvider>${children}</AdminPendingOperationProvider>`;
+  const component = (jsx) => `function AdminRouteApp() { return (${jsx}); }`;
+  const mountedFixtures = [
+    component(provider()),
+    component(`<AdminPendingOperationProvider key={sessionKey}>${shell}</AdminPendingOperationProvider>`),
+    component(`<Outer><AdminPendingOperationProvider\n key={sessionKey}\n {...props}\n label={epoch > 0 ? ">" : "<"}\n><><Inner>${shell}</Inner></></AdminPendingOperationProvider></Outer>`),
+    `const AdminRouteApp = () => (${provider()});`,
+  ];
+  const unmountedFixtures = [
+    component(shell),
+    `// ${provider()}\n${component(shell)}`,
+    `const example = ${JSON.stringify(provider())}; ${component(shell)}`,
+    `const unused = (${provider()}); ${component(shell)}`,
+    component(`<WrongProvider>${shell}</WrongProvider>`),
+    component(`<AdminPendingOperationProviderExtra>${shell}</AdminPendingOperationProviderExtra>`),
+    component(`<><AdminPendingOperationProvider />${shell}</>`),
+    component(`<>{provider("")}${shell}</>`),
+    component(`<AdminPendingOperationProvider content={${shell}} />`),
+    component(`<AdminPendingOperationProvider>{() => ${shell}}</AdminPendingOperationProvider>`),
+    component(`<AdminPendingOperationProvider>${shell}</WrongProvider>`),
+    `function AdminRouteApp() { if (unguarded) return (${shell}); return (${provider()}); }`,
+  ];
+  const centralSources = {
+    pendingSource: "if (activeOperation.current) return null; beforeunload",
+    actionSource: "useAdminOperationPending",
+    shellSource: "disabled={operationPending} blockPendingAnchorClick",
+    testSource: "rejects overlapping operations; reviewed snapshot",
+  };
+  for (const source of [...mountedFixtures, ...unmountedFixtures]) {
+    const violations = [];
+    inspectCentralSources({
+      ...centralSources,
+      appSource: source,
+      onViolation: (message) => violations.push(message),
+    });
+    assert.equal(violations.length, mountedFixtures.includes(source) ? 0 : 1, source);
+  }
+
   const contractViolations = [];
   inspectContract({
     contract: {
