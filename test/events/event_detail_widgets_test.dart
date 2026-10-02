@@ -2275,9 +2275,9 @@ Widget _withCurrentViewer(
 }) => ProviderScope(
   overrides: [
     // These test-only scopes isolate synthetic actors, not app dependencies.
-    // ignore: scoped_providers_should_specify_dependencies
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     uidProvider.overrideWithValue(AsyncData(child.userProfile.uid)),
-    // ignore: scoped_providers_should_specify_dependencies
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     eventViewerStateProvider(
       child.event.id,
       child.userProfile.uid,
