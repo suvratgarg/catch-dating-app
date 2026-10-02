@@ -69,25 +69,75 @@ class CatchFieldSupportRow extends StatelessWidget {
           )
         : label;
 
+    final counterStyle = CatchTextStyles.monoLabel(
+      context,
+      color: CatchTokens.of(context).ink3,
+    ).copyWith(fontSize: CatchFieldTokens.counterFontSize);
+    final counterLabel = Text(
+      normalizedCounter ?? '',
+      style: counterStyle,
+      textAlign: TextAlign.end,
+    );
     final content = Padding(
       padding: padding,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          if (hasText) Expanded(child: support) else const Spacer(),
-          if (hasCounter) ...[
-            if (hasText)
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // A counter alone must receive the field's width so large text can
+          // wrap rather than overflowing a narrow input beside its dial code.
+          if (!hasText) {
+            return Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: counterLabel,
+            );
+          }
+          if (!hasCounter) {
+            // Keep helper-only and error-only content in the full field lane.
+            // Returning the label directly would shrink an intrinsic parent.
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [Expanded(child: support)],
+            );
+          }
+
+          final counterPainter = TextPainter(
+            text: TextSpan(text: normalizedCounter, style: counterStyle),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          final counterWidth = counterPainter.width;
+          counterPainter.dispose();
+          final supportMinimum = showErrorIcon
+              ? CatchFieldTokens.errorGlyphExtent +
+                    CatchFieldTokens.errorGlyphGap
+              : 0.0;
+          if (counterWidth +
+                  CatchFieldTokens.supportingCounterGap +
+                  supportMinimum >=
+              constraints.maxWidth) {
+            // Preserve all helper/error copy when the counter cannot share a
+            // baseline. Both lines retain the full available field width.
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                support,
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: counterLabel,
+                ),
+              ],
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Expanded(child: support),
               const SizedBox(width: CatchFieldTokens.supportingCounterGap),
-            Text(
-              normalizedCounter!,
-              style: CatchTextStyles.monoLabel(
-                context,
-                color: CatchTokens.of(context).ink3,
-              ).copyWith(fontSize: CatchFieldTokens.counterFontSize),
-            ),
-          ],
-        ],
+              counterLabel,
+            ],
+          );
+        },
       ),
     );
     if (!showErrorIcon || !hasText) return content;

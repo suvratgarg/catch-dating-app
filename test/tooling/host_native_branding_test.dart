@@ -1,10 +1,85 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as image;
+import 'package:xml/xml.dart';
 
 void main() {
+  test('Host native launch background matches Flutter in each appearance', () {
+    const directory =
+        'apps/host/ios/Runner/Assets.xcassets/LaunchBackground.imageset';
+    final contents =
+        jsonDecode(File('$directory/Contents.json').readAsStringSync())
+            as Map<String, dynamic>;
+    for (final item in contents['images'] as List<dynamic>) {
+      final entry = item as Map<String, dynamic>;
+      final dark =
+          (entry['appearances'] as List<dynamic>?)?.any(
+            (dynamic appearance) =>
+                (appearance as Map<String, dynamic>)['value'] == 'dark',
+          ) ??
+          false;
+      final color = (dark ? AppTheme.dark : AppTheme.light)
+          .extension<CatchTokens>()!
+          .bg;
+      final bitmap = image.decodePng(
+        File('$directory/${entry['filename']}').readAsBytesSync(),
+      )!;
+      final pixel = bitmap.getPixel(0, 0);
+      expect(pixel.a, 255);
+      expect(pixel.r, (color.toARGB32() >> 16) & 255);
+      expect(pixel.g, (color.toARGB32() >> 8) & 255);
+      expect(pixel.b, color.toARGB32() & 255);
+    }
+  });
+
+  test('Host native launch matches the shared safe-area reading lane', () {
+    final document = XmlDocument.parse(
+      File(
+        'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard',
+      ).readAsStringSync(),
+    );
+    final constraints = {
+      for (final element in document.findAllElements('constraint'))
+        element.getAttribute('id'): element,
+    };
+    expect(
+      double.parse(constraints['7Hs-Wd']!.getAttribute('constant')!),
+      CatchStartupTokens.hostStartupLogoExtent,
+    );
+    expect(
+      double.parse(constraints['8Hs-Ht']!.getAttribute('constant')!),
+      CatchStartupTokens.hostStartupLogoExtent,
+    );
+    expect(
+      double.parse(constraints['6Hs-Tp']!.getAttribute('constant')!),
+      CatchStartupTokens.hostStartupLogoTopInset,
+    );
+    expect(constraints['6Hs-Tp']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(
+      double.parse(constraints['5Hs-Lmin']!.getAttribute('constant')!),
+      CatchStartupTokens.hostStartupLogoLeadingInset,
+    );
+    expect(
+      constraints['5Hs-Lmin']!.getAttribute('relation'),
+      'greaterThanOrEqual',
+    );
+    expect(constraints['5Hs-Lmin']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(constraints['5Hs-Ledge']!.getAttribute('priority'), '749');
+    expect(constraints['5Hs-Cx']!.getAttribute('priority'), '750');
+    expect(constraints['5Hs-Cx']!.getAttribute('secondItem'), '6Tk-OE-BBY');
+    expect(
+      double.parse(constraints['5Hs-Cx']!.getAttribute('constant')!),
+      CatchStartupTokens.hostStartupLogoLeadingInset +
+          CatchStartupTokens.hostStartupLogoExtent / 2 -
+          CatchLayout.maxContentWidth / 2,
+    );
+  });
+
   test(
     'Host wordmarks use the locked Archivo axes and singular product name',
     () {

@@ -80,6 +80,47 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     final l10n = context.l10n;
 
     if (widget.presentation == AuthPagePresentation.hostInline) {
+      final reflowPhoneInput = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+      final countrySelector = CountryCodeSelector(
+        countryCode: viewState.countryCode,
+        enabled: viewState.requestControlsEnabled,
+        embedded: true,
+        onChanged: (code) {
+          ref.read(authControllerProvider.notifier).setCountryCode(code);
+        },
+      );
+      final phoneInput = CatchFieldLanes.single(
+        child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
+          key: AuthFormKeys.phoneField,
+          title: l10n.authPhoneFieldLabel,
+          contract: CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
+          labelMode: CatchFieldLabelTextMode.hidden,
+          controller: _phoneController,
+          states: <WidgetState>{
+            if (!viewState.requestControlsEnabled) WidgetState.disabled,
+          },
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.done,
+          autofillHints: const [AutofillHints.telephoneNumberNational],
+          onSubmitted: (_) => _submit(),
+          onChanged: (_) {
+            ref.read(authControllerProvider.notifier).clearSendOtpErrorIfIdle();
+            setState(() {});
+          },
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
+          ],
+          placeholder: reflowPhoneInput
+              ? l10n.authPhoneFieldLabel
+              : l10n.authPhoneFieldPlaceholder,
+          variant: CatchFieldVariant.bare,
+          onValidate: (value) => AuthInput.phoneNumberIssue(value) == null
+              ? null
+              : l10n.authInvalidPhoneNumber,
+        ),
+      );
       final canSubmit =
           AuthInput.phoneNumberIssue(_phoneController.text) == null &&
           viewState.requestControlsEnabled;
@@ -100,68 +141,34 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                 child: CatchControlSurface(
                   enabled: viewState.requestControlsEnabled,
                   padding: EdgeInsets.zero,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CountryCodeSelector(
-                        countryCode: viewState.countryCode,
-                        enabled: viewState.requestControlsEnabled,
-                        embedded: true,
-                        onChanged: (code) {
-                          ref
-                              .read(authControllerProvider.notifier)
-                              .setCountryCode(code);
-                        },
-                      ),
-                      SizedBox(
-                        height: CatchField.mdControlHeight,
-                        child: VerticalDivider(
-                          width: CatchSpacing.s1,
-                          thickness: CatchStroke.hairline,
-                          color: CatchTokens.of(context).line2,
-                        ),
-                      ),
-                      Expanded(
-                        child: CatchField.input(
-                          copy: catchFieldCopy(context.l10n),
-                          key: AuthFormKeys.phoneField,
-                          title: l10n.authPhoneFieldLabel,
-                          contract: CatchContractConstraints
-                              .onboardingDraftDocumentPhoneNumber,
-                          labelMode: CatchFieldLabelTextMode.hidden,
-                          controller: _phoneController,
-                          states: <WidgetState>{
-                            if (!viewState.requestControlsEnabled)
-                              WidgetState.disabled,
-                          },
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.done,
-                          autofillHints: const [
-                            AutofillHints.telephoneNumberNational,
-                          ],
-                          onSubmitted: (_) => _submit(),
-                          onChanged: (_) {
-                            ref
-                                .read(authControllerProvider.notifier)
-                                .clearSendOtpErrorIfIdle();
-                            setState(() {});
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                              AuthInput.maxPhoneDigits,
+                  child: reflowPhoneInput
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: countrySelector,
                             ),
+                            const CatchDivider.section(),
+                            phoneInput,
                           ],
-                          placeholder: l10n.authPhoneFieldPlaceholder,
-                          variant: CatchFieldVariant.bare,
-                          onValidate: (value) =>
-                              AuthInput.phoneNumberIssue(value) == null
-                              ? null
-                              : l10n.authInvalidPhoneNumber,
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            countrySelector,
+                            SizedBox(
+                              height: CatchField.mdControlHeight,
+                              child: VerticalDivider(
+                                width: CatchSpacing.s1,
+                                thickness: CatchStroke.hairline,
+                                color: CatchTokens.of(context).line2,
+                              ),
+                            ),
+                            Expanded(child: phoneInput),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               if (mutation.hasError) ...[
@@ -399,12 +406,17 @@ class CountryCodeSelector extends StatelessWidget {
           : null,
     );
 
-    return SizedBox(
+    return ConstrainedBox(
       key: AuthFormKeys.countryCode,
-      width: embedded
-          ? CatchLayout.authCountryCodeEmbeddedWidth
-          : CatchLayout.countryCodeSelectorWidth,
-      height: CatchField.mdControlHeight,
+      constraints: embedded
+          ? const BoxConstraints(
+              minWidth: CatchStartupTokens.authCountryCodeEmbeddedWidth,
+              minHeight: CatchField.mdControlHeight,
+            )
+          : const BoxConstraints(
+              minWidth: CatchLayout.countryCodeSelectorWidth,
+              minHeight: CatchField.mdControlHeight,
+            ),
       child: embedded
           ? IgnorePointer(ignoring: !enabled, child: picker)
           : CatchControlSurface(

@@ -26,10 +26,12 @@
                             <constraint firstAttribute="trailing" secondItem="tWc-Dq-wcI" secondAttribute="trailing" id="2Lw-Bg-Tr"/>
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="3Lw-Bg-Tp"/>
                             <constraint firstAttribute="bottom" secondItem="tWc-Dq-wcI" secondAttribute="bottom" id="4Lw-Bg-Bt"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5Hs-Cx"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="6Hs-Tp"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="96" id="7Hs-Wd"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="96" id="8Hs-Ht"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="5Hs-Lmin"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" priority="749" id="5Hs-Ledge"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" constant="-172.0" priority="750" id="5Hs-Cx"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="72" id="6Hs-Tp"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="224" id="7Hs-Wd"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="224" id="8Hs-Ht"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
