@@ -556,18 +556,28 @@ export async function rosterWithReservedWaitlistOffers(
   });
 }
 
+/** Bounded read adapters must not treat a truncated offer set as inventory. */
+export class EventRosterReadLimitError extends Error {}
+
 export async function rosterWithReservedWaitlistOffersInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
   eventId: string,
   baseRoster: EventRosterSnapshot,
-  options: {excludeUid?: string; nowMillis?: number} = {}
+  options: {excludeUid?: string; nowMillis?: number; readLimit?: number} = {}
 ): Promise<EventRosterSnapshot> {
-  const offerQuery = db
+  let offerQuery = db
     .collection("eventWaitlistOffers")
     .where("eventId", "==", eventId)
     .where("status", "in", ["active", "accepted"]);
+  if (options.readLimit !== undefined) {
+    offerQuery = offerQuery.limit(options.readLimit + 1);
+  }
   const offerSnap = await tx.get(offerQuery);
+  if (options.readLimit !== undefined &&
+      offerSnap.docs.length > options.readLimit) {
+    throw new EventRosterReadLimitError();
+  }
   if (offerSnap.empty) return baseRoster;
 
   const offers = offerSnap.docs.map((doc) => doc.data());
@@ -587,6 +597,7 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
 
 export async function hasValidInviteForEvent(params: {
   db: FirebaseFirestore.Firestore;
+  tx?: FirebaseFirestore.Transaction;
   eventId: string;
   policy: EventPolicyBundleDocument;
   inviteCode?: string | null;
@@ -595,10 +606,8 @@ export async function hasValidInviteForEvent(params: {
   const submittedCode = normalizeInviteCode(params.inviteCode);
   if (!submittedCode) return false;
 
-  const accessSnap = await params.db
-    .collection("eventPrivateAccess")
-    .doc(params.eventId)
-    .get();
+  const ref = params.db.collection("eventPrivateAccess").doc(params.eventId);
+  const accessSnap = params.tx ? await params.tx.get(ref) : await ref.get();
   if (!accessSnap.exists) return false;
 
   const storedCode = normalizeInviteCode(accessSnap.data()?.inviteCode);
@@ -734,9 +743,10 @@ function paidCancellationPolicyId(
  * @return {boolean} Whether the request was approved by a host.
  */
 export function hasHostApprovedJoinRequest(
-  participation: unknown
+  participation: unknown,
+  nowMillis = Date.now()
 ): boolean {
-  if (hasAcceptedWaitlistOfferAccess(participation)) return true;
+  if (hasAcceptedWaitlistOfferAccess(participation, nowMillis)) return true;
   return typeof participation === "object" &&
     participation !== null &&
     (participation as {hostApprovalStatus?: unknown})

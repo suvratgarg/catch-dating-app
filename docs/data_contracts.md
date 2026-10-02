@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.159.0
+version: 1.160.0
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -3316,12 +3316,36 @@ revision/decision used at admission. Revocation fences new bookings; an existing
 signed-up/attended replay and historical paid admission remain intact, with
 cancellation/refund owned separately. Public OTP/form-offer and Cross Paths
 membership-gated continuations remain closed until their owners consume the same
-current authority. Viewer/profile linkage is a separate read-contract follow-up.
+current authority. The private viewer read source is described below; its callable and client
+integration remain pending.
 
 Account deletion's processing tombstone fences new decisions; cleanup deletes
 membership edges and decision receipts by subject `uid`. Decisions for other
 subjects retain their actor/source proof when their reviewer deletes an account.
 Direct client get/list/create/update/delete is denied for all four collections.
+
+### Authenticated Event Viewer Read Source
+
+`readEventViewerStateSource` is an internal read adapter, not yet an exported
+callable. One transaction reads an Auth-derived UID's public event, deletion
+state, native participation, current grant, review, policy, capacity/holds,
+schedule and seat-identity proof. Membership, review, future eligibility,
+payment, admission and attendance remain separate facts. It shares
+`signupPolicyDecision`, canonical schedule reads and the existing seat planner;
+it never applies plans, creates identity aliases, reserves seats or sends OTPs.
+A native payment pointer does not establish payment. An optional owned public
+payment uses `projectPublicPayment` and its immutable receipt/current roster
+proof in the same transaction, with checkout credentials suppressed. Public
+paid admission requires neither a Consumer profile nor native participation.
+
+Each candidate query reads at most 101 rows; an incomplete source closes future
+booking. Private visibility, external continuations and imported-guest linkage
+need their owning adapters and remain unavailable here. Admission history
+survives revoked membership, while new booking still checks current profile,
+review, invite, capacity, cohort/ratio and schedule. Policy and inventory
+revisions describe an observation, not a reservation or later write authority.
+The final native booking transaction also rechecks persisted host review,
+preventing a stale preflight approval from admitting a declined request.
 
 ### Private Program Functions And Guests
 

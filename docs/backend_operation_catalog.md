@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.91.0
+version: 1.92.0
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -155,6 +155,13 @@ promotion command creates only a blocked review receipt; it does not create an
 | P2 | Notification fan-out has a durable backend-owned Activity timeline for matches and event updates; messages instead update the conversation preview/unread flag. | Implemented; use the Notification Timeline table for category-specific ownership. |
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncClubMemberStats` recomputes `memberCount` from active membership edges, and `syncClubNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
 | P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only. Dev is 146/146 structured. The refreshed 2026-07-16 production dry run found 272 events: 125 valid, 138 deterministically repairable, and 9 unresolved coordinate blockers with no warnings; no production writes were applied. Keep `Event.meetingLocation` nullable until the production repair and follow-up validation complete, as tracked in `contracts/migrations/event_meeting_location.json`. |
+
+`readEventViewerStateSource` is currently an internal read source; no viewer
+callable is exported. It shares policy, schedule, membership, inventory and
+owned paid-admission readers in one read transaction. It keeps retained
+admission and attendance separate from present eligibility, never applies seat
+or identity plans, and returns unavailable for incomplete bounded sources.
+Callable registration and Consumer/website adapters remain pending.
 
 ## Cloud Functions Inventory
 
