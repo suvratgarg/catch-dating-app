@@ -32,7 +32,6 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import {getIdTokenResult, onAuthStateChanged, User} from "firebase/auth";
 import {
   AdminAccountMenu,
   AdminAppShell,
@@ -61,12 +60,13 @@ import {
   TextField,
 } from "../shared/ui/AdminPrimitives";
 import {
-  auth,
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
   signOutAdmin,
 } from "../shared/api/firebase";
+import {useAdminSession} from "./useAdminSession";
+import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
 import {
   AdminRoleClaim,
@@ -330,10 +330,9 @@ function AdminRouteApp() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneSignInStage, setPhoneSignInStage] =
     useState<PhoneSignInStage>("phone");
-  const [isRoleCheckPending, setIsRoleCheckPending] = useState(false);
-  const [rolesResolved, setRolesResolved] = useState(mode === "sample");
-  const [user, setUser] = useState<User | null>(null);
-  const [adminRoles, setAdminRoles] = useState<string[]>([]);
+  const session = useAdminSession(mode);
+  const {user, roles: adminRoles, resolved: rolesResolved} = session;
+  const isRoleCheckPending = Boolean(user && !rolesResolved);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState(readAdminSidebarPreference);
   const [marketingDirty, setMarketingDirty] = useState(false);
@@ -353,63 +352,17 @@ function AdminRouteApp() {
   }, [blocker]);
 
   useEffect(() => {
-    if (mode === "sample") {
-      setRolesResolved(true);
-      return undefined;
+    setError(null);
+    setNotice(null);
+    setMarketingDirty(false);
+    setAuthError(null);
+    if (user) {
+      resetPhoneSignIn();
+      setPhoneCode("");
+      setPhoneNumber("");
+      setPhoneSignInStage("phone");
     }
-    return onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser);
-      if (nextUser) {
-        resetPhoneSignIn();
-        setAuthError(null);
-        setPhoneCode("");
-        setPhoneNumber("");
-        setPhoneSignInStage("phone");
-      }
-    });
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "live") {
-      setAdminRoles([]);
-      setRolesResolved(true);
-      setIsRoleCheckPending(false);
-      return undefined;
-    }
-    if (!user) {
-      setAdminRoles([]);
-      setRolesResolved(false);
-      setIsRoleCheckPending(false);
-      return undefined;
-    }
-
-    let cancelled = false;
-    setRolesResolved(false);
-    setIsRoleCheckPending(true);
-    void getIdTokenResult(user)
-      .then((token) => {
-        if (cancelled) return;
-        setAdminRoles(adminRoleClaimKeys.filter(
-          (claim) => token.claims[claim] === true
-        ));
-        setAuthError(null);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setAdminRoles([]);
-          setAuthError("Unable to read admin claims for this Firebase session.");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setRolesResolved(true);
-          setIsRoleCheckPending(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, user]);
+  }, [session.epoch, user]);
 
   const visibleNavigation = useMemo(
     () => navigation.filter((item) =>
@@ -501,6 +454,7 @@ function AdminRouteApp() {
   const handleSignOut = useCallback(async () => {
     setAuthError(null);
     setIsAuthActionPending(true);
+    void session.clearSession();
     try {
       await signOutAdmin();
       setPhoneCode("");
@@ -509,7 +463,7 @@ function AdminRouteApp() {
       setNotice(null);
       setError(null);
     } catch (signOutError) {
-      setError(
+      setAuthError(
         signOutError instanceof Error ?
           signOutError.message :
           "Unable to sign out."
@@ -517,34 +471,12 @@ function AdminRouteApp() {
     } finally {
       setIsAuthActionPending(false);
     }
-  }, []);
+  }, [session.clearSession]);
 
   const handleRefreshAdminClaims = useCallback(async () => {
-    if (!user) return;
     setAuthError(null);
-    setIsRoleCheckPending(true);
-    try {
-      const token = await getIdTokenResult(user, true);
-      const roles = adminRoleClaimKeys.filter(
-        (claim) => token.claims[claim] === true
-      );
-      setAdminRoles(roles);
-      setRolesResolved(true);
-      if (roles.length === 0) {
-        setAuthError("This Firebase account does not have a Catch admin claim.");
-      }
-    } catch (refreshError) {
-      setAdminRoles([]);
-      setRolesResolved(true);
-      setAuthError(
-        refreshError instanceof Error ?
-          refreshError.message :
-          "Unable to refresh admin claims."
-      );
-    } finally {
-      setIsRoleCheckPending(false);
-    }
-  }, [user]);
+    await session.refreshClaims();
+  }, [session.refreshClaims]);
 
   const handleOverviewQueueOpen = useCallback((
     destination: OverviewQueueDestination,
@@ -594,7 +526,7 @@ function AdminRouteApp() {
   if (mode === "live" && !user) {
     return (
       <SignInScreen
-        error={authError}
+        error={authError ?? session.error}
         isSigningIn={isAuthActionPending}
         phoneCode={phoneCode}
         phoneNumber={phoneNumber}
@@ -611,7 +543,7 @@ function AdminRouteApp() {
     return (
       <AuthCheckScreen
         email={user.email ?? user.uid}
-        error={authError}
+        error={authError ?? session.error}
         isPending={isRoleCheckPending}
         onSignOut={() => void handleSignOut()}
       />
@@ -621,7 +553,7 @@ function AdminRouteApp() {
     return (
       <UnauthorizedAdminScreen
         email={user.email ?? user.uid}
-        error={authError}
+        error={authError ?? session.error}
         isPending={isRoleCheckPending || isAuthActionPending}
         onRefreshClaims={() => void handleRefreshAdminClaims()}
         onSignOut={() => void handleSignOut()}
@@ -630,6 +562,7 @@ function AdminRouteApp() {
   }
 
   return (
+    <AdminQueryProvider sessionKey={JSON.stringify([mode, user?.uid, session.epoch])}>
     <AdminAppShell
       intakeMode={currentNav === "organizer-intake"}
       sidebarCollapsed={isSidebarCollapsed}
@@ -943,6 +876,7 @@ function AdminRouteApp() {
         </AdminFeedbackProvider>
       </AdminWorkspace>
     </AdminAppShell>
+    </AdminQueryProvider>
   );
 }
 

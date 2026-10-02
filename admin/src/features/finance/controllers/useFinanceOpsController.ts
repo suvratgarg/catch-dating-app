@@ -129,15 +129,18 @@ export function useFinanceOpsController({
   });
   const [kindFilter, setKindFilter] = useState<FinanceIssueKind>("all");
   const [query, setQuery] = useState("");
+  // Disabling a query only stops fetching; TanStack still returns cached data.
+  // Gate every projection, including selection, metrics and source timestamps.
+  const hostAnalytics = canLoadHostAnalytics ? hostAnalyticsQuery.data : undefined;
   const built = useMemo(() => buildFinanceRows({
-    hostAnalytics: hostAnalyticsQuery.data,
+    hostAnalytics,
     overview: overviewQuery.data,
-  }), [hostAnalyticsQuery.data, overviewQuery.data]);
+  }), [hostAnalytics, overviewQuery.data]);
   const rows = built.rows;
   const metrics = useMemo(() => buildFinanceMetrics({
-    hostAnalytics: hostAnalyticsQuery.data,
+    hostAnalytics,
     overview: overviewQuery.data,
-  }), [hostAnalyticsQuery.data, overviewQuery.data]);
+  }), [hostAnalytics, overviewQuery.data]);
   const sources = useMemo<FinanceSourceState[]>(() => [
     sourceState({
       dataUpdatedAt: overviewQuery.dataUpdatedAt,
@@ -150,9 +153,9 @@ export function useFinanceOpsController({
     }),
     sourceState({
       enabled: canLoadHostAnalytics,
-      dataUpdatedAt: hostAnalyticsQuery.dataUpdatedAt,
+      dataUpdatedAt: canLoadHostAnalytics ? hostAnalyticsQuery.dataUpdatedAt : 0,
       error: hostAnalyticsQuery.error,
-      generatedAt: hostAnalyticsQuery.data?.generatedAt ?? null,
+      generatedAt: hostAnalytics?.generatedAt ?? null,
       id: "hostAnalytics",
       isPending: hostAnalyticsQuery.isPending,
       label: "Event payment analytics",
@@ -160,7 +163,7 @@ export function useFinanceOpsController({
     }),
   ], [
     canLoadHostAnalytics,
-    hostAnalyticsQuery.data?.generatedAt,
+    hostAnalytics?.generatedAt,
     hostAnalyticsQuery.dataUpdatedAt,
     hostAnalyticsQuery.error,
     hostAnalyticsQuery.isPending,

@@ -1,3 +1,5 @@
+// Resource keys are local to the principal + authorization epoch owned by
+// AdminQueryProvider. Never reuse its QueryClient across session boundaries.
 export const adminQueryKeys = {
   all: ["admin"] as const,
   adminRoles: {
