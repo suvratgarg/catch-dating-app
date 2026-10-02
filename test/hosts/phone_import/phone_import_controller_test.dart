@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_contact_picker.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact_reference.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,6 +29,34 @@ PhoneContact contact(String id, String name, List<String> values) =>
           .toList(),
     );
 void main() {
+  test(
+    'selected contact references are stable only in the same account and wedding',
+    () {
+      String reference(String actor, String program, String local) =>
+          phoneContactReferenceId(
+            accountId: actor,
+            programId: program,
+            localContactId: local,
+          );
+      final original = reference('client', 'wedding', 'synthetic-native-id');
+      expect(reference('client', 'wedding', 'synthetic-native-id'), original);
+      expect(
+        reference('parent', 'wedding', 'synthetic-native-id'),
+        isNot(original),
+      );
+      expect(
+        reference('client', 'other-wedding', 'synthetic-native-id'),
+        isNot(original),
+      );
+      expect(
+        reference('client', 'wedding', 'different-native-id'),
+        isNot(original),
+      );
+      expect(original, isNot(contains('synthetic-native-id')));
+      expect(RegExp(r'^[A-Za-z0-9_-]{8,120}$').hasMatch(original), isTrue);
+    },
+  );
+
   late SyntheticPicker picker;
   late PhoneImportController controller;
   setUp(() {
@@ -157,7 +187,7 @@ void main() {
       picker.result = PhoneContactPickerResult(status);
       await controller.pickContacts();
       expect(controller.entries.length, 1);
-      expect(controller.notice, isNotEmpty);
+      expect(controller.notice, isNotNull);
       expect(controller.sharingConfirmed, true);
       expect(picker.calls, 2);
     });

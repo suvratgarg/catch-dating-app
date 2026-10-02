@@ -1,34 +1,58 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_saved_review_section.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Local phone-contact review seam. No route, workspace authority or save action
-/// is mounted until the canonical CRM import/member contract is available.
+/// Shared review view. Without a canonical submission controller this remains
+/// an explicitly labelled demo with sharing permanently disabled.
 class PhoneImportReviewScreen extends StatelessWidget {
   const PhoneImportReviewScreen({
     super.key,
     required this.controller,
     required this.weddingName,
     required this.plannerName,
+    this.submission,
+    this.onReloadSaved,
   });
 
   final PhoneImportController controller;
   final String weddingName;
   final String plannerName;
+  final PhoneImportSubmissionController? submission;
+  final VoidCallback? onReloadSaved;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: controller,
+    listenable: Listenable.merge([controller, ?submission]),
     builder: (context, _) {
       final entries = controller.entries;
       final tokens = CatchTokens.of(context);
       final sharedPhones = controller.sharedPhones;
+      final live = submission;
+      final frozen =
+          live?.batch != null &&
+          {
+            PhoneImportSubmissionPhase.sharing,
+            PhoneImportSubmissionPhase.retry,
+            PhoneImportSubmissionPhase.completed,
+          }.contains(live?.phase);
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
-          title: 'Review phone contacts',
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: context.l10n.phoneImportTitle,
+          navigation: live == null
+              ? const CatchTopBarNavigation(
+                  mode: CatchTopBarNavigationMode.none,
+                )
+              : const CatchTopBarNavigation(
+                  mode: CatchTopBarNavigationMode.back,
+                ),
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
@@ -37,81 +61,155 @@ class PhoneImportReviewScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchBanner(
-                title: 'Phone import demo · sharing unavailable',
-                message:
-                    'This review stays on this device. Nothing is saved or '
-                    'shared with a wedding or planner in this demo.',
-                icon: CatchIcons.info,
-                tone: CatchBannerTone.warning,
-              ),
+              if (live == null)
+                CatchBanner(
+                  title: context.l10n.phoneImportDemoTitle,
+                  message: context.l10n.phoneImportDemoMessage,
+                  icon: CatchIcons.info,
+                  tone: CatchBannerTone.warning,
+                )
+              else
+                CatchBanner(
+                  key: const ValueKey('phone-import-status'),
+                  title: switch (live.phase) {
+                    PhoneImportSubmissionPhase.completed =>
+                      context.l10n.phoneImportCompletedTitle,
+                    PhoneImportSubmissionPhase.retry =>
+                      context.l10n.phoneImportRetryTitle,
+                    PhoneImportSubmissionPhase.ready =>
+                      context.l10n.phoneImportReadyTitle,
+                    PhoneImportSubmissionPhase.sharing =>
+                      context.l10n.phoneImportSharingTitle,
+                    PhoneImportSubmissionPhase.recovery =>
+                      context.l10n.phoneImportRecoveryTitle,
+                    _ => context.l10n.phoneImportPrivacyTitle,
+                  },
+                  message: switch (live.phase) {
+                    PhoneImportSubmissionPhase.completed =>
+                      context.l10n.phoneImportCompletedMessage(
+                        wedding: weddingName,
+                        planner: plannerName,
+                      ),
+                    PhoneImportSubmissionPhase.retry =>
+                      context.l10n.phoneImportRetryMessage,
+                    PhoneImportSubmissionPhase.recovery =>
+                      context.l10n.phoneImportRecoveryMessage,
+                    PhoneImportSubmissionPhase.sharing =>
+                      context.l10n.phoneImportSharingMessage,
+                    _ => context.l10n.phoneImportPrivacyMessage,
+                  },
+                  icon: CatchIcons.info,
+                  tone: live.phase == PhoneImportSubmissionPhase.completed
+                      ? CatchBannerTone.success
+                      : CatchBannerTone.neutral,
+                ),
+              if (live?.error case final error?) ...[
+                gapH12,
+                CatchBanner(
+                  key: const ValueKey('phone-import-error'),
+                  message: appErrorMessage(
+                    error,
+                    l10n: context.l10n,
+                    context: AppErrorContext.event,
+                  ),
+                  icon: CatchIcons.info,
+                  tone: CatchBannerTone.warning,
+                ),
+              ],
+              if (live?.result case final result?)
+                for (final issue in result.rowErrors) ...[
+                  gapH8,
+                  CatchBanner(
+                    message: context.l10n.phoneImportGuestIssue(
+                      number: issue.index + 1,
+                      message: issue.message,
+                    ),
+                    icon: CatchIcons.info,
+                    tone: CatchBannerTone.warning,
+                  ),
+                ],
               gapH24,
               CatchSection.contained(
                 title: weddingName,
-                subtitle: 'Selected planner: $plannerName',
+                subtitle: context.l10n.phoneImportSelectedPlanner(
+                  planner: plannerName,
+                ),
                 child: Text(
-                  'Choose only the guests you want to include. Review their '
-                  'names and phone numbers before sharing with this wedding.',
+                  context.l10n.phoneImportChooseMessage,
                   style: CatchTextStyles.proseM(context),
                 ),
               ),
               gapH24,
-              CatchSection.plain(
-                title: 'Select guests',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    CatchButton(
-                      key: const ValueKey('phone-import-pick'),
-                      label: entries.isEmpty
-                          ? 'Choose phone contacts'
-                          : 'Add phone contacts',
-                      onPressed: controller.picking
-                          ? null
-                          : controller.pickContacts,
-                      status: controller.picking
-                          ? CatchButtonStatus.loading
-                          : CatchButtonStatus.idle,
-                      fullWidth: true,
-                    ),
-                    gapH12,
-                    Text(
-                      'Contact selection opens in the native Catch Host app. '
-                      'On older Android phones, add contacts one at a time '
-                      'and repeat this action.',
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: tokens.ink2,
+              if (!frozen)
+                CatchSection.plain(
+                  title: context.l10n.phoneImportSelectGuests,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CatchButton(
+                        key: const ValueKey('phone-import-pick'),
+                        label: entries.isEmpty
+                            ? context.l10n.phoneImportChooseContacts
+                            : context.l10n.phoneImportAddContacts,
+                        onPressed: controller.interactionLocked
+                            ? null
+                            : controller.pickContacts,
+                        status: controller.picking
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        fullWidth: true,
                       ),
-                    ),
-                    if (controller.notice case final notice?) ...[
                       gapH12,
-                      Semantics(
-                        liveRegion: true,
-                        child: CatchBanner(
-                          key: const ValueKey('phone-import-notice'),
-                          message: notice,
-                          icon: CatchIcons.info,
+                      Text(
+                        context.l10n.phoneImportPickerHelp,
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: tokens.ink2,
                         ),
                       ),
+                      if (controller.notice case final notice?) ...[
+                        gapH12,
+                        Semantics(
+                          liveRegion: true,
+                          child: CatchBanner(
+                            key: const ValueKey('phone-import-notice'),
+                            message: switch (notice) {
+                              PhoneImportNotice.cancelled =>
+                                context.l10n.phoneImportCancelled,
+                              PhoneImportNotice.denied =>
+                                context.l10n.phoneImportDenied,
+                              PhoneImportNotice.unavailable =>
+                                context.l10n.phoneImportPickerUnavailable,
+                              PhoneImportNotice.failed =>
+                                context.l10n.phoneImportPickerFailed,
+                              PhoneImportNotice.tooMany =>
+                                context.l10n.phoneImportPickerLimit,
+                              PhoneImportNotice.reviewLimit =>
+                                context.l10n.phoneImportReviewLimit,
+                              PhoneImportNotice.empty =>
+                                context.l10n.phoneImportEmptySelection,
+                            },
+                            icon: CatchIcons.info,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
               gapH24,
-              if (entries.isEmpty)
+              if (frozen)
+                PhoneImportSavedReviewSection(batch: live!.batch!)
+              else if (entries.isEmpty)
                 CatchEmptyState(
                   icon: CatchIcons.peopleOutline,
-                  title: 'No guests selected',
-                  message:
-                      'Choose phone contacts or add a household member '
-                      'who does not have a phone contact.',
+                  title: context.l10n.phoneImportEmptyTitle,
+                  message: context.l10n.phoneImportEmptyMessage,
                 )
               else ...[
                 Semantics(
                   liveRegion: true,
                   child: Text(
-                    '${entries.length} ${entries.length == 1 ? 'guest' : 'guests'} in this local review',
+                    context.l10n.phoneImportReviewCount(count: entries.length),
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
@@ -119,9 +217,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                   gapH12,
                   CatchBanner(
                     key: const ValueKey('phone-import-shared-phones'),
-                    message:
-                        'A chosen number is shared by several guests. '
-                        'They stay separate; check their household assignments.',
+                    message: context.l10n.phoneImportSharedNumber,
                     icon: CatchIcons.info,
                     tone: CatchBannerTone.warning,
                   ),
@@ -132,7 +228,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                     key: ValueKey(entry.id),
                     entry: entry,
                     guestNumber: index + 1,
-                    busy: controller.picking,
+                    busy: controller.interactionLocked,
                     sharedPhone:
                         entry.selectedPhone != null &&
                         sharedPhones.contains(
@@ -154,88 +250,131 @@ class PhoneImportReviewScreen extends StatelessWidget {
                   gapH24,
                 ],
               ],
-              CatchButton(
-                key: const ValueKey('phone-import-add-member'),
-                label: 'Add household member without a phone',
-                variant: CatchButtonVariant.secondary,
-                onPressed: controller.picking || entries.length >= 100
-                    ? null
-                    : () => controller.addHouseholdMember(name: ''),
-                fullWidth: true,
-              ),
+              if (!frozen)
+                CatchButton(
+                  key: const ValueKey('phone-import-add-member'),
+                  label: context.l10n.phoneImportAddMember,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed:
+                      controller.interactionLocked || entries.length >= 100
+                      ? null
+                      : () => controller.addHouseholdMember(name: ''),
+                  fullWidth: true,
+                ),
               gapH24,
-              CatchSection.contained(
-                title: 'Review sharing',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Material(
-                      type: MaterialType.transparency,
-                      child: CheckboxListTile.adaptive(
-                        key: const ValueKey('phone-import-sharing'),
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        value: controller.sharingConfirmed,
-                        onChanged: entries.isEmpty || controller.picking
-                            ? null
-                            : (value) =>
-                                  controller.confirmSharing(value ?? false),
-                        title: Text(
-                          'I want to share only these reviewed guests with '
-                          '$weddingName and $plannerName.',
-                          style: CatchTextStyles.proseM(context),
+              if (!frozen)
+                CatchSection.contained(
+                  title: context.l10n.phoneImportReviewSharing,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Material(
+                        type: MaterialType.transparency,
+                        child: CheckboxListTile.adaptive(
+                          key: const ValueKey('phone-import-sharing'),
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: controller.sharingConfirmed,
+                          onChanged:
+                              entries.isEmpty || controller.interactionLocked
+                              ? null
+                              : (value) =>
+                                    controller.confirmSharing(value ?? false),
+                          title: Text(
+                            context.l10n.phoneImportConsent(
+                              wedding: weddingName,
+                              planner: plannerName,
+                            ),
+                            style: CatchTextStyles.proseM(context),
+                          ),
                         ),
                       ),
-                    ),
-                    gapH12,
-                    Text(
-                      'A phone number does not prove ownership or verification '
-                      'and does not give permission to send messages. '
-                      'These contacts are not used for Catch discovery or marketing.',
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: tokens.ink2,
-                      ),
-                    ),
-                    if (entries.isNotEmpty &&
-                        entries.any((entry) => !entry.valid)) ...[
                       gapH12,
-                      CatchBanner(
-                        key: const ValueKey('phone-import-needs-review'),
-                        message:
-                            'Enter every guest name and choose a phone '
-                            'number for each selected contact. Remove contacts '
-                            'without a number, or add them as household members.',
-                        icon: CatchIcons.info,
-                        tone: CatchBannerTone.warning,
+                      Text(
+                        context.l10n.phoneImportNoOwnership,
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: tokens.ink2,
+                        ),
                       ),
+                      if (entries.isNotEmpty &&
+                          entries.any((entry) => !entry.valid)) ...[
+                        gapH12,
+                        CatchBanner(
+                          key: const ValueKey('phone-import-needs-review'),
+                          message: context.l10n.phoneImportNeedsReview,
+                          icon: CatchIcons.info,
+                          tone: CatchBannerTone.warning,
+                        ),
+                      ],
+                      gapH16,
+                      if (live != null) ...[
+                        CatchButton(
+                          key: const ValueKey('phone-import-preview'),
+                          label: context.l10n.phoneImportPreview,
+                          variant: CatchButtonVariant.secondary,
+                          onPressed: live.canPreview ? live.preview : null,
+                          status:
+                              live.phase ==
+                                  PhoneImportSubmissionPhase.previewing
+                              ? CatchButtonStatus.loading
+                              : CatchButtonStatus.idle,
+                          fullWidth: true,
+                        ),
+                        gapH12,
+                      ],
+                      CatchButton(
+                        key: const ValueKey('phone-import-share'),
+                        label: context.l10n.phoneImportShare,
+                        onPressed: live?.canShare == true ? live!.share : null,
+                        fullWidth: true,
+                      ),
+                      if (live == null) ...[
+                        gapH8,
+                        Text(
+                          context.l10n.phoneImportUnavailable,
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: tokens.ink2,
+                          ),
+                        ),
+                      ],
                     ],
-                    gapH16,
-                    const CatchButton(
-                      key: ValueKey('phone-import-share'),
-                      label: 'Share reviewed guests',
-                      onPressed: null,
-                      fullWidth: true,
-                    ),
-                    gapH8,
-                    Text(
-                      'Sharing is unavailable until wedding member access '
-                      'and the workspace import service are connected.',
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: tokens.ink2,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              if (entries.isNotEmpty) ...[
+              if (!frozen && entries.isNotEmpty) ...[
                 gapH16,
                 CatchButton(
                   key: const ValueKey('phone-import-discard'),
-                  label: 'Discard local review',
+                  label: context.l10n.phoneImportDiscard,
                   variant: CatchButtonVariant.ghost,
-                  onPressed: controller.picking ? null : controller.discard,
+                  onPressed: controller.interactionLocked
+                      ? null
+                      : controller.discard,
+                ),
+              ],
+              if (live?.phase == PhoneImportSubmissionPhase.recovery) ...[
+                gapH16,
+                CatchButton(
+                  label: context.l10n.phoneImportReload,
+                  onPressed: onReloadSaved,
+                  fullWidth: true,
+                ),
+              ],
+              if (live?.canRetry == true) ...[
+                gapH16,
+                CatchButton(
+                  key: const ValueKey('phone-import-retry'),
+                  label: context.l10n.phoneImportRetry,
+                  onPressed: live!.retry,
+                  fullWidth: true,
+                ),
+                gapH8,
+                CatchButton(
+                  key: const ValueKey('phone-import-dismiss'),
+                  label: context.l10n.phoneImportDismiss,
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: () => _dismissSaved(context, live),
                 ),
               ],
             ],
@@ -244,4 +383,19 @@ class PhoneImportReviewScreen extends StatelessWidget {
       );
     },
   );
+
+  Future<void> _dismissSaved(
+    BuildContext context,
+    PhoneImportSubmissionController live,
+  ) async {
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      copy: catchDialogCopy(context.l10n),
+      title: context.l10n.phoneImportDismissTitle,
+      message: context.l10n.phoneImportDismissMessage,
+      confirmLabel: context.l10n.phoneImportDismiss,
+      danger: true,
+    );
+    if (confirmed == true) await live.dismissPending();
+  }
 }

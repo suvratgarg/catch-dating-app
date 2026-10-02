@@ -508,6 +508,13 @@
       "reason": "Covered by screen.programs.import as the staff manifest mapping and import surface; the callable re-checks guestRelations server-side."
     },
     {
+      "routeId": "hostWorkPhoneImportScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.import",
+      "reason": "Native phone selection and explicit wedding/planner review use the canonical manifest importer with fresh wedding-wide guest authority and durable identical retries."
+    },
+    {
       "routeId": "hostWorkAttendanceReportScreen",
       "status": "contracted",
       "priority": "P1",

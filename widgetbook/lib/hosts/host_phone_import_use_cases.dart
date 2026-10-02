@@ -1,12 +1,20 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_contact_picker.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_batch.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/presentation/widgets/phone_import_saved_review_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
@@ -141,3 +149,89 @@ final _guestEntries = [
     numbers: const [],
   ),
 ];
+
+@widgetbook.UseCase(
+  name: 'Saved review · synthetic read-only rows',
+  type: PhoneImportSavedReviewSection,
+  path: '[P1 product surfaces]/Host/Audience/Phone import demo',
+)
+Widget hostPhoneImportSavedReviewState(BuildContext context) =>
+    WidgetbookScrollCatalogFrame(
+      title: 'PhoneImportSavedReviewSection · synthetic review',
+      catalogId: 'host.phone_import_saved_review_demo',
+      children: [
+        WidgetbookPageStateCard(
+          label: 'Confirmed selected rows',
+          description:
+              'Synthetic retained command only. This preview sends no import.',
+          child: WidgetbookContentFrame(
+            child: PhoneImportSavedReviewSection(
+              batch: PhoneImportBatch.fromReview(
+                accountId: 'preview_actor',
+                programId: 'preview_wedding',
+                organizerId: 'preview_planner',
+                familySideLabels: const {},
+                review: PhoneImportReview(
+                  reviewId: 'preview_operation_01',
+                  entries: [
+                    PhoneImportEntry(
+                      id: 'preview_manual_member',
+                      displayName: 'Synthetic household member',
+                      household: 'Sample household',
+                      source: PhoneImportEntrySource.manualHouseholdMember,
+                      numbers: const [],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'Workspace route · access unavailable',
+  type: PhoneImportScreen,
+  path: '[P1 product surfaces]/Host/Audience/Phone import demo',
+)
+Widget hostPhoneImportAccessUnavailableState(
+  BuildContext context,
+) => WidgetbookScrollCatalogFrame(
+  title: 'PhoneImportScreen · access unavailable demo',
+  catalogId: 'host.phone_import_access_unavailable_demo',
+  children: [
+    WidgetbookPageStateCard(
+      label: 'No current workspace authority',
+      description:
+          'Synthetic failure seam. No grant, Contacts permission or CRM transport.',
+      child: WidgetbookViewportFrame.constrainedDevice(
+        size: const Size(390, 812),
+        child: ProviderScope(
+          overrides: [
+            phoneImportRouteControllerProvider.overrideWith(
+              _UnavailablePhoneImportRouteController.new,
+            ),
+            uidProvider.overrideWith(
+              (ref) => Stream<String?>.value('preview_actor'),
+            ),
+          ],
+          child: const PhoneImportScreen(programId: 'preview_wedding'),
+        ),
+      ),
+    ),
+  ],
+);
+
+class _UnavailablePhoneImportRouteController
+    extends PhoneImportRouteController {
+  @override
+  String? readAccountId() => 'preview_actor';
+  @override
+  Future<PhoneImportRouteSession> open({
+    required String programId,
+    required bool Function() isCurrent,
+  }) async => throw const PermissionException(
+    'Synthetic preview has no wedding authority.',
+  );
+}

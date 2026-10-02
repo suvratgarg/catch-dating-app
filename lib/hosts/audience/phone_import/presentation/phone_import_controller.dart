@@ -6,21 +6,40 @@ import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contac
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:flutter/foundation.dart';
 
-/// Owns a disposable, in-memory review. No repository or save action exists.
+enum PhoneImportNotice {
+  cancelled,
+  denied,
+  unavailable,
+  failed,
+  tooMany,
+  reviewLimit,
+  empty,
+}
+
+/// Owns the disposable in-memory review; submission uses the canonical adapter.
 class PhoneImportController extends ChangeNotifier {
-  PhoneImportController({required this.picker});
+  PhoneImportController({required this.picker, this.contactReferenceId});
+  final String Function(String localContactId)? contactReferenceId;
   final PhoneContactPicker picker;
   final Map<String, String> _localIds = {};
   List<PhoneImportEntry> _entries = [];
   bool _picking = false;
+  bool _submissionLocked = false;
   bool _sharingConfirmed = false;
   bool _disposed = false;
   int _generation = 0;
-  String? _notice;
+  PhoneImportNotice? _notice;
   PhoneImportReview? _review;
   List<PhoneImportEntry> get entries => List.unmodifiable(_entries);
   bool get picking => _picking;
-  String? get notice => _notice;
+  bool get interactionLocked => _picking || _submissionLocked;
+  void setSubmissionLocked(bool value) {
+    if (_disposed || value == _submissionLocked) return;
+    _submissionLocked = value;
+    _changed();
+  }
+
+  PhoneImportNotice? get notice => _notice;
   bool get sharingConfirmed => _sharingConfirmed;
   bool get canReview =>
       !_picking &&
@@ -42,7 +61,7 @@ class PhoneImportController extends ChangeNotifier {
   }
 
   Future<void> pickContacts() async {
-    if (_picking || _disposed) return;
+    if (interactionLocked || _disposed) return;
     final generation = _generation;
     _picking = true;
     _notice = null;
@@ -56,16 +75,11 @@ class PhoneImportController extends ChangeNotifier {
     if (_disposed || generation != _generation) return;
     _picking = false;
     _notice = switch (result.status) {
-      PhoneContactPickerStatus.cancelled =>
-        'Selection cancelled. Your review is unchanged.',
-      PhoneContactPickerStatus.denied =>
-        'Contact selection was not allowed. You can add a household member manually.',
-      PhoneContactPickerStatus.unavailable =>
-        'Contact selection is available in the native Catch Host app.',
-      PhoneContactPickerStatus.failed =>
-        'Contact selection could not be read. Try again when you are ready.',
-      PhoneContactPickerStatus.tooMany =>
-        'Select up to 100 contacts at a time.',
+      PhoneContactPickerStatus.cancelled => PhoneImportNotice.cancelled,
+      PhoneContactPickerStatus.denied => PhoneImportNotice.denied,
+      PhoneContactPickerStatus.unavailable => PhoneImportNotice.unavailable,
+      PhoneContactPickerStatus.failed => PhoneImportNotice.failed,
+      PhoneContactPickerStatus.tooMany => PhoneImportNotice.tooMany,
       PhoneContactPickerStatus.selected => null,
     };
     if (result.status == PhoneContactPickerStatus.selected) {
@@ -74,8 +88,7 @@ class PhoneImportController extends ChangeNotifier {
           .toSet()
           .difference(_localIds.keys.toSet());
       if (_entries.length + newIds.length > 100) {
-        _notice =
-            'Review up to 100 guests at a time. Remove guests before adding more.';
+        _notice = PhoneImportNotice.reviewLimit;
       } else {
         var changed = false;
         for (final contact in result.contacts) {
@@ -101,7 +114,7 @@ class PhoneImportController extends ChangeNotifier {
             }
             continue;
           }
-          final id = _id();
+          final id = contactReferenceId?.call(contact.localId) ?? _id();
           _localIds[contact.localId] = id;
           _entries.add(
             PhoneImportEntry(
@@ -118,7 +131,7 @@ class PhoneImportController extends ChangeNotifier {
         }
         if (changed) _invalidateReview();
         if (result.contacts.isEmpty) {
-          _notice = 'No contacts selected. Your review is unchanged.';
+          _notice = PhoneImportNotice.empty;
         }
       }
     }
@@ -145,7 +158,7 @@ class PhoneImportController extends ChangeNotifier {
   void assignHousehold(String id, String value) =>
       _update(id, (entry) => entry.copyWith(household: value));
   void remove(String id) {
-    if (_picking || _disposed) return;
+    if (interactionLocked || _disposed) return;
     _entries.removeWhere((entry) => entry.id == id);
     _localIds.removeWhere((_, value) => value == id);
     _invalidateReview();
@@ -153,7 +166,7 @@ class PhoneImportController extends ChangeNotifier {
   }
 
   void addHouseholdMember({required String name, String household = ''}) {
-    if (_picking || _disposed || _entries.length >= 100) return;
+    if (interactionLocked || _disposed || _entries.length >= 100) return;
     _entries.add(
       PhoneImportEntry(
         id: _id(),
@@ -168,7 +181,7 @@ class PhoneImportController extends ChangeNotifier {
   }
 
   void confirmSharing(bool value) {
-    if (_picking || _disposed) return;
+    if (interactionLocked || _disposed) return;
     _sharingConfirmed = value;
     _review = null;
     _changed();
@@ -180,6 +193,7 @@ class PhoneImportController extends ChangeNotifier {
   }
 
   void discard() {
+    if (_submissionLocked || _disposed) return;
     _generation++;
     _picking = false;
     _entries = [];
@@ -190,7 +204,7 @@ class PhoneImportController extends ChangeNotifier {
   }
 
   void _update(String id, PhoneImportEntry Function(PhoneImportEntry) update) {
-    if (_picking || _disposed) return;
+    if (interactionLocked || _disposed) return;
     final index = _entries.indexWhere((entry) => entry.id == id);
     if (index < 0) return;
     _entries[index] = update(_entries[index]);

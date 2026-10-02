@@ -22,6 +22,9 @@ internal class NativePhoneContactsPicker(private val activity: Activity) {
         // API 37 constants are documented literals so the pinned API 36 SDK can
         // compile this runtime-gated enhancement without a global SDK upgrade.
         val intent = if (sessionPicker) Intent(ACTION_PICK_CONTACTS).apply {
+            // Host still targets API36. API37 requires this explicit opt-in
+            // rather than forwarding the request to a legacy contacts app.
+            putExtra(EXTRA_USE_SYSTEM_CONTACTS_PICKER, true)
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             putExtra(EXTRA_SELECTION_LIMIT, 100)
             putStringArrayListExtra(EXTRA_REQUESTED_FIELDS, arrayListOf(
@@ -42,7 +45,7 @@ internal class NativePhoneContactsPicker(private val activity: Activity) {
         val uri = data?.data
         if (resultCode != Activity.RESULT_OK) { finish(mapOf("status" to "cancelled")); return true }
         if (uri == null || uri.scheme != "content" ||
-            (sessionPicker && uri.authority != SESSION_AUTHORITY)) {
+            (sessionPicker && !isSessionUri(uri))) {
             finish(mapOf("status" to "failed")); return true
         }
         val useSession = sessionPicker
@@ -54,6 +57,15 @@ internal class NativePhoneContactsPicker(private val activity: Activity) {
             activity.runOnUiThread { if (!disposed) finish(response) }
         }
         return true
+    }
+
+    private fun isSessionUri(uri: Uri): Boolean {
+        // Android may qualify a session authority with its numeric profile id.
+        // Preserve that URI for its scoped read grant; reject other authorities,
+        // nonnumeric user-info, ports and suffixes rather than stripping it.
+        val authority = uri.authority ?: return false
+        return authority == SESSION_AUTHORITY ||
+            Regex("[0-9]+@${Regex.escape(SESSION_AUTHORITY)}").matches(authority)
     }
 
     private fun readSelection(uri: Uri, session: Boolean): List<Map<String, Any>> {
@@ -101,6 +113,7 @@ internal class NativePhoneContactsPicker(private val activity: Activity) {
         private const val REQUEST_CODE = 43017
         // https://developer.android.com/reference/android/provider/ContactsPickerSessionContract
         private const val ACTION_PICK_CONTACTS = "android.provider.action.PICK_CONTACTS"
+        private const val EXTRA_USE_SYSTEM_CONTACTS_PICKER = "android.intent.extra.USE_SYSTEM_CONTACTS_PICKER"
         private const val EXTRA_REQUESTED_FIELDS = "android.provider.extra.PICK_CONTACTS_REQUESTED_DATA_FIELDS"
         private const val EXTRA_SELECTION_LIMIT = "android.provider.extra.PICK_CONTACTS_SELECTION_LIMIT"
         private const val SESSION_AUTHORITY = "com.android.contacts.picker.sessions"

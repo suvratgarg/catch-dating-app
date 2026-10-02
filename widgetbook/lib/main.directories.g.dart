@@ -247,6 +247,8 @@ import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
+import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_phone_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_export_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
@@ -8607,6 +8609,61 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Host',
         children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Audience',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Phone import demo',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'PhoneImportGuestSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name:
+                            'Multiple numbers, no number, and household member',
+                        builder:
+                            _widgetbook_workspace_hosts_host_phone_import_use_cases
+                                .hostPhoneImportGuestStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'PhoneImportReviewScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Local demo · empty and selected guests',
+                        builder:
+                            _widgetbook_workspace_hosts_host_phone_import_use_cases
+                                .hostPhoneImportReviewStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'PhoneImportSavedReviewSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Saved review · synthetic read-only rows',
+                        builder:
+                            _widgetbook_workspace_hosts_host_phone_import_use_cases
+                                .hostPhoneImportSavedReviewState,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'PhoneImportScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Workspace route · access unavailable',
+                        builder:
+                            _widgetbook_workspace_hosts_host_phone_import_use_cases
+                                .hostPhoneImportAccessUnavailableState,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Inbox',
             children: [

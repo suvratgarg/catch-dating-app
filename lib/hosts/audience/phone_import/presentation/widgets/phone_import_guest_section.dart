@@ -79,44 +79,42 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
     final copy = catchFieldCopy(context.l10n);
     final states = widget.busy ? {WidgetState.disabled} : <WidgetState>{};
     return CatchSection.containedFieldRows(
-      title: 'Guest ${widget.guestNumber}',
+      title: context.l10n.phoneImportGuestTitle(number: widget.guestNumber),
       children: [
         CatchField.read(
           copy: copy,
-          title: 'Source',
+          title: context.l10n.phoneImportSource,
           body: manual
-              ? 'Household member · no phone contact'
+              ? context.l10n.phoneImportManualSource
               : entry.nameEdited
-              ? 'Selected phone contact · name edited for this review'
-              : 'Selected phone contact',
+              ? context.l10n.phoneImportEditedSource
+              : context.l10n.phoneImportPickerSource,
           bodyMaxLines: 3,
         ),
         CatchField.input(
           key: ValueKey('phone-import-name-${entry.id}'),
           copy: copy,
-          title: 'Guest name',
+          title: context.l10n.phoneImportGuestName,
           controller: _name,
           contractExemption:
-              'Disposable local review; canonical CRM import contract is not connected.',
+              'Review input for canonical importProgramManifest.displayName; no write before explicit sharing.',
           textCapitalization: TextCapitalization.words,
           states: states,
           errorText: entry.displayName.trim().isEmpty
-              ? 'Enter a guest name.'
+              ? context.l10n.phoneImportNameRequired
               : null,
           onChanged: widget.onRename,
         ),
         if (manual)
           CatchField.read(
             copy: copy,
-            title: 'Phone number',
-            body: 'No phone needed for this household member.',
+            title: context.l10n.phoneImportPhoneNumber,
+            body: context.l10n.phoneImportNoPhoneNeeded,
             bodyMaxLines: 3,
           )
         else if (entry.numbers.isEmpty)
           CatchBanner(
-            message:
-                'This contact has no phone number. Remove it and add '
-                'a household member without a phone instead.',
+            message: context.l10n.phoneImportNoContactNumber,
             icon: CatchIcons.info,
             tone: CatchBannerTone.warning,
           )
@@ -124,7 +122,7 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
           CatchField<String>.select(
             key: ValueKey('phone-import-phone-${entry.id}'),
             copy: copy,
-            title: 'Chosen phone number',
+            title: context.l10n.phoneImportChosenNumber,
             contractExemption:
                 'Only user-selected local phone values are reviewed; no ownership or verification is asserted.',
             values: [for (final number in entry.numbers) number.value],
@@ -137,14 +135,14 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
                   : '${number.label} · $value';
             },
             value: entry.selectedPhone,
-            hintText: 'Choose one phone number',
+            hintText: context.l10n.phoneImportChooseNumber,
             states: states,
             onChanged: widget.busy ? null : widget.onChoosePhone,
             helperText: widget.sharedPhone
-                ? 'Also chosen for another guest. Keep guests separate.'
+                ? context.l10n.phoneImportSharedGuest
                 : entry.selectedPhone == null
-                ? 'Choose the number you want to share for this guest.'
-                : 'Review this number before sharing.',
+                ? context.l10n.phoneImportChooseNumberHelp
+                : context.l10n.phoneImportReviewNumberHelp,
             helperTone: widget.sharedPhone
                 ? CatchFieldSupportRowTone.brand
                 : CatchFieldSupportRowTone.neutral,
@@ -155,31 +153,31 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
           CatchField.input(
             key: ValueKey('phone-import-international-${entry.id}'),
             copy: copy,
-            title: 'International number to share',
+            title: context.l10n.phoneImportInternationalNumber,
             controller: _internationalPhone,
             keyboardType: TextInputType.phone,
             contractExemption:
                 'Explicit country-code review of the chosen phone; no country or ownership is inferred.',
             states: states,
             onChanged: widget.onInternationalPhoneChanged,
-            helperText:
-                'Include + and the country code. Check this is the chosen contact number.',
+            helperText: context.l10n.phoneImportInternationalHelp,
             errorText: entry.phoneForImport == null
-                ? 'Enter the chosen number with + and its country code.'
+                ? context.l10n.phoneImportInternationalRequired
                 : null,
           ),
         CatchField<PhoneImportFamilySide>.select(
           key: ValueKey('phone-import-family-${entry.id}'),
           copy: copy,
-          title: 'Family side / cohort',
+          title: context.l10n.phoneImportFamilySide,
           contractExemption:
-              'Optional local wedding review grouping; no workspace assignment is saved.',
+              'Review input for canonical importProgramManifest.groupLabels; no direct cohort write.',
           values: PhoneImportFamilySide.values,
           itemLabelBuilder: (side) => switch (side) {
-            PhoneImportFamilySide.unassigned => 'Unassigned',
-            PhoneImportFamilySide.partnerOne => 'Partner one’s side',
-            PhoneImportFamilySide.partnerTwo => 'Partner two’s side',
-            PhoneImportFamilySide.both => 'Both sides',
+            PhoneImportFamilySide.unassigned =>
+              context.l10n.phoneImportSideNone,
+            PhoneImportFamilySide.partnerOne => context.l10n.phoneImportSideOne,
+            PhoneImportFamilySide.partnerTwo => context.l10n.phoneImportSideTwo,
+            PhoneImportFamilySide.both => context.l10n.phoneImportSideBoth,
           },
           value: entry.familySide,
           states: states,
@@ -192,21 +190,25 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
         CatchField.input(
           key: ValueKey('phone-import-household-${entry.id}'),
           copy: copy,
-          title: 'Household',
+          title: context.l10n.phoneImportHousehold,
           controller: _household,
           contractExemption:
-              'Optional local household label; canonical household authority is not connected.',
+              'Review input for canonical importProgramManifest.householdLabel; no direct household write.',
           labelMode: CatchFieldLabelTextMode.optional,
-          helperText: 'Use the same label for guests grouped together.',
+          helperText: context.l10n.phoneImportHouseholdHelp,
           states: states,
           onChanged: widget.onHouseholdChanged,
         ),
         CatchButton(
           key: ValueKey('phone-import-remove-${entry.id}'),
-          label: 'Remove guest ${widget.guestNumber}',
+          label: context.l10n.phoneImportRemoveGuest(
+            number: widget.guestNumber,
+          ),
           semanticsLabel: entry.displayName.trim().isEmpty
-              ? 'Remove guest ${widget.guestNumber}'
-              : 'Remove ${entry.displayName} from this review',
+              ? context.l10n.phoneImportRemoveGuest(number: widget.guestNumber)
+              : context.l10n.phoneImportRemoveNamedGuest(
+                  name: entry.displayName,
+                ),
           variant: CatchButtonVariant.ghost,
           onPressed: widget.busy ? null : widget.onRemove,
         ),

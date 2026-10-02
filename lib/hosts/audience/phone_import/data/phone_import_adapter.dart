@@ -5,8 +5,8 @@ import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 
-/// Canonical gateway adapter, currently an unmounted integration seam. Do not
-/// enable its UI until the source-bound manifest authority (#504) is present.
+/// Canonical gateway adapter for the source-bound manifest authority. The route
+/// and every preview/commit use current canonical wedding-wide guest access.
 /// No offline import, direct Firestore write, synthetic grant or contact store.
 class PhoneImportAdapter {
   PhoneImportAdapter({
