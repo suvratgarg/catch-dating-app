@@ -620,19 +620,19 @@ test("shared Flutter presentation change selects tests and role-bounded web smok
   const v2Plan = plan(path);
 
   assert.deepEqual(v2Plan.directComponents, ["app.shared"]);
-  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host"]);
-  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke"]);
+  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host", "web.marketing"]);
+  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
   assert.deepEqual(v2Plan.operations.buildTargets, [
     "consumer-web-smoke",
     "host-web-smoke",
   ]);
 });
 
-test("host-only Flutter source selects only Flutter and the host web smoke lane", () => {
+test("host-only Flutter source keeps Host smoke while validating Marketing captures", () => {
   const result = plan("lib/hosts/presentation/host_home.dart");
   assert.deepEqual(result.directComponents, ["app.host"]);
-  assert.deepEqual(result.affectedComponents, []);
-  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke"]);
+  assert.deepEqual(result.affectedComponents, ["web.marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
   assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
@@ -807,11 +807,11 @@ test("callable contracts select both schema and admin validator codegen", () => 
   ]);
 });
 
-test("generated Flutter bindings validate Flutter without expanding upstream", () => {
+test("generated Flutter bindings validate Flutter and Marketing without expanding upstream", () => {
   const result = plan("lib/core/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
-  assert.deepEqual(result.affectedComponents, []);
-  assert.deepEqual(result.operations.ciTargets, ["flutter"]);
+  assert.deepEqual(result.affectedComponents, ["web.marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["flutter", "marketing"]);
   assert.deepEqual(result.operations.codegenIds, ["contracts.schema-projections"]);
 });
 
@@ -1037,30 +1037,30 @@ test("post-deploy callable IAM helper is deployment control, without runtime mut
 });
 
 
-test("Flutter token package selects both app builds and visual coverage without React", () => {
+test("Flutter token package preserves app and visual checks with Marketing capture freshness", () => {
   const result = plan("packages/catch_tokens/lib/src/primitives/catch_spacing.dart");
   assert.deepEqual(result.directComponents, ["app.tokens"]);
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "marketing", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
-  for (const target of ["admin", "marketing", "functions"]) {
+  for (const target of ["admin", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
   }
 });
 
-test("Flutter UI package selects both app builds and visual coverage without React", () => {
+test("Flutter UI package preserves app and visual checks with Marketing capture freshness", () => {
   const result = plan("packages/catch_ui/lib/src/foundations/catch_theme.dart");
   assert.deepEqual(result.directComponents, ["app.ui"]);
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "marketing", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
-  for (const target of ["admin", "marketing", "functions"]) {
+  for (const target of ["admin", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
   }
 });
@@ -1112,5 +1112,97 @@ test("every generator requires explicit runtimes and package dependencies", () =
     mutate(invalid.compileCodegen[0]);
     assert.ok(validateComponentGraph(invalid).some((error) => error.includes("checkRequirements")));
     assert.throws(() => planAffected({graph: invalid, changedPaths: []}), /checkRequirements/u);
+  }
+});
+
+
+test("capture provenance inputs add Marketing freshness without changing source obligations", () => {
+  const baseline = structuredClone(graph);
+  baseline.components.find((entry) => entry.id === "web.marketing").dependsOn =
+    ["contracts.source", "web.shared"];
+  const toolingPaths = graph.components.find((entry) =>
+    entry.id === "marketing.capture-tooling").ownedPaths.include;
+  baseline.components.find((entry) => entry.id === "repo.tooling").ownedPaths.exclude =
+    baseline.components.find((entry) => entry.id === "repo.tooling").ownedPaths.exclude
+      .filter((pattern) => !toolingPaths.includes(pattern));
+  baseline.components.find((entry) => entry.id === "app.design").ownedPaths.exclude =
+    baseline.components.find((entry) => entry.id === "app.design").ownedPaths.exclude
+      .filter((pattern) => pattern !== "artifacts/marketing/app-screenshots/**");
+  const docPaths = graph.classifications.find((entry) => entry.id === "capture-input-doc").paths.include;
+  baseline.classifications.find((entry) => entry.id === "ordinary-doc").paths.exclude =
+    baseline.classifications.find((entry) => entry.id === "ordinary-doc").paths.exclude
+      .filter((pattern) => !docPaths.includes(pattern));
+  delete baseline.classifications.find((entry) => entry.id === "design-runtime-doc").paths.exclude;
+  baseline.classifications = baseline.classifications.filter((entry) =>
+    !["capture-input-doc", "capture-artifact-doc"].includes(entry.id));
+  baseline.components = baseline.components.filter((entry) =>
+    !["marketing.capture-tooling", "marketing.capture-artifacts", "marketing.capture-docs",
+      "marketing.capture-artifact-docs"].includes(entry.id));
+  const inputs = [
+    "lib/auth/presentation/phone_page.dart", "lib/hosts/presentation/host_home.dart",
+    "lib/main_consumer.dart", "lib/l10n/app_en.arb",
+    "lib/l10n/generated/app_localizations.dart",
+    "lib/core/schema_contracts/generated/schema_paths.dart",
+    "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
+    "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",
+    "assets/images/sample.png", "assets/fonts/sample.ttf", "pubspec.yaml", "pubspec.lock",
+    "packages/catch_tokens/pubspec.yaml", "packages/catch_tokens/lib/example.dart",
+    "packages/catch_ui/lib/example.dart", "packages/catch_ui/assets/example.png",
+    "packages/catch_ui_lints/pubspec.yaml", "packages/catch_ui_lints/lib/example.dart",
+    "packages/phosphor_flutter/lib/example.dart", "packages/example/pubspec.yaml",
+    "packages/example/lib/example.dart", "packages/example/assets/example.png",
+    "tool/ui_capture/run_captures.mjs", "tool/lib/repo_paths.mjs",
+    "tool/demo/demo_seed/scenarios/host-demo.json",
+    "tool/demo/demo_seed/personas/india-host.json", "tool/ci/toolchain.env",
+    "artifacts/marketing/app-screenshots/host-event-setup.png",
+    "tool/marketing/lib/capture_provenance.mjs", "assets/audio/celebration/README.md",
+    "assets/audio/event_success/README.md", "packages/example/assets/README.md",
+    "lib/README.md", "test/goldens/README.md", "tool/marketing/event_guide/README.md",
+    "tool/demo/demo_seed/scenarios/README.md",
+    "artifacts/marketing/app-screenshots/README.md",
+  ];
+  for (const file of inputs) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const before = plan(file, mode, baseline);
+      const after = plan(file, mode);
+      assert.equal(after.complete, true, `${file} ${mode}`);
+      assert.deepEqual(after.operations.ciTargets,
+        [...new Set([...before.operations.ciTargets, "marketing"])].sort(), `${file} ${mode}`);
+      for (const key of ["checkIds", "codegenIds", "buildTargets", "deployGroups",
+        "releaseTargets", "releaseRoles"]) {
+        assert.deepEqual(after.operations[key], before.operations[key], `${file} ${mode} ${key}`);
+      }
+      if (before.operations.ciTargets.includes("tools")) {
+        const options = {changedPaths: [file], manifest: toolsManifest, mode};
+        const oldTools = planAffectedToolChecks({...options, componentGraph: baseline});
+        const newTools = planAffectedToolChecks({...options, componentGraph: graph});
+        assert.deepEqual(newTools, oldTools, `${file} ${mode} retains Tools ownership/setup`);
+      }
+    }
+  }
+  for (const file of ["lib/auth/presentation/phone_page.dart",
+    "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart"]) {
+    const before = plan(file, "release", baseline);
+    const after = plan(file, "release");
+    assert.deepEqual(after.operations, before.operations, `${file} release`);
+  }
+});
+
+test("capture validation keeps unrelated tooling narrow and mixed Functions authority intact", () => {
+  for (const file of ["tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+    "tool/docs/check_doc_metadata.mjs", "functions/test/publicListingReadiness.test.cjs"]) {
+    const result = plan(file);
+    assert.equal(result.operations.ciTargets.includes("marketing"), false, file);
+  }
+  for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+    const result = planAffected({graph, mode, changedPaths: [
+      "lib/auth/presentation/phone_page.dart", "functions/src/payments/razorpay.ts"]});
+    for (const target of ["marketing", "functions"]) {
+      assert.ok(result.operations.ciTargets.includes(target));
+    }
+    assert.deepEqual(result.operations.deployGroups, mode === "main" ? ["functions"] : []);
+    const nativeOnly = plan("lib/auth/presentation/phone_page.dart", mode);
+    assert.deepEqual(result.operations.releaseTargets, nativeOnly.operations.releaseTargets);
+    assert.deepEqual(result.operations.releaseRoles, nativeOnly.operations.releaseRoles);
   }
 });

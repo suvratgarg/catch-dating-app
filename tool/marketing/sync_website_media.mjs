@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
+import {spawnSync} from "node:child_process";
+import {repoRoot} from "../lib/repo_paths.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
@@ -43,6 +45,7 @@ function updateWebsiteMedia(manifest) {
   const errors = validateSourceManifest(manifest);
   if (errors.length > 0) fail("Marketing capture manifest is invalid.", errors);
 
+  requireCurrentExports();
   for (const capture of manifest.captures) {
     if (capture.status !== "active") continue;
     const sourcePath = fromRepo(capture.sourcePath);
@@ -69,6 +72,7 @@ function checkWebsiteMedia(manifest) {
   }
 
   if (errors.length > 0) fail("Marketing website media check failed.", errors);
+  requireCurrentExports();
 
   for (const capture of manifest.captures) {
     if (capture.status !== "active") continue;
@@ -104,6 +108,9 @@ function validateSourceManifest(manifest) {
   }
   if (!Number.isInteger(manifest.version)) {
     errors.push("Manifest version must be an integer.");
+  }
+  if (typeof manifest.previewDisclosure !== "string" || manifest.previewDisclosure.trim() === "") {
+    errors.push("Manifest previewDisclosure is required for synthetic app previews.");
   }
   if (!Array.isArray(manifest.captures)) {
     errors.push("Manifest captures must be an array.");
@@ -179,7 +186,7 @@ function buildWebsiteManifest(manifest) {
         device: capture.device,
         webPath,
         alt: capture.alt,
-        caption: capture.caption,
+        caption: `${manifest.previewDisclosure} ${capture.caption}`,
         walkthroughStep: capture.walkthroughStep,
       };
     });
@@ -242,4 +249,9 @@ Capture statuses:
   active           sourcePath is required and must match the website asset bytes.
   paused           Excluded from the generated website manifest.
 `);
+}
+
+function requireCurrentExports() {
+  const result = spawnSync(process.execPath, ['tool/marketing/export_app_screenshots.mjs', '--check'], {cwd: repoRoot, stdio: 'inherit'});
+  if (result.status !== 0) process.exit(result.status ?? 1);
 }
