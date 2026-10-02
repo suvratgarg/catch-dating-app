@@ -45,6 +45,8 @@ export async function readParticipantFormActivitySource(params: {
     if (deleted.exists || user.data()?.deleted === true) return null;
     const response = responseSnap.data() as Response | undefined;
     if (!validateOrganizerFormResponseDocument(response) || !response ||
+        !documentId(response.organizerId) || !documentId(response.formId) ||
+        !documentId(response.versionId) ||
         response.respondentUid !== uid || response.status !== "submitted" ||
         response.withdrawnAt !== null ||
         response.identityKind === "anonymous") {
@@ -56,6 +58,8 @@ export async function readParticipantFormActivitySource(params: {
         version.organizerId !== response.organizerId ||
         version.formId !== response.formId ||
         version.definition.consent.consentVersion !== response.consentVersion ||
+        (version.definition.defaultTargetKind === "event" &&
+          !documentId(version.definition.defaultTargetId ?? "")) ||
         !accountIdentityMatches(version.definition.identityPolicy,
           response.identityKind)) return null;
     const submittedAtMillis = timestampMillis(response.submittedAt);

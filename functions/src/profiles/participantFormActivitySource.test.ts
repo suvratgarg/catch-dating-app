@@ -109,6 +109,8 @@ test("version scope and notice mismatches make the source unavailable",
     for (const patch of [{organizerId: "foreign"}, {formId: "foreign"},
       {publishedAt: Timestamp.fromMillis(1500)},
       {definition: {...h.version.definition, identityPolicy: "anonymous"}},
+      {definition: {...h.version.definition, defaultTargetKind: "event",
+        defaultTargetId: "event/nested/other"}},
       {definition: {...h.version.definition, consent: {
         ...h.version.definition.consent, consentVersion: "changed"}}}]) {
       h.store.records.set("organizerFormVersions/version",
@@ -128,6 +130,23 @@ test("corrupt sources and future times are unavailable", async () => {
     {submittedAt: {_seconds: 1, _nanoseconds: 0}}]) {
     h.store.records.set(h.key, {...response, ...patch});
     assert.equal(await read(h.params), null);
+  }
+});
+
+test("malformed source IDs never follow a version reference", async () => {
+  const h = await fixture();
+  const response = h.store.records.get(h.key)!;
+  const db = {collection: (name: string) => {
+    assert.notEqual(name, "organizerFormVersions",
+      "Invalid source was followed");
+    return h.db.collection(name);
+  }, runTransaction: h.db.runTransaction.bind(h.db)} as
+    unknown as FirebaseFirestore.Firestore;
+  for (const field of ["organizerId", "formId", "versionId"]) {
+    for (const id of [".", "..", "a/b", "foreign/nested/version", "a\n"]) {
+      h.store.records.set(h.key, {...response, [field]: id});
+      assert.equal(await read({...h.params, db}), null);
+    }
   }
 });
 
