@@ -18,10 +18,6 @@
       "maxLines": 1298
     },
     {
-      "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
-      "maxLines": 807
-    },
-    {
       "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
       "maxLines": 2338
     },

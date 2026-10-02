@@ -90,7 +90,15 @@ class CatchFieldSupportRow extends StatelessWidget {
               child: counterLabel,
             );
           }
-          if (!hasCounter) return support;
+          if (!hasCounter) {
+            // Keep helper-only and error-only content in the full field lane.
+            // Returning the label directly would shrink an intrinsic parent.
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [Expanded(child: support)],
+            );
+          }
 
           final counterPainter = TextPainter(
             text: TextSpan(text: normalizedCounter, style: counterStyle),

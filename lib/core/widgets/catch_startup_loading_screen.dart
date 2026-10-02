@@ -56,7 +56,7 @@ class CatchStartupBrandStage extends StatelessWidget {
     if (resolvedRole == AppRole.host) {
       return SizedBox(
         width: double.infinity,
-        height: CatchLayout.hostStartupBrandStageExtent,
+        height: CatchStartupTokens.hostStartupBrandStageExtent,
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
@@ -66,16 +66,16 @@ class CatchStartupBrandStage extends StatelessWidget {
               width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.only(
-                  top: CatchLayout.hostStartupLogoTopInset,
-                  left: CatchLayout.hostStartupLogoLeadingInset,
+                  top: CatchStartupTokens.hostStartupLogoTopInset,
+                  left: CatchStartupTokens.hostStartupLogoLeadingInset,
                 ),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Image.asset(
                     iconAsset,
                     key: markKey,
-                    width: CatchLayout.hostStartupLogoExtent,
-                    height: CatchLayout.hostStartupLogoExtent,
+                    width: CatchStartupTokens.hostStartupLogoExtent,
+                    height: CatchStartupTokens.hostStartupLogoExtent,
                     semanticLabel: context.l10n.appTitleHost,
                   ),
                 ),
@@ -88,16 +88,18 @@ class CatchStartupBrandStage extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: CatchLayout.startupBrandStageExtent,
+      height: CatchStartupTokens.startupBrandStageExtent,
       child: Padding(
-        padding: const EdgeInsets.only(top: CatchLayout.startupLogoTopInset),
+        padding: const EdgeInsets.only(
+          top: CatchStartupTokens.startupLogoTopInset,
+        ),
         child: Align(
           alignment: Alignment.topCenter,
           child: Image.asset(
             iconAsset,
             key: markKey,
-            width: CatchLayout.startupLogoExtent,
-            height: CatchLayout.startupLogoExtent,
+            width: CatchStartupTokens.startupLogoExtent,
+            height: CatchStartupTokens.startupLogoExtent,
             semanticLabel: resolvedRole == AppRole.host
                 ? context.l10n.appTitleHost
                 : context.l10n.coreCatchStartupLoadingScreenSemanticlabelCatch,
@@ -151,8 +153,8 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                   Theme.of(context).brightness,
                 ),
                 key: CatchStartupBrandStage.markKey,
-                width: CatchLayout.startupLogoExtent,
-                height: CatchLayout.startupLogoExtent,
+                width: CatchStartupTokens.startupLogoExtent,
+                height: CatchStartupTokens.startupLogoExtent,
                 semanticLabel: context
                     .l10n
                     .coreCatchStartupLoadingScreenSemanticlabelCatch,
@@ -160,7 +162,10 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
             ),
           Center(
             child: Transform.translate(
-              offset: const Offset(0, CatchLayout.startupIndicatorOffsetY),
+              offset: const Offset(
+                0,
+                CatchStartupTokens.startupIndicatorOffsetY,
+              ),
               child: AnimatedSwitcher(
                 duration: CatchMotion.fast,
                 switchInCurve: CatchMotion.standardCurve,
@@ -171,7 +176,7 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                               .l10n
                               .coreCatchStartupLoadingScreenBodyStartupLoadingIndicator,
                         ),
-                        dimension: CatchLayout.startupIndicatorExtent,
+                        dimension: CatchStartupTokens.startupIndicatorExtent,
                         child: CatchLoadingIndicator(color: t.ink),
                       )
                     : SizedBox.shrink(

@@ -282,11 +282,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
 | <code>ForceUpdateGate</code> | <code>lib/app.dart:115</code> | — | — | No class documentation or registry summary. |
-| <code>HostAuthFlowFrame</code> | <code>lib/auth/presentation/auth_screen.dart:82</code> | — | — | Host auth frame whose top brand stage is geometrically identical to the Flutter startup surface. Only the lower content is animated. |
-| <code>HostAuthCard</code> | <code>lib/auth/presentation/host_auth_widgets.dart:6</code> | — | — | The outlined lower-stage container shared by every Catch Host auth state. |
+| <code>HostAuthFlowFrame</code> | <code>lib/auth/presentation/auth_screen.dart:83</code> | — | — | Host auth frame shares its initial brand anchor with Flutter startup. The inset card enters below it, and one scroll owner can reveal any focused control on short screens or when the keyboard reduces the available height. |
+| <code>HostAuthCard</code> | <code>lib/auth/presentation/host_auth_widgets.dart:6</code> | — | — | The inset card shared by every Catch Host authentication state. |
 | <code>HostAuthHeader</code> | <code>lib/auth/presentation/host_auth_widgets.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostAuthProgressButton</code> | <code>lib/auth/presentation/host_auth_widgets.dart:52</code> | — | — | A non-interactive primary action surface that preserves the button's geometry while an authentication request is in flight. |
-| <code>CountryCodeSelector</code> | <code>lib/auth/presentation/phone_page.dart:298</code> | — | — | No class documentation or registry summary. |
+| <code>CountryCodeSelector</code> | <code>lib/auth/presentation/phone_page.dart:305</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:183</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart:493</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:46</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |

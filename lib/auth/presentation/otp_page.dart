@@ -225,8 +225,8 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               status: verifyError != null
                   ? CatchCodeInputStatus.error
                   : CatchCodeInputStatus.ready,
-              height: CatchLayout.authOtpDigitHeight,
-              gap: CatchLayout.authOtpDigitGap,
+              height: CatchStartupTokens.authOtpDigitHeight,
+              gap: CatchStartupTokens.authOtpDigitGap,
               onSubmitted: _submit,
               onChanged: _handleCodeChanged,
             ),

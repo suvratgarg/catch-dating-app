@@ -8,6 +8,7 @@ Future<void> pumpSupportRow(
   double textScale = 1,
   String? text,
   bool showErrorIcon = false,
+  String? counter = '10 / 10',
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -22,7 +23,7 @@ Future<void> pumpSupportRow(
               width: width,
               child: CatchFieldSupportRow(
                 text: text,
-                counter: '10 / 10',
+                counter: counter,
                 color: Colors.black,
                 showErrorIcon: showErrorIcon,
               ),
@@ -35,6 +36,42 @@ Future<void> pumpSupportRow(
 }
 
 void main() {
+  for (final textScale in [1.0, 2.0]) {
+    for (final error in [false, true]) {
+      testWidgets(
+        'support without counter fills its lane at $textScale (error: $error)',
+        (tester) async {
+          await pumpSupportRow(
+            tester,
+            width: 320,
+            textScale: textScale,
+            text: 'Helper',
+            counter: null,
+            showErrorIcon: error,
+          );
+          final field = tester.getRect(
+            find.byKey(const ValueKey('field-width')),
+          );
+          final rows = find
+              .descendant(
+                of: find.byType(CatchFieldSupportRow),
+                matching: find.byType(Row),
+              )
+              .evaluate();
+          expect(
+            rows.any(
+              (element) =>
+                  tester.getSize(find.byWidget(element.widget)).width ==
+                  field.width,
+            ),
+            isTrue,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('counter retains trailing alignment at normal width', (
     tester,
   ) async {

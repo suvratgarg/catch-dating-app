@@ -81,13 +81,13 @@ void main() {
                 : 0.0;
             expect(
               brand.left,
-              laneLeft + CatchLayout.hostStartupLogoLeadingInset,
+              laneLeft + CatchStartupTokens.hostStartupLogoLeadingInset,
             );
-            expect(brand.top, CatchLayout.hostStartupLogoTopInset);
-            expect(brand.width, CatchLayout.hostStartupLogoExtent);
+            expect(brand.top, CatchStartupTokens.hostStartupLogoTopInset);
+            expect(brand.width, CatchStartupTokens.hostStartupLogoExtent);
             expect(
               card.top,
-              CatchLayout.hostStartupBrandStageExtent +
+              CatchStartupTokens.hostStartupBrandStageExtent +
                   CatchInsets.hostAuthStage.top,
             );
             expect(card.left, greaterThan(0));

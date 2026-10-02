@@ -410,7 +410,7 @@ class CountryCodeSelector extends StatelessWidget {
       key: AuthFormKeys.countryCode,
       constraints: embedded
           ? const BoxConstraints(
-              minWidth: CatchLayout.authCountryCodeEmbeddedWidth,
+              minWidth: CatchStartupTokens.authCountryCodeEmbeddedWidth,
               minHeight: CatchField.mdControlHeight,
             )
           : const BoxConstraints(

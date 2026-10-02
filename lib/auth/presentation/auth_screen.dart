@@ -136,7 +136,7 @@ class _HostAuthContentEntrance extends StatelessWidget {
           child: Transform.translate(
             offset: Offset(
               0,
-              CatchLayout.authContentEntranceOffset * (1 - value),
+              CatchStartupTokens.authContentEntranceOffset * (1 - value),
             ),
             child: child,
           ),

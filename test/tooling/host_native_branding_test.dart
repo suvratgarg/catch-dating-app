@@ -49,20 +49,20 @@ void main() {
     };
     expect(
       double.parse(constraints['7Hs-Wd']!.getAttribute('constant')!),
-      CatchLayout.hostStartupLogoExtent,
+      CatchStartupTokens.hostStartupLogoExtent,
     );
     expect(
       double.parse(constraints['8Hs-Ht']!.getAttribute('constant')!),
-      CatchLayout.hostStartupLogoExtent,
+      CatchStartupTokens.hostStartupLogoExtent,
     );
     expect(
       double.parse(constraints['6Hs-Tp']!.getAttribute('constant')!),
-      CatchLayout.hostStartupLogoTopInset,
+      CatchStartupTokens.hostStartupLogoTopInset,
     );
     expect(constraints['6Hs-Tp']!.getAttribute('secondItem'), '6Tk-OE-BBY');
     expect(
       double.parse(constraints['5Hs-Lmin']!.getAttribute('constant')!),
-      CatchLayout.hostStartupLogoLeadingInset,
+      CatchStartupTokens.hostStartupLogoLeadingInset,
     );
     expect(
       constraints['5Hs-Lmin']!.getAttribute('relation'),
@@ -74,8 +74,8 @@ void main() {
     expect(constraints['5Hs-Cx']!.getAttribute('secondItem'), '6Tk-OE-BBY');
     expect(
       double.parse(constraints['5Hs-Cx']!.getAttribute('constant')!),
-      CatchLayout.hostStartupLogoLeadingInset +
-          CatchLayout.hostStartupLogoExtent / 2 -
+      CatchStartupTokens.hostStartupLogoLeadingInset +
+          CatchStartupTokens.hostStartupLogoExtent / 2 -
           CatchLayout.maxContentWidth / 2,
     );
   });

@@ -18,7 +18,7 @@ const _consumerLaunchScreenPath =
 const _hostLaunchScreenPath =
     'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard';
 
-// Host launch geometry mirrors CatchLayout.hostStartupLogo* and the shared
+// Host launch geometry mirrors CatchStartupTokens.hostStartupLogo* and the shared
 // maxContentWidth. A clamped reading lane preserves the same transparent mark
 // canvas and safe-area anchor across native launch, Flutter startup and auth.
 const _hostLaunchImageExtent = 224;
