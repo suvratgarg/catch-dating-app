@@ -46,11 +46,33 @@ real messages; a source `expiresAt` field alone is not proof of retention.
 Protocol: [Meta webhook overview](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/overview/)
 and [endpoint setup](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/create-webhook-endpoint).
 
+## Catch-owned WhatsApp receipt consumers
+
+`onCatchWhatsappWebhookEventCreated` processes exact sender-scoped receipts;
+`onCatchWhatsappReplyOperationWritten` reconciles early statuses when a reply
+operation first saves its provider message ID. Bounded queries correlate the
+Catch WABA, phone number, endpoint and saved message ID. Replay does not send a
+message, release a send claim, overwrite raw receipts or extend their TTL.
+Delivery-only operation updates do not schedule another reconciliation.
+
+`CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED` defaults to false independently of
+the receiving endpoint. The deployment parameter materializer explicitly emits
+false and rejects true or malformed overrides in this offline milestone.
+These consumers have no provider credentials or sending authority. Signed STOP
+receipts and sender/endpoint suppression commit atomically at ingress even when
+consumers are disabled; retained STOP processing only repairs suppression and
+cannot establish completeness of history lost to TTL. Historical evidence,
+authenticated reply callables, outbound activation and deployment remain
+separately gated work. The private operation/STOP schemas still need canonical
+registration before the full reply workflow is admission-ready.
+
 ## Function inventory
 
 | Function | File | Purpose |
 |----------|------|---------|
 | `catchWhatsappWebhook` | `src/catchMessaging/whatsappWebhook.ts` | Separate Catch-owned signed message/status ingress, disabled by default; private immutable receipts and no outgoing messages. |
+| `onCatchWhatsappWebhookEventCreated` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled Catch receipt projection and idempotent STOP repair; scoped to the configured sender, no sends. |
+| `onCatchWhatsappReplyOperationWritten` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled bounded reconciliation of early delivery receipts after provider message ID save; ignores delivery-only writes. |
 
 ### Sales and related workflow registrations (September 2026)
 
