@@ -347,3 +347,24 @@ test("CRM adds a matched contact's provenance once", async () => {
   assert.equal(h.records("organizerContactOrigins").length, 1);
   assert.equal(h.store.docs["organizerContacts/matched"].sourceCount, 2);
 });
+
+for (const status of ["completed", "pending", "failed"] as const) {
+  test(`CRM ${status} replay cannot authorize a new attendee handoff`,
+    async () => {
+      const h = conversionFixture("crmContact");
+      await h.convert();
+      h.records("organizerFormConversionReceipts")[0][1].status = status;
+      h.store.docs["events/event1"] = {organizerId: "org1", clubId: "org1",
+        status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.beforeCommit = async () => {
+        h.withdraw();
+      };
+      await assert.rejects(convertOrganizerFormResponseHandler({
+        auth: {uid: "manager", token: {}}, data: {organizerId: "org1",
+          responseId: "response1", kind: "eventAttendeeProposal",
+          eventId: "event1", overrides: {}, requestId: "handoff-request"},
+      } as CallableRequest<unknown>, h.deps), {code: "failed-precondition"});
+      assert.equal(h.records("eventAttendees").length, 0);
+      assert.equal(h.records("organizerContactOrigins").length, 1);
+    });
+}

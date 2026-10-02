@@ -71,6 +71,8 @@ interface FormConversionDeps {
   timestamp: () => FirebaseFirestore.Timestamp;
   identitySecret: () => string;
   requireManagerAuthority?: boolean;
+  // An internal handoff must not turn historical replay into new authority.
+  requireSubmittedSource?: boolean;
 }
 
 const defaultDeps: FormConversionDeps = {
@@ -401,9 +403,14 @@ async function convertResponseInTransaction(params: {
     // A completed conversion may be replayed after source withdrawal, but
     // never by an actor whose current manager/account authority was lost.
     if (existing?.status === "completed") {
+      if (deps.requireSubmittedSource) {
+        assertConversionAllowed(await conversionContext(
+          db, data, tx, existing.fields));
+      }
       return conversionProjection(receiptId, existing);
     }
     const context = await conversionContext(db, data, tx, existing?.fields);
+    if (deps.requireSubmittedSource) assertConversionAllowed(context);
     const now = deps.timestamp();
     let resultId: string;
     if (data.kind === "application") {
@@ -530,6 +537,7 @@ async function applyEventAttendeeConversion(params: {
     checkRateLimit: async () => undefined,
     timestamp: () => params.now,
     identitySecret: () => params.identitySecret,
+    requireSubmittedSource: true,
   });
   const eventId = params.data.eventId!;
   const displayName = String(
