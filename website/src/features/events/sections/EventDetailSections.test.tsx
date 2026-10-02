@@ -1,5 +1,6 @@
-import {cleanup, render, screen} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {EventDetailPage} from "../EventDetailPage";
 import {hostListings} from "../../organizers/data";
 import type {HostListing} from "../../organizers/types";
 import type {EventDetailRecord} from "../eventDetailModel";
@@ -10,9 +11,26 @@ import {
   EventDetailReviewsSection,
 } from "./EventDetailSections";
 
-afterEach(cleanup);
+const observeOrganizerPageView = vi.hoisted(() => vi.fn(() => vi.fn()));
+const trackOrganizerAnalytics = vi.hoisted(() => vi.fn());
+const observeOrganizerProviders = vi.hoisted(() => vi.fn(() => vi.fn()));
+const trackOrganizerProviderOutboundClick = vi.hoisted(() => vi.fn());
+vi.mock("../../organizers/observeOrganizerProviders", () => ({observeOrganizerProviders, trackOrganizerProviderOutboundClick}));
+vi.mock("../../organizers/analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView}));
+afterEach(() => {cleanup(); vi.clearAllMocks();});
 
 describe("Event Detail sections", () => {
+  it("observes a directly rendered external detail page and cleans up its consent subscription", () => {
+    const event = externalEvent();
+    const {unmount} = render(<EventDetailPage event={event} />);
+    expect(observeOrganizerPageView).toHaveBeenCalledWith(event.listing, "eventView", "event_detail", event.eventId);
+    expect(observeOrganizerProviders).toHaveBeenCalledWith(event.listing, event.eventId);
+    const stopProvider = observeOrganizerProviders.mock.results[0].value;
+    const stop = observeOrganizerPageView.mock.results[0].value;
+    unmount();
+    expect(stop).toHaveBeenCalledOnce();
+    expect(stopProvider).toHaveBeenCalledOnce();
+  });
   it("keeps external events read-only and sends registration to the source", () => {
     const event = externalEvent();
     render(
@@ -25,6 +43,12 @@ describe("Event Detail sections", () => {
 
     expect(screen.getByRole("link", {name: "Open official source"}).getAttribute("href"))
       .toBe("https://luma.com/example");
+    fireEvent.click(screen.getByRole("link", {name: "Open official source"}));
+    expect(trackOrganizerProviderOutboundClick).toHaveBeenCalledWith(event.listing.id, event.eventId);
+    expect(trackOrganizerAnalytics).toHaveBeenLastCalledWith(event.listing, "outboundClick", "external_event_booking", event.eventId);
+    fireEvent.click(screen.getByRole("link", {name: "Luma"}));
+    expect(trackOrganizerAnalytics).toHaveBeenLastCalledWith(event.listing, "outboundClick", "external_event_source", event.eventId);
+    expect(trackOrganizerAnalytics.mock.calls.some((call) => call[1] === "eventView")).toBe(false);
     expect(screen.getByText("Source-backed event · Luma")).toBeTruthy();
     expect(screen.getByText("Registration stays with Luma")).toBeTruthy();
     expect(screen.getByText("Asia/Kolkata")).toBeTruthy();

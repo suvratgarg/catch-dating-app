@@ -548,6 +548,36 @@
       }
     },
     {
+      "id": "ci:data-validation-workflow",
+      "category": "ci",
+      "path": "tool/ci/data_validation_workflow.test.mjs",
+      "command": "node --test tool/ci/data_validation_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
+      "impactPaths": [
+        ".github/workflows/data-validation.yml",
+        "tool/ci/data_validation_workflow.test.mjs"
+      ],
+      "description": "Keeps Firestore validation failures visible through tee while saving the diagnostic report for upload.",
+      "checks": [
+        "node --check tool/ci/data_validation_workflow.test.mjs",
+        "node --test tool/ci/data_validation_workflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/data_validation_workflow.test.mjs",
+        "contains": [
+          "failing validator fails the step while tee retains its JSON",
+          "tee output failure also fails the step"
+        ]
+      }
+    },
+    {
       "id": "ci:backend-source-review",
       "category": "ci",
       "path": "tool/ci/backend_source_review.mjs",

@@ -301,7 +301,8 @@ event_rows AS (
     0 AS event_saves,
     0 AS contact_clicks,
     0 AS claim_clicks,
-    0 AS outbound_clicks
+    0 AS outbound_clicks,
+    0 AS outbound_booking_clicks
   FROM event_dim ed
   LEFT JOIN payments p USING (event_id)
   LEFT JOIN participations pf USING (event_id)
@@ -345,7 +346,8 @@ review_rows AS (
     0 AS event_saves,
     0 AS contact_clicks,
     0 AS claim_clicks,
-    0 AS outbound_clicks
+    0 AS outbound_clicks,
+    0 AS outbound_booking_clicks
   FROM reviews r
   LEFT JOIN event_dim ed ON ed.event_id = r.event_id
   LEFT JOIN clubs c ON c.club_id = r.club_id
@@ -388,7 +390,8 @@ saved_event_rows AS (
     se.event_saves,
     0 AS contact_clicks,
     0 AS claim_clicks,
-    0 AS outbound_clicks
+    0 AS outbound_clicks,
+    0 AS outbound_booking_clicks
   FROM saved_events se
   JOIN event_dim ed USING (event_id)
   WHERE se.saved_date BETWEEN @refresh_start AND @refresh_end
@@ -399,7 +402,10 @@ direct_discovery_counts AS (
     club_id,
     COALESCE(target_event_id, '') AS event_key,
     event_name,
-    COUNT(*) AS event_count
+    COUNT(DISTINCT analytics_event_id) AS event_count,
+    COUNT(DISTINCT IF(event_name = 'outboundClick' AND
+      source IN ('external_event_card', 'external_event_booking'),
+      analytics_event_id, NULL)) AS outbound_booking_clicks
   FROM `%s.%s.host_analytics_events`
   WHERE event_date BETWEEN @refresh_start AND @refresh_end
   GROUP BY date, club_id, event_key, event_name
@@ -416,18 +422,11 @@ ga4_discovery_counts AS (
   GROUP BY date, club_id, event_key, event_name
 ),
 behavior_counts AS (
-  SELECT
-    COALESCE(d.date, g.date) AS date,
-    COALESCE(d.club_id, g.club_id) AS club_id,
-    NULLIF(COALESCE(d.event_key, g.event_key), '') AS event_id,
-    COALESCE(d.event_name, g.event_name) AS event_name,
-    GREATEST(
-      COALESCE(d.event_count, 0),
-      COALESCE(g.event_count, 0)
-    ) AS event_count
-  FROM direct_discovery_counts d
-  FULL OUTER JOIN ga4_discovery_counts g
-  USING (date, club_id, event_key, event_name)
+  -- First-party measurements are independent of optional ad-provider events.
+  -- GA4 remains available for historical diagnostics, never a counter fallback.
+  SELECT date, club_id, NULLIF(event_key, '') AS event_id, event_name,
+    event_count, outbound_booking_clicks
+  FROM direct_discovery_counts
 ),
 discovery_rows AS (
   SELECT
@@ -466,7 +465,8 @@ discovery_rows AS (
     SUM(IF(event_name = 'eventSave', event_count, 0)) AS event_saves,
     SUM(IF(event_name = 'contactClick', event_count, 0)) AS contact_clicks,
     SUM(IF(event_name = 'claimClick', event_count, 0)) AS claim_clicks,
-    SUM(IF(event_name = 'outboundClick', event_count, 0)) AS outbound_clicks
+    SUM(IF(event_name = 'outboundClick', event_count, 0)) AS outbound_clicks,
+    SUM(outbound_booking_clicks) AS outbound_booking_clicks
   FROM behavior_counts
   GROUP BY date, club_id, event_id
 ),
@@ -513,6 +513,7 @@ SELECT
   SUM(u.contact_clicks) AS contact_clicks,
   SUM(u.claim_clicks) AS claim_clicks,
   SUM(u.outbound_clicks) AS outbound_clicks,
+  SUM(u.outbound_booking_clicks) AS outbound_booking_clicks,
   CURRENT_TIMESTAMP() AS refreshed_at
 FROM unioned u
 LEFT JOIN clubs c ON c.club_id = u.club_id
@@ -581,6 +582,7 @@ INSERT INTO `%s.%s.mart_host_event_daily` (
   contact_clicks,
   claim_clicks,
   outbound_clicks,
+  outbound_booking_clicks,
   refreshed_at
 )
 SELECT
@@ -620,6 +622,7 @@ SELECT
   contact_clicks,
   claim_clicks,
   outbound_clicks,
+  outbound_booking_clicks,
   refreshed_at
 FROM refreshed_host_event_daily
 """, analytics_project, analytics_dataset);

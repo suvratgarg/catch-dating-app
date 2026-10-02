@@ -26,6 +26,7 @@ import {
   validateHostAnalyticsQueryCallablePayload,
 } from "../shared/generated/validators/hostAnalyticsQueryInput";
 import {isClubHost} from "../shared/clubHosts";
+import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
   defaultHostAnalyticsBigQuerySource,
   HostAnalyticsBigQuerySource,
@@ -286,7 +287,11 @@ export function buildHostAnalyticsFromRecords(
     records.events,
     records.operationalAttendees ?? []
   );
-  const topEvents = [...eventMetrics]
+  // Event-report links target native management. External listing observations
+  // remain in presence totals, but must not produce an unsupported route.
+  const nativeEventIds = new Set(records.events.map((event) => event.id));
+  const topEvents = eventMetrics.filter((event) =>
+    nativeEventIds.has(event.eventId))
     .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
     .slice(0, 25);
   const totals = summarizeEventMetrics(eventMetrics);
@@ -331,6 +336,15 @@ export function buildHostAnalyticsFromRecords(
       eventTitle: resolveEventTitle(records, eventMetrics),
     },
     summaryCards: [
+      metricCard("outboundBookingClicks", "Provider booking clicks",
+        rows.reduce((sum, row) => sum + Math.max(0,
+          Math.trunc(row.outboundBookingClicks ?? 0)), 0), "count",
+        rows.length === 0 || rows.every((row) =>
+          row.outboundBookingClicks === undefined) ? "missing" :
+          rows.some((row) => row.outboundBookingClicks === undefined) ?
+            "partial" : sourceStatus,
+        "Outbound provider handoffs; " +
+          "Catch does not observe external purchases."),
       metricCard(
         "rosterGuests",
         "Guests on roster",
@@ -510,27 +524,32 @@ async function loadHostAnalytics(
     if (cached !== null) return cached;
   }
   const events = await resolveEvents(db, payload, clubs, range, scope);
-  const [martRows, operationalAttendees] = await Promise.all([
-    deps.bigQuerySource.loadRows(
-      {
-        startDate: zonedDateKey(previousRange.start, range.timezone),
-        endDate: zonedDateKey(
-          addUtcMilliseconds(range.endExclusive, -1),
-          range.timezone
-        ),
-      },
-      {
-        clubIds: clubs.map((club) => club.id),
-        eventId: payload.eventId ?? null,
-      },
-    ),
-    loadOperationalAttendees(db, events),
-  ]);
+  const [martRows, operationalAttendees, registrationAnalytics] =
+    await Promise.all([
+      deps.bigQuerySource.loadRows(
+        {
+          startDate: zonedDateKey(previousRange.start, range.timezone),
+          endDate: zonedDateKey(
+            addUtcMilliseconds(range.endExclusive, -1),
+            range.timezone
+          ),
+        },
+        {
+          clubIds: clubs.map((club) => club.id),
+          eventId: payload.eventId ?? null,
+        },
+      ),
+      loadOperationalAttendees(db, events),
+      loadHostRegistrationAnalytics(db, clubs.map((club) => club.id),
+        payload.eventId ?? null, range),
+    ]);
   const response = buildHostAnalyticsFromRecords(
     {clubs, events, martRows, operationalAttendees},
     range,
     now
   );
+  response.summaryCards.push(...registrationAnalytics.summaryCards);
+  response.dataQuality.push(...registrationAnalytics.dataQuality);
   if (scope === "host") {
     await writeHostAnalyticsSnapshot(db, snapshotId, uid, response, now, deps);
   }
@@ -554,6 +573,7 @@ export function hostAnalyticsSnapshotId(
   clubs: ClubRecord[]
 ): string {
   const scopeHash = createHash("sha256").update(JSON.stringify({
+    registrationReadoutVersion: 2,
     organizerId: payload.organizerId ?? payload.clubId ?? null,
     eventId: payload.eventId ?? null,
     clubIds: clubs.map((club) => club.id).sort(),
@@ -680,7 +700,13 @@ async function resolveClubs(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = eventSnap.data() as EventDocument;
-    const club = await getClubRecord(db, event.organizerId ?? event.clubId);
+    const eventOwnerId = event.organizerId ?? event.clubId;
+    const requestedOwnerId = payload.organizerId ?? payload.clubId;
+    if (requestedOwnerId && requestedOwnerId !== eventOwnerId) {
+      throw new HttpsError("permission-denied",
+        "Event scope does not match organizer.");
+    }
+    const club = await getClubRecord(db, eventOwnerId);
     assertCanReadClub(club, scope, uid);
     return [club];
   }
@@ -733,7 +759,12 @@ async function resolveEvents(
   if (payload.eventId) {
     const snap = await db.collection("events").doc(payload.eventId).get();
     if (!snap.exists) throw new HttpsError("not-found", "Event not found.");
-    return [{id: snap.id, data: snap.data() as EventDocument}];
+    const event = snap.data() as EventDocument;
+    if (!clubs.some((club) =>
+      club.id === (event.organizerId ?? event.clubId))) {
+      throw new HttpsError("permission-denied", "Event scope changed.");
+    }
+    return [{id: snap.id, data: event}];
   }
 
   if (scope === "admin" && !payload.organizerId && !payload.clubId) {
@@ -1199,14 +1230,13 @@ function dataQualityRows(
       id: "firestore-cache",
       state: "ok",
       detail:
-        "Firestore owns authorization, operational roster facts, and " +
-        "optional " +
-        "snapshots; BigQuery remains the source for historical funnels.",
+        "Firestore owns authorization, roster, bounded current registration " +
+        "outcomes and snapshots; BigQuery owns historical mart aggregates.",
       owner: "Admin platform",
       runbook: "functions/src/analytics/hostAnalytics.ts",
       nextAction:
-        "No action; keep Firestore reads limited to authorization and " +
-        "scope labels.",
+        "Keep registration reads projected and bounded; distinguish current " +
+        "outcomes from historical mart aggregates.",
     },
   ];
 }

@@ -4706,3 +4706,15 @@ history and privacy restrictions in one bounded read-only snapshot. It returns
 separate distinct-host and opportunity totals, stage entries and obligations.
 Overflow fails without partial totals. It does not infer conversion rates,
 provider-confirmed revenue or contact authority.
+
+### Organizer tracking configuration
+
+`organizer_tracking_settings.schema.json` owns server-only validated Meta Pixel
+and GA4 public identifiers plus bounded revision/private edit audit. Manager
+callables validate generated schemas; writes recheck canonical manager authority,
+verified claim or first-party ownership and expected revision inside the same
+transaction. Private read projections omit audit and expose server-derived edit
+eligibility. The public projection has a code-owned disabled publication gate
+and null IDs pending reviewed advertising policy. Public organizer and event
+eligibility cannot be supplied by a caller. No new client permissions, provider
+credentials, guest information or advertising transmission are introduced.

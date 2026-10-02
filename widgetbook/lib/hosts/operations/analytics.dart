@@ -1,8 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -60,6 +66,26 @@ Widget hostInsightsScorecardStates(BuildContext context) {
               report: _emptyHostAnalyticsReport(),
             ),
             child: const HostClubsScreen(initialTab: HostClubTab.insights),
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'measured zero public presence',
+        child: WidgetbookHostDeviceFrame(
+          child: WidgetbookHostShellScope(
+            analyticsRepository: HostFixtureAnalyticsRepository(
+              report: _emptyHostAnalyticsReport(unavailable: false),
+            ),
+            child: const HostClubsScreen(initialTab: HostClubTab.insights),
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'permission denied',
+        child: const WidgetbookHostDeviceFrame(
+          child: WidgetbookHostShellScope(
+            analyticsRepository: _HostDeniedAnalyticsRepository(),
+            child: HostClubsScreen(initialTab: HostClubTab.insights),
           ),
         ),
       ),
@@ -161,7 +187,7 @@ Widget _hostAnalyticsPreviewFor(String focus) {
   };
 }
 
-HostAnalyticsReport _emptyHostAnalyticsReport() {
+HostAnalyticsReport _emptyHostAnalyticsReport({bool unavailable = true}) {
   final source = HostOperationsFixtures.analyticsReport;
   return HostAnalyticsReport(
     generatedAt: source.generatedAt,
@@ -196,13 +222,15 @@ HostAnalyticsReport _emptyHostAnalyticsReport() {
       claimClicks: 0,
       outboundClicks: 0,
     ),
-    dataQuality: const [
-      HostAnalyticsDataQuality(
-        id: 'mart',
-        state: HostAnalyticsDataQualityState.missing,
-        detail: 'Fixture data is unavailable.',
-      ),
-    ],
+    dataQuality: unavailable
+        ? const [
+            HostAnalyticsDataQuality(
+              id: 'mart',
+              state: HostAnalyticsDataQualityState.missing,
+              detail: 'Fixture data is unavailable.',
+            ),
+          ]
+        : const [],
   );
 }
 
@@ -320,3 +348,161 @@ final class _HostLoadingAnalyticsRepository implements HostAnalyticsRepository {
     return Completer<HostAnalyticsReport>().future;
   }
 }
+
+final class _HostDeniedAnalyticsRepository implements HostAnalyticsRepository {
+  const _HostDeniedAnalyticsRepository();
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
+    throw const PermissionException('Host analytics access denied.');
+  }
+}
+
+@widgetbook.UseCase(
+  name: 'Observed totals and unavailable source',
+  type: HostAnalyticsPresenceSection,
+  path: '[P1 product surfaces]/Host operations/Analytics',
+)
+Widget hostAnalyticsPresenceSectionStates(
+  BuildContext context,
+) => WidgetbookPageCatalogFrame(
+  title: 'HostAnalyticsPresenceSection',
+  contractId:
+      'component.host.analytics.${widgetbookHostComponentSlug('HostAnalyticsPresenceSection')}',
+  children: [
+    WidgetbookPageStateCard(
+      label: 'observed totals',
+      child: WidgetbookHostComponentFrame(
+        child: HostAnalyticsPresenceSection(
+          report: HostOperationsFixtures.analyticsReport,
+        ),
+      ),
+    ),
+    WidgetbookPageStateCard(
+      label: 'measured zero',
+      child: WidgetbookHostComponentFrame(
+        child: HostAnalyticsPresenceSection(
+          report: _emptyHostAnalyticsReport(unavailable: false),
+        ),
+      ),
+    ),
+    WidgetbookPageStateCard(
+      label: 'source unavailable',
+      child: WidgetbookHostComponentFrame(
+        child: HostAnalyticsPresenceSection(
+          report: _emptyHostAnalyticsReport(),
+        ),
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Observed stages and missing coverage',
+  type: HostAnalyticsObservedStagesSection,
+  path: '[P1 product surfaces]/Host operations/Analytics',
+)
+Widget hostAnalyticsObservedStagesSectionStates(
+  BuildContext context,
+) => WidgetbookPageCatalogFrame(
+  title: 'HostAnalyticsObservedStagesSection',
+  contractId:
+      'component.host.analytics.${widgetbookHostComponentSlug('HostAnalyticsObservedStagesSection')}',
+  children: [
+    WidgetbookPageStateCard(
+      label: 'observed period counts with partial submissions',
+      child: WidgetbookHostComponentFrame(
+        child: HostAnalyticsObservedStagesSection(
+          report: HostAnalyticsReport.fromCallableData({
+            'generatedAt': '2026-06-18T12:00:00.000Z',
+            'summaryCards': [
+              for (final stage in <(String, int)>[
+                ('outboundBookingClicks', 9),
+                ('internalFormDrafts', 24),
+                ('internalFormSubmissions', 18),
+                ('internalFormCheckoutAttempts', 11),
+                ('internalFormFeesCaptured', 8),
+                ('internalDirectCheckoutAttempts', 7),
+                ('internalDirectPaymentsCaptured', 4),
+                ('internalDirectPaidAdmissions', 3),
+              ])
+                {
+                  'id': stage.$1,
+                  'label': '',
+                  'value': stage.$2,
+                  'unit': 'count',
+                  'status': stage.$1 == 'internalFormSubmissions'
+                      ? 'partial'
+                      : 'ready',
+                  'caption': 'Observed period counts',
+                },
+            ],
+          }),
+        ),
+      ),
+    ),
+    WidgetbookPageStateCard(
+      label: 'coverage unavailable',
+      child: WidgetbookHostComponentFrame(
+        child: HostAnalyticsObservedStagesSection(
+          report: _emptyHostAnalyticsReport(),
+        ),
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Mocked private settings read and save',
+  type: HostTrackingSettingsSection,
+  path: '[P1 product surfaces]/Host operations/Analytics',
+)
+Widget hostTrackingSettingsSectionState(BuildContext context) =>
+    WidgetbookHostComponentFrame(
+      child: HostTrackingSettingsSection(
+        organizerId: HostOperationsFixtures.primaryClub.id,
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Policy blocked and unclaimed configuration',
+  type: HostTrackingSettingsInputSection,
+  path: '[P1 product surfaces]/Host operations/Analytics',
+)
+Widget hostTrackingSettingsInputSectionStates(
+  BuildContext context,
+) => WidgetbookPageCatalogFrame(
+  title: 'HostTrackingSettingsInputSection',
+  contractId:
+      'component.host.analytics.${widgetbookHostComponentSlug('HostTrackingSettingsInputSection')}',
+  children: [
+    for (final canEdit in [true, false])
+      WidgetbookPageStateCard(
+        label: canEdit
+            ? 'disabled configuration; policy review required'
+            : 'unclaimed read only',
+        child: WidgetbookHostComponentFrame(
+          child: HostTrackingSettingsInputSection(
+            current: HostTrackingSettings(
+              organizerId: HostOperationsFixtures.primaryClub.id,
+              revision: 0,
+              metaPixelId: null,
+              googleMeasurementId: null,
+              enabled: false,
+              publicationAllowed: false,
+              canEdit: canEdit,
+              editBlockedReason: canEdit ? 'none' : 'unclaimed',
+            ),
+            pending: false,
+            onReload: () {},
+            onSave:
+                ({
+                  required metaPixelId,
+                  required googleMeasurementId,
+                  required enabled,
+                }) async {},
+          ),
+        ),
+      ),
+  ],
+);
