@@ -70,6 +70,50 @@ describe("useMarketingOpsController", () => {
     expect(removeListener).toHaveBeenCalledWith("beforeunload", expect.any(Function));
   });
 
+  it("keeps dirty edits after review receipt success or failure until explicitly discarded", async () => {
+    const initialBridge = bridge();
+    const draft = initialBridge.contentDrafts[0]!;
+    mocks.loadMarketingOpsBridge.mockResolvedValue({bridge: initialBridge});
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => useMarketingOpsController({
+      activeTab: "draft",
+      selectedDraftId: draft.id,
+      onError: vi.fn(),
+      onNotice: vi.fn(),
+    }), {wrapper});
+    await waitFor(() => expect(result.current.selectedDraft?.id).toBe(draft.id));
+    act(() => result.current.updateDraft(draft.id, {caption: "Session edit"}));
+    expect(result.current.hasUnsavedChanges).toBe(true);
+
+    await act(async () => {
+      await result.current.targetDecision({
+        targetType: "content_draft",
+        targetId: draft.id,
+        decision: "hold",
+        defaultNote: "Review",
+      });
+    });
+    expect(result.current.reviewReceiptRecorded).toBe(true);
+    expect(result.current.hasUnsavedChanges).toBe(true);
+    expect(result.current.selectedDraft?.caption).toBe("Session edit");
+
+    mocks.recordMarketingReviewDecision.mockRejectedValueOnce(new Error("Review failed"));
+    await act(async () => {
+      await result.current.targetDecision({
+        targetType: "content_draft",
+        targetId: draft.id,
+        decision: "hold",
+        defaultNote: "Review again",
+      });
+    });
+    expect(result.current.hasUnsavedChanges).toBe(true);
+    expect(result.current.selectedDraft?.caption).toBe("Session edit");
+
+    act(() => result.current.discardSelectedDraftEdits());
+    expect(result.current.hasUnsavedChanges).toBe(false);
+    expect(result.current.selectedDraft?.caption).toBe(draft.caption);
+  });
+
   it("does not substitute another draft for an unavailable deep link", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(() => useMarketingOpsController({

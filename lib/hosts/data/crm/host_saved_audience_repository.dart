@@ -157,6 +157,11 @@ Future<HostSavedAudiencePage> hostAllSavedAudiences(
       cursor: cursor,
       limit: 50,
     );
+    // Firebase callables do not expose transport cancellation. Stop the
+    // cursor chain when its owner leaves, rather than starting unused reads.
+    if (!ref.mounted) {
+      throw StateError('The saved audience directory was disposed.');
+    }
     audiences.addAll(page.audiences);
     cursor = page.nextCursor;
     if (audiences.length >= maximumDefinitions && cursor != null) {

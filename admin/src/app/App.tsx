@@ -8,7 +8,9 @@ import {
   useState,
 } from "react";
 import {
-  BrowserRouter,
+  createBrowserRouter,
+  RouterProvider,
+  useBlocker,
   useLocation,
   useNavigate,
 } from "react-router";
@@ -302,13 +304,15 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 };
 
 export function App() {
-  return (
-    <BrowserRouter>
+  const [router] = useState(() => createBrowserRouter([{
+    path: "*",
+    element: (
       <AdminPendingOperationProvider>
         <AdminRouteApp />
       </AdminPendingOperationProvider>
-    </BrowserRouter>
-  );
+    ),
+  }]));
+  return <RouterProvider router={router} />;
 }
 
 function AdminRouteApp() {
@@ -332,6 +336,21 @@ function AdminRouteApp() {
   const [adminRoles, setAdminRoles] = useState<string[]>([]);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState(readAdminSidebarPreference);
+  const [marketingDirty, setMarketingDirty] = useState(false);
+  const blocker = useBlocker(useCallback(({currentLocation, nextLocation}) =>
+    marketingDirty &&
+    adminNavForPath(currentLocation.pathname) === "marketing-ops" &&
+    adminNavForPath(nextLocation.pathname) !== "marketing-ops",
+  [marketingDirty]));
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (window.confirm("Discard unsaved Marketing edits and leave Marketing?")) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
 
   useEffect(() => {
     if (mode === "sample") {
@@ -751,6 +770,7 @@ function AdminRouteApp() {
               onError={setError}
               onNotice={setNotice}
               onTabChange={(tab) => navigate(marketingPathForTab(tab))}
+              onUnsavedChangesChange={setMarketingDirty}
               selectedDraftId={marketingDraftIdForPath(location.pathname)}
             />
           </Suspense>

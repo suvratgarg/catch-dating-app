@@ -71,6 +71,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   Timer? _searchDebounce;
   String? _query;
   String? _responseQuery;
+  bool _searchExpanded = false;
   Set<HostFormLifecycleStatus> _statuses = const {};
   Set<HostFormPurpose> _purposes = const {};
   late HostAudienceView _view;
@@ -125,6 +126,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       _searchDebounce?.cancel();
       _query = null;
       _responseQuery = null;
+      _searchExpanded = false;
     }
     if (oldWidget.initialResponses != widget.initialResponses) {
       _tabController.animateTo(widget.initialResponses ? 1 : 0);
@@ -241,32 +243,16 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       accountGeneration: _accountGeneration,
       request: request,
     );
-    final scopedDirectory = catchAsyncStateFromAsyncValue(
-      ref.watch(hostFormsAccountDirectoryProvider(directoryScope)),
+    final accountDirectory = ref.watch(
+      hostFormsAccountDirectoryProvider(directoryScope),
     );
-    if (scopedDirectory.error case final error?) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: [
-          CatchLocalizedSliverErrorState(
-            error,
-            context: AppErrorContext.forms,
-            onRetry: () => ref.invalidate(
-              hostFormsAccountDirectoryProvider(directoryScope),
-            ),
-          ),
-        ],
-      );
-    }
-    if (!scopedDirectory.isSettledData) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
-    }
-    final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
+    final scopedDirectory = catchAsyncStateFromAsyncValue(accountDirectory);
+    // The account gate protects only its Forms page. Responses performs its
+    // own fresh manager read and must not wait for unrelated form metadata.
+    // Until that gate settles, never expose cached source-directory rows.
+    final directory = scopedDirectory.isSettledData
+        ? ref.watch(hostFormsDirectoryControllerProvider(request))
+        : accountDirectory;
     String? responseVersionId;
     if (canMountHostResponseQuery(
       enabled: true,
@@ -321,6 +307,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                       : () => _pickApplicationImport(selectedClub.id),
                 ),
           search: CatchTopBarSearch(
+            fieldKey: ValueKey('host-forms-search-${_view.name}'),
+            expanded:
+                _searchExpanded ||
+                (activeSearchIsForms ? _query : _responseQuery) != null,
+            onExpandedChanged: (expanded) {
+              if (_searchExpanded == expanded) return;
+              setState(() => _searchExpanded = expanded);
+            },
             copy: catchSearchFieldCopy(context.l10n),
             value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
             contract: activeSearchIsForms
@@ -351,6 +345,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             page: _HostFormsLibraryPage(
               request: request,
               directory: directory,
+              onRetry: () => ref.invalidate(
+                hostFormsAccountDirectoryProvider(directoryScope),
+              ),
               query: _query,
               statuses: _statuses,
               purposes: _purposes,
@@ -437,6 +434,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     _searchDebounce?.cancel();
     setState(() {
       _view = nextView;
+      _searchExpanded = false;
     });
     _syncRoute();
   }
@@ -493,6 +491,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
   const _HostFormsLibraryPage({
     required this.request,
     required this.directory,
+    required this.onRetry,
     required this.query,
     required this.statuses,
     required this.purposes,
@@ -505,6 +504,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
 
   final HostFormListRequest request;
   final AsyncValue<HostFormsDirectoryState> directory;
+  final VoidCallback onRetry;
   final String? query;
   final Set<HostFormLifecycleStatus> statuses;
   final Set<HostFormPurpose> purposes;
@@ -600,8 +600,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
         ),
         CatchAsyncBoundary<HostFormsDirectoryState>.sliver(
           value: directory,
-          onRetry: () =>
-              ref.invalidate(hostFormsDirectoryControllerProvider(request)),
+          onRetry: onRetry,
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 6,
