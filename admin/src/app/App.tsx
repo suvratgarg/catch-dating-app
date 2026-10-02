@@ -32,7 +32,6 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import {getIdTokenResult, onAuthStateChanged, User} from "firebase/auth";
 import {
   AdminAccountMenu,
   AdminAppShell,
@@ -61,12 +60,13 @@ import {
   TextField,
 } from "../shared/ui/AdminPrimitives";
 import {
-  auth,
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
   signOutAdmin,
 } from "../shared/api/firebase";
+import {useAdminSession} from "./useAdminSession";
+import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
 import {
   AdminRoleClaim,
@@ -306,13 +306,37 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 export function App() {
   const [router] = useState(() => createBrowserRouter([{
     path: "*",
-    element: (
-      <AdminPendingOperationProvider>
-        <AdminRouteApp />
-      </AdminPendingOperationProvider>
-    ),
+    element: <AdminRouteApp />,
   }]));
   return <RouterProvider router={router} />;
+}
+
+// Async controller continuations may outlive their query provider. Their old
+// feedback callbacks must not display private identifiers in a newer session.
+function useSessionFeedback({epoch, isCurrent}: ReturnType<typeof useAdminSession>) {
+  const [feedback, setFeedback] = useState<{
+    epoch: number;
+    error: string | null;
+    notice: string | null;
+  }>({epoch, error: null, notice: null});
+  const setError = useCallback((error: string | null) => {
+    if (!isCurrent()) return;
+    setFeedback((current) => ({
+      epoch, error, notice: current.epoch === epoch ? current.notice : null,
+    }));
+  }, [epoch, isCurrent]);
+  const setNotice = useCallback((notice: string | null) => {
+    if (!isCurrent()) return;
+    setFeedback((current) => ({
+      epoch, notice, error: current.epoch === epoch ? current.error : null,
+    }));
+  }, [epoch, isCurrent]);
+  return {
+    error: feedback.epoch === epoch ? feedback.error : null,
+    notice: feedback.epoch === epoch ? feedback.notice : null,
+    setError,
+    setNotice,
+  };
 }
 
 function AdminRouteApp() {
@@ -322,18 +346,17 @@ function AdminRouteApp() {
   const adminEnvironment = String(
     import.meta.env.VITE_ADMIN_FIREBASE_ENV ?? "dev"
   );
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthActionPending, setIsAuthActionPending] = useState(false);
   const [phoneCode, setPhoneCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneSignInStage, setPhoneSignInStage] =
     useState<PhoneSignInStage>("phone");
-  const [isRoleCheckPending, setIsRoleCheckPending] = useState(false);
-  const [rolesResolved, setRolesResolved] = useState(mode === "sample");
-  const [user, setUser] = useState<User | null>(null);
-  const [adminRoles, setAdminRoles] = useState<string[]>([]);
+  const session = useAdminSession(mode);
+  const {error, notice, setError, setNotice} = useSessionFeedback(session);
+  const {user, roles: adminRoles, resolved: rolesResolved} = session;
+  const isRoleCheckPending = Boolean(user && !rolesResolved);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState(readAdminSidebarPreference);
   const [marketingDirty, setMarketingDirty] = useState(false);
@@ -353,63 +376,17 @@ function AdminRouteApp() {
   }, [blocker]);
 
   useEffect(() => {
-    if (mode === "sample") {
-      setRolesResolved(true);
-      return undefined;
+    setError(null);
+    setNotice(null);
+    setMarketingDirty(false);
+    setAuthError(null);
+    if (user) {
+      resetPhoneSignIn();
+      setPhoneCode("");
+      setPhoneNumber("");
+      setPhoneSignInStage("phone");
     }
-    return onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser);
-      if (nextUser) {
-        resetPhoneSignIn();
-        setAuthError(null);
-        setPhoneCode("");
-        setPhoneNumber("");
-        setPhoneSignInStage("phone");
-      }
-    });
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "live") {
-      setAdminRoles([]);
-      setRolesResolved(true);
-      setIsRoleCheckPending(false);
-      return undefined;
-    }
-    if (!user) {
-      setAdminRoles([]);
-      setRolesResolved(false);
-      setIsRoleCheckPending(false);
-      return undefined;
-    }
-
-    let cancelled = false;
-    setRolesResolved(false);
-    setIsRoleCheckPending(true);
-    void getIdTokenResult(user)
-      .then((token) => {
-        if (cancelled) return;
-        setAdminRoles(adminRoleClaimKeys.filter(
-          (claim) => token.claims[claim] === true
-        ));
-        setAuthError(null);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setAdminRoles([]);
-          setAuthError("Unable to read admin claims for this Firebase session.");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setRolesResolved(true);
-          setIsRoleCheckPending(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, user]);
+  }, [session.epoch, setError, setNotice, user]);
 
   const visibleNavigation = useMemo(
     () => navigation.filter((item) =>
@@ -501,6 +478,7 @@ function AdminRouteApp() {
   const handleSignOut = useCallback(async () => {
     setAuthError(null);
     setIsAuthActionPending(true);
+    void session.clearSession();
     try {
       await signOutAdmin();
       setPhoneCode("");
@@ -509,7 +487,7 @@ function AdminRouteApp() {
       setNotice(null);
       setError(null);
     } catch (signOutError) {
-      setError(
+      setAuthError(
         signOutError instanceof Error ?
           signOutError.message :
           "Unable to sign out."
@@ -517,34 +495,12 @@ function AdminRouteApp() {
     } finally {
       setIsAuthActionPending(false);
     }
-  }, []);
+  }, [session.clearSession, setError, setNotice]);
 
   const handleRefreshAdminClaims = useCallback(async () => {
-    if (!user) return;
     setAuthError(null);
-    setIsRoleCheckPending(true);
-    try {
-      const token = await getIdTokenResult(user, true);
-      const roles = adminRoleClaimKeys.filter(
-        (claim) => token.claims[claim] === true
-      );
-      setAdminRoles(roles);
-      setRolesResolved(true);
-      if (roles.length === 0) {
-        setAuthError("This Firebase account does not have a Catch admin claim.");
-      }
-    } catch (refreshError) {
-      setAdminRoles([]);
-      setRolesResolved(true);
-      setAuthError(
-        refreshError instanceof Error ?
-          refreshError.message :
-          "Unable to refresh admin claims."
-      );
-    } finally {
-      setIsRoleCheckPending(false);
-    }
-  }, [user]);
+    await session.refreshClaims();
+  }, [session.refreshClaims]);
 
   const handleOverviewQueueOpen = useCallback((
     destination: OverviewQueueDestination,
@@ -580,7 +536,7 @@ function AdminRouteApp() {
       return;
     }
     setActiveNav(destination);
-  }, [navigate, setActiveNav, visibleNavigation]);
+  }, [navigate, setActiveNav, setError, setNotice, visibleNavigation]);
 
   const topbarTitle = titleForAdminSection(currentNav, location.pathname);
 
@@ -594,7 +550,7 @@ function AdminRouteApp() {
   if (mode === "live" && !user) {
     return (
       <SignInScreen
-        error={authError}
+        error={authError ?? session.error}
         isSigningIn={isAuthActionPending}
         phoneCode={phoneCode}
         phoneNumber={phoneNumber}
@@ -611,7 +567,7 @@ function AdminRouteApp() {
     return (
       <AuthCheckScreen
         email={user.email ?? user.uid}
-        error={authError}
+        error={authError ?? session.error}
         isPending={isRoleCheckPending}
         onSignOut={() => void handleSignOut()}
       />
@@ -621,7 +577,7 @@ function AdminRouteApp() {
     return (
       <UnauthorizedAdminScreen
         email={user.email ?? user.uid}
-        error={authError}
+        error={authError ?? session.error}
         isPending={isRoleCheckPending || isAuthActionPending}
         onRefreshClaims={() => void handleRefreshAdminClaims()}
         onSignOut={() => void handleSignOut()}
@@ -629,7 +585,13 @@ function AdminRouteApp() {
     );
   }
 
+  const sessionKey = JSON.stringify([mode, user?.uid, session.epoch]);
   return (
+    <AdminPendingOperationProvider key={sessionKey}>
+    <AdminQueryProvider
+      sessionKey={sessionKey}
+      isCurrentSession={session.isCurrent}
+    >
     <AdminAppShell
       intakeMode={currentNav === "organizer-intake"}
       sidebarCollapsed={isSidebarCollapsed}
@@ -943,6 +905,8 @@ function AdminRouteApp() {
         </AdminFeedbackProvider>
       </AdminWorkspace>
     </AdminAppShell>
+    </AdminQueryProvider>
+    </AdminPendingOperationProvider>
   );
 }
 
