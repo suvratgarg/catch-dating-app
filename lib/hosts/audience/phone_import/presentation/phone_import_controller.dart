@@ -70,6 +70,8 @@ class PhoneImportController extends ChangeNotifier {
     try {
       result = await picker.pickContacts();
     } catch (_) {
+      // Native failures intentionally become the user-visible failed notice.
+      // Contact payloads must never enter logs.
       result = PhoneContactPickerResult(PhoneContactPickerStatus.failed);
     }
     if (_disposed || generation != _generation) return;

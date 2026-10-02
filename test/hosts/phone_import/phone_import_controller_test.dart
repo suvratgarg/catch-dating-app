@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contac
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact_reference.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class SyntheticPicker implements PhoneContactPicker {
@@ -192,6 +193,36 @@ void main() {
       expect(picker.calls, 2);
     });
   }
+  test(
+    'thrown native error preserves review and allows manual retry',
+    () async {
+      await select([
+        contact('one', 'Synthetic guest', ['+12025550101']),
+      ]);
+      controller.confirmSharing(true);
+      final review = controller.prepareReview()!;
+      final selectedEntry = controller.entries.single;
+      picker.pending = Completer();
+      final pick = controller.pickContacts();
+      expect(controller.interactionLocked, true);
+      picker.pending!.completeError(PlatformException(code: 'native_failure'));
+      await pick;
+
+      expect(controller.notice, PhoneImportNotice.failed);
+      expect(controller.picking, false);
+      expect(controller.interactionLocked, false);
+      expect(controller.entries.single, same(selectedEntry));
+      expect(controller.sharingConfirmed, true);
+      expect(controller.prepareReview(), same(review));
+      expect(picker.calls, 2);
+
+      picker.pending = null;
+      await controller.pickContacts();
+      expect(controller.notice, isNull);
+      expect(controller.prepareReview(), same(review));
+      expect(picker.calls, 3);
+    },
+  );
   test('pending picker freezes peer changes and duplicate taps', () async {
     await select([
       contact('one', 'Asha', ['+12025550101']),
