@@ -28,7 +28,8 @@ export function clubOwnerUserId(club: ClubDocument): string | null {
 }
 
 /**
- * Returns every user id with host privileges for this club.
+ * Returns host authority from the same id fields as Firestore rules.
+ * Legacy hostUserId remains supported. Display profiles cannot grant access.
  * @param {ClubDocument} club Club document.
  * @return {string[]} Owner and co-host ids.
  */
@@ -38,7 +39,6 @@ export function clubHostUserIds(club: ClubDocument): string[] {
     club.hostUserId,
     multiHostClub.ownerUserId ?? null,
     ...(multiHostClub.hostUserIds ?? []),
-    ...(multiHostClub.hostProfiles ?? []).map((host) => host.uid),
   ]);
 }
 
