@@ -141,6 +141,10 @@ function applyKey(step, text) {
       step.blockKey = "run";
       step.blockStyle = "folded";
       step.blockLines = [];
+    } else if (/^[|>]/u.test(value)) {
+      // A new YAML block modifier needs deliberate parser support. Running
+      // its marker as shell text would advertise a gate that never ran.
+      step.unsupportedRunStyle = value;
     } else {
       step.run = value;
     }
@@ -157,7 +161,9 @@ function applyKey(step, text) {
 function classify(step) {
   let skipReason = null;
   if (!step.run) {
-    skipReason = step.uses
+    skipReason = step.unsupportedRunStyle
+      ? `unsupported run block style (${step.unsupportedRunStyle})`
+      : step.uses
       ? `composite action (${step.uses})`
       : "no run block";
   } else if (GITHUB_COUPLED.test(step.raw ?? step.run)) {

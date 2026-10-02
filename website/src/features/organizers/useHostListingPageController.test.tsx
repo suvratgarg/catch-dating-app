@@ -5,8 +5,8 @@ import {hostListings} from "./data";
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 const trackOrganizerAnalytics = vi.hoisted(() => vi.fn());
 
-vi.mock("../../analytics", () => ({trackMarketingEvent}));
-vi.mock("./analytics", () => ({trackOrganizerAnalytics}));
+vi.mock("../../analytics", () => ({trackMarketingEvent, getMarketingConsent: () => null, marketingConsentChangedEvent: "catch:marketing-consent-changed"}));
+vi.mock("./analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView: vi.fn(() => () => undefined)}));
 
 import {useHostListingPageController} from "./useHostListingPageController";
 

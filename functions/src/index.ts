@@ -872,3 +872,7 @@ export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
   adminPreviewSalesPrivacyPlan, adminReviewSalesPrivacyPlan,
   adminApplySalesPrivacyBatch, adminGetSalesPrivacyCase} from
   "./admin/salesPrivacy/callables";
+
+export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
+  readPublicOrganizerTrackingSettings}
+  from "./analytics/organizerTrackingSettings";

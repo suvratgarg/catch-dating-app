@@ -1,10 +1,11 @@
+import {observeOrganizerProviders} from "./observeOrganizerProviders";
 import {websiteCopy} from "@content/generated";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteTemplates} from "@content/templates";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import type {SiteNavItem} from "../../shared/site";
-import {trackOrganizerAnalytics} from "./analytics";
+import {observeOrganizerPageView, trackOrganizerAnalytics} from "./analytics";
 import {absoluteListingUrl} from "./publicDiscovery";
 import {claimHrefForListing} from "./routing";
 import {readSavedOrganizer, writeSavedOrganizer} from "./savedOrganizerStorage";
@@ -29,9 +30,8 @@ export function useHostListingPageController(listing: HostListing) {
     setShareStatus("");
   }, [listing.id]);
 
-  useEffect(() => {
-    trackOrganizerAnalytics(listing, "listingView", "listing_page");
-  }, [listing.id]);
+  useEffect(() => observeOrganizerPageView(listing, "listingView", "listing_page"), [listing]);
+  useEffect(() => observeOrganizerProviders(listing), [listing]);
 
   const nav = useMemo<SiteNavItem[]>(() => [
     ...(eventsHref ? [{href: eventsHref, label: organizerPresenceCopy.navigation.events}] : []),

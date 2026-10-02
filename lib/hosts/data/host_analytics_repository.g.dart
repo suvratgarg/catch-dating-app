@@ -149,7 +149,7 @@ final class HostAnalyticsProvider
   }
 }
 
-String _$hostAnalyticsHash() => r'e671f4d7fbbdeba227b44170cfaa47158f046694';
+String _$hostAnalyticsHash() => r'7f6803c7bfd7b5d644b66da639cb97d272bfbb4d';
 
 final class HostAnalyticsFamily extends $Family
     with

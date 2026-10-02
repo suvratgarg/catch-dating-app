@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import test from "node:test";
 
 installBrowserFixture();
@@ -29,7 +30,7 @@ test("marketing events carry the immutable website copy content version", () => 
   });
 });
 
-test("analytics URL parameters omit query strings without changing attribution capture", () => {
+test("analytics URL parameters omit query strings and attribution requires consent", () => {
   window.localStorage.clear();
   window.dataLayer = [];
 
@@ -47,12 +48,13 @@ test("analytics URL parameters omit query strings without changing attribution c
     page_path: "/host/",
   });
   assert.equal(payload.analytics.pagePath, "/host/");
-  assert.equal(payload.attribution?.firstTouch.landingPath, "/host/?source=contract");
-  assert.equal(
-    payload.attribution?.firstTouch.landingUrl,
-    "https://catchdates.test/host/?source=contract"
-  );
-  assert.deepEqual(payload.attribution?.firstTouch.values, {});
+  assert.equal(payload.attribution, null);
+  analytics.setMarketingConsent("analytics");
+  const consented = analytics.waitlistAnalyticsPayload("waitlist_event-2", "member");
+  assert.equal(consented.attribution?.firstTouch.landingPath, "/host/");
+  assert.equal(consented.attribution?.firstTouch.landingUrl, "https://catchdates.test/host/");
+  assert.equal(consented.attribution?.firstTouch.referrer, null);
+  assert.deepEqual(consented.attribution?.firstTouch.values, {});
 });
 
 test("the host application attempt emits a GA4-safe event name", () => {
@@ -212,6 +214,9 @@ function installBrowserFixture() {
       search: "?source=contract",
     },
     localStorage,
+    sessionStorage: {getItem: (key) => localStorage.getItem(`session:${key}`),
+      setItem: (key, value) => localStorage.setItem(`session:${key}`, value),
+      removeItem: (key) => localStorage.removeItem(`session:${key}`)},
   };
   globalThis.document = {
     createElement() {
@@ -224,3 +229,15 @@ function installBrowserFixture() {
     title: "Catch contract fixture",
   };
 }
+
+test("event detail rendered views use the backend source vocabulary and shared public chrome", () => {
+  const page = readFileSync(new URL("../src/features/events/EventDetailPage.tsx", import.meta.url), "utf8");
+  const ingestion = readFileSync(new URL("../../functions/src/analytics/organizerAnalyticsEvents.ts", import.meta.url), "utf8");
+  const source = page.match(/observeOrganizerPageView\(event\.listing,\s*"eventView",\s*"([^"]+)"/u)?.[1];
+  assert.equal(source, "event_detail");
+  const allowedSources = ingestion.match(/const publicSources = new Set\(\[([\s\S]*?)\]\);/u)?.[1];
+  assert.ok(allowedSources?.includes(`"${source}"`), "rendered view source must survive backend normalization");
+  assert.match(page, /<PublicSiteHeader\b/u);
+  assert.match(page, /<PublicSiteFooter\b/u);
+  assert.doesNotMatch(page, /<Site(?:Header|Footer)\b/u);
+});

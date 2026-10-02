@@ -376,6 +376,7 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
                   "type": "string",
                   "enum": [
                     "accepted",
+                    "analytics",
                     "essential"
                   ]
                 },
@@ -841,6 +842,7 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
                   "type": "string",
                   "enum": [
                     "accepted",
+                    "analytics",
                     "essential"
                   ]
                 },
@@ -903,6 +905,7 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
           "type": "string",
           "enum": [
             "accepted",
+            "analytics",
             "essential"
           ]
         },

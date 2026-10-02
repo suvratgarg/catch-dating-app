@@ -505,6 +505,8 @@ test("planner sparse checkout contains its recursive local module closure", () =
   );
   const pending = [
     "tool/harness.mjs",
+    "tool/harness/verify_local.mjs",
+    "tool/run.mjs",
     "tool/design/build_host_feature_responsibilities.mjs",
   ];
   const visited = new Set();
@@ -935,7 +937,7 @@ test("identical registered checks execute once while preserving first-owner orde
 test("scheduled and manual CI resolve revision expressions before binding lane inputs", () => {
   const ci = workflow("ci.yml");
   const start = ci.indexOf('          if [[ -z "$base_sha"');
-  const end = ci.indexOf("          mkdir -p build/ci", start);
+  const end = ci.indexOf("          node tool/harness/verify_local.mjs --preflight", start);
   assert.ok(start >= 0 && end > start);
   const resolve = ci.slice(start, end).replace(/^          /gmu, "");
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-base-"));
@@ -1011,7 +1013,13 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(ci, /name: Backend source review/u);
   const feedback = workflow("pr-feedback.yml");
   const plan = namedStep(feedback, "Plan affected checks");
-  assert.match(plan, /node tool\/harness\.mjs plan --base "\$BASE_SHA" --head HEAD --mode pr --json/u);
+  assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --base "\$BASE_SHA" --head HEAD --mode pr/u);
+  assert.match(ci, /node tool\/harness\/verify_local\.mjs --preflight \\\n\s+--base "\$base_sha" --head "\$HEAD_SHA" --mode "\$event_mode"/u);
+  for (const source of [ci, feedback]) {
+    assert.match(source, /uses: \.\/\.github\/actions\/load-toolchain/u);
+    assert.match(source, /uses: actions\/setup-node@v6/u);
+    assert.match(source, /node-version: \$\{\{ steps\.toolchain\.outputs\.node-version \}\}/u);
+  }
   assert.doesNotMatch(feedback, /git diff --check/u);
   assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
   assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);

@@ -9,6 +9,103 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get hostsTrackingSettingsTitle => 'Meta Pixel and Google Analytics';
+
+  @override
+  String get hostsTrackingSettingsPolicyBlocked =>
+      'Tracking is disabled pending policy review. Saving these IDs does not activate scripts or send data to either provider.';
+
+  @override
+  String get hostsTrackingSettingsUnclaimed =>
+      'This organiser is not eligible to edit tracking settings. Complete the verified ownership or claim process first.';
+
+  @override
+  String get hostsTrackingSettingsMetaId => 'Meta Pixel ID';
+
+  @override
+  String get hostsTrackingSettingsGoogleId => 'Google measurement ID';
+
+  @override
+  String get hostsTrackingSettingsEnabled => 'Enable provider tracking';
+
+  @override
+  String get hostsTrackingSettingsInvalidId =>
+      'Enter a valid provider ID or leave this field blank.';
+
+  @override
+  String get hostsTrackingSettingsPrivacy =>
+      'Sensitive social, dating and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.';
+
+  @override
+  String get hostsTrackingSettingsSaveDisabled => 'Save disabled configuration';
+
+  @override
+  String get hostsTrackingSettingsReload => 'Reload settings';
+
+  @override
+  String get hostsTrackingSettingsReloadForConflict =>
+      'If another manager updated these settings, reload the current revision before saving again.';
+
+  @override
+  String get hostsHostAnalyticsLabelObservedStages => 'Observed booking stages';
+
+  @override
+  String get hostsHostAnalyticsLabelProviderBookingClicks =>
+      'Provider booking clicks';
+
+  @override
+  String get hostsHostAnalyticsLabelFormDrafts => 'Form drafts';
+
+  @override
+  String get hostsHostAnalyticsLabelFormSubmissions => 'Form submissions';
+
+  @override
+  String get hostsHostAnalyticsLabelFormCheckoutAttempts =>
+      'Form fee checkout attempts';
+
+  @override
+  String get hostsHostAnalyticsLabelFormFeesCaptured => 'Form fees captured';
+
+  @override
+  String get hostsHostAnalyticsLabelDirectCheckoutAttempts =>
+      'Direct checkout attempts';
+
+  @override
+  String get hostsHostAnalyticsLabelDirectPaymentsCaptured =>
+      'Direct payments captured';
+
+  @override
+  String get hostsHostAnalyticsLabelDirectPaidAdmissions =>
+      'Direct paid admissions';
+
+  @override
+  String get hostsHostAnalyticsTextObservedStageLimits =>
+      'Separate counts observed in this period, not a linked cohort or conversion rate. A form fee payment does not confirm admission. Direct bookings can skip forms and approval. Provider clicks do not confirm an external purchase. Missing stages are shown as —; partial stages may be incomplete.';
+
+  @override
+  String get hostsHostAnalyticsLabelPublicPresence => 'Public presence';
+
+  @override
+  String get hostsHostAnalyticsLabelOutboundSourceClicks =>
+      'Outbound source clicks';
+
+  @override
+  String get hostsHostAnalyticsTextPresenceUnavailable =>
+      'Presence data is unavailable for this range. Missing data is shown as —.';
+
+  @override
+  String get hostsHostAnalyticsTextPresenceEmpty =>
+      'No public views or outbound clicks were observed in this range.';
+
+  @override
+  String get hostsHostAnalyticsTextPresenceObservedTotals =>
+      'Observed totals, not unique visitors or a linked conversion funnel. Repeat visits, owner previews and automated traffic may affect these counts.';
+
+  @override
+  String get hostsHostAnalyticsTextPresenceExternalLimits =>
+      'Outbound source clicks include source and provider links. They do not confirm a booking or payment on another website.';
+
+  @override
   String get appTitleConsumer => 'Catch';
 
   @override

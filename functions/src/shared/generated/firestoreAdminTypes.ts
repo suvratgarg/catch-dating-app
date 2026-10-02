@@ -549,6 +549,16 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface OrganizerTrackingSettingsDocument {
+  organizerId: string;
+  revision: number;
+  metaPixelId: string | null;
+  googleMeasurementId: string | null;
+  enabled: false;
+  updatedByUid: string;
+  updatedAtMillis: number;
+}
+
 /**
  * Private immutable Catch-owned incoming message and status receipts. Exact configured WABA and sender binding, no organizer authority, no outgoing action. Bounded text expires after 30 days. Status facts remain individual events rather than an arrival-ordered delivery projection.
  */

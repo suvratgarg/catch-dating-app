@@ -1,0 +1,8 @@
+/// Consistent abbreviated counts across Host organiser and analytics sections.
+abstract final class HostCountFormatters {
+  static String compact(int count) {
+    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
+    return '$count';
+  }
+}
