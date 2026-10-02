@@ -710,6 +710,16 @@
     {"id": "dedicated-app-build-workflow", "paths": {"include": [".github/workflows/app-build-matrix.yml"]}, "components": ["ci.workflow.app-builds"], "terminal": true},
     {"id": "native-dependency-cache-action", "paths": {"include": [".github/actions/cache-cocoapods/action.yml"]}, "components": ["ci.native-dependency-cache"], "terminal": true},
     {"id": "dedicated-react-workflow", "paths": {"include": [".github/workflows/react-surface-validation.yml"]}, "components": ["ci.workflow.react"], "terminal": true},
+    {
+      "id": "web-hosting-promotion-control",
+      "paths": {"include": [
+        ".github/workflows/_web-hosting-promote.yml",
+        "tool/ci/web_hosting_freshness.mjs",
+        "tool/ci/web_hosting_workflow.test.mjs"
+      ]},
+      "components": ["ci.workflow.react"],
+      "terminal": true
+    },
     {"id": "dedicated-rules-workflow", "paths": {"include": [".github/workflows/firestore-rules-ci.yml"]}, "components": ["ci.workflow.rules"], "terminal": true},
     {"id": "dedicated-contracts-workflow", "paths": {"include": [".github/workflows/contracts-ci.yml"]}, "components": ["ci.workflow.contracts"], "terminal": true},
     {"id": "dedicated-functions-workflow", "paths": {"include": [".github/workflows/functions-ci.yml"]}, "components": ["ci.workflow.functions"], "terminal": true},
