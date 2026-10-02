@@ -1,5 +1,5 @@
-import {act, renderHook, waitFor} from "@testing-library/react";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {salesErrorMessage, toLocalDateTimeInput,
   useSalesWorkspaceController} from
@@ -44,6 +44,8 @@ const firstPage = {
 };
 
 describe("useSalesWorkspaceController", () => {
+  afterEach(cleanup);
+
   beforeEach(() => {
     Object.values(repository).forEach((mock) => mock.mockReset());
     repository.listSalesAccounts.mockResolvedValue(firstPage);
