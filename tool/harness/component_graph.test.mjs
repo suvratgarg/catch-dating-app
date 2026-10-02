@@ -101,6 +101,98 @@ test("shared screenshot runner validates every React caller with only its requir
   }
 });
 
+const organizerAuthorityEmulatorPaths = [
+  "functions/package.json",
+  "functions/src/shared/organizerHosts.ts",
+  "functions/src/shared/clubHosts.ts",
+  "functions/src/shared/organizerHosts.test.ts",
+  "functions/src/organizers/manageOrganizerTeam.ts",
+  "functions/src/profiles/syncPublicProfile.ts",
+  "functions/src/profiles/syncPublicProfile.test.ts",
+  "functions/src/profiles/syncPublicProfileEmulator.test.ts",
+];
+
+function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
+  for (const file of organizerAuthorityEmulatorPaths) {
+    for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
+      const result = plan(file, mode, sourceGraph);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets,
+        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+      assert.deepEqual(result.operations.deployGroups,
+        ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
+      for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
+        assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
+      }
+    }
+  }
+}
+
+test("organizer authority changes select the real emulator without rules deployment", () => {
+  assertOrganizerAuthorityEmulatorSelection(graph);
+});
+
+test("organizer authority selector rejects the known-bad Functions-only edge", () => {
+  const broken = clone(graph);
+  const owner = broken.components.find((entry) => entry.id === "backend.organizer-authority");
+  assert.ok(owner, "organizer authority selector owner must exist");
+  owner.alsoAffects = [];
+  assert.deepEqual(plan(organizerAuthorityEmulatorPaths[1], "pr", broken)
+    .operations.ciTargets, ["functions"]);
+  assert.throws(() => assertOrganizerAuthorityEmulatorSelection(broken),
+    /firestore_rules/u);
+});
+
+test("organizer authority routing preserves unrelated and mixed source lanes", () => {
+  const before = clone(graph);
+  before.classifications = before.classifications.filter((entry) =>
+    entry.id !== "organizer-authority-emulator");
+  before.components = before.components.filter((entry) =>
+    entry.id !== "backend.organizer-authority");
+  for (const mode of graph.modes) {
+    for (const changedPaths of [
+      ["functions/src/events/cancelEventSignUp.ts"],
+      ["firestore.rules"],
+      ["admin/src/App.tsx"],
+      ["apps/host/lib/main.dart"],
+      ["contracts/users/v1.schema.json"],
+      [organizerAuthorityEmulatorPaths[1], "admin/src/App.tsx"],
+      [organizerAuthorityEmulatorPaths[1], "apps/host/lib/main.dart"],
+      [organizerAuthorityEmulatorPaths[1], "firestore.rules"],
+    ]) {
+      const baseline = planAffected({changedPaths, graph: before, mode});
+      const actual = planAffected({changedPaths, graph, mode});
+      assert.equal(actual.complete, true);
+      const addedTargets = mode !== "release" &&
+        changedPaths.includes(organizerAuthorityEmulatorPaths[1]) ? ["firestore_rules"] : [];
+      assert.deepEqual(actual.operations, {...baseline.operations,
+        ciTargets: [...new Set([...baseline.operations.ciTargets, ...addedTargets])].sort()},
+      `${changedPaths.join(",")} ${mode}`);
+    }
+  }
+});
+
+test("rules emulator command executes the organizer authority regression", () => {
+  const packageJson = JSON.parse(fs.readFileSync(
+    new URL("../../functions/package.json", import.meta.url), "utf8"));
+  const script = packageJson.scripts["test:rules"];
+  const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
+  const assertIncluded = (command) => {
+    assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+    assert.equal(command.split(/\s+/u).filter((part) => part === compiledTest).length,
+      1, "test:rules must run the organizer authority emulator regression exactly once");
+  };
+  assertIncluded(script);
+  assert.throws(() => assertIncluded(script.replace(compiledTest, "")),
+    /must run the organizer authority emulator regression/u);
+  assert.ok(fs.existsSync(new URL(
+    "../../functions/src/profiles/syncPublicProfileEmulator.test.ts", import.meta.url)));
+  const workflow = fs.readFileSync(
+    new URL("../../.github/workflows/firestore-rules-ci.yml", import.meta.url), "utf8");
+  assert.match(workflow,
+    /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
+});
+
 test("component graph validates and affected edges cannot authorize release", () => {
   assert.deepEqual(validateComponentGraph(graph), []);
   for (const profile of Object.values(graph.operationProfiles)) {
@@ -779,6 +871,7 @@ test("authored contracts expand to every declared validation consumer", () => {
     "backend.firestore-indexes",
     "backend.firestore-rules",
     "backend.functions",
+    "backend.organizer-authority",
     "backend.storage-rules",
     "operations.contract-consumer",
     "web.admin",
