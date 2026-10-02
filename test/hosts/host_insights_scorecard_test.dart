@@ -70,10 +70,14 @@ void main() {
     expect(find.text('Published reviews'), findsOneWidget);
     expect(find.text('COACH'), findsNothing);
 
+    await tester.ensureVisible(find.text('Event One'));
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Event One'));
     await tester.pump();
     expect(openedEventId, 'event-1');
 
+    await tester.ensureVisible(find.text('All events'));
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('All events'));
     await tester.pump();
     expect(openedAllEvents, isTrue);

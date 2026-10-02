@@ -15,6 +15,13 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "GetOrganizerTrackingSettingsCallablePayload", "source": "callables/get_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/getOrganizerTrackingSettingsCallablePayload.ts"},
+  {"name": "SetOrganizerTrackingSettingsCallablePayload", "source": "callables/set_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload.ts"},
+  {"name": "ReadPublicOrganizerTrackingSettingsCallablePayload", "source": "callables/read_public_organizer_tracking_settings_payload.schema.json", "typeOutput": "functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload.ts"},
+  {"name": "OrganizerTrackingSettingsCallableResponse", "source": "callable_responses/organizer_tracking_settings_response.schema.json", "typeOutput": "functions/src/shared/generated/organizerTrackingSettingsCallableResponse.ts"},
+  {"name": "PublicOrganizerTrackingSettingsCallableResponse", "source": "callable_responses/public_organizer_tracking_settings_response.schema.json", "typeOutput": "functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse.ts"},
+  {"name": "OrganizerTrackingSettingsDocument", "source": "firestore/organizer_tracking_settings.schema.json", "typeOutput": "functions/src/shared/generated/organizerTrackingSettingsDocument.ts"},
+
   {
     name: "CatchWhatsappWebhookEventDocument",
     source: "firestore/catch_whatsapp_webhook_events.schema.json",

@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
@@ -475,20 +474,30 @@ HostAnalyticsRepository hostAnalyticsRepository(Ref ref) {
 }
 
 @riverpod
-Future<HostAnalyticsReport> hostAnalytics(Ref ref, HostAnalyticsQuery query) {
-  // keepalive: Reuse each scorecard preset for ten minutes after tab exit.
-  final link = ref.keepAlive();
-  Timer? expiryTimer;
-  ref.onCancel(() {
-    expiryTimer?.cancel();
-    expiryTimer = Timer(const Duration(minutes: 10), () {
-      link.close();
-      ref.invalidateSelf();
-    });
-  });
-  ref.onResume(() => expiryTimer?.cancel());
-  ref.onDispose(() => expiryTimer?.cancel());
-  return ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics(query);
+Future<HostAnalyticsReport> hostAnalytics(
+  Ref ref,
+  HostAnalyticsQuery query,
+) async {
+  // Auth transitions invalidate this read even when its tab cache is retained.
+  // The disposed read's Ref also fences sign-out/re-entry to the same UID.
+  final auth = ref.watch(uidProvider);
+  final uid = !auth.isLoading && !auth.hasError ? auth.asData?.value : null;
+  if (uid == null || uid.isEmpty) {
+    throw const SignInRequiredException('load host analytics');
+  }
+  final report = await ref
+      .watch(hostAnalyticsRepositoryProvider)
+      .getHostAnalytics(query);
+  if (!ref.mounted) {
+    throw const SignInRequiredException('load host analytics');
+  }
+  final current = ref.read(uidProvider);
+  if (current.isLoading || current.hasError || current.asData?.value != uid) {
+    throw const SignInRequiredException('load host analytics');
+  }
+  // Auto-dispose at tab exit: a paused cache cannot observe every auth
+  // transition. Reopening always requires fresh server authorization.
+  return report;
 }
 
 Map<Object?, Object?> _map(Object? value) =>

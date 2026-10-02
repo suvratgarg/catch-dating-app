@@ -85,7 +85,7 @@ export interface JoinWaitlistHTTPRequest {
   } | null;
   analytics?: {
     consent: {
-      choice: "accepted" | "essential";
+      choice: "accepted" | "analytics" | "essential";
       analytics: boolean;
       marketing: boolean;
       updatedAt: string;
