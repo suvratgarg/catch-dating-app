@@ -19,4 +19,12 @@ export interface UpsertProgramHouseholdCallablePayload {
    */
   memberGuestIds: string[];
   deliveryPreference?: "whatsapp" | "sms" | "email" | "none";
+  /**
+   * Explicit same-program, same-household field assertions chosen under expectedRevision.
+   */
+  fieldChoices?: {
+    displayName?: string;
+    phoneE164?: string;
+    email?: string;
+  };
 }

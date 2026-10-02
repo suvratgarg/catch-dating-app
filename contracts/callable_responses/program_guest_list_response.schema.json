@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json",
   "title": "ProgramGuestListCallableResponse",
-  "description": "Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.",
+  "description": "Program-authorized guest inventory. Name and endpoints resolve only from selected same-program field acquisition evidence; private organizer-wide contact fields are never dereferenced.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -105,6 +105,9 @@
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "fieldAuthority": {
+            "$ref": "../shared/workspace_common.schema.json#/definitions/fieldAuthority"
           }
         }
       }

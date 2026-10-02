@@ -115,4 +115,12 @@ export interface EventParticipationDocument {
    * Internal demo-operations command name used for cleanup and diagnostics.
    */
   demoOpsCommand?: string;
+  /**
+   * Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.
+   */
+  communityMembershipAtSignup?: {
+    membershipId: string;
+    revision: number;
+    decisionId: string;
+  };
 }

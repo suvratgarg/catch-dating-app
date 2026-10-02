@@ -11,6 +11,12 @@ export {readPublicOrganizerTrackingSettingsCallablePayloadSchema} from "./schema
 export {organizerTrackingSettingsCallableResponseSchema} from "./schemas/organizerTrackingSettingsOutput";
 export {publicOrganizerTrackingSettingsCallableResponseSchema} from "./schemas/publicOrganizerTrackingSettingsOutput";
 export {organizerTrackingSettingsDocumentSchema} from "./schemas/organizerTrackingSettingsDocument";
+export {organizerCommunityMembershipDocumentSchema} from "./schemas/organizerCommunityMembershipDocument";
+export {organizerCommunityMembershipDecisionDocumentSchema} from "./schemas/organizerCommunityMembershipDecisionDocument";
+export {decideOrganizerCommunityMembershipCallablePayloadSchema} from "./schemas/decideOrganizerCommunityMembershipInput";
+export {decideOrganizerCommunityMembershipCallableResponseSchema} from "./schemas/decideOrganizerCommunityMembershipOutput";
+export {workspaceFieldAssertionDocumentSchema} from "./schemas/workspaceFieldAssertionDocument";
+export {workspaceFieldDecisionDocumentSchema} from "./schemas/workspaceFieldDecisionDocument";
 export {catchWhatsappWebhookEventDocumentSchema} from "./schemas/catchWhatsappWebhookEventDocument";
 export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
 export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";
@@ -411,6 +417,10 @@ export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrgan
 export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
 export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {listParticipantActivityCallablePayloadSchema} from "./schemas/listParticipantActivityInput";
+export {listParticipantActivityCallableResponseSchema} from "./schemas/listParticipantActivityOutput";
+export {getParticipantActivityCallablePayloadSchema} from "./schemas/getParticipantActivityInput";
+export {getParticipantActivityCallableResponseSchema} from "./schemas/getParticipantActivityOutput";
 export {listParticipantFormProfilesCallablePayloadSchema} from "./schemas/listParticipantFormProfilesInput";
 export {listParticipantFormProfilesCallableResponseSchema} from "./schemas/listParticipantFormProfilesOutput";
 export {getParticipantFormPhotoCallablePayloadSchema} from "./schemas/getParticipantFormPhotoInput";

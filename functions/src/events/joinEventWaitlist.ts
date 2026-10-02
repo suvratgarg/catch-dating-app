@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {onCall, HttpsError, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -38,6 +40,7 @@ import {
   incrementCount,
   decrementCount,
   normalizeInviteCode,
+  assertPolicyAllowsMembership,
 } from "./eventPolicy";
 import {assertBookingReadyUserProfile} from "../shared/profileReadiness";
 import {assertRunPreferencesReadyForEvent} from
@@ -169,6 +172,12 @@ export async function joinEventWaitlistHandler(
       );
     }
 
+    assertPolicyAllowsMembership({policy,
+      hasActiveCommunityMembership: await hasEventCommunityMembership({
+        db, tx, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        policy,
+      }),
+    });
     const cohortAtSignup = cohortIdForUser(user);
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,

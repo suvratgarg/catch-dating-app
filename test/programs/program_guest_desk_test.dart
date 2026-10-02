@@ -147,11 +147,17 @@ void main() {
     // Guest desk staff do not hold door duty: no function check-in rows.
     expect(find.text('Sangeet'), findsNothing);
 
+    await tester.ensureVisible(find.text('Guests & RSVP'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Guests & RSVP').hitTestable(), findsOneWidget);
     await tester.tap(find.text('Guests & RSVP'));
     await pumpFeatureUi(tester);
     expect(router.state.uri.path, '/host/work/p-1/guests');
     router.pop();
     await pumpFeatureUi(tester);
+    await tester.ensureVisible(find.text('Manifest import'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Manifest import').hitTestable(), findsOneWidget);
     await tester.tap(find.text('Manifest import'));
     await pumpFeatureUi(tester);
     expect(router.state.uri.path, '/host/work/p-1/import');

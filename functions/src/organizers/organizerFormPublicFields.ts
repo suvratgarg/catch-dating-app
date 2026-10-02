@@ -159,3 +159,45 @@ function intakeValue(question: Question, value: Answer):
   }
   return null;
 }
+
+/** Organizer answers remain source snapshots, offered only for explicit review.
+ * Reuse is restricted to the same form; per-form keys cannot join other forms.
+ */
+export function organizerFormAnswerSuggestions(params: {
+  sourceDefinition: Definition;
+  targetDefinition: Definition;
+  answers: Record<string, Answer>;
+}): Record<string, Answer> {
+  const source = params.sourceDefinition;
+  const target = params.targetDefinition;
+  if (source.purpose !== target.purpose ||
+      JSON.stringify(source.consent) !== JSON.stringify(target.consent)) {
+    return {};
+  }
+  const oldQuestions = new Map(source.sections.flatMap((section) =>
+    section.questions).map((question) => [question.questionId, question]));
+  const suggestions: Record<string, Answer> = {};
+  for (const question of target.sections.flatMap((section) =>
+    section.questions)) {
+    const previous = oldQuestions.get(question.questionId);
+    if (!previous || question.prefillPolicy !== "participantReviewRequired" ||
+        previous.prefillPolicy !== "participantReviewRequired" ||
+        (question.answerDestination ?? "organizerOnly") !== "organizerOnly" ||
+        (previous.answerDestination ?? "organizerOnly") !== "organizerOnly" ||
+        ["file", "signature", "acknowledgement"].includes(question.kind) ||
+        question.key !== previous.key || question.kind !== previous.kind ||
+        question.label !== previous.label ||
+        question.helpText !== previous.helpText ||
+        question.canonicalFieldId !== previous.canonicalFieldId ||
+        question.privacyClass !== previous.privacyClass ||
+        JSON.stringify(question.options) !== JSON.stringify(previous.options)) {
+      continue;
+    }
+    const answer = params.answers[question.questionId];
+    if (matchesQuestion(question, answer)) {
+      suggestions[question.questionId] = Array.isArray(answer) ?
+        [...answer] : answer;
+    }
+  }
+  return suggestions;
+}

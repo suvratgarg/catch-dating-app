@@ -9,4 +9,8 @@ export interface BeginOrganizerFormResponseCallablePayload {
   publicFormId: string;
   sourceToken: string | null;
   requestId: string;
+  /**
+   * Explicit own submitted source selection for compatible same-form answer suggestions; never a claim or grant.
+   */
+  reuseResponseId?: string | null;
 }

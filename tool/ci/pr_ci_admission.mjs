@@ -53,12 +53,18 @@ export async function resolveAdmission({repository, number, headSha, baseSha, ru
       const candidates = runs.workflow_runs.filter((run) => run.event === "pull_request" &&
         run.head_sha === headSha && run.path === ".github/workflows/ci.yml" &&
         run.display_title === `CI PR #${number}`);
-      if (!candidates.some((run) => run.id === runId) ||
-          candidates.some((run) => !Number.isSafeInteger(run.id) || run.id > runId)) {
+      if (candidates.some((run) => !Number.isSafeInteger(run.id) || run.id < 1)) {
+        return deny("invalid_run_identity", "Eligible validation list contains an invalid run identity");
+      }
+      if (candidates.some((run) => run.id > runId)) {
         return deny("superseded_run", "A newer admission event supersedes this queued validation");
       }
       // Actions returns newest runs first. The current run must be present in
       // this bounded window, otherwise deny rather than guessing old authority.
+      if (!candidates.some((run) => run.id === runId)) {
+        return deny("unverified_run", `Current admission run ${runId} is absent from the workflow-scoped window ` +
+          `(${runs.workflow_runs.length} returned, ${candidates.length} eligible); freshness is unverified`);
+      }
       return {admitted: true, code: "admitted",
         reason: "Sole admitted PR and latest eligible run match tested head and current main"};
     }

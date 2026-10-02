@@ -1,3 +1,6 @@
+import {communityMembershipId, requiresCommunityMembership,
+  readCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {prepareNativePaidBooking, NativePaidBooking} from
   "../payments/nativeBooking";
 import {preparePairSeatTransition} from "../crossPaths/pairSeatAuthority";
@@ -41,6 +44,7 @@ import {
   cohortIdForUser,
   decrementCount,
   eventPolicyFromEvent,
+  hasHostApprovedJoinRequest,
   incrementCount,
   rosterFromEvent,
   rosterWithReservedWaitlistOffersInTransaction,
@@ -86,6 +90,7 @@ export async function signUpUserForEvent(
   options: {
     paidBooking?: NativePaidBooking;
     hasValidInvite?: boolean;
+    /** Caller hint only; the write transaction rechecks persisted review. */
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
     crossPathsPairHoldId?: string | null;
@@ -172,6 +177,7 @@ export async function signUpUserForEvent(
       participationSnap.data() as {
         status?: string;
         paymentId?: string;
+        communityMembershipAtSignup?: unknown;
         inviteLinkId?: string | null;
         inviteSource?: string | null;
       } :
@@ -364,13 +370,17 @@ export async function signUpUserForEvent(
         (reservedRoster.crossPathsPairHeldCount ?? 0) - 1
       ) : reservedRoster.crossPathsPairHeldCount,
     } : reservedRoster;
+    const membership = requiresCommunityMembership(policy) ?
+      await readCommunityMembership({db, tx,
+        organizerId: event.organizerId ?? event.clubId, uid: userId}) : null;
     assertPolicyAllowsSignup({
       policy,
       cohortId,
       roster: admissionRoster,
       hasValidInvite: options.hasValidInvite,
-      hasHostApproval: options.hasHostApproval,
+      hasHostApproval: hasHostApprovedJoinRequest(participationSnap.data()),
       admissionMode: pairHold ? "crossPathsPair" : "general",
+      hasActiveCommunityMembership: membership?.state === "active",
     });
 
     const scheduleClaim = await prepareUserEventScheduleClaimInTransaction(
@@ -478,6 +488,13 @@ export async function signUpUserForEvent(
         cohortAtSignup: cohortId,
         paymentId,
       }),
+      ...(membership ? {communityMembershipAtSignup: {
+        membershipId: communityMembershipId(event.organizerId ?? event.clubId,
+          userId), revision: membership.revision,
+        decisionId: membership.lastDecisionId,
+      }} : existingParticipation?.communityMembershipAtSignup ? {
+        communityMembershipAtSignup: admin.firestore.FieldValue.delete(),
+      } : {}),
       ...inviteAttributionWriteFields(attribution.write),
     }, {merge: true});
     incrementInviteLinkCounterInTransaction({

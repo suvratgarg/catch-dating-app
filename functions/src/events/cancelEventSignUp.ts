@@ -1,3 +1,5 @@
+import {hasEventCommunityMembership} from
+  "../memberships/communityMembershipAuthority";
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -331,6 +333,10 @@ export async function cancelEventSignUpHandler(
           policy,
           cohortId: wCohort,
           roster: nextRoster,
+          hasActiveCommunityMembership: await hasEventCommunityMembership({
+            db, tx, organizerId: event.organizerId ?? event.clubId,
+            uid: waitlistUserId, policy,
+          }),
         });
         const quotedAmountInPaise = quotePriceInPaise({
           policy,

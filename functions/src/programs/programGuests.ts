@@ -55,6 +55,13 @@ import {
   validateProgramIdCallablePayload,
 } from "../shared/generated/validators/programIdInput";
 
+import {
+  permittedFieldPointers, planWorkspaceFieldWrite, programGuestFieldContext,
+  readProgramGuestFields, readProgramHouseholdFields, readWorkspaceFieldChoices,
+  type ScopedProgramGuest, type ScopedProgramHousehold,
+  type WorkspaceFieldSelections,
+} from "../workspaces/workspaceFieldAuthority";
+
 interface ProgramGuestDeps {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -75,8 +82,9 @@ export async function upsertProgramGuestHandler(
   deps: ProgramGuestDeps = defaultDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<UpsertProgramGuestCallablePayload>(
-    request, validateUpsertProgramGuestCallablePayload, normalizePayload);
+  const data = validateCallableWithAjv<UpsertProgramGuestCallablePayload &
+    {fieldChoices?: WorkspaceFieldSelections}>(
+      request, validateUpsertProgramGuestCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramGuest");
   const ref = data.guestId ?
@@ -90,7 +98,7 @@ export async function upsertProgramGuestHandler(
     requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
-    const existing = snap.data() as ProgramGuestDocument | undefined;
+    const existing = snap.data() as ScopedProgramGuest | undefined;
     if (snap.exists &&
         existing!.programId !== data.programId) {
       throw new HttpsError("not-found", "Guest not found in this program.");
@@ -116,17 +124,38 @@ export async function upsertProgramGuestHandler(
           "Unknown guest group for this program.");
       }
     }
-    const document: ProgramGuestDocument = {
+    const context = programGuestFieldContext(data.programId,
+      access.program.organizerId, ref.id,
+      existing ?? {programId: data.programId,
+        organizerId: access.program.organizerId});
+    const previous = existing ?? {displayName: null, phoneE164: null,
+      email: null};
+    const pointers = existing ? permittedFieldPointers(previous,
+      await readProgramGuestFields({db, tx, programId: data.programId,
+        organizerId: access.program.organizerId, guestId: ref.id,
+        guest: existing})) : {};
+    const choices = await readWorkspaceFieldChoices({db, tx,
+      choices: data.fieldChoices});
+    const revision = nextRevision(existing?.revision, now);
+    const fields = planWorkspaceFieldWrite({context,
+      previous: {...previous, ...pointers}, supplied: {
+        displayName: data.displayName,
+        ...(data.phoneE164 === undefined ? {} : {phoneE164: data.phoneE164}),
+        ...(data.email === undefined ? {} : {email: data.email}),
+      }, choices, source: {sourceKind: "manualEntry", sourceId: ref.id,
+        sourceVersion: revision, actorUid, observedAtMillis: now.toMillis()}});
+    const document: ScopedProgramGuest = {
+      ...existing,
       programId: data.programId,
       organizerId: access.program.organizerId,
-      displayName: data.displayName,
+      displayName: fields.values.displayName!,
       householdId: data.householdId === undefined ?
         existing?.householdId ?? null : data.householdId,
       contactId: existing?.contactId ?? null,
-      phoneE164: data.phoneE164 === undefined ?
-        existing?.phoneE164 ?? null : data.phoneE164,
-      email: data.email === undefined ?
-        existing?.email ?? null : data.email,
+      phoneE164: fields.values.phoneE164,
+      email: fields.values.email,
+      fieldSelections: fields.fieldSelections,
+      fieldConflicts: fields.fieldConflicts,
       externalReference: data.externalReference === undefined ?
         existing?.externalReference ?? null : data.externalReference,
       groupIds: nextGroupIds,
@@ -135,7 +164,7 @@ export async function upsertProgramGuestHandler(
       source: existing?.source ?? "manual",
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
-      revision: nextRevision(existing?.revision, now),
+      revision,
     };
     const households = await readHouseholds(db, tx,
       [existing?.householdId, document.householdId]);
@@ -150,6 +179,14 @@ export async function upsertProgramGuestHandler(
     }
     applyGroupMembershipWrites(db, tx, groups, existing?.groupIds ?? [],
       document.groupIds, now);
+    for (const assertion of fields.assertions) {
+      tx.create(db.collection("workspaceFieldAssertions").doc(assertion.id),
+        assertion.data);
+    }
+    for (const decision of fields.decisions) {
+      tx.create(db.collection("workspaceFieldDecisions").doc(decision.id),
+        decision.data);
+    }
     committedRevision = document.revision;
     tx.set(ref, document);
   });
@@ -166,84 +203,88 @@ export async function listProgramGuestsHandler(
     request, validateListProgramGuestsCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listProgramGuests");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  // Guest desk duty opens the read surface; programCoordinator tuples satisfy
-  // it implicitly through dutyAssignments.
-  requireProgramDuty(access, "guestRelations");
-  const limit = data.limit ?? guestPageCap;
-  let query = db.collection("programGuests")
-    .where("programId", "==", data.programId)
-    .orderBy("displayName")
-    .limit(limit + 1);
-  if (data.cursor) {
-    const cursorRef = db.collection("programGuests").doc(data.cursor);
-    const cursorSnap = await cursorRef.get();
-    const cursorDoc = cursorSnap.data() as ProgramGuestDocument | undefined;
-    if (!cursorDoc || cursorDoc.programId !== data.programId ||
-        cursorDoc.organizerId !== access.program.organizerId) {
-      throw new HttpsError("invalid-argument", "Unknown page cursor.");
+  return db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    // Guest desk duty opens the read surface; programCoordinator tuples satisfy
+    // it implicitly through dutyAssignments.
+    requireProgramDuty(access, "guestRelations");
+    const limit = data.limit ?? guestPageCap;
+    let query = db.collection("programGuests")
+      .where("programId", "==", data.programId)
+      .orderBy("displayName")
+      .limit(limit + 1);
+    if (data.cursor) {
+      const cursorRef = db.collection("programGuests").doc(data.cursor);
+      const cursorSnap = await tx.get(cursorRef);
+      const cursorDoc = cursorSnap.data() as ProgramGuestDocument | undefined;
+      if (!cursorDoc || cursorDoc.programId !== data.programId ||
+          cursorDoc.organizerId !== access.program.organizerId) {
+        throw new HttpsError("invalid-argument", "Unknown page cursor.");
+      }
+      query = query.startAfter(cursorSnap);
     }
-    query = query.startAfter(cursorSnap);
-  }
-  const snap = await query.get();
-  const page = snap.docs.slice(0, limit);
-  const nextCursor = snap.docs.length > limit ?
-    page[page.length - 1].id : null;
-  const householdIds = [...new Set(page
-    .map((doc) =>
-      (doc.data() as ProgramGuestDocument).householdId)
-    .filter((id): id is string => id !== null))];
-  const households = await Promise.all(householdIds.map(async (id) => {
-    const snap = await db.collection("programHouseholds").doc(id).get();
-    const doc = snap.data() as ProgramHouseholdDocument | undefined;
-    if (!doc || doc.programId !== data.programId ||
-        doc.organizerId !== access.program.organizerId) {
-      throw new HttpsError("failed-precondition",
-        "Guest household ownership needs reconciliation.");
-    }
-    return {
-      householdId: id,
-      label: doc.label,
-      memberGuestIds: doc.memberGuestIds,
-      revision: doc.revision,
-    };
-  }));
-  const functionGuests = await listFunctionGuestRows(
-    db, access.program.organizerId, data.programId,
-    page.map((doc) => doc.id),
-  );
-  const groups = await listReferencedGroups(
-    db, access.program.organizerId, data.programId, page);
-  return {
-    programId: data.programId,
-    guests: page.map((doc) => {
-      const guest = requireDoc<ProgramGuestDocument>(
-        doc, "ProgramGuestDocument");
-      if (guest.organizerId !== access.program.organizerId) {
+    const snap = await tx.get(query);
+    const rawPage = snap.docs.slice(0, limit);
+    const permitted = await Promise.all(rawPage.map(async (doc) => {
+      const guest = requireDoc<ScopedProgramGuest>(doc, "ProgramGuestDocument");
+      const fields = await readProgramGuestFields({db, tx,
+        programId: data.programId, organizerId: access.program.organizerId,
+        guestId: doc.id, guest});
+      return fields.values.displayName === null ? null : {doc, guest, fields};
+    }));
+    const visible = permitted.filter((entry) => entry !== null);
+    const page = visible.map((entry) => entry.doc);
+    const nextCursor = snap.docs.length > limit ?
+      rawPage[rawPage.length - 1].id : null;
+    const householdIds = [...new Set(page
+      .map((doc) =>
+        (doc.data() as ProgramGuestDocument).householdId)
+      .filter((id): id is string => id !== null))];
+    const households = await Promise.all(householdIds.map(async (id) => {
+      const snap = await tx.get(db.collection("programHouseholds").doc(id));
+      const doc = snap.data() as ProgramHouseholdDocument | undefined;
+      if (!doc || doc.programId !== data.programId ||
+          doc.organizerId !== access.program.organizerId) {
         throw new HttpsError("failed-precondition",
-          "Guest ownership needs reconciliation.");
+          "Guest household ownership needs reconciliation.");
       }
       return {
+        householdId: id,
+        label: doc.label,
+        memberGuestIds: doc.memberGuestIds,
+        revision: doc.revision,
+      };
+    }));
+    const functionGuests = await listFunctionGuestRows(
+      db, access.program.organizerId, data.programId,
+      page.map((doc) => doc.id), tx,
+    );
+    const groups = await listReferencedGroups(
+      db, access.program.organizerId, data.programId, page, tx);
+    return {
+      programId: data.programId,
+      guests: visible.map(({doc, guest, fields}) => ({
         guestId: doc.id,
-        displayName: guest.displayName,
+        displayName: fields.values.displayName!,
         householdId: guest.householdId,
         contactId: guest.contactId,
-        phoneE164: guest.phoneE164,
-        email: guest.email,
+        phoneE164: fields.values.phoneE164,
+        email: fields.values.email,
+        fieldAuthority: fields.authority,
         externalReference: guest.externalReference,
         groupIds: guest.groupIds ?? [],
         invitationStatus: guest.invitationStatus,
         rsvpStatus: guest.rsvpStatus,
         revision: guest.revision,
-      };
-    }),
-    households: households.filter((h) => h !== null),
-    functionGuests,
-    groups,
-    nextCursor,
-  };
+      })),
+      households: households.filter((h) => h !== null),
+      functionGuests,
+      groups,
+      nextCursor,
+    };
+  });
 }
 
 /**
@@ -255,11 +296,12 @@ async function listReferencedGroups(
   organizerId: string,
   programId: string,
   page: FirebaseFirestore.QueryDocumentSnapshot[],
+  tx: FirebaseFirestore.Transaction,
 ): Promise<ProgramGuestListCallableResponse["groups"]> {
   const groupIds = [...new Set(page.flatMap((doc) =>
     (doc.data() as ProgramGuestDocument).groupIds ?? []))];
   const groups = await Promise.all(groupIds.map(async (id) => {
-    const snap = await db.collection("programGuestGroups").doc(id).get();
+    const snap = await tx.get(db.collection("programGuestGroups").doc(id));
     const doc = snap.data() as ProgramGuestGroupDocument | undefined;
     if (!doc) return null;
     if (doc.programId !== programId || doc.organizerId !== organizerId) {
@@ -298,14 +340,14 @@ async function listFunctionGuestRows(
   organizerId: string,
   programId: string,
   guestIds: string[],
+  tx: FirebaseFirestore.Transaction,
 ): Promise<FunctionGuestRow[]> {
   const rows: FunctionGuestRow[] = [];
   for (let i = 0; i < guestIds.length; i += 30) {
     const chunk = guestIds.slice(i, i + 30);
-    const snap = await db.collection("programFunctionGuests")
+    const snap = await tx.get(db.collection("programFunctionGuests")
       .where("programId", "==", programId)
-      .where("guestId", "in", chunk)
-      .get();
+      .where("guestId", "in", chunk));
     for (const doc of snap.docs) {
       const row = doc.data() as ProgramFunctionGuestDocument;
       if (row.organizerId !== organizerId ||
@@ -331,8 +373,9 @@ export async function upsertProgramHouseholdHandler(
   deps: ProgramGuestDeps = defaultDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<UpsertProgramHouseholdCallablePayload>(
-    request, validateUpsertProgramHouseholdCallablePayload, normalizePayload);
+  const data = validateCallableWithAjv<UpsertProgramHouseholdCallablePayload &
+    {fieldChoices?: WorkspaceFieldSelections}>(
+      request, validateUpsertProgramHouseholdCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramHousehold");
   const ref = data.householdId ?
@@ -346,7 +389,7 @@ export async function upsertProgramHouseholdHandler(
     requireProgramMutable(access.program);
     requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
-    const existing = snap.data() as ProgramHouseholdDocument | undefined;
+    const existing = snap.data() as ScopedProgramHousehold | undefined;
     if (existing && (existing.programId !== data.programId ||
         existing.organizerId !== access.program.organizerId)) {
       throw new HttpsError("not-found", "Household not found in this program.");
@@ -380,15 +423,40 @@ export async function upsertProgramHouseholdHandler(
       [...guests.values()].map((guest) => guest.householdId)
         .filter((id) => id !== ref.id));
     const now = deps.now();
-    const document: ProgramHouseholdDocument = {
+    const context = programGuestFieldContext(data.programId,
+      access.program.organizerId, ref.id, existing ?? {
+        programId: data.programId, organizerId: access.program.organizerId});
+    context.relationshipRef.kind = "programHousehold";
+    const previous = {displayName: existing?.primaryContactName ?? null,
+      phoneE164: existing?.primaryPhoneE164 ?? null,
+      email: existing?.primaryEmail ?? null,
+      fieldSelections: existing?.fieldSelections,
+      fieldConflicts: existing?.fieldConflicts};
+    const pointers = existing ? permittedFieldPointers(previous,
+      await readProgramHouseholdFields({db, tx, programId: data.programId,
+        organizerId: access.program.organizerId, householdId: ref.id,
+        household: existing})) : {};
+    const choices = await readWorkspaceFieldChoices({db, tx,
+      choices: data.fieldChoices});
+    const fields = planWorkspaceFieldWrite({context,
+      previous: {...previous, ...pointers}, supplied: {
+        displayName: data.primaryContactName,
+        ...(data.primaryPhoneE164 === undefined ? {} :
+          {phoneE164: data.primaryPhoneE164}),
+        ...(data.primaryEmail === undefined ? {} : {email: data.primaryEmail}),
+      }, choices, source: {sourceKind: "manualEntry", sourceId: ref.id,
+        sourceVersion: nextRevision(existing?.revision, now), actorUid,
+        observedAtMillis: now.toMillis()}});
+    const document: ScopedProgramHousehold = {
+      ...existing,
       programId: data.programId,
       organizerId: access.program.organizerId,
       label: data.label,
-      primaryContactName: data.primaryContactName,
-      primaryPhoneE164: data.primaryPhoneE164 === undefined ?
-        existing?.primaryPhoneE164 ?? null : data.primaryPhoneE164,
-      primaryEmail: data.primaryEmail === undefined ?
-        existing?.primaryEmail ?? null : data.primaryEmail,
+      primaryContactName: fields.values.displayName,
+      primaryPhoneE164: fields.values.phoneE164,
+      primaryEmail: fields.values.email,
+      fieldSelections: fields.fieldSelections,
+      fieldConflicts: fields.fieldConflicts,
       memberGuestIds: existing?.memberGuestIds ?? [],
       deliveryPreference: data.deliveryPreference ??
         existing?.deliveryPreference ?? "none",
@@ -403,6 +471,14 @@ export async function upsertProgramHouseholdHandler(
           nextHouseholdId: selected.has(id) ? ref.id : null})));
     document.memberGuestIds = memberships.get(ref.id) ??
       document.memberGuestIds;
+    for (const assertion of fields.assertions) {
+      tx.create(db.collection("workspaceFieldAssertions").doc(assertion.id),
+        assertion.data);
+    }
+    for (const decision of fields.decisions) {
+      tx.create(db.collection("workspaceFieldDecisions").doc(decision.id),
+        decision.data);
+    }
     committedRevision = document.revision;
     tx.set(ref, document);
     for (const [id, memberGuestIds] of memberships) {

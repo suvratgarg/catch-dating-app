@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.88.1
-updated: 2026-09-28
+version: 1.92.0
+updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -156,6 +156,13 @@ promotion command creates only a blocked review receipt; it does not create an
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncClubMemberStats` recomputes `memberCount` from active membership edges, and `syncClubNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
 | P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only. Dev is 146/146 structured. The refreshed 2026-07-16 production dry run found 272 events: 125 valid, 138 deterministically repairable, and 9 unresolved coordinate blockers with no warnings; no production writes were applied. Keep `Event.meetingLocation` nullable until the production repair and follow-up validation complete, as tracked in `contracts/migrations/event_meeting_location.json`. |
 
+`readEventViewerStateSource` is currently an internal read source; no viewer
+callable is exported. It shares policy, schedule, membership, inventory and
+owned paid-admission readers in one read transaction. It keeps retained
+admission and attendance separate from present eligibility, never applies seat
+or identity plans, and returns unavailable for incomplete bounded sources.
+Callable registration and Consumer/website adapters remain pending.
+
 ## Cloud Functions Inventory
 
 Organizer authority is canonical. Club-named functions and paths in this
@@ -173,6 +180,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads show independently recorded organizer operations, organizer marketing and Catch marketing. A withdrawal can stop one purpose or the whole sender; optimistic receipt fences and idempotent retries return the current canonical projection, including a newer opt-in after an old STOP. No opt-in, dispatch, booking, or profile mutation. |
 | `promoteFormCommunicationIntent` | Callable | Submitted public form completion after phone verification | Private pending form intent, owned response and withdrawal bearer, canonical purpose receipts/preferences | App Check, UID rate limit and exact verified phone endpoint; rechecks organizer/form/version/response ownership, reviewed copy hash and decision order. Promotes only selected source-bound purposes, cannot revive a later STOP or withdrawn response, and replays without widening consent. New form-originated WhatsApp delivery remains provider-disabled. |
+| `listParticipantActivity` / `getParticipantActivity` | Callable | Own account form activity | No domain writes; bounded UID query and exact immutable response/version proof | Auth-derived account only, including email/account-only submissions. No profile claim, answers, private Host notes or admission inference. Subject/source-bound cursors advance over omitted rows. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create and increments the server profile revision; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
 | `listOrganizerAttentionItems` | Callable | Host Today | Reads bounded canonical event, practical guest-help case, event-assistance delivery work, participation, application, provider-sync, form-automation, organizer, and payout-account facts; reconciles `organizerAttentionItems` | App-Check-protected, rate-limited, manager-only read-through projection. It aggregates open event-lead help cases and validated delivery work in the explicit host-review phase per active event while keeping safety cases and private message details outside Host Today, resolves stale rows before returning at most 400 open items ordered by urgency and deadline, fails closed on every over-cap source, merges legacy `clubId` and canonical `organizerId` ownership, and returns explicit coverage for client-local, shortcut-only, and missing-truth kinds. |
@@ -199,7 +207,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `listOrganizerForms` / `listOrganizerFormTemplates` | Callable | Host Forms library and create flow | Indexed bounded `organizerForms` read and generated template catalog | Manager-only, rate-limited projections. Form listing orders by update time plus document id, applies an opaque cursor, scans at most 400 documents per request, and excludes archived forms by default. Raw draft/version documents remain unreadable. |
 | `publishOrganizerForm` | Callable | Host Forms builder | Immutable `organizerFormVersions/{formId_vN}` plus active metadata pointer | Runs the shared semantic validator in the transaction, enforces the expected draft revision, and never mutates a published version. `sourceDraftRevision` turns an exact publish retry into a replay instead of another version. |
 | `setOrganizerFormLifecycle` / `deleteOrganizerFormDraft` | Callable | Host Forms library and builder actions | `organizerForms/{formId}` lifecycle or eligible draft/metadata deletes | Expected-state transitions permit published-to-paused, paused-to-published, and archival. Only a never-published draft with no active version can be permanently deleted. |
-| `getPublicOrganizerForm` / `beginOrganizerFormResponse` | Callable | Public website `/f/:publicFormId/` respondent runtime | Reads one active immutable version; creates or resumes one TTL-bound `organizerFormResponseDrafts/{draftId}` | Returns only a safe active-version projection. Identity policy is enforced server-side; a routing token or source token grants no Firestore authority. A stable request id makes respondent bootstrap idempotent. |
+| `getPublicOrganizerForm` / `beginOrganizerFormResponse` | Callable | Public website `/f/:publicFormId/` respondent runtime | Reads one active immutable version; creates or resumes one TTL-bound `organizerFormResponseDrafts/{draftId}` | Returns only a safe active-version projection. Identity policy is enforced server-side; a routing token or source token grants no Firestore authority. A stable request id makes respondent bootstrap idempotent. Explicit own `reuseResponseId` offers compatible same-form organizer answers for review using immutable source proof; neither prior answers nor new consent are auto-applied. |
 | `saveOrganizerFormResponseDraft` / `submitOrganizerFormResponse` / `withdrawOrganizerFormResponse` | Callable | Public website form autosave, completion, and receipt controls | Revision-guarded response draft; immutable `organizerFormResponses/{responseId}`; form counters; withdrawal timestamp; optional private `formCommunicationConsentIntents/{responseId}` | Every answer is rebuilt and validated against the exact published version. Unchecked v2 WhatsApp choices grant nothing; selected unverified choices create only an endpoint/source-bound pending intent. Verified legacy grants retain their established scope. Exact retries replay, paid finalization keeps choices frozen, and response withdrawal preserves the audit record while fencing later consent promotion. |
 | `listOrganizerFormPayments` | Callable | Host form payment records | Form fee ledger | Manager-only, App Check and rate limited. Form ownership, status-bound pagination and a minimal financial projection. |
 | `manageOrganizerFormPaymentConnection` | Callable | Host form payment settings | Merchant bindings and hashed OAuth state | Manager-only, App Check and rate limited. Begins one-use OAuth, lists safe status, refreshes an organizer-bound credential, or disables new checkout. |
@@ -250,7 +258,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `cancelEvent` | Callable | `HostEventManageScreen` | event cancellation fields, organizer next-event projection, canonical schedule-lock release, durable native refund staging, participant notifications | Current organizer-manager cancellation; exact replay resumes staging while retaining history. Provider acceptance alone does not mark a refund complete. |
 | `deleteEvent` | Callable | `HostEventManageScreen` | event delete and organizer next-event refresh | Hard delete only for unused events; events with history are cancelled. |
 | `syncClubNextEvent` | Firestore trigger on `events/{eventId}` write | Backend | canonical organizer and legacy club next-event projections | Compatibility-named trigger that queries `events.organizerId` and recomputes the organizer projection. |
-| `signUpForFreeEvent` | Callable | `PaymentRepository.bookFreeEvent` | `eventParticipations/{eventId_uid}`, event booking/pair aggregate projections, optional `crossPathsPairHolds/{holdId}`, optional Cross Paths event plan, `notifications/{uid}/items/{notificationId}` | Delegates core booking to `signUpUserForEvent`; an active caller-owned companion hold uses its frozen quote and converts atomically into a canonical booking plus event plan after live attendee consent/participation and safety revalidation. |
+| `signUpForFreeEvent` | Callable | `PaymentRepository.bookFreeEvent` | `eventParticipations/{eventId_uid}`, event booking/pair aggregate projections, optional `crossPathsPairHolds/{holdId}`, optional Cross Paths event plan, `notifications/{uid}/items/{notificationId}` | Delegates core booking to `signUpUserForEvent`, whose final transaction rechecks persisted host review rather than a preflight approval hint; an active caller-owned companion hold uses its frozen quote and converts atomically into a canonical booking plus event plan after live attendee consent/participation and safety revalidation. |
 | `createRazorpayOrder` | Callable | `PaymentRepository.processPayment` | Razorpay order, same-environment public checkout key id, and optional Cross Paths hold attribution | Uses trusted event price and server-side credentials; rejects cancelled events before creating an order. The response supplies the public key id from the same Secret Manager environment as the order, so mobile builds do not embed a local `.env` value. The secret key never leaves Functions. An active caller-owned companion hold freezes price and is carried through fulfillment without widening payment authority. |
 | `createRazorpayHostPaymentAccount` / `refreshRazorpayHostPaymentAccount` | Callable | `HostPaymentAccountController` from Host Payments | `hostPaymentAccounts/{uid}_razorpay` plus Razorpay Route linked account, stakeholder, product configuration, and settlement details | Organizer-owner-only, App-Check-protected and rate-limited. Catch persists only provider ids and activation/requirement state; PAN, bank, stakeholder, and contact KYC values are submitted directly to Razorpay and are not stored in Firestore. Provider ids are checkpointed after creation so retries continue the same Route account/product. Route activation remains an external Razorpay gate. |
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | Callable | `HostPaymentAccountController` from Host Payments | canonical `hostPaymentAccounts/{uid}_stripe`, legacy `hostPaymentAccounts/{uid}` fallback, and Stripe Connect account/onboarding links | Organizer-owner-only provider seam for non-INR payouts. New writes are provider-scoped; legacy Stripe account documents remain readable and refreshable during migration. |
@@ -384,6 +392,33 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `ChatController.sendImage` / `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Shared `ImageUploadRepository` picks/compresses/uploads the chat image; repository writes the image message. | Storage rules prove match participation from `user1Id`/`user2Id` with legacy `participantIds` fallback; message create rules prove active match participation before Firestore write. | Yes. Media picking/compression is centralized with profile/onboarding/event-club image upload policy. |
 | `MatchRepository.resetUnread` | `matches/{matchId}.unreadCounts.{uid}` | Reset own unread count to zero. | Participant narrow update. | Yes. |
 | `EventSuccessRepository.savePlan` | `eventSuccessPlans/{eventId}` | Revision-checked partial update of setup-owned plan fields before the event is live. | Host-only setup update; participant activity, event start, live status, or `frozenAt` freezes setup fields. | Yes. The transaction rejects stale/frozen plans and never overwrites live-control fields. |
+
+## Workspace field and community membership operations
+
+Program guest/household upserts and manifest imports acquire exact immutable
+`workspaceFieldAssertions`; explicit coordinator conflict choices append
+`workspaceFieldDecisions`. Lists and message delivery resolve selected evidence
+through `workspaces/workspaceFieldAuthority`. Final delivery rechecks phone proof,
+consent and household binding. Program retention owns erasure; imported phone/name
+acquisition proves no account identity, membership or attendance. Whole-program
+manifest preview/commit requires one program-wide guestRelations assignment;
+manual edits/choices retain coordinator authority.
+
+`decideOrganizerCommunityMembership` is a manager-only, App-Check-protected,
+rate-limited transaction using the application-review budget. Grant consumes
+current approved native generic organizer-target application evidence for the
+exact UID. Revoke requires an active grant; exact retries report decision/current
+revisions without restoring an old grant. The callable owns the current
+`organizerCommunityMemberships` edge and immutable decision receipts. Native
+booking/waitlist/checkout owners read that authority without duplicating it.
+Participation stores historical grant evidence; revoke is prospective and never
+initiates paid-booking cancellation/refund. Subject account deletion erases these
+roots; actor deletion leaves other subjects' immutable authority intact.
+
+Account/viewer read projections, legacy/manual/exemption sources and gated
+public OTP/external continuations remain future adapters, with existing payment,
+seat, offer and attendance owners retained. All four new roots deny direct client
+reads/writes; grants do not publish a profile or disclose private endpoints.
 
 ## Backend-Owned Collections And Fields
 

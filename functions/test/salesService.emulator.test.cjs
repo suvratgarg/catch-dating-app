@@ -288,19 +288,28 @@ test("private demo uses real atomic start limits and only synthetic records", as
 });
 
 
-test("reviewed source history and privacy cleanup use real atomic receipts", async () => {
+test("reviewed source history and privacy cleanup use real atomic receipts", async (t) => {
   const privacy = require("../lib/admin/salesPrivacy/service");
   const owner = {uid: "privacy-owner", roles: ["adminOwner"]};
   const organizerId = "privacy-history-emulator";
   const canonical = {name: "Synthetic Privacy Host", appVisibility: "hidden"};
+  // Bounded operation names locate emulator failures without logging records.
+  const phase = async (name, operation) => {
+    try {
+      return await operation();
+    } catch (error) {
+      t.diagnostic(`Sales atomic receipts failed during ${name}`);
+      throw error;
+    }
+  };
   await db.doc(`organizers/${organizerId}`).set(canonical);
   const packet = {sourceId: "privacy-source", contentHash: "c".repeat(64),
     mappingVersion: "source-v1", rows: [{sourceRowId: "row-1", organizerId,
       name: canonical.name, researchStatus: "new",
       originalCells: [{column: "Notes", value: "Synthetic prior observation"}]}]};
   const preview = await read(owner, "imports.preview", packet, deps);
-  const applied = await write(owner, "imports.apply", {...packet,
-    requestId: "privacy-import-001", previewHash: preview.previewHash}, deps);
+  const applied = await phase("source import", () => write(owner, "imports.apply", {...packet,
+    requestId: "privacy-import-001", previewHash: preview.previewHash}, deps));
   const history = {sourceId: packet.sourceId, contentHash: packet.contentHash,
     mappingVersion: packet.mappingVersion, promotionVersion: "history-v1",
     rows: [{sourceRowId: "row-1", organizerId, importId: applied.importId,
@@ -311,9 +320,9 @@ test("reviewed source history and privacy cleanup use real atomic receipts", asy
   const historyPreview = await read(owner, "imports.history.preview", history, deps);
   const request = {...history, requestId: "privacy-history-001",
     previewHash: historyPreview.previewHash};
-  const [one, two] = await Promise.all([
+  const [one, two] = await phase("concurrent history receipts", () => Promise.all([
     write(owner, "imports.history.apply", request, deps),
-    write(owner, "imports.history.apply", request, deps)]);
+    write(owner, "imports.history.apply", request, deps)]));
   assert.deepEqual(one, two);
   const listed = await read(owner, "imports.history.list", {organizerId}, deps);
   assert.equal(listed.records.length, 1);
@@ -335,29 +344,29 @@ test("reviewed source history and privacy cleanup use real atomic receipts", asy
   const privacyDeps = {db, now: deps.now, authorizeOwner: async () => {
     if (!allowed) throw new Error("Owner revoked");
   }};
-  await privacy.reviewSalesPrivacyPolicy(privacyDeps, owner, {
+  await phase("policy review", () => privacy.reviewSalesPrivacyPolicy(privacyDeps, owner, {
     requestId: "privacy-policy-001", expectedRevision: 0,
     sourceReference: "synthetic:reviewed-policy", sourceHash: "d".repeat(64),
-    financeReason: "Retain pending review", auditReason: "Retain pending review"});
-  await privacy.restrictSalesOrganizer(privacyDeps, owner, {organizerId,
-    requestId: "privacy-restrict-001", reason: "Synthetic cleanup test"});
+    financeReason: "Retain pending review", auditReason: "Retain pending review"}));
+  await phase("privacy restriction", () => privacy.restrictSalesOrganizer(privacyDeps, owner, {organizerId,
+    requestId: "privacy-restrict-001", reason: "Synthetic cleanup test"}));
   await assert.rejects(write(owner, "imports.history.apply", request, deps),
     {code: "failed-precondition"});
-  const planPreview = await privacy.previewSalesPrivacyPlan(privacyDeps, owner,
-    {organizerId});
+  const planPreview = await phase("privacy inventory", () => privacy.previewSalesPrivacyPlan(privacyDeps, owner,
+    {organizerId}));
   assert.equal(planPreview.overflow, false);
-  const reviewed = await privacy.reviewSalesPrivacyPlan(privacyDeps, owner, {
+  const reviewed = await phase("privacy plan review", () => privacy.reviewSalesPrivacyPlan(privacyDeps, owner, {
     organizerId, requestId: "privacy-plan-001",
     restrictionRevision: planPreview.restrictionRevision,
     expectedActivePlanId: planPreview.activePlanId,
-    policyHash: planPreview.policyHash, inventoryHash: planPreview.inventoryHash});
+    policyHash: planPreview.policyHash, inventoryHash: planPreview.inventoryHash}));
   let cursor = 0; let lastRequest;
   while (cursor < reviewed.plan.itemCount) {
     lastRequest = {organizerId, planId: reviewed.plan.planId,
       requestId: `privacy-batch-${cursor}`, expectedCursor: cursor};
-    const [first, retried] = await Promise.all([
+    const [first, retried] = await phase("concurrent privacy batch receipts", () => Promise.all([
       privacy.applySalesPrivacyBatch(privacyDeps, owner, lastRequest),
-      privacy.applySalesPrivacyBatch(privacyDeps, owner, lastRequest)]);
+      privacy.applySalesPrivacyBatch(privacyDeps, owner, lastRequest)]));
     assert.deepEqual(first, retried);
     assert.equal(first.batch.completeDeletion, false);
     cursor = first.batch.nextCursor;

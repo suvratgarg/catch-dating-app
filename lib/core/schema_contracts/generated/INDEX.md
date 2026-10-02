@@ -18,6 +18,12 @@ Do not edit it by hand.
 | OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsCallableResponse.ts` |
 | PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse.ts` |
 | OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `functions/src/shared/generated/organizerTrackingSettingsDocument.ts` |
+| OrganizerCommunityMembershipDocument | `firestore/organizer_community_memberships.schema.json` | `functions/src/shared/generated/organizerCommunityMembershipDocument.ts` |
+| OrganizerCommunityMembershipDecisionDocument | `firestore/organizer_community_membership_decisions.schema.json` | `functions/src/shared/generated/organizerCommunityMembershipDecisionDocument.ts` |
+| DecideOrganizerCommunityMembershipCallablePayload | `callables/decide_organizer_community_membership_payload.schema.json` | `functions/src/shared/generated/decideOrganizerCommunityMembershipCallablePayload.ts` |
+| DecideOrganizerCommunityMembershipCallableResponse | `callable_responses/organizer_community_membership_decision_response.schema.json` | `functions/src/shared/generated/decideOrganizerCommunityMembershipCallableResponse.ts` |
+| WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `functions/src/shared/generated/workspaceFieldAssertionDocument.ts` |
+| WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `functions/src/shared/generated/workspaceFieldDecisionDocument.ts` |
 | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts` |
 | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `functions/src/shared/generated/salesImportHistoryRowDocument.ts` |
 | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `functions/src/shared/generated/salesImportHistoryRecordDocument.ts` |
@@ -418,6 +424,10 @@ Do not edit it by hand.
 | ParticipantProfileClaimReceiptDocument | `firestore/participant_profile_claim_receipts.schema.json` | `functions/src/shared/generated/participantProfileClaimReceiptDocument.ts` |
 | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `functions/src/shared/generated/claimParticipantFormProfileCallablePayload.ts` |
 | ClaimParticipantFormProfileCallableResponse | `callable_responses/claim_participant_form_profile_response.schema.json` | `functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts` |
+| ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `functions/src/shared/generated/listParticipantActivityCallablePayload.ts` |
+| ListParticipantActivityCallableResponse | `callable_responses/list_participant_activity_response.schema.json` | `functions/src/shared/generated/listParticipantActivityCallableResponse.ts` |
+| GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `functions/src/shared/generated/getParticipantActivityCallablePayload.ts` |
+| GetParticipantActivityCallableResponse | `callable_responses/get_participant_activity_response.schema.json` | `functions/src/shared/generated/getParticipantActivityCallableResponse.ts` |
 | ListParticipantFormProfilesCallablePayload | `callables/list_participant_form_profiles_payload.schema.json` | `functions/src/shared/generated/listParticipantFormProfilesCallablePayload.ts` |
 | ListParticipantFormProfilesCallableResponse | `callable_responses/list_participant_form_profiles_response.schema.json` | `functions/src/shared/generated/listParticipantFormProfilesCallableResponse.ts` |
 | GetParticipantFormPhotoCallablePayload | `callables/get_participant_form_photo_payload.schema.json` | `functions/src/shared/generated/getParticipantFormPhotoCallablePayload.ts` |
@@ -1170,6 +1180,12 @@ Do not edit it by hand.
 | `schemaOrganizerTrackingSettingsCallableResponseSchema` | OrganizerTrackingSettingsCallableResponse | `callable_responses/organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_callable_response.g.dart` |
 | `schemaPublicOrganizerTrackingSettingsCallableResponseSchema` | PublicOrganizerTrackingSettingsCallableResponse | `callable_responses/public_organizer_tracking_settings_response.schema.json` | `lib/core/schema_contracts/generated/schemas/public_organizer_tracking_settings_callable_response.g.dart` |
 | `schemaOrganizerTrackingSettingsDocumentSchema` | OrganizerTrackingSettingsDocument | `firestore/organizer_tracking_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_tracking_settings_document.g.dart` |
+| `schemaOrganizerCommunityMembershipDocumentSchema` | OrganizerCommunityMembershipDocument | `firestore/organizer_community_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_community_membership_document.g.dart` |
+| `schemaOrganizerCommunityMembershipDecisionDocumentSchema` | OrganizerCommunityMembershipDecisionDocument | `firestore/organizer_community_membership_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_community_membership_decision_document.g.dart` |
+| `schemaDecideOrganizerCommunityMembershipCallablePayloadSchema` | DecideOrganizerCommunityMembershipCallablePayload | `callables/decide_organizer_community_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_organizer_community_membership_callable_payload.g.dart` |
+| `schemaDecideOrganizerCommunityMembershipCallableResponseSchema` | DecideOrganizerCommunityMembershipCallableResponse | `callable_responses/organizer_community_membership_decision_response.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_organizer_community_membership_callable_response.g.dart` |
+| `schemaWorkspaceFieldAssertionDocumentSchema` | WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_assertion_document.g.dart` |
+| `schemaWorkspaceFieldDecisionDocumentSchema` | WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_decision_document.g.dart` |
 | `schemaCatchWhatsappWebhookEventDocumentSchema` | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_webhook_event_document.g.dart` |
 | `schemaSalesImportHistoryRowDocumentSchema` | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_row_document.g.dart` |
 | `schemaSalesImportHistoryRecordDocumentSchema` | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_record_document.g.dart` |
@@ -1570,6 +1586,10 @@ Do not edit it by hand.
 | `schemaParticipantProfileClaimReceiptDocumentSchema` | ParticipantProfileClaimReceiptDocument | `firestore/participant_profile_claim_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/participant_profile_claim_receipt_document.g.dart` |
 | `schemaClaimParticipantFormProfileCallablePayloadSchema` | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_participant_form_profile_callable_payload.g.dart` |
 | `schemaClaimParticipantFormProfileCallableResponseSchema` | ClaimParticipantFormProfileCallableResponse | `callable_responses/claim_participant_form_profile_response.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_participant_form_profile_callable_response.g.dart` |
+| `schemaListParticipantActivityCallablePayloadSchema` | ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_activity_callable_payload.g.dart` |
+| `schemaListParticipantActivityCallableResponseSchema` | ListParticipantActivityCallableResponse | `callable_responses/list_participant_activity_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_activity_callable_response.g.dart` |
+| `schemaGetParticipantActivityCallablePayloadSchema` | GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_participant_activity_callable_payload.g.dart` |
+| `schemaGetParticipantActivityCallableResponseSchema` | GetParticipantActivityCallableResponse | `callable_responses/get_participant_activity_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_participant_activity_callable_response.g.dart` |
 | `schemaListParticipantFormProfilesCallablePayloadSchema` | ListParticipantFormProfilesCallablePayload | `callables/list_participant_form_profiles_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_form_profiles_callable_payload.g.dart` |
 | `schemaListParticipantFormProfilesCallableResponseSchema` | ListParticipantFormProfilesCallableResponse | `callable_responses/list_participant_form_profiles_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_form_profiles_callable_response.g.dart` |
 | `schemaGetParticipantFormPhotoCallablePayloadSchema` | GetParticipantFormPhotoCallablePayload | `callables/get_participant_form_photo_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_participant_form_photo_callable_payload.g.dart` |
@@ -2424,6 +2444,8 @@ Do not edit it by hand.
 | GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
 | SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
 | ClaimParticipantFormProfileCallableRequest | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `lib/core/schema_contracts/generated/callables/claim_participant_form_profile_callable_request.g.dart` |
+| ListParticipantActivityCallableRequest | ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_participant_activity_callable_request.g.dart` |
+| GetParticipantActivityCallableRequest | GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_participant_activity_callable_request.g.dart` |
 | ListParticipantFormProfilesCallableRequest | ListParticipantFormProfilesCallablePayload | `callables/list_participant_form_profiles_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_participant_form_profiles_callable_request.g.dart` |
 | GetParticipantFormPhotoCallableRequest | GetParticipantFormPhotoCallablePayload | `callables/get_participant_form_photo_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_participant_form_photo_callable_request.g.dart` |
 | GetParticipantFormProfileCallableRequest | GetParticipantFormProfileCallablePayload | `callables/get_participant_form_profile_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_participant_form_profile_callable_request.g.dart` |
@@ -2729,6 +2751,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| DecideOrganizerCommunityMembershipCallablePayload | cannot map field "action" (no type) |
 | AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |
 | AdminReviewSalesOutreachDraftRequest | cannot map field "factualValidity" (no type) |
 | AdminAttestSalesHostSettlementPayload | cannot map field "purpose" (no type) |

@@ -9,6 +9,291 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get phoneImportTitle => 'Review phone contacts';
+
+  @override
+  String get phoneImportDemoTitle => 'Phone import demo · sharing unavailable';
+
+  @override
+  String get phoneImportDemoMessage =>
+      'This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.';
+
+  @override
+  String get phoneImportCompletedTitle => 'Reviewed guests shared';
+
+  @override
+  String get phoneImportRetryTitle => 'Saved review needs confirmation';
+
+  @override
+  String get phoneImportReadyTitle => 'Ready to share';
+
+  @override
+  String get phoneImportSharingTitle => 'Sharing reviewed guests';
+
+  @override
+  String get phoneImportRecoveryTitle => 'Saved review needs recovery';
+
+  @override
+  String get phoneImportPrivacyTitle => 'Only reviewed guests are shared';
+
+  @override
+  String get phoneImportRetryMessage =>
+      'A request may already have applied. Retry this exact saved review to confirm its outcome. Nothing retries automatically.';
+
+  @override
+  String get phoneImportRecoveryMessage =>
+      'The saved review is preserved. Return to this wedding and retry loading it before starting a new import.';
+
+  @override
+  String get phoneImportSharingMessage =>
+      'Keep this review unchanged while its result is checked.';
+
+  @override
+  String get phoneImportPrivacyMessage =>
+      'Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.';
+
+  @override
+  String get phoneImportChooseMessage =>
+      'Choose only the guests you want to include. Review their names and phone numbers before sharing with this wedding.';
+
+  @override
+  String get phoneImportSelectGuests => 'Select guests';
+
+  @override
+  String get phoneImportChooseContacts => 'Choose phone contacts';
+
+  @override
+  String get phoneImportAddContacts => 'Add phone contacts';
+
+  @override
+  String get phoneImportPickerHelp =>
+      'Contact selection opens in the native Catch Host app. On older Android phones, add contacts one at a time and repeat this action.';
+
+  @override
+  String get phoneImportEmptyTitle => 'No guests selected';
+
+  @override
+  String get phoneImportEmptyMessage =>
+      'Choose phone contacts or add a household member who does not have a phone contact.';
+
+  @override
+  String get phoneImportSharedNumber =>
+      'A chosen number is shared by several guests. They stay separate; check their household assignments.';
+
+  @override
+  String get phoneImportAddMember => 'Add household member without a phone';
+
+  @override
+  String get phoneImportReviewSharing => 'Review sharing';
+
+  @override
+  String get phoneImportNoOwnership =>
+      'A phone number does not prove ownership or verification and does not give permission to send messages. These contacts are not used for Catch discovery or marketing.';
+
+  @override
+  String get phoneImportNeedsReview =>
+      'Enter every guest name, choose a phone for each selected contact and review its international country code. Remove contacts without a number, or add them as household members.';
+
+  @override
+  String get phoneImportPreview => 'Check reviewed guests';
+
+  @override
+  String get phoneImportShare => 'Share reviewed guests';
+
+  @override
+  String get phoneImportUnavailable =>
+      'Sharing is unavailable until wedding member access and the workspace import service are connected.';
+
+  @override
+  String get phoneImportDiscard => 'Discard local review';
+
+  @override
+  String get phoneImportReload => 'Reload saved review';
+
+  @override
+  String get phoneImportRetry => 'Retry saved sharing';
+
+  @override
+  String get phoneImportDismiss => 'Dismiss saved review';
+
+  @override
+  String get phoneImportConfirmedGuests => 'Confirmed guests';
+
+  @override
+  String get phoneImportManualSource => 'Household member · no phone contact';
+
+  @override
+  String get phoneImportDismissTitle => 'Dismiss saved review?';
+
+  @override
+  String get phoneImportDismissMessage =>
+      'An already-issued request may have applied to the wedding. Dismissing this local review does not remove shared guests. Check the guest list before importing them again.';
+
+  @override
+  String get phoneImportSource => 'Source';
+
+  @override
+  String get phoneImportEditedSource =>
+      'Selected phone contact · name edited for this review';
+
+  @override
+  String get phoneImportPickerSource => 'Selected phone contact';
+
+  @override
+  String get phoneImportGuestName => 'Guest name';
+
+  @override
+  String get phoneImportNameRequired => 'Enter a guest name.';
+
+  @override
+  String get phoneImportPhoneNumber => 'Phone number';
+
+  @override
+  String get phoneImportNoPhoneNeeded =>
+      'No phone needed for this household member.';
+
+  @override
+  String get phoneImportNoContactNumber =>
+      'This contact has no phone number. Remove it and add a household member without a phone instead.';
+
+  @override
+  String get phoneImportChosenNumber => 'Chosen phone number';
+
+  @override
+  String get phoneImportChooseNumber => 'Choose one phone number';
+
+  @override
+  String get phoneImportSharedGuest =>
+      'Also chosen for another guest. Keep guests separate.';
+
+  @override
+  String get phoneImportChooseNumberHelp =>
+      'Choose the number you want to share for this guest.';
+
+  @override
+  String get phoneImportReviewNumberHelp =>
+      'Review this number before sharing.';
+
+  @override
+  String get phoneImportInternationalNumber => 'International number to share';
+
+  @override
+  String get phoneImportInternationalHelp =>
+      'Include + and the country code. Check this is the chosen contact number.';
+
+  @override
+  String get phoneImportInternationalRequired =>
+      'Enter the chosen number with + and its country code.';
+
+  @override
+  String get phoneImportFamilySide => 'Family side / cohort';
+
+  @override
+  String get phoneImportSideNone => 'Unassigned';
+
+  @override
+  String get phoneImportSideOne => 'Partner one’s side';
+
+  @override
+  String get phoneImportSideTwo => 'Partner two’s side';
+
+  @override
+  String get phoneImportSideBoth => 'Both sides';
+
+  @override
+  String get phoneImportHousehold => 'Household';
+
+  @override
+  String get phoneImportHouseholdHelp =>
+      'Use the same label for guests grouped together.';
+
+  @override
+  String get phoneImportCancelled =>
+      'Selection cancelled. Your review is unchanged.';
+
+  @override
+  String get phoneImportDenied =>
+      'Contact selection was not allowed. You can add a household member manually.';
+
+  @override
+  String get phoneImportPickerUnavailable =>
+      'Contact selection is available in the native Catch Host app.';
+
+  @override
+  String get phoneImportPickerFailed =>
+      'Contact selection could not be read. Try again when you are ready.';
+
+  @override
+  String get phoneImportPickerLimit => 'Select up to 100 contacts at a time.';
+
+  @override
+  String get phoneImportReviewLimit =>
+      'Review up to 100 guests at a time. Remove guests before adding more.';
+
+  @override
+  String get phoneImportEmptySelection =>
+      'No contacts selected. Your review is unchanged.';
+
+  @override
+  String get phoneImportEntryTitle => 'Import phone contacts';
+
+  @override
+  String get phoneImportEntryHelp =>
+      'Choose guests to review and share with this wedding.';
+
+  @override
+  String phoneImportCompletedMessage({
+    required String wedding,
+    required String planner,
+  }) {
+    return 'These reviewed guests were shared with $wedding and $planner.';
+  }
+
+  @override
+  String phoneImportSelectedPlanner({required String planner}) {
+    return 'Selected planner: $planner';
+  }
+
+  @override
+  String phoneImportGuestIssue({required int number, required String message}) {
+    return 'Guest $number: $message';
+  }
+
+  @override
+  String phoneImportReviewCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests',
+      one: '1 guest',
+    );
+    return '$_temp0 in this local review';
+  }
+
+  @override
+  String phoneImportConsent({
+    required String wedding,
+    required String planner,
+  }) {
+    return 'I want to share only these reviewed guests with $wedding and $planner.';
+  }
+
+  @override
+  String phoneImportGuestTitle({required int number}) {
+    return 'Guest $number';
+  }
+
+  @override
+  String phoneImportRemoveGuest({required int number}) {
+    return 'Remove guest $number';
+  }
+
+  @override
+  String phoneImportRemoveNamedGuest({required String name}) {
+    return 'Remove $name from this review';
+  }
+
+  @override
   String get hostsTrackingSettingsTitle => 'Meta Pixel and Google Analytics';
 
   @override

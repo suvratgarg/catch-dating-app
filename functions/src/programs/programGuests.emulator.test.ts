@@ -37,6 +37,18 @@ test("Firestore paginates equal names and serializes household moves",
           ...seed["programGuests/guest-1"], programId, organizerId,
           displayName: "Same Name",
         })));
+      // Raw fixture values have no acquisition proof and stay restricted.
+      const unassigned = await listProgramGuestsHandler(request({programId,
+        limit: 1}, "manager-1"), deps);
+      assert.deepEqual(unassigned.guests, []);
+      assert.equal(unassigned.nextCursor, guestIds[0]);
+      for (const guestId of guestIds) {
+        const existing = (await db.doc(`programGuests/${guestId}`).get())
+          .data()!;
+        await upsertProgramGuestHandler(request({programId, guestId,
+          displayName: "Same Name", expectedRevision: existing.revision,
+        }, "manager-1"), deps);
+      }
       const seen: string[] = [];
       let cursor: string | null = null;
       do {
@@ -73,6 +85,12 @@ test("Firestore paginates equal names and serializes household moves",
           guest.householdId === household.id);
       }
     } finally {
+      for (const name of ["workspaceFieldAssertions",
+        "workspaceFieldDecisions"]) {
+        const rows = await db.collection(name)
+          .where("programId", "==", programId).limit(100).get();
+        await Promise.all(rows.docs.map((row) => row.ref.delete()));
+      }
       await Promise.all(refs.map((ref) => ref.delete()));
       await db.terminate();
       await deleteApp(app);

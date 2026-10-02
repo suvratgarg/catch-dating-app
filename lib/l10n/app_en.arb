@@ -1,4 +1,585 @@
 {
+  "phoneImportTitle": "Review phone contacts",
+  "@phoneImportTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDemoTitle": "Phone import demo · sharing unavailable",
+  "@phoneImportDemoTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDemoMessage": "This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.",
+  "@phoneImportDemoMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportCompletedTitle": "Reviewed guests shared",
+  "@phoneImportCompletedTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRetryTitle": "Saved review needs confirmation",
+  "@phoneImportRetryTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReadyTitle": "Ready to share",
+  "@phoneImportReadyTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSharingTitle": "Sharing reviewed guests",
+  "@phoneImportSharingTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRecoveryTitle": "Saved review needs recovery",
+  "@phoneImportRecoveryTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPrivacyTitle": "Only reviewed guests are shared",
+  "@phoneImportPrivacyTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRetryMessage": "A request may already have applied. Retry this exact saved review to confirm its outcome. Nothing retries automatically.",
+  "@phoneImportRetryMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRecoveryMessage": "The saved review is preserved. Return to this wedding and retry loading it before starting a new import.",
+  "@phoneImportRecoveryMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSharingMessage": "Keep this review unchanged while its result is checked.",
+  "@phoneImportSharingMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPrivacyMessage": "Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.",
+  "@phoneImportPrivacyMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportChooseMessage": "Choose only the guests you want to include. Review their names and phone numbers before sharing with this wedding.",
+  "@phoneImportChooseMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSelectGuests": "Select guests",
+  "@phoneImportSelectGuests": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportChooseContacts": "Choose phone contacts",
+  "@phoneImportChooseContacts": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportAddContacts": "Add phone contacts",
+  "@phoneImportAddContacts": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPickerHelp": "Contact selection opens in the native Catch Host app. On older Android phones, add contacts one at a time and repeat this action.",
+  "@phoneImportPickerHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEmptyTitle": "No guests selected",
+  "@phoneImportEmptyTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEmptyMessage": "Choose phone contacts or add a household member who does not have a phone contact.",
+  "@phoneImportEmptyMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSharedNumber": "A chosen number is shared by several guests. They stay separate; check their household assignments.",
+  "@phoneImportSharedNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportAddMember": "Add household member without a phone",
+  "@phoneImportAddMember": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReviewSharing": "Review sharing",
+  "@phoneImportReviewSharing": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportNoOwnership": "A phone number does not prove ownership or verification and does not give permission to send messages. These contacts are not used for Catch discovery or marketing.",
+  "@phoneImportNoOwnership": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportNeedsReview": "Enter every guest name, choose a phone for each selected contact and review its international country code. Remove contacts without a number, or add them as household members.",
+  "@phoneImportNeedsReview": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPreview": "Check reviewed guests",
+  "@phoneImportPreview": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportShare": "Share reviewed guests",
+  "@phoneImportShare": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportUnavailable": "Sharing is unavailable until wedding member access and the workspace import service are connected.",
+  "@phoneImportUnavailable": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDiscard": "Discard local review",
+  "@phoneImportDiscard": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReload": "Reload saved review",
+  "@phoneImportReload": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRetry": "Retry saved sharing",
+  "@phoneImportRetry": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDismiss": "Dismiss saved review",
+  "@phoneImportDismiss": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportConfirmedGuests": "Confirmed guests",
+  "@phoneImportConfirmedGuests": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportManualSource": "Household member · no phone contact",
+  "@phoneImportManualSource": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDismissTitle": "Dismiss saved review?",
+  "@phoneImportDismissTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDismissMessage": "An already-issued request may have applied to the wedding. Dismissing this local review does not remove shared guests. Check the guest list before importing them again.",
+  "@phoneImportDismissMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSource": "Source",
+  "@phoneImportSource": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEditedSource": "Selected phone contact · name edited for this review",
+  "@phoneImportEditedSource": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPickerSource": "Selected phone contact",
+  "@phoneImportPickerSource": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportGuestName": "Guest name",
+  "@phoneImportGuestName": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportNameRequired": "Enter a guest name.",
+  "@phoneImportNameRequired": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPhoneNumber": "Phone number",
+  "@phoneImportPhoneNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportNoPhoneNeeded": "No phone needed for this household member.",
+  "@phoneImportNoPhoneNeeded": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportNoContactNumber": "This contact has no phone number. Remove it and add a household member without a phone instead.",
+  "@phoneImportNoContactNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportChosenNumber": "Chosen phone number",
+  "@phoneImportChosenNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportChooseNumber": "Choose one phone number",
+  "@phoneImportChooseNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSharedGuest": "Also chosen for another guest. Keep guests separate.",
+  "@phoneImportSharedGuest": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportChooseNumberHelp": "Choose the number you want to share for this guest.",
+  "@phoneImportChooseNumberHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReviewNumberHelp": "Review this number before sharing.",
+  "@phoneImportReviewNumberHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportInternationalNumber": "International number to share",
+  "@phoneImportInternationalNumber": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportInternationalHelp": "Include + and the country code. Check this is the chosen contact number.",
+  "@phoneImportInternationalHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportInternationalRequired": "Enter the chosen number with + and its country code.",
+  "@phoneImportInternationalRequired": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportFamilySide": "Family side / cohort",
+  "@phoneImportFamilySide": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSideNone": "Unassigned",
+  "@phoneImportSideNone": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSideOne": "Partner one’s side",
+  "@phoneImportSideOne": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSideTwo": "Partner two’s side",
+  "@phoneImportSideTwo": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSideBoth": "Both sides",
+  "@phoneImportSideBoth": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportHousehold": "Household",
+  "@phoneImportHousehold": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportHouseholdHelp": "Use the same label for guests grouped together.",
+  "@phoneImportHouseholdHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportCancelled": "Selection cancelled. Your review is unchanged.",
+  "@phoneImportCancelled": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportDenied": "Contact selection was not allowed. You can add a household member manually.",
+  "@phoneImportDenied": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPickerUnavailable": "Contact selection is available in the native Catch Host app.",
+  "@phoneImportPickerUnavailable": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPickerFailed": "Contact selection could not be read. Try again when you are ready.",
+  "@phoneImportPickerFailed": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportPickerLimit": "Select up to 100 contacts at a time.",
+  "@phoneImportPickerLimit": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReviewLimit": "Review up to 100 guests at a time. Remove guests before adding more.",
+  "@phoneImportReviewLimit": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEmptySelection": "No contacts selected. Your review is unchanged.",
+  "@phoneImportEmptySelection": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEntryTitle": "Import phone contacts",
+  "@phoneImportEntryTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportEntryHelp": "Choose guests to review and share with this wedding.",
+  "@phoneImportEntryHelp": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportCompletedMessage": "These reviewed guests were shared with {wedding} and {planner}.",
+  "@phoneImportCompletedMessage": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "wedding": {
+        "type": "String"
+      },
+      "planner": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportSelectedPlanner": "Selected planner: {planner}",
+  "@phoneImportSelectedPlanner": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "planner": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportGuestIssue": "Guest {number}: {message}",
+  "@phoneImportGuestIssue": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "message": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportReviewCount": "{count, plural, =1{1 guest} other{{count} guests}} in this local review",
+  "@phoneImportReviewCount": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportConsent": "I want to share only these reviewed guests with {wedding} and {planner}.",
+  "@phoneImportConsent": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "wedding": {
+        "type": "String"
+      },
+      "planner": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportGuestTitle": "Guest {number}",
+  "@phoneImportGuestTitle": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRemoveGuest": "Remove guest {number}",
+  "@phoneImportRemoveGuest": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "phoneImportRemoveNamedGuest": "Remove {name} from this review",
+  "@phoneImportRemoveNamedGuest": {
+    "description": "Native phone guest import review and explicit workspace sharing.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
   "hostsTrackingSettingsTitle": "Meta Pixel and Google Analytics",
   "@hostsTrackingSettingsTitle": {"description": "Organiser provider tracking settings in Host Insights.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_tracking_settings_section"},
   "hostsTrackingSettingsPolicyBlocked": "Tracking is disabled pending policy review. Saving these IDs does not activate scripts or send data to either provider.",

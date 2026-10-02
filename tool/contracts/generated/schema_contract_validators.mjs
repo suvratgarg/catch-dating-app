@@ -9,6 +9,12 @@ import {
   organizerTrackingSettingsCallableResponseSchema,
   publicOrganizerTrackingSettingsCallableResponseSchema,
   organizerTrackingSettingsDocumentSchema,
+  organizerCommunityMembershipDocumentSchema,
+  organizerCommunityMembershipDecisionDocumentSchema,
+  decideOrganizerCommunityMembershipCallablePayloadSchema,
+  decideOrganizerCommunityMembershipCallableResponseSchema,
+  workspaceFieldAssertionDocumentSchema,
+  workspaceFieldDecisionDocumentSchema,
   catchWhatsappWebhookEventDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
@@ -409,6 +415,10 @@ import {
   participantProfileClaimReceiptDocumentSchema,
   claimParticipantFormProfileCallablePayloadSchema,
   claimParticipantFormProfileCallableResponseSchema,
+  listParticipantActivityCallablePayloadSchema,
+  listParticipantActivityCallableResponseSchema,
+  getParticipantActivityCallablePayloadSchema,
+  getParticipantActivityCallableResponseSchema,
   listParticipantFormProfilesCallablePayloadSchema,
   listParticipantFormProfilesCallableResponseSchema,
   getParticipantFormPhotoCallablePayloadSchema,
@@ -1180,6 +1190,12 @@ export const validateReadPublicOrganizerTrackingSettingsCallablePayload = ajv.co
 export const validateOrganizerTrackingSettingsCallableResponse = ajv.compile(organizerTrackingSettingsCallableResponseSchema);
 export const validatePublicOrganizerTrackingSettingsCallableResponse = ajv.compile(publicOrganizerTrackingSettingsCallableResponseSchema);
 export const validateOrganizerTrackingSettingsDocument = ajv.compile(organizerTrackingSettingsDocumentSchema);
+export const validateOrganizerCommunityMembershipDocument = ajv.compile(organizerCommunityMembershipDocumentSchema);
+export const validateOrganizerCommunityMembershipDecisionDocument = ajv.compile(organizerCommunityMembershipDecisionDocumentSchema);
+export const validateDecideOrganizerCommunityMembershipCallablePayload = ajv.compile(decideOrganizerCommunityMembershipCallablePayloadSchema);
+export const validateDecideOrganizerCommunityMembershipCallableResponse = ajv.compile(decideOrganizerCommunityMembershipCallableResponseSchema);
+export const validateWorkspaceFieldAssertionDocument = ajv.compile(workspaceFieldAssertionDocumentSchema);
+export const validateWorkspaceFieldDecisionDocument = ajv.compile(workspaceFieldDecisionDocumentSchema);
 export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
@@ -1580,6 +1596,10 @@ export const validateParticipantOrganizerCardDocument = ajv.compile(participantO
 export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
 export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
 export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateListParticipantActivityCallablePayload = ajv.compile(listParticipantActivityCallablePayloadSchema);
+export const validateListParticipantActivityCallableResponse = ajv.compile(listParticipantActivityCallableResponseSchema);
+export const validateGetParticipantActivityCallablePayload = ajv.compile(getParticipantActivityCallablePayloadSchema);
+export const validateGetParticipantActivityCallableResponse = ajv.compile(getParticipantActivityCallableResponseSchema);
 export const validateListParticipantFormProfilesCallablePayload = ajv.compile(listParticipantFormProfilesCallablePayloadSchema);
 export const validateListParticipantFormProfilesCallableResponse = ajv.compile(listParticipantFormProfilesCallableResponseSchema);
 export const validateGetParticipantFormPhotoCallablePayload = ajv.compile(getParticipantFormPhotoCallablePayloadSchema);

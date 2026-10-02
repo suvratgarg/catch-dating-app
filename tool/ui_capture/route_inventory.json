@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "6f7c1c2803573015743efecf9bce83f8c2e6213d27529514c6b4695e4b2ca024",
-    "routeContractSha256": "713dbcda7163051ceb764daa72f0d6b2bec1f1dc3e154a1ab2de3b1a5e3274b0",
-    "goRouteCount": 116,
+    "normalizedFileSha256": "34602f085c150abfe04c236ab41b99aa6d5402de3c6fb42e13aa6178e7ff8242",
+    "routeContractSha256": "e15715260d57a7feab7b78e58b4ed315402bf89bdb8e58ab2c4ea705fa46b6ce",
+    "goRouteCount": 117,
     "shellBranchCount": 9,
-    "enumRouteCount": 101,
-    "referencedRouteCount": 101,
-    "runtimeRouteCount": 101,
+    "enumRouteCount": 102,
+    "referencedRouteCount": 102,
+    "runtimeRouteCount": 102,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1208,6 +1208,23 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkPhoneImportScreen",
+      "path": "/host/work/:programId/phone-import",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/phone-import",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkPhoneImportScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>PhoneImportScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "PhoneImportScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkAttendanceReportScreen",
       "path": "/host/work/:programId/attendance",
       "pathParameters": [
@@ -1919,6 +1936,7 @@
     "hostWorkHotelScreen",
     "hostWorkImportScreen",
     "hostWorkNowScreen",
+    "hostWorkPhoneImportScreen",
     "hostWorkProgramScreen",
     "hostWorkScreen",
     "hostWorkTripsScreen",

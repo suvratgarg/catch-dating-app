@@ -95,6 +95,25 @@ test("only the newest admission event for the same head can run expensive checks
   assert.equal((await resolveAdmission(fixture({runs: []}))).admitted, false);
 });
 
+test("missing current-run evidence is distinct from an observed newer admission", async () => {
+  for (const runs of [[], [run(999)]]) {
+    const result = await resolveAdmission(fixture({runs}));
+    assert.equal(result.admitted, false);
+    assert.equal(result.code, "unverified_run");
+    assert.match(result.reason, /Current admission run 1000 is absent/u);
+  }
+  assert.equal((await resolveAdmission(fixture({runs: [run(1001)]}))).code,
+    "superseded_run");
+});
+
+test("malformed eligible run identities fail closed without claiming a newer run", async () => {
+  for (const id of [null, "1001", 0, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+    const result = await resolveAdmission(fixture({runs: [run(id), run()]}));
+    assert.equal(result.admitted, false);
+    assert.equal(result.code, "invalid_run_identity");
+  }
+});
+
 test("unrelated labels neither admit nor supersede a current full run", async () => {
   for (const action of ["labeled", "unlabeled"]) {
     assert.equal(isAdmissionEvent({action, label: {name: "documentation"}}), false);
