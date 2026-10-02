@@ -1,6 +1,6 @@
 import {websiteCopy} from "@content/generated";
 import {type FormEvent, useCallback, useMemo, useRef, useState} from "react";
-import {trackMarketingEvent} from "../../analytics";
+import {trackCatchAcquisitionEvent, trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
@@ -35,6 +35,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     null;
   const claimUrlState = routeState.urlState;
   const urlRequestId = routeState.requestId;
+  const claimStarted = useRef(false);
   const submissionInFlight = useRef<Promise<unknown> | null>(null);
   const [step, setStepState] = useState<ClaimFlowStep>(
     claimUrlState ? "listing" : preselectedListing ? "role" : "listing"
@@ -103,59 +104,76 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       businessPhone.trim().length > 0 ||
       proofUrls.trim().length > 0);
 
+  function markClaimStarted() {
+    if (claimStarted.current) return;
+    claimStarted.current = true;
+    trackCatchAcquisitionEvent({name: "acquisition_start", form: "claim"});
+  }
+
   function selectListing(nextListing: HostListing) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setListing(nextListing);
     setQueryState(nextListing.name);
   }
 
   function setQuery(nextQuery: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setQueryState(nextQuery);
   }
 
   function setRequesterName(nextRequesterName: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setRequesterNameState(nextRequesterName);
   }
 
   function setRequesterRole(nextRequesterRole: ClaimRole) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setRequesterRoleState(nextRequesterRole);
   }
 
   function setBusinessEmail(nextBusinessEmail: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setBusinessEmailState(nextBusinessEmail);
   }
 
   function setBusinessPhone(nextBusinessPhone: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setBusinessPhoneState(nextBusinessPhone);
   }
 
   function setProofUrls(nextProofUrls: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setProofUrlsState(nextProofUrls);
   }
 
   function setMessage(nextMessage: string) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setMessageState(nextMessage);
   }
 
   function setVerificationMethodSafely(nextMethod: ClaimVerificationMethodId) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setVerificationMethod(nextMethod);
   }
 
   function setStep(nextStep: ClaimFlowStep) {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     setStepState(nextStep);
   }
 
   async function handleSignIn() {
     if (submissionInFlight.current) return;
+    markClaimStarted();
     await handleAuthSignIn();
   }
 

@@ -23,3 +23,23 @@ test("analytics consent is separate from advertising and remains revocable", () 
   expect(changed).toHaveBeenCalledTimes(2);
   window.removeEventListener(marketingConsentChangedEvent, changed);
 });
+
+test("explicit marketing choice is versioned and can be withdrawn", () => {
+  render(<MarketingConsentBanner />);
+  fireEvent.click(screen.getByRole("button", {name: "Allow analytics and marketing"}));
+  expect(getMarketingConsent()).toMatchObject({version: 2, analytics: true, marketing: true});
+  fireEvent.click(screen.getByRole("button", {name: "Privacy choices"}));
+  fireEvent.click(screen.getByRole("button", {name: "Allow analytics"}));
+  expect(getMarketingConsent()).toMatchObject({version: 2, analytics: true, marketing: false});
+});
+
+test("legacy accepted choice still presents all choices and sibling-tab revocation refreshes the UI", () => {
+  localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "accepted", analytics: true,
+    marketing: true, updatedAt: new Date().toISOString()}));
+  render(<MarketingConsentBanner />);
+  expect(screen.getByRole("button", {name: "Allow analytics and marketing"})).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", {name: "Allow analytics"}));
+  expect(screen.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
+  fireEvent(window, new Event(marketingConsentChangedEvent));
+  expect(getMarketingConsent()?.marketing).toBe(false);
+});

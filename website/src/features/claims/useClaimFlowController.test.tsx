@@ -22,7 +22,8 @@ const watchClaimAuthState = vi.hoisted(() => vi.fn((callback: (user: typeof clai
   return vi.fn();
 }));
 
-vi.mock("../../analytics", () => ({trackMarketingEvent}));
+const trackCatchAcquisitionEvent = vi.hoisted(() => vi.fn());
+vi.mock("../../analytics", () => ({trackMarketingEvent, trackCatchAcquisitionEvent}));
 vi.mock("../../firebase", () => ({
   requestOrganizerClaim,
   signInForClaim: vi.fn(),
@@ -65,6 +66,18 @@ describe("useClaimFlowController", () => {
     vi.clearAllMocks();
     claimRuntime.configured = false;
     claimRuntime.user = null;
+  });
+
+  it("emits one acquisition start for explicit claim interactions, without search text or a signup", () => {
+    const {result} = renderHook(() => useClaimFlowController(), {wrapper: wrapper()});
+    expect(trackCatchAcquisitionEvent).not.toHaveBeenCalled();
+    act(() => {
+      result.current.setQuery("Private search");
+      result.current.selectListing(enabledListing());
+      result.current.setRequesterName("Private name");
+      result.current.setBusinessEmail("private@example.test");
+    });
+    expect(trackCatchAcquisitionEvent).toHaveBeenCalledExactlyOnceWith({name: "acquisition_start", form: "claim"});
   });
 
   it("returns an empty claim route to listing selection on submit", async () => {
