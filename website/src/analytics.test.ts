@@ -112,7 +112,7 @@ test("an environment GTM ID cannot load a script or call an external global gtag
 
 test("legacy analytics-only UI choices cannot authorize marketing and request a fresh versioned choice", () => {
   localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "accepted", analytics: true,
-    marketing: true, updatedAt: new Date().toISOString()}));
+    marketing: true, version: 2, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");

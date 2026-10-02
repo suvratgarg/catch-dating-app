@@ -103,7 +103,9 @@ export function getMarketingConsent(): MarketingConsent | null {
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
   if (!legacy || !validConsent(legacy)) { clearAttribution(); return null; }
   // Previous accept-all choices came from an analytics-only UI. Never escalate them.
-  return {version: 1, ...legacy, choice: legacy.analytics ? "analytics" : "essential", marketing: false};
+  if (!legacy.analytics) clearAttribution();
+  return {version: 1, choice: legacy.analytics ? "analytics" : "essential", analytics: legacy.analytics,
+    marketing: false, updatedAt: legacy.updatedAt};
 }
 
 function validConsent(stored: Omit<MarketingConsent, "version">) {
