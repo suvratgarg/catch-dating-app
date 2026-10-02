@@ -994,22 +994,12 @@ test("deployment-image retention has one bounded seven-day policy without indefi
 });
 
 
-test("backend approval occurs before merge without credentials and is independently reverified", () => {
+test("automated PR CI preserves independently verified historical production review", () => {
   const ci = workflow("ci.yml");
-  const review = ciJob(ci, "backend-review");
-  assert.match(review, /github.event_name == 'pull_request'/);
-  assert.match(review, /head.repo.id == github.repository_id/);
-  assert.match(review, /needs.plan.outputs.functions == 'true'/);
-  assert.match(review, /permissions: \{\}/);
-  assert.match(review, /name: backend-review/);
-  assert.ok(!review.includes("checkout@"));
-  assert.ok(!review.includes("secrets."));
+  assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
     assert.match(workflow(name), /pull-requests: read/);
   }
-  const required = ciJob(ci, "required");
-  assert.match(required, /- backend-review/);
-  assert.ok(required.includes('test "$(jq -er \'.["backend-review"].result\' <<< "$NEEDS_JSON")" = success'));
   for (const name of ["delivery.yml", "_firebase-promote.yml"]) {
     const text = workflow(name);
     assert.match(text, /pull-requests: read/);
@@ -1032,7 +1022,6 @@ test("Required CI cannot succeed when main publication is skipped or absent", (c
       ...process.env, PATH: `${directory}${path.delimiter}${process.env.PATH}`,
       GH_CALLED: path.join(directory, "called"), GITHUB_REF: "refs/heads/main",
       EVENT_NAME: "push", NEEDS_JSON: JSON.stringify(needs), DEPLOY_REQUIRED: "false",
-      BACKEND_REVIEW_REQUIRED: "false",
     }});
     assert.notEqual(execution.status, 0, `Unexpected main success with finalize-plan=${result}`);
     assert.equal(fs.existsSync(path.join(directory, "called")), false, "Missing finalization must reject before consulting artifacts.");
