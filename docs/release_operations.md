@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.19
+version: 2.7.20
 updated: 2026-10-02
 owner: recursive_audit_loop
 status: active
@@ -1144,8 +1144,23 @@ then reruns the Functions, contract/index, and rules validation lanes and
 packages their exact tested output in the rebaseline run; it does not borrow
 or rebuild an older pending backend package.
 
-The resulting immutable package follows the ordinary ordered promotion path
-through `dev` and protected `prod`. Every environment additionally
+The `target_environment` input defaults to `dev`, including reusable calls that
+omit it. Authorization validates `dev|prod` and binds the selected target to
+its outputs and immutable rebaseline plan. A DEV-only request promotes the full
+snapshot to `catchdates-dev`, then finishes: both the production job and the
+cursor/drain finalizer are ineligible regardless of live environment review
+settings. Its run result, immutable package provenance, and DEV checkpoint are
+deployment evidence; it does not publish an ordinary DEV completion receipt,
+advance either delivery cursor, or drain the pending queue. Do not treat a
+successful DEV-only snapshot as a production baseline or enable queue draining
+on that basis.
+
+Only an explicitly approved `target_environment: prod` request follows the
+ordinary ordered promotion path through `dev` and protected `prod`. Later
+production approval requires a new explicit production-scoped request with
+fresh exact-current-main authority and validation; rerunning a DEV-only request
+cannot expand its scope. Existing production review requirements remain in place.
+Every environment additionally
 requires the package source to remain the exact live `main` head. Only a
 successful production promotion may publish a normal v4 delivery cursor for
 the current successful `main` CI authority; that cursor supersedes the covered

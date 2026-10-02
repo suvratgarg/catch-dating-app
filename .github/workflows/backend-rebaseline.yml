@@ -3,6 +3,12 @@ name: Backend Rebaseline
 on:
   workflow_dispatch:
     inputs:
+      target_environment:
+        description: Stop after DEV, or explicitly include protected production after DEV succeeds.
+        required: true
+        default: dev
+        type: choice
+        options: [dev, prod]
       source_sha:
         description: Exact current main SHA to deploy as the cumulative backend snapshot.
         required: true
@@ -12,7 +18,7 @@ on:
         required: true
         type: string
       confirm_full_backend_rebaseline:
-        description: Confirm Functions, Firestore indexes/rules, and Storage rules promotion through prod.
+        description: Confirm all backend targets within the selected environment scope.
         required: true
         default: false
         type: boolean
@@ -43,6 +49,7 @@ jobs:
       cancel-in-progress: false
     uses: ./.github/workflows/_backend-rebaseline.yml
     with:
+      target_environment: ${{ inputs.target_environment }}
       source_sha: ${{ inputs.source_sha }}
       reason: ${{ inputs.reason }}
       confirm_full_backend_rebaseline: ${{ inputs.confirm_full_backend_rebaseline }}

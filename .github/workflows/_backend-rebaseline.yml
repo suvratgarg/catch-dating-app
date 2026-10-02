@@ -3,6 +3,11 @@ name: Backend Rebaseline Worker
 on:
   workflow_call:
     inputs:
+      target_environment:
+        description: Stop after DEV, or explicitly include protected production after DEV succeeds.
+        required: false
+        default: dev
+        type: string
       source_sha:
         description: Exact current main SHA to deploy as the cumulative backend snapshot.
         required: true
@@ -12,7 +17,7 @@ on:
         required: true
         type: string
       confirm_full_backend_rebaseline:
-        description: Confirm Functions, Firestore indexes/rules, and Storage rules promotion through prod.
+        description: Confirm all backend targets within the selected environment scope.
         required: true
         default: false
         type: boolean
@@ -29,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
+      target_environment: ${{ steps.inputs.outputs.target_environment }}
       base_sha: ${{ steps.cursor.outputs.base_sha }}
       source_ci_run_attempt: ${{ steps.authority.outputs.source_ci_run_attempt }}
       source_ci_run_id: ${{ steps.authority.outputs.source_ci_run_id }}
@@ -53,10 +59,12 @@ jobs:
         name: Require an explicit exact-current-main authorization
         env:
           CONFIRM_FULL_BACKEND_REBASELINE: ${{ inputs.confirm_full_backend_rebaseline }}
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
           REASON: ${{ inputs.reason }}
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           set -euo pipefail
+          [[ "$TARGET_ENVIRONMENT" =~ ^(dev|prod)$ ]]
           test "$GITHUB_REF" = "refs/heads/main"
           test "$CONFIRM_FULL_BACKEND_REBASELINE" = "true"
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
@@ -72,6 +80,7 @@ jobs:
             exit 64
           fi
           echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "target_environment=$TARGET_ENVIRONMENT" >> "$GITHUB_OUTPUT"
 
       - id: cursor
         name: Restore and verify the latest delivery cursor
@@ -349,6 +358,7 @@ jobs:
 
       - name: Create the graph-authorized all-backend impact plan
         env:
+          TARGET_ENVIRONMENT: ${{ steps.inputs.outputs.target_environment }}
           BASE_SHA: ${{ steps.cursor.outputs.base_sha }}
           REBASELINE_REASON: ${{ inputs.reason }}
           SOURCE_SHA: ${{ steps.inputs.outputs.source_sha }}
@@ -367,6 +377,7 @@ jobs:
             --arg sourceSha "$SOURCE_SHA" \
             --arg sourceCiRunId "$GITHUB_RUN_ID" \
             --arg sourceCiRunAttempt "$GITHUB_RUN_ATTEMPT" \
+            --arg targetEnvironment "$TARGET_ENVIRONMENT" \
             --arg reason "$REBASELINE_REASON" '
               . + {
                 baseSha: $baseSha,
@@ -376,18 +387,21 @@ jobs:
                 rebaseline: {
                   schema: "catch.backend-rebaseline/v1",
                   cumulativeSnapshot: true,
+                  targetEnvironment: $targetEnvironment,
                   reason: $reason
                 }
               }
             ' build/rebaseline/impact-plan.unbound.json \
               > build/rebaseline/impact-plan.json
           rm build/rebaseline/impact-plan.unbound.json
-          jq -e '
+          jq -e --arg targetEnvironment "$TARGET_ENVIRONMENT" '
             .complete == true and
             .graphStatus == "required" and
             .mode == "main" and
             .rebaseline.schema == "catch.backend-rebaseline/v1" and
             .rebaseline.cumulativeSnapshot == true and
+            (.rebaseline.targetEnvironment == $targetEnvironment) and
+            ($targetEnvironment == "dev" or $targetEnvironment == "prod") and
             (.rebaseline.reason | type == "string" and length > 0 and length <= 200) and
             (.operations.deployGroups | sort) == [
               "firestore-indexes",
@@ -519,7 +533,7 @@ jobs:
   prod:
     name: Rebaseline backend in prod
     needs: [authorize, dev]
-    if: ${{ always() && needs.authorize.result == 'success' && needs.dev.result == 'success' }}
+    if: ${{ always() && needs.authorize.outputs.target_environment == 'prod' && needs.authorize.result == 'success' && needs.dev.result == 'success' }}
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
@@ -534,7 +548,7 @@ jobs:
   finalize:
     name: Advance the delivery cursor only after prod
     needs: [authorize, dev, prod]
-    if: ${{ always() && needs.authorize.result == 'success' && needs.prod.result == 'success' }}
+    if: ${{ always() && needs.authorize.outputs.target_environment == 'prod' && needs.authorize.result == 'success' && needs.dev.result == 'success' && needs.prod.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
