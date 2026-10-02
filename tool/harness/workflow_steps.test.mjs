@@ -8,6 +8,7 @@ import {spawnSync} from "node:child_process";
 import {
   deriveTargetWorkflows,
   extractSteps,
+  planCodegenFreshness,
   workflowForTarget,
 } from "./lib/workflow_steps.mjs";
 
@@ -243,7 +244,7 @@ test("local verification resolves Tools matrix checks and preserves package test
 test("structural preflight runs from the declared sparse closure and fails closed", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-shared-preflight-"));
   const git = (args, options = {}) => spawnSync("git", args, {
-    cwd: root, encoding: "utf8", ...options,
+    cwd: root, encoding: "utf8", maxBuffer: 32 * 1024 * 1024, ...options,
   });
   const expectGit = (args, options) => {
     const result = git(args, options);
@@ -263,10 +264,14 @@ test("structural preflight runs from the declared sparse closure and fails close
       input: `${graph.ciCheckout.planner.paths.join("\n")}\n`,
     });
     expectGit(["checkout", "--quiet", "HEAD"]);
-    for (const relativePath of [graphPath, "tool/harness/verify_local.mjs",
+    for (const relativePath of [graphPath, "tool/harness/component_graph.schema.json",
+      "tool/harness/verify_local.mjs", "tool/harness/lib/component_graph.mjs",
       "tool/harness/lib/workflow_steps.mjs"]) {
       fs.copyFileSync(path.join(sourceRoot, relativePath), path.join(root, relativePath));
     }
+    expectGit(["add", "--sparse", "--", "tool/harness"]);
+    expectGit(["-c", "user.name=Preflight fixture", "-c", "user.email=fixture@example.invalid",
+      "commit", "--quiet", "--allow-empty", "-m", "Use current preflight implementation"]);
     // A clean checkout copies identical files. Make the intended changed
     // source explicit so the planner selects real CI targets in every run.
     fs.appendFileSync(path.join(root, "tool/harness/verify_local.mjs"),
@@ -282,6 +287,56 @@ test("structural preflight runs from the declared sparse closure and fails close
       ["passed", "passed"]);
     assert.ok(report.githubOnlyObligations.some((item) => item.target === "tools"));
     assert.equal(report.baseSha, report.headSha);
+    assert.deepEqual(report.codegenIds, []);
+    assert.equal(report.validationComplete, false);
+
+    const materialize = (files) => {
+      for (const file of files) {
+        const blob = git(["show", `HEAD:${file}`]);
+        assert.equal(blob.status, 0, blob.stderr);
+        const destination = path.join(root, file);
+        fs.mkdirSync(path.dirname(destination), {recursive: true});
+        fs.writeFileSync(destination, blob.stdout);
+      }
+      expectGit(["update-index", "--no-skip-worktree", "--", ...files]);
+    };
+    const ios = graph.compileCodegen.find((entry) => entry.id === "platform.ios-pod-policy");
+    const notification = graph.compileCodegen.find((entry) => entry.id === "copy.notification");
+    materialize([...ios.inputs, ...ios.outputs, ...notification.inputs, ...notification.outputs]);
+    fs.appendFileSync(path.join(root, ios.inputs.at(-1)), "\n");
+    fs.appendFileSync(path.join(root, notification.inputs[0]), "\n");
+    const current = run();
+    assert.equal(current.status, 0, current.stderr);
+    const selected = JSON.parse(current.stdout);
+    assert.deepEqual(selected.codegenIds, ["copy.notification", "platform.ios-pod-policy"]);
+    assert.equal(selected.freshnessComplete, true);
+    assert.equal(selected.validationComplete, false);
+    assert.deepEqual(selected.freshnessChecks.map((check) => check.status), ["passed", "passed"]);
+    assert.ok(selected.githubOnlyObligations.some((item) => item.target === "functions"));
+    assert.equal(git(["diff", "--name-only", "--", ...ios.outputs, ...notification.outputs])
+      .stdout.trim(), "", "freshness checks must not write generated outputs");
+
+    const arb = "lib/l10n/app_en.arb";
+    materialize([arb]);
+    fs.appendFileSync(path.join(root, arb), "\n");
+    const unavailable = run();
+    assert.equal(unavailable.status, 0, unavailable.stderr);
+    const partial = JSON.parse(unavailable.stdout);
+    assert.equal(partial.freshnessComplete, false);
+    assert.equal(partial.validationComplete, false);
+    assert.ok(partial.githubOnlyObligations.some((item) =>
+      item.codegenId === "flutter.l10n" && /unmaterialized/u.test(item.reason)));
+    fs.appendFileSync(path.join(root, notification.outputs[0]), "// Stale output fixture.\n");
+    const stale = run();
+    assert.notEqual(stale.status, 0);
+    assert.match(stale.stderr, /Freshness preflight failed for copy\.notification/u);
+    assert.match(stale.stderr, /Regenerate with:/u);
+    fs.unlinkSync(path.join(root, notification.outputs[0]));
+    const missingOutput = run();
+    assert.notEqual(missingOutput.status, 0);
+    assert.match(missingOutput.stderr, /Freshness preflight failed for copy\.notification/u);
+    expectGit(["restore", "--", ...ios.inputs, ...notification.inputs,
+      ...notification.outputs, arb]);
 
     const unknownPath = path.join(root, "unowned-preflight-fixture");
     fs.writeFileSync(unknownPath, "unknown\n");
@@ -325,4 +380,57 @@ test("structural preflight runs from the declared sparse closure and fails close
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
+});
+
+test("freshness selection uses explicit graph requirements and never loses unavailable checks", () => {
+  const graph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const repositoryPaths = spawnSync("git", ["ls-files", "-z"], {encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024}).stdout.split("\0").filter(Boolean);
+  const options = {graph, codegenIds: graph.compileCodegen.map((entry) => entry.id),
+    repositoryPaths, platform: "linux", fileAvailable: () => true,
+    executableAvailable: () => true, packageAvailable: () => true};
+  const available = planCodegenFreshness(options);
+  assert.equal(available.length, 8);
+  assert.ok(available.every((check) => check.runnable), JSON.stringify(available));
+  const noFlutter = planCodegenFreshness({...options,
+    executableAvailable: (executable) => executable !== "flutter" && executable !== "dart"});
+  for (const id of ["flutter.l10n", "copy.structured-domain"]) {
+    const check = noFlutter.find((entry) => entry.codegenId === id);
+    assert.equal(check.runnable, false);
+    assert.match(check.reasons.join("; "), /missing runtime/u);
+    assert.ok(check.command && check.writeCommand);
+  }
+  const noPackages = planCodegenFreshness({...options, packageAvailable: () => false});
+  assert.deepEqual(noPackages.filter((check) => !check.runnable).map((check) => check.codegenId),
+    ["contracts.schema-projections", "copy.structured-domain"]);
+  const sparse = planCodegenFreshness({...options,
+    sparsePaths: repositoryPaths.filter((file) => file.startsWith("lib/l10n/generated/")),
+    fileAvailable: (file) => !file.startsWith("lib/l10n/generated/")});
+  assert.match(sparse.find((entry) => entry.codegenId === "flutter.l10n").reasons.join("; "),
+    /unmaterialized output/u);
+  const missingOutput = planCodegenFreshness({...options,
+    fileAvailable: () => false});
+  assert.ok(missingOutput.every((check) => check.runnable),
+    "Missing full-checkout files must execute and fail their freshness command");
+  const indirectOmission = planCodegenFreshness({...options,
+    codegenIds: ["admin.callable-validators"],
+    sparsePaths: ["contracts/firestore/sales_quotes.schema.json"],
+    fileAvailable: (file) => file !== "contracts/firestore/sales_quotes.schema.json"});
+  assert.equal(indirectOmission[0].runnable, false);
+  assert.match(indirectOmission[0].reasons.join("; "), /unmaterialized input contracts/u);
+  const wrongPlatform = planCodegenFreshness({...options, platform: "win32"});
+  assert.ok(wrongPlatform.every((check) => !check.runnable));
+  assert.deepEqual(planCodegenFreshness({...options, codegenIds: []}), []);
+  assert.throws(() => planCodegenFreshness({...options, codegenIds: ["unknown"]}),
+    /Unknown required compile-codegen/u);
+  const invalid = structuredClone(graph);
+  delete invalid.compileCodegen[0].checkRequirements;
+  assert.throws(() => planCodegenFreshness({...options, graph: invalid}), /checkRequirements/u);
+  // No command-string heuristic may hide a declared transitive runtime.
+  const explicit = structuredClone(graph);
+  explicit.compileCodegen.find((entry) => entry.id === "copy.notification")
+    .checkRequirements.executables.push("flutter");
+  const declared = planCodegenFreshness({...options, graph: explicit,
+    codegenIds: ["copy.notification"], executableAvailable: (name) => name === "node"});
+  assert.deepEqual(declared[0].reasons, ["missing runtime flutter"]);
 });
