@@ -5,6 +5,8 @@ import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import vm from "node:vm";
+// Keep the actual Required CI policy exercised by the registered Harness suite.
+import "../ci/required_ci_policy.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -1005,7 +1007,7 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
   assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
   assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
-  assert.match(ci, /name: Backend source review/u);
+  assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   const feedback = workflow("pr-feedback.yml");
   const plan = namedStep(feedback, "Plan affected checks");
   assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --base "\$BASE_SHA" --head HEAD --mode pr/u);
