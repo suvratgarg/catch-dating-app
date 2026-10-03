@@ -2,6 +2,8 @@ import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {defineString} from "firebase-functions/params";
 import {HttpsError} from "firebase-functions/v2/https";
 
+import {loadFlightProviderPolicy} from "./flightProviderPolicy";
+
 export const flightProviderConfigVersion = defineString(
   "FLIGHT_PROVIDER_CONFIG_VERSION", {default: ""});
 export const flightWebhookBaseUrl =
@@ -48,6 +50,7 @@ export async function readFlightProviderConfig({
 
 export function loadFlightProviderConfig():
   Promise<FlightProviderConfig | null> {
+  if (!loadFlightProviderPolicy()) return Promise.resolve(null);
   return readFlightProviderConfig({
     version: flightProviderConfigVersion.value(),
     projectId: process.env.GCLOUD_PROJECT,

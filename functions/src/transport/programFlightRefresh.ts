@@ -1,3 +1,4 @@
+import {setTimeout as delay} from "node:timers/promises";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
@@ -22,15 +23,12 @@ import type {ProgramTravelLegDocument} from
 import {
   fetchFlightStatus,
 } from "./aeroDataBox";
-import {
-  createFlightSubscription,
-  deleteFlightSubscription,
-  syncLegAlertSubscription,
-  listFlightSubscriptions,
-} from "./flightSubscriptions";
-import {defaultAlertBaseUrl, loadFlightProviderConfig,
+import {loadFlightProviderConfig,
   flightProviderUnavailable, type FlightProviderConfig} from
   "./flightProviderConfig";
+import {loadFlightProviderPolicy, pilotAllowsProgram, reserveFlightPoll,
+  runFlightPoll,
+  type FlightProviderPolicy} from "./flightProviderPolicy";
 import {
   refreshDueFlightLegs,
   refreshTravelLegForRequest,
@@ -42,22 +40,24 @@ export interface RefreshDeps extends FlightRefreshDeps {
   checkRateLimit: typeof checkRateLimit;
 }
 
-function configuredRefreshDeps(config: FlightProviderConfig): RefreshDeps {
+function configuredRefreshDeps(config: FlightProviderConfig,
+  policy: FlightProviderPolicy): RefreshDeps {
   return {
     firestore: () => admin.firestore(),
     checkRateLimit,
     now: () => new Date(),
     apiKey: () => config.apiKey,
-    fetchStatus: fetchFlightStatus,
-    syncAlert: (legRef) => syncLegAlertSubscription(legRef, {
-      now: () => new Date(),
-      listSubscriptions: listFlightSubscriptions,
-      apiKey: () => config.apiKey,
-      secret: () => config.webhookSecret,
-      baseUrl: defaultAlertBaseUrl,
-      createSubscription: createFlightSubscription,
-      deleteSubscription: deleteFlightSubscription,
-    }),
+    pilotLegIds: policy.legIds,
+    allowsLeg: (programId, legId) => policy.legIds.includes(legId) &&
+      pilotAllowsProgram(policy, programId, Date.now()),
+    fetchStatus: async (input) => {
+      await delay(1100);
+      return runFlightPoll(policy, Date.now,
+        (now) => reserveFlightPoll(admin.firestore(), policy, now),
+        () => fetchFlightStatus(input));
+    },
+    // Alerts spend provider credits, including delivery retries. The prepared
+    // pilot is polling-only; subscription lifecycle code remains reusable.
   };
 }
 
@@ -67,9 +67,11 @@ export async function refreshProgramTravelLegHandler(
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   if (!deps) {
+    const policy = loadFlightProviderPolicy();
+    if (!policy) return flightProviderUnavailable();
     const config = await loadFlightProviderConfig();
     if (!config) return flightProviderUnavailable();
-    deps = configuredRefreshDeps(config);
+    deps = configuredRefreshDeps(config, policy);
   }
   const data =
     validateCallableWithAjv<RefreshProgramTravelLegCallablePayload>(
@@ -111,10 +113,12 @@ export const refreshProgramFlightStatuses = onSchedule(
     timeZone: "Asia/Kolkata",
   },
   async () => {
+    const policy = loadFlightProviderPolicy();
+    if (!policy) return;
     const config = await loadFlightProviderConfig();
     if (!config) return;
     const summary = await refreshDueFlightLegs(
-      admin.firestore(), configuredRefreshDeps(config));
+      admin.firestore(), configuredRefreshDeps(config, policy));
     if (summary.updated + summary.failed > 0) {
       logger.info("Program flight refresh sweep completed", summary);
     }

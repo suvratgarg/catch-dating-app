@@ -39,6 +39,7 @@ export const materializedNonSecretParams = [
   "FORM_DOMAIN_CNAME_TARGET",
   "FLIGHT_WEBHOOK_BASE_URL",
   "FLIGHT_PROVIDER_CONFIG_VERSION",
+  "FLIGHT_PROVIDER_POLICY",
 ];
 
 function option(name) {
@@ -155,6 +156,11 @@ function normalizedProviderParams(environment = process.env, projectId) {
       flightConfigVersion.slice(secretPrefix.length))),
   "FLIGHT_PROVIDER_CONFIG_VERSION must pin a secret in this project");
 
+  // Inactive preparation only: a later reviewed rollout must explicitly
+  // admit policy materialization. Credentials alone never enable polling.
+  assert(!environment.FLIGHT_PROVIDER_POLICY?.trim(),
+    "FLIGHT_PROVIDER_POLICY must remain unconfigured in this milestone");
+
   const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
@@ -185,6 +191,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     // Empty lets the function derive the URL from GCLOUD_PROJECT.
     FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
+    FLIGHT_PROVIDER_POLICY: " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
