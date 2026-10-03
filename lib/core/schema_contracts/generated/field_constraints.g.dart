@@ -127098,6 +127098,82 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const programLodgingSourceVersionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingSourceVersionDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsInventoryFingerprint = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.inventory.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsInventoryRevision = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.inventory.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsLayoutFingerprint = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.layout.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsLayoutRevision = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.layout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsPublishedFingerprint = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.published.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsPublishedRevision = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.published.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsSourceFingerprint = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.source.fingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingSourceVersionDocumentVersionsSourceRevision = CatchContractFieldConstraints(
+    path: 'programLodgingSourceVersionDocument.versions.source.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programLodgingWorkflowDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'programLodgingWorkflowDocument.organizerId',
     maxLength: 180,
@@ -127427,7 +127503,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 21,
+    maxItems: 22,
   );
 
   static const programRetentionRunDocumentPhasesItemsCollection = CatchContractFieldConstraints(
@@ -175429,6 +175505,16 @@ abstract final class CatchContractConstraints {
     'programLodgingReceiptDocument.receipt.operationId': programLodgingReceiptDocumentReceiptOperationId,
     'programLodgingReceiptDocument.receipt.requestHash': programLodgingReceiptDocumentReceiptRequestHash,
     'programLodgingReceiptDocument.receipt.resultingRevision': programLodgingReceiptDocumentReceiptResultingRevision,
+    'programLodgingSourceVersionDocument.organizerId': programLodgingSourceVersionDocumentOrganizerId,
+    'programLodgingSourceVersionDocument.programId': programLodgingSourceVersionDocumentProgramId,
+    'programLodgingSourceVersionDocument.versions.inventory.fingerprint': programLodgingSourceVersionDocumentVersionsInventoryFingerprint,
+    'programLodgingSourceVersionDocument.versions.inventory.revision': programLodgingSourceVersionDocumentVersionsInventoryRevision,
+    'programLodgingSourceVersionDocument.versions.layout.fingerprint': programLodgingSourceVersionDocumentVersionsLayoutFingerprint,
+    'programLodgingSourceVersionDocument.versions.layout.revision': programLodgingSourceVersionDocumentVersionsLayoutRevision,
+    'programLodgingSourceVersionDocument.versions.published.fingerprint': programLodgingSourceVersionDocumentVersionsPublishedFingerprint,
+    'programLodgingSourceVersionDocument.versions.published.revision': programLodgingSourceVersionDocumentVersionsPublishedRevision,
+    'programLodgingSourceVersionDocument.versions.source.fingerprint': programLodgingSourceVersionDocumentVersionsSourceFingerprint,
+    'programLodgingSourceVersionDocument.versions.source.revision': programLodgingSourceVersionDocumentVersionsSourceRevision,
     'programLodgingWorkflowDocument.organizerId': programLodgingWorkflowDocumentOrganizerId,
     'programLodgingWorkflowDocument.programId': programLodgingWorkflowDocumentProgramId,
     'programLodgingWorkflowDocument.workflow.approvedProposalId': programLodgingWorkflowDocumentWorkflowApprovedProposalId,

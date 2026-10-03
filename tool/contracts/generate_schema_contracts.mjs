@@ -15,6 +15,7 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ProgramLodgingSourceVersionDocument", "source": "firestore/program_lodging_source_versions.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingSourceVersionDocument.ts"},
   {"name": "ProgramLodgingProposalDocument", "source": "firestore/program_lodging_proposals.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingProposalDocument.ts"},
   {"name": "ProgramLodgingWorkflowDocument", "source": "firestore/program_lodging_workflows.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingWorkflowDocument.ts"},
   {"name": "ProgramLodgingReceiptDocument", "source": "firestore/program_lodging_receipts.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingReceiptDocument.ts"},

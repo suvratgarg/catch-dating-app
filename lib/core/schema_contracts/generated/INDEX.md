@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ProgramLodgingSourceVersionDocument | `firestore/program_lodging_source_versions.schema.json` | `functions/src/shared/generated/programLodgingSourceVersionDocument.ts` |
 | ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `functions/src/shared/generated/programLodgingProposalDocument.ts` |
 | ProgramLodgingWorkflowDocument | `firestore/program_lodging_workflows.schema.json` | `functions/src/shared/generated/programLodgingWorkflowDocument.ts` |
 | ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `functions/src/shared/generated/programLodgingReceiptDocument.ts` |
@@ -1188,6 +1189,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaProgramLodgingSourceVersionDocumentSchema` | ProgramLodgingSourceVersionDocument | `firestore/program_lodging_source_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_source_version_document.g.dart` |
 | `schemaProgramLodgingProposalDocumentSchema` | ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_proposal_document.g.dart` |
 | `schemaProgramLodgingWorkflowDocumentSchema` | ProgramLodgingWorkflowDocument | `firestore/program_lodging_workflows.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_workflow_document.g.dart` |
 | `schemaProgramLodgingReceiptDocumentSchema` | ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_receipt_document.g.dart` |

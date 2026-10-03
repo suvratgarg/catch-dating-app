@@ -550,6 +550,32 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Private transactional revision counters backed by complete canonical source fingerprints. Contains no copied guest or property records. Changes invalidate proposals; publication advances its own domain atomically with canonical stays.
+ */
+export interface ProgramLodgingSourceVersionDocument {
+  programId: string;
+  organizerId: string;
+  versions: {
+    source: {
+      revision: number;
+      fingerprint: string;
+    };
+    inventory: {
+      revision: number;
+      fingerprint: string;
+    };
+    layout: {
+      revision: number;
+      fingerprint: string;
+    };
+    published: {
+      revision: number;
+      fingerprint: string;
+    };
+  };
+}
+
+/**
  * Private immutable placement proposal tied to source, inventory, layout and published revisions. Server validates content identity and current canonical Programs scope; no hotel affinity or medical projection is public.
  */
 export interface ProgramLodgingProposalDocument {
@@ -12542,7 +12568,7 @@ export interface ProgramRetentionRunDocument {
   /**
    * Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.
    *
-   * @maxItems 21
+   * @maxItems 22
    */
   phases: {
     collection: string;

@@ -883,6 +883,7 @@ export 'program_id_callable_payload.g.dart';
 export 'program_invite_claim_callable_response.g.dart';
 export 'program_lodging_proposal_document.g.dart';
 export 'program_lodging_receipt_document.g.dart';
+export 'program_lodging_source_version_document.g.dart';
 export 'program_lodging_workflow_document.g.dart';
 export 'program_manifest_import_callable_response.g.dart';
 export 'program_mutation_callable_response.g.dart';

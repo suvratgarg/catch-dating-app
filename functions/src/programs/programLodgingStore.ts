@@ -30,6 +30,7 @@ function requireStoredShape(valid: boolean): void {
 
 export interface TransactionLodgingSource {
   snapshot: LodgingSnapshot;
+  persistSource?: () => void;
   /** Prepared using reads in loadSource. This callback may only enqueue
    * canonical stay/occupancy writes in this same transaction, with no IO.
    * It must increment the published-source revision and preserve check-ins. */
@@ -75,6 +76,7 @@ export class ProgramLodgingStore {
       const source = await this.loadSource(tx, access, programId);
       this.assertScope(source.snapshot, access, programId);
       this.authority(access, actorUid, source.snapshot);
+      source.persistSource?.();
       return source.snapshot;
     });
     // Search outside the transaction. Save revalidates current authority and
@@ -87,7 +89,8 @@ export class ProgramLodgingStore {
     return this.deps.firestore().runTransaction(async (tx) => {
       const access = await this.access(tx, programId, actorUid);
       requireProgramDuty(access, "programCoordinator");
-      const {snapshot} = await this.loadSource(tx, access, programId);
+      const source = await this.loadSource(tx, access, programId);
+      const {snapshot} = source;
       this.assertScope(snapshot, access, programId);
       this.authority(access, actorUid, snapshot);
       assertLodgingProposalCurrent(proposal, snapshot.revisions);
@@ -108,8 +111,10 @@ export class ProgramLodgingStore {
       if (existing.exists) {
         const stored = existing.data() as StoredProposal;
         this.assertStoredProposal(stored, access, programId, canonical.id);
+        source.persistSource?.();
         return stored.proposal;
       }
+      source.persistSource?.();
       tx.create(ref, {programId, organizerId: access.program.organizerId,
         proposal: canonical, createdByUid: actorUid,
         createdAtMillis: this.deps.now().toMillis()} satisfies StoredProposal);
@@ -160,6 +165,7 @@ export class ProgramLodgingStore {
         this.authority(access, actorUid, source.snapshot, command.hotelId),
         command, storedReceipt?.receipt ?? null, this.deps.now().toMillis());
       if (!result.replayed) {
+        source.persistSource?.();
         if (command.action === "publishGuests") {
           source.publish(storedProposal.proposal);
         }

@@ -12,7 +12,7 @@ export interface ProgramRetentionRunDocument {
   /**
    * Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.
    *
-   * @maxItems 21
+   * @maxItems 22
    */
   phases: {
     collection: string;

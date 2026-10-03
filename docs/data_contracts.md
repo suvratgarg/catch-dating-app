@@ -3463,11 +3463,16 @@ Canonical `programGuests.groupIds` remains membership truth. Canonical import an
 selection transaction adapters are still required; these schemas do not grant
 membership or infer room sharing from a household.
 
-All five private collections join the existing archive retention sweep by exact
+All six private collections join the existing archive retention sweep by exact
 program scope. Membership workspace scope and lodging proposal scope must agree
 with the archived program and organizer; mismatches block completion. Records
 are deleted rather than retaining guest/group pointers as aggregate counts.
-The resumable retention journal supports 21 collection phases. Real emulator
+The resumable retention journal supports 22 collection phases.
+`programLodgingSourceVersions` holds private per-domain counters and complete
+source fingerprints; previews persist the prepared fence before search, and
+canonical publication must advance its published fence in the same transaction.
+The bounded native reader includes all program guests without requiring travel
+legs and rejects truncated source. No guest records are copied into the fence. Real emulator
 rules, transaction integration and combined feature acceptance remain gates.
 
 ### Organizer Application Intake

@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  programLodgingSourceVersionDocumentSchema,
   programLodgingProposalDocumentSchema,
   programLodgingWorkflowDocumentSchema,
   programLodgingReceiptDocumentSchema,
@@ -1198,6 +1199,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateProgramLodgingSourceVersionDocument = ajv.compile(programLodgingSourceVersionDocumentSchema);
 export const validateProgramLodgingProposalDocument = ajv.compile(programLodgingProposalDocumentSchema);
 export const validateProgramLodgingWorkflowDocument = ajv.compile(programLodgingWorkflowDocumentSchema);
 export const validateProgramLodgingReceiptDocument = ajv.compile(programLodgingReceiptDocumentSchema);

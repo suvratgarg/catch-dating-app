@@ -4907,7 +4907,7 @@ describe("firestore.rules", () => {
     it("denies direct access for guests, managers and unauthenticated viewers",
       async () => {
         const collections = ["workspaceFieldAssertions", "workspaceFieldDecisions",
-          "programLodgingProposals", "programLodgingWorkflows", "programLodgingReceipts", "workspaceMembershipAssertions", "workspaceMembershipDecisions",
+          "programLodgingProposals", "programLodgingWorkflows", "programLodgingReceipts", "programLodgingSourceVersions", "workspaceMembershipAssertions", "workspaceMembershipDecisions",
           "organizerCommunityMemberships", "organizerCommunityMembershipDecisions"];
         for (const name of collections) {
           await seed([name, "doc-1"], {uid: "guest-1", organizerId: "club-1"});
