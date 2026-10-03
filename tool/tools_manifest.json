@@ -7413,6 +7413,42 @@
           "actual fanout cannot suppress obligations found by independent comparison"
         ]
       }
+    },
+    {
+      "id": "ci:main-marketing-validation",
+      "category": "ci",
+      "path": "tool/ci/wait_main_marketing_validation.mjs",
+      "command": "node tool/ci/wait_main_marketing_validation.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/capture-freshness-ci.yml",
+        "tool/ci/wait_main_marketing_validation.mjs",
+        "tool/ci/wait_main_marketing_validation.test.mjs"
+      ],
+      "description": "Reuses exact-main Marketing and capture execution only with matching workflow, repository, source and attempt identity; offline fixtures reject missing, failed or cancelled evidence.",
+      "checks": [
+        "node --check tool/ci/wait_main_marketing_validation.mjs",
+        "node --test tool/ci/wait_main_marketing_validation.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/wait_main_marketing_validation.test.mjs",
+        "contains": [
+          "missing jobs and a completed run without evidence fail closed",
+          "cancellation during the final identity recheck revokes reuse"
+        ]
+      }
     }
   ]
 }

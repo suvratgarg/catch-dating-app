@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.23
+version: 2.7.24
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -430,6 +430,28 @@ or cancelled React check still blocks CI. Reusable and standalone Tools runs
 default to executing their own browser checks. No result crosses source commits
 or CI attempts, and altered commands lose the omission until their equivalence
 is verified again.
+
+On a Marketing main push, `ci.yml` owns React validation and its separate
+capture-freshness lane. `marketing-website.yml` waits up to 35 minutes for those
+two successful jobs on the exact source SHA, canonical workflow, repository,
+run and attempt. It records their job IDs in a seven-day artifact and omits its
+duplicate React invocation. It does not wait for unrelated lanes. Missing,
+failed, cancelled or ambiguous evidence blocks packaging; inspect the linked
+same-source CI jobs, repair the failure and rerun the source workflow. Only an
+explicitly skipped Marketing lane requests standalone React validation. Manual
+validation still executes the complete reusable validation workflow. Source,
+workflow and toolchain changes invalidate reuse across commits; dependency
+caches are not execution evidence.
+
+Native app source and test changes select capture freshness through the impact
+graph without triggering a Marketing production build. Actual website, shared
+web UI, media and production snapshot inputs retain their validation and release
+triggers. Reused validation authorizes only the next packaging step: the release
+workflow still materializes read-only live organizer listings, checks production
+environment inputs, builds exact production bytes and verifies artifact hashes,
+promotion authorization and readback. A PR bundle never supplies production
+bytes. The check contract is enforced by `ci:main-marketing-validation` and
+`ci:web-hosting-delivery-workflow`; no cross-SHA validation reuse is supported.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job
