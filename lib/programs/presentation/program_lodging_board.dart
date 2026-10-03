@@ -48,7 +48,9 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
   String? _destinationId;
   var _destinations = <ProgramLodgingDestination>[];
   var _map = false;
-  var _pending = false;
+  var _previewPending = false;
+  var _moving = false;
+  bool get _pending => _previewPending || _moving;
   var _epoch = 0;
   Object? _error;
 
@@ -62,7 +64,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
       _partyId = null;
       _destinationId = null;
       _destinations = [];
-      _pending = false;
+      _previewPending = false;
       _error = null;
     }
   }
@@ -81,7 +83,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
       _partyId = party.id;
       _destinationId = null;
       _destinations = [];
-      _pending = true;
+      _previewPending = true;
       _error = null;
     });
     try {
@@ -96,7 +98,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
     } catch (error) {
       if (mounted && epoch == _epoch) setState(() => _error = error);
     } finally {
-      if (mounted && epoch == _epoch) setState(() => _pending = false);
+      if (mounted && epoch == _epoch) setState(() => _previewPending = false);
     }
   }
 
@@ -116,7 +118,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
     final epoch = ++_epoch;
     final proposalId = widget.proposalId;
     setState(() {
-      _pending = true;
+      _moving = true;
       _error = null;
     });
     try {
@@ -130,7 +132,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
     } catch (error) {
       if (mounted && epoch == _epoch) setState(() => _error = error);
     } finally {
-      if (mounted && epoch == _epoch) setState(() => _pending = false);
+      if (mounted) setState(() => _moving = false);
     }
   }
 
@@ -164,7 +166,9 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
                 label: party.canMove
                     ? party.label
                     : '${party.label} · ${widget.copy.locked}',
-                variant: CatchButtonVariant.ghost,
+                variant: _partyId == party.id
+                    ? CatchButtonVariant.secondary
+                    : CatchButtonVariant.ghost,
                 onPressed:
                     _pending ||
                         !party.canMove ||
@@ -183,7 +187,10 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
             mode: CatchChipMode.single,
             onChanged: _pending
                 ? null
-                : (value) => setState(() => _layerId = value.single),
+                : (value) => setState(() {
+                    _layerId = value.single;
+                    _destinationId = null;
+                  }),
           ),
         CatchChoiceInput<bool>(
           values: const [false, true],
@@ -244,7 +251,9 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
     return CatchButton(
       key: ValueKey('lodging-room-${unit.inventoryId}'),
       label: label,
-      variant: CatchButtonVariant.ghost,
+      variant: _destinationId == unit.inventoryId
+          ? CatchButtonVariant.secondary
+          : CatchButtonVariant.ghost,
       onPressed: _pending || option == null
           ? null
           : () => setState(() => _destinationId = unit.inventoryId),

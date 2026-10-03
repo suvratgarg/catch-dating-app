@@ -207,4 +207,100 @@ void main() {
       isNull,
     );
   });
+
+  testWidgets('callback rebuild cannot overlap an unfinished move', (
+    tester,
+  ) async {
+    _size(tester);
+    final pending = Completer<void>();
+    var moves = 0;
+    ProgramLodgingBoard board() => ProgramLodgingBoard(
+      proposalId: 'proposal-1',
+      units: _units,
+      parties: _parties,
+      copy: _copy,
+      onPreview: (_, _) async => _options,
+      onMove: (_, _, _) async {
+        moves++;
+        await pending.future;
+      },
+    );
+    await tester.pumpWidget(_app(board()));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-party-party'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-room-102'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-move'));
+    await tester.pump();
+    expect(moves, 1);
+    await tester.pumpWidget(_app(board()));
+    await tester.pump();
+    expect(
+      tester.widget<CatchButton>(_key('lodging-party-party')).onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<CatchButton>(_key('lodging-room-102')).onPressed,
+      isNull,
+    );
+    expect(_key('lodging-move'), findsNothing);
+    expect(moves, 1);
+    pending.complete();
+    await pumpFeatureUi(tester);
+    expect(
+      tester.widget<CatchButton>(_key('lodging-party-party')).onPressed,
+      isNotNull,
+    );
+    await tester.tap(_key('lodging-party-party'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-room-102'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-move'));
+    await pumpFeatureUi(tester);
+    expect(moves, 2);
+  });
+
+  testWidgets('floor change clears the hidden room confirmation', (
+    tester,
+  ) async {
+    _size(tester);
+    final moves = <String>[];
+    await tester.pumpWidget(
+      _app(
+        ProgramLodgingBoard(
+          proposalId: 'proposal-1',
+          units: _units,
+          parties: _parties,
+          copy: _copy,
+          onPreview: (_, _) async => _options,
+          onMove: (_, _, room) async => moves.add(room),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-party-party'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-room-102'));
+    await pumpFeatureUi(tester);
+    expect(
+      tester.widget<CatchButton>(_key('lodging-party-party')).variant,
+      CatchButtonVariant.secondary,
+    );
+    expect(
+      tester.widget<CatchButton>(_key('lodging-room-102')).variant,
+      CatchButtonVariant.secondary,
+    );
+    expect(_key('lodging-move'), findsOneWidget);
+    await tester.tap(find.text('Floor 2'));
+    await pumpFeatureUi(tester);
+    expect(_key('lodging-room-102'), findsNothing);
+    expect(_key('lodging-move'), findsNothing);
+    expect(moves, isEmpty);
+    await tester.tap(_key('lodging-room-201'));
+    await pumpFeatureUi(tester);
+    await tester.tap(_key('lodging-move'));
+    await pumpFeatureUi(tester);
+    expect(moves, ['201']);
+  });
 }
