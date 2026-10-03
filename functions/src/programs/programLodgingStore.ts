@@ -4,8 +4,8 @@ import {dutyAssignments, dutyCoversHotel, requireProgramAccess,
   requireProgramDuty, requireProgramMutable} from "../shared/programAuthority";
 import type {ProgramAccess} from "../shared/programAuthority";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
-import {assertLodgingProposalCurrent, immutableLodgingProposal, lodgingProposalId,
-  planLodging}
+import {assertLodgingProposalCurrent, immutableLodgingProposal,
+  lodgingProposalId, planLodging}
   from "./programLodgingPlanner";
 import {lodgingHotelProjection, lodgingTransition}
   from "./programLodgingTransitions";
