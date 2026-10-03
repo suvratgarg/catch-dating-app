@@ -126202,6 +126202,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHotelRoomsCallableResponseRoomBlocksItemsMaxOccupantsPerRoom = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.roomBlocks.items.maxOccupantsPerRoom',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
   static const programHotelRoomsCallableResponseRoomBlocksItemsRemainingRooms = CatchContractFieldConstraints(
     path: 'programHotelRoomsCallableResponse.roomBlocks.items.remainingRooms',
     required: true,
@@ -126298,6 +126305,14 @@ abstract final class CatchContractConstraints {
     path: 'programHotelRoomsCallableResponse.stays.items.roomLabel',
     maxLength: 40,
     minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelRoomsCallableResponseStaysItemsRoomOccupancyId = CatchContractFieldConstraints(
+    path: 'programHotelRoomsCallableResponse.stays.items.roomOccupancyId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -127303,6 +127318,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programRoomBlockDocumentMaxOccupantsPerRoom = CatchContractFieldConstraints(
+    path: 'programRoomBlockDocument.maxOccupantsPerRoom',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
   );
 
   static const programRoomBlockDocumentNotes = CatchContractFieldConstraints(
@@ -128313,6 +128335,14 @@ abstract final class CatchContractConstraints {
     path: 'programStayDocument.roomLabel',
     maxLength: 40,
     minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentRoomOccupancyId = CatchContractFieldConstraints(
+    path: 'programStayDocument.roomOccupancyId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -153987,6 +154017,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertProgramRoomBlockCallablePayloadMaxOccupantsPerRoom = CatchContractFieldConstraints(
+    path: 'upsertProgramRoomBlockCallablePayload.maxOccupantsPerRoom',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
   static const upsertProgramRoomBlockCallablePayloadNotes = CatchContractFieldConstraints(
     path: 'upsertProgramRoomBlockCallablePayload.notes',
     maxLength: 500,
@@ -154097,6 +154134,26 @@ abstract final class CatchContractConstraints {
     maxLength: 40,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadSeparateRoom = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.separateRoom',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertProgramStayCallablePayloadShareWithStayId = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.shareWithStayId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramStayCallablePayloadShareWithStayRevision = CatchContractFieldConstraints(
+    path: 'upsertProgramStayCallablePayload.shareWithStayRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const upsertProgramStayCallablePayloadStartsAtMillis = CatchContractFieldConstraints(
@@ -174780,6 +174837,7 @@ abstract final class CatchContractConstraints {
     'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds': programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIds,
     'programHotelRoomsCallableResponse.roomBlocks.items.heldForGroupIds.items': programHotelRoomsCallableResponseRoomBlocksItemsHeldForGroupIdsItems,
     'programHotelRoomsCallableResponse.roomBlocks.items.label': programHotelRoomsCallableResponseRoomBlocksItemsLabel,
+    'programHotelRoomsCallableResponse.roomBlocks.items.maxOccupantsPerRoom': programHotelRoomsCallableResponseRoomBlocksItemsMaxOccupantsPerRoom,
     'programHotelRoomsCallableResponse.roomBlocks.items.remainingRooms': programHotelRoomsCallableResponseRoomBlocksItemsRemainingRooms,
     'programHotelRoomsCallableResponse.roomBlocks.items.roomBlockId': programHotelRoomsCallableResponseRoomBlocksItemsRoomBlockId,
     'programHotelRoomsCallableResponse.roomBlocks.items.roomType': programHotelRoomsCallableResponseRoomBlocksItemsRoomType,
@@ -174793,6 +174851,7 @@ abstract final class CatchContractConstraints {
     'programHotelRoomsCallableResponse.stays.items.revision': programHotelRoomsCallableResponseStaysItemsRevision,
     'programHotelRoomsCallableResponse.stays.items.roomBlockId': programHotelRoomsCallableResponseStaysItemsRoomBlockId,
     'programHotelRoomsCallableResponse.stays.items.roomLabel': programHotelRoomsCallableResponseStaysItemsRoomLabel,
+    'programHotelRoomsCallableResponse.stays.items.roomOccupancyId': programHotelRoomsCallableResponseStaysItemsRoomOccupancyId,
     'programHotelRoomsCallableResponse.stays.items.roomReadyAtMillis': programHotelRoomsCallableResponseStaysItemsRoomReadyAtMillis,
     'programHotelRoomsCallableResponse.stays.items.startsAtMillis': programHotelRoomsCallableResponseStaysItemsStartsAtMillis,
     'programHotelRoomsCallableResponse.stays.items.status': programHotelRoomsCallableResponseStaysItemsStatus,
@@ -174934,6 +174993,7 @@ abstract final class CatchContractConstraints {
     'programRoomBlockDocument.heldForGroupIds.items': programRoomBlockDocumentHeldForGroupIdsItems,
     'programRoomBlockDocument.hotelId': programRoomBlockDocumentHotelId,
     'programRoomBlockDocument.label': programRoomBlockDocumentLabel,
+    'programRoomBlockDocument.maxOccupantsPerRoom': programRoomBlockDocumentMaxOccupantsPerRoom,
     'programRoomBlockDocument.notes': programRoomBlockDocumentNotes,
     'programRoomBlockDocument.organizerId': programRoomBlockDocumentOrganizerId,
     'programRoomBlockDocument.programId': programRoomBlockDocumentProgramId,
@@ -175068,6 +175128,7 @@ abstract final class CatchContractConstraints {
     'programStayDocument.revision': programStayDocumentRevision,
     'programStayDocument.roomBlockId': programStayDocumentRoomBlockId,
     'programStayDocument.roomLabel': programStayDocumentRoomLabel,
+    'programStayDocument.roomOccupancyId': programStayDocumentRoomOccupancyId,
     'programStayDocument.roomReadyAt._nanoseconds': programStayDocumentRoomReadyAtNanoseconds,
     'programStayDocument.roomReadyAt._seconds': programStayDocumentRoomReadyAtSeconds,
     'programStayDocument.source': programStayDocumentSource,
@@ -178612,6 +178673,7 @@ abstract final class CatchContractConstraints {
     'upsertProgramRoomBlockCallablePayload.heldForGroupIds.items': upsertProgramRoomBlockCallablePayloadHeldForGroupIdsItems,
     'upsertProgramRoomBlockCallablePayload.hotelId': upsertProgramRoomBlockCallablePayloadHotelId,
     'upsertProgramRoomBlockCallablePayload.label': upsertProgramRoomBlockCallablePayloadLabel,
+    'upsertProgramRoomBlockCallablePayload.maxOccupantsPerRoom': upsertProgramRoomBlockCallablePayloadMaxOccupantsPerRoom,
     'upsertProgramRoomBlockCallablePayload.notes': upsertProgramRoomBlockCallablePayloadNotes,
     'upsertProgramRoomBlockCallablePayload.programId': upsertProgramRoomBlockCallablePayloadProgramId,
     'upsertProgramRoomBlockCallablePayload.roomBlockId': upsertProgramRoomBlockCallablePayloadRoomBlockId,
@@ -178628,6 +178690,9 @@ abstract final class CatchContractConstraints {
     'upsertProgramStayCallablePayload.programId': upsertProgramStayCallablePayloadProgramId,
     'upsertProgramStayCallablePayload.roomBlockId': upsertProgramStayCallablePayloadRoomBlockId,
     'upsertProgramStayCallablePayload.roomLabel': upsertProgramStayCallablePayloadRoomLabel,
+    'upsertProgramStayCallablePayload.separateRoom': upsertProgramStayCallablePayloadSeparateRoom,
+    'upsertProgramStayCallablePayload.shareWithStayId': upsertProgramStayCallablePayloadShareWithStayId,
+    'upsertProgramStayCallablePayload.shareWithStayRevision': upsertProgramStayCallablePayloadShareWithStayRevision,
     'upsertProgramStayCallablePayload.startsAtMillis': upsertProgramStayCallablePayloadStartsAtMillis,
     'upsertProgramStayCallablePayload.status': upsertProgramStayCallablePayloadStatus,
     'upsertProgramStayCallablePayload.stayId': upsertProgramStayCallablePayloadStayId,

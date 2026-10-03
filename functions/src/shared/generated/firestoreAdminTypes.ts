@@ -12152,13 +12152,13 @@ export interface ProgramHotelDocument {
 }
 
 /**
- * Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.
+ * Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.
  */
 export interface ProgramStayDocument {
   programId: string;
   organizerId: string;
   /**
-   * Exactly one guest per stay; roommates are separate stays sharing roomLabel.
+   * Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups.
    */
   guestId: string;
   /**
@@ -12205,6 +12205,10 @@ export interface ProgramStayDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing.
+   */
+  roomOccupancyId?: string;
 }
 
 /**
@@ -12230,7 +12234,7 @@ export interface ProgramRoomBlockDocument {
    */
   totalRooms: number;
   /**
-   * Server-maintained count of live programStays rows bound to this block; never written by clients.
+   * Peak simultaneous occupied rooms across local contract nights; recomputed from explicit occupancy identities, not guest rows.
    */
   assignedCount: number;
   /**
@@ -12252,6 +12256,10 @@ export interface ProgramRoomBlockDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility.
+   */
+  maxOccupantsPerRoom?: number;
 }
 
 /**
