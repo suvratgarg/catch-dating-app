@@ -375,6 +375,8 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
   Object? _error;
 
   bool get _isNew => widget.stay == null;
+  bool get _placementLocked =>
+      widget.stay?.status == ProgramStayStatus.checkedIn;
 
   @override
   void initState() {
@@ -453,6 +455,8 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
   Widget build(BuildContext context) {
     final statuses = _isNew
         ? const [ProgramStayStatus.held, ProgramStayStatus.confirmed]
+        : _placementLocked
+        ? const [ProgramStayStatus.checkedIn, ProgramStayStatus.checkedOut]
         : ProgramStayStatus.values;
     return CatchSheet.standard(
       title: _isNew
@@ -493,7 +497,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
                 option.$2,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              onTap: () => setState(() => _roomBlockId = option.$1),
+              onTap: _placementLocked || _busy
+                  ? null
+                  : () => setState(() => _roomBlockId = option.$1),
             ),
           gapH12,
           CatchSection.containedFieldRows(
@@ -502,6 +508,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.programsRoomsRoomLabel,
                 controller: _roomController,
+                inputMode: _placementLocked || _busy
+                    ? CatchTextInputMode.readOnly
+                    : CatchTextInputMode.editable,
                 contract: CatchContractConstraints
                     .upsertProgramStayCallablePayloadRoomLabel,
               ),
@@ -520,7 +529,7 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
               for (final status in statuses)
                 CatchButton.command(
                   label: _statusLabel(context, status),
-                  onPressed: _status == status
+                  onPressed: _busy || _status == status
                       ? null
                       : () => setState(() => _status = status),
                 ),

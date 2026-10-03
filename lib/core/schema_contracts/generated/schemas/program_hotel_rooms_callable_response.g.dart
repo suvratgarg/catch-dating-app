@@ -120,6 +120,11 @@ const schemaProgramHotelRoomsCallableResponseSchema = <String, Object?>{
             'minimum': 0,
             'maximum': 253402300799999,
           },
+          'maxOccupantsPerRoom': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 20,
+          },
         },
       },
     },
@@ -220,6 +225,11 @@ const schemaProgramHotelRoomsCallableResponseSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 1,
             'maximum': 9007199254740991,
+          },
+          'roomOccupancyId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
           },
         },
       },

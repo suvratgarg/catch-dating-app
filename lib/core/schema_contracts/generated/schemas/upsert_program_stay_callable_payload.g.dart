@@ -61,7 +61,7 @@ const schemaUpsertProgramStayCallablePayloadSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 40,
-      'description': 'Room or suite label shared by roommates (e.g. "312").',
+      'description': 'Display-only room or suite label; never used as room identity.',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -106,6 +106,21 @@ const schemaUpsertProgramStayCallablePayloadSchema = <String, Object?>{
     'markHotelArrived': <String, Object?>{
       'type': 'boolean',
       'description': 'When true, stamps hotelArrivedAt with the server time.',
+    },
+    'shareWithStayId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Explicitly join this live stay at the same hotel and block; requires its reviewed revision and verified block occupancy limit. Never inferred from labels or households.',
+    },
+    'shareWithStayRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 9007199254740991,
+    },
+    'separateRoom': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Explicitly leave a shared occupancy for a newly minted room occupancy.',
     },
   },
 };

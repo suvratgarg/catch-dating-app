@@ -72,7 +72,7 @@ const schemaProgramRoomBlockDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 500,
-      'description': 'Server-maintained count of live programStays rows bound to this block; never written by clients.',
+      'description': 'Peak simultaneous occupied rooms across local contract nights; recomputed from explicit occupancy identities, not guest rows.',
     },
     'heldForGroupIds': <String, Object?>{
       'type': 'array',
@@ -205,6 +205,12 @@ const schemaProgramRoomBlockDocumentSchema = <String, Object?>{
         },
       ],
       'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
+    },
+    'maxOccupantsPerRoom': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 20,
+      'description': 'Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility.',
     },
   },
 };

@@ -1,3 +1,5 @@
+import {peakRoomOccupancy} from "./programRoomOccupancy";
+
 // Pure room-block / stay helpers for program accommodation (R5). Mirrors
 // programSelection.ts conventions: callers translate Firestore documents
 // into these row shapes; the module never touches the database.
@@ -6,7 +8,7 @@
 // earmarked for guest groups (heldForGroupIds). A programStay binds one
 // guest to one hotel — roomBlockId when it consumes block capacity, or
 // null for ad-hoc assignments. Guests sharing a room are separate stays
-// with the same roomLabel; block capacity counts rooms, not heads.
+// with an explicit roomOccupancyId; labels never establish identity.
 
 export type StayStatus =
   "held" | "confirmed" | "checkedIn" | "checkedOut" | "cancelled";
@@ -16,7 +18,10 @@ export interface RoomBlockRow {
   hotelId: string;
   label: string;
   totalRooms: number;
-  // Server-maintained rollup of live stays bound to the block.
+  startsAtMillis?: number | null;
+  endsAtMillis?: number | null;
+  maxOccupantsPerRoom?: number;
+  // Server-maintained peak room-night occupancy, never a guest count.
   assignedCount: number;
   heldForGroupIds: ReadonlyArray<string>;
 }
@@ -27,6 +32,9 @@ export interface StayRow {
   hotelId: string;
   roomBlockId: string | null;
   roomLabel: string | null;
+  roomOccupancyId?: string;
+  startsAtMillis?: number | null;
+  endsAtMillis?: number | null;
   status: StayStatus;
 }
 
@@ -50,17 +58,15 @@ export function staysConsumingBlock(
     stay.roomBlockId === blockId && CAPACITY_CONSUMING.has(stay.status));
 }
 
-/**
- * Rooms still open in a block. `assignedCount` is the trusted rollup;
- * when live stays disagree (rollup drift), the stricter of the two wins —
- * a block never overbooks because its counter lagged.
- */
+/** Minimum rooms available across the complete contract window. The live
+ * snapshot owns truth; a legacy guest-count rollup cannot block roommates. */
 export function blockRemainingRooms(
   block: RoomBlockRow,
   stays: ReadonlyArray<StayRow>,
+  timezone = "UTC",
 ): number {
-  const live = staysConsumingBlock(stays, block.roomBlockId).length;
-  return Math.max(0, block.totalRooms - Math.max(block.assignedCount, live));
+  const live = staysConsumingBlock(stays, block.roomBlockId);
+  return Math.max(0, block.totalRooms - peakRoomOccupancy(live, timezone));
 }
 
 /**
@@ -91,13 +97,14 @@ export function suggestStayBlock(
   hotelId: string,
   blocks: ReadonlyArray<RoomBlockRow>,
   stays: ReadonlyArray<StayRow>,
+  timezone = "UTC",
 ): RoomBlockRow | null {
   const guestGroups = new Set(guest.groupIds);
   const candidates = blocks
     .filter((block) => block.hotelId === hotelId)
     .map((block) => ({
       block,
-      remaining: blockRemainingRooms(block, stays),
+      remaining: blockRemainingRooms(block, stays, timezone),
       held: block.heldForGroupIds.some((groupId) => guestGroups.has(groupId)),
     }))
     .filter(({remaining}) => remaining > 0)
