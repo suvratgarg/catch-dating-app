@@ -341,10 +341,13 @@ const dispatcherCallableLimits = {
 };
 
 export const dispatchOrganizerCampaign = onCall(
-  appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
-    dispatcherCallableLimits,
-  ),
+  {
+    ...appCheckCallableOptionsWithSecrets(
+      [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+      dispatcherCallableLimits,
+    ),
+    serviceAccount: "catch-whatsapp-reader@",
+  },
   (request) => dispatchOrganizerCampaignHandler(request),
 );
 

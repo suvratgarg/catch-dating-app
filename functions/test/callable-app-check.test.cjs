@@ -4,11 +4,188 @@ const path = require("node:path");
 const test = require("node:test");
 
 const sourceRoot = path.resolve(__dirname, "../src");
-const allowedPrefixes = [
-  "onCall(appCheckCallableOptions",
-  "onCall(appCheckCallableOptionsWithLimits",
-  "onCall(appCheckCallableOptionsWithSecrets",
-];
+const ts = require("typescript");
+
+// Bind identifiers locally so an identically named function or shadowed import
+// cannot stand in for the shared policy. No dependency loading or emit is needed.
+function callableViolations(source, filePath, wrappers = new Set(), moduleSources = new Map()) {
+  const sourceFile = ts.createSourceFile(filePath, source,
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const host = {
+    getSourceFile: (name) => name === filePath ? sourceFile : undefined,
+    getDefaultLibFileName: () => "", writeFile: () => {},
+    getCurrentDirectory: () => path.dirname(filePath),
+    getDirectories: () => [], fileExists: (name) => name === filePath,
+    readFile: (name) => name === filePath ? source : undefined,
+    getCanonicalFileName: (name) => name,
+    useCaseSensitiveFileNames: () => true, getNewLine: () => "\n",
+  };
+  const program = ts.createProgram([filePath], {noLib: true, noResolve: true}, host);
+  const checker = program.getTypeChecker();
+  const policyPath = path.join(sourceRoot, "shared", "callableOptions");
+  const declarations = (node) =>
+    checker.getSymbolAtLocation(node)?.declarations || [];
+  function importedName(node, moduleMatches) {
+    const reference = ts.isPropertyAccessExpression(node) ? node.expression : node;
+    if (!ts.isIdentifier(reference)) return undefined;
+    const bindings = declarations(reference);
+    const [declaration] = bindings;
+    if (bindings.length !== 1 || !declaration) return undefined;
+    const named = ts.isImportSpecifier(declaration) && ts.isIdentifier(node);
+    const namespace = ts.isNamespaceImport(declaration) && ts.isPropertyAccessExpression(node);
+    if (!named && !namespace) return undefined;
+    const module = named ? declaration.parent.parent.parent.moduleSpecifier :
+      declaration.parent.parent.moduleSpecifier;
+    if (!ts.isStringLiteral(module) || !moduleMatches(module.text)) return undefined;
+    return namespace ? node.name.text : (declaration.propertyName || declaration.name).text;
+  }
+  const sharedName = (node) => importedName(node, (module) =>
+    module.startsWith(".") &&
+    path.resolve(path.dirname(filePath), module).replace(/\.ts$/, "") === policyPath);
+  function unwrap(node) {
+    while (node && (ts.isParenthesizedExpression(node) ||
+      ts.isAsExpression(node) || ts.isSatisfiesExpression(node) ||
+      ts.isNonNullExpression(node) || ts.isTypeAssertionExpression(node))) node = node.expression;
+    return node;
+  }
+  function isOnCall(node) {
+    node = unwrap(node);
+    if (ts.isIdentifier(node)) return node.text === "onCall" ||
+      importedName(node, (module) => module === "firebase-functions/v2/https") === "onCall";
+    return (ts.isPropertyAccessExpression(node) && node.name.text === "onCall") ||
+      (ts.isElementAccessExpression(node) && ts.isStringLiteral(node.argumentExpression) &&
+        node.argumentExpression.text === "onCall");
+  }
+  // A const binding alone does not freeze its object. Reject mutation, aliases,
+  // and escapes within this source file; cross-module mutation of exported
+  // legacy limits remains outside this lexical scan. Accepted references copy
+  // primitive limits or feed a
+  // policy helper whose result is directly checked as onCall options.
+  function confinedLimits(identifier, declaration) {
+    const symbol = checker.getSymbolAtLocation(identifier);
+    let confined = true;
+    function inspect(node) {
+      if (ts.isIdentifier(node) && checker.getSymbolAtLocation(node) === symbol &&
+        node !== declaration.name) {
+        let reference = node;
+        while (ts.isParenthesizedExpression(reference.parent) ||
+          ts.isAsExpression(reference.parent) || ts.isSatisfiesExpression(reference.parent)) {
+          reference = reference.parent;
+        }
+        const parent = reference.parent;
+        let options = parent;
+        if (ts.isCallExpression(parent) && ts.isSpreadAssignment(parent.parent) &&
+          ts.isObjectLiteralExpression(parent.parent.parent)) options = parent.parent.parent;
+        while (options.parent && (ts.isParenthesizedExpression(options.parent) ||
+          ts.isAsExpression(options.parent) || ts.isSatisfiesExpression(options.parent))) {
+          options = options.parent;
+        }
+        const helperCall = ts.isCallExpression(parent) && parent.arguments.includes(reference) &&
+          ts.isCallExpression(options.parent) && isOnCall(options.parent.expression) &&
+          options.parent.arguments[0] === options;
+        if (!ts.isSpreadAssignment(parent) && !helperCall) confined = false;
+      }
+      ts.forEachChild(node, inspect);
+    }
+    inspect(sourceFile);
+    return confined;
+  }
+  function safeLimits(node, keys, seen = new Set()) {
+    node = unwrap(node);
+    if (!node || seen.has(node)) return false;
+    seen.add(node);
+    if (ts.isIdentifier(node)) {
+      const [declaration] = declarations(node);
+      return !!declaration && ts.isVariableDeclaration(declaration) &&
+        (declaration.parent.flags & ts.NodeFlags.Const) !== 0 &&
+        confinedLimits(node, declaration) &&
+        safeLimits(declaration.initializer, keys, seen);
+    }
+    if (!ts.isObjectLiteralExpression(node)) return false;
+    return node.properties.every((property) => {
+      if (ts.isSpreadAssignment(property)) {
+        return safeLimits(property.expression, keys, new Set(seen));
+      }
+      if (!ts.isPropertyAssignment(property) ||
+        !(ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ||
+        !keys.includes(property.name.text)) return false;
+      const value = unwrap(property.initializer);
+      return ts.isStringLiteral(value) || ts.isNumericLiteral(value);
+    });
+  }
+  function sharedOptions(node) {
+    node = unwrap(node);
+    if (!node) return false;
+    if (sharedName(node) === "appCheckCallableOptions") return true;
+    if (!ts.isCallExpression(node) || node.arguments.some(ts.isSpreadElement)) return false;
+    const name = sharedName(unwrap(node.expression));
+    if (name === "appCheckCallableOptionsWithLimits") {
+      return node.arguments.length === 1 && safeLimits(node.arguments[0],
+        ["concurrency", "maxInstances", "memory", "timeoutSeconds"]);
+    }
+    if (name === "appCheckCallableOptionsWithSecrets") {
+      return node.arguments.length >= 1 && node.arguments.length <= 2 &&
+        (node.arguments.length === 1 || safeLimits(node.arguments[1],
+          ["concurrency", "maxInstances", "timeoutSeconds", "cpu"]));
+    }
+    // Legacy form helpers are proved from their imported implementation, rather
+    // than trusting a function-name prefix. Only a single-return wrapper around
+    // the same narrow policy composition is accepted.
+    const bindings = declarations(node.expression);
+    const [binding] = bindings;
+    if (bindings.length !== 1 || !binding || !ts.isImportSpecifier(binding) ||
+      node.arguments.length !== 1 || !safeLimits(node.arguments[0],
+        ["concurrency", "maxInstances", "memory", "timeoutSeconds"])) return false;
+    const module = binding.parent.parent.parent.moduleSpecifier;
+    if (!ts.isStringLiteral(module) || !module.text.startsWith(".")) return false;
+    const importedPath = path.resolve(path.dirname(filePath), module.text) + ".ts";
+    if (!importedPath.startsWith(sourceRoot + path.sep) ||
+      wrappers.has(importedPath) || (!moduleSources.has(importedPath) && !fs.existsSync(importedPath))) return false;
+    const wrapperSource = ts.createSourceFile(importedPath,
+      moduleSources.get(importedPath) ?? fs.readFileSync(importedPath, "utf8"), ts.ScriptTarget.Latest, true);
+    const exportName = (binding.propertyName || binding.name).text;
+    const functions = wrapperSource.statements.filter((statement) =>
+      ts.isFunctionDeclaration(statement) && statement.name?.text === exportName);
+    if (functions.length !== 1) return false;
+    const wrapper = functions[0];
+    if (wrapper.asteriskToken || wrapper.modifiers?.some((modifier) =>
+      modifier.kind === ts.SyntaxKind.AsyncKeyword) ||
+      !wrapper.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ||
+      wrapper.parameters.length !== 1 || !ts.isIdentifier(wrapper.parameters[0].name) ||
+      wrapper.body?.statements.length !== 1 ||
+      !ts.isReturnStatement(wrapper.body.statements[0]) ||
+      !wrapper.body.statements[0].expression) return false;
+    const imports = wrapperSource.statements.filter(ts.isImportDeclaration)
+      .map((statement) => statement.getText(wrapperSource)).join("\n");
+    const proof = `${imports}\nconst ${wrapper.parameters[0].name.text} = {};\n` +
+      `onCall(${wrapper.body.statements[0].expression.getText(wrapperSource)}, handler);`;
+    return callableViolations(proof, importedPath,
+      new Set([...wrappers, importedPath]), moduleSources).length === 0;
+  }
+  function approvedOptions(node) {
+    node = unwrap(node);
+    if (sharedOptions(node)) return true;
+    if (!node || !ts.isObjectLiteralExpression(node) || node.properties.length !== 2) return false;
+    const [spread, account] = node.properties;
+    return ts.isSpreadAssignment(spread) && sharedOptions(spread.expression) &&
+      ts.isPropertyAssignment(account) &&
+      (ts.isIdentifier(account.name) || ts.isStringLiteral(account.name)) &&
+      account.name.text === "serviceAccount" &&
+      ts.isStringLiteral(account.initializer) && account.initializer.text.length > 0;
+  }
+  const violations = [];
+  function visit(node) {
+    if (ts.isCallExpression(node) &&
+      isOnCall(node.expression) &&
+      !approvedOptions(node.arguments[0])) {
+      const {line} = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+      violations.push(`${path.relative(sourceRoot, filePath)}:${line + 1}: ${node.arguments[0]?.getText(sourceFile) || "missing options"}`);
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(sourceFile);
+  return violations;
+}
 
 function tsFiles(dir) {
   return fs.readdirSync(dir, {withFileTypes: true}).flatMap((entry) => {
@@ -23,20 +200,124 @@ test("callable functions use shared App Check enforcement options", () => {
 
   for (const filePath of tsFiles(sourceRoot)) {
     const source = fs.readFileSync(filePath, "utf8");
-    let index = source.indexOf("onCall(");
-    while (index !== -1) {
-      const snippet = source.slice(index, index + 64).replace(/\s+/g, " ");
-      const normalizedSnippet = snippet.replace(/^onCall\(\s+/, "onCall(");
-      if (!allowedPrefixes.some((prefix) =>
-        normalizedSnippet.startsWith(prefix)
-      )) {
-        missing.push(`${path.relative(sourceRoot, filePath)}: ${snippet}`);
-      }
-      index = source.indexOf("onCall(", index + 1);
-    }
+    missing.push(...callableViolations(source, filePath));
   }
 
   assert.deepEqual(missing, []);
+});
+
+const fixturePath = path.join(sourceRoot, "fixtures", "callable.ts");
+const fixtureImports = `
+import {onCall} from "firebase-functions/v2/https";
+import {appCheckCallableOptions, appCheckCallableOptionsWithLimits,
+  appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
+`;
+function fixtureViolations(body, imports = fixtureImports) {
+  return callableViolations(imports + body, fixturePath);
+}
+
+test("scanner accepts canonical options and narrow service-account composition", () => {
+  const valid = [
+    "onCall(appCheckCallableOptions, handler);",
+    "export const limits = {timeoutSeconds: 60, memory: '512MiB' as const, maxInstances: 20, concurrency: 20}; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "onCall ( appCheckCallableOptions, handler);",
+    "onCall(appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}), handler);",
+    "const limits = {concurrency: 6, memory: '512MiB' as const}; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const base = {timeoutSeconds: 30}; onCall(appCheckCallableOptionsWithLimits({...base, memory: '512MiB'}), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets([secret]), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets([secret], {timeoutSeconds: 30}), handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret], {cpu: 'gcf_gen1', concurrency: 1}), serviceAccount: 'catch-whatsapp-reader@example.iam.gserviceaccount.com' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithLimits({memory: '512MiB'}), 'serviceAccount': 'reader@example.iam.gserviceaccount.com' }, handler);",
+    "const limits = {timeoutSeconds: 30} as const; onCall(appCheckCallableOptionsWithSecrets([secret], limits), handler);",
+    "// onCall({enforceAppCheck: false}, handler)\nconst text = 'onCall(unsafe, handler)';",
+  ];
+  for (const source of valid) assert.deepEqual(fixtureViolations(source), [], source);
+  assert.deepEqual(fixtureViolations("https.onCall(policy.appCheckCallableOptions, handler);", `
+    import * as https from "firebase-functions/v2/https";
+    import * as policy from "../shared/callableOptions";
+  `), []);
+  assert.deepEqual(fixtureViolations("call(shared, handler);", `
+    import {onCall as call} from "firebase-functions/v2/https";
+    import {appCheckCallableOptions as shared} from "../shared/callableOptions";
+  `), []);
+});
+
+test("scanner rejects policy overrides, arbitrary spreads and malformed helper calls", () => {
+  const invalid = [
+    "onCall({enforceAppCheck: false}, handler);",
+    "onCall(appCheckCallableOptionsUnsafe, handler);",
+    "onCall(appCheckCallableOptionsWithSecretsUnsafe([secret]), handler);",
+    "onCall({ ...other, serviceAccount: 'reader' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), enforceAppCheck: false }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), invoker: 'private' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), ...other, serviceAccount: 'reader' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), serviceAccount: account }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), serviceAccount: '' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), ['serviceAccount']: 'reader' }, handler);",
+    "onCall({ ...appCheckCallableOptionsWithSecrets([secret]), serviceAccount: 'reader', invoker: 'private' }, handler);",
+    "onCall(appCheckCallableOptionsWithLimits({enforceAppCheck: false} as any), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets([secret], {invoker: 'private'} as any), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets([secret], {...other}), handler);",
+    "onCall(appCheckCallableOptionsWithLimits({['enforceAppCheck']: false}), handler);",
+    "onCall(appCheckCallableOptionsWithLimits({timeoutSeconds}), handler);",
+    "onCall(appCheckCallableOptionsWithLimits(dynamicLimits), handler);",
+    "let limits = {concurrency: 1}; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const limits = {invoker: 'private'}; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const limits = {concurrency: 1, ...other}; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const base = {enforceAppCheck: false}; onCall(appCheckCallableOptionsWithLimits({...base}), handler);",
+    "onCall(appCheckCallableOptionsWithLimits(), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets(), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets([secret], {}, other), handler);",
+    "onCall(appCheckCallableOptionsWithSecrets(...args), handler);",
+    "function f(appCheckCallableOptions) { onCall(appCheckCallableOptions, handler); }",
+    "function f(appCheckCallableOptionsWithSecrets) { onCall(appCheckCallableOptionsWithSecrets([secret]), handler); }",
+    "onCall(handler);",
+    "onCall();",
+    "onCall(appCheckCallableOptions.enforceAppCheck, handler);",
+    "onCall(appCheckCallableOptionsWithLimits.fake({}), handler);",
+    "(onCall)({enforceAppCheck: false}, handler);",
+    "onCall!({enforceAppCheck: false}, handler);",
+    "(onCall as any)({enforceAppCheck: false}, handler);",
+    "const limits = {concurrency: 1}; (limits as any).enforceAppCheck = false; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const limits = {concurrency: 1}; const alias = limits; alias.invoker = 'private'; onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const limits = {concurrency: 1}; Object.assign(limits, {enforceAppCheck: false}); onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "const limits = {concurrency: 1}; mutate(limits); onCall(appCheckCallableOptionsWithLimits(limits), handler);",
+    "https.onCall({enforceAppCheck: false}, handler);",
+    "https['onCall']({enforceAppCheck: false}, handler);",
+    "https?.onCall({enforceAppCheck: false}, handler);",
+  ];
+  for (const source of invalid) assert.equal(fixtureViolations(source).length, 1, source);
+  for (const imports of [
+    `import {appCheckCallableOptions} from "../other/callableOptions";`,
+    `const appCheckCallableOptions = {enforceAppCheck: false};`,
+    `function appCheckCallableOptionsWithSecrets() { return {enforceAppCheck: false}; }`,
+  ]) {
+    const options = imports.includes("WithSecrets") ?
+      "appCheckCallableOptionsWithSecrets([secret])" : "appCheckCallableOptions";
+    assert.equal(fixtureViolations(`onCall(${options}, handler);`, imports).length, 1, imports);
+  }
+});
+
+test("scanner proves imported legacy wrapper implementations", () => {
+  const modulePath = path.join(sourceRoot, "shared", "fixturePolicy.ts");
+  const imports = `import {policy} from "../shared/fixturePolicy";`;
+  const preamble = `import {appCheckCallableOptionsWithLimits} from "./callableOptions";`;
+  const valid = `${preamble} export function policy(limits) {
+    return {...appCheckCallableOptionsWithLimits(limits), serviceAccount: 'reader@'};
+  }`;
+  const check = (implementation, options = "{concurrency: 1}") => callableViolations(
+    `${imports} onCall(policy(${options}), handler);`, fixturePath, new Set(),
+    new Map([[modulePath, implementation]]));
+  assert.deepEqual(check(valid), []);
+  assert.equal(check(valid, "{enforceAppCheck: false}").length, 1);
+  assert.equal(check(`${preamble} export async function policy(limits) {return appCheckCallableOptionsWithLimits(limits);}`).length, 1);
+  assert.equal(check(`${preamble} export function* policy(limits) {return appCheckCallableOptionsWithLimits(limits);}`).length, 1);
+  for (const body of [
+    "return {enforceAppCheck: false};",
+    "return {...appCheckCallableOptionsWithLimits(limits), invoker: 'private'};",
+    "return {...appCheckCallableOptionsWithLimits(limits), ...other, serviceAccount: 'reader@'};",
+    "limits.enforceAppCheck = false; return {...appCheckCallableOptionsWithLimits(limits), serviceAccount: 'reader@'};",
+  ]) assert.equal(check(`${preamble} export function policy(limits) {${body}}`).length, 1, body);
 });
 
 test("shared callable options declare App Check and public invoker intent", () => {
@@ -47,6 +328,7 @@ test("shared callable options declare App Check and public invoker intent", () =
 
   const {enforceAppCheckForRuntime, appCheckCallableOptions} = require("../lib/shared/callableOptions.js");
   assert.equal(appCheckCallableOptions.enforceAppCheck, true);
+  assert.equal(appCheckCallableOptions.invoker, "public");
   assert.equal(enforceAppCheckForRuntime({}), true);
   const local = {FUNCTIONS_EMULATOR: "true", GCLOUD_PROJECT: "demo-catch",
     FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9099", FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080",
