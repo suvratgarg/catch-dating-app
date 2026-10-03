@@ -474,3 +474,26 @@ test("sharing never follows a household and unknown occupancy stays single",
       "stay-1");
     assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 2);
   });
+
+
+test("checked-in status cannot be downgraded to bypass allocation locks",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programStays/stay-1", {status: "checkedIn", revision: 2});
+    for (const status of ["held", "confirmed", "cancelled"]) {
+      await assert.rejects(upsertStay(db, "desk-1", {
+        stayId: "stay-1", guestId: "g-1", expectedRevision: 2, status,
+      }), precondition);
+      assert.equal(db.getDoc("programStays/stay-1")!.status, "checkedIn");
+      await assert.rejects(upsertStay(db, "desk-1", {
+        stayId: "stay-1", guestId: "g-1", expectedRevision: 2,
+        separateRoom: true, roomLabel: "999",
+      }), precondition);
+    }
+    await upsertStay(db, "desk-1", {
+      stayId: "stay-1", guestId: "g-1", expectedRevision: 2,
+      status: "checkedOut",
+    });
+    assert.equal(db.getDoc("programStays/stay-1")!.status, "checkedOut");
+    assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 0);
+  });

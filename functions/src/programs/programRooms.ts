@@ -288,6 +288,12 @@ export async function upsertProgramStayHandler(
     const roomBlockId = data.roomBlockId === undefined ?
       existing?.roomBlockId ?? null : data.roomBlockId;
     const status = data.status ?? existing?.status ?? "held";
+    if (existing?.status === "checkedIn" &&
+        status !== "checkedIn" && status !== "checkedOut") {
+      throw new HttpsError("failed-precondition",
+        "A checked-in stay can only remain checked in or check out.");
+    }
+
     const affectedBlockIds = new Set<string>();
     if (existing?.roomBlockId) affectedBlockIds.add(existing.roomBlockId);
     if (roomBlockId) affectedBlockIds.add(roomBlockId);
