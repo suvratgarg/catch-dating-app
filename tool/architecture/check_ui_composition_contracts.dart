@@ -7,6 +7,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:crypto/crypto.dart';
@@ -2452,6 +2453,217 @@ String _normalizeDartExpression(String value) {
   return result.toString();
 }
 
+/// Projects the layout of direct, typed private route factories into their
+/// callers. This is analyzer evidence for the existing checks, not an allowlist
+/// or a substitute for terminal, route-body, or competing-inset validation.
+///
+/// Only same-owner methods and same-unit top-level functions with one direct
+/// canonical constructor and a required named body pass through. Other shapes
+/// remain unchanged and must satisfy the existing fail-closed proof.
+String expandDirectRouteFactoryCallsForOwner({
+  required String root,
+  required ResolvedUnitResult result,
+  required CompilationUnitMember declaration,
+}) {
+  final factories = <Element, InstanceCreationExpression>{};
+  bool canonicalType(DartType? type, String name) =>
+      type is InterfaceType &&
+      type.nullabilitySuffix == NullabilitySuffix.none &&
+      type.element.displayName == name &&
+      type.element.library.firstFragment.source.fullName.replaceAll(
+            '\\',
+            '/',
+          ) ==
+          _fromRoot(root, _canonicalRouteScaffoldPath).replaceAll('\\', '/');
+
+  void record(ExecutableElement? element, FunctionBody body, bool generic) {
+    if (element == null ||
+        generic ||
+        !element.displayName.startsWith('_') ||
+        !canonicalType(element.returnType, 'CatchRouteScaffold') ||
+        body is! ExpressionFunctionBody ||
+        body.isAsynchronous ||
+        body.isGenerator) {
+      return;
+    }
+    final construction = body.expression;
+    if (construction is! InstanceCreationExpression ||
+        construction.constructorName.type.toSource() != 'CatchRouteScaffold' ||
+        construction.constructorName.name != null) {
+      return;
+    }
+    final constructor = construction.constructorName.element?.baseElement;
+    if (constructor is! ConstructorElement ||
+        constructor.enclosingElement.displayName != 'CatchRouteScaffold' ||
+        constructor.enclosingElement.library.firstFragment.source.fullName
+                .replaceAll('\\', '/') !=
+            _fromRoot(
+              root,
+              _canonicalRouteScaffoldPath,
+            ).replaceAll('\\', '/')) {
+      return;
+    }
+    final bodyParameters = element.formalParameters
+        .where(
+          (parameter) =>
+              parameter.name == 'body' &&
+              parameter.isRequiredNamed &&
+              canonicalType(parameter.type, 'CatchRouteBody'),
+        )
+        .toList();
+    if (bodyParameters.length != 1) return;
+    // This bounded proof covers only the existing body + optional chrome text
+    // protocol. Generic, positional and widget-valued parameters are unsupported.
+    if (element.formalParameters.any(
+      (parameter) =>
+          !parameter.isNamed ||
+          (parameter != bodyParameters.single &&
+              !parameter.type.isDartCoreString),
+    )) {
+      return;
+    }
+    final forwarded = _namedArgumentExpression(
+      construction.argumentList,
+      'body',
+    );
+    if (forwarded is! SimpleIdentifier ||
+        forwarded.element?.baseElement != bodyParameters.single.baseElement) {
+      return;
+    }
+    factories[element.baseElement] = construction;
+  }
+
+  for (final member in result.unit.declarations) {
+    if (member is FunctionDeclaration) {
+      record(
+        member.declaredFragment?.element,
+        member.functionExpression.body,
+        member.functionExpression.typeParameters != null,
+      );
+    }
+  }
+  if (declaration is ClassDeclaration) {
+    for (final member in declaration.body.members) {
+      if (member is MethodDeclaration && !member.isStatic) {
+        record(
+          member.declaredFragment?.element,
+          member.body,
+          member.typeParameters != null,
+        );
+      }
+    }
+  }
+
+  final visitor = _DirectRouteFactoryCallProjection(
+    factories: factories,
+    source: result.content,
+    owner: declaration,
+    isCanonicalBody: (type) => canonicalType(type, 'CatchRouteBody'),
+  );
+  declaration.accept(visitor);
+  // Nested factory invocations need a deeper proof. Do not partially rewrite
+  // overlapping calls or accidentally combine bindings from different sites.
+  final edits =
+      visitor.edits
+          .where(
+            (edit) => !visitor.edits.any(
+              (other) =>
+                  edit.offset != other.offset &&
+                  edit.offset < other.end &&
+                  other.offset < edit.end,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => b.offset.compareTo(a.offset));
+  var source = result.content.substring(declaration.offset, declaration.end);
+  for (final edit in edits) {
+    source = source.replaceRange(
+      edit.offset - declaration.offset,
+      edit.end - declaration.offset,
+      edit.source,
+    );
+  }
+  return source;
+}
+
+final class _DirectRouteFactoryCallProjection
+    extends RecursiveAstVisitor<void> {
+  _DirectRouteFactoryCallProjection({
+    required this.factories,
+    required this.source,
+    required this.owner,
+    required this.isCanonicalBody,
+  });
+  final Map<Element, InstanceCreationExpression> factories;
+  final String source;
+  final CompilationUnitMember owner;
+  final bool Function(DartType?) isCanonicalBody;
+  final edits = <({int offset, int end, String source})>[];
+
+  @override
+  void visitMethodDeclaration(MethodDeclaration node) {
+    // Do not recursively project indirect factories or dead sibling helpers.
+    if (node.name.lexeme == 'build') super.visitMethodDeclaration(node);
+  }
+
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (identical(node, owner)) super.visitFunctionDeclaration(node);
+  }
+
+  @override
+  void visitNamedExpression(NamedExpression node) {
+    if (node.expression is FunctionExpression) {
+      final invocation = node.parent?.parent;
+      final signature = switch (invocation) {
+        final InstanceCreationExpression creation =>
+          _resolvedInstanceCreationSignature(creation),
+        final MethodInvocation method => _methodInvocationSignature(method),
+        _ => null,
+      };
+      if (!_isWidgetBuilderArgumentName(node.name.label.name) ||
+          !_widgetBuilderOwnerSignatures.contains(signature)) {
+        return;
+      }
+    }
+    super.visitNamedExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    super.visitMethodInvocation(node);
+    if (node.target != null && node.target is! ThisExpression) return;
+    if (node.typeArguments != null) return;
+    final element = node.methodName.element?.baseElement;
+    final construction = factories[element];
+    if (construction == null || element is! ExecutableElement) return;
+    final arguments = node.argumentList.arguments;
+    if (arguments.any((argument) => argument is! NamedExpression)) return;
+    final named = arguments.cast<NamedExpression>();
+    final names = named.map((argument) => argument.name.label.name).toList();
+    if (names.toSet().length != names.length ||
+        names.any(
+          (name) => !element.formalParameters.any((p) => p.name == name),
+        )) {
+      return;
+    }
+    final body = _namedArgumentExpression(node.argumentList, 'body');
+    if (body == null || !isCanonicalBody(body.staticType)) return;
+    final forwarded = _namedArgumentExpression(
+      construction.argumentList,
+      'body',
+    )!;
+    final projected = source
+        .substring(construction.offset, construction.end)
+        .replaceRange(
+          forwarded.offset - construction.offset,
+          forwarded.end - construction.offset,
+          '(${body.toSource()})',
+        );
+    edits.add((offset: node.offset, end: node.end, source: projected));
+  }
+}
+
 Future<void> _validateLayoutOwner({
   required String root,
   required AnalysisContextCollection collection,
@@ -2479,9 +2691,10 @@ Future<void> _validateLayoutOwner({
     );
     return;
   }
-  final declarationSource = result.content.substring(
-    declaration.offset,
-    declaration.end,
+  final declarationSource = expandDirectRouteFactoryCallsForOwner(
+    root: root,
+    result: result,
+    declaration: declaration,
   );
   final referencedSemanticOwnerRoles = _resolvedSemanticRootPageOwnerRoles(
     declaration,

@@ -20,30 +20,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
     return CatchAsyncBoundary<HostEventOperatorAccess>(
       value: accessAsync,
       onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.hostsEventOperatorTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.hostsEventOperatorTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -54,17 +36,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
       ),
       builder: (context, access) {
         if (access.eventStatus == 'cancelled') {
-          return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-              title: context.l10n.hostsEventOperatorTitle,
-              subtitle: access.title,
-              emphasis: scrolledUnder
-                  ? CatchTopBarEmphasis.divided
-                  : CatchTopBarEmphasis.plain,
-              navigation: const CatchTopBarNavigation(
-                mode: CatchTopBarNavigationMode.back,
-              ),
-            ),
+          return _routeScaffold(
+            subtitle: access.title,
             body: CatchRouteBody.standardViewport(
               child: CatchErrorState(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
@@ -75,17 +48,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
             ),
           );
         }
-        return CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-            title: context.l10n.hostsEventOperatorTitle,
-            subtitle: access.title,
-            emphasis: scrolledUnder
-                ? CatchTopBarEmphasis.divided
-                : CatchTopBarEmphasis.plain,
-            navigation: const CatchTopBarNavigation(
-              mode: CatchTopBarNavigationMode.back,
-            ),
-          ),
+        return _routeScaffold(
+          subtitle: access.title,
           body: CatchRouteBody.standardSections(
             sections: [
               CatchSectionListItem(
@@ -137,4 +101,21 @@ class HostEventOperatorScreen extends ConsumerWidget {
       },
     );
   }
+
+  CatchRouteScaffold _routeScaffold({
+    String? subtitle,
+    required CatchRouteBody body,
+  }) => CatchRouteScaffold(
+    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      title: context.l10n.hostsEventOperatorTitle,
+      subtitle: subtitle,
+      emphasis: scrolledUnder
+          ? CatchTopBarEmphasis.divided
+          : CatchTopBarEmphasis.plain,
+      navigation: const CatchTopBarNavigation(
+        mode: CatchTopBarNavigationMode.back,
+      ),
+    ),
+    body: body,
+  );
 }
