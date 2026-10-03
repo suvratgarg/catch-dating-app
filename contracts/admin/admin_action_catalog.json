@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.5.0",
-  "updated": "2026-09-28",
+  "catalogVersion": "1.6.0",
+  "updated": "2026-10-03",
   "owner": "operations_platform",
   "program": "catch-admin",
   "actions": [
@@ -30,6 +30,55 @@
       "requestSchema": "contracts/callables/admin_get_overview_payload.schema.json",
       "summary": "Load the bounded admin overview, queue, and data-quality snapshot.",
       "example": {}
+    },
+    {
+      "actionId": "catch.whatsapp.inbound.review",
+      "callable": "adminReviewCatchWhatsappInbound",
+      "workflowIds": [
+        "overview"
+      ],
+      "guiPath": "/overview",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "support",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_review_catch_whatsapp_inbound_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json",
+      "summary": "Review one exact inbound support request in the default-disabled DEV-only panel.",
+      "example": {
+        "purpose": "serviceSupport",
+        "inboundEventId": "cwhe_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "catch.whatsapp.inbound.send",
+      "callable": "adminSendCatchWhatsappReply",
+      "workflowIds": [
+        "overview"
+      ],
+      "guiPath": "/overview",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "support",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_send_catch_whatsapp_reply_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_send_catch_whatsapp_reply_response.schema.json",
+      "summary": "Send one explicitly confirmed support reply within the separately authorized controlled scope; uncertain attempts remain consumed.",
+      "example": {
+        "purpose": "serviceSupport",
+        "inboundEventId": "cwhe_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reviewedInboundTextHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "confirmSupportRequest": true,
+        "body": "Synthetic support reply for offline schema validation."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "inboundEventId"
     },
     {
       "actionId": "safety.get",
@@ -3040,7 +3089,9 @@
       "guiPath": "/overview",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "catch.whatsapp.inbound.review",
+        "catch.whatsapp.inbound.send"
       ]
     },
     {
