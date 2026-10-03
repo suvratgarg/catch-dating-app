@@ -172,6 +172,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('checked-in stays lock placement and permit checkout', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = _Repository();
+    final stays = repository.data['stays']! as List;
+    (stays.single as Map)['status'] = 'checkedIn';
+    await _pumpSubject(tester, repository);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Nisha Rao'));
+    await pumpFeatureUi(tester);
+    expect(tester.widget<TextField>(find.byType(TextField)).readOnly, isTrue);
+    expect(find.text('Held'), findsNothing);
+    expect(find.text('Confirmed'), findsNothing);
+    expect(find.text('Cancelled'), findsNothing);
+    await tester.tap(find.text('Checked out'));
+    await tester.tap(find.text('Save stay'));
+    await pumpFeatureUi(tester);
+    expect(repository.lastAssignment, (
+      'blk_bride',
+      '512',
+      ProgramStayStatus.checkedOut,
+    ));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('empty board renders inline empty states', (tester) async {
     tester.view.physicalSize = const Size(1000, 1800);
     tester.view.devicePixelRatio = 1;
