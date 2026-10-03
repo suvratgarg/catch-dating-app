@@ -284,12 +284,12 @@ test("main builds the deployable Vite output once while validation-only dispatch
     const source = caller(surface);
     assert.match(source,
       /skip_deployable_build: \$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}/u);
-    assert.match(source,
+    if (surface === "admin") assert.match(source,
       /if: \$\{\{ github\.event_name != 'workflow_dispatch' \|\| inputs\.recovery_artifact_id == '' \}\}/u);
     assert.match(source,
       /if: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.recovery_artifact_id != '' \}\}/u);
     const packageJob = source.slice(source.indexOf("  package:"), source.indexOf("  promote:"));
-    assert.match(packageJob, /if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/u);
+    assert.match(packageJob, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/u);
     assert.doesNotMatch(packageJob, /workflow_dispatch/u);
   }
 });
@@ -828,4 +828,85 @@ test("automatic promotion labels recovery-only diagnostics not applicable while 
   assert.equal(recovery.checks.recoveryTerminalStatus, false);
   assert.equal(recovery.checks.recoveryTerminalConclusion, false);
   assert.deepEqual(recovery.observations.recoveryTerminalStatus, {expected: "completed", observed: "in_progress"});
+});
+
+function marketingJobCondition(name, {event = "push", cancelled = false,
+  lookup = "success", validated = "true", validation = "skipped", recovery = "",
+  packaged = "success", ref = "refs/heads/main", ancestorsSucceeded = true,
+  source = caller("marketing")} = {}) {
+  const job = source.split(`\n  ${name}:\n`)[1]?.split(/\n  [a-z-]+:\n/u)[0];
+  assert.ok(job, `Missing ${name} job`);
+  const expression = job.match(/\n    if: (?:>-\n)?([\s\S]*?)\n    uses:/u)?.[1].trim();
+  assert.ok(expression?.startsWith("${{"), "Expected explicit cancellation-aware condition");
+  const body = expression.slice(3, -2).replaceAll("needs.ci-validation", 'needs["ci-validation"]');
+  // Actions injects success() unless an explicit status function is present.
+  // A deliberately skipped validation ancestor makes that default false even
+  // when the immediate packaging dependency succeeded.
+  if (!/\b(?:always|cancelled|failure|success)\s*\(/u.test(body) && !ancestorsSucceeded) return false;
+  return Function("github", "needs", "inputs", "cancelled", `return (${body});`)(
+    {event_name: event, ref},
+    {"ci-validation": {result: lookup, outputs: {validated}}, validate: {result: validation},
+      package: {result: packaged}},
+    {recovery_artifact_id: recovery}, () => cancelled);
+}
+
+test("Marketing packaging requires exact-source validation reuse or a successful standalone fallback", () => {
+  assert.equal(marketingJobCondition("package"), true);
+  assert.equal(marketingJobCondition("package", {validated: "false", validation: "success"}), true);
+  for (const lookup of ["failure", "cancelled", "skipped", ""]) {
+    assert.equal(marketingJobCondition("package", {lookup}), false);
+    assert.equal(marketingJobCondition("validate", {lookup, validated: "false"}), false);
+  }
+  for (const validated of ["", "false", "malformed"]) {
+    assert.equal(marketingJobCondition("package", {validated}), false);
+  }
+  for (const validation of ["failure", "cancelled", "skipped", ""]) {
+    assert.equal(marketingJobCondition("package", {validated: "false", validation}), false);
+  }
+  assert.equal(marketingJobCondition("package", {cancelled: true}), false);
+  assert.equal(marketingJobCondition("validate", {validated: "false", cancelled: true}), false);
+  assert.equal(marketingJobCondition("validate"), false, "successful CI must omit duplicate validation");
+  assert.equal(marketingJobCondition("validate", {validated: "false"}), true);
+  assert.equal(marketingJobCondition("validate", {event: "workflow_dispatch", lookup: "skipped"}), true);
+  assert.equal(marketingJobCondition("validate", {event: "workflow_dispatch", lookup: "skipped", recovery: "123"}), false);
+  assert.equal(marketingJobCondition("package", {event: "workflow_dispatch"}), false);
+});
+
+test("Marketing reuse callers retain equivalent source, toolchain, baseline and capture obligations", () => {
+  const ci = workflow("ci.yml");
+  const job = ci.split("\n  marketing:\n")[1].split("\n  capture-freshness:")[0];
+  assert.match(job, /uses: \.\/\.github\/workflows\/react-surface-validation\.yml/u);
+  assert.match(job, /surface: marketing\n/u);
+  assert.match(job, /capture_freshness_in_ci: true\n/u);
+  assert.doesNotMatch(job, /update_visual_baselines:|skip_deployable_build:|ref:|environment:/u);
+  const reusable = workflow("react-surface-validation.yml");
+  for (const input of ["update_visual_baselines", "skip_deployable_build", "capture_freshness_in_ci"]) {
+    const contract = reusable.split(`      ${input}:\n`)[1].split(/\n      [a-z_]+:/u)[0];
+    assert.match(contract, /default: false/u);
+  }
+  const lookup = caller("marketing").split("\n  ci-validation:\n")[1].split("\n  validate:")[0];
+  assert.match(lookup, /actions: read/u);
+  assert.doesNotMatch(lookup, /id-token:|secrets: inherit|ref:|environment:/u);
+  assert.match(lookup, /node tool\/ci\/wait_main_marketing_validation\.mjs > marketing-validation\.json/u);
+  assert.match(lookup, /retention-days: 7/u);
+  assert.match(caller("marketing"), /needs: \[ci-validation, validate\]/u);
+});
+
+test("Marketing promotion survives intentionally skipped duplicate validation and fails closed on unsuccessful packaging", () => {
+  const reused = {ancestorsSucceeded: false, validation: "skipped"};
+  assert.equal(marketingJobCondition("promote", reused), true,
+    "successful exact-source packaging must reach promotion after validation reuse");
+  assert.equal(marketingJobCondition("promote", {validation: "success"}), true);
+  for (const packaged of ["failure", "cancelled", "skipped", "", null]) {
+    assert.equal(marketingJobCondition("promote", {...reused, packaged}), false);
+  }
+  assert.equal(marketingJobCondition("promote", {...reused, cancelled: true}), false);
+  assert.equal(marketingJobCondition("promote", {...reused, event: "workflow_dispatch"}), false);
+  assert.equal(marketingJobCondition("promote", {...reused, ref: "refs/heads/feature"}), false);
+  const old = caller("marketing").replace(
+    /(!cancelled\(\) && )(github.event_name == 'push' && github.ref == 'refs\/heads\/main' && needs.package.result == 'success')/u,
+    "$2");
+  assert.notEqual(old, caller("marketing"), "known-bad control must remove the explicit status guard");
+  assert.equal(marketingJobCondition("promote", {...reused, source: old}), false,
+    "the old implicit success guard is a known-bad skipped-ancestor control");
 });

@@ -293,6 +293,53 @@ void main() {
       );
     },
   );
+  test('each changed source needs impact proof, including mixed changes', () {
+    for (final operation in ['addition', 'edit', 'deletion', 'rename']) {
+      final before = {...fixture};
+      final after = {...fixture};
+      final changed = {'lib/a.dart'};
+      if (operation != 'addition') {
+        before['lib/uncovered.dart'] = 'const uncovered = 1;';
+      }
+      if (operation != 'deletion' && operation != 'rename') {
+        after['lib/uncovered.dart'] = 'const uncovered = 2;';
+      }
+      changed.add('lib/uncovered.dart');
+      if (operation == 'rename') {
+        after['lib/renamed.dart'] = 'const uncovered = 1;';
+        changed.add('lib/renamed.dart');
+      }
+      final result = plan(changed, before: before, after: after);
+      expect(result['mode'], 'full', reason: operation);
+      expect(result['reason'], contains('lib/uncovered.dart'));
+    }
+  });
+  test('covered source rename retains narrow base and head closure', () {
+    final after = {...fixture}..remove('lib/a.dart');
+    after['lib/renamed.dart'] = 'const a = 2;';
+    after['lib/b.dart'] = "export 'renamed.dart';";
+    expect(
+      selected(
+        plan({'lib/a.dart', 'lib/renamed.dart', 'lib/b.dart'}, after: after),
+      ),
+      ['test/a_test.dart'],
+    );
+  });
+  test('filesystem probes do not cover unrelated changed source', () {
+    final before = {
+      ...fixture,
+      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+    };
+    final after = {...before, 'lib/uncovered.dart': 'const value = 1;'};
+    expect(
+      plan(
+        {'lib/a.dart', 'lib/uncovered.dart'},
+        before: before,
+        after: after,
+      )['mode'],
+      'full',
+    );
+  });
   test('conditional imports and part directives propagate impact', () {
     final files = {
       ...fixture,

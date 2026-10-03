@@ -168,8 +168,8 @@ test("shared screenshot runner validates every React caller with only its requir
     const result = plan(file, mode);
     assert.equal(result.complete, true);
     assert.deepEqual(result.directComponents, ["web.shared"]);
-    assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
-    assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+    assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness", "web.admin", "web.marketing"]);
+    assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
     for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "codegenIds", "buildTargets"]) {
       assert.deepEqual(result.operations[key], [], key);
     }
@@ -198,8 +198,10 @@ function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
     for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
       const result = plan(file, mode, sourceGraph);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      assert.deepEqual(result.operations.ciTargets,
-        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+      if (mode === "release") assert.deepEqual(result.operations.ciTargets, []);
+      else for (const required of ["firestore_rules", "functions"]) {
+        assert.ok(result.operations.ciTargets.includes(required), `${file} ${mode}: missing ${required}`);
+      }
       assert.deepEqual(result.operations.deployGroups,
         ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
       for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
@@ -218,8 +220,11 @@ test("organizer authority selector rejects the known-bad Functions-only edge", (
   const owner = broken.components.find((entry) => entry.id === "backend.organizer-authority");
   assert.ok(owner, "organizer authority selector owner must exist");
   owner.alsoAffects = [];
-  assert.deepEqual(plan(organizerAuthorityEmulatorPaths[1], "pr", broken)
-    .operations.ciTargets, ["functions"]);
+  for (const profile of Object.values(broken.operationProfiles)) {
+    for (const modes of Object.values(profile)) for (const operations of Object.values(modes)) {
+      if (operations.ciTargets) operations.ciTargets = operations.ciTargets.filter(target => target !== "firestore_rules");
+    }
+  }
   assert.throws(() => assertOrganizerAuthorityEmulatorSelection(broken),
     /firestore_rules/u);
 });
@@ -259,7 +264,7 @@ test("rules emulator command executes the organizer authority regression", () =>
   const script = packageJson.scripts["test:rules"];
   const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
   const assertIncluded = (command) => {
-    assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+    assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
     assert.equal(command.split(/\s+/u).filter((part) => part === compiledTest).length,
       1, "test:rules must run the organizer authority emulator regression exactly once");
   };
@@ -294,6 +299,7 @@ test("component graph schema admits only signed mobile release targets", () => {
 
 for (const [file, target] of [
   ["firestore-rules-ci.yml", "firestore_rules"],
+  ["capture-freshness-ci.yml", "capture_freshness"],
   ["contracts-ci.yml", "contracts"],
   ["functions-ci.yml", "functions"],
   ["operations-ci.yml", "operations"],
@@ -359,7 +365,7 @@ test("shared React validation runs both callers and retains Hosting and policy c
     const result = plan(file, mode);
     assert.equal(result.complete, true);
     assert.deepEqual(result.operations.ciTargets,
-      ["admin", "marketing", "policy_docs", "tools"]);
+      ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
     assert.deepEqual(result.operations.deployGroups, []);
     assert.deepEqual(result.operations.releaseTargets, []);
     const tools = planAffectedToolChecks({changedPaths: [file],
@@ -384,7 +390,7 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.equal(result.complete, true, `${file} ${mode}`);
       assert.deepEqual(result.directComponents, ["ci.workflow.react"]);
       assert.deepEqual(result.operations.ciTargets,
-        ["admin", "marketing", "policy_docs", "tools"]);
+        ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
       for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
         assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
       }
@@ -420,7 +426,7 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
         const result = planAffected({changedPaths: [control, companion], graph, mode});
         assert.equal(result.complete, true);
         assert.deepEqual(result.operations.ciTargets,
-          [...new Set(["admin", "marketing", "policy_docs", "tools",
+          [...new Set(["admin", "capture_freshness", "marketing", "policy_docs", "tools",
             ...own.operations.ciTargets])].sort());
         for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
           assert.deepEqual(result.operations[key], own.operations[key], `${control} ${mode} ${key}`);
@@ -525,7 +531,7 @@ test("React workflow routing preserves mixed native and backend ownership", () =
     ".github/workflows/react-surface-validation.yml",
     "functions/src/payments/razorpay.ts", "apps/host/ios/Runner/Info.plist",
   ], graph, mode: "main"});
-  for (const target of ["admin", "marketing", "functions", "flutter_build_ios"]) {
+  for (const target of ["admin", "capture_freshness", "marketing", "functions", "flutter_build_ios"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
   assert.deepEqual(result.operations.deployGroups, ["functions"]);
@@ -575,6 +581,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     paths: [
       "/tool/harness.mjs",
       "/tool/harness/verify_local.mjs",
+      "/tool/harness/compare_selectors.mjs",
       "/tool/ci/main_ci_baseline.mjs",
       "/tool/ci/toolchain.env",
       "/tool/harness/component_graph.json",
@@ -793,8 +800,8 @@ test("shared Flutter presentation change selects tests and role-bounded web smok
   const v2Plan = plan(path);
 
   assert.deepEqual(v2Plan.directComponents, ["app.shared"]);
-  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host", "web.marketing"]);
-  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
+  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host", "marketing.capture-freshness"]);
+  assert.deepEqual(v2Plan.operations.ciTargets, ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"]);
   assert.deepEqual(v2Plan.operations.buildTargets, [
     "consumer-web-smoke",
     "host-web-smoke",
@@ -804,8 +811,8 @@ test("shared Flutter presentation change selects tests and role-bounded web smok
 test("host-only Flutter source keeps Host smoke while validating Marketing captures", () => {
   const result = plan("lib/hosts/presentation/host_home.dart");
   assert.deepEqual(result.directComponents, ["app.host"]);
-  assert.deepEqual(result.affectedComponents, ["web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
+  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness"]);
+  assert.deepEqual(result.operations.ciTargets, ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"]);
   assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
@@ -922,15 +929,15 @@ test("web and desktop shells cannot authorize a signed mobile release", () => {
 test("shared React primitives expand to both web consumers", () => {
   const result = plan("packages/web-ui/src/Button.tsx");
   assert.deepEqual(result.directComponents, ["web.shared"]);
-  assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness", "web.admin", "web.marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
 });
 
 test("shared React build configuration expands to both web consumers", () => {
   const result = plan("packages/web-config/vite-react.ts");
   assert.deepEqual(result.directComponents, ["web.shared"]);
-  assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness", "web.admin", "web.marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
 });
 
 test("Flutter field adoption stays on the Flutter design lane", () => {
@@ -954,12 +961,14 @@ test("authored contracts expand to every declared validation consumer", () => {
     "backend.functions",
     "backend.organizer-authority",
     "backend.storage-rules",
+    "marketing.capture-freshness",
     "operations.contract-consumer",
     "web.admin",
     "web.marketing",
   ]);
   assert.deepEqual(result.operations.ciTargets, [
     "admin",
+    "capture_freshness",
     "contracts",
     "firestore_rules",
     "flutter",
@@ -984,8 +993,8 @@ test("callable contracts select both schema and admin validator codegen", () => 
 test("generated Flutter bindings validate Flutter and Marketing without expanding upstream", () => {
   const result = plan("lib/core/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
-  assert.deepEqual(result.affectedComponents, ["web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["flutter", "marketing"]);
+  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness"]);
+  assert.deepEqual(result.operations.ciTargets, ["capture_freshness", "contracts", "flutter"]);
   assert.deepEqual(result.operations.codegenIds, ["contracts.schema-projections"]);
 });
 
@@ -1003,7 +1012,7 @@ test("form conversion authority selects emulator validation in every CI mode", (
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
       assert.deepEqual(result.operations.ciTargets,
-        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+        mode === "release" ? [] : ["contracts", "firestore_rules", "functions"], `${file} ${mode}`);
       assert.deepEqual(result.operations.deployGroups,
         ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
       for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
@@ -1013,15 +1022,15 @@ test("form conversion authority selects emulator validation in every CI mode", (
   }
 });
 
-test("form conversion routing preserves unrelated Functions and mixed lanes", () => {
+test("backend integration conservatively covers runtime and mixed lanes", () => {
   assert.deepEqual(plan("functions/src/events/cancelEventSignUp.ts")
-    .operations.ciTargets, ["functions"]);
+    .operations.ciTargets, ["contracts", "firestore_rules", "functions"]);
   const mixed = planAffected({graph, mode: "pr", changedPaths: [
     formConversionEmulatorPaths[1], "admin/src/App.tsx",
   ]});
   assert.equal(mixed.complete, true);
   assert.deepEqual(mixed.operations.ciTargets,
-    ["admin", "firestore_rules", "functions"]);
+    ["admin", "contracts", "firestore_rules", "functions"]);
   assert.deepEqual(mixed.operations.deployGroups, []);
 });
 
@@ -1029,7 +1038,7 @@ test("rules command executes both form conversion and attendee regressions", () 
   const packageJson = JSON.parse(fs.readFileSync(
     new URL("../../functions/package.json", import.meta.url), "utf8"));
   const command = packageJson.scripts["test:rules"];
-  assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+  assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
   for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
     "lib/events/eventAttendees.test.js"]) {
     assert.equal(command.split(/\s+/u).filter((part) => part === compiled).length,
@@ -1269,7 +1278,7 @@ test("Flutter token package preserves app and visual checks with Marketing captu
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "marketing", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "capture_freshness", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
   for (const target of ["admin", "functions"]) {
@@ -1283,7 +1292,7 @@ test("Flutter UI package preserves app and visual checks with Marketing capture 
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "marketing", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "capture_freshness", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
   for (const target of ["admin", "functions"]) {
@@ -1342,8 +1351,15 @@ test("every generator requires explicit runtimes and package dependencies", () =
 });
 
 
-test("capture provenance inputs add Marketing freshness without changing source obligations", () => {
+test("capture provenance inputs add lightweight freshness without changing source obligations", () => {
   const baseline = structuredClone(graph);
+  baseline.components = baseline.components.filter(entry => entry.id !== "marketing.capture-freshness");
+  delete baseline.operationProfiles["capture-freshness"];
+  for (const profile of Object.values(baseline.operationProfiles)) {
+    for (const side of Object.values(profile)) for (const operation of Object.values(side)) {
+      if (operation.ciTargets) operation.ciTargets = operation.ciTargets.filter(id => id !== "capture_freshness");
+    }
+  }
   baseline.components.find((entry) => entry.id === "web.marketing").dependsOn =
     ["contracts.source", "web.shared"];
   const toolingPaths = graph.components.find((entry) =>
@@ -1393,7 +1409,7 @@ test("capture provenance inputs add Marketing freshness without changing source 
       const after = plan(file, mode);
       assert.equal(after.complete, true, `${file} ${mode}`);
       assert.deepEqual(after.operations.ciTargets,
-        [...new Set([...before.operations.ciTargets, "marketing"])].sort(), `${file} ${mode}`);
+        [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort(), `${file} ${mode}`);
       for (const key of ["checkIds", "codegenIds", "buildTargets", "deployGroups",
         "releaseTargets", "releaseRoles"]) {
         assert.deepEqual(after.operations[key], before.operations[key], `${file} ${mode} ${key}`);
@@ -1423,12 +1439,52 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
   for (const mode of ["pr", "merge_group", "main", "nightly"]) {
     const result = planAffected({graph, mode, changedPaths: [
       "lib/auth/presentation/phone_page.dart", "functions/src/payments/razorpay.ts"]});
-    for (const target of ["marketing", "functions"]) {
+    for (const target of ["capture_freshness", "functions"]) {
       assert.ok(result.operations.ciTargets.includes(target));
     }
     assert.deepEqual(result.operations.deployGroups, mode === "main" ? ["functions"] : []);
     const nativeOnly = plan("lib/auth/presentation/phone_page.dart", mode);
     assert.deepEqual(result.operations.releaseTargets, nativeOnly.operations.releaseTargets);
     assert.deepEqual(result.operations.releaseRoles, nativeOnly.operations.releaseRoles);
+  }
+});
+
+test("minimum safety obligations cover source, tests, lockfiles and generated outputs", () => {
+  const fixtures = [
+    {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
+    {paths: ["functions/test/firestore.rules.test.cjs"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},
+    {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/core/theme/app_theme.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/core/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
+    {paths: ["functions/src/shared/generated/schemaRegistry.ts"], required: ["contracts", "functions", "firestore_rules"]},
+    {paths: ["website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"], required: ["contracts", "marketing"]},
+    // Renames retain both sides; additions/deletions use the same path obligation.
+    {paths: ["functions/src/chats/old.ts", "functions/src/chats/new.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["docs/feature.md", "functions/src/chats/eventChatAccess.ts"], required: ["docs", "functions", "firestore_rules"]},
+  ];
+  for (const fixture of fixtures) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = planAffected({graph, mode, changedPaths: fixture.paths});
+      assert.equal(result.complete, true, fixture.paths.join(","));
+      for (const target of fixture.required) {
+        assert.ok(result.operations.ciTargets.includes(target), `${mode} ${fixture.paths}: missing ${target}`);
+      }
+    }
+  }
+});
+
+test("every selector control input routes to full validation before comparison", () => {
+  for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
+    "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
+    }
   }
 });

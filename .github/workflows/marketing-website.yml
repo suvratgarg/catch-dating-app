@@ -16,18 +16,9 @@ on:
       - "functions/package.json"
       - "functions/package-lock.json"
       - "website/**"
-      # Capture provenance must be checked when an app-render input changes.
-      - "lib/**"
-      - "test/**"
+      # Native capture-only changes are checked by the CI capture-freshness lane.
       - "assets/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - "packages/*/pubspec.yaml"
-      - "packages/*/lib/**"
-      - "packages/*/assets/**"
       - "artifacts/marketing/app-screenshots/**"
-      - "tool/ui_capture/**"
-      - "tool/lib/repo_paths.mjs"
       - "packages/web-config/**"
       - "packages/web-ui/**"
       - "design/tokens/**"
@@ -41,6 +32,7 @@ on:
       - "tool/ci/toolchain.env"
       - "tool/ci/delivery_core.mjs"
       - "tool/ci/package_web_hosting.mjs"
+      - "tool/ci/wait_main_marketing_validation.mjs"
       - "tool/contracts/generated/schema_contract_validators.mjs"
       - "tool/contracts/generated/schema_contract_registry.mjs"
       - "tool/demo/demo_seed/scenarios/**"
@@ -93,9 +85,44 @@ permissions:
   contents: read
 
 jobs:
+  ci-validation:
+    name: Resolve exact-main Marketing validation
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      validated: ${{ steps.validation.outputs.validated }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Wait for successful same-source Marketing and capture jobs
+        id: validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/wait_main_marketing_validation.mjs > marketing-validation.json
+      - name: Save exact-source validation identity
+        uses: actions/upload-artifact@v7
+        with:
+          name: marketing-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: marketing-validation.json
+          if-no-files-found: error
+          retention-days: 7
+
   validate:
     name: Validate marketing website
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '' }}
+    needs: ci-validation
+    if: >-
+      ${{ !cancelled() &&
+          ((github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id == '') ||
+           (github.event_name == 'push' && needs.ci-validation.result == 'success' &&
+            needs.ci-validation.outputs.validated == 'false')) }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
@@ -104,8 +131,12 @@ jobs:
 
   package:
     name: Package exact marketing Hosting bytes
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [ci-validation, validate]
+    if: >-
+      ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+          needs.ci-validation.result == 'success' &&
+          ((needs.ci-validation.outputs.validated == 'true' && needs.validate.result == 'skipped') ||
+           (needs.ci-validation.outputs.validated == 'false' && needs.validate.result == 'success')) }}
     uses: ./.github/workflows/_web-hosting-build.yml
     with:
       surface: marketing
@@ -118,7 +149,8 @@ jobs:
   promote:
     name: Promote exact marketing Hosting bytes
     needs: package
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    # Validation reuse intentionally skips an ancestor; override implicit success().
+    if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
     uses: ./.github/workflows/_web-hosting-promote.yml
     with:
       artifact_digest: ${{ needs.package.outputs.artifact_digest }}

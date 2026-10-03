@@ -181,14 +181,17 @@ function readJson(path) {
   return JSON.parse(fs.readFileSync(path, "utf8"));
 }
 
-function trackedPaths() {
-  const result = spawnSync("git", ["ls-files"], {
-    cwd: repoRoot,
+export function trackedPaths({cwd = repoRoot, runner = spawnSync} = {}) {
+  const result = runner("git", ["ls-files", "-z"], {
+    cwd,
     encoding: "utf8",
     shell: false,
+    maxBuffer: 16 * 1024 * 1024,
   });
-  if (result.status !== 0) throw new Error(result.stderr || "Unable to list tracked paths.");
-  return result.stdout.split(/\r?\n/).filter(Boolean);
+  if (result.error || result.status !== 0) {
+    throw new Error(result.error?.message || result.stderr || "Unable to list tracked paths.");
+  }
+  return result.stdout.split("\0").filter(Boolean);
 }
 
 function valueAfter(args, flag) {
