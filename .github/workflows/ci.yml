@@ -65,6 +65,7 @@ jobs:
     outputs:
       admin: ${{ steps.plan.outputs.admin }}
       app_roles: ${{ steps.plan.outputs.app_roles }}
+      capture_freshness: ${{ steps.plan.outputs.capture_freshness }}
       contracts: ${{ steps.plan.outputs.contracts }}
       docs: ${{ steps.plan.outputs.docs }}
       docs_checkout: ${{ steps.plan.outputs.docs_checkout }}
@@ -329,7 +330,13 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
+      capture_freshness_in_ci: true
     secrets: inherit
+
+  capture-freshness:
+    needs: plan
+    if: ${{ needs.plan.outputs.capture_freshness == 'true' }}
+    uses: ./.github/workflows/capture-freshness-ci.yml
 
   operations:
     needs: plan
@@ -456,6 +463,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -542,6 +550,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -675,6 +684,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -724,6 +734,22 @@ jobs:
             exit 1
           fi
           test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
+          # Selection only counts when its owning job actually succeeded.
+          jq -e '
+            . as $needs |
+            {admin: "admin", capture_freshness: "capture-freshness", contracts: "contracts",
+             docs: "docs-policy", policy_docs: "docs-policy", firestore_rules: "firestore-rules",
+             flutter: "flutter", functions: "functions", marketing: "marketing",
+             operations: "operations", tools: "tools", visual_integration: "visual-integration",
+             flutter_build_android: "app-builds", flutter_build_ios: "app-builds",
+             flutter_build_web: "app-builds", flutter_web_smoke: "app-builds"} |
+            to_entries | all(.[];
+              . as $lane | $needs.plan.outputs[$lane.key] as $selected |
+              if $selected == "false" then true
+              elif $selected == "true" and $needs[$lane.value].result == "success" then true
+              else error("Selected lane " + $lane.key + " lacks successful execution or selection output")
+              end)
+          ' <<< "$NEEDS_JSON" > /dev/null
           if [[ "$EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
             test "$(jq -er '.["finalize-plan"].result' <<< "$NEEDS_JSON")" = success
           fi

@@ -1076,3 +1076,21 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.ok(pkg.scripts["test:rules"].includes("test/firestore.rules.test.cjs"));
   assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
+
+test("capture freshness has a required Node-only lane independent of React rendering", () => {
+  const ci = workflow("ci.yml");
+  const capture = workflow("capture-freshness-ci.yml");
+  const react = workflow("react-surface-validation.yml");
+  assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
+  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  for (const id of ["finalize-plan", "package-firebase", "required"]) {
+    const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
+    assert.match(job, /- capture-freshness\n/u, id);
+  }
+  assert.match(capture, /node tool\/marketing\/sync_website_media.mjs --check/u);
+  assert.match(capture, /node tool\/marketing\/export_app_screenshots.mjs --check-design-json/u);
+  assert.doesNotMatch(capture, /npm ci|flutter pub get|setup-flutter|continue-on-error/u);
+  assert.match(ci, /surface: marketing\n      capture_freshness_in_ci: true/u);
+  assert.equal(react.match(/inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci/gu)?.length, 2);
+  assert.match(react, /capture_freshness_in_ci:[\s\S]*?default: false/u);
+});

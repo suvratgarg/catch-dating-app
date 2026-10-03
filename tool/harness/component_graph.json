@@ -5,6 +5,7 @@
   "modes": ["pr", "merge_group", "main", "nightly", "release"],
   "targets": [
     "admin",
+    "capture_freshness",
     "contracts",
     "docs",
     "firestore_rules",
@@ -71,6 +72,29 @@
     }
   },
   "operationProfiles": {
+    "capture-freshness": {
+      "direct": {
+        "pr": {"ciTargets": ["capture_freshness"]},
+        "merge_group": {"ciTargets": ["capture_freshness"]},
+        "main": {"ciTargets": ["capture_freshness"]},
+        "nightly": {"ciTargets": ["capture_freshness"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["capture_freshness"]},
+        "merge_group": {"ciTargets": ["capture_freshness"]},
+        "main": {"ciTargets": ["capture_freshness"]},
+        "nightly": {"ciTargets": ["capture_freshness"]}
+      }
+    },
+    "ci-workflow-capture": {
+      "direct": {
+        "pr": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
+        "main": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
+        "nightly": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+      },
+      "affected": {}
+    },
     "design-todo-decisions": {"direct": {"pr": {"ciTargets": ["docs", "tools"], "checkIds": ["design:comprehensive-todo-summary"]}, "merge_group": {"ciTargets": ["docs", "tools"], "checkIds": ["design:comprehensive-todo-summary"]}, "main": {"ciTargets": ["docs", "tools"], "checkIds": ["design:comprehensive-todo-summary"]}, "nightly": {"ciTargets": ["docs", "tools"], "checkIds": ["design:comprehensive-todo-summary"]}}, "affected": {}},
     "contracts-generated-flutter": {
       "direct": {
@@ -106,16 +130,16 @@
     },
     "contracts-generated-marketing": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "marketing"]},
-        "merge_group": {"ciTargets": ["contracts", "marketing"]},
-        "main": {"ciTargets": ["contracts", "marketing"]},
-        "nightly": {"ciTargets": ["contracts", "marketing"]}
+        "pr": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "main": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "nightly": {"ciTargets": ["capture_freshness", "contracts", "marketing"]}
       },
       "affected": {
-        "pr": {"ciTargets": ["contracts", "marketing"]},
-        "merge_group": {"ciTargets": ["contracts", "marketing"]},
-        "main": {"ciTargets": ["contracts", "marketing"]},
-        "nightly": {"ciTargets": ["contracts", "marketing"]}
+        "pr": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "main": {"ciTargets": ["capture_freshness", "contracts", "marketing"]},
+        "nightly": {"ciTargets": ["capture_freshness", "contracts", "marketing"]}
       }
     },
     "contracts-generated-tools": {
@@ -147,10 +171,10 @@
     },
     "harness-full": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "merge_group": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "main": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "nightly": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
@@ -183,10 +207,10 @@
     },
     "ci-workflow-react": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "merge_group": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "main": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "nightly": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]}
       },
       "affected": {}
     },
@@ -366,16 +390,16 @@
     },
     "marketing-source": {
       "direct": {
-        "pr": {"ciTargets": ["marketing"]},
-        "merge_group": {"ciTargets": ["marketing"]},
-        "main": {"ciTargets": ["marketing"]},
-        "nightly": {"ciTargets": ["marketing"]}
+        "pr": {"ciTargets": ["capture_freshness", "marketing"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "marketing"]},
+        "main": {"ciTargets": ["capture_freshness", "marketing"]},
+        "nightly": {"ciTargets": ["capture_freshness", "marketing"]}
       },
       "affected": {
-        "pr": {"ciTargets": ["marketing"]},
-        "merge_group": {"ciTargets": ["marketing"]},
-        "main": {"ciTargets": ["marketing"]},
-        "nightly": {"ciTargets": ["marketing"]}
+        "pr": {"ciTargets": ["capture_freshness", "marketing"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "marketing"]},
+        "main": {"ciTargets": ["capture_freshness", "marketing"]},
+        "nightly": {"ciTargets": ["capture_freshness", "marketing"]}
       }
     },
     "web-shared": {
@@ -630,19 +654,19 @@
     },
     "other-packages": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
-        "merge_group": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
-        "main": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
-        "nightly": {"ciTargets": ["admin", "flutter", "marketing", "tools"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "flutter", "marketing", "tools"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "flutter", "marketing", "tools"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "flutter", "marketing", "tools"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "flutter", "marketing", "tools"]}
       },
       "affected": {}
     },
     "node-workspace": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
-        "merge_group": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
-        "main": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
-        "nightly": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "functions", "marketing", "operations", "tools"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "functions", "marketing", "operations", "tools"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "functions", "marketing", "operations", "tools"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "functions", "marketing", "operations", "tools"]}
       },
       "affected": {}
     },
@@ -667,10 +691,10 @@
     },
     "firebase-config": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
-        "merge_group": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
-        "main": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
-        "nightly": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
+        "pr": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
         "release": {}
       },
       "affected": {}
@@ -756,6 +780,7 @@
     }
   },
   "classifications": [
+    {"id": "dedicated-capture-workflow", "paths": {"include": [".github/workflows/capture-freshness-ci.yml"]}, "components": ["ci.workflow.capture"], "terminal": true},
     {"id": "design-todo-decisions", "paths": {"include": ["docs/design_parity/comprehensive_todo.md"]}, "components": ["design.todo-decisions"], "terminal": true},
     {
       "id": "admin-pending-input",
@@ -991,6 +1016,8 @@
     }
   ],
   "components": [
+    {"id": "marketing.capture-freshness", "owner": "marketing_website", "risk": "standard", "operationProfile": "capture-freshness", "pathType": "consumer", "dependsOn": ["app.shared", "app.host", "app.consumer", "app.tests", "app.dependencies", "app.l10n-source", "app.generated.l10n", "contracts.generated.flutter", "repo.flutter-tooling", "repo.other-packages", "web.marketing"], "alsoAffects": [], "description": "Node-only capture input provenance, image bytes, website copies and design metadata. Conservative app input closure is independent of React product validation."},
+    {"id": "ci.workflow.capture", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-capture", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated capture freshness workflow validates provenance and policy without release authority."},
     {"id": "design.todo-decisions", "owner": "design_system", "risk": "standard", "operationProfile": "design-todo-decisions", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Authored design-priority decisions retain scoped integrity checks; migration counts are derived at consumption."},
     {"id": "ci.workflow.app-builds", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-app-builds", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "App build orchestration validates both app roles on every platform plus toolchain and policy checks, without backend or mobile release authority."},
     {"id": "ci.native-dependency-cache", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-native-dependency-cache", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "CocoaPods download caching validates both iOS callers and macOS smoke plus toolchain and policy checks, without deployment or release authority."},
@@ -1028,11 +1055,11 @@
     {"id": "web.shared", "owner": "web_platform", "risk": "standard", "operationProfile": "web-shared", "pathType": "component", "ownedPaths": {"include": ["tool/web/check_storybook_visuals.mjs", "packages/web-config/**", "packages/web-ui/**", "design/web-ui/**", "design/components/**"], "exclude": ["design/components/flutter_field_surface_adoption.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared React primitives and configuration consumed by admin and marketing."},
     {"id": "web.admin-pending-input", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-pending-input", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Admin pending-operation scanner inputs retain Admin validation and select their exact integrity gate."},
     {"id": "web.admin", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-source", "pathType": "component", "ownedPaths": {"include": ["admin/**", "design/admin/**"], "exclude": ["admin/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Admin React surface."},
-    {"id": "web.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "component", "ownedPaths": {"include": ["website/**", "design/website/**"], "exclude": ["website/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared", "app.shared", "app.host", "app.consumer", "app.tests", "app.dependencies", "app.l10n-source", "app.generated.l10n", "contracts.generated.flutter", "repo.flutter-tooling", "repo.other-packages"], "alsoAffects": [], "description": "Marketing React surface."},
-    {"id": "marketing.capture-docs", "owner": "marketing_website", "risk": "standard", "operationProfile": "docs", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["web.marketing"], "description": "Markdown in capture input scopes retains Docs validation and requires Marketing freshness, including declared asset-directory membership."},
-    {"id": "marketing.capture-artifact-docs", "owner": "marketing_website", "risk": "standard", "operationProfile": "flutter-design", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["web.marketing"], "description": "Capture artifact documentation retains Flutter design validation and requires Marketing capture freshness."},
-    {"id": "marketing.capture-tooling", "owner": "marketing_website", "risk": "standard", "operationProfile": "repo-tooling", "pathType": "component", "ownedPaths": {"include": ["tool/ui_capture/**", "tool/lib/repo_paths.mjs", "tool/demo/demo_seed/scenarios/**", "tool/demo/demo_seed/personas/**", "tool/marketing/**"]}, "dependsOn": [], "alsoAffects": ["web.marketing"], "description": "Canonical capture tooling and runtime fixture inputs retain Tools validation and also require Marketing screenshot freshness."},
-    {"id": "marketing.capture-artifacts", "owner": "marketing_website", "risk": "standard", "operationProfile": "flutter-design", "pathType": "component", "ownedPaths": {"include": ["artifacts/marketing/app-screenshots/**"]}, "dependsOn": ["app.tokens", "app.ui"], "alsoAffects": ["web.marketing"], "description": "Canonical screenshot PNG inputs retain Flutter visual validation and also require Marketing screenshot freshness."},
+    {"id": "web.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "component", "ownedPaths": {"include": ["website/**", "design/website/**"], "exclude": ["website/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Marketing React surface."},
+    {"id": "marketing.capture-docs", "owner": "marketing_website", "risk": "standard", "operationProfile": "docs", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["marketing.capture-freshness"], "description": "Markdown in capture input scopes retains Docs validation and requires capture freshness, including declared asset-directory membership."},
+    {"id": "marketing.capture-artifact-docs", "owner": "marketing_website", "risk": "standard", "operationProfile": "flutter-design", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["marketing.capture-freshness"], "description": "Capture artifact documentation retains Flutter design validation and requires capture freshness."},
+    {"id": "marketing.capture-tooling", "owner": "marketing_website", "risk": "standard", "operationProfile": "repo-tooling", "pathType": "component", "ownedPaths": {"include": ["tool/ui_capture/**", "tool/lib/repo_paths.mjs", "tool/demo/demo_seed/scenarios/**", "tool/demo/demo_seed/personas/**", "tool/marketing/**"]}, "dependsOn": [], "alsoAffects": ["marketing.capture-freshness"], "description": "Canonical capture tooling and runtime fixture inputs retain Tools validation and also require capture freshness."},
+    {"id": "marketing.capture-artifacts", "owner": "marketing_website", "risk": "standard", "operationProfile": "flutter-design", "pathType": "component", "ownedPaths": {"include": ["artifacts/marketing/app-screenshots/**"]}, "dependsOn": ["app.tokens", "app.ui"], "alsoAffects": ["marketing.capture-freshness"], "description": "Canonical screenshot PNG inputs retain Flutter visual validation and also require capture freshness."},
     {"id": "app.tokens", "owner": "design_system", "risk": "standard", "operationProfile": "app-dependencies", "pathType": "component", "ownedPaths": {"include": ["packages/catch_tokens/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter-only L0 scales, semantic roles, and component token contracts used by both apps and Widgetbook."},
     {"id": "app.ui", "owner": "design_system", "risk": "standard", "operationProfile": "app-dependencies", "pathType": "component", "ownedPaths": {"include": ["packages/catch_ui/**"]}, "dependsOn": ["app.tokens"], "alsoAffects": [], "description": "Shared presentation package for foundations, primitives, components, and patterns used by both apps and Widgetbook."},
     {"id": "app.shared", "owner": "app_platform", "risk": "standard", "operationProfile": "app-shared", "pathType": "component", "ownedPaths": {"include": ["lib/**"], "exclude": ["lib/hosts/**", "lib/main_host*.dart", "lib/main_consumer*.dart", "lib/core/schema_contracts/generated/**", "lib/l10n/generated/**", "lib/l10n/app_en.arb"]}, "dependsOn": ["app.tokens", "app.ui"], "alsoAffects": [], "description": "Shared Flutter product source used by both installable roles."},
