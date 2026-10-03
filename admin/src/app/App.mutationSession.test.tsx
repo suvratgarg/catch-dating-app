@@ -33,7 +33,7 @@ const target = {
 let tokenChanged: (user: User | null) => void;
 
 afterEach(cleanup);
-beforeEach(() => {
+beforeEach(async () => {
   window.history.replaceState({}, "", "/admin-roles/private-target-uid");
   mocks.onIdTokenChanged.mockImplementation((_auth, callback) => {
     tokenChanged = callback;
@@ -43,6 +43,7 @@ beforeEach(() => {
   mocks.getIdTokenResult.mockResolvedValue({claims: {adminOwner: true}});
   mocks.list.mockResolvedValue({generatedAt: "2026-10-02T01:00:00.000Z", rows: [], source: "adminRoleAssignments"});
   mocks.load.mockResolvedValue({user: target});
+  await import("../features/admin-roles/ui/AdminRoleManagementScreen");
 });
 
 describe("App mutation session isolation", () => {
