@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateCatchWhatsappReadinessApprovalDocument} from "./validators/catchWhatsappReadinessApprovalDocument";
+export {validateCatchWhatsappReadinessIngressDocument} from "./validators/catchWhatsappReadinessIngressDocument";
+export {validateCatchWhatsappReadinessAuditDocument} from "./validators/catchWhatsappReadinessAuditDocument";
 export {validateCatchWhatsappReplyOperationDocument} from "./validators/catchWhatsappReplyOperationDocument";
 export {validateCatchWhatsappEndpointStopDocument} from "./validators/catchWhatsappEndpointStopDocument";
 export {validateCatchWhatsappReplyReadinessDocument} from "./validators/catchWhatsappReplyReadinessDocument";

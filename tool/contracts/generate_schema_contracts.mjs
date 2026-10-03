@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "CatchWhatsappReadinessApprovalDocument", "source": "firestore/catch_whatsapp_readiness_approval.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessApprovalDocument.ts"},
+  {"name": "CatchWhatsappReadinessIngressDocument", "source": "firestore/catch_whatsapp_readiness_ingress.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessIngressDocument.ts"},
+  {"name": "CatchWhatsappReadinessAuditDocument", "source": "firestore/catch_whatsapp_readiness_audit.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts"},
   {"name": "CatchWhatsappReplyOperationDocument", "source": "firestore/catch_whatsapp_reply_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts"},
   {"name": "CatchWhatsappEndpointStopDocument", "source": "firestore/catch_whatsapp_endpoint_stops.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts"},
   {"name": "CatchWhatsappReplyReadinessDocument", "source": "firestore/catch_whatsapp_reply_readiness.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts"},

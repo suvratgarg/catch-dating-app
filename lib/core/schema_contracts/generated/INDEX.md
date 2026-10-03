@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CatchWhatsappReadinessApprovalDocument | `firestore/catch_whatsapp_readiness_approval.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessApprovalDocument.ts` |
+| CatchWhatsappReadinessIngressDocument | `firestore/catch_whatsapp_readiness_ingress.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessIngressDocument.ts` |
+| CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts` |
 | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts` |
 | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts` |
 | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts` |
@@ -1183,6 +1186,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCatchWhatsappReadinessApprovalDocumentSchema` | CatchWhatsappReadinessApprovalDocument | `firestore/catch_whatsapp_readiness_approval.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_approval_document.g.dart` |
+| `schemaCatchWhatsappReadinessIngressDocumentSchema` | CatchWhatsappReadinessIngressDocument | `firestore/catch_whatsapp_readiness_ingress.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_ingress_document.g.dart` |
+| `schemaCatchWhatsappReadinessAuditDocumentSchema` | CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_audit_document.g.dart` |
 | `schemaCatchWhatsappReplyOperationDocumentSchema` | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_operation_document.g.dart` |
 | `schemaCatchWhatsappEndpointStopDocumentSchema` | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_endpoint_stop_document.g.dart` |
 | `schemaCatchWhatsappReplyReadinessDocumentSchema` | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_readiness_document.g.dart` |
