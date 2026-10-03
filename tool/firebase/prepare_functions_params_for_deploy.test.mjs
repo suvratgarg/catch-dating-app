@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import {prepareFunctionsParamsForDeploy} from
+import {prepareFunctionsParamsForDeploy, functionsParamsProvenance} from
   "./prepare_functions_params_for_deploy.mjs";
 
 const publicIds = {
@@ -54,6 +54,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
+    'FLIGHT_PROVIDER_POLICY=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -100,6 +101,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
+    'FLIGHT_PROVIDER_POLICY=" "',
     "",
   ].join("\n"));
 });
@@ -376,4 +378,78 @@ test("offline reply gates and scoped configuration cannot be provisioned", () =>
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
   }
+});
+
+
+test("flight policy stays blank across environments even with stored credentials", () => {
+  for (const projectId of ["catchdates-dev", "catchdates-staging",
+    "catch-dating-app-64e51"]) {
+    for (const policy of [undefined, "", "  "]) {
+      const functionsDir = fixture();
+      const output = path.join(functionsDir, `.env.${projectId}`);
+      fs.writeFileSync(output, 'FLIGHT_PROVIDER_POLICY="old-pilot"\n');
+      const version = `projects/${projectId}/secrets/FLIGHT_PROVIDER_CONFIG/versions/1`;
+      const result = prepareFunctionsParamsForDeploy({functionsDir, projectId,
+        environment: {...publicIds, FLIGHT_PROVIDER_CONFIG_VERSION: version,
+          FLIGHT_PROVIDER_POLICY: policy},
+      });
+      const contents = fs.readFileSync(result.outputPath, "utf8");
+      assert.match(contents, /^FLIGHT_PROVIDER_POLICY=" "$/m);
+      assert.doesNotMatch(contents, /old-pilot/);
+      assert.ok(contents.includes(`FLIGHT_PROVIDER_CONFIG_VERSION="${version}"`));
+    }
+  }
+});
+
+test("flight activation overrides fail before writing deployment config", () => {
+  for (const policy of ["true", "polling-pilot", "{}", JSON.stringify({
+    schema: "catch.flight-policy/v1", mode: "polling-pilot",
+    programIds: ["program-1"], legIds: ["leg-1"],
+    startsAt: "2026-10-03T11:00:00Z", expiresAt: "2026-10-03T12:00:00Z",
+    maxRequestsPerDay: 5,
+  })]) {
+    const functionsDir = fixture();
+    const output = path.join(functionsDir, ".env.catchdates-dev");
+    const generate = () => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, FLIGHT_PROVIDER_POLICY: policy},
+    });
+    assert.throws(generate, /FLIGHT_PROVIDER_POLICY must remain unconfigured/);
+    assert.equal(fs.existsSync(output), false);
+    fs.writeFileSync(output, "previous-file-must-survive\n");
+    assert.throws(generate, /FLIGHT_PROVIDER_POLICY must remain unconfigured/);
+    assert.equal(fs.readFileSync(output, "utf8"), "previous-file-must-survive\n");
+  }
+});
+
+test("provenance allowlists names and references without public IDs, private values or arbitrary environment fields", () => {
+  const sourceSha = "a".repeat(40);
+  const environment = {...publicIds, PRIVATE_KEY: "never-print-private",
+    GOOGLE_APPLICATION_CREDENTIALS: "/private/never-read.json",
+    FLIGHT_PROVIDER_CONFIG_VERSION: "projects/catchdates-dev/secrets/FLIGHT_PROVIDER_CONFIG/versions/7"};
+  const receipt = functionsParamsProvenance({projectId: "catchdates-dev", sourceSha, environment});
+  const serialized = JSON.stringify(receipt);
+  assert.doesNotMatch(serialized, /never-print-private|never-read|CATCHDEV01|rzp_test_example123|PRIVATE_KEY/u);
+  assert.equal(receipt.references.FLIGHT_PROVIDER_CONFIG_VERSION, environment.FLIGHT_PROVIDER_CONFIG_VERSION);
+  assert.equal(receipt.names.find((entry) => entry.name === "ALGOLIA_APPLICATION_ID").source, "deployment-environment");
+  assert.equal(receipt.names.find((entry) => entry.name === "FLIGHT_PROVIDER_POLICY").source, "source-disabled");
+  assert.match(receipt.paramsSha256, /^[a-f0-9]{64}$/u);
+  assert.equal(receipt.sourceSha, sourceSha);
+});
+
+test("materialization refuses changed provenance before writing and never follows a symlink", (t) => {
+  const functionsDir = fixture(); t.after(() => fs.rmSync(functionsDir, {recursive: true, force: true}));
+  const sourceSha = "b".repeat(40), projectId = "catchdates-dev";
+  const expectedProvenance = functionsParamsProvenance({projectId, sourceSha, environment: publicIds});
+  const output = path.join(functionsDir, `.env.${projectId}`);
+  assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId, sourceSha, expectedProvenance,
+    environment: {...publicIds, META_WHATSAPP_GRAPH_VERSION: "v24.0"}}), /provenance changed/u);
+  assert.equal(fs.existsSync(output), false);
+  const result = prepareFunctionsParamsForDeploy({functionsDir, projectId, sourceSha, expectedProvenance, environment: publicIds});
+  assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
+  fs.unlinkSync(output);
+  const sentinel = path.join(functionsDir, "fake-existing.txt"); fs.writeFileSync(sentinel, "preserve");
+  fs.symlinkSync(sentinel, output);
+  assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId, environment: publicIds}));
+  assert.equal(fs.readFileSync(sentinel, "utf8"), "preserve");
 });

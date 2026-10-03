@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -852,4 +853,195 @@ test("broad secret administrator grants cannot pass as reader-only permission", 
       ["roles/secretmanager.secretAccessor", "roles/secretmanager.admin"].map((role) =>
         ({role, members: [`serviceAccount:${serviceAccount}`]}))})});
   assert.equal(result.reason, "runtime-secret-permission-leakage");
+});
+
+
+// Bounded authored-source verification, not whole-program call/points-to analysis.
+// ts is injected from the repository's existing TypeScript dependency. sources
+// contains tracked .ts text only; this helper never executes Functions modules.
+function sourceConsumerFacts(ts, sources) {
+  const files = new Map([...sources].map(([name, text]) => {
+    const ast = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
+    if (ast.parseDiagnostics.length) throw new Error(`Cannot parse ${name}`);
+    return [name, ast];
+  }));
+  const resolve = (from, specifier) => {
+    if (!specifier.startsWith('.')) return null;
+    const stem = path.posix.normalize(path.posix.join(path.posix.dirname(from), specifier)).replace(/\.js$/, '');
+    const found = [stem, `${stem}.ts`, `${stem}/index.ts`].find(name => files.has(name));
+    if (!found) throw new Error(`Unresolved local module in ${from}`);
+    return found;
+  };
+  const exports = new Map();
+  const dependencies = new Map();
+  for (const [name, ast] of files) {
+    const deps = new Set();
+    for (const statement of ast.statements) {
+      if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
+      if (statement.isTypeOnly || statement.importClause?.isTypeOnly) continue;
+      if (!statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+      const target = resolve(name, statement.moduleSpecifier.text);
+      if (target) deps.add(target);
+      if (name === 'functions/src/index.ts' && ts.isExportDeclaration(statement)) {
+        if (!target || !statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
+          throw new Error('Unsupported Functions export shape');
+        }
+        for (const element of statement.exportClause.elements) {
+          if (!element.isTypeOnly) exports.set(element.name.text, {
+            source: target, symbol: (element.propertyName ?? element.name).text,
+          });
+        }
+      }
+    }
+    dependencies.set(name, deps);
+  }
+  function moduleMayReach(from, target, seen = new Set()) {
+    if (from === target) return true;
+    if (seen.has(from)) return false;
+    seen.add(from);
+    return [...dependencies.get(from) ?? []].some(dep => moduleMayReach(dep, target, seen));
+  }
+  function declaration(file, symbol) {
+    if (symbol.includes('.')) {
+      const [root, property] = symbol.split('.');
+      const object = declaration(file, root);
+      if (!ts.isObjectLiteralExpression(object)) throw new Error(`Unsupported dependency object ${symbol}`);
+      const member = object.properties.find(p => p.name?.getText() === property);
+      if (!member || !ts.isPropertyAssignment(member)) throw new Error(`Missing dependency property ${symbol}`);
+      return member.initializer;
+    }
+    for (const statement of files.get(file)?.statements ?? []) {
+      if (ts.isFunctionDeclaration(statement) && statement.name?.text === symbol) return statement.body;
+      if (ts.isVariableStatement(statement)) {
+        const found = statement.declarationList.declarations.find(d => ts.isIdentifier(d.name) && d.name.text === symbol);
+        if (found) return found.initializer;
+      }
+    }
+    throw new Error(`Missing runtime declaration ${file}:${symbol}`);
+  }
+  function expressionName(node) {
+    if (ts.isIdentifier(node)) return node.text;
+    if (ts.isPropertyAccessExpression(node)) return `${expressionName(node.expression)}.${node.name.text}`;
+    return '';
+  }
+  function hasCall(file, symbol, callee, argumentNames = []) {
+    let found = false;
+    const walk = node => {
+      if (!node || ts.isTypeNode(node)) return;
+      if (ts.isCallExpression(node) && expressionName(node.expression) === callee &&
+          argumentNames.every(name => node.arguments.some(arg => expressionName(arg) === name))) found = true;
+      ts.forEachChild(node, walk);
+    };
+    walk(declaration(file, symbol));
+    return found;
+  }
+  function hasDefaultParameter(file, symbol, parameter, value) {
+    const fn = files.get(file)?.statements.find(s => ts.isFunctionDeclaration(s) && s.name?.text === symbol);
+    return !!fn?.parameters.some(p => p.name.getText() === parameter && p.initializer && expressionName(p.initializer) === value);
+  }
+  function hasReferenceParameter(file, parameter) {
+    let found = false;
+    const walk = node => {
+      if (ts.isTypeNode(node)) return;
+      if (ts.isCallExpression(node) && expressionName(node.expression) === 'defineString' &&
+          ts.isStringLiteral(node.arguments[0]) && node.arguments[0].text === parameter) found = true;
+      if (ts.isPropertyAccessExpression(node) && expressionName(node) === `process.env.${parameter}`) found = true;
+      ts.forEachChild(node, walk);
+    };
+    walk(files.get(file));
+    return found;
+  }
+  return {exports, moduleMayReach, hasCall, hasReferenceParameter, hasDefaultParameter};
+}
+
+// This is only an exclusion check: sharing a module is NOT proof of a consumer.
+// Positive consumer completeness is separately covered by the bounded behavior
+// witnesses below and manual review of interface/callback-based runtime wiring.
+function validateConsumerExclusions(facts, manifest) {
+  for (const reader of manifest.directReaders) {
+    for (const consumer of reader.consumers) {
+      const entry = facts.exports.get(consumer);
+      if (!entry || !reader.sourcePaths.some(target => facts.moduleMayReach(entry.source, target))) {
+        throw new Error(`Unrelated direct-reader consumer ${reader.id}:${consumer}`);
+      }
+    }
+    if (reader.binding.kind === 'parameter' && !reader.sourcePaths.some(source =>
+      facts.hasReferenceParameter(source, reader.binding.parameter))) {
+      throw new Error(`Reference parameter is absent from reader source: ${reader.id}`);
+    }
+  }
+}
+
+function validateFlightConsumerWitnesses(facts, manifest) {
+  const reader = manifest.directReaders.find(r => r.id === 'functions.reference.flight');
+  if (!reader) throw new Error('Flight reader contract missing');
+  const refresh = 'functions/src/transport/programFlightRefresh.ts';
+  const alerts = 'functions/src/transport/flightAlerts.ts';
+  const retention = 'functions/src/programs/programRetention.ts';
+  const witnesses = [
+    ['refreshProgramTravelLeg', refresh, [
+      ['refreshProgramTravelLeg', 'refreshProgramTravelLegHandler'],
+      ['refreshProgramTravelLegHandler', 'loadFlightProviderConfig'],
+    ]],
+    ['refreshProgramFlightStatuses', refresh, [
+      ['refreshProgramFlightStatuses', 'loadFlightProviderConfig'],
+    ]],
+    ['flightAlertWebhook', alerts, [
+      ['defaultFlightAlertWebhookDeps.secret', 'loadFlightProviderConfig'],
+      ['flightAlertWebhookHandler', 'deps.secret'],
+      ['flightAlertWebhook', 'flightAlertWebhookHandler'],
+    ]],
+    ['anonymizeDueProgramsSweep', retention, [
+      ['defaultRetentionDeps.loadFlightApiKey', 'loadFlightProviderConfig'],
+      ['anonymizeProgram', 'deps.loadFlightApiKey'],
+      ['anonymizeDuePrograms', 'anonymizeProgram', ['deps']],
+      ['anonymizeDueProgramsSweep', 'anonymizeDuePrograms', ['defaultRetentionDeps']],
+    ]],
+  ];
+  // Explicitly bounded current behavior, not a second runtime inventory. A new
+  // flight entry point changes these assertions in the same source review.
+  if (!facts.hasDefaultParameter(alerts, 'flightAlertWebhookHandler', 'deps', 'defaultFlightAlertWebhookDeps')) {
+    throw new Error('Review changed flight webhook default dependency');
+  }
+  const expected = witnesses.map(([consumer]) => consumer).sort();
+  if (JSON.stringify([...reader.consumers].sort()) !== JSON.stringify(expected)) {
+    throw new Error('Flight consumer contract does not match reviewed runtime witnesses');
+  }
+  for (const [consumer, source, edges] of witnesses) {
+    const entry = facts.exports.get(consumer);
+    if (entry?.source !== source || entry.symbol !== consumer) throw new Error(`Flight export changed: ${consumer}`);
+    for (const [symbol, callee, args = []] of edges) {
+      if (!facts.hasCall(source, symbol, callee, args)) throw new Error(`Review changed flight runtime edge: ${symbol} -> ${callee}`);
+    }
+  }
+}
+
+test("authored source witnesses catch omitted flight retention and unrelated direct consumers", () => {
+  const ts = createRequire(import.meta.url)("typescript");
+  const sources = new Map();
+  function visit(directory) {
+    for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+      const filename = path.join(directory, entry.name);
+      if (entry.isDirectory()) visit(filename);
+      else if (entry.isFile() && entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
+        sources.set(path.relative(repoRoot, filename).split(path.sep).join("/"), fs.readFileSync(filename, "utf8"));
+      }
+    }
+  }
+  visit(path.join(repoRoot, "functions/src"));
+  const facts = sourceConsumerFacts(ts, sources);
+  validateConsumerExclusions(facts, manifest);
+  validateFlightConsumerWitnesses(facts, manifest);
+  const removed = structuredClone(manifest);
+  removed.directReaders.find((r) => r.id === "functions.reference.flight").consumers =
+    removed.directReaders.find((r) => r.id === "functions.reference.flight").consumers.filter((name) => name !== "anonymizeDueProgramsSweep");
+  assert.throws(() => validateFlightConsumerWitnesses(facts, removed), /Flight consumer contract/u);
+  const unrelated = structuredClone(manifest);
+  unrelated.directReaders[0].consumers = ["exploreSearch"];
+  assert.throws(() => validateConsumerExclusions(facts, unrelated), /Unrelated direct-reader/u);
+  const moduleOnly = structuredClone(manifest); moduleOnly.directReaders[0].consumers.push("archiveProgram");
+  assert.throws(() => validateFlightConsumerWitnesses(facts, moduleOnly), /Flight consumer contract/u);
+  const changed = new Map(sources), source = "functions/src/programs/programRetention.ts";
+  changed.set(source, sources.get(source).replace("await deps.loadFlightApiKey()", "await deps.unrelatedOperation()"));
+  assert.throws(() => validateFlightConsumerWitnesses(sourceConsumerFacts(ts, changed), manifest), /Review changed flight runtime edge/u);
 });
