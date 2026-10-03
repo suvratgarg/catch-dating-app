@@ -9,6 +9,7 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
+import 'package:crypto/crypto.dart';
 
 const screenRegistryConformanceCode = 'catch_screen_registry_conformance';
 const screenTopBarConformanceCode = 'catch_screen_top_bar_conformance';
@@ -2336,7 +2337,6 @@ _validateImperativePageOwnerBindings({
     }
     final expression = row['presentationExpression'] as String?;
     final target = row['presentationTarget'] as String?;
-    final inventoryLine = row['line'] as int?;
     final fullscreenDialogExpression =
         row['fullscreenDialogExpression'] as String?;
     if (resolved.expression == null) {
@@ -2361,11 +2361,6 @@ _validateImperativePageOwnerBindings({
         '$screenRouteOwnerBindingCode imperative.${entry.key}: inventory fullscreenDialog expression `$fullscreenDialogExpression` does not match resolved `$resolvedFullscreenDialog`',
       );
     }
-    if (inventoryLine != resolved.line) {
-      hardFailures.add(
-        '$screenRouteOwnerBindingCode imperative.${entry.key}: inventory line $inventoryLine does not match resolved ${resolved.line}',
-      );
-    }
     final roots = resolved.rootsForTarget(target ?? '', root);
     if (roots.isEmpty) {
       hardFailures.add(
@@ -2375,7 +2370,7 @@ _validateImperativePageOwnerBindings({
     final reachable = await graph.reachableDeclarations(roots);
     hardFailures.addAll(
       evaluateImperativePageOwnerReachability(
-        siteId: entry.key,
+        siteId: '${entry.key} (line ${resolved.line})',
         presentationExpression: expression,
         presentationTarget: target,
         requiredOwners: ownersByTarget[target] ?? const <DeclarationBinding>{},
@@ -2971,7 +2966,7 @@ final class _ImperativePageRouteVisitor extends RecursiveAstVisitor<void> {
   final LineInfo lineInfo;
   final List<_ResolvedImperativePagePresentation> presentations =
       <_ResolvedImperativePagePresentation>[];
-  var _materialOrdinal = 0;
+  final _materialOccurrences = <String, int>{};
   var _unsupportedOrdinal = 0;
 
   @override
@@ -3059,14 +3054,25 @@ final class _ImperativePageRouteVisitor extends RecursiveAstVisitor<void> {
         kind == _RouteConstructionKind.constructor &&
         _isFlutterMaterialPageRouteInterface(element) &&
         inventorySafeSpelling;
-    final ordinal = inventorySupported
-        ? ++_materialOrdinal
-        : ++_unsupportedOrdinal;
     final arguments = _namedArguments(argumentList);
+    final expression = arguments['builder'] ?? arguments['pageBuilder'];
+    final fullscreen = arguments['fullscreenDialog'];
+    final identity = imperativePageIdentity(
+      sourcePath: relativePath,
+      presentationExpression: expression?.toSource() ?? '',
+      fullscreenDialogExpression: fullscreen?.toSource(),
+    );
+    final ordinal = inventorySupported
+        ? _materialOccurrences.update(
+            identity,
+            (value) => value + 1,
+            ifAbsent: () => 1,
+          )
+        : ++_unsupportedOrdinal;
     presentations.add(
       _ResolvedImperativePagePresentation(
         siteId: inventorySupported
-            ? 'material-page:$relativePath:$ordinal'
+            ? 'material-page:$identity:$ordinal'
             : 'unsupported-page-route:$relativePath:$ordinal',
         line: lineInfo.getLocation(node.offset).lineNumber,
         routeType: routeType,
@@ -3077,6 +3083,22 @@ final class _ImperativePageRouteVisitor extends RecursiveAstVisitor<void> {
       ),
     );
   }
+}
+
+// Match the generated semantic identity; physical source positions are live
+// diagnostics and do not participate in a route's canonical contract.
+String imperativePageIdentity({
+  required String sourcePath,
+  required String presentationExpression,
+  String? fullscreenDialogExpression,
+}) {
+  final payload = jsonEncode([
+    _normalizeDartExpression(presentationExpression),
+    fullscreenDialogExpression == null
+        ? null
+        : _normalizeDartExpression(fullscreenDialogExpression),
+  ]);
+  return '$sourcePath:${sha256.convert(utf8.encode(payload))}';
 }
 
 enum _RouteConstructionKind {

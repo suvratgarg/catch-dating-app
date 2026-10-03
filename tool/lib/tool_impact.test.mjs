@@ -269,7 +269,7 @@ test("feature coverage and context manifests select executable owners without fu
   assert.equal(planAffectedToolChecks({
     changedPaths: mixedPaths, manifest: previousManifest, componentGraph: productionGraph,
   }).mode, "full");
-  for (const companion of ["design_context_pack/new-input.json", "tool/harness/component_graph.json"]) {
+  for (const companion of ["design/unowned-new-input.json", "tool/harness/component_graph.json"]) {
     assert.equal(planAffectedToolChecks({
       changedPaths: [...mixedPaths, companion], manifest: productionManifest,
       componentGraph: productionGraph,
@@ -741,6 +741,10 @@ test("canonical harness full paths come only from the component graph", () => {
     "tool/harness.mjs",
     "tool/repository_root_manifest.json",
     "tool/tools_manifest.json",
+    "tool/lib/path_glob.mjs",
+    "tool/lib/tool_impact.mjs",
+    "tool/lib/repository_snapshot.mjs",
+    "tool/run.mjs",
   ]);
   assert.throws(
     () => canonicalHarnessFullPaths({components: []}),
@@ -779,6 +783,7 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
   ).flatMap((entry) => entry.paths.include);
   assert.deepEqual([...workflows].sort(), [
     ".github/workflows/app-build-matrix.yml",
+    ".github/workflows/capture-freshness-ci.yml",
     ".github/workflows/contracts-ci.yml",
     ".github/workflows/firestore-rules-ci.yml",
     ".github/workflows/flutter-ci.yml",
@@ -852,6 +857,6 @@ test("additional full paths cannot duplicate canonical harness authority", () =>
       manifest: fixture,
       componentGraph: componentGraph(),
     }),
-    ["tool/ci/**"],
+    ["tool/ci/**", "tool/run.mjs"],
   );
 });

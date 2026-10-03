@@ -361,7 +361,7 @@ jobs:
       - affected-tools
       - fast-gates
       - tool-buckets
-    if: always()
+    if: ${{ !cancelled() }}
     timeout-minutes: 5
 
     steps:

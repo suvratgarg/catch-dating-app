@@ -7,7 +7,7 @@ import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
-import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
+import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
@@ -939,7 +939,7 @@ test("identical registered checks execute once while preserving first-owner orde
 test("scheduled and manual CI resolve revision expressions before binding lane inputs", () => {
   const ci = workflow("ci.yml");
   const start = ci.indexOf('          if [[ -z "$base_sha"');
-  const end = ci.indexOf("          node tool/harness/verify_local.mjs --preflight", start);
+  const end = ci.indexOf("          mkdir -p build/ci", start);
   assert.ok(start >= 0 && end > start);
   const resolve = ci.slice(start, end).replace(/^          /gmu, "");
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-base-"));
@@ -1003,9 +1003,9 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
   assert.match(ci, /reason_code: \$\{\{ steps\.check\.outputs\.reason_code \}\}/u);
   assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
-  assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ always\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
+  assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
   assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
-  assert.match(ci, /if: \$\{\{ always\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
+  assert.match(ci, /if: \$\{\{ !cancelled\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
   assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
   assert.match(namedStep(ci, "Refuse deferred PR validation"),
     /REASON_CODE: \$\{\{ needs\.admission\.outputs\.reason_code \}\}/u);
@@ -1049,4 +1049,131 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
     assert.equal(runName("pull_request", action, "ci:admitted"), "CI PR #42");
     assert.equal(runName("pull_request", action, "documentation"), "CI pull_request");
   }
+});
+
+test("headless journeys start independently of macOS rendering and native smoke", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const headless = source.split("  headless-journeys:\n")[1]?.split("  visual-and-integration:\n")[0];
+  assert.ok(headless);
+  assert.match(headless, /runs-on: ubuntu-latest/u);
+  assert.match(headless, /timeout-minutes: 20/u);
+  assert.match(headless, /run: bash tool\/test_app_shell_integration.sh/u);
+  assert.doesNotMatch(headless, /needs:|goldens|Widgetbook|CocoaPods/u);
+  const native = source.split("  visual-and-integration:\n")[1];
+  assert.match(native, /flutter test --concurrency=1 test\/goldens/u);
+  assert.match(native, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(native, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
+  assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);
+  assert.doesNotMatch(native, /Deterministic app-shell integration suites/u);
+});
+
+test("backend integration runs strict execution inside both emulators with a bounded job", () => {
+  const source = workflow("firestore-rules-ci.yml");
+  assert.match(source, /timeout-minutes: 35/u);
+  assert.match(source, /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
+  const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
+  assert.match(pkg.scripts["test:rules"], /^npm run build && node scripts\/run-tests.cjs --require-emulators /u);
+  assert.ok(pkg.scripts["test:rules"].includes("test/firestore.rules.test.cjs"));
+  assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
+});
+
+test("capture freshness has a required Node-only lane independent of React rendering", () => {
+  const ci = workflow("ci.yml");
+  const capture = workflow("capture-freshness-ci.yml");
+  const react = workflow("react-surface-validation.yml");
+  assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
+  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  for (const id of ["finalize-plan", "package-firebase", "required"]) {
+    const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
+    assert.match(job, /- capture-freshness\n/u, id);
+  }
+  assert.match(capture, /node tool\/marketing\/sync_website_media.mjs --check/u);
+  assert.match(capture, /node tool\/marketing\/export_app_screenshots.mjs --check-design-json/u);
+  assert.doesNotMatch(capture, /npm ci|flutter pub get|setup-flutter|continue-on-error/u);
+  assert.match(ci, /surface: marketing\n      capture_freshness_in_ci: true/u);
+  assert.equal(react.match(/inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci/gu)?.length, 2);
+  assert.match(react, /capture_freshness_in_ci:[\s\S]*?default: false/u);
+});
+
+test("cancelling admission or a validation run makes every aggregate job terminal", () => {
+  const ci = workflow("ci.yml");
+  // Exercise the real expressions, including the historical always() fault.
+  const guardFor = id => {
+    const block = ci.slice(ci.indexOf(`\n  ${id}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
+    const inline = block.match(/^    if: \$\{\{ (.+) \}\}$/mu)?.[1];
+    if (inline) return inline;
+    const folded = block.match(/^    if: >-\n((?:      .+\n)+)/mu)?.[1];
+    assert.ok(folded, `missing ${id} cancellation guard`);
+    return folded.trim().replace(/\n\s*/gu, " ");
+  };
+  const context = (wasCancelled, result = "success", admitted = "true") => ({
+    cancelled: () => wasCancelled, always: () => true,
+    contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
+    github: {event_name: "pull_request", ref: "refs/pull/522/merge", event: {action: "synchronize"}},
+    needs: {admission: {outputs: {admitted}}, plan: {result},
+      "finalize-plan": {result, outputs: {deploy_required: "false"}}},
+    results: [result],
+  });
+  const evaluate = (expression, ctx) => vm.runInNewContext(expression
+    .replaceAll("needs.*.result", "results")
+    .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]'), ctx);
+  for (const id of ["plan", "finalize-plan", "package-firebase", "required"]) {
+    const guard = guardFor(id);
+    assert.match(guard, /!cancelled\(\)/u, id);
+    for (const result of ["success", "failure", "cancelled", "skipped"]) {
+      assert.equal(evaluate(guard, context(true, result)), false, `${id} ${result}`);
+    }
+  }
+  for (const file of ["flutter-ci.yml", "tools-ci.yml"]) {
+    const source = workflow(file);
+    assert.doesNotMatch(source, /^    if:.*always\(/mu);
+    const guard = source.match(/^    if: \$\{\{ (!cancelled\(\)) \}\}$/mu)?.[1];
+    assert.ok(guard, `${file} requires an explicit cancellation-aware aggregate`);
+    assert.equal(evaluate(guard, context(true)), false);
+    assert.equal(evaluate(guard, context(false, "failure")), true);
+  }
+  const required = guardFor("required");
+  assert.equal(evaluate(required.replace("!cancelled()", "always()"), context(true)), true,
+    "negative control reproduces the obsolete run's cancellation-resistant aggregate");
+  for (const result of ["failure", "skipped"]) {
+    assert.equal(evaluate(required, context(false, result)), true,
+      "ordinary failures still run the existing fail-closed shell aggregate");
+  }
+  assert.equal(evaluate(guardFor("plan"), context(false, "success", "false")), false);
+  assert.equal(evaluate(required, context(false, "skipped", "false")), true,
+    "unadmitted runs promptly execute the rejecting aggregate");
+  assert.match(ci, /timeout-minutes: 3/u);
+  assert.match(ci.slice(ci.indexOf("\n  required:\n")), /timeout-minutes: 5/u);
+});
+
+test("selector comparison runs before fanout and keeps delivery plan artifact unchanged", () => {
+  for (const name of ["ci.yml", "pr-feedback.yml"]) {
+    const source = workflow(name);
+    assert.match(source, /\/tool\/harness\/compare_selectors.mjs/u);
+    assert.match(source, /node tool\/harness\/compare_selectors.mjs --base/u);
+    assert.match(source, /name: selector-comparison-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/u);
+  }
+  assert.match(namedStep(workflow("ci.yml"), "Upload planner evidence"), /path: build\/ci\/impact-plan.json/u);
+});
+
+test("Flutter design checks share only complete owners in the actual required Tools plan", () => {
+  const owned = (changedPaths, full = false, manifest = toolsManifest) => toolsOwnDesignChecks({
+    plan: planAffected({changedPaths, graph, full, mode: full ? "nightly" : "pr"}), manifest, componentGraph: graph,
+  });
+  assert.deepEqual(owned([".github/workflows/ci.yml"]), {parity: true, handoff: true});
+  assert.deepEqual(owned([], true), {parity: true, handoff: true});
+  assert.deepEqual(owned(["lib/main.dart"]), {parity: false, handoff: false});
+  assert.deepEqual(owned(["tool/design/check_design_parity.mjs"]), {parity: true, handoff: false});
+  assert.throws(() => toolsOwnDesignChecks({plan: {complete: false}}), /incomplete/);
+  const broken = structuredClone(toolsManifest);
+  broken.tools.find(tool => tool.id === "design:context-pack").checks = [];
+  assert.throws(() => owned([], true, broken), /no longer provides/);
+  const ci = workflow("ci.yml"), flutter = workflow("flutter-ci.yml");
+  for (const kind of ["parity", "handoff"]) {
+    assert.ok(ci.includes("design_" + kind + "_in_tools: $" + "{{ needs.plan.outputs.tools_owns_design_" + kind + " == 'true' }}"));
+    assert.ok(flutter.includes("if: $" + "{{ !inputs.design_" + kind + "_in_tools }}"));
+    assert.match(flutter, new RegExp(`design_${kind}_in_tools:[\\s\\S]*?default: false`, "u"));
+  }
+  assert.match(flutter, /--check-handoff[\s\S]*--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  assert.doesNotMatch(flutter, /run: node tool\/design\/build_context_pack\.mjs --check/u);
 });
