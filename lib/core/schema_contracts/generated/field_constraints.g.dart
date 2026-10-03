@@ -128641,6 +128641,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programStayDocumentLodgingInventoryId = CatchContractFieldConstraints(
+    path: 'programStayDocument.lodgingInventoryId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStayDocumentLodgingPartyId = CatchContractFieldConstraints(
+    path: 'programStayDocument.lodgingPartyId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programStayDocumentNotes = CatchContractFieldConstraints(
     path: 'programStayDocument.notes',
     maxLength: 500,
@@ -175713,6 +175729,8 @@ abstract final class CatchContractConstraints {
     'programStayDocument.hotelArrivedAt._nanoseconds': programStayDocumentHotelArrivedAtNanoseconds,
     'programStayDocument.hotelArrivedAt._seconds': programStayDocumentHotelArrivedAtSeconds,
     'programStayDocument.hotelId': programStayDocumentHotelId,
+    'programStayDocument.lodgingInventoryId': programStayDocumentLodgingInventoryId,
+    'programStayDocument.lodgingPartyId': programStayDocumentLodgingPartyId,
     'programStayDocument.notes': programStayDocumentNotes,
     'programStayDocument.organizerId': programStayDocumentOrganizerId,
     'programStayDocument.programId': programStayDocumentProgramId,

@@ -170528,6 +170528,20 @@ export const programStayDocumentSchema = {
       "minLength": 1,
       "maxLength": 180,
       "description": "Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing."
+    },
+    "lodgingPartyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.",
+      "x-catch-ownership": "server-only"
+    },
+    "lodgingInventoryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Stable dated lodging inventory unit identity; never inferred from roomLabel.",
+      "x-catch-ownership": "server-only"
     }
   }
 };

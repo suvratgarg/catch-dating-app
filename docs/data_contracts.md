@@ -4912,3 +4912,15 @@ of scoped reply values. There is no readiness writer, automatic history repair
 approval, live credential read, provider send, deployment or activation in these
 tests. Runtime history collection and all scoped live approvals remain separate.
 The 24-hour cutoff is a transport eligibility rule, not a verified pricing claim.
+
+The canonical lodging publication source adapter prepares per-guest stay writes
+from the same complete transactional records used for feasibility. Planner
+stays carry explicit `lodgingPartyId` and `lodgingInventoryId`; labels never
+establish inventory identity. Desk readiness edits preserve these links, while
+manual room/date/occupancy changes invalidate them. Unbound live stays require
+verified adoption before planning; they cannot be ignored as spare capacity.
+The adapter preserves checked-in stay documents and verifies native block
+occupancy/date limits before queueing any writes. Its exact post-write stay
+evidence must advance the source fence atomically with workflow/receipt writes.
+This source helper is not yet connected to persisted configuration, a complete
+canonical snapshot mapper, an exported callable or the routed room board.

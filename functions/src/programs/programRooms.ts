@@ -400,6 +400,18 @@ export async function upsertProgramStayHandler(
       throw new HttpsError("failed-precondition",
         "A checked-in stay cannot be moved by allocation edits.");
     }
+    // Keep verified planner links only while the same allocation remains.
+    // Desk readiness/check-in edits preserve them; a manual move must be
+    // explicitly adopted again before a planner can treat it as known stock.
+    if (existing?.lodgingPartyId && existing.lodgingInventoryId &&
+        existing.roomBlockId === document.roomBlockId &&
+        existing.roomLabel === document.roomLabel &&
+        occupancyId(stayRow(ref.id, existing)) === document.roomOccupancyId &&
+        millisOrNull(existing.startsAt) === proposed.startsAtMillis &&
+        millisOrNull(existing.endsAt) === proposed.endsAtMillis) {
+      document.lodgingPartyId = existing.lodgingPartyId;
+      document.lodgingInventoryId = existing.lodgingInventoryId;
+    }
     const allRows = new Map<string, StayRow>();
     for (const rows of liveByBlock.values()) {
       for (const row of rows) allRows.set(row.stayId, row);

@@ -12361,6 +12361,14 @@ export interface ProgramStayDocument {
    * Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing.
    */
   roomOccupancyId?: string;
+  /**
+   * Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.
+   */
+  lodgingPartyId?: string;
+  /**
+   * Stable dated lodging inventory unit identity; never inferred from roomLabel.
+   */
+  lodgingInventoryId?: string;
 }
 
 /**

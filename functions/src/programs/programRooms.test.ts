@@ -497,3 +497,20 @@ test("checked-in status cannot be downgraded to bypass allocation locks",
     assert.equal(db.getDoc("programStays/stay-1")!.status, "checkedOut");
     assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 0);
   });
+
+
+test("desk updates preserve planner bindings until an allocation moves",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programStays/stay-1", {lodgingPartyId: "party",
+      lodgingInventoryId: "unit"});
+    const ready = await upsertStay(db, "desk-1", {stayId: "stay-1",
+      guestId: "g-1", expectedRevision: 1, markRoomReady: true});
+    assert.equal(db.getDoc("programStays/stay-1")!.lodgingPartyId, "party");
+    assert.equal(db.getDoc("programStays/stay-1")!.lodgingInventoryId, "unit");
+    await upsertStay(db, "desk-1", {stayId: "stay-1", guestId: "g-1",
+      expectedRevision: ready.revision, roomLabel: "302"});
+    const moved = db.getDoc("programStays/stay-1")!;
+    assert.equal(moved.lodgingPartyId, undefined);
+    assert.equal(moved.lodgingInventoryId, undefined);
+  });
