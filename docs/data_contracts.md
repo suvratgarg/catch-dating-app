@@ -2571,9 +2571,17 @@ health and event state before each attempt. Meta provider tokens live in Secret
 Manager. Every environment pre-provisions one
 `ORGANIZER_WHATSAPP_ACCESS_TOKENS` vault; each organizer connection is stored
 as a distinct immutable secret version containing its organizer and connection
-binding, and retired versions are disabled. The Functions runtime receives
-secret-level accessor and version-manager roles on that vault only; it may not
-create secrets or access unrelated application secrets. Existing raw-token
+binding, and retired versions are disabled. The source proposal binds
+`dispatchOrganizerCampaign`, `getOrganizerMessagingSetup`,
+`sendOrganizerWhatsappReply`, `sendOrganizerWhatsappTest`, and
+`syncOrganizerWhatsappTemplates` to the project-scoped
+`catch-whatsapp-reader@` runtime identity, with secret-level accessor access
+only to this vault and `META_WHATSAPP_APP_SECRET`. Only
+`completeOrganizerWhatsappConnection` and
+`disconnectOrganizerWhatsappConnection` retain the default connection-writer
+runtime identity, which requires accessor and version-manager access on the
+vault. This source change is not deployed; other permissions inherited by the
+default runtime identity remain unchanged. Existing raw-token
 versions remain readable only for migration compatibility. Meta integration is
 reported configured only when `META_WHATSAPP_ENABLED=true` and the real Meta
 app/config credentials are present. Webhook receipts are signature-verified,
