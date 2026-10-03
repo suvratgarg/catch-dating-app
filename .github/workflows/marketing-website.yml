@@ -149,7 +149,8 @@ jobs:
   promote:
     name: Promote exact marketing Hosting bytes
     needs: package
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    # Validation reuse intentionally skips an ancestor; override implicit success().
+    if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
     uses: ./.github/workflows/_web-hosting-promote.yml
     with:
       artifact_digest: ${{ needs.package.outputs.artifact_digest }}
