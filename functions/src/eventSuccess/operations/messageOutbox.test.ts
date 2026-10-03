@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import type {Firestore} from "firebase-admin/firestore";
 import type {EventAssistanceMessageIntent as MessageIntent} from
   "../../shared/generated/eventAssistanceMessageIntent";
@@ -294,7 +294,7 @@ test("Firestore transactions arbitrate competing dispatch workers", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const key = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "outbox-" + key);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   const source = db.collection("testEventFacts").doc(key);
   const intent = {...message(), intentId: "notice:" + key};
   const messageId = assistanceMessageId(intent);
@@ -506,7 +506,7 @@ test("Firestore recovery and old claims arbitrate on one expired reservation", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "recovery-" + id);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   const intent = {...message(), intentId: "notice:" + id};
   let now = intent.createdAt;
   const outbox = new FirestoreMessageOutbox(db, async () => {

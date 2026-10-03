@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {createHmac, randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {RcsCallbackStore} from "./rcsCallbackStore";
 import {RcsCallbackConsumer, RCS_CALLBACK_RECEIPTS} from
@@ -299,7 +300,7 @@ test("Firestore RCS contention creates one request and receipt", {
   const key = randomUUID();
   const app = initializeApp({projectId: "demo-rcs-consumer-" + key.slice(0, 8)},
     "rcs-consumer-" + key);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await fixture(db, "real", [{choiceId: "help", label: "Need help",
       value: {kind: "requestHelp", category: "eventLogistics"}}]);

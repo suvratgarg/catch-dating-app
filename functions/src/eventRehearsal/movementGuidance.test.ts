@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
@@ -234,7 +235,7 @@ test("Firestore departure retries publish once and later stops refresh guests",
     if (!admin.apps.length) {
       admin.initializeApp({projectId: "demo-catch-rules"});
     }
-    const db = admin.firestore();
+    const db = getEmulatorFirestore();
     const id = randomUUID();
     const session = practiceSession();
     session.organizerId = "departure-guidance-" + id;

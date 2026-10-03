@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync, writeFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {operationContentHash} from "../../operations/durableActions";
 import type {ResolveEventAssistanceCaseCallablePayload as Command} from
@@ -375,7 +376,7 @@ test("Firestore contending resolutions apply once and fence recreated guests", {
   assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await harness(db);
     const command = await h.command();

@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {LiveAssistanceEnrollmentStore} from "./liveEnrollmentStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
@@ -204,7 +205,7 @@ test("Firestore serializes automatic enrollment and runtime rebinding", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await enrollmentHarness(getFirestore(app));
+    const h = await enrollmentHarness(getEmulatorFirestore(app));
     await h.db.doc(h.guestPath).delete();
     const enrolled = await Promise.all([h.ensure(), h.ensure()]);
     assert.equal(enrolled.filter((r) => r.kind === "enrolled").length, 1);

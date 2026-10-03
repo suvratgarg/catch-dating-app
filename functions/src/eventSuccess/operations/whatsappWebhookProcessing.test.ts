@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash, createHmac, randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
 import {validateOrganizerMessagingWebhookEventDocument} from
@@ -286,7 +287,7 @@ test("Firestore retries converge on one reply and one terminal checkpoint", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "wa-queue-" + id);
   try {
-    const h = await harness(getFirestore(app), id);
+    const h = await harness(getEmulatorFirestore(app), id);
     await h.claim();
     const service = processor(h);
     const replyId = await reply(h, id);

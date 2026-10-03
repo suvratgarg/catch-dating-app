@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
@@ -14,7 +15,7 @@ test("checkpoint management uses receipts and current authority", {
     getEventRehearsalMovementHandler: read,
     resetEventRehearsalHandler: reset} = await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const h = harness(); h.arrive(); h.arrive(1);
   // A bar-crawl checkpoint does not require the general accountability sweep.
   h.session.setup.moduleIds = h.session.setup.moduleIds.filter((m) =>

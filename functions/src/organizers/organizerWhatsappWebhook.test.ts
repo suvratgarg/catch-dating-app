@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {FakeFirestore} from "../operations/testFirestore";
 import {ingestMetaWhatsappWebhook, parseMetaWhatsappWebhook,
   processOrganizerMessagingWebhookEvent} from
@@ -355,7 +356,7 @@ test("Firestore deduplicates competing signed WhatsApp replies", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "wa-hook-" + id);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   const connectionRef = db.collection("organizerSenderConnections").doc(id);
   const phoneNumberId = BigInt("0x" + id.replace(/-/g, "").slice(0, 16))
     .toString();
@@ -399,7 +400,7 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
 }, async () => {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "wa-stop-" + id);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   const organizerId = `org-${id}`;
   const uid = `person-${id}`;
   const contactId = `contact-${id}`;

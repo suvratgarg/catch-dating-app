@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {operationCollections} from "../../operations/collections";
 import {eventStaffGrantId} from "../../shared/eventOperatorAuthority";
@@ -275,7 +276,7 @@ test("Firestore competing assignments have one winner and retry safely", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "checkpoint-reassignment-" + randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     const input = await h.assign();
     const results = await Promise.allSettled(Array.from({length: 6}, () =>
       h.owners.reassign(manager, input)));

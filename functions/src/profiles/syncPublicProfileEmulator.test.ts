@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {readFileSync} from "node:fs";
@@ -5,7 +6,6 @@ import {resolve} from "node:path";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {syncOrganizerHostProfile} from "./syncPublicProfile";
 import {addOrganizerManagerHandler, removeOrganizerManagerHandler,
   transferOrganizerOwnershipHandler} from "../organizers/manageOrganizerTeam";
@@ -66,7 +66,7 @@ test("removal and transfer fence stale sync and callable/rules access",
     const owner = `owner-${suffix}`;
     const manager = `manager-${suffix}`;
     const app = initializeApp({projectId}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const [host, port] = emulator!.split(":");
     const env = await initializeTestEnvironment({projectId, firestore: {
       host, port: Number(port),

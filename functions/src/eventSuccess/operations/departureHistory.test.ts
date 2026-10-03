@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync, writeFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {EventDepartureHistoryStore} from "./departureHistoryStore";
 import {listEventAssistanceDepartureRostersHandler} from
@@ -239,7 +240,7 @@ test("Firestore history query paginates older roster scopes", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await harness(getFirestore(app));
+    const h = await harness(getEmulatorFirestore(app));
     for (let i = 0; i < 12; i++) await depart(h, []);
     const first = await h.history.list(manager, h.scope);
     const second = await h.history.list(manager, {...h.scope,

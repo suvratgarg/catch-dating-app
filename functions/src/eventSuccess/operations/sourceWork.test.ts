@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import {rcsSubscriptionId} from "./rcsSubscriptions";
 import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
@@ -5,7 +6,7 @@ import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {newLiveWorkRecords} from "./liveWorkRecords";
@@ -505,7 +506,7 @@ test("Firestore arbitrates source work and indexed scope fanout", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await harness(2, getFirestore(app));
+    const h = await harness(2, getEmulatorFirestore(app));
     const [a, b] = await Promise.all([h.work.enqueue(h.input),
       h.work.enqueue(h.input)]);
     assert.equal(Number(a.replayed) + Number(b.replayed), 1);

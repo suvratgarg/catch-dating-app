@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {ProgressFirestore} from "./groupProgressTestFixtures";
 import type {SetEventAssistanceSmsPreferenceCallablePayload as Submission} from
@@ -350,7 +351,7 @@ test("Firestore persists one grant across competing participant requests", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "sms-consent-" + key);
   try {
-    const h = await harness(getFirestore(app), key);
+    const h = await harness(getEmulatorFirestore(app), key);
     const actor = {...h.actor, phone: "+918888889999"};
     await h.write(h.attendeePath, {...await h.read(h.attendeePath),
       phoneE164: actor.phone});

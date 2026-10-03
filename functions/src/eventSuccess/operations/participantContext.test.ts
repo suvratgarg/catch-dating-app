@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync, writeFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {ProgressFirestore} from "./groupProgressTestFixtures";
 import {getEventAssistanceParticipantContextHandler as handler,
@@ -77,7 +78,7 @@ test("emulator self-resolution never links, rewrites or chooses ambiguous rows",
   {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const key = randomUUID(); const app = initializeApp({projectId:
       process.env.GCLOUD_PROJECT || "demo-catch-rules"}, "context-" + key);
-    const db = getFirestore(app); const id = "event-" + key;
+    const db = getEmulatorFirestore(app); const id = "event-" + key;
     const refs = [db.collection("events").doc(id),
       db.collection("eventAttendees").doc("own-" + key),
       db.collection("eventAttendees").doc("other-" + key)];

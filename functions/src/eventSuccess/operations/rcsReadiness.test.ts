@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHmac, randomUUID} from "node:crypto";
 import {readFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {rcsConsentCollections, parseRcsPermission, rcsPermissionId} from
@@ -304,7 +305,7 @@ test("Firestore resolves exact RCS conversation pages and guest wakes", {
   const app = initializeApp({projectId: "demo-rcs-readiness-" + id.slice(0, 8)},
     "rcs-readiness-" + id);
   try {
-    await conversationDiscovery(getFirestore(app));
+    await conversationDiscovery(getEmulatorFirestore(app));
   } finally {
     await deleteApp(app);
   }

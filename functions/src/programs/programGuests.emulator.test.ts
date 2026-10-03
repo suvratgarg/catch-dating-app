@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {baseSeed, request, now} from "../shared/testing/programFixtures";
 import {listProgramGuestsHandler, upsertProgramGuestHandler,
   upsertProgramHouseholdHandler} from "./programGuests";
@@ -13,7 +13,7 @@ test("Firestore paginates equal names and serializes household moves",
   {skip: !enabled}, async () => {
     const id = randomUUID();
     const app = initializeApp({projectId: "demo-catch-rules"}, id);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const programId = `household-test-${id}`;
     const organizerId = `household-org-${id}`;
     const seed = baseSeed();

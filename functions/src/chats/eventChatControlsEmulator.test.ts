@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {getEventChatAccessHandler as get,
   updateEventChatAccessHandler as update} from "./eventChatAccess";
@@ -18,7 +19,7 @@ test("scheduled, announcement-only, paused and archived room authority",
     const host = `host-${suffix}`;
     const person = `person-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     let now = 500;
     const deps = {db: () => db, now: () => Timestamp.fromMillis(now),
       rateLimit: async () => undefined};

@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {createHmac, randomUUID} from "node:crypto";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {Request} from "firebase-functions/v2/https";
 import {rcsHarness, rcsHttpResponse} from "./rcsDispatchTestHarness";
 import {keys, start} from "./whatsappTestHarness";
@@ -158,7 +159,7 @@ test("Firestore connects RCS publication, dispatch and webhook receipt", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-rcs-live-" + id.slice(0, 8)}, id);
   try {
-    await callbackAfterPause(getFirestore(app));
+    await callbackAfterPause(getEmulatorFirestore(app));
   } finally {
     await deleteApp(app);
   }

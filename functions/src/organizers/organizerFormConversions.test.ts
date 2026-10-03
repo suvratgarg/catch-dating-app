@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -440,7 +441,7 @@ test("Firestore conversion authority, receipts and attendee handoff",
     assert.match(conversionEmulator!, /^(127\.0\.0\.1|localhost):[0-9]+$/u);
     const app = admin.initializeApp({projectId: "demo-catch-form-conversions"},
       `form-conversions-${Date.now()}`);
-    const db = admin.firestore(app);
+    const db = getEmulatorFirestore(app);
     const collections = ["organizers", "organizerForms",
       "organizerFormVersions", "organizerFormResponses",
       "organizerFormConversionReceipts", "organizerApplications",

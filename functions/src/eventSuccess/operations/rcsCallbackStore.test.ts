@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {createHmac, randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {Request, Response} from "express";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {createRcsWebhookIngress} from "./rcsWebhookIngress";
@@ -416,8 +417,8 @@ test(
     const projectId = "demo-rcs-inbox-" + key.slice(0, 8);
     const firstApp = initializeApp({projectId}, "rcs-first-" + key);
     const secondApp = initializeApp({projectId}, "rcs-second-" + key);
-    const db = getFirestore(firstApp);
-    const otherDb = getFirestore(secondApp);
+    const db = getEmulatorFirestore(firstApp);
+    const otherDb = getEmulatorFirestore(secondApp);
     const first = new RcsCallbackStore(db, () => at);
     const second = new RcsCallbackStore(otherDb, () => at);
     const callback = verified();
