@@ -320,9 +320,10 @@ test("revocation works after STOP and ingress revocation",
       provenanceSha256, null);
   });
 
-// Explicit opt-in and loopback-only host prevent accidental live data access.
-const emulatorEnabled = process.env.CATCH_READINESS_EMULATOR_TESTS === "1";
+// The canonical rules lane supplies this host; ordinary unit tests may skip.
+// Reject non-loopback hosts before any SDK initialization or data access.
 const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST ?? "";
+const emulatorEnabled = emulatorHost.length > 0;
 if (emulatorEnabled &&
     !/^(127\.0\.0\.1|localhost):[0-9]+$/u.test(emulatorHost)) {
   throw new Error("Readiness tests require a loopback Firestore emulator");
