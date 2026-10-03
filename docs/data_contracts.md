@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.161.1
+version: 1.161.2
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -4873,7 +4873,7 @@ caller can be wired. The adapter itself invokes the bounded offline
 `catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
 not a native Meta export parser. The trusted immutable source loader must pin
 exact bytes and an independent authenticity/completeness audit. Empty history,
-unsupported or truncated records, and historical STOP fail closed. No approved
+unsupported or truncated records, and historical STOP fail closed. No live authenticated
 history producer is provided. Independent complete historical STOP provenance is also
 mandatory: archive validation, current receipt queries and evidence hashes do
 not establish missing historical truth. No live readiness write is authorized
@@ -4887,3 +4887,55 @@ adapter, not against arbitrary privileged Admin SDK mutation. Outbound gates
 remain off by default; this milestone makes no provider call, credential change,
 backend deployment or activation. The 24-hour cutoff is a transport eligibility
 rule, not a verified pricing claim.
+
+
+`whatsappReadinessEvidence.ts` provides disconnected protected producer and
+read-only loader protocols. Preparation accepts an opaque review reference and
+requires independent authenticated-review, actual atomic-ingress audit and
+immutable archive/pin sources. It validates existing contracts, exact decision
+binding and historical session observations; unexpected fields and private
+backend errors are rejected without exposing their values. Dependency arguments,
+results and archive bytes are copied across awaits. Its create-only publisher is
+an interface only: there is no implementation, new collection, live producer,
+publication call or enabled readiness output. Hashes and synthetic tests prove
+neither source authenticity nor historical completeness.
+
+The review observation binds the verified token UID/project/auth_time and token
+expiry to the observed tokens-valid-after cutoff, enabled owner role, review
+time, exact decision digest and authenticated source provenance. Token expiry
+bounds the proposed approval expiry. This records authentication at that review;
+it is not `sessionCurrent`, an authority epoch, protection against revoke/regrant
+or delete/recreate races, or the mandatory full-span Auth fence. The protected
+archive loader revalidates the exact approval and existing history verifier but
+cannot authenticate arbitrary caller-supplied bytes or pins. Actual immutable
+storage, authorized publication and independently audited sources remain absent.
+
+### Readiness authority mutation boundary
+
+The scoped source inventory identifies these paths; it is not an inventory of
+live IAM, tenant configuration or every authorized principal:
+
+| Path | Relevant behavior and limit |
+|---|---|
+| `functions/src/admin/adminUserRoles.ts` | Writes Auth custom claims, then projects `adminRoleAssignments` separately. The projection does not fence Auth changes inside a readiness transaction. |
+| `functions/src/safety/accountDeletion.ts` | Writes the recipient `deletedUsers` tombstone before Auth deletion. Readiness reads that guard; direct Auth deletion bypasses this application path. |
+| `tool/demo/cross_paths_demo_core.mjs` | Privileged fixture tooling can clear/reassign phone numbers, create users and alter test-phone configuration. It has scoped guards including an explicitly pinned production path, not a readiness lock. |
+| `tool/firebase/probe_chat_storage_rules.mjs` | Mints and exchanges a custom token for a selected user after its own data preflight; it does not establish a readiness authority fence. |
+| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
+
+The client SDK also exposes account deletion, linking/unlinking, password and
+phone mutation capabilities independently of whether the current application UI
+uses them. Their actual availability depends on provider configuration. Firebase
+console, other Admin SDK/REST clients, privileged imports and automation, and
+provider self-service routes remain outside this source inventory. No production
+session-revocation or bulk-import writer was found in this scoped search; that
+absence does not establish absence of external capability.
+
+The send path observes actor roles, disabled state and token revocation cutoff,
+plus the recipient's enabled state and exact verified phone. The readiness
+reviewer check observes current enabled/adminOwner status but not the reviewer's
+session revocation. None of those external Auth reads participates atomically in
+Firestore commits. A future audited fence must address role removal/regrant,
+enable/delete/recreate, session revocation and phone unlink/reassign/restore,
+including changes through external principals. No application epoch protocol or
+live authority fence is introduced by these producer interfaces.

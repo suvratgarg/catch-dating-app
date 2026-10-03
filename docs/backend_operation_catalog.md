@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.93.1
+version: 1.93.2
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -733,7 +733,7 @@ caller can be wired. The adapter itself invokes the bounded offline
 `catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
 not a native Meta export parser. The trusted immutable source loader must pin
 exact bytes and an independent authenticity/completeness audit. Empty history,
-unsupported or truncated records, and historical STOP fail closed. No approved
+unsupported or truncated records, and historical STOP fail closed. No live authenticated
 history producer is provided. Independent complete historical STOP provenance is also
 mandatory: archive validation, current receipt queries and evidence hashes do
 not establish missing historical truth. No live readiness write is authorized
@@ -747,3 +747,30 @@ adapter, not against arbitrary privileged Admin SDK mutation. Outbound gates
 remain off by default; this milestone makes no provider call, credential change,
 backend deployment or activation. The 24-hour cutoff is a transport eligibility
 rule, not a verified pricing claim.
+
+
+`whatsappReadinessEvidence.ts` provides disconnected protected producer and
+read-only loader protocols. Preparation accepts an opaque review reference and
+requires independent authenticated-review, actual atomic-ingress audit and
+immutable archive/pin sources. It validates existing contracts, exact decision
+binding and historical session observations; unexpected fields and private
+backend errors are rejected without exposing their values. Dependency arguments,
+results and archive bytes are copied across awaits. Its create-only publisher is
+an interface only: there is no implementation, new collection, live producer,
+publication call or enabled readiness output. Hashes and synthetic tests prove
+neither source authenticity nor historical completeness.
+
+The review observation binds the verified token UID/project/auth_time and token
+expiry to the observed tokens-valid-after cutoff, enabled owner role, review
+time, exact decision digest and authenticated source provenance. Token expiry
+bounds the proposed approval expiry. This records authentication at that review;
+it is not `sessionCurrent`, an authority epoch, protection against revoke/regrant
+or delete/recreate races, or the mandatory full-span Auth fence. The protected
+archive loader revalidates the exact approval and existing history verifier but
+cannot authenticate arbitrary caller-supplied bytes or pins. Actual immutable
+storage, authorized publication and independently audited sources remain absent.
+
+The scoped Auth mutation inventory and remaining external-administration gap are
+recorded in [Readiness authority mutation boundary](data_contracts.md#readiness-authority-mutation-boundary).
+Role projections, token observations and application deletion tombstones are not
+a substitute for the mandatory full-span authority fence.
