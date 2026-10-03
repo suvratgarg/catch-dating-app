@@ -2,7 +2,6 @@ import * as admin from "firebase-admin";
 import {snapshotMatchesLeg} from "./flightIdentity";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
-import {loadFlightProviderConfig} from "./flightProviderConfig";
 
 import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -67,7 +66,9 @@ export interface FlightAlertWebhookDeps {
 
 export const defaultFlightAlertWebhookDeps: FlightAlertWebhookDeps = {
   firestore: () => admin.firestore(),
-  secret: async () => (await loadFlightProviderConfig())?.webhookSecret ?? "",
+  // No alert-enabled mode is admitted yet. Stored credentials cannot enable
+  // webhook ingestion or delivery-credit spending in the polling-only pilot.
+  secret: () => "",
   now: () => new Date(),
 };
 
