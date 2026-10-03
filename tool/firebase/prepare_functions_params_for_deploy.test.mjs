@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -55,6 +57,8 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     'FLIGHT_PROVIDER_POLICY=" "',
+    'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
+    'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -102,6 +106,8 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     'FLIGHT_PROVIDER_POLICY=" "',
+    'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
+    'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
     "",
   ].join("\n"));
 });
@@ -452,4 +458,34 @@ test("materialization refuses changed provenance before writing and never follow
   fs.symlinkSync(sentinel, output);
   assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId, environment: publicIds}));
   assert.equal(fs.readFileSync(sentinel, "utf8"), "preserve");
+});
+
+
+test("supplied falsy or malformed provenance never writes a deployment file", () => {
+  for (const receipt of [null, false, 0, "", "text", [], {}]) {
+    const functionsDir = fixture();
+    try {
+      const receiptPath = path.join(functionsDir, "receipt.json");
+      fs.writeFileSync(receiptPath, JSON.stringify(receipt));
+      const result = spawnSync(process.execPath, [fileURLToPath(new URL("./prepare_functions_params_for_deploy.mjs", import.meta.url)),
+        "--functions-dir", functionsDir, "--project", "catchdates-dev", "--source-sha", "a".repeat(40), "--provenance", receiptPath],
+      {encoding: "utf8", env: publicIds});
+      assert.notEqual(result.status, 0);
+      assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")), false);
+    } finally { fs.rmSync(functionsDir, {recursive: true, force: true}); }
+  }
+});
+
+test("assistance references are represented explicitly and constrained to their own secret", () => {
+  const options = {projectId: "catchdates-dev", sourceSha: "a".repeat(40), environment: publicIds};
+  const blank = functionsParamsProvenance(options);
+  for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
+    ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
+    assert.equal(blank.references[name], null);
+    const reference = `projects/catchdates-dev/secrets/${secret}/versions/7`;
+    assert.equal(functionsParamsProvenance({...options, environment: {...publicIds, [name]: reference}}).references[name], reference);
+    for (const bad of [reference.replace("/7", "/latest"), reference.replace("catchdates-dev", "foreign-project"), reference.replace(secret, "OTHER_SECRET")]) {
+      assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds, [name]: bad}}), /must pin its expected secret/);
+    }
+  }
 });

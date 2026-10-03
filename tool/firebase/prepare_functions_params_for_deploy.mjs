@@ -41,6 +41,8 @@ export const materializedNonSecretParams = [
   "FLIGHT_WEBHOOK_BASE_URL",
   "FLIGHT_PROVIDER_CONFIG_VERSION",
   "FLIGHT_PROVIDER_POLICY",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
+  "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ];
 
 function option(name) {
@@ -162,6 +164,15 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(!environment.FLIGHT_PROVIDER_POLICY?.trim(),
     "FLIGHT_PROVIDER_POLICY must remain unconfigured in this milestone");
 
+  const assistanceReferences = {};
+  for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
+    ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
+    const reference = environment[name]?.trim() || "";
+    const prefix = `projects/${projectId}/secrets/${secret}/versions/`;
+    assert(!reference || reference.startsWith(prefix) && /^[1-9][0-9]*$/.test(reference.slice(prefix.length)),
+      `${name} must pin its expected secret in this project`);
+    assistanceReferences[name] = reference || " ";
+  }
   const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
@@ -193,6 +204,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
     FLIGHT_PROVIDER_POLICY: " ",
+    ...assistanceReferences,
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
@@ -203,6 +215,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
 const referenceNames = Object.freeze([
   "FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ]);
 const activationNames = Object.freeze([
   "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
@@ -250,7 +263,7 @@ export function prepareFunctionsParamsForDeploy({
   const params = normalizedProviderParams(environment, projectId);
   const outputPath = path.join(resolvedFunctionsDir, `.env.${projectId}`);
   const contents = paramsContents(params);
-  if (expectedProvenance) {
+  if (expectedProvenance !== undefined) {
     const actual = functionsParamsProvenance({projectId, sourceSha, environment});
     assert(JSON.stringify(actual) === JSON.stringify(expectedProvenance),
       "Deployment parameter provenance changed after readiness; repeat preflight");
@@ -273,7 +286,7 @@ function runCli() {
   }
   const result = prepareFunctionsParamsForDeploy({
     functionsDir: path.resolve(option("--functions-dir")), projectId: option("--project"),
-    ...(expectedProvenance ? {expectedProvenance, sourceSha: option("--source-sha")} : {}),
+    ...(process.argv.includes("--provenance") ? {expectedProvenance, sourceSha: option("--source-sha")} : {}),
   });
   console.log(`Materialized non-secret Functions params; Meta enabled: ${result.enabled}.`);
 }

@@ -5,6 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
+  classifyForbiddenSecretAccess,
+  buildCandidateBindings,
   assertMetadataOnlyCommand,
   buildFunctionBindingsCommand,
   observeFunctionBinding,
@@ -112,6 +114,10 @@ test("usage is explicit and unsafe project/apply overrides are rejected", () => 
     {
       all: false,
       candidate: null,
+      sourceRoot: null,
+      sourceSha: null,
+      paramsProvenance: null,
+      writeCandidate: null,
       phase: "deployed",
       capabilities: ["cross-paths"],
       environment: "dev",
@@ -1044,4 +1050,61 @@ test("authored source witnesses catch omitted flight retention and unrelated dir
   const changed = new Map(sources), source = "functions/src/programs/programRetention.ts";
   changed.set(source, sources.get(source).replace("await deps.loadFlightApiKey()", "await deps.unrelatedOperation()"));
   assert.throws(() => validateFlightConsumerWitnesses(sourceConsumerFacts(ts, changed), manifest), /Review changed flight runtime edge/u);
+});
+
+test("source candidate resolves only SDK latest metadata and fails disabled selected versions", async () => {
+  const {functionsParamsProvenance} = await import("./prepare_functions_params_for_deploy.mjs");
+  const sourceSha = "a".repeat(40), projectId = "catchdates-dev", environment = "dev", projectNumber = "123";
+  const requirement = manifest.requirements.find((entry) => entry.name === "ALGOLIA_SEARCH_API_KEY");
+  const paramsProvenance = functionsParamsProvenance({projectId, sourceSha,
+    environment: {ALGOLIA_APPLICATION_ID: "abcdefghij", RAZORPAY_PUBLIC_KEY_ID: "rzp_test_fake"}});
+  const intent = {schemaVersion: 1, sourceSha, projectId, projectNumber, environment,
+    functions: [{consumer: "exploreSearch", platform: "gcfv2", serviceAccount: "123-compute@developer.gserviceaccount.com",
+      secretNames: ["ALGOLIA_SEARCH_API_KEY"]}]};
+  const commands = [];
+  const options = {environment, projectId, projectNumber, sourceSha, requirements: [requirement],
+    targets: ["functions:exploreSearch"], intent, paramsProvenance,
+    runCommand(spec) { commands.push(spec); return {status: 0, stdout: JSON.stringify({
+      name: "projects/123/secrets/ALGOLIA_SEARCH_API_KEY/versions/7", state: "ENABLED", payload: "never-persist-me"})}; }};
+  const candidate = buildCandidateBindings(options);
+  assert.equal(candidate.bindings[0].reference, "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/7");
+  assert.equal(JSON.stringify(candidate).includes("never-persist-me"), false);
+  assert.equal(commands[0].args[3], "latest");
+  assert.equal(commands[0].args.includes("--format=json(name,state)"), true);
+  for (const state of ["DISABLED", "DESTROYED", "UNKNOWN"]) {
+    assert.throws(() => buildCandidateBindings({...options, runCommand: () => ({status: 0, stdout: JSON.stringify({
+      name: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/7", state})})}), /missing, disabled or unobservable/);
+  }
+  for (const mutate of [
+    (o) => { o.intent.functions[0].secretNames = []; },
+    (o) => { o.intent.functions[0].secretNames.push("UNREVIEWED_SECRET"); },
+    (o) => { o.intent.functions[0].serviceAccount = null; },
+    (o) => { o.paramsProvenance.references.FLIGHT_PROVIDER_CONFIG_VERSION = "projects/foreign-project/secrets/KEY/versions/1"; },
+    (o) => { o.paramsProvenance.references.FLIGHT_PROVIDER_CONFIG_VERSION = "projects/catchdates-dev/secrets/KEY/versions/latest"; },
+    (o) => { o.paramsProvenance.payload = "never-persist-me"; },
+    (o) => { o.paramsProvenance.sourceSha = "b".repeat(40); },
+  ]) {
+    const copy = structuredClone({...options, runCommand: undefined}); mutate(copy);
+    assert.throws(() => buildCandidateBindings({...copy, runCommand: options.runCommand}), /Invalid source intent/);
+  }
+  const report = runEnvironmentReadiness({aliases, environments: [environment], manifest, sourceSha,
+    candidate, phase: "candidate", targets: options.targets, runCommand: (spec) =>
+      spec.args[0] === "functions" ? {status: 0, stdout: "[]"} : readyMetadataRunner(spec)});
+  assert.equal(report.exitCode, 0, "first deployment uses intended source identity, not missing observed Function");
+});
+
+
+test("an active feature identity with unrelated WhatsApp grants fails the explicit boundary", () => {
+  const serviceAccount = "flight-provider@catchdates-dev.iam.gserviceaccount.com";
+  const secret = "ORGANIZER_WHATSAPP_ACCESS_TOKENS";
+  for (const role of ["roles/secretmanager.secretAccessor", "roles/secretmanager.secretVersionManager", "roles/secretmanager.admin"]) {
+    const result = classifyForbiddenSecretAccess({serviceAccount, secret, result: {status: 0,
+      stdout: JSON.stringify({bindings: [{role, members: [`serviceAccount:${serviceAccount}`]}], payload: "not-printed"})}});
+    assert.equal(result.reason, "unrelated-secret-permission-leakage");
+    assert.equal(result.status, "not-ready");
+    assert.equal(JSON.stringify(result).includes("not-printed"), false);
+  }
+  const absent = classifyForbiddenSecretAccess({serviceAccount, secret, result: {status: 0, stdout: '{"bindings":[]}'}});
+  assert.equal(absent.metadata.effectiveAccessVerified, false);
+  assert.equal(classifyForbiddenSecretAccess({serviceAccount, secret, result: {status: 1, stderr: "PERMISSION_DENIED"}}).status, "unknown");
 });

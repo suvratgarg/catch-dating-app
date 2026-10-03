@@ -125,12 +125,13 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
-          "functions:cancelEvent",
           "functions:cancelEventSignUp",
           "functions:createRazorpayHostPaymentAccount",
           "functions:createRazorpayOrder",
+          "functions:onNativeCancellationRefund",
           "functions:razorpayWebhook",
           "functions:reconcileRazorpayOrders",
+          "functions:recoverNativeCancellationRefunds",
           "functions:refreshRazorpayHostPaymentAccount",
           "functions:verifyRazorpayPayment"
         ]
@@ -193,8 +194,11 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
+          "functions:cancelEventSignUp",
           "functions:createStripeCheckoutSession",
           "functions:createStripeHostOnboardingLink",
+          "functions:onNativeCancellationRefund",
+          "functions:recoverNativeCancellationRefunds",
           "functions:refreshStripeHostPaymentAccount",
           "functions:stripeWebhook"
         ]
@@ -363,9 +367,9 @@
           "functions:dispatchScheduledOrganizerCampaigns",
           "functions:getOrganizerMessagingSetup",
           "functions:organizerWhatsappWebhook",
+          "functions:sendOrganizerWhatsappReply",
           "functions:sendOrganizerWhatsappTest",
-          "functions:syncOrganizerWhatsappTemplates",
-          "functions:sendOrganizerWhatsappReply"
+          "functions:syncOrganizerWhatsappTemplates"
         ]
       },
       "acceptedStates": [
@@ -431,9 +435,10 @@
           "functions:disconnectOrganizerWhatsappConnection",
           "functions:dispatchOrganizerCampaign",
           "functions:dispatchScheduledOrganizerCampaigns",
+          "functions:getOrganizerMessagingSetup",
+          "functions:sendOrganizerWhatsappReply",
           "functions:sendOrganizerWhatsappTest",
-          "functions:syncOrganizerWhatsappTemplates",
-          "functions:sendOrganizerWhatsappReply"
+          "functions:syncOrganizerWhatsappTemplates"
         ]
       },
       "acceptedStates": [
@@ -475,13 +480,15 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
-          "functions:onEventAttendeeAudienceProjected",
+          "functions:convertOrganizerFormResponse",
           "functions:createOrganizerContact",
           "functions:mutateOrganizerContact",
-          "functions:onOrganizerFormResponseAutomated",
+          "functions:onEventAttendeeAudienceProjected",
           "functions:onOrganizerApplicationAutomated",
           "functions:onOrganizerAttendanceAutomated",
-          "functions:retryOrganizerAutomations"
+          "functions:onOrganizerFormResponseAutomated",
+          "functions:retryOrganizerAutomations",
+          "functions:reviewOrganizerApplication"
         ]
       },
       "acceptedStates": [
@@ -778,7 +785,10 @@
         "exactReference": "same-project-numeric",
         "identity": "observed-function-service-account",
         "parameter": "FLIGHT_PROVIDER_CONFIG_VERSION",
-        "optional": true
+        "optional": true,
+        "forbiddenSecretAccess": [
+          "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
+        ]
       },
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",

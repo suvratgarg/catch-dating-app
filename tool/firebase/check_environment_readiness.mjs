@@ -4,6 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 
+import {materializedNonSecretParams} from "./prepare_functions_params_for_deploy.mjs";
+import {collectFunctionBindingIntent} from "./function_binding_intent.mjs";
+
 import {inspectUploadIdentity, uploadIdentityTarget} from "./form_upload_identity.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
@@ -40,6 +43,10 @@ export function parseArgs(argv) {
   const parsed = {
     all: false,
     candidate: null,
+    sourceRoot: null,
+    sourceSha: null,
+    paramsProvenance: null,
+    writeCandidate: null,
     phase: "deployed",
     capabilities: [],
     environment: null,
@@ -61,6 +68,10 @@ export function parseArgs(argv) {
         ...parseCsv(requireValue(argv, ++index, arg), arg),
       );
     } else if (arg === "--candidate") parsed.candidate = requireValue(argv, ++index, arg);
+    else if (arg === "--source-root") parsed.sourceRoot = requireValue(argv, ++index, arg);
+    else if (arg === "--source-sha") parsed.sourceSha = requireValue(argv, ++index, arg);
+    else if (arg === "--params-provenance") parsed.paramsProvenance = requireValue(argv, ++index, arg);
+    else if (arg === "--write-candidate") parsed.writeCandidate = requireValue(argv, ++index, arg);
     else if (arg === "--phase") parsed.phase = requireValue(argv, ++index, arg);
     else if (arg === "--manifest-only") parsed.manifestOnly = true;
     else if (arg === "--json") parsed.json = true;
@@ -72,8 +83,15 @@ export function parseArgs(argv) {
   parsed.capabilities = [...new Set(parsed.capabilities)].sort();
   if (parsed.help) return parsed;
   if (!["candidate", "deployed"].includes(parsed.phase) ||
-      (parsed.phase === "candidate" && !parsed.candidate)) {
+      (parsed.phase === "candidate" && !parsed.candidate && !parsed.writeCandidate)) {
     throw new ReadinessUsageError("Candidate phase requires --candidate metadata; phase must be candidate or deployed.");
+  }
+
+  if (parsed.writeCandidate && (parsed.phase !== "candidate" || parsed.candidate || parsed.all ||
+      !parsed.paramsProvenance || !parsed.sourceRoot || !parsed.sourceSha) ||
+      parsed.paramsProvenance && !parsed.writeCandidate ||
+      parsed.sourceSha && !/^[a-f0-9]{40}$/u.test(parsed.sourceSha)) {
+    throw new ReadinessUsageError("Candidate generation requires one environment, approved source root/SHA and parameter provenance.");
   }
 
   for (const target of parsed.targets) {
@@ -861,6 +879,7 @@ export function validateCandidateBindings(candidate, {environment, projectId, so
         !(requirement.requiredWhen.anyDeployTarget ?? []).includes(`functions:${entry.consumer}`) ||
         !serviceAccountPattern.test(entry.serviceAccount ?? "") || typeof entry.active !== "boolean") invalid();
     const selected = parseSecretReference(entry.reference, projectId);
+    if (selected && requirement.name && selected.secret !== requirement.name) invalid();
     if (entry.active ? !selected || requirement.name && selected.secret !== requirement.name :
       (entry.reference !== null && !selected) || requirement.binding?.optional !== true ||
         entry.reference !== null && !requirement.binding.enabledParameter) invalid();
@@ -915,6 +934,93 @@ export function observeFunctionBinding({requirement, consumer, functions, projec
   return {status: active ? "ready" : "inactive", reason: active ? "binding-observed" : "consumer-disabled", serviceAccount, reference, active};
 }
 
+// firebase-tools 15.20 resolves SecretParam bindings through latest metadata,
+// then deploys the returned numeric version. This is resolution, not an SDK pin.
+export function buildCandidateBindings({environment, projectId, projectNumber, sourceSha,
+  requirements, targets, intent, paramsProvenance, runCommand = defaultRunCommand}) {
+  const invalid = () => { throw new ReadinessUsageError("Invalid source intent or names-only parameter provenance."); };
+  const exactKeys = (value, keys) => value && typeof value === "object" && !Array.isArray(value) &&
+    Object.keys(value).sort().join(",") === [...keys].sort().join(",");
+  const refs = ["FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+    "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+    "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"];
+  const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED"];
+  if (!exactKeys(paramsProvenance, ["version", "projectId", "sourceSha", "paramsSha256", "names", "references", "activation"]) ||
+      paramsProvenance.version !== 1 || paramsProvenance.projectId !== projectId || paramsProvenance.sourceSha !== sourceSha ||
+      !/^[a-f0-9]{64}$/u.test(paramsProvenance.paramsSha256 ?? "") ||
+      !exactKeys(paramsProvenance.references, refs) || !exactKeys(paramsProvenance.activation, flags) ||
+      !Array.isArray(paramsProvenance.names) || paramsProvenance.names.length !== materializedNonSecretParams.length ||
+      paramsProvenance.names.some((entry, index) => !exactKeys(entry, ["name", "source"]) || entry.name !== materializedNonSecretParams[index] ||
+        !["source-disabled", "deployment-environment", "source-default"].includes(entry.source)) ||
+      refs.some((name) => paramsProvenance.references[name] !== null && !parseSecretReference(paramsProvenance.references[name], projectId)) ||
+      flags.some((name) => typeof paramsProvenance.activation[name] !== "boolean") ||
+      intent?.sourceSha !== sourceSha || intent?.projectId !== projectId || intent?.environment !== environment ||
+      String(intent?.projectNumber) !== String(projectNumber) || !Array.isArray(intent?.functions)) invalid();
+  const bindings = [];
+  const resolved = new Map();
+  const selected = new Set(targets);
+  for (const requirement of requirements) {
+    if (!["secret-version", "secret-reference"].includes(requirement.kind)) continue;
+    for (const target of requirement.requiredWhen.anyDeployTarget.filter((target) => targetMatches(target, selected))) {
+      const consumer = target.slice("functions:".length);
+      const functions = intent.functions.filter((entry) => entry.consumer === consumer);
+      if (functions.length !== 1 || functions[0].platform !== "gcfv2" ||
+          !serviceAccountPattern.test(functions[0].serviceAccount ?? "")) invalid();
+      const fn = functions[0];
+      let reference, active;
+      if (requirement.kind === "secret-version") {
+        if (!fn.secretNames.includes(requirement.name)) invalid();
+        if (!resolved.has(requirement.name)) {
+          const response = executeMetadataCommand(metadataOnlyCommand(["secrets", "versions", "describe", "latest",
+            `--secret=${requirement.name}`, `--project=${projectId}`, "--format=json(name,state)", "--quiet"]), runCommand);
+          const metadata = parseJsonOutput(response.stdout);
+          const version = parseSecretReference(metadata?.name, projectId, projectNumber);
+          const failure = classifyCommandFailure(response) ??
+            (!version || version.secret !== requirement.name ? {status: "unknown", reason: "invalid-metadata-response"} :
+              metadata?.state !== "ENABLED" ? {status: "not-ready", reason: "selected-secret-version-not-enabled"} : null);
+          if (failure) {
+            const error = new Error("Candidate SecretParam latest version is missing, disabled or unobservable; no payload was read.");
+            error.probeResult = {id: requirement.id, kind: requirement.kind, resource: requirement.name, ...failure};
+            throw error;
+          }
+          resolved.set(requirement.name, version.reference);
+        }
+        reference = resolved.get(requirement.name); active = true;
+      } else {
+        reference = paramsProvenance.references[requirement.binding.parameter] ?? null;
+        const flag = requirement.binding.enabledParameter;
+        active = flag ? paramsProvenance.activation[flag] === true : Boolean(reference);
+        if (active && !reference || !reference && !requirement.binding.optional ||
+            reference && requirement.name && parseSecretReference(reference, projectId).secret !== requirement.name) invalid();
+      }
+      bindings.push({requirementId: requirement.id, consumer, serviceAccount: fn.serviceAccount, reference, active});
+    }
+  }
+  // Also reject source-bound SDK secrets absent from the contract for a consumer.
+  for (const fn of intent.functions) {
+    const contracted = requirements.filter((entry) => entry.kind === "secret-version" &&
+      entry.requiredWhen.anyDeployTarget.includes(`functions:${fn.consumer}`)).map((entry) => entry.name).sort();
+    if (JSON.stringify([...fn.secretNames].sort()) !== JSON.stringify(contracted)) invalid();
+  }
+  return {version: 1, sourceSha, environment, projectId, bindings};
+}
+
+export function classifyForbiddenSecretAccess({serviceAccount, secret, result}) {
+  const base = {id: `identity.unrelated-secret:${secret}`, kind: "identity-isolation", resource: secret};
+  const failure = classifyCommandFailure(result);
+  if (failure) return readinessResult({...base, ...failure});
+  const policy = parseJsonOutput(result.stdout);
+  if (!Array.isArray(policy?.bindings)) return readinessResult({...base, status: "unknown", reason: "invalid-metadata-response"});
+  const member = `serviceAccount:${serviceAccount}`;
+  const prohibited = new Set(["roles/secretmanager.secretAccessor", "roles/secretmanager.secretVersionManager",
+    "roles/secretmanager.admin", "roles/editor", "roles/owner"]);
+  const grants = [...new Set(policy.bindings.filter((entry) => !entry.condition &&
+    entry.members?.includes(member) && prohibited.has(entry.role)).map((entry) => entry.role))].sort();
+  return readinessResult({...base, status: grants.length ? "not-ready" : "ready",
+    reason: grants.length ? "unrelated-secret-permission-leakage" : "no-explicit-unrelated-secret-grant",
+    metadata: {serviceAccount, grants, evidenceScope: "secret-policy-only", effectiveAccessVerified: false}});
+}
+
 function assessSecretBindings({requirement, targets, projectId, projectNumber,
   functionsResult, candidate, phase, runCommand}) {
   const failure = classifyCommandFailure(functionsResult);
@@ -953,6 +1059,12 @@ function assessSecretBindings({requirement, targets, projectId, projectNumber,
       results.push(readinessResult({...base, metadata, status: "inactive", reason: binding.reference ? "consumer-disabled" : "optional-reference-unconfigured"}));
       continue;
     }
+    for (const secret of requirement.binding?.forbiddenSecretAccess ?? []) {
+      if (!secretNamePattern.test(secret)) throw new ReadinessUsageError("Invalid unrelated-secret identity boundary.");
+      results.push(classifyForbiddenSecretAccess({serviceAccount: binding.serviceAccount, secret,
+        result: executeMetadataCommand(buildSecretRuntimeAccessCommand({projectId,
+          requirement: {kind: "secret-version", name: secret}}), runCommand)}));
+    }
     const selected = parseSecretReference(binding.reference, projectId);
     const selectedRequirement = {...requirement, id, name: selected.secret,
       runtimeRoles: requirement.runtimeRolesByConsumer?.[consumer] ??
@@ -977,6 +1089,7 @@ export function exitCodeForResults(results) {
 export function runEnvironmentReadiness({
   aliases,
   candidate,
+  candidateFactory,
   sourceSha,
   phase = "deployed",
   capabilities = [],
@@ -1006,14 +1119,24 @@ export function runEnvironmentReadiness({
       result: executeMetadataCommand(identityCommand, runCommand),
     });
     const results = [identityResult];
+    let candidateProbeFailed = false;
+    if (candidateFactory && identityResult.status === "ready") {
+      try {
+        candidate = candidateFactory({environment, projectId, projectNumber: identityResult.metadata.projectNumber, requirements});
+        validateCandidateBindings(candidate, {environment, projectId, sourceSha, manifest});
+      } catch (error) {
+        if (!error.probeResult) throw error;
+        results.push(error.probeResult); candidateProbeFailed = true;
+      }
+    }
     const secretRequirements = requirements.filter((entry) =>
       ["secret-version", "secret-reference"].includes(entry.kind));
-    const functionsResult = secretRequirements.length && identityResult.status === "ready"
+    const functionsResult = secretRequirements.length && identityResult.status === "ready" && !candidateProbeFailed
       ? executeMetadataCommand(buildFunctionBindingsCommand({projectId, requirements: secretRequirements}), runCommand)
       : {status: null, stdout: "", stderr: ""};
     for (const requirement of requirements) {
       if (["secret-version", "secret-reference"].includes(requirement.kind)) {
-        if (identityResult.status === "ready") results.push(...assessSecretBindings({
+        if (identityResult.status === "ready" && !candidateProbeFailed) results.push(...assessSecretBindings({
           requirement, targets, projectId, projectNumber: identityResult.metadata.projectNumber,
           functionsResult, candidate, phase, runCommand}));
         continue;
@@ -1082,7 +1205,15 @@ export function executeReadinessCli(argv, dependencies = {}) {
   if (args.help) {
     return {exitCode: 0, output: helpText()};
   }
-  const repoRoot = dependencies.repoRoot ?? defaultRepoRoot;
+  const repoRoot = args.sourceRoot ? path.resolve(args.sourceRoot) : dependencies.repoRoot ?? defaultRepoRoot;
+  const sourceSha = args.sourceSha ?? dependencies.sourceSha ?? spawnSync("git", ["rev-parse", "HEAD"],
+    {cwd: repoRoot, encoding: "utf8"}).stdout?.trim();
+  if (args.sourceRoot && (spawnSync("git", ["rev-parse", "HEAD"],
+    {cwd: repoRoot, encoding: "utf8"}).stdout?.trim() !== sourceSha ||
+    spawnSync("git", ["diff", "HEAD", "--quiet", "--", "functions/src", "tool/firebase/environment_readiness.json", ".firebaserc"],
+      {cwd: repoRoot}).status !== 0)) {
+    throw new ReadinessUsageError("Approved source checkout does not match the receipt SHA.");
+  }
   const readFile = dependencies.readFile ?? fs.readFileSync;
   const pathExists = dependencies.pathExists ?? fs.existsSync;
   const manifestPath = dependencies.manifestPath ?? path.join(
@@ -1153,16 +1284,29 @@ export function executeReadinessCli(argv, dependencies = {}) {
     ? [...manifest.environments]
     : [args.environment];
   const candidate = args.candidate ? readJsonFile(args.candidate, readFile) : null;
-  const sourceSha = dependencies.sourceSha ?? spawnSync("git", ["rev-parse", "HEAD"],
-    {cwd: repoRoot, encoding: "utf8"}).stdout?.trim();
+  let generatedCandidate;
+  const paramsProvenance = args.paramsProvenance ? readJsonFile(args.paramsProvenance, readFile) : null;
+  const candidateFactory = args.writeCandidate ? ({environment, projectId, projectNumber, requirements}) => {
+    const consumers = [...functionTargets].filter((target) => targetMatches(target, new Set(args.targets)))
+      .map((target) => target.slice("functions:".length));
+    const intent = consumers.length ? collectFunctionBindingIntent({sourceRoot: repoRoot,
+      environment, projectId, projectNumber, sourceSha, consumers}) : {schemaVersion: 1, sourceSha, environment, projectId, projectNumber, functions: []};
+    generatedCandidate = buildCandidateBindings({environment, projectId, projectNumber, sourceSha,
+      requirements, targets: args.targets, intent, paramsProvenance, runCommand: dependencies.runCommand});
+    return generatedCandidate;
+  } : undefined;
   const report = runEnvironmentReadiness({
-    aliases, candidate, sourceSha, phase: args.phase,
+    aliases, candidate, candidateFactory, sourceSha, phase: args.phase,
     capabilities: args.capabilities,
     environments,
     manifest,
     runCommand: dependencies.runCommand,
     targets: args.targets,
   });
+  if (args.writeCandidate && report.exitCode === 0 && generatedCandidate) {
+    // Exclusive create prevents accidental replacement of an approved receipt.
+    fs.writeFileSync(args.writeCandidate, JSON.stringify(generatedCandidate, null, 2) + "\n", {flag: "wx", mode: 0o600});
+  }
   return {
     exitCode: report.exitCode,
     output: formatReport(report, args.json),
