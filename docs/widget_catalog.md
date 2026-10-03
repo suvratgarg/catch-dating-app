@@ -644,11 +644,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDetailCalloutCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:340</code> | — | — | Compact host identity, with all affordances derived from available actions. |
 | <code>GuestBookCta</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:318</code> | — | — | No class documentation or registry summary. |
-| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:23</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
-| <code>EventCtaStatusLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:468</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailCta</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:78</code> | — | — | No class documentation or registry summary. |
-| <code>PriceLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:388</code> | — | — | No class documentation or registry summary. |
-| <code>WaitlistOfferLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:425</code> | — | — | No class documentation or registry summary. |
+| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:25</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
+| <code>EventCtaStatusLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:523</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailCta</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:80</code> | — | — | No class documentation or registry summary. |
+| <code>PriceLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:443</code> | — | — | No class documentation or registry summary. |
+| <code>WaitlistOfferLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:480</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
 | <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:77</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |

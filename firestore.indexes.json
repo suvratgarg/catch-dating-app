@@ -1,6 +1,50 @@
 {
   "indexes": [
     {
+      "collectionGroup": "catchWhatsappReplyOperations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "wabaId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "phoneNumberId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "endpointHash",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "providerMessageId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "catchWhatsappWebhookEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "wabaId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "phoneNumberId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventKind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "messageId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [

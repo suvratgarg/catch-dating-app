@@ -94,6 +94,24 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// Current event viewer booking facts status.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking booking availability…'**
+  String get eventsEventViewerCheckingBooking;
+
+  /// Current event viewer booking facts status.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry booking availability'**
+  String get eventsEventViewerRetryBooking;
+
+  /// Current event viewer booking facts status.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking unavailable'**
+  String get eventsEventViewerBookingUnavailable;
+
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:

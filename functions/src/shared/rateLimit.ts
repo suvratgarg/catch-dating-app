@@ -60,6 +60,8 @@ export interface RateLimitConfig {
 
 /** Limits for each callable/HTTP endpoint keyed by action name. */
 export const RATE_LIMITS: Record<string, RateLimitConfig> = {
+  adminReviewCatchWhatsappInbound: {maxRequests: 30, windowMs: 60 * 1000},
+  adminSendCatchWhatsappReply: {maxRequests: 5, windowMs: 60 * 1000},
   getEventAttendanceReport: {maxRequests: 10, windowMs: 60 * 1000},
   getEventAttendanceDisposition: {maxRequests: 120, windowMs: 60 * 1000},
   recordEventNoShow: {maxRequests: 60, windowMs: 60 * 1000},
@@ -474,6 +476,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   },
   listParticipantActivity: {maxRequests: 60, windowMs: 60 * 1000},
   getParticipantActivity: {maxRequests: 60, windowMs: 60 * 1000},
+  getEventViewerState: {maxRequests: 60, windowMs: 60 * 1000},
   listParticipantFormProfiles: {maxRequests: 60, windowMs: 60 * 1000},
   getParticipantFormPhoto: {maxRequests: 30, windowMs: 60 * 1000},
   getParticipantFormProfile: {maxRequests: 60, windowMs: 60 * 1000},

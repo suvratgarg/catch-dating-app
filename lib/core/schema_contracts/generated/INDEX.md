@@ -12,6 +12,13 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts` |
+| CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts` |
+| CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts` |
+| AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts` |
+| AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts` |
+| AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `functions/src/shared/generated/adminSendCatchWhatsappReplyCallablePayload.ts` |
+| AdminSendCatchWhatsappReplyCallableResponse | `callable_responses/admin_send_catch_whatsapp_reply_response.schema.json` | `functions/src/shared/generated/adminSendCatchWhatsappReplyCallableResponse.ts` |
 | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/getOrganizerTrackingSettingsCallablePayload.ts` |
 | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload.ts` |
 | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload.ts` |
@@ -424,6 +431,8 @@ Do not edit it by hand.
 | ParticipantProfileClaimReceiptDocument | `firestore/participant_profile_claim_receipts.schema.json` | `functions/src/shared/generated/participantProfileClaimReceiptDocument.ts` |
 | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `functions/src/shared/generated/claimParticipantFormProfileCallablePayload.ts` |
 | ClaimParticipantFormProfileCallableResponse | `callable_responses/claim_participant_form_profile_response.schema.json` | `functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts` |
+| GetEventViewerStateCallablePayload | `callables/get_event_viewer_state_payload.schema.json` | `functions/src/shared/generated/getEventViewerStateCallablePayload.ts` |
+| GetEventViewerStateCallableResponse | `callable_responses/get_event_viewer_state_response.schema.json` | `functions/src/shared/generated/getEventViewerStateCallableResponse.ts` |
 | ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `functions/src/shared/generated/listParticipantActivityCallablePayload.ts` |
 | ListParticipantActivityCallableResponse | `callable_responses/list_participant_activity_response.schema.json` | `functions/src/shared/generated/listParticipantActivityCallableResponse.ts` |
 | GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `functions/src/shared/generated/getParticipantActivityCallablePayload.ts` |
@@ -1174,6 +1183,13 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCatchWhatsappReplyOperationDocumentSchema` | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_operation_document.g.dart` |
+| `schemaCatchWhatsappEndpointStopDocumentSchema` | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_endpoint_stop_document.g.dart` |
+| `schemaCatchWhatsappReplyReadinessDocumentSchema` | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_readiness_document.g.dart` |
+| `schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema` | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_payload.g.dart` |
+| `schemaAdminReviewCatchWhatsappInboundCallableResponseSchema` | AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_response.g.dart` |
+| `schemaAdminSendCatchWhatsappReplyCallablePayloadSchema` | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_send_catch_whatsapp_reply_callable_payload.g.dart` |
+| `schemaAdminSendCatchWhatsappReplyCallableResponseSchema` | AdminSendCatchWhatsappReplyCallableResponse | `callable_responses/admin_send_catch_whatsapp_reply_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_send_catch_whatsapp_reply_callable_response.g.dart` |
 | `schemaGetOrganizerTrackingSettingsCallablePayloadSchema` | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_tracking_settings_callable_payload.g.dart` |
 | `schemaSetOrganizerTrackingSettingsCallablePayloadSchema` | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_organizer_tracking_settings_callable_payload.g.dart` |
 | `schemaReadPublicOrganizerTrackingSettingsCallablePayloadSchema` | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/read_public_organizer_tracking_settings_callable_payload.g.dart` |
@@ -1586,6 +1602,8 @@ Do not edit it by hand.
 | `schemaParticipantProfileClaimReceiptDocumentSchema` | ParticipantProfileClaimReceiptDocument | `firestore/participant_profile_claim_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/participant_profile_claim_receipt_document.g.dart` |
 | `schemaClaimParticipantFormProfileCallablePayloadSchema` | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_participant_form_profile_callable_payload.g.dart` |
 | `schemaClaimParticipantFormProfileCallableResponseSchema` | ClaimParticipantFormProfileCallableResponse | `callable_responses/claim_participant_form_profile_response.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_participant_form_profile_callable_response.g.dart` |
+| `schemaGetEventViewerStateCallablePayloadSchema` | GetEventViewerStateCallablePayload | `callables/get_event_viewer_state_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_viewer_state_callable_payload.g.dart` |
+| `schemaGetEventViewerStateCallableResponseSchema` | GetEventViewerStateCallableResponse | `callable_responses/get_event_viewer_state_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_viewer_state_callable_response.g.dart` |
 | `schemaListParticipantActivityCallablePayloadSchema` | ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_activity_callable_payload.g.dart` |
 | `schemaListParticipantActivityCallableResponseSchema` | ListParticipantActivityCallableResponse | `callable_responses/list_participant_activity_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_activity_callable_response.g.dart` |
 | `schemaGetParticipantActivityCallablePayloadSchema` | GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_participant_activity_callable_payload.g.dart` |
@@ -2336,6 +2354,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
+| AdminSendCatchWhatsappReplyCallableRequest | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_send_catch_whatsapp_reply_callable_request.g.dart` |
 | GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |
 | SetOrganizerTrackingSettingsCallableRequest | SetOrganizerTrackingSettingsCallablePayload | `callables/set_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_organizer_tracking_settings_callable_request.g.dart` |
 | ReadPublicOrganizerTrackingSettingsCallableRequest | ReadPublicOrganizerTrackingSettingsCallablePayload | `callables/read_public_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/read_public_organizer_tracking_settings_callable_request.g.dart` |
@@ -2444,6 +2464,7 @@ Do not edit it by hand.
 | GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
 | SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
 | ClaimParticipantFormProfileCallableRequest | ClaimParticipantFormProfileCallablePayload | `callables/claim_participant_form_profile_payload.schema.json` | `lib/core/schema_contracts/generated/callables/claim_participant_form_profile_callable_request.g.dart` |
+| GetEventViewerStateCallableRequest | GetEventViewerStateCallablePayload | `callables/get_event_viewer_state_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_viewer_state_callable_request.g.dart` |
 | ListParticipantActivityCallableRequest | ListParticipantActivityCallablePayload | `callables/list_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_participant_activity_callable_request.g.dart` |
 | GetParticipantActivityCallableRequest | GetParticipantActivityCallablePayload | `callables/get_participant_activity_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_participant_activity_callable_request.g.dart` |
 | ListParticipantFormProfilesCallableRequest | ListParticipantFormProfilesCallablePayload | `callables/list_participant_form_profiles_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_participant_form_profiles_callable_request.g.dart` |
