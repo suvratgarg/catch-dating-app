@@ -10,6 +10,7 @@ const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
 const supportedRequirementKinds = new Set([
   "secret-version",
+  "secret-reference",
   "firestore-ttl",
   "form-upload-identity",
 ]);
@@ -23,6 +24,8 @@ const supportedSecretRuntimeRoles = new Set([
 const resourceNamePattern = /^[A-Za-z][A-Za-z0-9_-]*$/u;
 const projectIdPattern = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u;
 const projectNumberPattern = /^[1-9][0-9]*$/u;
+const serviceAccountPattern = /^[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.gserviceaccount\.com$/u;
+const numericReferencePattern = /^projects\/([a-z0-9-]+)\/secrets\/([A-Za-z0-9_-]{1,255})\/versions\/([1-9][0-9]*)$/u;
 const metadataCommandTimeoutMs = 15_000;
 
 export class ReadinessUsageError extends Error {
@@ -36,6 +39,8 @@ export class ReadinessUsageError extends Error {
 export function parseArgs(argv) {
   const parsed = {
     all: false,
+    candidate: null,
+    phase: "deployed",
     capabilities: [],
     environment: null,
     help: false,
@@ -55,7 +60,9 @@ export function parseArgs(argv) {
       parsed.capabilities.push(
         ...parseCsv(requireValue(argv, ++index, arg), arg),
       );
-    } else if (arg === "--manifest-only") parsed.manifestOnly = true;
+    } else if (arg === "--candidate") parsed.candidate = requireValue(argv, ++index, arg);
+    else if (arg === "--phase") parsed.phase = requireValue(argv, ++index, arg);
+    else if (arg === "--manifest-only") parsed.manifestOnly = true;
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--help" || arg === "-h") parsed.help = true;
     else throw new ReadinessUsageError(`Unknown argument: ${arg}`);
@@ -64,6 +71,10 @@ export function parseArgs(argv) {
   parsed.targets = [...new Set(parsed.targets)].sort();
   parsed.capabilities = [...new Set(parsed.capabilities)].sort();
   if (parsed.help) return parsed;
+  if (!["candidate", "deployed"].includes(parsed.phase) ||
+      (parsed.phase === "candidate" && !parsed.candidate)) {
+    throw new ReadinessUsageError("Candidate phase requires --candidate metadata; phase must be candidate or deployed.");
+  }
 
   for (const target of parsed.targets) {
     if (!deployTargetPattern.test(target)) {
@@ -78,7 +89,7 @@ export function parseArgs(argv) {
 
   if (parsed.manifestOnly) {
     if (parsed.all || parsed.environment || parsed.targets.length > 0 ||
-        parsed.capabilities.length > 0) {
+        parsed.capabilities.length > 0 || parsed.candidate) {
       throw new ReadinessUsageError(
         "--manifest-only cannot be combined with live environment selectors.",
       );
@@ -102,6 +113,7 @@ export function validateEnvironmentReadinessManifest(
   manifest,
   {
     discoveredSecrets,
+    directReaderPaths,
     functionTargets,
     sourcePathExists,
     unsupportedSecretDeclarations = [],
@@ -338,6 +350,64 @@ export function validateEnvironmentReadinessManifest(
     }
   }
 
+  const readerPaths = new Set();
+  for (const reader of manifest.directReaders ?? []) {
+    const label = reader?.id ?? "<direct reader>";
+    if (ids.has(label)) errors.push(`${label}: duplicate id.`);
+    ids.add(label);
+    if (!Array.isArray(reader.sourcePaths) || !reader.sourcePaths.length ||
+        !Array.isArray(reader.consumers) || !reader.consumers.length ||
+        !reader.owner || !reader.credentialClass || !reader.rotationCompatibility ||
+        !reader.activationPolicy || typeof reader.recordReferences !== "boolean" ||
+        !["parameter", "record"].includes(reader.binding?.kind) ||
+        reader.binding?.exactReference !== "same-project-numeric" ||
+        reader.binding?.identity !== "observed-function-service-account") {
+      errors.push(`${label}: incomplete direct-reader contract.`);
+      continue;
+    }
+    if (reader.binding.kind === "parameter" &&
+        (!secretNamePattern.test(reader.binding.parameter ?? "") ||
+          typeof reader.binding.optional !== "boolean" ||
+          reader.binding.enabledParameter && !secretNamePattern.test(reader.binding.enabledParameter))) {
+      errors.push(`${label}: invalid reference/activation parameter.`);
+    }
+    for (const consumer of reader.consumers) {
+      if (!/^[A-Za-z][A-Za-z0-9_]*$/u.test(consumer) ||
+          functionTargets && !functionTargets.has(`functions:${consumer}`)) {
+        errors.push(`${label}: unsupported direct-reader consumer.`);
+      }
+    }
+    for (const source of reader.sourcePaths) {
+      if (readerPaths.has(source)) errors.push(`${label}: duplicate reader source.`);
+      readerPaths.add(source);
+      if (!source.startsWith("functions/src/") || source.includes("..") ||
+          sourcePathExists && !sourcePathExists(source)) errors.push(`${label}: invalid reader source.`);
+    }
+  }
+  if (directReaderPaths) {
+    for (const source of directReaderPaths) {
+      if (!readerPaths.has(source)) errors.push(`Direct secret reader is missing from manifest: ${source}.`);
+    }
+    for (const source of readerPaths) {
+      if (!directReaderPaths.has(source)) errors.push(`Manifest direct reader is not found in source: ${source}.`);
+    }
+  }
+  for (const requirement of requirements.filter((item) => item.kind === "secret-version")) {
+    if (!requirement.credentialClass || !requirement.rotationCompatibility ||
+        requirement.binding?.kind !== "firebase-secret-param" ||
+        requirement.binding?.exactReference !== "observed-numeric-version" ||
+        requirement.binding?.identity !== "observed-function-service-account") {
+      errors.push(`${requirement.id}: incomplete secret binding contract.`);
+    }
+    for (const [consumer, roles] of Object.entries(requirement.runtimeRolesByConsumer ?? {})) {
+      if (!requirement.requiredWhen.anyDeployTarget.includes(`functions:${consumer}`) ||
+          !Array.isArray(roles) || !roles.includes("roles/secretmanager.secretAccessor") ||
+          roles.some((role) => !supportedSecretRuntimeRoles.has(role))) {
+        errors.push(`${requirement.id}: invalid consumer runtime roles.`);
+      }
+    }
+  }
+
   if (errors.length > 0) {
     throw new ReadinessUsageError(
       `Environment readiness manifest is invalid:\n- ${errors.join("\n- ")}`,
@@ -360,6 +430,21 @@ export function discoverDefineSecretNames(sources) {
     for (const match of literalCalls) names.add(match[2]);
   }
   return {names, unsupported};
+}
+
+export function discoverDirectSecretReaders(sources) {
+  return new Set(sources.filter((source) =>
+    /\.accessSecretVersion\s*\(/u.test(source.contents) ||
+    /\breadRcsSecret\s*\(/u.test(source.contents) && !source.path.endsWith("rcsCredentialStore.ts"))
+    .map((source) => source.path));
+}
+
+function bindingRequirements(manifest) {
+  return [...manifest.requirements, ...(manifest.directReaders ?? [])
+    .filter((reader) => reader.binding.kind === "parameter")
+    .map((reader) => ({...reader, kind: "secret-reference", name: reader.binding.secret,
+      environments: manifest.environments, acceptedStates: ["ENABLED"],
+      requiredWhen: {anyDeployTarget: reader.consumers.map((name) => `functions:${name}`)}}))];
 }
 
 export function parseFirebaseFunctionTargets(indexSource) {
@@ -417,7 +502,7 @@ export function selectReadinessRequirements({
 }) {
   const selectedTargets = new Set(targets);
   const selectedCapabilities = new Set(capabilities);
-  return manifest.requirements
+  return bindingRequirements(manifest)
     .filter((requirement) => requirement.environments.includes(environment))
     .filter((requirement) => {
       const targetMatch = (requirement.requiredWhen.anyDeployTarget ?? [])
@@ -476,9 +561,8 @@ export function buildSecretRuntimeAccessCommand({
   requirement,
 }) {
   validateProjectId(projectId);
-  validateProjectNumber(projectNumber);
-  if (requirement?.kind !== "secret-version" ||
-      !secretNamePattern.test(requirement.name ?? "")) {
+  if (!["secret-version", "secret-reference"].includes(requirement?.kind) ||
+      !/^[A-Za-z0-9_-]{1,255}$/u.test(requirement.name ?? "")) {
     throw new ReadinessUsageError(
       "Secret runtime access probes require a valid secret-version requirement.",
     );
@@ -493,21 +577,17 @@ export function buildSecretRuntimeAccessCommand({
   ]);
 }
 
-export function buildRequirementCommand({projectId, requirement}) {
+export function buildRequirementCommand({projectId, requirement, reference}) {
   validateProjectId(projectId);
   let args;
-  if (requirement.kind === "secret-version") {
-    args = [
-      "secrets",
-      "versions",
-      "list",
-      requirement.name,
-      `--project=${projectId}`,
-      "--filter=state=ENABLED",
-      "--limit=1",
-      "--format=json(state)",
-      "--quiet",
-    ];
+  if (["secret-version", "secret-reference"].includes(requirement.kind)) {
+    const selected = parseSecretReference(reference, projectId);
+    if (!selected || (requirement.name && selected.secret !== requirement.name)) {
+      throw new ReadinessUsageError("An exact same-project numeric secret reference is required.");
+    }
+    args = ["secrets", "versions", "describe", selected.version,
+      `--secret=${selected.secret}`, `--project=${projectId}`,
+      "--format=json(name,state)", "--quiet"];
   } else if (requirement.kind === "firestore-ttl") {
     args = [
       "firestore",
@@ -542,7 +622,8 @@ export function assertMetadataOnlyCommand(spec) {
     }
   }
   const allowed = (words[0] === "projects" && words[1] === "describe") ||
-    words.slice(0, 3).join(" ") === "secrets versions list" ||
+    words.slice(0, 3).join(" ") === "secrets versions describe" ||
+    words.slice(0, 2).join(" ") === "functions list" ||
     words.slice(0, 2).join(" ") === "secrets get-iam-policy" ||
     words.slice(0, 4).join(" ") === "firestore fields ttls list";
   if (!allowed) {
@@ -582,7 +663,7 @@ export function classifyProjectIdentity({projectId, result}) {
       id: "environment.project-identity",
       kind: "project-identity",
       metadata: {
-        lifecycleState: payload.lifecycleState ?? null,
+        lifecycleState: ["ACTIVE", "DELETE_REQUESTED", "DELETE_IN_PROGRESS"].includes(payload.lifecycleState) ? payload.lifecycleState : null,
         projectIdMatches: payload.projectId === projectId,
         projectNumberPresent: projectNumberValid,
       },
@@ -605,13 +686,15 @@ export function classifyProjectIdentity({projectId, result}) {
 }
 
 export function classifySecretRuntimeAccess({
-  projectNumber,
+  serviceAccount,
   requirement,
   result,
 }) {
-  validateProjectNumber(projectNumber);
-  const serviceAccount =
-    `${projectNumber}-compute@developer.gserviceaccount.com`;
+  if (!serviceAccountPattern.test(serviceAccount ?? "")) {
+    return readinessResult({id: `${requirement.id}.runtime-access`,
+      kind: "secret-runtime-access", resource: requirement.name,
+      status: "unknown", reason: "runtime-identity-unobserved"});
+  }
   const resource = `${requirement.name}:${serviceAccount}`;
   const failure = classifyCommandFailure(result);
   if (failure) {
@@ -642,14 +725,24 @@ export function classifySecretRuntimeAccess({
       binding?.role === role &&
       binding.condition == null &&
       Array.isArray(binding.members) && binding.members.includes(member)));
+  const excessiveRoles = [...supportedSecretRuntimeRoles, "roles/secretmanager.admin", "roles/editor", "roles/owner"].filter((role) =>
+    !requiredRoles.includes(role) && (payload.bindings ?? []).some((binding) =>
+      binding?.role === role && Array.isArray(binding.members) &&
+      binding.members.includes(member)));
+  if (excessiveRoles.length) {
+    return readinessResult({id: `${requirement.id}.runtime-access`,
+      kind: "secret-runtime-access", resource, status: "not-ready",
+      reason: "runtime-secret-permission-leakage",
+      metadata: {serviceAccount, excessiveRoles, evidenceScope: "secret-policy-only"}});
+  }
   const missingRoles = requiredRoles.filter((role) =>
     !presentRoles.includes(role));
   if (missingRoles.length > 0) {
     return readinessResult({
       id: `${requirement.id}.runtime-access`,
       kind: "secret-runtime-access",
-      metadata: {missingRoles, serviceAccount},
-      reason: "runtime-secret-access-missing",
+      metadata: {missingRoles, serviceAccount, evidenceScope: "secret-policy-only"},
+      reason: "runtime-secret-access-unproven",
       resource,
       status: "not-ready",
     });
@@ -660,6 +753,7 @@ export function classifySecretRuntimeAccess({
     metadata: {
       roles: presentRoles,
       serviceAccount,
+      evidenceScope: "secret-policy-only",
     },
     reason: "runtime-secret-access-present",
     resource,
@@ -667,8 +761,8 @@ export function classifySecretRuntimeAccess({
   });
 }
 
-export function classifyRequirementResult({requirement, result}) {
-  const resource = requirement.kind === "secret-version"
+export function classifyRequirementResult({requirement, result, reference, projectId, projectNumber}) {
+  const resource = ["secret-version", "secret-reference"].includes(requirement.kind)
     ? requirement.name
     : `${requirement.collectionGroup}.${requirement.field}`;
   const failure = classifyCommandFailure(result);
@@ -681,44 +775,30 @@ export function classifyRequirementResult({requirement, result}) {
     });
   }
   const payload = parseJsonOutput(result.stdout);
-  if (!Array.isArray(payload)) {
-    return readinessResult({
-      id: requirement.id,
-      kind: requirement.kind,
-      reason: "invalid-metadata-response",
-      resource,
-      status: "unknown",
-    });
-  }
-  if (requirement.kind === "secret-version") {
-    const version = payload.find((entry) =>
-      requirement.acceptedStates.includes(entry?.state));
-    if (!version) {
-      return readinessResult({
-        id: requirement.id,
-        kind: requirement.kind,
-        metadata: {enabledVersionPresent: false},
-        reason: "no-enabled-version",
-        resource,
-        status: "not-ready",
-      });
+  if (["secret-version", "secret-reference"].includes(requirement.kind)) {
+    const selected = parseSecretReference(reference, projectId, projectNumber);
+    const observed = parseSecretReference(payload?.name, projectId, projectNumber);
+    if (!selected || !observed || selected.reference !== observed.reference) {
+      return readinessResult({id: requirement.id, kind: requirement.kind, resource,
+        status: "unknown", reason: "selected-version-metadata-mismatch"});
     }
-    return readinessResult({
-      id: requirement.id,
-      kind: requirement.kind,
-      metadata: compactObject({
-        enabledVersionPresent: true,
-        state: version.state,
-      }),
-      reason: "enabled-version-present",
-      resource,
-      status: "ready",
-    });
+    const enabled = payload.state === "ENABLED";
+    return readinessResult({id: requirement.id, kind: requirement.kind, resource,
+      status: enabled ? "ready" : "not-ready",
+      reason: enabled ? "selected-version-enabled" : "selected-version-not-enabled",
+      metadata: {reference: selected.reference,
+        state: ["ENABLED", "DISABLED", "DESTROYED"].includes(payload.state)
+          ? payload.state : "UNKNOWN"}});
+  }
+  if (!Array.isArray(payload)) {
+    return readinessResult({id: requirement.id, kind: requirement.kind, resource,
+      status: "unknown", reason: "invalid-metadata-response"});
   }
 
   const ttl = payload.find((entry) =>
     resourceFieldName(entry?.name) === requirement.field);
-  const state = ttl?.ttlConfig?.state;
+  const rawState = ttl?.ttlConfig?.state;
+  const state = ["ACTIVE", "CREATING", "NEEDS_REPAIR", "STATE_UNSPECIFIED"].includes(rawState) ? rawState : null;
   if (!ttl || !requirement.acceptedStates.includes(state)) {
     return readinessResult({
       id: requirement.id,
@@ -739,6 +819,155 @@ export function classifyRequirementResult({requirement, result}) {
   });
 }
 
+// Project numbers are accepted only when independently resolved from the selected
+// .firebaserc project. Direct parameter contracts remain project-ID pinned.
+export function parseSecretReference(value, projectId, projectNumber) {
+  if (typeof value !== "string") return null;
+  const match = numericReferencePattern.exec(value);
+  if (!match || !projectId || ![projectId, projectNumber].includes(match[1])) return null;
+  return {secret: match[2], version: match[3],
+    reference: `projects/${projectId}/secrets/${match[2]}/versions/${match[3]}`};
+}
+
+export function buildFunctionBindingsCommand({projectId, requirements}) {
+  validateProjectId(projectId);
+  const params = [...new Set(requirements.flatMap((entry) =>
+    [entry.binding?.parameter, entry.binding?.enabledParameter].filter(Boolean)))].sort();
+  if (params.some((name) => !secretNamePattern.test(name))) {
+    throw new ReadinessUsageError("Invalid binding metadata parameter name.");
+  }
+  const fields = ["name", "state", "serviceConfig.serviceAccountEmail",
+    "serviceConfig.secretEnvironmentVariables", ...params.map((name) =>
+      `serviceConfig.environmentVariables.${name}`)];
+  return metadataOnlyCommand(["functions", "list", "--v2", "--regions=-",
+    `--project=${projectId}`, `--format=json(${fields.join(",")})`, "--quiet"]);
+}
+
+// Receipts contain references and identities, never dotenv values. Strict shape
+// checks reject accidental raw environment/Secret Manager responses before use.
+export function validateCandidateBindings(candidate, {environment, projectId, sourceSha, manifest}) {
+  const invalid = () => { throw new ReadinessUsageError("Invalid candidate binding metadata; use names/references only for the exact source and environment."); };
+  const keys = (value, expected) => value && typeof value === "object" && !Array.isArray(value) &&
+    Object.keys(value).sort().join(",") === [...expected].sort().join(",");
+  if (!keys(candidate, ["version", "sourceSha", "environment", "projectId", "bindings"]) ||
+      candidate.version !== 1 || candidate.environment !== environment ||
+      candidate.projectId !== projectId || !/^[a-f0-9]{40}$/u.test(candidate.sourceSha ?? "") ||
+      !sourceSha || candidate.sourceSha !== sourceSha || !Array.isArray(candidate.bindings)) invalid();
+  const seen = new Set();
+  for (const entry of candidate.bindings) {
+    if (!keys(entry, ["requirementId", "consumer", "serviceAccount", "reference", "active"])) invalid();
+    const requirement = bindingRequirements(manifest).find((item) => item.id === entry.requirementId);
+    if (!requirement || !["secret-version", "secret-reference"].includes(requirement.kind) ||
+        !(requirement.requiredWhen.anyDeployTarget ?? []).includes(`functions:${entry.consumer}`) ||
+        !serviceAccountPattern.test(entry.serviceAccount ?? "") || typeof entry.active !== "boolean") invalid();
+    const selected = parseSecretReference(entry.reference, projectId);
+    if (entry.active ? !selected || requirement.name && selected.secret !== requirement.name :
+      (entry.reference !== null && !selected) || requirement.binding?.optional !== true ||
+        entry.reference !== null && !requirement.binding.enabledParameter) invalid();
+    const key = `${entry.requirementId}:${entry.consumer}`;
+    if (seen.has(key)) invalid();
+    seen.add(key);
+  }
+  return candidate;
+}
+
+export function observeFunctionBinding({requirement, consumer, functions, projectId, projectNumber}) {
+  const matches = functions.filter((entry) => {
+    const match = /^projects\/([^/]+)\/locations\/[^/]+\/functions\/([^/]+)$/u.exec(entry?.name ?? "");
+    return match && [projectId, projectNumber].includes(match[1]) && match[2] === consumer;
+  });
+  const fail = (reason, status = "not-ready") => ({status, reason});
+  if (matches.length !== 1) return fail(matches.length ? "ambiguous-function-binding" : "function-binding-missing");
+  const fn = matches[0];
+  if (fn.state !== "ACTIVE") return fail("function-not-active");
+  const serviceAccount = fn.serviceConfig?.serviceAccountEmail;
+  if (!serviceAccountPattern.test(serviceAccount ?? "")) return fail("runtime-identity-unobserved", "unknown");
+  let reference;
+  let active = true;
+  if (requirement.kind === "secret-version") {
+    const entries = fn.serviceConfig?.secretEnvironmentVariables;
+    const bindings = Array.isArray(entries) ? entries.filter((entry) => entry?.key === requirement.name) : [];
+    if (bindings.length !== 1) return fail("selected-secret-binding-missing");
+    const binding = bindings[0];
+    reference = `projects/${binding.projectId}/secrets/${binding.secret}/versions/${binding.version}`;
+    const selected = parseSecretReference(reference, projectId, projectNumber);
+    if (!selected || selected.secret !== requirement.name) return fail("invalid-selected-secret-reference");
+    reference = selected.reference;
+  } else {
+    const params = fn.serviceConfig?.environmentVariables ?? {};
+    const raw = params[requirement.binding.parameter];
+    if (raw != null && typeof raw !== "string") return fail("invalid-selected-secret-reference");
+    const enabledName = requirement.binding.enabledParameter;
+    const enabled = enabledName ? params[enabledName] : null;
+    if (enabledName && enabled != null && !["true", "false"].includes(enabled)) return fail("invalid-activation-state");
+    if (!raw?.trim()) {
+      if (requirement.binding.optional && enabled !== "true") {
+        return {status: "inactive", reason: "optional-reference-unconfigured", serviceAccount,
+          reference: null, active: false};
+      }
+      return fail("active-reference-missing");
+    }
+    const selected = parseSecretReference(raw.trim(), projectId);
+    if (!selected || requirement.name && selected.secret !== requirement.name) return fail("invalid-selected-secret-reference");
+    reference = selected.reference;
+    active = enabledName ? enabled === "true" : true;
+  }
+  return {status: active ? "ready" : "inactive", reason: active ? "binding-observed" : "consumer-disabled", serviceAccount, reference, active};
+}
+
+function assessSecretBindings({requirement, targets, projectId, projectNumber,
+  functionsResult, candidate, phase, runCommand}) {
+  const failure = classifyCommandFailure(functionsResult);
+  const functions = parseJsonOutput(functionsResult.stdout);
+  const consumers = (requirement.requiredWhen.anyDeployTarget ?? [])
+    .filter((target) => targetMatches(target, new Set(targets)))
+    .map((target) => target.slice("functions:".length));
+  const results = [];
+  for (const consumer of consumers) {
+    const id = `${requirement.id}:${consumer}`;
+    const base = {id, kind: requirement.kind, resource: requirement.name ?? requirement.binding.parameter};
+    const proposed = candidate?.bindings.find((entry) =>
+      entry.requirementId === requirement.id && entry.consumer === consumer);
+    const observed = failure ?? (!Array.isArray(functions)
+      ? {status: "unknown", reason: "invalid-metadata-response"}
+      : observeFunctionBinding({requirement, consumer, functions, projectId, projectNumber}));
+    if (candidate && !proposed) {
+      results.push(readinessResult({...base, status: "unknown", reason: "candidate-binding-missing"}));
+      continue;
+    }
+    const binding = phase === "candidate" ? proposed : observed;
+    if (phase === "deployed" && !["ready", "inactive"].includes(observed.status)) {
+      results.push(readinessResult({...base, ...observed}));
+      continue;
+    }
+    const matches = proposed && observed.reference === proposed.reference &&
+      observed.serviceAccount === proposed.serviceAccount && observed.active === proposed.active;
+    const metadata = {consumer, phase, serviceAccount: binding.serviceAccount,
+      reference: binding.reference, source: phase === "candidate" ? "candidate-receipt" : "cloud-functions-v2",
+      ...(candidate ? {sourceSha: candidate.sourceSha, deployedMatchesCandidate: Boolean(matches)} : {})};
+    if (phase === "deployed" && proposed && !matches) {
+      results.push(readinessResult({...base, metadata, status: "not-ready", reason: "deployed-binding-outdated"}));
+      continue;
+    }
+    if (!binding.active) {
+      results.push(readinessResult({...base, metadata, status: "inactive", reason: binding.reference ? "consumer-disabled" : "optional-reference-unconfigured"}));
+      continue;
+    }
+    const selected = parseSecretReference(binding.reference, projectId);
+    const selectedRequirement = {...requirement, id, name: selected.secret,
+      runtimeRoles: requirement.runtimeRolesByConsumer?.[consumer] ??
+        requirement.runtimeRoles ?? ["roles/secretmanager.secretAccessor"]};
+    const state = classifyRequirementResult({requirement: selectedRequirement, reference: binding.reference,
+      projectId, projectNumber, result: executeMetadataCommand(buildRequirementCommand({projectId,
+        requirement: selectedRequirement, reference: binding.reference}), runCommand)});
+    results.push({...state, metadata: {...metadata, ...state.metadata}});
+    results.push(classifySecretRuntimeAccess({serviceAccount: binding.serviceAccount,
+      requirement: selectedRequirement, result: executeMetadataCommand(buildSecretRuntimeAccessCommand({
+        projectId, requirement: selectedRequirement}), runCommand)}));
+  }
+  return results;
+}
+
 export function exitCodeForResults(results) {
   if (results.some((result) => result.status === "unknown")) return 2;
   if (results.some((result) => result.status === "not-ready")) return 1;
@@ -747,6 +976,9 @@ export function exitCodeForResults(results) {
 
 export function runEnvironmentReadiness({
   aliases,
+  candidate,
+  sourceSha,
+  phase = "deployed",
   capabilities = [],
   environments,
   manifest,
@@ -761,6 +993,7 @@ export function runEnvironmentReadiness({
       );
     }
     const projectId = resolveFirebaseProjectId({environment, aliases});
+    if (candidate) validateCandidateBindings(candidate, {environment, projectId, sourceSha, manifest});
     const requirements = selectReadinessRequirements({
       capabilities,
       environment,
@@ -773,7 +1006,18 @@ export function runEnvironmentReadiness({
       result: executeMetadataCommand(identityCommand, runCommand),
     });
     const results = [identityResult];
+    const secretRequirements = requirements.filter((entry) =>
+      ["secret-version", "secret-reference"].includes(entry.kind));
+    const functionsResult = secretRequirements.length && identityResult.status === "ready"
+      ? executeMetadataCommand(buildFunctionBindingsCommand({projectId, requirements: secretRequirements}), runCommand)
+      : {status: null, stdout: "", stderr: ""};
     for (const requirement of requirements) {
+      if (["secret-version", "secret-reference"].includes(requirement.kind)) {
+        if (identityResult.status === "ready") results.push(...assessSecretBindings({
+          requirement, targets, projectId, projectNumber: identityResult.metadata.projectNumber,
+          functionsResult, candidate, phase, runCommand}));
+        continue;
+      }
       if (requirement.kind === "form-upload-identity") {
         try {
           const target = uploadIdentityTarget(environment, projectId, requirement.purpose);
@@ -798,20 +1042,7 @@ export function runEnvironmentReadiness({
         requirement,
         result: executeMetadataCommand(command, runCommand),
       }));
-      if (requirement.kind === "secret-version" &&
-          identityResult.status === "ready") {
-        const projectNumber = identityResult.metadata.projectNumber;
-        const accessCommand = buildSecretRuntimeAccessCommand({
-          projectId,
-          projectNumber,
-          requirement,
-        });
-        results.push(classifySecretRuntimeAccess({
-          projectNumber,
-          requirement,
-          result: executeMetadataCommand(accessCommand, runCommand),
-        }));
-      }
+
     }
     const exitCode = exitCodeForResults(results);
     environmentReports.push({
@@ -821,6 +1052,9 @@ export function runEnvironmentReadiness({
       ready: exitCode === 0,
       results,
       selectedRequirementCount: requirements.length,
+      unverifiedRecordReaders: (manifest.directReaders ?? []).filter((reader) =>
+        reader.recordReferences && reader.consumers.some((name) =>
+          targetMatches(`functions:${name}`, new Set(targets)))).map((reader) => reader.id),
       status: statusForExitCode(exitCode),
     });
   }
@@ -832,6 +1066,10 @@ export function runEnvironmentReadiness({
     environments: environmentReports,
     exitCode,
     mode: "live",
+    phase,
+    evidenceScope: "configured-function-bindings-and-explicit-secret-policy",
+    providerUsabilityVerified: false,
+    identityIsolationVerified: false,
     ready: exitCode === 0,
     status: statusForExitCode(exitCode),
     targets: [...targets],
@@ -870,6 +1108,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
     functionTargets = parseFirebaseFunctionTargets(indexSource);
     validationOptions = {
       discoveredSecrets: declarations.names,
+      directReaderPaths: discoverDirectSecretReaders(sources),
       functionTargets,
       sourcePathExists: (sourcePath) => pathExists(path.join(repoRoot, sourcePath)),
       unsupportedSecretDeclarations: declarations.unsupported,
@@ -882,6 +1121,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
       mode: "manifest-only",
       ready: true,
       requirementCount: manifest.requirements.length,
+      directReaderCount: (manifest.directReaders ?? []).length,
       secretCount: manifest.requirements.filter(
         (requirement) => requirement.kind === "secret-version",
       ).length,
@@ -912,8 +1152,11 @@ export function executeReadinessCli(argv, dependencies = {}) {
   const environments = args.all
     ? [...manifest.environments]
     : [args.environment];
+  const candidate = args.candidate ? readJsonFile(args.candidate, readFile) : null;
+  const sourceSha = dependencies.sourceSha ?? spawnSync("git", ["rev-parse", "HEAD"],
+    {cwd: repoRoot, encoding: "utf8"}).stdout?.trim();
   const report = runEnvironmentReadiness({
-    aliases,
+    aliases, candidate, sourceSha, phase: args.phase,
     capabilities: args.capabilities,
     environments,
     manifest,
@@ -1095,7 +1338,7 @@ function readJsonFile(filePath, readFile) {
     return JSON.parse(readFile(filePath, "utf8"));
   } catch (error) {
     throw new ReadinessUsageError(
-      `Could not read ${filePath}: ${error?.message ?? String(error)}.`,
+      "Could not read readiness JSON metadata.",
     );
   }
 }
@@ -1155,6 +1398,7 @@ Usage:
   node tool/firebase/check_environment_readiness.mjs \\
     (--env <dev|staging|prod> | --all) \\
     [--targets <csv>] [--capabilities <csv>] [--json]
+    [--candidate <names-only-receipt.json>] [--phase deployed|candidate]
 
 The live checker resolves projects only from .firebaserc and uses metadata-only
 gcloud commands. It has no apply mode and never accesses secret payloads.

@@ -5,6 +5,10 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
   assertMetadataOnlyCommand,
+  buildFunctionBindingsCommand,
+  observeFunctionBinding,
+  parseSecretReference,
+  validateCandidateBindings,
   buildProjectIdentityCommand,
   buildRequirementCommand,
   buildSecretRuntimeAccessCommand,
@@ -12,6 +16,7 @@ import {
   classifyRequirementResult,
   classifySecretRuntimeAccess,
   discoverDefineSecretNames,
+  discoverDirectSecretReaders,
   executeReadinessCli,
   exitCodeForResults,
   parseArgs,
@@ -105,6 +110,8 @@ test("usage is explicit and unsafe project/apply overrides are rejected", () => 
     ]),
     {
       all: false,
+      candidate: null,
+      phase: "deployed",
       capabilities: ["cross-paths"],
       environment: "dev",
       help: false,
@@ -153,12 +160,12 @@ test("target and capability filtering selects only relevant prerequisites", () =
     ).length,
     18,
   );
-  assert.equal(selected("dev", ["functions"]).length, 23);
+  assert.equal(selected("dev", ["functions"]).length, 29);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
-      ["refreshProgramTravelLeg", []],
-      ["flightAlertWebhook", []],
-      ["refreshProgramFlightStatuses", []],
+      ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
+      ["flightAlertWebhook", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
+      ["refreshProgramFlightStatuses", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
       ["startSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
       ["getSalesDemoSession", ["SALES_DEMO_GRANT_KEY"]],
       ["advanceSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
@@ -178,7 +185,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
       ["expireSalesDemos", []],
     ]) {
       assert.deepEqual(
-        selected(environment, [`functions:${target}`]).map((entry) => entry.name).sort(),
+        selected(environment, [`functions:${target}`]).map((entry) => entry.name ?? entry.binding.parameter).sort(),
         secrets,
       );
     }
@@ -284,7 +291,8 @@ test("gcloud command construction is metadata-only and forbids secret access", (
   );
   const commands = [
     buildProjectIdentityCommand("catchdates-dev"),
-    buildRequirementCommand({projectId: "catchdates-dev", requirement: secret}),
+    buildRequirementCommand({projectId: "catchdates-dev", requirement: secret,
+      reference: "projects/catchdates-dev/secrets/CROSS_PATHS_SUGGESTION_SIGNING_KEY/versions/1"}),
     buildSecretRuntimeAccessCommand({
       projectId: "catchdates-dev",
       projectNumber: "619661127800",
@@ -296,10 +304,10 @@ test("gcloud command construction is metadata-only and forbids secret access", (
   assert.deepEqual(commands[1].args.slice(0, 4), [
     "secrets",
     "versions",
-    "list",
-    "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
+    "describe",
+    "1",
   ]);
-  assert.ok(commands[1].args.includes("--filter=state=ENABLED"));
+  assert.ok(commands[1].args.includes("--secret=CROSS_PATHS_SUGGESTION_SIGNING_KEY"));
   assert.ok(commands[1].args.includes("--project=catchdates-dev"));
   assert.deepEqual(commands[2].args.slice(0, 3), [
     "secrets",
@@ -336,7 +344,7 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
   const member =
     "serviceAccount:619661127800-compute@developer.gserviceaccount.com";
   const classify = (bindings) => classifySecretRuntimeAccess({
-    projectNumber,
+    serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
     requirement,
     result: {
       status: 0,
@@ -354,14 +362,15 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
   assert.deepEqual(ready.metadata, {
     roles: ["roles/secretmanager.secretAccessor"],
     serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
+    evidenceScope: "secret-policy-only",
   });
 
   const vaultRequirement = manifest.requirements.find(
     (entry) => entry.name === "ORGANIZER_WHATSAPP_ACCESS_TOKENS",
   );
   const vaultReady = classifySecretRuntimeAccess({
-    projectNumber,
-    requirement: vaultRequirement,
+    serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
+    requirement: {...vaultRequirement, runtimeRoles: vaultRequirement.runtimeRolesByConsumer.completeOrganizerWhatsappConnection},
     result: {
       status: 0,
       stderr: "",
@@ -379,8 +388,8 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
   });
   assert.equal(vaultReady.status, "ready");
   const vaultMissingManager = classifySecretRuntimeAccess({
-    projectNumber,
-    requirement: vaultRequirement,
+    serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
+    requirement: {...vaultRequirement, runtimeRoles: vaultRequirement.runtimeRolesByConsumer.completeOrganizerWhatsappConnection},
     result: {
       status: 0,
       stderr: "",
@@ -397,7 +406,7 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
 
   const absent = classify([]);
   assert.equal(absent.status, "not-ready");
-  assert.equal(absent.reason, "runtime-secret-access-missing");
+  assert.equal(absent.reason, "runtime-secret-access-unproven");
 
   const wrongRole = classify([{
     members: [member],
@@ -413,7 +422,7 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
   assert.equal(conditional.status, "not-ready");
 
   const invalid = classifySecretRuntimeAccess({
-    projectNumber,
+    serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
     requirement,
     result: {status: 0, stderr: "", stdout: "[]"},
   });
@@ -422,49 +431,24 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
 });
 
 test("secret metadata classification never returns payload fields", () => {
-  const requirement = manifest.requirements.find(
-    (entry) => entry.name === "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
-  );
-  const ready = classifyRequirementResult({
-    requirement,
-    result: {
-      status: 0,
-      stderr: "",
-      stdout: JSON.stringify([{
-        createTime: "2026-08-06T00:00:00Z",
-        name: "projects/demo/secrets/key/versions/7",
-        payload: "must-never-escape",
-        state: "ENABLED",
-      }]),
-    },
-  });
+  const requirement = manifest.requirements.find((entry) => entry.name === "CROSS_PATHS_SUGGESTION_SIGNING_KEY");
+  const reference = "projects/catchdates-dev/secrets/CROSS_PATHS_SUGGESTION_SIGNING_KEY/versions/7";
+  const classify = (payload) => classifyRequirementResult({requirement, reference,
+    projectId: "catchdates-dev", projectNumber: "123", result: metadata(payload)});
+  const ready = classify({name: reference, state: "ENABLED", payload: "must-never-escape"});
   assert.equal(ready.status, "ready");
-  assert.deepEqual(ready.metadata, {
-    enabledVersionPresent: true,
-    state: "ENABLED",
-  });
+  assert.deepEqual(ready.metadata, {reference, state: "ENABLED"});
   assert.doesNotMatch(JSON.stringify(ready), /must-never-escape/u);
-
-  const absent = classifyRequirementResult({
-    requirement,
-    result: {status: 0, stderr: "", stdout: "[]"},
-  });
-  assert.equal(absent.status, "not-ready");
-  assert.equal(absent.reason, "no-enabled-version");
-
-  const missing = classifyRequirementResult({
-    requirement,
-    result: {status: 1, stderr: "NOT_FOUND", stdout: ""},
-  });
-  assert.equal(missing.status, "not-ready");
-  assert.equal(missing.reason, "resource-not-found");
-
-  const denied = classifyRequirementResult({
-    requirement,
-    result: {status: 1, stderr: "PERMISSION_DENIED", stdout: ""},
-  });
-  assert.equal(denied.status, "unknown");
-  assert.equal(denied.reason, "permission-denied");
+  assert.equal(classify({name: reference, state: "DISABLED"}).status, "not-ready");
+  assert.equal(classify({name: reference.replace("/7", "/8"), state: "ENABLED"}).status, "unknown");
+  assert.equal(classify([{name: reference, state: "DISABLED"},
+    {name: reference.replace("/7", "/8"), state: "ENABLED"}]).status, "unknown");
+  for (const [stderr, status, reason] of [["NOT_FOUND", "not-ready", "resource-not-found"],
+    ["PERMISSION_DENIED", "unknown", "permission-denied"]]) {
+    const result = classifyRequirementResult({requirement, reference, projectId: "catchdates-dev",
+      result: {status: 1, stderr, stdout: ""}});
+    assert.equal(result.status, status); assert.equal(result.reason, reason);
+  }
 });
 
 test("TTL metadata distinguishes ACTIVE, missing, and transitional policies", () => {
@@ -528,9 +512,11 @@ test("injected runner receives resolved project and returns a known-missing exit
           }),
         };
       }
+      if (spec.args[0] === "functions") return metadata([fakeFunction("getCrossPathsSuggestions",
+        "CROSS_PATHS_SUGGESTION_SIGNING_KEY", "catchdates-staging")]);
       if (spec.args[0] === "secrets") {
         if (spec.args[1] === "versions") {
-          return {status: 0, stderr: "", stdout: "[]"};
+          return {status: 1, stderr: "NOT_FOUND", stdout: ""};
         }
         return {
           status: 0,
@@ -553,7 +539,7 @@ test("injected runner receives resolved project and returns a known-missing exit
 
   assert.equal(report.exitCode, 1);
   assert.equal(report.status, "not-ready");
-  assert.equal(commands.length, 4);
+  assert.equal(commands.length, 5);
   assert.ok(commands.slice(1).every((spec) =>
     spec.args.includes("--project=catchdates-staging")));
   assert.ok(commands.every((spec) =>
@@ -710,15 +696,10 @@ function readyMetadataRunner(spec) {
       }),
     };
   }
-  return {
-    status: 0,
-    stderr: "",
-    stdout: JSON.stringify([{
-      createTime: "2026-08-06T00:00:00Z",
-      name: "projects/demo/secrets/key/versions/1",
-      state: "ENABLED",
-    }]),
-  };
+  if (spec.args[0] === "functions") return metadata([fakeFunction("exploreSearch", "ALGOLIA_SEARCH_API_KEY", "catchdates-staging")]);
+  const project = spec.args.find((arg) => arg.startsWith("--project=")).slice(10);
+  const secret = spec.args.find((arg) => arg.startsWith("--secret=")).slice(9);
+  return metadata({name: `projects/${project}/secrets/${secret}/versions/${spec.args[3]}`, state: "ENABLED"});
 }
 
 function readyProjectMetadata(projectId) {
@@ -732,3 +713,143 @@ function readyProjectMetadata(projectId) {
     }),
   };
 }
+
+function metadata(value) { return {status: 0, stderr: "", stdout: JSON.stringify(value)}; }
+function fakeFunction(consumer, secret, project = "catchdates-dev", version = "1") {
+  return {name: `projects/${project}/locations/asia-south1/functions/${consumer}`, state: "ACTIVE",
+    serviceConfig: {serviceAccountEmail: "123-compute@developer.gserviceaccount.com",
+      secretEnvironmentVariables: [{key: secret, secret, projectId: project, version}]}};
+}
+
+test("observed bindings reject aliases, other projects and missing identities without exposing environment values", () => {
+  const requirement = manifest.requirements.find((entry) => entry.name === "ALGOLIA_SEARCH_API_KEY");
+  const fn = fakeFunction("exploreSearch", requirement.name);
+  const observe = (value) => observeFunctionBinding({requirement, consumer: "exploreSearch",
+    functions: [value], projectId: "catchdates-dev", projectNumber: "123"});
+  assert.equal(observe(fn).reference, "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/1");
+  for (const [field, value] of [["version", "latest"], ["version", "0"],
+    ["projectId", "other-project"], ["secret", "OTHER_SECRET"]]) {
+    const copy = structuredClone(fn); copy.serviceConfig.secretEnvironmentVariables[0][field] = value;
+    assert.equal(observe(copy).reason, "invalid-selected-secret-reference");
+  }
+  const copy = structuredClone(fn); delete copy.serviceConfig.serviceAccountEmail;
+  copy.serviceConfig.environmentVariables = {PRIVATE_KEY: "do-not-print-this"};
+  assert.equal(observe(copy).reason, "runtime-identity-unobserved");
+  assert.doesNotMatch(JSON.stringify(observe(copy)), /do-not-print-this|PRIVATE_KEY/u);
+  assert.equal(parseSecretReference("projects/123/secrets/KEY/versions/1", "catchdates-dev"), null);
+  assert.ok(parseSecretReference("projects/123/secrets/KEY/versions/1", "catchdates-dev", "123"));
+});
+
+test("disabled optional configuration performs no secret query; enabled configuration without a reference fails", () => {
+  const requirement = {id: "functions.reference.fake", kind: "secret-reference", owner: "fake",
+    binding: {parameter: "FAKE_CONFIG_VERSION", enabledParameter: "FAKE_ENABLED", optional: true},
+    requiredWhen: {anyDeployTarget: ["functions:fakeConsumer"]}, environments: ["dev"], acceptedStates: ["ENABLED"]};
+  const run = (params) => {
+    const commands = [];
+    const fn = fakeFunction("fakeConsumer", "unused"); fn.serviceConfig.environmentVariables = params;
+    const report = runEnvironmentReadiness({aliases, environments: ["dev"], targets: ["functions:fakeConsumer"],
+      manifest: {...manifest, requirements: [requirement]}, runCommand(spec) {
+        commands.push(spec);
+        if (spec.args[0] === "projects") return readyProjectMetadata("catchdates-dev");
+        if (spec.args[0] === "functions") return metadata([fn]);
+        throw new Error("inactive must not probe secrets");
+      }});
+    assert.equal(commands.length, 2); return report;
+  };
+  const inactive = run({FAKE_CONFIG_VERSION: " ", FAKE_ENABLED: "false", SECRET: "fake-never-print"});
+  assert.equal(inactive.exitCode, 0);
+  assert.equal(inactive.environments[0].results[1].status, "inactive");
+  assert.doesNotMatch(JSON.stringify(inactive), /fake-never-print/u);
+  const active = run({FAKE_CONFIG_VERSION: " ", FAKE_ENABLED: "true"});
+  assert.equal(active.exitCode, 1);
+  assert.equal(active.environments[0].results[1].reason, "active-reference-missing");
+  assert.equal(run({FAKE_CONFIG_VERSION: "RAW-SECRET-DO-NOT-PRINT"}).exitCode, 1);
+});
+
+test("IAM uses the explicit identity and catches a reader inheriting the provisioner grant", () => {
+  const requirement = {id: "fake", name: "FAKE_CONFIG", runtimeRoles: ["roles/secretmanager.secretAccessor"]};
+  const serviceAccount = "reader@catchdates-dev.iam.gserviceaccount.com";
+  const result = metadata({bindings: ["roles/secretmanager.secretAccessor", "roles/secretmanager.secretVersionManager"]
+    .map((role) => ({role, members: [`serviceAccount:${serviceAccount}`]}))});
+  assert.equal(classifySecretRuntimeAccess({requirement, result}).reason, "runtime-identity-unobserved");
+  const excessive = classifySecretRuntimeAccess({requirement, serviceAccount, result});
+  assert.equal(excessive.status, "not-ready");
+  assert.equal(excessive.reason, "runtime-secret-permission-leakage");
+  assert.deepEqual(excessive.metadata.excessiveRoles, ["roles/secretmanager.secretVersionManager"]);
+  assert.equal(classifySecretRuntimeAccess({requirement, serviceAccount: "other@catchdates-dev.iam.gserviceaccount.com", result}).status, "not-ready");
+});
+
+test("candidate readiness is distinct from deployed equivalence and preserves exact source provenance", () => {
+  const requirement = manifest.requirements.find((entry) => entry.name === "ALGOLIA_SEARCH_API_KEY");
+  const sourceSha = "a".repeat(40);
+  const candidate = {version: 1, environment: "staging", projectId: "catchdates-staging", sourceSha,
+    bindings: [{requirementId: requirement.id, consumer: "exploreSearch", active: true,
+      serviceAccount: "123-compute@developer.gserviceaccount.com",
+      reference: "projects/catchdates-staging/secrets/ALGOLIA_SEARCH_API_KEY/versions/2"}]};
+  const options = {aliases, environments: ["staging"], manifest, sourceSha, candidate,
+    targets: ["functions:exploreSearch"], runCommand: readyMetadataRunner};
+  const proposed = runEnvironmentReadiness({...options, phase: "candidate"});
+  assert.equal(proposed.exitCode, 0);
+  assert.equal(proposed.environments[0].results[1].metadata.deployedMatchesCandidate, false);
+  assert.equal(proposed.providerUsabilityVerified, false);
+  const deployed = runEnvironmentReadiness({...options, phase: "deployed"});
+  assert.equal(deployed.exitCode, 1);
+  assert.equal(deployed.environments[0].results[1].reason, "deployed-binding-outdated");
+  for (const mutate of [
+    (c) => { c.sourceSha = "b".repeat(40); },
+    (c) => { c.bindings[0].consumer = "unsupportedConsumer"; },
+    (c) => { c.bindings[0].reference = "projects/other-project/secrets/KEY/versions/2"; },
+    (c) => { c.bindings[0].reference = "projects/catchdates-staging/secrets/ALGOLIA_SEARCH_API_KEY/versions/latest"; },
+    (c) => { c.environmentVariables = {SECRET: "must-never-escape"}; },
+    (c) => { c.bindings[0].payload = "must-never-escape"; },
+  ]) {
+    const copy = structuredClone(candidate); mutate(copy);
+    assert.throws(() => validateCandidateBindings(copy, {environment: "staging", projectId: "catchdates-staging", sourceSha, manifest}),
+      (error) => error.exitCode === 64 && !error.message.includes("must-never-escape"));
+  }
+});
+
+test("offline direct-reader coverage rejects omitted and unsupported consumers", () => {
+  const reduced = structuredClone(manifest); reduced.directReaders.shift();
+  assert.throws(() => executeReadinessCli(["--manifest-only"], {manifest: reduced, repoRoot}),
+    /Direct secret reader is missing from manifest/u);
+  const unsupported = structuredClone(manifest); unsupported.directReaders[0].consumers.push("missingFunction");
+  assert.throws(() => executeReadinessCli(["--manifest-only"], {manifest: unsupported, repoRoot}),
+    /unsupported direct-reader consumer/u);
+  assert.deepEqual([...discoverDirectSecretReaders([
+    {path: "functions/src/direct.ts", contents: "client.accessSecretVersion({name});"},
+    {path: "functions/src/delegated.ts", contents: "readRcsSecret(client, version);"},
+  ])], ["functions/src/direct.ts", "functions/src/delegated.ts"]);
+});
+
+test("metadata projections only request reference and activation fields, never the whole environment", () => {
+  const command = buildFunctionBindingsCommand({projectId: "catchdates-dev", requirements: [
+    {binding: {parameter: "FLIGHT_PROVIDER_CONFIG_VERSION", enabledParameter: "FLIGHT_ENABLED"}},
+  ]});
+  const format = command.args.find((arg) => arg.startsWith("--format="));
+  assert.match(format, /environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION/u);
+  assert.doesNotMatch(format, /environmentVariables[,)]/u);
+  assert.doesNotMatch(format, /payload|value|private_key/iu);
+});
+
+test("a disabled gated consumer may retain a valid reference without checking its version", () => {
+  const requirement = {kind: "secret-reference", binding: {parameter: "CONFIG_VERSION",
+    enabledParameter: "FEATURE_ENABLED", optional: true}};
+  const fn = fakeFunction("example", "UNUSED");
+  fn.serviceConfig.environmentVariables = {FEATURE_ENABLED: "false",
+    CONFIG_VERSION: "projects/catchdates-dev/secrets/RETAINED/versions/1"};
+  const binding = observeFunctionBinding({requirement, consumer: "example", functions: [fn],
+    projectId: "catchdates-dev", projectNumber: "123"});
+  assert.equal(binding.active, false);
+  assert.equal(binding.status, "inactive");
+  assert.equal(binding.reference, fn.serviceConfig.environmentVariables.CONFIG_VERSION);
+});
+
+test("broad secret administrator grants cannot pass as reader-only permission", () => {
+  const serviceAccount = "reader@catchdates-dev.iam.gserviceaccount.com";
+  const result = classifySecretRuntimeAccess({serviceAccount,
+    requirement: {id: "fake", name: "FAKE"}, result: metadata({bindings:
+      ["roles/secretmanager.secretAccessor", "roles/secretmanager.admin"].map((role) =>
+        ({role, members: [`serviceAccount:${serviceAccount}`]}))})});
+  assert.equal(result.reason, "runtime-secret-permission-leakage");
+});

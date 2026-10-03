@@ -41,7 +41,15 @@
       "owner": "explore-search",
       "sourcePaths": [
         "functions/src/search/exploreSearch.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.algolia-write-api-key",
@@ -64,7 +72,15 @@
       "owner": "explore-search",
       "sourcePaths": [
         "functions/src/search/algoliaExploreIndex.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.google-maps-places-api-key",
@@ -88,7 +104,15 @@
       "sourcePaths": [
         "functions/src/places/googlePlaces.ts",
         "functions/src/places/placeAutocomplete.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.razorpay-key-secret",
@@ -117,7 +141,15 @@
       "owner": "payments",
       "sourcePaths": [
         "functions/src/payments/razorpay.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.razorpay-webhook-secret",
@@ -140,7 +172,15 @@
       "sourcePaths": [
         "functions/src/payments/razorpay.ts",
         "functions/src/payments/razorpayWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.stripe-secret-key",
@@ -165,7 +205,15 @@
       "owner": "payments",
       "sourcePaths": [
         "functions/src/payments/stripe.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.stripe-webhook-secret",
@@ -188,7 +236,15 @@
       "sourcePaths": [
         "functions/src/payments/stripe.ts",
         "functions/src/payments/stripeWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.roster-ingestion-webhook-secret",
@@ -210,7 +266,15 @@
       "owner": "event-success",
       "sourcePaths": [
         "functions/src/events/eventRosterHandoffs.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.event-venue-session-signing-key",
@@ -238,7 +302,15 @@
         "functions/src/events/selfCheckInAttendance.ts",
         "functions/src/eventSuccess/eventRuntime.ts",
         "functions/src/eventSuccess/firstHelloCheckIn.ts"
-      ]
+      ],
+      "credentialClass": "signing-key",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "outstanding-token-invalidation"
     },
     {
       "id": "functions.secret.cross-paths-suggestion-signing-key",
@@ -264,7 +336,15 @@
       "sourcePaths": [
         "functions/src/crossPaths/getCrossPathsSuggestions.ts",
         "functions/src/crossPaths/invitations.ts"
-      ]
+      ],
+      "credentialClass": "signing-key",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "outstanding-token-invalidation"
     },
     {
       "id": "functions.secret.meta-whatsapp-app-secret",
@@ -284,7 +364,8 @@
           "functions:getOrganizerMessagingSetup",
           "functions:organizerWhatsappWebhook",
           "functions:sendOrganizerWhatsappTest",
-          "functions:syncOrganizerWhatsappTemplates"
+          "functions:syncOrganizerWhatsappTemplates",
+          "functions:sendOrganizerWhatsappReply"
         ]
       },
       "acceptedStates": [
@@ -295,7 +376,15 @@
         "functions/src/organizers/organizerCampaignDispatcher.ts",
         "functions/src/organizers/organizerMessagingSetup.ts",
         "functions/src/organizers/organizerWhatsappWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.meta-whatsapp-webhook-verify-token",
@@ -317,7 +406,15 @@
       "owner": "organizer-messaging",
       "sourcePaths": [
         "functions/src/organizers/organizerWhatsappWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.organizer-whatsapp-access-tokens",
@@ -335,22 +432,37 @@
           "functions:dispatchOrganizerCampaign",
           "functions:dispatchScheduledOrganizerCampaigns",
           "functions:sendOrganizerWhatsappTest",
-          "functions:syncOrganizerWhatsappTemplates"
+          "functions:syncOrganizerWhatsappTemplates",
+          "functions:sendOrganizerWhatsappReply"
         ]
       },
       "acceptedStates": [
         "ENABLED"
-      ],
-      "runtimeRoles": [
-        "roles/secretmanager.secretAccessor",
-        "roles/secretmanager.secretVersionManager"
       ],
       "owner": "organizer-messaging",
       "sourcePaths": [
         "functions/src/organizers/organizerCampaignDispatcher.ts",
         "functions/src/organizers/organizerMessagingSetup.ts",
         "functions/src/organizers/organizerWhatsappProvider.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap",
+      "runtimeRolesByConsumer": {
+        "completeOrganizerWhatsappConnection": [
+          "roles/secretmanager.secretAccessor",
+          "roles/secretmanager.secretVersionManager"
+        ],
+        "disconnectOrganizerWhatsappConnection": [
+          "roles/secretmanager.secretAccessor",
+          "roles/secretmanager.secretVersionManager"
+        ]
+      }
     },
     {
       "id": "functions.secret.organizer-contact-identity-key",
@@ -365,7 +477,11 @@
         "anyDeployTarget": [
           "functions:onEventAttendeeAudienceProjected",
           "functions:createOrganizerContact",
-          "functions:mutateOrganizerContact"
+          "functions:mutateOrganizerContact",
+          "functions:onOrganizerFormResponseAutomated",
+          "functions:onOrganizerApplicationAutomated",
+          "functions:onOrganizerAttendanceAutomated",
+          "functions:retryOrganizerAutomations"
         ]
       },
       "acceptedStates": [
@@ -374,7 +490,15 @@
       "owner": "organizer-audience",
       "sourcePaths": [
         "functions/src/organizers/organizerAudienceSecrets.ts"
-      ]
+      ],
+      "credentialClass": "identity-hmac",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "identity-migration"
     },
     {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
@@ -499,7 +623,15 @@
       "owner": "program-rsvp",
       "sourcePaths": [
         "functions/src/programRsvp/householdRsvp.ts"
-      ]
+      ],
+      "credentialClass": "signing-key",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "outstanding-token-invalidation"
     },
     {
       "id": "functions.secret.sales-demo-grant-key",
@@ -532,7 +664,15 @@
       "owner": "sales-demo",
       "sourcePaths": [
         "functions/src/salesDemo/callables.ts"
-      ]
+      ],
+      "credentialClass": "signing-key",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "outstanding-token-invalidation"
     },
     {
       "id": "functions.secret.catch-whatsapp-app-secret",
@@ -554,7 +694,15 @@
       "owner": "catch-messaging",
       "sourcePaths": [
         "functions/src/catchMessaging/whatsappWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "functions.secret.catch-whatsapp-webhook-verify-token",
@@ -576,7 +724,15 @@
       "owner": "catch-messaging",
       "sourcePaths": [
         "functions/src/catchMessaging/whatsappWebhook.ts"
-      ]
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
     },
     {
       "id": "firestore.ttl.catch-whatsapp-webhook-events",
@@ -601,6 +757,296 @@
         "contracts/firestore/catch_whatsapp_webhook_events.schema.json",
         "functions/src/catchMessaging/whatsappWebhook.ts"
       ]
+    }
+  ],
+  "directReaders": [
+    {
+      "id": "functions.reference.flight",
+      "sourcePaths": [
+        "functions/src/transport/flightProviderConfig.ts"
+      ],
+      "owner": "program-transport",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "refreshProgramTravelLeg",
+        "refreshProgramFlightStatuses",
+        "flightAlertWebhook",
+        "anonymizeDueProgramsSweep"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "FLIGHT_PROVIDER_CONFIG_VERSION",
+        "optional": true
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
+      "id": "functions.reference.form-partner",
+      "sourcePaths": [
+        "functions/src/payments/formPayments/formPaymentRuntimeConfig.ts"
+      ],
+      "owner": "payments",
+      "credentialClass": "oauth-client",
+      "consumers": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments",
+        "manageEventOfferCheckout",
+        "reconcileOrganizerEventOfferPayments",
+        "onCancelledEventOfferPayments",
+        "configureEventRegistration",
+        "managePublicEventCheckout",
+        "reconcilePublicEventPayments",
+        "onCancelledPublicEventPayments",
+        "organizerFormPaymentOauthCallback"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
+        "optional": true
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "historical-payments",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.payment-platform",
+      "sourcePaths": [
+        "functions/src/payments/razorpayPlatformPaymentConfig.ts"
+      ],
+      "owner": "payments",
+      "credentialClass": "payment-platform",
+      "consumers": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments",
+        "manageEventOfferCheckout",
+        "reconcileOrganizerEventOfferPayments",
+        "onCancelledEventOfferPayments",
+        "configureEventRegistration",
+        "managePublicEventCheckout",
+        "reconcilePublicEventPayments",
+        "onCancelledPublicEventPayments"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+        "optional": true
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "historical-payments",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.payment-oauth",
+      "sourcePaths": [
+        "functions/src/payments/formPayments/razorpayCredentialVault.ts"
+      ],
+      "owner": "payments",
+      "credentialClass": "oauth-refresh",
+      "consumers": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments",
+        "manageEventOfferCheckout",
+        "reconcileOrganizerEventOfferPayments",
+        "onCancelledEventOfferPayments",
+        "configureEventRegistration",
+        "managePublicEventCheckout",
+        "reconcilePublicEventPayments",
+        "onCancelledPublicEventPayments"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "refresh-lease-recovery",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.guest-keyring",
+      "sourcePaths": [
+        "functions/src/eventSuccess/operations/guestLinkKeyStore.ts"
+      ],
+      "owner": "event-assistance",
+      "credentialClass": "signing-keyring",
+      "consumers": [
+        "onAssistanceMessageChanged",
+        "onAssistanceWorkChanged",
+        "evaluateDueEventAssistanceWork"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
+        "optional": true,
+        "secret": "EVENT_ASSISTANCE_GUEST_KEYS"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "retained-signing-keys",
+      "recordReferences": false
+    },
+    {
+      "id": "functions.reference.sms",
+      "sourcePaths": [
+        "functions/src/eventSuccess/operations/gupshupSmsProvider.ts"
+      ],
+      "owner": "event-assistance",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "onAssistanceMessageChanged",
+        "onAssistanceWorkChanged",
+        "evaluateDueEventAssistanceWork"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.rcs",
+      "sourcePaths": [
+        "functions/src/eventSuccess/operations/rcsCredentialStore.ts"
+      ],
+      "owner": "event-assistance",
+      "credentialClass": "provider-private-key",
+      "consumers": [
+        "onAssistanceMessageChanged",
+        "onAssistanceWorkChanged",
+        "evaluateDueEventAssistanceWork"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.rcs-webhook",
+      "sourcePaths": [
+        "functions/src/eventSuccess/operations/rcsWebhookKeyStore.ts"
+      ],
+      "owner": "event-assistance",
+      "credentialClass": "webhook-keyring",
+      "consumers": [
+        "eventAssistanceRcsWebhook"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+        "optional": true,
+        "secret": "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS",
+        "enabledParameter": "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "retained-signing-keys",
+      "recordReferences": false
+    },
+    {
+      "id": "functions.reference.organizer-provider",
+      "sourcePaths": [
+        "functions/src/organizers/organizerLumaProvider.ts"
+      ],
+      "owner": "organizer-integrations",
+      "credentialClass": "provider-key",
+      "consumers": [
+        "syncOrganizerProviderEvent"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.organizer-token",
+      "sourcePaths": [
+        "functions/src/organizers/organizerWhatsappProvider.ts"
+      ],
+      "owner": "organizer-messaging",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "disconnectOrganizerWhatsappConnection",
+        "syncOrganizerWhatsappTemplates",
+        "sendOrganizerWhatsappTest",
+        "sendOrganizerWhatsappReply",
+        "dispatchOrganizerCampaign",
+        "dispatchScheduledOrganizerCampaigns",
+        "onOrganizerFormResponseAutomated",
+        "onOrganizerApplicationAutomated",
+        "onOrganizerAttendanceAutomated",
+        "retryOrganizerAutomations",
+        "runOrganizerMoment",
+        "organizerMomentSweep",
+        "programTravelLegMoments",
+        "onAssistanceMessageChanged",
+        "onAssistanceWorkChanged",
+        "evaluateDueEventAssistanceWork"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "secret": "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.catch-reply",
+      "sourcePaths": [
+        "functions/src/catchMessaging/whatsappReplyHandlers.ts"
+      ],
+      "owner": "catch-messaging",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "adminSendCatchWhatsappReply"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+        "optional": true,
+        "secret": "CATCH_WHATSAPP_ACCESS_TOKEN",
+        "enabledParameter": "CATCH_WHATSAPP_REPLIES_ENABLED"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
     }
   ]
 }
