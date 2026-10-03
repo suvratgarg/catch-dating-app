@@ -1,3 +1,6 @@
+import {isLiveOffer} from "./waitlistOffers";
+import {validateEventWaitlistOfferDocument} from
+  "../shared/generated/validators/eventWaitlistOfferDocument";
 import {projectPublicPayment} from "./publicRegistration/projection";
 import type {ManagePublicEventCheckoutCallableResponse as PublicCheckout} from
   "../shared/generated/managePublicEventCheckoutCallableResponse";
@@ -12,7 +15,7 @@ import {validateEventParticipationDocument} from
 import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {eventParticipationId, eventParticipationsByStatusInTransaction,
-  participantUids} from "../shared/relationshipDocuments";
+  participantUids, eventWaitlistOfferId} from "../shared/relationshipDocuments";
 import {isBookingReadyUserProfile} from "../shared/profileReadiness";
 import {eventRequiresRunPreferences, hasCurrentRunPreferences} from
   "../shared/runPreferencesReadiness";
@@ -54,8 +57,9 @@ export interface EventViewerStateSource {
   waitlisted: boolean;
   /** Payment uses source evidence; a native pointer proves no payment. */
   payment: "notRead" | NonNullable<PublicCheckout["payment"]>["status"];
-  futureBooking: {allowed: boolean; reason: Restriction | null};
-  route: "catchFreeBooking" | "catchCheckout" | null;
+  futureBooking: {allowed: true; reason: null} |
+    {allowed: false; reason: Restriction};
+  route: "catchFreeBooking" | "catchCheckout" | "catchWaitlistOffer" | null;
   quotedPriceInPaise: number | null;
   basis: {policyHash: string | null; inventoryRevision: number | null;
     capacityRevision: number | null; migrationRevision: number | null};
@@ -80,13 +84,15 @@ export async function readEventViewerStateSource(params: {
   if (![uid, eventId].every(validId) || !Number.isSafeInteger(nowMillis) ||
       nowMillis < 0) return null;
   return db.runTransaction(async (tx) => {
-    const [eventSnap, userSnap, deletion, participationSnap] =
+    const [eventSnap, userSnap, deletion, participationSnap, offerSnap] =
       await Promise.all([
         tx.get(db.collection("events").doc(eventId)),
         tx.get(db.collection("users").doc(uid)),
         tx.get(db.collection("deletedUsers").doc(uid)),
         tx.get(db.collection("eventParticipations")
           .doc(eventParticipationId(eventId, uid))),
+        tx.get(db.collection("eventWaitlistOffers")
+          .doc(eventWaitlistOfferId(eventId, uid))),
       ]);
     const event = eventSnap.data() as EventDocument | undefined;
     const user = userSnap.data() as UserProfileDocument | undefined;
@@ -103,6 +109,17 @@ export async function readEventViewerStateSource(params: {
           participation.organizerId !== (event.organizerId ?? event.clubId))) {
       return null;
     }
+    const offer = offerSnap.data();
+    if (offer && (!validateEventWaitlistOfferDocument(offer) ||
+        offer.uid !== uid || offer.eventId !== eventId ||
+        offer.clubId !== event.clubId || offer.organizerId !== undefined &&
+          offer.organizerId !== (event.organizerId ?? event.clubId))) {
+      return null;
+    }
+    // An active owned offer unlocks its accept command, never direct booking.
+    // The accept writer uses the same liveness and policy checks again.
+    const activeOffer = participation?.status === "waitlisted" &&
+      offer?.status === "active" && isLiveOffer(offer, nowMillis);
     const policy = eventPolicyFromEvent(event);
     const hostApproved = hasHostApprovedJoinRequest(participation, nowMillis);
     const confirmed = ["signedUp", "attended"]
@@ -192,12 +209,14 @@ export async function readEventViewerStateSource(params: {
             peer.data.status === "signedUp").length) +
             Math.max(0, event.crossPathsPairHeldCount ?? 0)},
         {excludeUid: uid, nowMillis, readLimit});
-      const cohortId = cohortIdForUser(user);
+      const cohortId = activeOffer ? offer!.cohortAtOffer :
+        cohortIdForUser(user);
       result.quotedPriceInPaise = quotePriceInPaise({policy, cohortId, roster});
       const decision = signupPolicyDecision({policy, cohortId, roster,
         hasActiveCommunityMembership: result.membership.state === "active",
-        hasHostApproval: hostApproved,
+        hasHostApproval: hostApproved || activeOffer,
         hasValidInvite:
+          activeOffer ||
           hasAcceptedWaitlistOfferAccess(participation, nowMillis) ||
           await hasValidInviteForEvent({db, tx, eventId, policy,
             inviteCode: params.inviteCode}),
@@ -237,8 +256,9 @@ export async function readEventViewerStateSource(params: {
         result.basis.migrationRevision = ledger.migrationRevision;
       }
       result.futureBooking = {allowed: true, reason: null};
-      result.route = result.quotedPriceInPaise === 0 ?
-        "catchFreeBooking" : "catchCheckout";
+      result.route = activeOffer ? "catchWaitlistOffer" :
+        result.quotedPriceInPaise === 0 ?
+          "catchFreeBooking" : "catchCheckout";
       return result;
     } catch (error) {
       if (error instanceof SeatAuthorityError ||

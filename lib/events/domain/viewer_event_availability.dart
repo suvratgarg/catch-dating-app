@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
@@ -258,6 +259,88 @@ ViewerEventAvailability resolveViewerEventAvailability({
         quotedPriceInPaise: quotedPriceInPaise,
       );
   }
+}
+
+/// Maps canonical observed facts into existing presentation labels. This does
+/// not run admission policy or treat follows/review as a membership grant.
+ViewerEventAvailability viewerEventAvailabilityFromState({
+  required EventViewerState viewer,
+  required Event event,
+  required UserProfile? userProfile,
+  required DateTime now,
+  bool isSaved = false,
+}) {
+  final status = viewer.hasAdmission
+      ? viewer.attendance == EventViewerAttendance.attended &&
+                !event.startTime.isAfter(now)
+            ? ViewerEventAvailabilityStatus.attended
+            : ViewerEventAvailabilityStatus.joined
+      : viewer.allowed
+      ? viewer.review == EventViewerReview.approved
+            ? ViewerEventAvailabilityStatus.approvedToBook
+            : isSaved
+            ? ViewerEventAvailabilityStatus.saved
+            : ViewerEventAvailabilityStatus.open
+      : switch (viewer.restriction!) {
+          EventViewerRestriction.membershipRequired =>
+            ViewerEventAvailabilityStatus.membershipRequired,
+          EventViewerRestriction.inviteRequired =>
+            ViewerEventAvailabilityStatus.inviteRequired,
+          EventViewerRestriction.reviewRequired ||
+          EventViewerRestriction.outOfRatioReviewRequired =>
+            viewer.waitlisted
+                ? ViewerEventAvailabilityStatus.waitlisted
+                : ViewerEventAvailabilityStatus.requestRequired,
+          EventViewerRestriction.full ||
+          EventViewerRestriction.generalCapacityUnavailable ||
+          EventViewerRestriction.pairCapacityUnavailable =>
+            viewer.waitlisted
+                ? ViewerEventAvailabilityStatus.waitlisted
+                : ViewerEventAvailabilityStatus.full,
+          EventViewerRestriction.cohortCapacityUnavailable ||
+          EventViewerRestriction.balanceUnavailable =>
+            event.effectiveEventPolicy.admissionPolicy.waitlistPolicy.isEnabled
+                ? ViewerEventAvailabilityStatus.waitlistAvailable
+                : ViewerEventAvailabilityStatus.fullForViewer,
+          EventViewerRestriction.runPreferencesRequired =>
+            ViewerEventAvailabilityStatus.runPreferencesRequired,
+          EventViewerRestriction.past => ViewerEventAvailabilityStatus.past,
+          EventViewerRestriction.cancelled =>
+            ViewerEventAvailabilityStatus.cancelled,
+          _ => ViewerEventAvailabilityStatus.ageRestricted,
+        };
+  final eligibility = switch (status) {
+    ViewerEventAvailabilityStatus.joined => const AlreadySignedUp(),
+    ViewerEventAvailabilityStatus.attended => const Attended(),
+    ViewerEventAvailabilityStatus.waitlisted => const OnWaitlist(),
+    ViewerEventAvailabilityStatus.full ||
+    ViewerEventAvailabilityStatus.waitlistAvailable => const EventFull(),
+    ViewerEventAvailabilityStatus.inviteRequired => const EventInviteRequired(),
+    ViewerEventAvailabilityStatus.fullForViewer =>
+      const GenderCapacityReached(),
+    ViewerEventAvailabilityStatus.ageRestricted =>
+      userProfile == null
+          ? null
+          : userProfile.ageOn(now) < event.constraints.minAge
+          ? AgeTooYoung(event.constraints.minAge)
+          : userProfile.ageOn(now) > event.constraints.maxAge
+          ? AgeTooOld(event.constraints.maxAge)
+          : null,
+    ViewerEventAvailabilityStatus.open ||
+    ViewerEventAvailabilityStatus.saved ||
+    ViewerEventAvailabilityStatus.approvedToBook ||
+    ViewerEventAvailabilityStatus.runPreferencesRequired => const Eligible(),
+    _ => null,
+  };
+  return ViewerEventAvailability(
+    status: status,
+    eligibility: eligibility,
+    spotsRemaining: event.spotsRemaining,
+    isSaved: isSaved,
+    isHosted: false,
+    isClubMember: viewer.membership == EventViewerMembership.active,
+    quotedPriceInPaise: viewer.quotedPriceInPaise,
+  );
 }
 
 bool _hasEventStarted(Event event, DateTime now) =>

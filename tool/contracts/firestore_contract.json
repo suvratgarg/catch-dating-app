@@ -3659,6 +3659,66 @@
         "Immutable actor/reason/source/revision decision receipts; exact replay cannot restore an old grant after revocation.",
         "Subject account deletion removes receipts; deleting a reviewer does not delete other subjects' authority."
       ]
+    },
+    {
+      "id": "catchWhatsappReplyOperations",
+      "path": "catchWhatsappReplyOperations/{operationId}",
+      "rulesMatch": "/catchWhatsappReplyOperations/{operationId}",
+      "typescriptInterface": "CatchWhatsappReplyOperationDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
+      "rulesTestNames": [
+        "new Catch state denies SDK clients including privileged staff"
+      ],
+      "owner": "Catch support reply service",
+      "read": "server only; exact controlled support/adminOwner callable scope",
+      "write": "server only; permanent one-reply claim and monotonic delivery projection",
+      "exportedFunctions": [
+        "adminReviewCatchWhatsappInbound",
+        "adminSendCatchWhatsappReply",
+        "onCatchWhatsappWebhookEventCreated",
+        "onCatchWhatsappReplyOperationWritten"
+      ]
+    },
+    {
+      "id": "catchWhatsappEndpointStops",
+      "path": "catchWhatsappEndpointStops/{stopId}",
+      "rulesMatch": "/catchWhatsappEndpointStops/{stopId}",
+      "typescriptInterface": "CatchWhatsappEndpointStopDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
+      "rulesTestNames": [
+        "new Catch state denies SDK clients including privileged staff"
+      ],
+      "owner": "Catch support reply service",
+      "read": "server only; exact controlled support/adminOwner callable scope",
+      "write": "server only; atomic ingress suppression with no TTL or reset",
+      "exportedFunctions": [
+        "adminReviewCatchWhatsappInbound",
+        "adminSendCatchWhatsappReply",
+        "onCatchWhatsappWebhookEventCreated",
+        "onCatchWhatsappReplyOperationWritten"
+      ]
+    },
+    {
+      "id": "catchWhatsappReplyReadiness",
+      "path": "catchWhatsappReplyReadiness/{readinessId}",
+      "rulesMatch": "/catchWhatsappReplyReadiness/{readinessId}",
+      "typescriptInterface": "CatchWhatsappReplyReadinessDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
+      "rulesTestNames": [
+        "new Catch state denies SDK clients including privileged staff"
+      ],
+      "owner": "Catch support reply service",
+      "read": "server only; exact controlled support/adminOwner callable scope",
+      "write": "no writer in this feature; separately reviewed evidence required, never inferred from receipt absence",
+      "exportedFunctions": [
+        "adminReviewCatchWhatsappInbound",
+        "adminSendCatchWhatsappReply",
+        "onCatchWhatsappWebhookEventCreated",
+        "onCatchWhatsappReplyOperationWritten"
+      ]
     }
   ]
 }

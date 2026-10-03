@@ -1,4 +1,10 @@
 {
+  "eventsEventViewerCheckingBooking": "Checking booking availability…",
+  "@eventsEventViewerCheckingBooking": {"description": "Current event viewer booking facts status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.event_detail_cta"},
+  "eventsEventViewerRetryBooking": "Retry booking availability",
+  "@eventsEventViewerRetryBooking": {"description": "Current event viewer booking facts status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.event_detail_cta"},
+  "eventsEventViewerBookingUnavailable": "Booking unavailable",
+  "@eventsEventViewerBookingUnavailable": {"description": "Current event viewer booking facts status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.event_detail_cta"},
   "phoneImportTitle": "Review phone contacts",
   "@phoneImportTitle": {
     "description": "Native phone guest import review and explicit workspace sharing.",

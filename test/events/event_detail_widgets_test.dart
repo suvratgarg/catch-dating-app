@@ -14,6 +14,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -43,6 +44,7 @@ import 'package:share_plus/share_plus.dart';
 import '../clubs/clubs_test_helpers.dart'
     show FakeClubsRepository, seededClubsRepository;
 import '../test_pump_helpers.dart';
+import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
 void main() {
@@ -225,6 +227,7 @@ void main() {
           data: media,
           child: const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
         ),
+        viewerState: viewerFixture(),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -263,6 +266,7 @@ void main() {
             eventId: 'event-1',
           ),
         ),
+        viewerState: viewerFixture(),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -294,6 +298,7 @@ void main() {
           clubId: 'club-1',
           eventId: 'event-1',
         ),
+        viewerState: viewerFixture(reason: 'past'),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -485,11 +490,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(bookedCount: 2),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(bookedCount: 2),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
+            ),
+            viewer: viewerFixture(),
           ),
         ),
         overrides: [
@@ -518,11 +526,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(bookedCount: 2),
-            clubId: 'club1',
-            userProfile: buildUser(runPreferencesVersion: 0),
-            participation: null,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(bookedCount: 2),
+              clubId: 'club1',
+              userProfile: buildUser(runPreferencesVersion: 0),
+              participation: null,
+            ),
+            viewer: viewerFixture(reason: 'runPreferencesRequired'),
           ),
         ),
         overrides: [
@@ -554,13 +565,16 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: event,
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
-            inviteCode: 'CATCH-DELHI',
-            inviteLinkId: 'invite-link-1',
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: event,
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
+              inviteCode: 'CATCH-DELHI',
+              inviteLinkId: 'invite-link-1',
+            ),
+            viewer: viewerFixture(),
           ),
         ),
         overrides: [
@@ -585,16 +599,19 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(
-              eventPolicy: EventPolicyBundle.inviteOnlyEvent(
-                capacityLimit: 20,
-                basePriceInPaise: 0,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(
+                eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+                  capacityLimit: 20,
+                  basePriceInPaise: 0,
+                ),
               ),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
             ),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
+            viewer: viewerFixture(reason: 'inviteRequired'),
           ),
         ),
         overrides: [
@@ -616,11 +633,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
+            ),
+            viewer: viewerFixture(),
           ),
         ),
         overrides: [
@@ -654,11 +674,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(priceInPaise: 15000),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(priceInPaise: 15000),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
+            ),
+            viewer: viewerFixture(price: 15000),
           ),
         ),
         overrides: [
@@ -682,11 +705,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(bookedCount: 1),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: _participation(),
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(bookedCount: 1),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: _participation(),
+            ),
+            viewer: viewerFixture(admission: 'nativeParticipation'),
           ),
         ),
         overrides: [
@@ -708,11 +734,14 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(bookedCount: 1),
-            clubId: 'club1',
-            userProfile: buildUser(),
-            participation: null,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(bookedCount: 1),
+              clubId: 'club1',
+              userProfile: buildUser(),
+              participation: null,
+            ),
+            viewer: viewerFixture(),
           ),
         ),
         overrides: [
@@ -733,12 +762,15 @@ void main() {
         await pumpEventsTestApp(
           tester,
           Scaffold(
-            bottomNavigationBar: EventDetailCta(
-              event: buildEvent(startTime: startTime, bookedCount: 1),
-              clubId: 'club1',
-              now: startTime.subtract(const Duration(minutes: 5)),
-              userProfile: buildUser(),
-              participation: _participation(),
+            bottomNavigationBar: _withCurrentViewer(
+              EventDetailCta(
+                event: buildEvent(startTime: startTime, bookedCount: 1),
+                clubId: 'club1',
+                now: startTime.subtract(const Duration(minutes: 5)),
+                userProfile: buildUser(),
+                participation: _participation(),
+              ),
+              viewer: viewerFixture(admission: 'nativeParticipation'),
             ),
           ),
           overrides: [
@@ -780,30 +812,36 @@ void main() {
             home: Scaffold(
               body: ListView(
                 children: [
-                  EventDetailCta(
-                    event: buildEvent(
-                      capacityLimit: 1,
-                      bookedCount: 1,
-                      eventPolicy: EventPolicyBundle.openEvent(
+                  _withCurrentViewer(
+                    EventDetailCta(
+                      event: buildEvent(
                         capacityLimit: 1,
-                        basePriceInPaise: 0,
+                        bookedCount: 1,
+                        eventPolicy: EventPolicyBundle.openEvent(
+                          capacityLimit: 1,
+                          basePriceInPaise: 0,
+                        ),
+                        cohortCounts: const {
+                          EventCohortIds.menInterestedInWomen: 1,
+                        },
                       ),
-                      cohortCounts: const {
-                        EventCohortIds.menInterestedInWomen: 1,
-                      },
+                      clubId: 'club1',
+                      userProfile: buildUser(uid: 'runner-9'),
+                      participation: null,
                     ),
-                    clubId: 'club1',
-                    userProfile: buildUser(uid: 'runner-9'),
-                    participation: null,
+                    viewer: viewerFixture(reason: 'full'),
                   ),
-                  EventDetailCta(
-                    event: buildEvent(waitlistedCount: 1),
-                    clubId: 'club1',
-                    userProfile: buildUser(uid: 'runner-9'),
-                    participation: _participation(
-                      uid: 'runner-9',
-                      status: EventParticipationStatus.waitlisted,
+                  _withCurrentViewer(
+                    EventDetailCta(
+                      event: buildEvent(waitlistedCount: 1),
+                      clubId: 'club1',
+                      userProfile: buildUser(uid: 'runner-9'),
+                      participation: _participation(
+                        uid: 'runner-9',
+                        status: EventParticipationStatus.waitlisted,
+                      ),
                     ),
+                    viewer: viewerFixture(reason: 'full', waitlisted: true),
                   ),
                 ],
               ),
@@ -848,17 +886,23 @@ void main() {
             child: MaterialApp(
               theme: AppTheme.light,
               home: Scaffold(
-                bottomNavigationBar: EventDetailCta(
-                  event: buildEvent(),
-                  clubId: 'club1',
-                  now: DateTime(2026, 1, 1, 12),
-                  userProfile: buildUser(uid: 'runner-9'),
-                  participation: _participation(
-                    uid: 'runner-9',
-                    status: EventParticipationStatus.waitlisted,
-                    waitlistOfferStatus: EventWaitlistOfferStatus.active,
-                    waitlistOfferExpiresAt: DateTime(2026, 1, 1, 13),
-                    waitlistOfferId: 'event-1_runner-9',
+                bottomNavigationBar: _withCurrentViewer(
+                  EventDetailCta(
+                    event: buildEvent(),
+                    clubId: 'club1',
+                    now: DateTime(2026, 1, 1, 12),
+                    userProfile: buildUser(uid: 'runner-9'),
+                    participation: _participation(
+                      uid: 'runner-9',
+                      status: EventParticipationStatus.waitlisted,
+                      waitlistOfferStatus: EventWaitlistOfferStatus.active,
+                      waitlistOfferExpiresAt: DateTime(2026, 1, 1, 13),
+                      waitlistOfferId: 'event-1_runner-9',
+                    ),
+                  ),
+                  viewer: viewerFixture(
+                    route: 'catchWaitlistOffer',
+                    waitlisted: true,
                   ),
                 ),
               ),
@@ -920,30 +964,43 @@ void main() {
             home: Scaffold(
               body: ListView(
                 children: [
-                  EventDetailCta(
-                    event: event,
-                    clubId: 'club1',
-                    userProfile: buildUser(uid: 'runner-9'),
-                    participation: null,
+                  _withCurrentViewer(
+                    EventDetailCta(
+                      event: event,
+                      clubId: 'club1',
+                      userProfile: buildUser(uid: 'runner-9'),
+                      participation: null,
+                    ),
+                    viewer: viewerFixture(reason: 'reviewRequired'),
                   ),
-                  EventDetailCta(
-                    event: event,
-                    clubId: 'club1',
-                    userProfile: buildUser(uid: 'runner-9'),
-                    participation: _participation(
-                      uid: 'runner-9',
-                      status: EventParticipationStatus.waitlisted,
+                  _withCurrentViewer(
+                    EventDetailCta(
+                      event: event,
+                      clubId: 'club1',
+                      userProfile: buildUser(uid: 'runner-9'),
+                      participation: _participation(
+                        uid: 'runner-9',
+                        status: EventParticipationStatus.waitlisted,
+                      ),
+                    ),
+                    viewer: viewerFixture(
+                      reason: 'reviewRequired',
+                      review: 'pending',
+                      waitlisted: true,
                     ),
                   ),
-                  EventDetailCta(
-                    event: event,
-                    clubId: 'club1',
-                    userProfile: buildUser(uid: 'runner-9'),
-                    participation: _participation(
-                      uid: 'runner-9',
-                      status: EventParticipationStatus.waitlisted,
-                      hostApprovalStatus: EventJoinRequestStatus.approved,
+                  _withCurrentViewer(
+                    EventDetailCta(
+                      event: event,
+                      clubId: 'club1',
+                      userProfile: buildUser(uid: 'runner-9'),
+                      participation: _participation(
+                        uid: 'runner-9',
+                        status: EventParticipationStatus.waitlisted,
+                        hostApprovalStatus: EventJoinRequestStatus.approved,
+                      ),
                     ),
+                    viewer: viewerFixture(review: 'approved', waitlisted: true),
                   ),
                 ],
               ),
@@ -976,26 +1033,38 @@ void main() {
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              EventDetailCta(
-                event: buildEvent(
-                  startTime: pastStart,
-                  endTime: pastStart.add(const Duration(hours: 1)),
-                  checkedInCount: 1,
+              _withCurrentViewer(
+                EventDetailCta(
+                  event: buildEvent(
+                    startTime: pastStart,
+                    endTime: pastStart.add(const Duration(hours: 1)),
+                    checkedInCount: 1,
+                  ),
+                  clubId: 'club1',
+                  userProfile: buildUser(),
+                  participation: _participation(
+                    status: EventParticipationStatus.attended,
+                  ),
                 ),
-                clubId: 'club1',
-                userProfile: buildUser(),
-                participation: _participation(
-                  status: EventParticipationStatus.attended,
+                viewer: viewerFixture(
+                  reason: 'past',
+                  admission: 'nativeParticipation',
+                  attendance: 'attended',
                 ),
               ),
-              EventDetailCta(
-                event: buildEvent(
-                  startTime: DateTime.now().subtract(const Duration(hours: 2)),
-                  endTime: DateTime.now().subtract(const Duration(hours: 1)),
+              _withCurrentViewer(
+                EventDetailCta(
+                  event: buildEvent(
+                    startTime: DateTime.now().subtract(
+                      const Duration(hours: 2),
+                    ),
+                    endTime: DateTime.now().subtract(const Duration(hours: 1)),
+                  ),
+                  clubId: 'club1',
+                  userProfile: buildUser(),
+                  participation: null,
                 ),
-                clubId: 'club1',
-                userProfile: buildUser(),
-                participation: null,
+                viewer: viewerFixture(reason: 'past'),
               ),
             ],
           ),
@@ -1019,18 +1088,24 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(
-              startTime: futureStart,
-              endTime: futureStart.add(const Duration(hours: 1)),
-              bookedCount: 9,
-              checkedInCount: 1,
+          bottomNavigationBar: _withCurrentViewer(
+            EventDetailCta(
+              event: buildEvent(
+                startTime: futureStart,
+                endTime: futureStart.add(const Duration(hours: 1)),
+                bookedCount: 9,
+                checkedInCount: 1,
+              ),
+              clubId: 'club1',
+              now: now,
+              userProfile: buildUser(),
+              participation: _participation(
+                status: EventParticipationStatus.attended,
+              ),
             ),
-            clubId: 'club1',
-            now: now,
-            userProfile: buildUser(),
-            participation: _participation(
-              status: EventParticipationStatus.attended,
+            viewer: viewerFixture(
+              admission: 'nativeParticipation',
+              attendance: 'attended',
             ),
           ),
         ),
@@ -1062,30 +1137,39 @@ void main() {
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              EventDetailCta(
-                event: buildEvent(
-                  constraints: const EventConstraints(minAge: 18),
+              _withCurrentViewer(
+                EventDetailCta(
+                  event: buildEvent(
+                    constraints: const EventConstraints(minAge: 18),
+                  ),
+                  clubId: 'club1',
+                  userProfile: tooYoungUser,
+                  participation: null,
                 ),
-                clubId: 'club1',
-                userProfile: tooYoungUser,
-                participation: null,
+                viewer: viewerFixture(reason: 'ageRestricted'),
               ),
-              EventDetailCta(
-                event: buildEvent(
-                  constraints: const EventConstraints(maxAge: 40),
+              _withCurrentViewer(
+                EventDetailCta(
+                  event: buildEvent(
+                    constraints: const EventConstraints(maxAge: 40),
+                  ),
+                  clubId: 'club1',
+                  userProfile: olderUser,
+                  participation: null,
                 ),
-                clubId: 'club1',
-                userProfile: olderUser,
-                participation: null,
+                viewer: viewerFixture(reason: 'ageRestricted'),
               ),
-              EventDetailCta(
-                event: buildEvent(
-                  constraints: const EventConstraints(maxMen: 1),
-                  genderCounts: const {'man': 1},
+              _withCurrentViewer(
+                EventDetailCta(
+                  event: buildEvent(
+                    constraints: const EventConstraints(maxMen: 1),
+                    genderCounts: const {'man': 1},
+                  ),
+                  clubId: 'club1',
+                  userProfile: buildUser(uid: 'runner-3'),
+                  participation: null,
                 ),
-                clubId: 'club1',
-                userProfile: buildUser(uid: 'runner-3'),
-                participation: null,
+                viewer: viewerFixture(reason: 'cohortCapacityUnavailable'),
               ),
             ],
           ),
@@ -1625,6 +1709,7 @@ void main() {
           clubId: 'club-1',
           eventId: 'event-1',
         ),
+        viewerState: viewerFixture(),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(
             seededClubsRepository(buildClub()),
@@ -1663,6 +1748,7 @@ void main() {
           clubId: 'club-1',
           eventId: 'event-1',
         ),
+        viewerState: viewerFixture(admission: 'nativeParticipation'),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(
             seededClubsRepository(buildClub()),
@@ -1871,6 +1957,7 @@ void main() {
           clubId: 'club-1',
           eventId: 'event-1',
         ),
+        viewerState: viewerFixture(),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -1916,6 +2003,7 @@ void main() {
           clubId: 'club-1',
           eventId: 'event-1',
         ),
+        viewerState: viewerFixture(),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -2178,3 +2266,23 @@ EventParticipation _participation({
     waitlistOfferId: waitlistOfferId,
   );
 }
+
+/// Each synthetic actor has its own Auth/current-read scope, including cases
+/// that show several event states side by side. No local policy grants access.
+Widget _withCurrentViewer(
+  EventDetailCta child, {
+  required EventViewerState viewer,
+}) => ProviderScope(
+  overrides: [
+    // These test-only scopes isolate synthetic actors, not app dependencies.
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+    uidProvider.overrideWithValue(AsyncData(child.userProfile.uid)),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+    eventViewerStateProvider(
+      child.event.id,
+      child.userProfile.uid,
+      inviteCode: child.inviteCode,
+    ).overrideWithValue(AsyncData(viewer)),
+  ],
+  child: child,
+);

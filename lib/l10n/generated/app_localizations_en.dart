@@ -9,6 +9,16 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get eventsEventViewerCheckingBooking =>
+      'Checking booking availability…';
+
+  @override
+  String get eventsEventViewerRetryBooking => 'Retry booking availability';
+
+  @override
+  String get eventsEventViewerBookingUnavailable => 'Booking unavailable';
+
+  @override
   String get phoneImportTitle => 'Review phone contacts';
 
   @override
