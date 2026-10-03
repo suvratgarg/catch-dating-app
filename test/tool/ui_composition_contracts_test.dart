@@ -546,7 +546,7 @@ class ExampleScreen {
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchAsyncBoundary(
+  Object build() => CatchAsyncBoundary<Object>(
     loadingBuilder: (_) => CatchRouteScaffold(
       body: CatchRouteBody.standard(child: const SizedBox()),
     ),
