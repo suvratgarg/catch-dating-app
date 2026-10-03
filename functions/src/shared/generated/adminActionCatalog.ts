@@ -13,6 +13,24 @@ export const ADMIN_ACTION_CATALOG = {
       "analyticsViewer"
     ]
   },
+  "catch.whatsapp.inbound.review": {
+    "callable": "adminReviewCatchWhatsappInbound",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "support",
+      "adminOwner"
+    ]
+  },
+  "catch.whatsapp.inbound.send": {
+    "callable": "adminSendCatchWhatsappReply",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "support",
+      "adminOwner"
+    ]
+  },
   "safety.get": {
     "callable": "adminGetSafetyTriageDetails",
     "controlPlane": false,
