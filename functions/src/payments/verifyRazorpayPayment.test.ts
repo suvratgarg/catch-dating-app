@@ -364,6 +364,60 @@ test(
   }
 );
 
+for (const scenario of [
+  {name: "wrong order", payment: {order_id: "order_other"},
+    code: "invalid-argument"},
+  {name: "wrong user", notes: {userId: "another-user"},
+    code: "permission-denied"},
+  {name: "wrong amount", payment: {amount: 24999},
+    code: "invalid-argument"},
+  {name: "wrong currency", payment: {currency: "USD"},
+    code: "invalid-argument"},
+  {name: "uncaptured authorization", payment: {status: "authorized"},
+    code: "failed-precondition"},
+  {name: "failed payment", payment: {status: "failed"},
+    code: "failed-precondition"},
+  {name: "partial refund", payment: {amount_refunded: 1},
+    code: "failed-precondition"},
+]) {
+  test(`verifyRazorpayPayment rejects ${scenario.name} despite valid signature`,
+    async () => {
+      const paymentDoc = createPaymentDocRecorder();
+      let admissionCalls = 0;
+      let providerRefundCalls = 0;
+      await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+        auth: {uid: "runner-1"},
+        data: {paymentId: "pay_123", orderId: "order_123", signature: "valid"},
+      }), {
+        firestore: () => createPaymentsFirestore(paymentDoc),
+        verifySignature: () => true,
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          admissionCalls++;
+        },
+        createClient: () => ({
+          orders: {fetch: async () => ({id: "order_123", amount: 25000,
+            currency: "INR", amount_paid: 25000, amount_due: 0,
+            notes: {eventId: "trusted-event", userId: "runner-1",
+              ...scenario.notes}})},
+          payments: {
+            fetch: async () => ({id: "pay_123", order_id: "order_123",
+              amount: 25000, currency: "INR", status: "captured",
+              refund_status: null, ...scenario.payment}),
+            refund: async () => {
+              providerRefundCalls++;
+            },
+          },
+        }) as unknown as Razorpay,
+      }), (error: unknown) => error instanceof HttpsError &&
+        error.code === scenario.code);
+      assert.equal(admissionCalls, 0);
+      assert.equal(providerRefundCalls, 0);
+      assert.deepEqual(paymentDoc.setCalls, []);
+      assert.deepEqual(paymentDoc.inviteLinkSetCalls, []);
+    });
+}
+
 function buildRequest({
   data,
   auth,
