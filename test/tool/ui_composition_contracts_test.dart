@@ -6,6 +6,36 @@ import 'package:test/test.dart';
 import '../../tool/architecture/check_ui_composition_contracts.dart';
 
 void main() {
+  test(
+    'imperative identity matches Node generation and ignores source formatting',
+    () {
+      final identity = imperativePageIdentity(
+        sourcePath: 'lib/open.dart',
+        presentationExpression: '(_) => const FixtureScreen( )',
+        fullscreenDialogExpression: 'true',
+      );
+      expect(
+        identity,
+        'lib/open.dart:596bceec245cd3c8ada59e961cbfb7109c76626490ae131dc0fbc54acd8ca79d',
+      );
+      expect(
+        imperativePageIdentity(
+          sourcePath: 'lib/open.dart',
+          presentationExpression: '(_) => const OtherScreen()',
+          fullscreenDialogExpression: 'true',
+        ),
+        isNot(identity),
+      );
+      expect(
+        imperativePageIdentity(
+          sourcePath: 'lib/open.dart',
+          presentationExpression: '(_) => const FixtureScreen()',
+        ),
+        isNot(identity),
+      );
+    },
+  );
+
   test('screen schema accepts exactly the analyzer layout vocabulary', () {
     final schema =
         jsonDecode(

@@ -13,7 +13,7 @@ import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
 const laneJobs = {
   admin: "admin", contracts: "contracts", docs: "docs-policy", policy_docs: "docs-policy",
   firestore_rules: "firestore-rules", flutter: "flutter", functions: "functions",
-  marketing: "marketing", operations: "operations", tools: "tools",
+  capture_freshness: "capture-freshness", marketing: "marketing", operations: "operations", tools: "tools",
   visual_integration: "visual-integration", flutter_build_android: "app-builds",
   flutter_build_ios: "app-builds", flutter_build_web: "app-builds", flutter_web_smoke: "app-builds",
 };

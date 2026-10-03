@@ -10,6 +10,7 @@ import {
   main,
   parseArgs,
   projectPlanOutputs,
+  trackedPaths,
 } from "../harness.mjs";
 
 const graph = JSON.parse(
@@ -245,4 +246,17 @@ test("committed-window CLI rejects options that could replace its exact main his
     assert.equal(result.status, 64);
     assert.match(result.stderr, /requires a main base\/head plan/u);
   }
+});
+
+
+test("coverage reads inventories larger than the default subprocess buffer", () => {
+  const paths = trackedPaths({runner: (command, args, options) => {
+    assert.equal(command, "git");
+    assert.deepEqual(args, ["ls-files", "-z"]);
+    return spawnSync(process.execPath, ["-e",
+      "process.stdout.write('lib/long_feature_path/example.dart\\0'.repeat(50000))"], options);
+  }});
+  assert.equal(paths.length, 50000);
+  assert.equal(paths[49999], "lib/long_feature_path/example.dart");
+  assert.throws(() => trackedPaths({runner: () => ({status: null, error: new Error("ENOBUFS")})}), /ENOBUFS/u);
 });
