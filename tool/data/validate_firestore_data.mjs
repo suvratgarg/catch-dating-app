@@ -4,6 +4,13 @@ import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
+  validateClubDocument,
+  validateOrganizerDocument,
+  validateClubMembershipDocument,
+  validateEventDocument,
+  validateSwipeDocument,
+} from "../contracts/generated/schema_contract_validators.mjs";
+import {
   EVENT_MAX_DURATION_MINUTES,
   scheduleComplianceIssues,
 } from "../demo/demo_schedule_policy.mjs";
@@ -13,7 +20,6 @@ const repoRoot = path.resolve(toolDir, "../..");
 const requireFromFunctions = createRequire(
   path.join(repoRoot, "functions/package.json")
 );
-const admin = requireFromFunctions("firebase-admin");
 
 const DEFAULT_MAX_DOCS = 5000;
 const WARN_DOC_BYTES = 768 * 1024;
@@ -38,34 +44,47 @@ const retiredProfileFields = [
   "runPreferencesVersion",
 ];
 
-const args = parseArgs(process.argv.slice(2));
-if (args.help) {
-  printHelp();
-  process.exit(0);
+// Importing this module is offline: only the CLI boundary initializes Firebase.
+export async function main(argv, {firestore} = {}) {
+  const args = parseArgs(argv);
+  if (args.help) {
+    printHelp();
+    return;
+  }
+  const projectId = resolveProjectId(args);
+  const emulatorHost = args.emulatorHost ?? process.env.FIRESTORE_EMULATOR_HOST;
+  let app;
+  let db = firestore;
+  if (!db) {
+    if (emulatorHost) process.env.FIRESTORE_EMULATOR_HOST = emulatorHost;
+    const admin = requireFromFunctions("firebase-admin");
+    app = admin.initializeApp({projectId});
+    db = app.firestore();
+  }
+  try {
+    const report = createReport({projectId, emulatorHost, maxDocs: args.maxDocs});
+    const collections = await loadCollections(db, args.maxDocs, {
+      includeScheduleLocks: args.checkScheduleLocks,
+    });
+    validateAll(collections, report, {checkScheduleLocks: args.checkScheduleLocks});
+    const json = `${JSON.stringify(report, null, 2)}\n`;
+    // Complete the artifact before reporting failure; stdout may be a slow pipe.
+    if (args.output) fs.writeFileSync(args.output, json, {mode: 0o600});
+    if (args.json) process.stdout.write(json);
+    else printReport(report);
+    process.exitCode = report.summary.errors > 0 ||
+      (args.failOnWarning && report.summary.warnings > 0) ? 1 : 0;
+    return report;
+  } finally {
+    if (app) {
+      await db.terminate();
+      await app.delete();
+    }
+  }
 }
 
-const projectId = resolveProjectId(args);
-if (args.emulatorHost) {
-  process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
-}
-
-admin.initializeApp({projectId});
-const db = admin.firestore();
-const report = createReport({projectId, emulatorHost: args.emulatorHost});
-
-const collections = await loadCollections(db, args.maxDocs, {
-  includeScheduleLocks: args.checkScheduleLocks,
-});
-validateAll(collections, report, {checkScheduleLocks: args.checkScheduleLocks});
-
-if (args.json) {
-  console.log(JSON.stringify(report, null, 2));
-} else {
-  printReport(report);
-}
-
-if (report.summary.errors > 0 || (args.failOnWarning && report.summary.warnings > 0)) {
-  process.exit(1);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await main(process.argv.slice(2));
 }
 
 function parseArgs(argv) {
@@ -75,6 +94,7 @@ function parseArgs(argv) {
     emulatorHost: null,
     maxDocs: DEFAULT_MAX_DOCS,
     json: false,
+    output: null,
     failOnWarning: false,
     checkScheduleLocks: false,
     help: false,
@@ -84,6 +104,7 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--json") parsed.json = true;
+    else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
     else if (arg === "--fail-on-warning") parsed.failOnWarning = true;
     else if (arg === "--check-schedule-locks") parsed.checkScheduleLocks = true;
     else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
@@ -91,13 +112,13 @@ function parseArgs(argv) {
     else if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
     else if (arg === "--project") parsed.project = requireValue(argv, ++i, arg);
     else if (arg === "--max-docs") {
-      parsed.maxDocs = Number.parseInt(requireValue(argv, ++i, arg), 10);
+      parsed.maxDocs = Number(requireValue(argv, ++i, arg));
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
   }
 
-  if (!Number.isInteger(parsed.maxDocs) || parsed.maxDocs < 1) {
+  if (!Number.isSafeInteger(parsed.maxDocs) || parsed.maxDocs < 1) {
     throw new Error("--max-docs must be a positive integer.");
   }
   return parsed;
@@ -146,16 +167,18 @@ Options:
   --max-docs <n>                 Per-collection cap, default ${DEFAULT_MAX_DOCS}.
   --check-schedule-locks         Also verify server schedule lock documents.
   --json                         Emit machine-readable JSON.
+  --output <file>                 Save complete JSON before setting failure status.
   --fail-on-warning              Exit non-zero on warnings as well as errors.
 `);
 }
 
-async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false} = {}) {
+export async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false} = {}) {
   const topLevel = [
     "users",
     "hostProfiles",
     "publicProfiles",
     "clubs",
+    "organizers",
     "clubMemberships",
     "events",
     "eventParticipations",
@@ -177,7 +200,7 @@ async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false
   result.userEventScheduleLocks = includeScheduleLocks ?
     await readQuery(firestore.collection("userEventScheduleLocks"), maxDocs) :
     [];
-  result.swipes = await readQuery(
+  result.outgoing = await readQuery(
     firestore.collectionGroup("outgoing"),
     maxDocs
   );
@@ -198,9 +221,12 @@ async function readQuery(query, maxDocs) {
   }));
 }
 
-function createReport({projectId, emulatorHost}) {
+export function createReport({projectId, emulatorHost, maxDocs = DEFAULT_MAX_DOCS}) {
   return {
+    reportVersion: 2,
     projectId,
+    maxDocs,
+    consistency: "bounded-sequential-reads-not-a-snapshot",
     emulatorHost: emulatorHost ?? null,
     generatedAt: new Date().toISOString(),
     summary: {
@@ -208,22 +234,40 @@ function createReport({projectId, emulatorHost}) {
       errors: 0,
       warnings: 0,
       largestDocuments: [],
+      collections: {},
+      completeWithinCap: true,
     },
+    documentStates: {},
     issues: [],
   };
 }
 
-function validateAll(collections, currentReport, {checkScheduleLocks = false} = {}) {
+export function validateAll(collections, currentReport, {checkScheduleLocks = false} = {}) {
   const users = byId(collections.users);
   const hostProfiles = byId(collections.hostProfiles);
   const publicProfiles = byId(collections.publicProfiles);
-  const clubs = byId(collections.clubs);
+  const clubs = byId([...collections.clubs, ...collections.organizers]);
   const events = byId(collections.events);
   const eventParticipations = byId(collections.eventParticipations);
   const matches = byId(collections.matches);
 
-  for (const docs of Object.values(collections)) {
-    for (const doc of docs) validateDocumentSize(doc, currentReport);
+  for (const [name, docs] of Object.entries(collections)) {
+    const enabled = !["clubScheduleLocks", "userEventScheduleLocks"].includes(name) ||
+      checkScheduleLocks;
+    const limitReached = enabled && docs.length >= currentReport.maxDocs;
+    currentReport.summary.collections[name] = {
+      scannedDocuments: docs.length, enabled, limitReached,
+      errors: 0, warnings: 0, documentsWithIssues: 0,
+    };
+    for (const doc of docs) {
+      currentReport.documentStates[doc.path] = documentState(doc);
+      validateDocumentSize(doc, currentReport);
+    }
+    if (limitReached) {
+      currentReport.summary.completeWithinCap = false;
+      issue(currentReport, "warning", name, "scan-limit-reached",
+        "Query reached its cap; references and aggregate findings are provisional within this scan.");
+    }
   }
 
   for (const doc of collections.users) validateUser(doc, currentReport);
@@ -234,7 +278,7 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
     collections.publicProfiles,
     currentReport
   );
-  for (const doc of collections.clubs) {
+  for (const doc of [...collections.clubs, ...collections.organizers]) {
     validateClub(doc, users, currentReport);
   }
   for (const doc of collections.clubMemberships) {
@@ -250,7 +294,7 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
   for (const doc of collections.reviews) {
     validateReview(doc, users, clubs, events, currentReport);
   }
-  for (const doc of collections.swipes) {
+  for (const doc of collections.outgoing) {
     validateSwipe(doc, users, publicProfiles, events, eventParticipations,
       currentReport);
   }
@@ -277,6 +321,21 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
     currentReport
   );
   validateSchedulePolicy(collections, currentReport, {checkScheduleLocks});
+  const collectionByPath = new Map(Object.entries(collections).flatMap(([name, docs]) =>
+    docs.map((doc) => [doc.path, name])));
+  for (const [name, docs] of Object.entries(collections)) {
+    const paths = new Set(docs.map((doc) => doc.path));
+    // Missing-document findings (for example absent schedule locks) still
+    // belong to their collection, but not to its scanned-document denominator.
+    const findings = currentReport.issues.filter((found) =>
+      (collectionByPath.get(found.path) ?? found.path.split("/")[0]) === name);
+    Object.assign(currentReport.summary.collections[name], {
+      errors: findings.filter((found) => found.severity === "error").length,
+      warnings: findings.filter((found) => found.severity === "warning").length,
+      documentsWithIssues: new Set(findings.filter((found) => paths.has(found.path))
+        .map((found) => found.path)).size,
+    });
+  }
 }
 
 function validateDocumentSize(doc, currentReport) {
@@ -372,17 +431,9 @@ function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport)
 
 function validateClub(doc, users, currentReport) {
   const data = doc.data;
-  requireString(data, "name", doc, currentReport);
-  requireString(data, "description", doc, currentReport);
-  requireString(data, "location", doc, currentReport);
-  requireString(data, "area", doc, currentReport);
-  requireString(data, "hostUserId", doc, currentReport);
-  requireString(data, "hostName", doc, currentReport);
+  validateSchema(doc, doc.path.startsWith("organizers/") ?
+    validateOrganizerDocument : validateClubDocument, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
-  requireStringArray(data, "tags", doc, currentReport);
-  requireInteger(data, "memberCount", doc, currentReport);
-  requireNumber(data, "rating", doc, currentReport);
-  requireInteger(data, "reviewCount", doc, currentReport);
 
   if (Number.isInteger(data.memberCount) && data.memberCount < 0) {
     issue(currentReport, "error", doc.path, "negative-member-count",
@@ -409,19 +460,10 @@ function isSyntheticPublicProfile(doc) {
 
 function validateClubMembership(doc, users, clubs, currentReport) {
   const data = doc.data;
-  requireString(data, "clubId", doc, currentReport);
-  requireString(data, "uid", doc, currentReport);
-  requireString(data, "role", doc, currentReport);
-  requireString(data, "status", doc, currentReport);
+  validateSchema(doc, validateClubMembershipDocument, currentReport);
   requireTimestamp(data, "joinedAt", doc, currentReport);
-
-  if (!["host", "member"].includes(data.role)) {
-    issue(currentReport, "error", doc.path, "invalid-membership-role",
-      "role must be host or member.");
-  }
-  if (!["active", "left", "deleted"].includes(data.status)) {
-    issue(currentReport, "error", doc.path, "invalid-membership-status",
-      "status must be active, left, or deleted.");
+  for (const field of ["leftAt", "deletedAt"]) {
+    if (data[field] != null) requireTimestamp(data, field, doc, currentReport);
   }
   if (data.clubId && data.uid && doc.id !== `${data.clubId}_${data.uid}`) {
     issue(currentReport, "error", doc.path, "membership-id-mismatch",
@@ -439,21 +481,16 @@ function validateClubMembership(doc, users, clubs, currentReport) {
 
 function validateRun(doc, clubs, currentReport) {
   const data = doc.data;
-  requireString(data, "clubId", doc, currentReport);
+  validateSchema(doc, validateEventDocument, currentReport);
   requireTimestamp(data, "startTime", doc, currentReport);
-  requireTimestamp(data, "endTime", doc, currentReport);
-  requireString(data, "meetingPoint", doc, currentReport);
-  requireNumber(data, "distanceKm", doc, currentReport);
-  requireString(data, "pace", doc, currentReport);
-  requireInteger(data, "capacityLimit", doc, currentReport);
-  requireString(data, "description", doc, currentReport);
-  requireInteger(data, "priceInPaise", doc, currentReport);
-  requireInteger(data, "bookedCount", doc, currentReport);
-  requireInteger(data, "checkedInCount", doc, currentReport);
-  requireInteger(data, "waitlistedCount", doc, currentReport);
-  requireObject(data, "constraints", doc, currentReport);
-  requireObject(data, "genderCounts", doc, currentReport);
-  validateEventMeetingLocation(data, doc, currentReport);
+  if (Object.hasOwn(data, "endTime")) requireTimestamp(data, "endTime", doc, currentReport);
+  // Private setup can have a named venue before geocoding. Any supplied
+  // structured location still needs coherent mirrors.
+  if (data.publicationState !== "private" ||
+      ["meetingLocation", "startingPointLat", "startingPointLng"]
+        .some((field) => Object.hasOwn(data, field))) {
+    validateEventMeetingLocation(data, doc, currentReport);
+  }
 
   if (data.clubId && !clubs.has(data.clubId)) {
     issue(currentReport, "error", doc.path, "missing-club",
@@ -669,9 +706,7 @@ function validateReview(doc, users, clubs, events, currentReport) {
     const expectedReviewerName = publicDisplayName(reviewer.data);
     if (data.reviewerName !== expectedReviewerName) {
       issue(currentReport, "error", doc.path, "reviewer-name-drift",
-        `reviewerName is ${JSON.stringify(data.reviewerName)}, but users/` +
-        `${data.reviewerUserId} projects to ` +
-        `${JSON.stringify(expectedReviewerName)}.`);
+        "reviewerName differs from the current user public-name projection.");
     }
   }
 }
@@ -679,16 +714,17 @@ function validateReview(doc, users, clubs, events, currentReport) {
 function validateSwipe(doc, users, publicProfiles, events, eventParticipations,
   currentReport) {
   const data = doc.data;
-  const pathMatch = /^swipes\/([^/]+)\/outgoing\/([^/]+)$/.exec(doc.path);
-  requireString(data, "swiperId", doc, currentReport);
-  requireString(data, "targetId", doc, currentReport);
-  requireString(data, "eventId", doc, currentReport);
-  requireString(data, "direction", doc, currentReport);
+  const pathMatch = /^(?:profileDecisions|swipes)\/([^/]+)\/outgoing\/([^/]+)$/.exec(doc.path);
+  if (!pathMatch) {
+    issue(currentReport, "warning", doc.path, "unrecognized-outgoing-path",
+      "Outgoing collection-group document is outside profileDecisions or legacy swipes.");
+    return;
+  }
+  validateSchema(doc, validateSwipeDocument, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
-
-  if (!["like", "pass"].includes(data.direction)) {
-    issue(currentReport, "error", doc.path, "invalid-swipe-direction",
-      "direction must be like or pass.");
+  if (doc.path.startsWith("swipes/")) {
+    issue(currentReport, "warning", doc.path, "legacy-swipe-path",
+      "Profile decision uses the legacy swipes path.");
   }
   if (pathMatch &&
       (pathMatch[1] !== data.swiperId || pathMatch[2] !== data.targetId)) {
@@ -850,14 +886,11 @@ function validateClubHostProfileProjections(clubs, hostProfiles, currentReport) 
     const expectedAvatarUrl = professionalAvatarUrl(hostProfile);
     if (data.hostName !== expectedName) {
       issue(currentReport, "error", doc.path, "club-host-name-drift",
-        `hostName is ${JSON.stringify(data.hostName)}, but hostProfiles/` +
-        `${data.hostUserId} projects to ${JSON.stringify(expectedName)}.`);
+        "hostName differs from the current host profile projection.");
     }
     if ((data.hostAvatarUrl ?? null) !== expectedAvatarUrl) {
       issue(currentReport, "error", doc.path, "club-host-avatar-drift",
-        `hostAvatarUrl is ${JSON.stringify(data.hostAvatarUrl ?? null)}, ` +
-        `but hostProfiles/${data.hostUserId} projects to ` +
-        `${JSON.stringify(expectedAvatarUrl)}.`);
+        "hostAvatarUrl differs from the current host profile projection.");
     }
   }
 }
@@ -890,9 +923,20 @@ function publicAvatarUrl(user) {
 }
 
 function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}) {
+  const unscheduled = new Set(collections.events.filter((doc) =>
+    doc.data.publicationState === "private" && !Object.hasOwn(doc.data, "endTime"))
+    .map((doc) => doc.id));
+  for (const doc of collections.eventParticipations) {
+    if (unscheduled.has(doc.data.eventId) &&
+        ["signedUp", "waitlisted", "attended"].includes(doc.data.status)) {
+      issue(currentReport, "error", doc.path, "participation-event-unscheduled",
+        "Scheduled participation references a private event without an end time.");
+    }
+  }
   const issues = scheduleComplianceIssues({
-    events: collections.events,
-    participations: collections.eventParticipations,
+    events: collections.events.filter((doc) => !unscheduled.has(doc.id)),
+    participations: collections.eventParticipations.filter((doc) =>
+      !unscheduled.has(doc.data.eventId)),
     clubScheduleLocks: collections.clubScheduleLocks,
     userEventScheduleLocks: collections.userEventScheduleLocks,
     checkLocks: checkScheduleLocks,
@@ -935,12 +979,6 @@ function requireString(data, field, doc, currentReport) {
 function requireBool(data, field, doc, currentReport) {
   if (typeof data[field] !== "boolean") {
     typeIssue(field, "boolean", doc, currentReport);
-  }
-}
-
-function requireNumber(data, field, doc, currentReport) {
-  if (typeof data[field] !== "number" || Number.isNaN(data[field])) {
-    typeIssue(field, "number", doc, currentReport);
   }
 }
 
@@ -1002,7 +1040,12 @@ function estimateBytes(value) {
 }
 
 function toJsonSafe(value) {
-  if (isTimestamp(value)) return {__timestampMillis: value.toMillis()};
+  if (isTimestamp(value)) {
+    const seconds = value.seconds ?? value._seconds ?? Math.floor(value.toMillis() / 1000);
+    const nanoseconds = value.nanoseconds ?? value._nanoseconds ??
+      Math.round((value.toMillis() - seconds * 1000) * 1_000_000);
+    return {_seconds: seconds, _nanoseconds: nanoseconds};
+  }
   if (Array.isArray(value)) return value.map(toJsonSafe);
   if (value && typeof value === "object") {
     return Object.fromEntries(
@@ -1010,6 +1053,46 @@ function toJsonSafe(value) {
     );
   }
   return value;
+}
+
+function validateSchema(doc, validator, currentReport) {
+  if (validator(toJsonSafe(doc.data))) return;
+  // Report schema locations/keywords, never rejected values or user-authored text.
+  for (const error of validator.errors ?? []) {
+    issue(currentReport, "error", doc.path, "schema-contract",
+      `${error.instancePath || "/"}: ${error.keyword}` +
+      `${error.keyword === "required" ? ` (${error.params.missingProperty})` : ""}` +
+      ` at ${error.schemaPath}`);
+  }
+}
+
+function documentState(doc) {
+  const data = doc.data;
+  const state = {
+    collection: doc.path.split("/")[0],
+    synthetic: data.synthetic === true,
+    hasSeedMarker: typeof data.seedPrefix === "string",
+  };
+  const enums = {
+    status: ["active", "archived", "cancelled", "deleted", "left", "signedUp",
+      "waitlisted", "attended"],
+    publicationState: ["private", "published"],
+    role: ["owner", "host", "member"],
+  };
+  for (const [field, values] of Object.entries(enums)) {
+    if (Object.hasOwn(data, field)) {
+      state[field] = values.includes(data[field]) ? data[field] : "unrecognized";
+    }
+  }
+  if (["clubs", "organizers"].includes(state.collection)) {
+    state.hasHostUserId = typeof data.hostUserId === "string" && data.hostUserId.length > 0;
+  }
+  if (state.collection === "events") {
+    state.hasEndTime = Object.hasOwn(data, "endTime");
+    state.hasMeetingLocation = Object.hasOwn(data, "meetingLocation");
+    state.hasSetupRevision = Object.hasOwn(data, "setupRevision");
+  }
+  return state;
 }
 
 function issue(currentReport, severity, pathValue, code, message) {

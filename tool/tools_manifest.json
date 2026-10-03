@@ -562,7 +562,7 @@
         ".github/workflows/data-validation.yml",
         "tool/ci/data_validation_workflow.test.mjs"
       ],
-      "description": "Keeps Firestore validation failures visible through tee while saving the diagnostic report for upload.",
+      "description": "Keeps Firestore validation failures visible while explicitly saving the complete diagnostic report for upload.",
       "checks": [
         "node --check tool/ci/data_validation_workflow.test.mjs",
         "node --test tool/ci/data_validation_workflow.test.mjs"
@@ -572,8 +572,8 @@
         "type": "test",
         "path": "tool/ci/data_validation_workflow.test.mjs",
         "contains": [
-          "failing validator fails the step while tee retains its JSON",
-          "tee output failure also fails the step"
+          "failing validator fails the step while explicit output retains its JSON",
+          "explicit output failure also fails the step"
         ]
       }
     },
@@ -2706,9 +2706,20 @@
       "command": "node tool/data/validate_firestore_data.mjs",
       "safety": "remote-read",
       "status": "active",
-      "description": "Validates live or emulator Firestore data invariants.",
+      "description": "Validates live or emulator Firestore data invariants; checks use offline fixtures only.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "functions-npm"]
+      },
+      "impactPaths": [
+        "tool/data/validate_firestore_data.mjs",
+        "tool/data/validate_firestore_data.test.mjs",
+        "tool/contracts/generated/schema_contract_registry.mjs",
+        "tool/contracts/generated/schema_contract_validators.mjs"
+      ],
       "checks": [
-        "node --check tool/data/validate_firestore_data.mjs"
+        "node --check tool/data/validate_firestore_data.mjs",
+        "node --test tool/data/validate_firestore_data.test.mjs"
       ]
     },
     {
