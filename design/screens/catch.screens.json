@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-28",
+  "updated": "2026-10-03",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -1472,6 +1472,22 @@
         }
       ],
       "reason": "The screen renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.lodging": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramLodgingScreen"
+          ],
+          "file": "lib/programs/presentation/program_lodging_screen.dart",
+          "symbol": "_ProgramLodgingScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Private coordinator planning route with source-fenced review, layered 2D room board and explicit approval/publication."
     }
   },
   "layoutOnlyRoutes": {
@@ -30924,6 +30940,145 @@
         ]
       },
       "openGaps": []
+    },
+    {
+      "id": "screen.programs.lodging",
+      "name": "Stay planner",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramLodgingScreen",
+          "path": "/host/programs/:programId/lodging",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_lodging_screen.dart",
+        "symbol": "ProgramLodgingScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "ProgramLodgingController and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "ProgramLodgingController",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_lodging_controller.dart",
+            "symbol": "ProgramLodgingController"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_lodging_controller.dart",
+            "symbol": "ProgramLodgingController"
+          }
+        ],
+        "notes": "Immutable proposal, session/authority lifetime, independent destination validation and exact pending command retries."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramLodgingScreen renders the loading private planner state.",
+          "nextAction": "Run routed widget tests and capture the final editable surface.",
+          "previewIds": []
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramLodgingScreen renders the error private planner state.",
+          "nextAction": "Run routed widget tests and capture the final editable surface.",
+          "previewIds": []
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "ProgramLodgingScreen renders the populated private planner state.",
+          "nextAction": "Run routed widget tests and capture the final editable surface.",
+          "previewIds": []
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "ProgramLodgingScreen renders the empty private planner state.",
+          "nextAction": "Run routed widget tests and capture the final editable surface.",
+          "previewIds": []
+        }
+      ],
+      "composition": {
+        "currentLayout": "Private proposal actions and the existing layered 2D/list ProgramLodgingBoard inside CatchRouteScaffold.",
+        "targetLayout": "Explicit party, demand, contract and verified room editors alongside source-fenced planning.",
+        "sections": [
+          {
+            "id": "section.programs.lodging.board",
+            "name": "Layered room board",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramLodgingBoard"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_lodging_board.dart",
+              "symbol": "ProgramLodgingBoard"
+            },
+            "currentOwner": "ProgramLodgingController + ProgramLodgingBoard",
+            "targetOwner": "ProgramLodgingController + ProgramLodgingBoard",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.button"
+            ],
+            "states": [
+              "proposal",
+              "pending",
+              "locked",
+              "empty"
+            ],
+            "migration": "Keep canonical authority and placement validation on the server.",
+            "previewIds": []
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-LODGING-001",
+          "status": "open",
+          "nextAction": "Complete party/inventory editors, import decisions, routed session tests and fresh captures before release."
+        }
+      ]
     }
   ]
 }

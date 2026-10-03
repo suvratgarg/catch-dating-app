@@ -39735,6 +39735,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New offers will use these terms'**
   String get hostOfferPaymentReviewBody;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay planner'**
+  String get programsLodgingTitle;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan rooms around people, dates and verified needs.'**
+  String get programsLodgingSubtitle;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add lodging dates, confirmed sharing parties and contracted rooms to start planning.'**
+  String get programsLodgingSetupMissing;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this proposal'**
+  String get programsLodgingReview;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The search reached its limit. Review this proposal before approval.'**
+  String get programsLodgingBoundedSearch;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate unlocked placements'**
+  String get programsLodgingRegenerate;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve proposal'**
+  String get programsLodgingApprove;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish rooms to guests'**
+  String get programsLodgingPublish;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room-sharing parties'**
+  String get programsLodgingParties;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get programsLodgingList;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor map'**
+  String get programsLodgingMap;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Move party'**
+  String get programsLodgingMove;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get programsLodgingLocked;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact room pending'**
+  String get programsLodgingProvisional;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No contracted rooms on this floor.'**
+  String get programsLodgingEmpty;
+
+  /// Private program stay planner copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One party still needs a room.} other{{count} parties still need rooms.}}'**
+  String programsLodgingUnplaced({required int count});
 }
 
 class _AppLocalizationsDelegate

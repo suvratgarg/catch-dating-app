@@ -1,7 +1,7 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.1.1
-updated: 2026-09-28
+version: 1.3.0
+updated: 2026-10-03
 owner: product
 status: active
 ---
@@ -120,6 +120,41 @@ never CRM, saved audiences, sender connections, or payouts.
 | Taxi/transport tracking | **built backend + staff UI** | `transportTrips` (vehicle class, vendor, plate, parties/legs, depart/arrive, rate snapshot), dispatch + hotel-inbound + trips-ledger screens. **How it's exposed:** dispatcher creates trip at `/dispatch/:pickupPointId`; hotel desk sees inbound at `/hotel/:hotelId`; ledger at `/trips`. No guest-facing tracking. |
 | Vendors / rate cards | **partial** | `transportVendors` + `rateSnapshot` on trips; no rate-card management UI |
 | Distance-aware reminder lead times | **in review** | `travelTimeLead` flag on `functionGuests` audiences; planner wakes runs early by the farthest hotel→venue lead and defers nearer recipients individually (pure haversine seam, Routes API replaceable) — #456 |
+
+#### Socially aware lodging extension (CAT-149)
+
+The occupancy foundation is in review: explicit roommate identity, local-night
+capacity, occupant limits, cross-hotel duplicate protection and checked-in
+placement protection extend the existing Programs stay/block service. The
+current room board remains the native entry point; explicit sharing controls
+and lodging demand independent of inbound travel remain integration work.
+Invitation households, room-sharing parties and overlapping social groups
+must remain separate; household membership may only suggest sharing.
+
+Reviewed source slices now provide nested groups with cycle checks, typed
+membership suggestions and manual decisions, a bounded planner with independent
+hard-feasibility validation, dated inventory including provisional types, and
+bed/accessibility/whole-villa constraints. The 21-room case penalizes isolated
+spillover and produces a coherent 19+2 split in the focused benchmark. Manual
+pins and unlocked regeneration use the same validator. These are private
+snapshot inputs; canonical property/party/inventory editors remain to be wired.
+
+The layered 2D/list board includes empty-room moves, locked-party protection,
+explicit selection, and stale async-result rejection. It is an injected-callback
+component, not yet a routed Host feature. Immutable proposal storage and scoped
+operation receipts have transaction adapter tests; host approval, hotel
+confirmation and guest publication remain separate. Private generated document
+contracts, direct-access denial and archive retention are being integrated.
+Canonical source/revision reads, same-transaction stay publication, membership
+import/choice writes, real emulator verification, native editors and combined
+UI/capture acceptance remain required before operational release.
+
+Photo/PDF ingestion is a later, optional path into editable layered 2D drafts
+with a source overlay and mandatory human/room-roster verification. Private
+reusable versions are immutable. A shared hotel catalog needs a separate
+rights and verification policy. No 3D model, external AI credentials,
+cross-event guest data, real guest import, booking or deployment is part of
+this source foundation. Core allocation must work without photos.
 
 ### 3.4 Messaging / Moments
 

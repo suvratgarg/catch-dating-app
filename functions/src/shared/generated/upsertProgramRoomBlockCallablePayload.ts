@@ -43,4 +43,8 @@ export interface UpsertProgramRoomBlockCallablePayload {
    */
   endsAtMillis?: number;
   notes?: string | null;
+  /**
+   * Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility.
+   */
+  maxOccupantsPerRoom?: number;
 }

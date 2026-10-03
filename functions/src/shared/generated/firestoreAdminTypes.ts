@@ -550,6 +550,273 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.
+ */
+export interface ProgramLodgingConfigDocument {
+  programId: string;
+  organizerId: string;
+  revision: number;
+  /**
+   * @maxItems 500
+   */
+  demand: {
+    guestId: string;
+    startsAtMillis: number;
+    endsAtMillis: number;
+    beds: number;
+    /**
+     * @maxItems 30
+     */
+    requiredFeatures: string[];
+  }[];
+  /**
+   * @maxItems 500
+   */
+  parties: {
+    id: string;
+    /**
+     * @minItems 1
+     * @maxItems 100
+     */
+    guestIds: string[];
+    confirmed: boolean;
+    priority: number;
+    requiredRoomType: string | null;
+    pin: {
+      inventoryId?: string;
+      hotelId?: string;
+      zoneId?: string;
+    } | null;
+  }[];
+  /**
+   * @maxItems 500
+   */
+  groupParents: {
+    id: string;
+    /**
+     * @maxItems 20
+     */
+    parentIds: string[];
+  }[];
+  /**
+   * @maxItems 500
+   */
+  rooms: {
+    id: string;
+    hotelId: string;
+    zoneId: string;
+    building: string | null;
+    floor: string | null;
+    wing: string | null;
+    roomType: string;
+    beds: number;
+    maxOccupants: number;
+    /**
+     * @maxItems 30
+     */
+    verifiedFeatures: string[];
+    /**
+     * @minItems 1
+     * @maxItems 100
+     */
+    resourceIds: string[];
+    position: {
+      x: number;
+      y: number;
+    } | null;
+  }[];
+  /**
+   * @maxItems 500
+   */
+  inventory: {
+    id: string;
+    contractId: string;
+    physicalRoomId: string | null;
+    provisional: {
+      hotelId: string;
+      zoneId: string;
+      building: string | null;
+      floor: string | null;
+      wing: string | null;
+      roomType: string;
+      beds: number;
+      maxOccupants: number;
+      /**
+       * @maxItems 30
+       */
+      verifiedFeatures: string[];
+    } | null;
+    /**
+     * @minItems 1
+     * @maxItems 30
+     */
+    availability: {
+      arrival: string;
+      departure: string;
+    }[];
+  }[];
+  /**
+   * @maxItems 500
+   */
+  labels: {
+    inventoryId: string;
+    roomLabel: string | null;
+  }[];
+}
+
+/**
+ * Private transactional revision counters backed by complete canonical source fingerprints. Contains no copied guest or property records. Changes invalidate proposals; publication advances its own domain atomically with canonical stays.
+ */
+export interface ProgramLodgingSourceVersionDocument {
+  programId: string;
+  organizerId: string;
+  versions: {
+    source: {
+      revision: number;
+      fingerprint: string;
+    };
+    inventory: {
+      revision: number;
+      fingerprint: string;
+    };
+    layout: {
+      revision: number;
+      fingerprint: string;
+    };
+    published: {
+      revision: number;
+      fingerprint: string;
+    };
+  };
+}
+
+/**
+ * Private immutable placement proposal tied to source, inventory, layout and published revisions. Server validates content identity and current canonical Programs scope; no hotel affinity or medical projection is public.
+ */
+export interface ProgramLodgingProposalDocument {
+  programId: string;
+  organizerId: string;
+  proposal: {
+    scope: {
+      programId: string;
+      organizerId: string;
+    };
+    id: string;
+    revisions: {
+      source: number;
+      inventory: number;
+      layout: number;
+      published: number;
+    };
+    /**
+     * @maxItems 500
+     */
+    placements: {
+      partyId: string;
+      inventoryId: string;
+    }[];
+    /**
+     * @maxItems 500
+     */
+    unplacedPartyIds: string[];
+    /**
+     * @maxItems 502
+     */
+    explanations: string[];
+    /**
+     * @minItems 5
+     * @maxItems 5
+     */
+    score: number[];
+    search: {
+      complete: boolean;
+      explored: number;
+    };
+  };
+  createdByUid: string;
+  createdAtMillis: number;
+}
+
+/**
+ * Private program workflow. Host approval, individual hotel confirmation and guest publication are distinct states. Publication changes canonical stays and this workflow atomically.
+ */
+export interface ProgramLodgingWorkflowDocument {
+  programId: string;
+  organizerId: string;
+  workflow: {
+    revision: number;
+    approvedProposalId: string | null;
+    /**
+     * @maxItems 500
+     */
+    confirmedHotelIds: string[];
+    guestPublishedProposalId: string | null;
+  };
+}
+
+/**
+ * Immutable private operation receipt bound to program, actor and exact request. Replay rechecks current authority and returns current workflow; it never restores a prior approval.
+ */
+export interface ProgramLodgingReceiptDocument {
+  programId: string;
+  organizerId: string;
+  receipt: {
+    operationId: string;
+    requestHash: string;
+    actorUid: string;
+    resultingRevision: number;
+  };
+}
+
+/**
+ * Immutable source-labelled suggestion or manual membership evidence. Exact program/guest/group scope and program retention index are checked by the server. Import suggestions cannot overwrite selected manual inclusion or exclusion.
+ */
+export interface WorkspaceMembershipAssertionDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  programId: string;
+  workspaceRef: {
+    kind: "program";
+    id: string;
+  };
+  relationshipRef: {
+    kind: "programGuest";
+    id: string;
+  };
+  groupId: string;
+  included: boolean;
+  sourceKind: "manualEntry" | "manifestRow" | "contributorList";
+  sourceId: string;
+  sourceVersion: number;
+  sourceLabel: string;
+  actorUid: string;
+  observedAtMillis: number;
+}
+
+/**
+ * Immutable explicit membership selection, preserving previous evidence identity and reviewed guest revision. Canonical programGuests.groupIds remains membership truth, updated with this decision in one authorized transaction.
+ */
+export interface WorkspaceMembershipDecisionDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  programId: string;
+  workspaceRef: {
+    kind: "program";
+    id: string;
+  };
+  relationshipRef: {
+    kind: "programGuest";
+    id: string;
+  };
+  groupId: string;
+  selectedAssertionId: string;
+  previousAssertionId: string | null;
+  relationshipRevision: number;
+  actorUid: string;
+  observedAtMillis: number;
+}
+
+/**
  * Private one-reply-per-inbound support claim and saved provider delivery projection. Explicit human review of the exact inbound support request is service evidence, never marketing permission. No body, credential or pricing data. No automatic retry or TTL; uncertain and completed claims remain consumed beyond receipt retention. Source-only and disabled pending atomic STOP ingress and scoped activation.
  */
 export interface CatchWhatsappReplyOperationDocument {
@@ -12152,13 +12419,13 @@ export interface ProgramHotelDocument {
 }
 
 /**
- * Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.
+ * Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.
  */
 export interface ProgramStayDocument {
   programId: string;
   organizerId: string;
   /**
-   * Exactly one guest per stay; roommates are separate stays sharing roomLabel.
+   * Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups.
    */
   guestId: string;
   /**
@@ -12205,6 +12472,18 @@ export interface ProgramStayDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing.
+   */
+  roomOccupancyId?: string;
+  /**
+   * Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.
+   */
+  lodgingPartyId?: string;
+  /**
+   * Stable dated lodging inventory unit identity; never inferred from roomLabel.
+   */
+  lodgingInventoryId?: string;
 }
 
 /**
@@ -12230,7 +12509,7 @@ export interface ProgramRoomBlockDocument {
    */
   totalRooms: number;
   /**
-   * Server-maintained count of live programStays rows bound to this block; never written by clients.
+   * Peak simultaneous occupied rooms across local contract nights; recomputed from explicit occupancy identities, not guest rows.
    */
   assignedCount: number;
   /**
@@ -12252,6 +12531,10 @@ export interface ProgramRoomBlockDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility.
+   */
+  maxOccupantsPerRoom?: number;
 }
 
 /**
@@ -12408,7 +12691,7 @@ export interface ProgramRetentionRunDocument {
   /**
    * Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.
    *
-   * @maxItems 16
+   * @maxItems 23
    */
   phases: {
     collection: string;

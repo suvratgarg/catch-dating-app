@@ -117,6 +117,11 @@ export const programHotelRoomsCallableResponseSchema: Record<string, unknown> = 
             "type": "integer",
             "minimum": 0,
             "maximum": 253402300799999
+          },
+          "maxOccupantsPerRoom": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
           }
         }
       }
@@ -218,6 +223,11 @@ export const programHotelRoomsCallableResponseSchema: Record<string, unknown> = 
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "roomOccupancyId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }
