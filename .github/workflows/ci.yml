@@ -58,7 +58,7 @@ jobs:
 
   plan:
     needs: admission
-    if: ${{ always() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
     name: Plan affected targets
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -100,6 +100,7 @@ jobs:
           sparse-checkout: |
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
+            /tool/harness/compare_selectors.mjs
             /tool/ci/main_ci_baseline.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
@@ -186,6 +187,10 @@ jobs:
             git merge-base --is-ancestor "$base_sha" "$HEAD_SHA"
           fi
 
+          mkdir -p build/ci
+          node tool/harness/compare_selectors.mjs --base "$base_sha" --head "$HEAD_SHA" \
+            --mode "$event_mode" > build/ci/selector-comparison.json
+
           node tool/harness/verify_local.mjs --preflight \
             --base "$base_sha" --head "$HEAD_SHA" --mode "$event_mode" \
             "${full_flag[@]}" "${window_flag[@]}"
@@ -211,6 +216,8 @@ jobs:
             }' \
             build/ci/impact-plan.unbound.json > build/ci/impact-plan.json
           rm build/ci/impact-plan.unbound.json
+          node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
+            --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
@@ -268,6 +275,14 @@ jobs:
           path: build/ci/impact-plan.json
           if-no-files-found: error
           retention-days: 90
+
+      - name: Upload selector comparison
+        uses: actions/upload-artifact@v7
+        with:
+          name: selector-comparison-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/selector-comparison.json
+          if-no-files-found: error
+          retention-days: 7
 
   tools:
     needs: plan
@@ -450,7 +465,7 @@ jobs:
   finalize-plan:
     name: Finalize the ordered delivery plan
     if: >-
-      always() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs:
@@ -533,7 +548,7 @@ jobs:
   package-firebase:
     name: Package approved Firebase backend
     if: >-
-      always() &&
+      !cancelled() &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
@@ -671,7 +686,7 @@ jobs:
   required:
     # Metadata notifications never publish a replacement Required CI context.
     name: ${{ github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted' && 'Ignored PR metadata' || 'Required CI' }}
-    if: ${{ always() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
+    if: ${{ !cancelled() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
     needs:
       - admission
       - plan

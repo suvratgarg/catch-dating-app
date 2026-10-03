@@ -15,7 +15,6 @@
       "pubspec.yaml",
       "pubspec.lock",
       "tool/lib/**",
-      "tool/run.mjs",
       "tool/run.test.mjs"
     ]
   },
@@ -556,7 +555,9 @@
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "impactPaths": [
         ".github/workflows/data-validation.yml",
@@ -5813,12 +5814,24 @@
       "command": "node tool/design/check_comprehensive_todo_summary.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Validates the comprehensive design parity todo snapshot and priority summary table against the screen-contract and state-matrix ledgers.",
+      "description": "Validates authored design decisions and P1 screen coverage; derives current gap and migration summaries without duplicated Markdown counts.",
       "checks": [
         "node --check tool/design/check_comprehensive_todo_summary.mjs",
+        "node --test tool/design/check_comprehensive_todo_summary.test.mjs",
         "node tool/design/check_comprehensive_todo_summary.mjs --check"
       ],
-      "role": "finder"
+      "role": "finder",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "docs/design_parity/comprehensive_todo.md",
+        "design/screens/catch.screens.json",
+        "docs/design_parity/state_matrix.json"
+      ]
     },
     {
       "id": "design:screen-coverage",
@@ -7370,6 +7383,34 @@
         "repositoryView": "full",
         "setup": [
           "node"
+        ]
+      }
+    },
+    {
+      "id": "agent:selector-comparison",
+      "category": "agent",
+      "path": "tool/harness/compare_selectors.mjs",
+      "command": "node tool/harness/compare_selectors.mjs --base origin/main --head HEAD",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "gate",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Compares exact Git base/head selector snapshots and requires conservative full validation for control edits; checks actual CI plan and fanout against the same-source obligations.",
+      "checks": [
+        "node --check tool/harness/compare_selectors.mjs",
+        "node --test tool/harness/compare_selectors.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/harness/compare_selectors.test.mjs",
+        "contains": [
+          "a head engine that falsely claims complete narrow coverage cannot suppress trusted-base obligations",
+          "actual fanout cannot suppress obligations found by independent comparison"
         ]
       }
     }

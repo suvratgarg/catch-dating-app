@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.22
+version: 2.7.23
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -342,8 +342,22 @@ contract checks retain their separate owners.
 
 ### Selected Check Contracts
 
-The graph selects obligations; selection is not execution evidence. Preserve
-these contracts when narrowing work:
+The graph selects obligations; selection is not execution evidence. Selector-control
+edits compare the actual Git base and head graph/engine snapshots on identical
+changed paths and require the union of their full validation targets. Main
+comparison includes transient and reverted paths in the committed window.
+Comparison artifacts record selected IDs, differences, source and selector-input
+hashes; they are not executed-test evidence or a cross-SHA reuse permission.
+Missing snapshot dependencies and incomplete selection fail closed.
+
+Orchestration job guards use `!cancelled()` so cancellation can terminate the
+planner and aggregate instead of leaving an `always()` job holding the serial
+slot. Failed or unadmitted runs still execute the rejecting aggregate; every
+selected target requires a successful owning job. A cancelled workflow has no
+successful validation authority. The single admitted integration slot and its
+live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+
+Preserve these contracts when narrowing work:
 
 | Invariant and owner | Inputs and trigger | Environment and evidence | Failure action |
 |---|---|---|---|

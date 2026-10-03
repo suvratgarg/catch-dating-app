@@ -484,6 +484,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     paths: [
       "/tool/harness.mjs",
       "/tool/harness/verify_local.mjs",
+      "/tool/harness/compare_selectors.mjs",
       "/tool/ci/main_ci_baseline.mjs",
       "/tool/ci/toolchain.env",
       "/tool/harness/component_graph.json",
@@ -1375,6 +1376,18 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
       for (const target of fixture.required) {
         assert.ok(result.operations.ciTargets.includes(target), `${mode} ${fixture.paths}: missing ${target}`);
       }
+    }
+  }
+});
+
+test("every selector control input routes to full validation before comparison", () => {
+  for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
+    "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
     }
   }
 });
