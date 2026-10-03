@@ -127,6 +127,32 @@ Map<String, Object?> _access({
   'vehicleClasses': <Object?>[],
 };
 
+// These responses are consumed by the live adapter's wall clock. The fixed
+// sample date above belongs only to page fixtures with an injected clock.
+Map<String, Object?> _liveAccess({
+  DateTime? now,
+  List<String> functionIds = const [],
+}) {
+  final clock = now ?? DateTime.now();
+  return _access(
+    grantExpiry: clock.add(const Duration(days: 1)),
+    duties: [
+      _duty(
+        functions: functionIds,
+        expiry: clock.add(const Duration(hours: 1)),
+      ),
+    ],
+  );
+}
+
+Future<void> _waitForCommit(Completer<void> started, Future<void> pending) =>
+    Future.any<void>([
+      started.future,
+      pending.then<void>((_) {
+        fail('Retry ended before the fixture received a commit.');
+      }),
+    ]);
+
 Map<String, Object?> _result(
   Map<String, Object?> payload, {
   bool replay = false,
@@ -214,14 +240,8 @@ class _Fixture {
     currentAccountId: () => auth.account,
   );
   _Fixture() {
-    functions.respond = (name, payload) async => name == 'getProgramWorkAccess'
-        ? _access(
-            grantExpiry: DateTime.now().add(const Duration(days: 1)),
-            duties: [
-              _duty(expiry: DateTime.now().add(const Duration(hours: 1))),
-            ],
-          )
-        : _result(payload);
+    functions.respond = (name, payload) async =>
+        name == 'getProgramWorkAccess' ? _liveAccess() : _result(payload);
   }
   Future<void> mount(WidgetTester tester, {String program = 'wedding'}) async {
     await tester.pumpWidget(
@@ -281,6 +301,32 @@ void main() {
           null,
         );
   });
+  test(
+    'live fixture deadlines follow the caller clock beyond the sample date',
+    () {
+      final clock = DateTime.utc(2030, 6, 17);
+      final access = ProgramWorkAccess.fromCallableData(
+        _liveAccess(now: clock),
+      );
+      expect(
+        access.grantExpiresAt!.toUtc(),
+        clock.add(const Duration(days: 1)),
+      );
+      expect(
+        access.duties.single.expiresAt!.toUtc(),
+        clock.add(const Duration(hours: 1)),
+      );
+    },
+  );
+  test(
+    'commit wait fails when retry ends before reaching the fixture',
+    () async {
+      await expectLater(
+        _waitForCommit(Completer<void>(), Future<void>.value()),
+        throwsA(isA<TestFailure>()),
+      );
+    },
+  );
   testWidgets(
     'client uses current scoped grant and canonical planner; explicit preview then share',
     (tester) async {
@@ -468,7 +514,7 @@ void main() {
     (tester) async {
       final f = _Fixture();
       addTearDown(() => f.close(tester));
-      await f.snapshots.save('client', 'work:wedding', _access());
+      await f.snapshots.save('client', 'work:wedding', _liveAccess());
       f.functions.respond = (name, payload) async =>
           throw FirebaseFunctionsException(
             code: 'unavailable',
@@ -489,11 +535,8 @@ void main() {
       if (mismatch) {
         f.assignments.planner = 'other-planner';
       } else {
-        f.functions.respond = (name, payload) async => _access(
-          duties: [
-            _duty(functions: ['one-function']),
-          ],
-        );
+        f.functions.respond = (name, payload) async =>
+            _liveAccess(functionIds: ['one-function']);
       }
       await f.mount(tester);
       expect(find.byType(PhoneImportReviewScreen), findsNothing);
@@ -516,14 +559,14 @@ void main() {
       final response = Completer<Object?>();
       Map<String, Object?>? sent;
       f.functions.respond = (name, payload) async {
-        if (name == 'getProgramWorkAccess') return _access();
+        if (name == 'getProgramWorkAccess') return _liveAccess();
         if (payload['mode'] == 'preview') return _result(payload);
         sent = payload;
         started.complete();
         return response.future;
       };
       final pending = old.retry();
-      await started.future;
+      await _waitForCommit(started, pending);
       await f.mount(tester, program: 'other-wedding');
       expect(find.byType(PhoneImportReviewScreen), findsNothing);
       await f.mount(tester);
@@ -550,14 +593,14 @@ void main() {
       final response = Completer<Object?>();
       Map<String, Object?>? sent;
       f.functions.respond = (name, payload) async {
-        if (name == 'getProgramWorkAccess') return _access();
+        if (name == 'getProgramWorkAccess') return _liveAccess();
         if (payload['mode'] == 'preview') return _result(payload);
         sent = payload;
         started.complete();
         return response.future;
       };
       final pending = old.retry();
-      await started.future;
+      await _waitForCommit(started, pending);
       f.auth.switchAccount(null);
       await pumpFeatureUi(tester);
       expect(find.byType(PhoneImportReviewScreen), findsNothing);
@@ -642,7 +685,7 @@ void main() {
           await submission.preview();
           if (phase == 'retry') {
             f.functions.respond = (name, payload) async {
-              if (name == 'getProgramWorkAccess') return _access();
+              if (name == 'getProgramWorkAccess') return _liveAccess();
               throw FirebaseFunctionsException(
                 code: 'unavailable',
                 message: 'Synthetic lost response',

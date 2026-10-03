@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import {
   applicationRouteOwnershipFindings,
   audienceWorkspacePresentationFindings,
@@ -7,8 +10,131 @@ import {
   hostCrmCountCopyFindings,
   manualSendContractFindings,
   scanBackendFile,
+  scanHostCrmBoundaries,
   scanPresentationFile,
 } from "./check_host_crm_boundaries.mjs";
+
+const protectedFormConversion = `
+async function convertResponseInTransaction({db, data, actorUid}) {
+  return db.runTransaction(async (transaction) => {
+    await authorizeFormMutation({db, tx: transaction, actorUid});
+    const source = await conversionContext(db, data, transaction);
+    const provenanceRef = db.collection("organizerContactOrigins").doc(
+      organizerContactOriginId({sourceKind: "hostForm",
+        sourceEntityKind: "hostFormResponse", sourceEntityId: data.responseId}));
+    const priorOrigin = await transaction.get(provenanceRef);
+    if (priorOrigin.exists) {
+      return recoverPriorCompletion(priorOrigin);
+    } else {
+      assertConversionAllowed(source);
+      const target = crmContactConversionTarget({
+        existingResultId: await findExistingContact(
+          db, source.response, source.fields, transaction),
+        responseId: data.responseId,
+      });
+      const result = await createOrganizerContactInTransaction({
+        transaction, contactId: target.contactId, origin: target.origin,
+      });
+      return result.contactId;
+    }
+  });
+}
+`;
+
+function scanConversionFixture(t, source) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "form-provenance-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const relativePath = "functions/src/organizers/organizerFormConversions.ts";
+  const file = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(file), {recursive: true});
+  fs.writeFileSync(file, source);
+  return scanHostCrmBoundaries({root}).findings.filter((item) =>
+    item.path === relativePath);
+}
+
+test("form provenance accepts protected new and matched contact writes", (t) => {
+  const withReplay = protectedFormConversion.replace("return db.runTransaction",
+    'const receiptId = formConversionReceiptId(data.responseId, data.kind);\n' +
+    'const receiptRef = db.collection("organizerFormConversionReceipts").doc(receiptId);\n' +
+    "return db.runTransaction").replace("const source =",
+    'const receiptSnap = await transaction.get(receiptRef);\n' +
+    'const receipt = receiptSnap.exists ? requireDoc(receiptSnap, "Receipt") : null;\n' +
+    'if (receipt?.status === "completed") return conversionProjection(receiptId, receipt);\n' +
+    "const source =");
+  for (const source of [protectedFormConversion,
+    withReplay,
+    protectedFormConversion.replace("transaction, contactId:",
+      '"transaction": transaction, "contactId":').replace("origin: target.origin",
+      '"origin": target.origin'),
+    protectedFormConversion.replaceAll("transaction", "work")
+      .replace("work, contactId", "transaction: work, contactId")
+      .replaceAll("target", "destination")
+      .replaceAll("priorOrigin", "receipt")
+      .replaceAll("provenanceRef", "originDocument"),
+    protectedFormConversion.replace(
+      "const target = crmContactConversionTarget({",
+      "const matched = await findExistingContact(db, source.response, source.fields, transaction);\n" +
+      "const target = crmContactConversionTarget({"
+    ).replace("existingResultId: await findExistingContact(\n" +
+      "          db, source.response, source.fields, transaction)",
+    "existingResultId: matched"),
+  ]) {
+    assert.deepEqual(scanConversionFixture(t, source), []);
+  }
+});
+
+for (const [name, mutate] of [
+  ["omitted origin", (s) => s.replace("origin: target.origin,", "")],
+  ["wrong origin", (s) => s.replace("origin: target.origin", "origin: unrelated")],
+  ["wrong destination", (s) => s.replace("contactId: target.contactId", "contactId: unrelated")],
+  ["matched-contact early return", (s) => s.replace("const result = await",
+    "if (target.contactId) return target.contactId;\nconst result = await")],
+  ["matched-contact return before origin read", (s) => s.replace(
+    "const provenanceRef =", "if (source.existingResultId) return source.existingResultId;\nconst provenanceRef =")],
+  ["matched-contact return before transaction", (s) => s.replace(
+    "return db.runTransaction", "if (data.existingResultId) return data.existingResultId;\nreturn db.runTransaction")],
+  ["matched contact skips the entire origin branch", (s) => s.replace(
+    "const provenanceRef =", "if (!source.existingResultId) { const provenanceRef =")
+    .replace("  });", "    }\n  });")],
+  ["writer skipped for a matched contact", (s) => s.replace("const result = await",
+    "if (!target.contactId) { const result = await").replace(
+    "return result.contactId;", "return result.contactId; } return target.contactId;")],
+  ["writer detached from transaction", (s) => s.replace("transaction, contactId",
+    "transaction: unrelated, contactId")],
+  ["writer outside transaction", (s) => {
+    const writer = "const result = await createOrganizerContactInTransaction({\n" +
+      "        transaction, contactId: target.contactId, origin: target.origin,\n      });";
+    return s.replace(writer, "").replace("return db.runTransaction", writer + "\nreturn db.runTransaction");
+  }],
+  ["unproved completed-contact replay", (s) => s.replace("const provenanceRef =",
+    "const matched = await findExistingContact(db, source.response, source.fields, transaction);\n" +
+    'if (matched?.status === "completed") return matched;\nconst provenanceRef =')],
+  ["missing canonical provenance helper", (s) => s.replace(
+    "crmContactConversionTarget({", "unreviewedContactTarget({")],
+  ["unawaited writer", (s) => s.replace("await createOrganizerContactInTransaction",
+    "createOrganizerContactInTransaction")],
+  ["origin read outside transaction", (s) => s.replace(
+    "const priorOrigin = await transaction.get(provenanceRef);", "").replace(
+    "return db.runTransaction", "const priorOrigin = await provenanceRef.get();\nreturn db.runTransaction")],
+  ["source check outside transaction", (s) => s.replace("assertConversionAllowed(source);", "")
+    .replace("return db.runTransaction", "assertConversionAllowed(source);\nreturn db.runTransaction")],
+  ["source read outside transaction", (s) => s.replace(
+    "const source = await conversionContext(db, data, transaction);", "").replace(
+    "return db.runTransaction", "const source = await conversionContext(db, data);\nreturn db.runTransaction")],
+  ["actor check outside transaction", (s) => s.replace(
+    "await authorizeFormMutation({db, tx: transaction, actorUid});", "").replace(
+    "return db.runTransaction", "await authorizeFormMutation({db, actorUid});\nreturn db.runTransaction")],
+  ["match lookup outside transaction", (s) => s.replace(
+    "db, source.response, source.fields, transaction", "db, source.response, source.fields")],
+  ["origin branch based on a contact instead", (s) => s.replace(
+    'collection("organizerContactOrigins")', 'collection("organizerContacts")')],
+  ["dead transaction instead of returned result", (s) => s.replace(
+    "return db.runTransaction", "const unused = db.runTransaction")],
+]) {
+  test(`form provenance rejects ${name}`, (t) => {
+    assert.notDeepEqual(scanConversionFixture(t, mutate(protectedFormConversion)), []);
+  });
+}
 
 test("flags generic or context-free Customers messaging handoffs", () => {
   const findings = customerMessagingHandoffFindings({

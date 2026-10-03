@@ -1020,3 +1020,94 @@ test("roster import retries current event and manager authority before writes",
       assert.equal(firestore.get(attendeePath), undefined);
     }
   });
+
+function sourceImportFixture() {
+  const now = admin.firestore.Timestamp.fromMillis(1000);
+  const event = {clubId: "organizer-1", organizerId: "organizer-1",
+    status: "active", capacityLimit: 1, bookedCount: 0,
+    constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+  const policy = deriveEventSeatPolicy(event);
+  const firestore = new FakeFirestore({
+    "events/event-1": event,
+    "organizers/organizer-1": {ownerUserId: "host-1",
+      hostUserIds: ["host-1"], hostProfiles: []},
+    "organizerFormResponses/source": {status: "submitted", actorActive: true},
+    "eventSeatMigrationFences/event-1": {eventId: "event-1",
+      migrationRevision: 1, state: "ready"},
+    "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
+      occupied: 0, revision: 1, capacityRevision: 1,
+      policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+      migrationRevision: 1, state: "ready"},
+    "payments/control": {status: "captured"},
+  });
+  const db = firestore as unknown as FirebaseFirestore.Firestore;
+  const payload = {eventId: "event-1", importKey: "source-import",
+    fileName: "Source handoff", format: "manual" as const, rows: [{
+      rowId: "source", displayName: "Synthetic Person",
+      phone: null, email: "synthetic@example.com", externalReference: "source",
+      arrivalGroup: null, ticketType: null, status: "registered" as const,
+    }]};
+  const checks: boolean[] = [];
+  const authorizeSource = async (tx: FirebaseFirestore.Transaction,
+    replayed: boolean) => {
+    checks.push(replayed);
+    const source = await tx.get(db.collection("organizerFormResponses")
+      .doc("source"));
+    if (!source.data()?.actorActive) {
+      throw new HttpsError("permission-denied", "Actor revoked.");
+    }
+    if (!replayed && source.data()?.status !== "submitted") {
+      throw new HttpsError("failed-precondition", "Source withdrawn.");
+    }
+  };
+  const run = (changes: Partial<typeof payload> = {}) =>
+    importEventAttendeesForHost({hostUid: "host-1", authorizeSource,
+      payload: {...payload, ...changes}}, {firestore: () => db,
+      checkRateLimit: async () => undefined, timestamp: () => now});
+  return {firestore, run, checks};
+}
+
+test("source adapter retries authority before attendee and seat writes",
+  async () => {
+    const h = sourceImportFixture();
+    h.firestore.afterRead = (path) => {
+      if (!path.startsWith("eventAttendees/")) return;
+      h.firestore.afterRead = null;
+      h.firestore.update("organizerFormResponses/source",
+        {status: "withdrawn"});
+    };
+    await assert.rejects(h.run(), {code: "failed-precondition"});
+    assert.deepEqual(h.checks, [false, false]);
+    assert.equal(h.firestore.entries("eventAttendees").length, 0);
+    assert.equal(h.firestore.entries("eventAttendeeImports").length, 0);
+    assert.equal(h.firestore.entries("eventSeatReservations").length, 0);
+    assert.equal(h.firestore.entries("eventSeatRequestReceipts").length, 0);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 0);
+    assert.deepEqual(h.firestore.get("payments/control"), {status: "captured"});
+  });
+
+test("source adapter preserves admitted replay without cancelling its seat",
+  async () => {
+    const h = sourceImportFixture();
+    const admitted = await h.run();
+    const attendees = h.firestore.entries("eventAttendees");
+    const reservations = h.firestore.entries("eventSeatReservations");
+    h.firestore.update("organizerFormResponses/source",
+      {status: "withdrawn"});
+    assert.deepEqual(await h.run(), {...admitted, replayed: true});
+    assert.deepEqual(h.checks, [false, true]);
+    await assert.rejects(h.run({importKey: "new-import"}),
+      {code: "failed-precondition"});
+    assert.deepEqual(h.firestore.entries("eventAttendees"), attendees);
+    assert.deepEqual(h.firestore.entries("eventSeatReservations"),
+      reservations);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    assert.deepEqual(h.firestore.get("payments/control"), {status: "captured"});
+    h.firestore.update("organizerFormResponses/source", {actorActive: false});
+    await assert.rejects(h.run(), {code: "permission-denied"});
+    assert.deepEqual(h.firestore.entries("eventAttendees"), attendees);
+    assert.deepEqual(h.firestore.entries("eventSeatReservations"),
+      reservations);
+  });
