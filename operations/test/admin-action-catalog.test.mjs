@@ -3,6 +3,7 @@ import test from "node:test";
 import {checkAdminActionCatalog} from
   "../scripts/check-admin-action-catalog.mjs";
 import {loadAdminActionCatalog} from "../src/admin/action-catalog.mjs";
+import {runAction} from "../src/admin-cli/main.mjs";
 
 test("admin action catalog validates every workflow example", async () => {
   const catalog = await loadAdminActionCatalog();
@@ -82,3 +83,51 @@ test("Owner control-plane GUI actions remain catalogued and strictly validated",
     finding.id === "strict-request-validation-drift" &&
     finding.missing.includes(action.callable)));
 });
+
+
+test("Catch WhatsApp GUI actions keep strict validation and cannot run via CLI",
+  async () => {
+    const catalog = await loadAdminActionCatalog();
+    const review = catalog.actionsById.get("catch.whatsapp.inbound.review");
+    const send = catalog.actionsById.get("catch.whatsapp.inbound.send");
+    assert.equal(review.kind, "read");
+    assert.equal(review.risk, "sensitive-read");
+    assert.equal(send.kind, "mutation");
+    assert.equal(send.risk, "critical");
+    assert.equal(send.confirmation, "action-and-target");
+    assert.equal(send.targetField, "inboundEventId");
+    let calls = 0;
+    for (const action of [review, send]) {
+      assert.equal(action.controlPlane, true);
+      assert.deepEqual(action.roles, ["support", "adminOwner"]);
+      assert.deepEqual(action.workflowIds, ["overview"]);
+      assert.equal(action.guiPath, "/overview");
+      assert.equal(catalog.validateRequest(action.actionId, action.example),
+        action.example);
+      assert.throws(() => catalog.validateRequest(action.actionId,
+        {...action.example, unreviewedField: true}),
+      {code: "ADMIN_ACTION_INPUT_INVALID"});
+      await assert.rejects(runAction({catalog, actionId: action.actionId,
+        flags: {example: true, apply: true, confirm: action.actionId,
+          confirmTarget: action.example.inboundEventId},
+        repoRoot: process.cwd(),
+        dependencies: {client: {invoke: async () => { calls += 1; }}},
+      }), {code: "ADMIN_ACTION_CONTROL_PLANE_ONLY"});
+    }
+    assert.equal(calls, 0);
+    assert.throws(() => catalog.validateRequest(send.actionId,
+      {...send.example, confirmSupportRequest: false}),
+    {code: "ADMIN_ACTION_INPUT_INVALID"});
+    const callables = catalog.actions.map((action) => action.callable);
+    for (const action of [review, send]) {
+      const result = await checkAdminActionCatalog({catalog,
+        adminApiSource: callables.map((name) =>
+          `(functions, "${name}")`).join("\n"),
+        validatorSource: `"strictRequests": ${JSON.stringify(
+          callables.filter((name) => name !== action.callable))}`,
+      });
+      assert.ok(result.findings.some((finding) =>
+        finding.id === "strict-request-validation-drift" &&
+        finding.missing.includes(action.callable)));
+    }
+  });
