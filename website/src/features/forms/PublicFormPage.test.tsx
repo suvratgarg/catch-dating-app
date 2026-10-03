@@ -378,3 +378,44 @@ it("does not prompt verification for unchecked or already promoted choices",
     expect(screen.queryByRole("button", {
       name: "Verify number for WhatsApp choices"})).toBeNull();
   });
+
+describe("previous-response chooser states", () => {
+  function chooser(overrides: Record<string, unknown> = {}) {
+    const section = {sectionId: "details", title: "Details", questions: [city]};
+    usePublicFormController.mockReturnValue({
+      stage: "form", form: {organizer: {name: "Demo organizer"}, definition: {
+        title: "Application", appearance: {preset: "minimal"}, sections: [section],
+      }}, activeSection: section, sectionIndex: 0, visibleSections: [section],
+      answers: {}, errors: {}, uploads: {}, status: {message: "", tone: ""},
+      canReuseAnswers: true, reuseOpen: true, reuseSources: [], reuseSourceId: "",
+      reusePreview: null, reuseSelectedIds: [], reusePending: false,
+      reuseStatus: {message: "", tone: ""}, pending: false,
+      reuseActivity: {isFetching: false, isPending: false, isError: false,
+        hasNextPage: false}, ...overrides,
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+  }
+  it("keeps an empty scanned page navigable when the account cursor continues", () => {
+    const fetchNextPage = vi.fn();
+    chooser({reuseActivity: {isPending: false, isFetching: false,
+      isError: false, hasNextPage: true, fetchNextPage}});
+    expect(screen.getByText(/responses checked so far/u)).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Show more previous responses"}));
+    expect(fetchNextPage).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("button", {name: "Use selected answers"})).toBeNull();
+  });
+  it("offers a retry for a failed metadata read without blocking manual questions", () => {
+    const refetch = vi.fn();
+    chooser({reuseActivity: {isPending: false, isFetching: false,
+      isError: true, hasNextPage: false, refetch}});
+    fireEvent.click(screen.getByRole("button", {name: "Try checking again"}));
+    expect(refetch).toHaveBeenCalledOnce();
+    expect(screen.getAllByText("Event city").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", {name: "Review answers"})).not.toBeNull();
+  });
+  it("does not present account-owned reuse controls without current access", () => {
+    chooser({canReuseAnswers: false});
+    expect(screen.queryByText("Review previous answers")).toBeNull();
+    expect(screen.getByRole("button", {name: "Review answers"})).not.toBeNull();
+  });
+});

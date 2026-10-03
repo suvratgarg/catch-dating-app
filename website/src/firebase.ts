@@ -41,6 +41,8 @@ import type {CheckInEventRuntimeCallableResponse} from "../../functions/src/shar
 import type {ClaimEventRuntimeAccessCallablePayload} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallablePayload";
 import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallableResponse";
 import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
+import type {ListParticipantActivityCallablePayload} from "../../functions/src/shared/generated/listParticipantActivityCallablePayload";
+import type {ListParticipantActivityCallableResponse} from "../../functions/src/shared/generated/listParticipantActivityCallableResponse";
 import type {BeginOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallablePayload";
 import type {BeginOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallableResponse";
 import type {CreateOrganizerFormAssetIntentCallablePayload} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallablePayload";
@@ -159,6 +161,7 @@ export type EventSuccessConversationGraph =
   GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
 export type PublicOrganizerForm = GetPublicOrganizerFormCallableResponse;
+export type ParticipantFormActivityPage = ListParticipantActivityCallableResponse;
 export type PublicOrganizerFormDraft =
   BeginOrganizerFormResponseCallableResponse;
 export type PublicOrganizerFormReceipt =
@@ -240,6 +243,14 @@ export async function getPublicOrganizerForm(
     runtime.functions, "getPublicOrganizerForm"
   );
   return (await callable(payload)).data;
+}
+
+export async function listParticipantFormActivity(
+  payload: ListParticipantActivityCallablePayload
+): Promise<ParticipantFormActivityPage> {
+  return invokeWebsiteCallable(
+    "listParticipantActivity", payload, publicFormsFirebaseConfigured, "Public forms"
+  );
 }
 
 export async function beginOrganizerFormResponse(

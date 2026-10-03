@@ -1,5 +1,5 @@
 import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {useMutation} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation} from "@tanstack/react-query";
 import {
   beginOrganizerFormResponse,
   beginPublicEventPhoneVerification,
@@ -7,6 +7,7 @@ import {
   createOrganizerFormAssetIntent,
   finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
+  listParticipantFormActivity,
   promoteFormCommunicationIntent,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink,
@@ -31,6 +32,10 @@ import {
   type PublicFormAnswers,
   type PublicFormQuestion,
 } from "./publicFormModel";
+
+import {acceptReviewedReuseAnswers, hasReusableOrganizerQuestions,
+  reviewedReuseSuggestions, sameFormReuseSources,
+  type PublicFormReuseSource} from "./publicFormAnswerReuse";
 
 export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
@@ -70,6 +75,10 @@ export function usePublicFormController(publicFormId: string) {
   const promotingConsentRef = useRef(false);
   const [verifyingConsent, setVerifyingConsent] = useState(false);
   const [answers, setAnswers] = useState<PublicFormAnswers>({});
+  const [accountUid, setAccountUid] = useState<string | null>(null);
+  const [reuseOpen, setReuseOpen] = useState(false);
+  const [reuseSourceId, setReuseSourceId] = useState("");
+  const [reuseSelectedIds, setReuseSelectedIds] = useState<string[]>([]);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [messagingChoices, setMessagingChoices] = useState<MessagingChoices>(uncheckedMessaging);
   const [sectionIndex, setSectionIndex] = useState(0);
@@ -95,6 +104,9 @@ export function usePublicFormController(publicFormId: string) {
   const consentRef = useRef(false);
   const messagingRef = useRef<MessagingChoices>(uncheckedMessaging);
   const authGenerationRef = useRef(0);
+  const draftStartRequestIdRef = useRef<string | null>(null);
+  const reuseOperationRef = useRef(0);
+  const reuseFlightRef = useRef<number | null>(null);
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const startPromiseRef = useRef<Promise<void> | null>(null);
@@ -139,6 +151,134 @@ export function usePublicFormController(publicFormId: string) {
     (upload) => upload.status === "uploading"
   );
 
+  const canReuseAnswers = accountUid !== null && draft !== null &&
+    draft.identityKind !== "anonymous" && stage === "form" &&
+    form !== null && form.publicFormId === publicFormId &&
+    draft.form.publicFormId === publicFormId &&
+    draft.form.formId === form.formId && draft.form.versionId === form.versionId &&
+    hasReusableOrganizerQuestions(form);
+  const reuseActivity = useInfiniteQuery({
+    queryKey: ["public-form-answer-reuse", publicFormId,
+      form?.organizer.organizerId, form?.formId, form?.versionId, accountUid],
+    queryFn: ({pageParam}) => listParticipantFormActivity({
+      sourceKind: "formResponse", limit: 30, cursor: pageParam,
+    }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (last, _pages, _lastParam, params) =>
+      last.nextCursor && !params.includes(last.nextCursor) ?
+        last.nextCursor : undefined,
+    enabled: reuseOpen && canReuseAnswers,
+    retry: false,
+  });
+  const reuseSources = form ? sameFormReuseSources(
+    reuseActivity.data?.pages ?? [], form) : [];
+  const reusePreviewMutation = useMutation({
+    mutationFn: async (input: {
+      payload: Parameters<typeof beginOrganizerFormResponse>[0];
+      current: PublicOrganizerFormDraft; source: PublicFormReuseSource;
+      uid: string; generation: number; operation: number;
+    }) => {
+      const result = await beginOrganizerFormResponse(input.payload);
+      return {source: input.source,
+        answers: reviewedReuseSuggestions(result, input.current, input.source),
+        uid: input.uid, draftId: input.current.draftId, generation: input.generation};
+    },
+    retry: false,
+  });
+  const reuseAttempt = reusePreviewMutation.variables;
+  const ownsReuseAttempt = canReuseAnswers && reuseOpen &&
+    reuseAttempt?.payload.publicFormId === publicFormId &&
+    reuseAttempt?.uid === accountUid &&
+    reuseAttempt?.generation === authGenerationRef.current &&
+    reuseAttempt?.operation === reuseOperationRef.current &&
+    reuseAttempt?.current.draftId === draft?.draftId &&
+    reuseAttempt?.source.sourceId === reuseSourceId;
+  const reusePending = ownsReuseAttempt && reusePreviewMutation.isPending;
+  const reusePreview = ownsReuseAttempt ? reusePreviewMutation.data ?? null : null;
+  const reuseStatus: FormStatus = ownsReuseAttempt && reusePreviewMutation.isError ?
+    {message: publicFormError(reusePreviewMutation.error), tone: "is-error"} :
+    {message: "", tone: ""};
+
+  function dismissAnswerReuse() {
+    reuseOperationRef.current++;
+    reuseFlightRef.current = null;
+    setReuseOpen(false);
+    setReuseSourceId("");
+    reusePreviewMutation.reset();
+    setReuseSelectedIds([]);
+  }
+
+  function openAnswerReuse() {
+    if (!canReuseAnswers || pending) return;
+    dismissAnswerReuse();
+    setReuseOpen(true);
+  }
+
+  function chooseReuseSource(id: string) {
+    if (reuseFlightRef.current !== null) return;
+    setReuseSourceId(id);
+    reusePreviewMutation.reset();
+    setReuseSelectedIds([]);
+  }
+
+  async function previewReusableAnswers() {
+    const current = draftRef.current;
+    const uid = userRef.current?.uid;
+    const source = reuseSources.find((item) => item.sourceId === reuseSourceId);
+    const startId = draftStartRequestIdRef.current;
+    if (!canReuseAnswers || !reuseOpen || pending || !current ||
+        !uid || uid !== accountUid || !source || !startId || reuseFlightRef.current !== null) return;
+    const generation = authGenerationRef.current;
+    const operation = ++reuseOperationRef.current;
+    reuseFlightRef.current = operation;
+    reusePreviewMutation.reset();
+    setReuseSelectedIds([]);
+    const stillCurrent = () => generation === authGenerationRef.current &&
+      userRef.current?.uid === uid && reuseOperationRef.current === operation &&
+      draftRef.current?.draftId === current.draftId;
+    try {
+      await reusePreviewMutation.mutateAsync({
+        payload: {publicFormId, sourceToken, requestId: startId,
+          reuseResponseId: source.sourceId},
+        current, source, uid, generation, operation,
+      });
+    } catch {
+      // The mutation owns errors; only the matching account/draft attempt is shown.
+    } finally {
+      if (stillCurrent()) reuseFlightRef.current = null;
+    }
+  }
+
+  function selectReusableAnswer(id: string, selected: boolean) {
+    if (!reusePreview || reusePending || pending ||
+        reusePreview.uid !== userRef.current?.uid ||
+        reusePreview.generation !== authGenerationRef.current ||
+        !Object.hasOwn(reusePreview.answers, id) ||
+        Object.hasOwn(answersRef.current, id)) return;
+    setReuseSelectedIds((ids) => selected ? [...new Set([...ids, id])] :
+      ids.filter((candidate) => candidate !== id));
+  }
+
+  function acceptReusableAnswers() {
+    if (!reusePreview || !canReuseAnswers || pending || reusePending ||
+        reusePreview.uid !== userRef.current?.uid ||
+        reusePreview.generation !== authGenerationRef.current ||
+        reusePreview.draftId !== draftRef.current?.draftId ||
+        reusePreview.source.sourceId !== reuseSourceId) return;
+    const chosenIds = reuseSelectedIds.filter((id) =>
+      Object.hasOwn(reusePreview.answers, id) && !Object.hasOwn(answersRef.current, id));
+    if (chosenIds.length === 0) return;
+    const updated = acceptReviewedReuseAnswers(
+      answersRef.current, reusePreview.answers, chosenIds);
+    answersRef.current = updated;
+    setAnswers(updated);
+    setErrors((current) => Object.fromEntries(Object.entries(current)
+      .filter(([id]) => !chosenIds.includes(id))));
+    setDirtyRevision((value) => value + 1);
+    dismissAnswerReuse();
+    setStatus({message: publicFormsCopy.reuseSelected, tone: ""});
+  }
+
   const startDraft = useCallback(async (nextForm: PublicOrganizerForm) => {
     if (startPromiseRef.current) return startPromiseRef.current;
     const generation = authGenerationRef.current;
@@ -164,10 +304,9 @@ export function usePublicFormController(publicFormId: string) {
             publicFormsCopy.paymentRecoveryEmpty});
           return;
         }
+        const startId = stableStartRequestId(publicFormId, startRequestIdRef.current);
         const started = await beginOrganizerFormResponse({
-          publicFormId,
-          sourceToken,
-          requestId: stableStartRequestId(publicFormId, startRequestIdRef.current),
+          publicFormId, sourceToken, requestId: startId,
         });
         if (generation !== authGenerationRef.current) return;
         const localAnswers = answersRef.current;
@@ -182,6 +321,7 @@ export function usePublicFormController(publicFormId: string) {
             userRef.current.phoneNumber;
         }
         const mergedConsent = started.consentAccepted || consentRef.current;
+        draftStartRequestIdRef.current = startId;
         draftRef.current = started;
         answersRef.current = mergedAnswers;
         consentRef.current = mergedConsent;
@@ -218,6 +358,9 @@ export function usePublicFormController(publicFormId: string) {
     authGenerationRef.current++;
     startPromiseRef.current = null;
     userRef.current = null;
+    setAccountUid(null);
+    draftStartRequestIdRef.current = null;
+    dismissAnswerReuse();
     formRef.current = null;
     draftRef.current = null;
     answersRef.current = {};
@@ -256,6 +399,8 @@ export function usePublicFormController(publicFormId: string) {
           loaded?.definition.identityPolicy === "phoneVerified";
         if (userRef.current?.uid !== user?.uid) {
           authGenerationRef.current++;
+          draftStartRequestIdRef.current = null;
+          dismissAnswerReuse();
           startPromiseRef.current = null;
           if (!keepUnverifiedAnswers) {
             consentRef.current = false;
@@ -274,6 +419,7 @@ export function usePublicFormController(publicFormId: string) {
           if (!keepUnverifiedAnswers) answersRef.current = {};
         }
         userRef.current = user;
+        setAccountUid(user?.uid ?? null);
         setVerifiedPhone(user?.phoneNumber ?? null);
         if (!user && loaded) {
           const savedReceipt = storedReceipt(publicFormId, null);
@@ -322,6 +468,8 @@ export function usePublicFormController(publicFormId: string) {
     return () => {
       cancelled = true;
       authGenerationRef.current++;
+      reuseOperationRef.current++;
+      reuseFlightRef.current = null;
       startPromiseRef.current = null;
       verificationRef.current?.clear();
       unsubscribe();
@@ -494,7 +642,7 @@ export function usePublicFormController(publicFormId: string) {
   }
 
   async function nextSection() {
-    if (!activeSection) return;
+    if (!activeSection || reuseFlightRef.current !== null) return;
     if (uploadInProgress) {
       setStatus({message: publicFormsCopy.uploadPending, tone: "is-error"});
       return;
@@ -597,6 +745,7 @@ export function usePublicFormController(publicFormId: string) {
   }
 
   async function submit() {
+    if (reuseFlightRef.current !== null) return;
     const questions = visibleSections.flatMap((section) => section.questions);
     const nextErrors = validatePublicFormAnswers(questions, answers);
     setErrors(nextErrors);
@@ -742,6 +891,21 @@ export function usePublicFormController(publicFormId: string) {
   }
 
   return {
+    canReuseAnswers,
+    openAnswerReuse,
+    dismissAnswerReuse,
+    reuseOpen,
+    reuseSources,
+    reuseSourceId,
+    chooseReuseSource,
+    reusePreview,
+    reuseSelectedIds,
+    reusePending,
+    reuseStatus,
+    reuseActivity,
+    previewReusableAnswers,
+    selectReusableAnswer,
+    acceptReusableAnswers,
     activeSection,
     answers,
     blurQuestion,
