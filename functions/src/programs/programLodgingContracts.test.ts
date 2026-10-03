@@ -10,6 +10,10 @@ import {validateWorkspaceMembershipAssertionDocument} from
   "../shared/generated/validators/workspaceMembershipAssertionDocument";
 import {validateWorkspaceMembershipDecisionDocument} from
   "../shared/generated/validators/workspaceMembershipDecisionDocument";
+import {selectWorkspaceMembership, workspaceMembershipAssertionId} from
+  "../workspaces/workspaceMembershipAuthority";
+import type {WorkspaceMembershipAssertion} from
+  "../workspaces/workspaceMembershipAuthority";
 import {lodgingProposalId} from "./programLodgingPlanner";
 
 const scope = {organizerId: "org", programId: "program"};
@@ -64,4 +68,28 @@ test("membership contracts preserve typed program guest evidence", () => {
   assert.equal(validateWorkspaceMembershipDecisionDocument(decision), true);
   assert.equal(validateWorkspaceMembershipDecisionDocument({...decision,
     selectedAssertionId: "wfa_" + id}), false);
+});
+
+
+test("membership selector returns only permitted decision fields", () => {
+  const assertion: WorkspaceMembershipAssertion = {...scope, schemaVersion: 1,
+    workspaceRef: {kind: "program", id: "program"},
+    relationshipRef: {kind: "programGuest", id: "guest"}, groupId: "friends",
+    included: false, sourceKind: "manualEntry", sourceId: "manual-1",
+    sourceVersion: 1, sourceLabel: "Host review", actorUid: "manager",
+    observedAtMillis: 1};
+  const context = {...assertion,
+    workspaceRef: {...assertion.workspaceRef, privateSourceNote: "private"},
+    relationshipRef: {...assertion.relationshipRef, privateNote: "private"}};
+  const result = selectWorkspaceMembership({context, assertion,
+    assertionId: workspaceMembershipAssertionId(assertion),
+    projection: {groupIds: ["friends"], selections: [], suggestions: []},
+    currentRevision: 1, expectedRevision: 1,
+    actorUid: "reviewer", observedAtMillis: 2});
+  assert.equal(validateWorkspaceMembershipDecisionDocument(result.decision),
+    true);
+  assert.deepEqual(result.projection.groupIds, []);
+  assert.equal("included" in result.decision, false);
+  assert.equal("privateSourceNote" in result.decision.workspaceRef, false);
+  assert.equal("privateNote" in result.decision.relationshipRef, false);
 });

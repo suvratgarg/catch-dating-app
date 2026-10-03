@@ -165,7 +165,11 @@ export function selectWorkspaceMembership(params: {
   {groupId: context.groupId, assertionId: params.assertionId}];
   next.suggestions = next.suggestions.filter((row) =>
     row.assertionId !== params.assertionId);
-  return {projection: next, decision: {...context, schemaVersion: 1,
+  return {projection: next, decision: {schemaVersion: 1,
+    organizerId: context.organizerId,
+    workspaceRef: {kind: "program", id: context.workspaceRef.id},
+    relationshipRef: {kind: "programGuest", id: context.relationshipRef.id},
+    groupId: context.groupId,
     programId: context.workspaceRef.id, selectedAssertionId: params.assertionId,
     previousAssertionId: previous[0]?.assertionId ?? null,
     relationshipRevision: params.currentRevision, actorUid: params.actorUid,
