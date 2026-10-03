@@ -59,7 +59,7 @@ final class ProgramLodgingControllerProvider
 }
 
 String _$programLodgingControllerHash() =>
-    r'4237dff232b2f00c9452e9a8dbf32771554e9080';
+    r'8151d48b74496b3776de5d1fb7523b156d5d0873';
 
 /// One state owner fences every async result and retains an uncertain command
 /// verbatim for retry. Authority loss/disposal clears private planning data.
