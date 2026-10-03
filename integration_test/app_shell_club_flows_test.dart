@@ -3,6 +3,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
+import '../test/events/event_viewer_state_fixtures.dart';
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
@@ -112,6 +113,9 @@ void main() {
         clubEvents: {
           club.id: [run],
         },
+        eventViewerStates: [
+          viewerFixture(eventId: run.id, organizerId: run.organizerId),
+        ],
       ),
     );
 

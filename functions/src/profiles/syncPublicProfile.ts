@@ -8,7 +8,8 @@ import {
   publicProfileFromUserProfileDoc,
 } from "../shared/profileProjection";
 import {isSocialReadyUserProfile} from "../shared/profileReadiness";
-import {organizerHostProfiles} from "../shared/organizerHosts";
+import {organizerHostProfiles, organizerManagerUserIds} from
+  "../shared/organizerHosts";
 import {HostProfileDocument} from "../shared/hostProfiles";
 
 interface SyncPublicProfileDeps {
@@ -147,26 +148,32 @@ export async function syncOrganizerHostProfile(
   for (const doc of canonicalHostSnap.docs) docsByPath.set(doc.ref.path, doc);
   if (docsByPath.size === 0) return;
 
-  const batch = db.batch();
-  docsByPath.forEach((doc) => {
-    const organizer = doc.data() as Parameters<typeof organizerHostProfiles>[0];
-    const fields: Record<string, unknown> = {};
-    if (organizer.hostUserId === userId) {
-      fields.hostName = patch.hostName;
-      fields.hostAvatarUrl = patch.hostAvatarUrl;
-    }
-    fields.hostProfiles = organizerHostProfiles(organizer).map((host) =>
-      host.uid === userId ?
-        {
-          ...host,
-          displayName: patch.hostName,
-          avatarUrl: patch.hostAvatarUrl,
-        } :
-        host
-    );
-    batch.set(doc.ref, fields, {merge: true});
-  });
-  await batch.commit();
+  // Query snapshots only discover candidates. Team removal/transfer and the
+  // projection update must serialize on the current organizer document.
+  for (const candidate of docsByPath.values()) {
+    await db.runTransaction(async (tx) => {
+      const current = await tx.get(candidate.ref);
+      if (!current.exists) return;
+      const organizer = current.data() as
+        Parameters<typeof organizerHostProfiles>[0];
+      const managerIds = new Set(organizerManagerUserIds(organizer));
+      if (!managerIds.has(userId)) return;
+
+      const fields: Record<string, unknown> = {};
+      if (organizer.hostUserId === userId) {
+        fields.hostName = patch.hostName;
+        fields.hostAvatarUrl = patch.hostAvatarUrl;
+      }
+      fields.hostProfiles = organizerHostProfiles(organizer)
+        .filter((host) => managerIds.has(host.uid))
+        .map((host) => host.uid === userId ?
+          {...host, displayName: patch.hostName,
+            avatarUrl: patch.hostAvatarUrl} :
+          host
+        );
+      tx.update(candidate.ref, fields);
+    });
+  }
 }
 
 /**

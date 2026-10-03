@@ -1,6 +1,636 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const catchWhatsappReplyOperationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_reply_operations.schema.json",
+  "title": "CatchWhatsappReplyOperationDocument",
+  "description": "Private one-reply-per-inbound support claim and saved provider delivery projection. Explicit human review of the exact inbound support request is service evidence, never marketing permission. No body, credential or pricing data. No automatic retry or TTL; uncertain and completed claims remain consumed beyond receipt retention. Source-only and disabled pending atomic STOP ingress and scoped activation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchWhatsappReplyOperations",
+  "x-firestore-path": "catchWhatsappReplyOperations/{operationId}",
+  "x-document-id-field": "operationId",
+  "x-owner": "Catch support reply service",
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "purpose",
+    "source",
+    "wabaId",
+    "phoneNumberId",
+    "recipientUid",
+    "endpointHash",
+    "actorUid",
+    "inboundEventId",
+    "inboundMessageId",
+    "inboundTextHash",
+    "bodyHash",
+    "materialHash",
+    "reviewedAtMillis",
+    "deadlineMillis",
+    "state",
+    "providerMessageId",
+    "deliveryStatus",
+    "deliveryEventId",
+    "deliveryAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "readinessEvidenceHash"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 72,
+      "pattern": "^cwreply_[a-f0-9]{64}$"
+    },
+    "purpose": {
+      "const": "serviceSupport",
+      "type": "string"
+    },
+    "source": {
+      "const": "reviewedInboundSupportRequest",
+      "type": "string"
+    },
+    "wabaId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "phoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "inboundEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "inboundMessageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\s\\u0000-\\u001f]+$"
+    },
+    "inboundTextHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "bodyHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "materialHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "deadlineMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "enum": [
+        "claimed",
+        "unknown",
+        "completed"
+      ],
+      "type": "string"
+    },
+    "providerMessageId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[^\\s\\u0000-\\u001f]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deliveryStatus": {
+      "enum": [
+        "pending",
+        "accepted",
+        "sent",
+        "delivered",
+        "read",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "deliveryEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 69,
+          "pattern": "^cwhe_[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deliveryAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "readinessEvidenceHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "providerMessageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[^\\s\\u0000-\\u001f]+$"
+          },
+          "deliveryStatus": {
+            "enum": [
+              "accepted",
+              "sent",
+              "delivered",
+              "read",
+              "failed"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "providerMessageId": {
+            "type": "null"
+          },
+          "deliveryStatus": {
+            "const": "pending"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "deliveryStatus": {
+            "enum": [
+              "pending",
+              "accepted"
+            ]
+          }
+        },
+        "required": [
+          "deliveryStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "deliveryEventId": {
+            "type": "null"
+          },
+          "deliveryAtMillis": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "deliveryEventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 69,
+            "pattern": "^cwhe_[a-f0-9]{64}$"
+          },
+          "deliveryAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const catchWhatsappEndpointStopDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_endpoint_stops.schema.json",
+  "title": "CatchWhatsappEndpointStopDocument",
+  "description": "Private permanent Catch sender/endpoint STOP fence, committed atomically with the immutable authenticated inbound STOP receipt. Independent of UID and organizer contact resolution. No raw endpoint, message body, credentials, TTL, reset or automatic re-enrollment. Ingress wiring and historical reconciliation remain required before outbound activation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchWhatsappEndpointStops",
+  "x-firestore-path": "catchWhatsappEndpointStops/{stopId}",
+  "x-document-id-field": "stopId",
+  "x-owner": "Catch support reply service",
+  "required": [
+    "schemaVersion",
+    "stopId",
+    "wabaId",
+    "phoneNumberId",
+    "endpointHash",
+    "sourceEventId",
+    "sourceMessageId",
+    "payloadHash",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "stopId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 71,
+      "pattern": "^cwstop_[a-f0-9]{64}$"
+    },
+    "wabaId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "phoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "sourceMessageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\s\\u0000-\\u001f]+$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const catchWhatsappReplyReadinessDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_reply_readiness.schema.json",
+  "title": "CatchWhatsappReplyReadinessDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "readinessId",
+    "wabaId",
+    "phoneNumberId",
+    "recipientUid",
+    "endpointHash",
+    "purpose",
+    "state",
+    "completeHistory",
+    "historyFromMillis",
+    "coveredThroughMillis",
+    "atomicIngressStartedAtMillis",
+    "evidenceSha256",
+    "reviewedByUid",
+    "reviewedAtMillis",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "readinessId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 72,
+      "pattern": "^cwready_[a-f0-9]{64}$"
+    },
+    "wabaId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "phoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "purpose": {
+      "type": "string",
+      "const": "serviceSupport"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "revoked"
+      ]
+    },
+    "completeHistory": {
+      "type": "boolean",
+      "const": true
+    },
+    "historyFromMillis": {
+      "type": "integer",
+      "const": 0
+    },
+    "coveredThroughMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "atomicIngressStartedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "evidenceSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "reviewedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "description": "Private externally reviewed historical STOP clearance for one Catch sender/recipient endpoint. Complete evidence from sender inception (coverage starts at epoch) through verified atomic STOP ingress is required; empty or expired receipt queries are never proof. This feature only reads the record; it cannot attest, provision, refresh or activate it. No TTL or raw endpoint.",
+  "x-firestore-collection": "catchWhatsappReplyReadiness",
+  "x-firestore-path": "catchWhatsappReplyReadiness/{readinessId}",
+  "x-document-id-field": "readinessId",
+  "x-owner": "Catch support reply service"
+};
+
+export const adminReviewCatchWhatsappInboundCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_review_catch_whatsapp_inbound_payload.schema.json",
+  "title": "AdminReviewCatchWhatsappInboundCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "purpose",
+    "inboundEventId"
+  ],
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "serviceSupport"
+    },
+    "inboundEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const adminReviewCatchWhatsappInboundCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json",
+  "title": "AdminReviewCatchWhatsappInboundCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "purpose",
+    "inboundEventId",
+    "inboundText",
+    "reviewedInboundTextHash",
+    "deadlineMillis"
+  ],
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "serviceSupport"
+    },
+    "inboundEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "inboundText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "reviewedInboundTextHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "deadlineMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const adminSendCatchWhatsappReplyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_send_catch_whatsapp_reply_payload.schema.json",
+  "title": "AdminSendCatchWhatsappReplyCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "purpose",
+    "inboundEventId",
+    "reviewedInboundTextHash",
+    "confirmSupportRequest",
+    "body"
+  ],
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "serviceSupport"
+    },
+    "inboundEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "reviewedInboundTextHash": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "confirmSupportRequest": {
+      "type": "boolean",
+      "const": true
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    }
+  }
+};
+
+export const adminSendCatchWhatsappReplyCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_send_catch_whatsapp_reply_response.schema.json",
+  "title": "AdminSendCatchWhatsappReplyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operationId",
+    "providerMessageId",
+    "deliveryStatus",
+    "replayed"
+  ],
+  "properties": {
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 72,
+      "pattern": "^cwreply_[a-f0-9]{64}$"
+    },
+    "providerMessageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\s\\u0000-\\u001f]+$"
+    },
+    "deliveryStatus": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "sent",
+        "delivered",
+        "read",
+        "failed"
+      ]
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const getOrganizerTrackingSettingsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_organizer_tracking_settings_payload.schema.json",
@@ -133055,6 +133685,333 @@ export const claimParticipantFormProfileCallableResponseSchema = {
       "type": "boolean"
     }
   }
+};
+
+export const getEventViewerStateCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publicPaymentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_viewer_state_payload.schema.json",
+  "title": "GetEventViewerStateCallablePayload",
+  "description": "Read current account-scoped event facts using an Auth-derived subject; never reserve or grant admission.",
+  "x-callable-aliases": [
+    "getEventViewerState"
+  ]
+};
+
+export const getEventViewerStateCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "viewer"
+  ],
+  "properties": {
+    "viewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "organizerId",
+        "observedAtMillis",
+        "membership",
+        "review",
+        "admission",
+        "attendance",
+        "waitlisted",
+        "payment",
+        "futureBooking",
+        "route",
+        "quotedPriceInPaise",
+        "basis"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "observedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "membership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "revision",
+            "decisionId"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "notRequired",
+                "none",
+                "active",
+                "revoked",
+                "unavailable"
+              ]
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "review": {
+          "type": "string",
+          "enum": [
+            "none",
+            "pending",
+            "approved"
+          ]
+        },
+        "admission": {
+          "type": "string",
+          "enum": [
+            "none",
+            "nativeParticipation",
+            "publicPaidRoster"
+          ]
+        },
+        "attendance": {
+          "type": "string",
+          "enum": [
+            "notRecorded",
+            "attended"
+          ]
+        },
+        "waitlisted": {
+          "type": "boolean"
+        },
+        "payment": {
+          "type": "string",
+          "enum": [
+            "notRead",
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "admitted",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "futureBooking": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowed",
+                "reason"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": true
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowed",
+                "reason"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": false
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "membershipRequired",
+                    "inviteRequired",
+                    "reviewRequired",
+                    "full",
+                    "pairCapacityUnavailable",
+                    "generalCapacityUnavailable",
+                    "cohortCapacityUnavailable",
+                    "outOfRatioReviewRequired",
+                    "balanceUnavailable",
+                    "bookingDetailsRequired",
+                    "runPreferencesRequired",
+                    "ageRestricted",
+                    "scheduleConflict",
+                    "eventUnavailable",
+                    "past",
+                    "cancelled",
+                    "unsupportedRoute"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "catchFreeBooking",
+                "catchCheckout",
+                "catchWaitlistOffer"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quotedPriceInPaise": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyHash",
+            "inventoryRevision",
+            "capacityRevision",
+            "migrationRevision"
+          ],
+          "properties": {
+            "policyHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "inventoryRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "capacityRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "migrationRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_viewer_state_response.schema.json",
+  "title": "GetEventViewerStateCallableResponse",
+  "description": "Current eligibility is separate from retained payment, admission and attendance evidence. Observation only; final mutations revalidate authority."
 };
 
 export const listParticipantActivityCallablePayloadSchema = {

@@ -1,7 +1,8 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
@@ -17,7 +18,7 @@ test("Firestore serializes sender withdrawals and queries only owned rows",
     const uid = `permission-${suffix}`;
     const organizerId = `organizer-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, uid);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const deps = {db: () => db, now: () => Timestamp.now(),
       rateLimit: async () => undefined};
     const request = (data: unknown) => ({auth: {uid, token: {}}, data}) as

@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {messageRecipientMatches, MessageRecipientBinding,
   reviewMessageRecipient} from "./messageRecipient";
 import {rcsHarness} from "./rcsDispatchTestHarness";
@@ -163,7 +163,7 @@ test("Firestore private grants and dispatch leave the canonical roster intact",
   {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const app = initializeApp({projectId: "demo-catch-rules"},
       "private-recipient-" + randomUUID());
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     try {
       const h = await rcsHarness(db, randomUUID(),
         ["catchEventRcs"], undefined, true);

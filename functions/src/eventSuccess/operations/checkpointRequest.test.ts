@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {eventStaffGrantId} from "../../shared/eventOperatorAuthority";
 import {EventCheckpointStore} from "./checkpointStore";
 import {DEPARTURE_ROSTERS} from "./departureRosterSource";
@@ -270,7 +271,7 @@ test("Firestore concurrent departure requests preserve one immutable owner", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "checkpoint-owner-" + randomUUID());
   try {
-    const h = await harness(getFirestore(app));
+    const h = await harness(getEmulatorFirestore(app));
     const input = await h.departure();
     const results = await Promise.all(Array.from({length: 6}, () =>
       h.progress.confirmDeparture(manager, input)));

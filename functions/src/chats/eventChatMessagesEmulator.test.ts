@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {updateEventChatAccessHandler as access} from "./eventChatAccess";
 import {sendEventChatMessageHandler as send,
@@ -33,7 +34,7 @@ test("event messages fence retries, protect replies and expire typing",
     const person = `person-${suffix}`;
     const stranger = `stranger-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     let now = Timestamp.now();
     const deps = {db: () => db, now: () => now,
       rateLimit: async () => undefined};

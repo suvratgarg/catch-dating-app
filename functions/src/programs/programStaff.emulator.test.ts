@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {baseSeed, request, now} from "../shared/testing/programFixtures";
 import {inviteProgramStaffHandler} from "./programStaffInvites";
 import {listProgramStaffHandler, revokeProgramStaffHandler} from
@@ -14,7 +14,7 @@ test("Firestore serializes same-phone invite issuance, including empty queries",
   {skip: !enabled}, async () => {
     const id = randomUUID();
     const app = initializeApp({projectId: "demo-catch-rules"}, id);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const programId = `staff-test-${id}`;
     const organizerId = `staff-org-${id}`;
     const seed = baseSeed();
@@ -62,7 +62,7 @@ test("Firestore staff pages survive revocation and deletion",
   {skip: !enabled}, async () => {
     const id = randomUUID();
     const app = initializeApp({projectId: "demo-catch-rules"}, id);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const programId = `staff-page-${id}`;
     const organizerId = `staff-page-org-${id}`;
     const seed = baseSeed();

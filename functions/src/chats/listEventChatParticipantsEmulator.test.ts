@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {listEventChatParticipantsHandler as list} from
   "./listEventChatParticipants";
@@ -23,7 +24,7 @@ test("Firestore room participants are current, bounded and private",
     const host = `host-${suffix}`;
     const person = `person-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const now = Timestamp.now();
     const refs: FirebaseFirestore.DocumentReference[] = [];
     const ref = (collection: string, id: string) => db.collection(collection)

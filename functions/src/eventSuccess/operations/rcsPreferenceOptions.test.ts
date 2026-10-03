@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {RcsPreferenceStore} from "./rcsPreferenceStore";
@@ -225,7 +226,7 @@ test("Firestore returns only the participant's bounded preference pages", {
   const projectId = "demo-rcs-prefs-" + id.slice(0, 8);
   const app = initializeApp({projectId}, id);
   try {
-    await pagination(getFirestore(app));
+    await pagination(getEmulatorFirestore(app));
   } finally {
     await deleteApp(app);
   }

@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {harness, start} from "./whatsappTestHarness";
 import {parseMessageRecord, newMessageRecord, MessageRecord} from
   "./messageOutbox";
@@ -267,7 +268,7 @@ test("Firestore joins live operating facts, consent and episode history", {
   assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await harness(db, randomUUID());
     const attendee = {...JSON.parse(readFileSync(

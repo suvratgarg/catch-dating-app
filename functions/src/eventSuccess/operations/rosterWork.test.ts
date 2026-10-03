@@ -1,10 +1,11 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {guestCollections, guestIdentity, parseGuest} from "./guestRecords";
 import {AssistanceRosterWorkStore} from "./rosterWorkStore";
@@ -344,7 +345,7 @@ test("Firestore arbitrates roster scans and preserves exact event scope", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await rosterHarness(2, getFirestore(app));
+    const h = await rosterHarness(2, getEmulatorFirestore(app));
     const created = await Promise.all([h.enqueue(), h.enqueue()]);
     assert.equal(created.filter((r) => r.replayed).length, 2,
       "the configuration transaction already saved the single roster job");

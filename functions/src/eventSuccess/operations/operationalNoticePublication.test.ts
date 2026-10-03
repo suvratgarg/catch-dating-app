@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {EventAssistanceSettingsStore} from "./policySettingsStore";
 import {deliveryWorkIds} from "./deliveryWorkRecords";
@@ -167,7 +168,7 @@ test("Firestore serializes competing source publications", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const f = await setup(1, db);
     const results = await Promise.all(Array.from({length: 8}, () =>
       f.publisher.publish(f.request)));

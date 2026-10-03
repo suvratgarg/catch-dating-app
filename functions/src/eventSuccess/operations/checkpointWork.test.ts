@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {accountabilityResolutionFields} from "../accountability";
 import {operationCollections} from "../../operations/collections";
 import {operationResourceLeaseId} from
@@ -354,7 +355,7 @@ test("Firestore member deletion refreshes the original departure only once", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "checkpoint-member-" + randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     await h.work.process(h.id);
     const change = await h.changeMember(null);
     const [one, two] = await Promise.all([
@@ -521,7 +522,7 @@ test("Firestore arbitrates checkpoint work and reopens a corrected report", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "checkpoint-work-" + randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     assert.ok((await h.work.listDue(100)).includes(h.id));
     const results = await Promise.all(Array.from({length: 6}, () =>
       h.work.process(h.id, {kind: "wake", signalId: "concurrent"})));

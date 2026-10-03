@@ -3,6 +3,13 @@
 
 import {createRequire} from "node:module";
 import {
+  catchWhatsappReplyOperationDocumentSchema,
+  catchWhatsappEndpointStopDocumentSchema,
+  catchWhatsappReplyReadinessDocumentSchema,
+  adminReviewCatchWhatsappInboundCallablePayloadSchema,
+  adminReviewCatchWhatsappInboundCallableResponseSchema,
+  adminSendCatchWhatsappReplyCallablePayloadSchema,
+  adminSendCatchWhatsappReplyCallableResponseSchema,
   getOrganizerTrackingSettingsCallablePayloadSchema,
   setOrganizerTrackingSettingsCallablePayloadSchema,
   readPublicOrganizerTrackingSettingsCallablePayloadSchema,
@@ -415,6 +422,8 @@ import {
   participantProfileClaimReceiptDocumentSchema,
   claimParticipantFormProfileCallablePayloadSchema,
   claimParticipantFormProfileCallableResponseSchema,
+  getEventViewerStateCallablePayloadSchema,
+  getEventViewerStateCallableResponseSchema,
   listParticipantActivityCallablePayloadSchema,
   listParticipantActivityCallableResponseSchema,
   getParticipantActivityCallablePayloadSchema,
@@ -1184,6 +1193,13 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateCatchWhatsappReplyOperationDocument = ajv.compile(catchWhatsappReplyOperationDocumentSchema);
+export const validateCatchWhatsappEndpointStopDocument = ajv.compile(catchWhatsappEndpointStopDocumentSchema);
+export const validateCatchWhatsappReplyReadinessDocument = ajv.compile(catchWhatsappReplyReadinessDocumentSchema);
+export const validateAdminReviewCatchWhatsappInboundCallablePayload = ajv.compile(adminReviewCatchWhatsappInboundCallablePayloadSchema);
+export const validateAdminReviewCatchWhatsappInboundCallableResponse = ajv.compile(adminReviewCatchWhatsappInboundCallableResponseSchema);
+export const validateAdminSendCatchWhatsappReplyCallablePayload = ajv.compile(adminSendCatchWhatsappReplyCallablePayloadSchema);
+export const validateAdminSendCatchWhatsappReplyCallableResponse = ajv.compile(adminSendCatchWhatsappReplyCallableResponseSchema);
 export const validateGetOrganizerTrackingSettingsCallablePayload = ajv.compile(getOrganizerTrackingSettingsCallablePayloadSchema);
 export const validateSetOrganizerTrackingSettingsCallablePayload = ajv.compile(setOrganizerTrackingSettingsCallablePayloadSchema);
 export const validateReadPublicOrganizerTrackingSettingsCallablePayload = ajv.compile(readPublicOrganizerTrackingSettingsCallablePayloadSchema);
@@ -1596,6 +1612,8 @@ export const validateParticipantOrganizerCardDocument = ajv.compile(participantO
 export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
 export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
 export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateGetEventViewerStateCallablePayload = ajv.compile(getEventViewerStateCallablePayloadSchema);
+export const validateGetEventViewerStateCallableResponse = ajv.compile(getEventViewerStateCallableResponseSchema);
 export const validateListParticipantActivityCallablePayload = ajv.compile(listParticipantActivityCallablePayloadSchema);
 export const validateListParticipantActivityCallableResponse = ajv.compile(listParticipantActivityCallableResponseSchema);
 export const validateGetParticipantActivityCallablePayload = ajv.compile(getParticipantActivityCallablePayloadSchema);

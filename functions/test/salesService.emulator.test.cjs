@@ -1,3 +1,5 @@
+const {getEmulatorFirestore} =
+  require("../lib/shared/testing/emulatorFirestore");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -19,7 +21,7 @@ before(() => {
   if (!emulatorEnabled) return;
   app = admin.initializeApp({projectId: "demo-catch-sales-service"},
     "sales-service-integration");
-  db = app.firestore();
+  db = getEmulatorFirestore(app);
   deps = {firestore: () => db,
     now: () => new Date("2026-09-28T00:00:00.000Z")};
 });

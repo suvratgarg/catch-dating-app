@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {baseSeed, request, now} from "../shared/testing/programFixtures";
 import {getProgramHotelInboundHandler} from "./programTripReads";
 
@@ -12,7 +13,7 @@ test("Firestore hotel cursors retain timestamp ties and mixed readiness rows",
   {skip: !enabled}, async () => {
     const id = randomUUID();
     const app = initializeApp({projectId: "demo-catch-rules"}, id);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const programId = `hotel-test-${id}`;
     const organizerId = `hotel-org-${id}`;
     const hotelId = `hotel-${id}`;

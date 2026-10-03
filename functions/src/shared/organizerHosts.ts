@@ -16,15 +16,18 @@ export function organizerOwnerUserId(
   return organizer.ownerUserId ?? organizer.hostUserId ?? null;
 }
 
-/** Returns all users with organizer management privileges. */
+/**
+ * Returns management authority from the same id fields as Firestore rules.
+ * Keep legacy hostUserId authority; hostProfiles is display-only and may lag
+ * team removal. Nested ownership snapshots are not current team authority.
+ */
 export function organizerManagerUserIds(
   organizer: OrganizerDocument
 ): string[] {
   return uniqueStrings([
     organizer.hostUserId,
     organizer.ownerUserId,
-    ...organizer.hostUserIds,
-    ...organizer.hostProfiles.map((host) => host.uid),
+    ...(organizer.hostUserIds ?? []),
   ]);
 }
 

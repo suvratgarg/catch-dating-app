@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {start} from "./whatsappTestHarness";
 import {prepareLiveLateJoinPublication} from
   "./liveLateJoinPublication";
@@ -196,7 +196,7 @@ test("Firestore arbitrates publication, final claims and host edits", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     await h.configure({...h.template, config: {...h.template.config,
       maxMessagesPerEpisode: 1}});
     const [a, b] = await Promise.all([h.publishReady(), h.publishReady()]);

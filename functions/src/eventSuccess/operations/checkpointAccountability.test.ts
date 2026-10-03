@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPTS} from
   "./accountabilityStore";
 import {EventCheckpointStore} from "./checkpointStore";
@@ -319,7 +320,7 @@ test("Firestore serializes checkpoint dispositions without inventing arrival", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "checkpoint-dispositions-" + randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     const input = command(await h.view());
     const results = await Promise.all(Array.from({length: 6}, () =>
       h.account.resolve(manager, input)));

@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
@@ -353,7 +354,7 @@ test("Firestore source joins fence an identically recreated roster", {
   assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await harness(db);
     await h.begin();

@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash, createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {ProgressFirestore, seedJoiningProgress} from
   "./groupProgressTestFixtures";
 import {ingestMetaWhatsappWebhook} from
@@ -431,7 +432,7 @@ test("Firestore arbitrates competing native and web replies to one effect", {
     "wa-action-" + randomUUID());
   let h: Awaited<ReturnType<typeof fixture>> | undefined;
   try {
-    h = await fixture({db: getFirestore(app)});
+    h = await fixture({db: getEmulatorFirestore(app)});
     const eventId = await h.receive(2);
     const {replies, submitWeb} = h;
     const results = await Promise.all(Array.from({length: 8}, (_, i) => i % 2 ?

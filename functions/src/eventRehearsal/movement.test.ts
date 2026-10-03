@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {harness, departure, report, changeRoute} from
   "./movementTestFixtures";
 import assert from "node:assert/strict";
@@ -253,7 +254,7 @@ test("Firestore movement uses parent receipts, current authority and reset", {
     getEventRehearsalMovementHandler: read,
     resetEventRehearsalHandler: reset} = await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const h = harness(); h.arrive(); h.arrive(1);
   h.session.organizerId = "movement-" + h.id;
   h.session.clubId = h.session.organizerId;

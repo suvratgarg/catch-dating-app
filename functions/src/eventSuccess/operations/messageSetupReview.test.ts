@@ -1,8 +1,8 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore} from "firebase-admin/firestore";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {start} from "./whatsappTestHarness";
 import {reviewEventMessageSetup, MessageSetupScope} from "./messageSetupReview";
@@ -256,7 +256,7 @@ test("Firestore setup review reads each channel without modifying budgets", {
   const key = randomUUID();
   const app = initializeApp({projectId: "demo-setup-" + key.slice(0, 8)},
     "setup-review-" + key);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await rcsHarness(db, "review");
     const budgetPaths = routes.flatMap((route) => paths(h, route));

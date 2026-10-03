@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationContentHash} from "../../operations/durableActions";
 import {setupRuntimePublication} from "./runtimeConfigTestHarness";
@@ -227,8 +228,9 @@ test("Firestore sender and endpoint recovery preserve submission identity", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    await recoverReadiness(await setup(getFirestore(app)), "sender");
-    await recoverReadiness(await setup(getFirestore(app)), "suppression");
+    await recoverReadiness(await setup(getEmulatorFirestore(app)), "sender");
+    await recoverReadiness(
+      await setup(getEmulatorFirestore(app)), "suppression");
   } finally {
     await deleteApp(app);
   }
@@ -363,7 +365,7 @@ test("Firestore consent fanout resumes held delivery and deduplicates wakes", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    await recoverConsent(await setup(getFirestore(app)));
+    await recoverConsent(await setup(getEmulatorFirestore(app)));
   } finally {
     await deleteApp(app);
   }
@@ -671,7 +673,7 @@ test("Firestore arbitrates publication and delivery", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     const before = await h.store.get(h.id);
     assert.equal(before.payload.intentHash,
       operationContentHash(h.published.intent));

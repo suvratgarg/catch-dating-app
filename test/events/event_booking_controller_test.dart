@@ -296,48 +296,53 @@ void main() {
       expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-42');
     });
 
-    test(
-      'acceptWaitlistOffer starts checkout for paid accepted offers',
-      () async {
-        final fakeEventRepository = FakeEventRepository()
-          ..acceptWaitlistOfferResponse =
-              const WaitlistOfferAcceptanceCallableResponse(
-                accepted: true,
-                requiresPayment: true,
-                booked: false,
-              );
-        final fakePaymentRepository = FakePaymentRepository()
-          ..processPaymentResult = const PaymentConfirmationData(
-            eventId: 'event-42',
-            paymentId: 'pay-1',
-            orderId: 'order-1',
-            amountInPaise: 25000,
-            currency: 'INR',
-          );
-        final container = ProviderContainer(
-          overrides: [
-            eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-            paymentRepositoryProvider.overrideWith(
-              (ref) => fakePaymentRepository,
-            ),
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          ],
-        );
-        addTearDown(container.dispose);
-        await primeUidProvider(container);
-
-        final result = await container
-            .read(eventBookingControllerProvider.notifier)
-            .acceptWaitlistOffer(
-              event: buildEvent(id: 'event-42', priceInPaise: 25000),
-              user: buildUser(),
+    for (final displayedPrice in [25000, 0]) {
+      test(
+        'accepted paid offers start checkout with local price $displayedPrice',
+        () async {
+          final fakeEventRepository = FakeEventRepository()
+            ..acceptWaitlistOfferResponse =
+                const WaitlistOfferAcceptanceCallableResponse(
+                  accepted: true,
+                  requiresPayment: true,
+                  booked: false,
+                );
+          final fakePaymentRepository = FakePaymentRepository()
+            ..processPaymentResult = const PaymentConfirmationData(
+              eventId: 'event-42',
+              paymentId: 'pay-1',
+              orderId: 'order-1',
+              amountInPaise: 25000,
+              currency: 'INR',
             );
+          final container = ProviderContainer(
+            overrides: [
+              eventRepositoryProvider.overrideWith(
+                (ref) => fakeEventRepository,
+              ),
+              paymentRepositoryProvider.overrideWith(
+                (ref) => fakePaymentRepository,
+              ),
+              uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            ],
+          );
+          addTearDown(container.dispose);
+          await primeUidProvider(container);
 
-        expect(result?.paymentId, 'pay-1');
-        expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-42');
-        expect(fakePaymentRepository.processPaymentCalled, isTrue);
-      },
-    );
+          final result = await container
+              .read(eventBookingControllerProvider.notifier)
+              .acceptWaitlistOffer(
+                event: buildEvent(id: 'event-42', priceInPaise: displayedPrice),
+                user: buildUser(),
+              );
+
+          expect(result?.paymentId, 'pay-1');
+          expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-42');
+          expect(fakePaymentRepository.processPaymentCalled, isTrue);
+          expect(fakePaymentRepository.bookFreeEventCalled, isFalse);
+        },
+      );
+    }
 
     test('declineWaitlistOffer delegates to the event repository', () async {
       final fakeEventRepository = FakeEventRepository();

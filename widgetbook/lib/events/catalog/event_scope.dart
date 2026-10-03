@@ -4,6 +4,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -98,3 +99,36 @@ class WidgetbookEventFakePaymentRepository implements PaymentRepository {
   @override
   void dispose() {}
 }
+
+/// Synthetic current-read snapshot for the existing EventDetail previews.
+/// It does not evaluate a membership, admission, or capacity policy.
+EventViewerState widgetbookEventViewerSnapshot(
+  Event event, {
+  required EventViewerAdmission admission,
+  EventViewerAttendance attendance = EventViewerAttendance.notRecorded,
+}) => EventViewerState.fromResponse({
+  'viewer': {
+    'eventId': event.id,
+    'organizerId': event.organizerId,
+    'observedAtMillis': widgetbookEventsNow.millisecondsSinceEpoch,
+    'membership': {
+      'state': 'notRequired',
+      'revision': null,
+      'decisionId': null,
+    },
+    'review': 'none',
+    'admission': admission.name,
+    'attendance': attendance.name,
+    'waitlisted': false,
+    'payment': 'notRead',
+    'futureBooking': {'allowed': true, 'reason': null},
+    'route': event.priceInPaise == 0 ? 'catchFreeBooking' : 'catchCheckout',
+    'quotedPriceInPaise': event.priceInPaise,
+    'basis': {
+      'policyHash': null,
+      'inventoryRevision': null,
+      'capacityRevision': null,
+      'migrationRevision': null,
+    },
+  },
+});

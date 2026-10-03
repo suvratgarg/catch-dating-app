@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
@@ -17,7 +18,7 @@ test("practice staff controls retain receipts, current Host " +
     resetEventRehearsalHandler: reset,
     updateEventRehearsalSetupHandler: setup} = await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore(); const h = harness();
+  const db = getEmulatorFirestore(); const h = harness();
   h.session.organizerId = "practice-staff-" + h.id;
   h.session.clubId = h.session.organizerId;
   h.group(); h.arrive(); h.arrive(1); h.place(); h.place(1);

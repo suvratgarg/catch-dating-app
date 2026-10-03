@@ -327,6 +327,7 @@ function QuestionStage({
         label={publicFormsCopy.stepLabel}
         total={controller.visibleSections.length + 1}
       />
+      <AnswerReuseSection controller={controller} />
       <PublicFormSection title={section.title} description={section.description}>
         {phoneVerificationForm && controller.sectionIndex === 0 ? (
           <InlinePhoneVerification controller={controller}
@@ -357,7 +358,7 @@ function QuestionStage({
           </Button>
         ) : null}
         <Button
-          disabled={controller.uploadInProgress}
+          disabled={controller.uploadInProgress || controller.reusePending}
           onClick={() => void controller.nextSection()}
           type="button"
         >
@@ -372,6 +373,85 @@ function QuestionStage({
       }} />
     </PublicFormPanel>
   );
+}
+
+function AnswerReuseSection({controller}: {
+  controller: ReturnType<typeof usePublicFormController>;
+}) {
+  if (!controller.canReuseAnswers) return null;
+  if (!controller.reuseOpen) {
+    return <PublicFormActions>
+      <Button type="button" variant="ghost" disabled={controller.pending}
+        onClick={controller.openAnswerReuse}>{publicFormsCopy.reuseOpen}</Button>
+    </PublicFormActions>;
+  }
+  const activity = controller.reuseActivity;
+  const preview = controller.reusePreview;
+  const questions = controller.form!.definition.sections.flatMap((section) =>
+    section.questions);
+  const suggestions = preview ? questions.filter((question) =>
+    Object.hasOwn(preview.answers, question.questionId) &&
+    !Object.hasOwn(controller.answers, question.questionId)) : [];
+  return <PublicFormSection title={publicFormsCopy.reuseTitle}
+    description={publicFormsCopy.reuseHelp}>
+    {activity.isFetching ? <FormStatus status={{
+      message: publicFormsCopy.reuseLoading, tone: "",
+    }} /> : null}
+    {activity.isError ? <>
+      <FormStatus status={{message: publicFormsCopy.genericError, tone: "is-error"}} />
+      <Button type="button" variant="ghost"
+        onClick={() => void activity.refetch()}>{publicFormsCopy.reuseRetry}</Button>
+    </> : null}
+    {!activity.isPending && controller.reuseSources.length === 0 ?
+      <FormStatus status={{message: publicFormsCopy.reuseEmpty, tone: ""}} /> : null}
+    {controller.reuseSources.length > 0 ? <>
+      <SelectField id="public-form-reuse-source" label={publicFormsCopy.reuseSourceLabel}
+        value={controller.reuseSourceId} disabled={controller.reusePending || controller.pending}
+        onChange={(event) => controller.chooseReuseSource(event.target.value)}>
+        <option value="">{publicFormsCopy.reuseSourcePlaceholder}</option>
+        {controller.reuseSources.map((source) =>
+          <option key={source.sourceId} value={source.sourceId}>
+            {publicFormsCopy.reuseSourceDate(source.submittedAtMillis)}
+          </option>)}
+      </SelectField>
+      <Button type="button" disabled={!controller.reuseSourceId || controller.pending}
+        loading={controller.reusePending} loadingLabel={publicFormsCopy.reuseChecking}
+        onClick={() => void controller.previewReusableAnswers()}>
+        {publicFormsCopy.reusePreview}
+      </Button>
+    </> : null}
+    {activity.hasNextPage ? <Button type="button" variant="ghost"
+      disabled={controller.reusePending || controller.pending}
+      loading={activity.isFetchingNextPage}
+      onClick={() => void activity.fetchNextPage()}>{publicFormsCopy.reuseLoadMore}</Button> : null}
+    {preview ? <>
+      <FormStatus status={{message: publicFormsCopy.reuseSourceDate(
+        preview.source.submittedAtMillis), tone: ""}} />
+      {suggestions.length === 0 ?
+        <FormStatus status={{message: publicFormsCopy.reuseNoAnswers, tone: ""}} /> :
+        <PublicFormReview>{suggestions.map((question) =>
+          <PublicFormReviewAnswer key={question.questionId} label={
+            <CheckboxField
+              checked={controller.reuseSelectedIds.includes(question.questionId)}
+              disabled={controller.pending}
+              onChange={(event) => controller.selectReusableAnswer(
+                question.questionId, event.target.checked)}>
+              {question.label}
+            </CheckboxField>}
+            answer={answerSummary(preview.answers[question.questionId])} />)}
+        </PublicFormReview>}
+      {suggestions.length > 0 ? <Button type="button"
+        disabled={controller.pending || !suggestions.some((question) =>
+          controller.reuseSelectedIds.includes(question.questionId))}
+        onClick={controller.acceptReusableAnswers}>
+        {publicFormsCopy.reuseApply}
+      </Button> : null}
+    </> : null}
+    <FormStatus status={controller.reuseStatus} />
+    <Button type="button" variant="ghost" onClick={controller.dismissAnswerReuse}>
+      {publicFormsCopy.reuseDismiss}
+    </Button>
+  </PublicFormSection>;
 }
 
 function InlinePhoneVerification({
