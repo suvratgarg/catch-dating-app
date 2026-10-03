@@ -773,7 +773,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 22);
+      Array<{collection: string}>).length, 23);
   });
 
 test("mismatched evidence scope blocks retention completion",
@@ -800,6 +800,7 @@ test("retention deletes private lodging only in the archived program",
     const db = new FakeFirestore(retentionSeed());
     const collections = ["programLodgingProposals", "programLodgingWorkflows",
       "programLodgingReceipts", "programLodgingSourceVersions",
+      "programLodgingConfigs",
       "workspaceMembershipAssertions",
       "workspaceMembershipDecisions"];
     for (const collection of collections) {

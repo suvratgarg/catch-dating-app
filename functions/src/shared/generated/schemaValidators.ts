@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateProgramLodgingConfigDocument} from "./validators/programLodgingConfigDocument";
 export {validateProgramLodgingSourceVersionDocument} from "./validators/programLodgingSourceVersionDocument";
 export {validateProgramLodgingProposalDocument} from "./validators/programLodgingProposalDocument";
 export {validateProgramLodgingWorkflowDocument} from "./validators/programLodgingWorkflowDocument";

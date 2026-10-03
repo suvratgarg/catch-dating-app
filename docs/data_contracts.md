@@ -2678,7 +2678,7 @@ withdrawal stamps that response instead of deleting the audit record.
 bounded attribution counters. A source token changes measurement only; it
 never grants form-management, response, or Firestore authority.
 
-All six collections are server-only. Organizer managers create, update,
+All seven collections are server-only. Organizer managers create, update,
 validate, publish, pause, resume, archive, duplicate, delete eligible drafts,
 and list bounded projections through App-Check-protected callables. Form lists
 use the `organizerId + updatedAt desc + __name__ desc` index and opaque cursors;
@@ -3467,7 +3467,7 @@ All six private collections join the existing archive retention sweep by exact
 program scope. Membership workspace scope and lodging proposal scope must agree
 with the archived program and organizer; mismatches block completion. Records
 are deleted rather than retaining guest/group pointers as aggregate counts.
-The resumable retention journal supports 22 collection phases.
+The resumable retention journal supports 23 collection phases.
 `programLodgingSourceVersions` holds private per-domain counters and complete
 source fingerprints; previews persist the prepared fence before search, and
 canonical publication must advance its published fence in the same transaction.
@@ -4922,5 +4922,13 @@ verified adoption before planning; they cannot be ignored as spare capacity.
 The adapter preserves checked-in stay documents and verifies native block
 occupancy/date limits before queueing any writes. Its exact post-write stay
 evidence must advance the source fence atomically with workflow/receipt writes.
-This source helper is not yet connected to persisted configuration, a complete
-canonical snapshot mapper, an exported callable or the routed room board.
+`canonicalLodgingSource` now connects persisted private configuration, complete
+native records, per-domain revision fences and this prepared writer to the Store.
+`saveCanonicalLodgingConfig` requires current coordinator authority and an exact
+configuration revision. Legacy adoption explicitly verifies the selected stay,
+its revision, dates, room and existing occupancy; it does not infer sharing.
+Configuration references canonical guest/group/hotel/block IDs and has no copied
+contact records. Native membership with unknown acquisition evidence is marked
+`canonical`; it is never relabelled as a manual decision. The private config is
+retained only within the event and deleted by the archive sweep. Callable and
+routed UI integration plus real Firestore validation remain pending.

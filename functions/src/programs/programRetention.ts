@@ -226,6 +226,7 @@ const retentionCollections = [
   "programLodgingWorkflows",
   "programLodgingReceipts",
   "programLodgingSourceVersions",
+  "programLodgingConfigs",
   "workspaceMembershipAssertions",
   "workspaceMembershipDecisions",
 ] as const;
@@ -252,6 +253,7 @@ function retentionScrub(
   case "programLodgingProposals":
   case "programLodgingWorkflows":
   case "programLodgingSourceVersions":
+  case "programLodgingConfigs":
   case "programLodgingReceipts":
   case "workspaceMembershipAssertions":
   case "workspaceMembershipDecisions":
@@ -413,7 +415,8 @@ export async function anonymizeProgram(
               "Field assertion retention scope needs reconciliation.");
           }
           if (["programLodgingProposals", "programLodgingWorkflows",
-            "programLodgingReceipts", "programLodgingSourceVersions"]
+            "programLodgingReceipts", "programLodgingSourceVersions",
+            "programLodgingConfigs"]
             .includes(collection) &&
               (data.organizerId !== claimed.program.organizerId ||
                 (collection === "programLodgingProposals" &&

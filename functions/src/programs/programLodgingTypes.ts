@@ -17,7 +17,8 @@ export interface MembershipDecision {
   guestId: string;
   groupId: string;
   included: boolean;
-  authority: "manual" | "acceptedSuggestion";
+  /** Native truth may predate typed acquisition evidence. */
+  authority: "manual" | "acceptedSuggestion" | "canonical";
   sourceId: string | null;
 }
 export interface LodgingParty {

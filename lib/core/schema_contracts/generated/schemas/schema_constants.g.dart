@@ -881,6 +881,7 @@ export 'program_household_rsvp_link_callable_response.g.dart';
 export 'program_household_rsvp_view_callable_response.g.dart';
 export 'program_id_callable_payload.g.dart';
 export 'program_invite_claim_callable_response.g.dart';
+export 'program_lodging_config_document.g.dart';
 export 'program_lodging_proposal_document.g.dart';
 export 'program_lodging_receipt_document.g.dart';
 export 'program_lodging_source_version_document.g.dart';

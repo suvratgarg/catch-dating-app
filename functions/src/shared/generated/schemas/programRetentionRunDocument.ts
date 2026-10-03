@@ -46,7 +46,7 @@ export const programRetentionRunDocumentSchema: Record<string, unknown> = {
     },
     "phases": {
       "type": "array",
-      "maxItems": 22,
+      "maxItems": 23,
       "description": "Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.",
       "items": {
         "type": "object",

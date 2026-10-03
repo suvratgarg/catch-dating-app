@@ -1772,6 +1772,9 @@ service cloud.firestore {
     match /programLodgingWorkflows/{programId} {
       allow read, write: if false;
     }
+    match /programLodgingConfigs/{programId} {
+      allow read, write: if false;
+    }
     match /programLodgingSourceVersions/{programId} {
       allow read, write: if false;
     }
