@@ -162,6 +162,46 @@ function callableViolations(source, filePath, wrappers = new Set(), moduleSource
     return callableViolations(proof, importedPath,
       new Set([...wrappers, importedPath]), moduleSources).length === 0;
   }
+  function approvedAccount(node) {
+    if (ts.isStringLiteral(node)) return node.text.length > 0;
+    const exactExpression = (candidate) => ts.isTaggedTemplateExpression(candidate) &&
+      ts.isIdentifier(candidate.tag) &&
+      importedName(candidate.tag, (module) => module === "firebase-functions/params") === "expr" &&
+      ts.isTemplateExpression(candidate.template) && candidate.template.templateSpans.length === 1 &&
+      candidate.template.head.text === "catch-whatsapp-reader@" &&
+      candidate.template.templateSpans[0].literal.text === ".iam.gserviceaccount.com" &&
+      ts.isIdentifier(candidate.template.templateSpans[0].expression) &&
+      importedName(candidate.template.templateSpans[0].expression,
+        (module) => module === "firebase-functions/params") === "projectID";
+    if (!exactExpression(node)) return false;
+    for (const identifier of [node.tag, node.template.templateSpans[0].expression]) {
+      const binding = declarations(identifier)[0];
+      if (!ts.isImportSpecifier(binding) || binding.isTypeOnly || binding.parent.parent.isTypeOnly) return false;
+    }
+    const tag = checker.getSymbolAtLocation(node.tag);
+    const project = checker.getSymbolAtLocation(node.template.templateSpans[0].expression);
+    let confined = true;
+    function inspect(reference) {
+      if (ts.isIdentifier(reference)) {
+        const symbol = ts.isShorthandPropertyAssignment(reference.parent) ?
+          checker.getShorthandAssignmentValueSymbol(reference.parent) :
+          ts.isExportSpecifier(reference.parent) ?
+            checker.getExportSpecifierLocalTargetSymbol(reference.parent) :
+            checker.getSymbolAtLocation(reference);
+        const declaration = declarations(reference)[0];
+        const bindingName = declaration && ts.isImportSpecifier(declaration) &&
+          (reference === declaration.name || reference === declaration.propertyName);
+        if (symbol === tag && !bindingName &&
+            !(reference.parent.tag === reference && exactExpression(reference.parent))) confined = false;
+        if (symbol === project && !bindingName &&
+            !(ts.isTemplateSpan(reference.parent) && reference.parent.expression === reference &&
+              exactExpression(reference.parent.parent.parent))) confined = false;
+      }
+      ts.forEachChild(reference, inspect);
+    }
+    inspect(sourceFile);
+    return confined;
+  }
   function approvedOptions(node) {
     node = unwrap(node);
     if (sharedOptions(node)) return true;
@@ -171,7 +211,7 @@ function callableViolations(source, filePath, wrappers = new Set(), moduleSource
       ts.isPropertyAssignment(account) &&
       (ts.isIdentifier(account.name) || ts.isStringLiteral(account.name)) &&
       account.name.text === "serviceAccount" &&
-      ts.isStringLiteral(account.initializer) && account.initializer.text.length > 0;
+      approvedAccount(account.initializer);
   }
   const violations = [];
   function visit(node) {
@@ -342,4 +382,66 @@ test("shared callable options declare App Check and public invoker intent", () =
   assert.equal(enforceAppCheckForRuntime({...local, GCLOUD_PROJECT: "catch-dating-app-64e51"}), true);
   assert.equal(enforceAppCheckForRuntime({...local, FIRESTORE_EMULATOR_HOST: "cloud.example:8080"}), true);
   assert.match(source, /invoker:\s*"public"/);
+});
+
+
+test("scanner accepts only the confined SDK project identity expression", () => {
+  const imports = fixtureImports + '\nimport {expr, projectID} from "firebase-functions/params";';
+  const exact = 'expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`';
+  const callable = (expression = exact) =>
+    `onCall({...appCheckCallableOptionsWithSecrets([secret]), serviceAccount: ${expression}}, handler);`;
+  assert.deepEqual(fixtureViolations(callable(), imports), []);
+  const aliasedImports = fixtureImports +
+    '\nimport {expr as sdkExpr, projectID as sdkProject} from "firebase-functions/params";';
+  const aliasedCall = callable().replace('expr`', 'sdkExpr`').replace('${projectID}', '${sdkProject}');
+  assert.deepEqual(fixtureViolations(aliasedCall, aliasedImports), []);
+  for (const escape of ['const alias = {sdkProject}; alias.sdkProject.name = "FOREIGN";',
+    'const alias = {sdkExpr};', 'export {sdkProject};', 'export {sdkExpr};',
+    'export {sdkProject as escapedProject};', 'export {sdkExpr as escapedTag};']) {
+    assert.equal(fixtureViolations(escape + aliasedCall, aliasedImports).length, 1, escape);
+  }
+  for (const expression of [
+    'expr`catch-whatsapp-reader@${process.env.PROJECT}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID.value()}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID}${projectID}.iam.gserviceaccount.com`',
+    'expr`other-reader@${projectID}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID}.example.com`',
+    '`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`',
+  ]) assert.equal(fixtureViolations(callable(expression), imports).length, 1, expression);
+  for (const preamble of [
+    'projectID.name = "FOREIGN";', 'projectID.value = () => "foreign";',
+    'expr = () => "fake";', 'Object.assign(projectID, {name:"FOREIGN"});',
+    'unknown(projectID);', 'const alias = projectID;',
+    'const alias = {projectID}; alias.projectID.name = "FOREIGN";',
+    'const alias = {expr}; alias.expr = () => "fake";',
+    'export {projectID};', 'export {expr};',
+    'export {projectID as escapedProject};', 'export {expr as escapedTag};',
+  ]) assert.equal(fixtureViolations(preamble + callable(), imports).length, 1, preamble);
+  for (const parameter of ['expr', 'projectID']) {
+    assert.equal(fixtureViolations(`function f(${parameter}) {${callable()}}`, imports).length, 1);
+  }
+  for (const fake of [
+    '\nimport {expr, projectID} from "../fake";',
+    '\nimport type {expr, projectID} from "firebase-functions/params";',
+    '\nimport {expr, type projectID} from "firebase-functions/params";',
+  ]) assert.equal(fixtureViolations(callable(), fixtureImports + fake).length, 1, fake);
+  assert.equal(fixtureViolations(callable().replace('}, handler)', ', enforceAppCheck: false}, handler)'), imports).length, 1);
+});
+
+test("pinned SDK wire manifest preserves PROJECT_ID while shorthand stays incomplete", () => {
+  const {onCall} = require("firebase-functions/v2/https");
+  const {expr, projectID} = require("firebase-functions/params");
+  const sdkPackage = path.resolve(path.dirname(require.resolve("firebase-functions/v2/https")),
+    "../../../package.json");
+  assert.equal(require(sdkPackage).version, "7.4.0");
+  const {stackToWire} = require(path.join(path.dirname(sdkPackage), "lib/runtime/manifest.js"));
+  const wire = (serviceAccount) => {
+    const callable = onCall({serviceAccount, enforceAppCheck: true}, () => {});
+    return JSON.parse(JSON.stringify(stackToWire({specVersion: "v1alpha1",
+      endpoints: {reader: callable.__endpoint}, params: []}))).endpoints.reader;
+  };
+  const reader = wire(expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`);
+  assert.equal(reader.serviceAccountEmail,
+    'catch-whatsapp-reader@{{ params.PROJECT_ID }}.iam.gserviceaccount.com');
+  assert.equal(wire("catch-whatsapp-reader@").serviceAccountEmail, "catch-whatsapp-reader@");
 });

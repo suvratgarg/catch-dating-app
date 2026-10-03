@@ -14,6 +14,9 @@ export {validateProgramLodgingWorkflowDocument} from "./validators/programLodgin
 export {validateProgramLodgingReceiptDocument} from "./validators/programLodgingReceiptDocument";
 export {validateWorkspaceMembershipAssertionDocument} from "./validators/workspaceMembershipAssertionDocument";
 export {validateWorkspaceMembershipDecisionDocument} from "./validators/workspaceMembershipDecisionDocument";
+export {validateCatchWhatsappReadinessApprovalDocument} from "./validators/catchWhatsappReadinessApprovalDocument";
+export {validateCatchWhatsappReadinessIngressDocument} from "./validators/catchWhatsappReadinessIngressDocument";
+export {validateCatchWhatsappReadinessAuditDocument} from "./validators/catchWhatsappReadinessAuditDocument";
 export {validateCatchWhatsappReplyOperationDocument} from "./validators/catchWhatsappReplyOperationDocument";
 export {validateCatchWhatsappEndpointStopDocument} from "./validators/catchWhatsappEndpointStopDocument";
 export {validateCatchWhatsappReplyReadinessDocument} from "./validators/catchWhatsappReplyReadinessDocument";

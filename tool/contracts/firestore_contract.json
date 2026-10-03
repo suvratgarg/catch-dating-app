@@ -3,6 +3,203 @@
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
   "collections": [
     {
+      "id": "programLodgingProposals",
+      "path": "programLodgingProposals/{proposalId}",
+      "rulesMatch": "/programLodgingProposals/{proposalId}",
+      "typescriptInterface": "ProgramLodgingProposalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
+      ],
+      "migrationNotes": [
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+      ]
+    },
+    {
+      "id": "programLodgingWorkflows",
+      "path": "programLodgingWorkflows/{programId}",
+      "rulesMatch": "/programLodgingWorkflows/{programId}",
+      "typescriptInterface": "ProgramLodgingWorkflowDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
+      ],
+      "migrationNotes": [
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+      ]
+    },
+    {
+      "id": "programLodgingReceipts",
+      "path": "programLodgingReceipts/{receiptId}",
+      "rulesMatch": "/programLodgingReceipts/{receiptId}",
+      "typescriptInterface": "ProgramLodgingReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
+      ],
+      "migrationNotes": [
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+      ]
+    },
+    {
+      "id": "workspaceMembershipAssertions",
+      "path": "workspaceMembershipAssertions/{assertionId}",
+      "rulesMatch": "/workspaceMembershipAssertions/{assertionId}",
+      "typescriptInterface": "WorkspaceMembershipAssertionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "workspaceMembershipDecisions",
+      "path": "workspaceMembershipDecisions/{decisionId}",
+      "rulesMatch": "/workspaceMembershipDecisions/{decisionId}",
+      "typescriptInterface": "WorkspaceMembershipDecisionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "programLodgingSourceVersions",
+      "path": "programLodgingSourceVersions/{programId}",
+      "rulesMatch": "/programLodgingSourceVersions/{programId}",
+      "typescriptInterface": "ProgramLodgingSourceVersionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
+      ],
+      "migrationNotes": [
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+      ]
+    },
+    {
+      "id": "programLodgingConfigs",
+      "path": "programLodgingConfigs/{programId}",
+      "rulesMatch": "/programLodgingConfigs/{programId}",
+      "typescriptInterface": "ProgramLodgingConfigDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
+      ],
+      "migrationNotes": [
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+      ]
+    },
+    {
+      "id": "catchWhatsappReadinessApprovals",
+      "path": "catchWhatsappReadinessApprovals/{approvalId}",
+      "rulesMatch": "/catchWhatsappReadinessApprovals/{approvalId}",
+      "typescriptInterface": "CatchWhatsappReadinessApprovalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "disconnected provisioning transaction only; no deployed writer or client authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "catchWhatsappReadinessIngress",
+      "path": "catchWhatsappReadinessIngress/{ingressId}",
+      "rulesMatch": "/catchWhatsappReadinessIngress/{ingressId}",
+      "typescriptInterface": "CatchWhatsappReadinessIngressDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "no writer provided; separately audited ingress cutover attestation required",
+      "exportedFunctions": []
+    },
+    {
+      "id": "catchWhatsappReadinessAudits",
+      "path": "catchWhatsappReadinessAudits/{auditId}",
+      "rulesMatch": "/catchWhatsappReadinessAudits/{auditId}",
+      "typescriptInterface": "CatchWhatsappReadinessAuditDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "disconnected provisioning transaction only; no deployed writer or client authority",
+      "exportedFunctions": []
+    },
+    {
       "id": "organizerPaymentConnections",
       "path": "organizerPaymentConnections/{connectionId}",
       "rulesMatch": "/organizerPaymentConnections/{connectionId}",
@@ -3715,164 +3912,12 @@
       ],
       "owner": "Catch support reply service",
       "read": "server only; exact controlled support/adminOwner callable scope",
-      "write": "no writer in this feature; separately reviewed evidence required, never inferred from receipt absence",
+      "write": "disconnected readiness transaction adapter; audited external authority fence and complete archive evidence required; no live callable writer",
       "exportedFunctions": [
         "adminReviewCatchWhatsappInbound",
         "adminSendCatchWhatsappReply",
         "onCatchWhatsappWebhookEventCreated",
         "onCatchWhatsappReplyOperationWritten"
-      ]
-    },
-    {
-      "id": "programLodgingProposals",
-      "path": "programLodgingProposals/{proposalId}",
-      "rulesMatch": "/programLodgingProposals/{proposalId}",
-      "typescriptInterface": "ProgramLodgingProposalDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep",
-        "manageProgramLodging"
-      ],
-      "migrationNotes": [
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
-        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
-      ]
-    },
-    {
-      "id": "programLodgingWorkflows",
-      "path": "programLodgingWorkflows/{programId}",
-      "rulesMatch": "/programLodgingWorkflows/{programId}",
-      "typescriptInterface": "ProgramLodgingWorkflowDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep",
-        "manageProgramLodging"
-      ],
-      "migrationNotes": [
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
-        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
-      ]
-    },
-    {
-      "id": "programLodgingReceipts",
-      "path": "programLodgingReceipts/{receiptId}",
-      "rulesMatch": "/programLodgingReceipts/{receiptId}",
-      "typescriptInterface": "ProgramLodgingReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep",
-        "manageProgramLodging"
-      ],
-      "migrationNotes": [
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
-        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
-      ]
-    },
-    {
-      "id": "workspaceMembershipAssertions",
-      "path": "workspaceMembershipAssertions/{assertionId}",
-      "rulesMatch": "/workspaceMembershipAssertions/{assertionId}",
-      "typescriptInterface": "WorkspaceMembershipAssertionDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
-      ],
-      "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
-      ]
-    },
-    {
-      "id": "workspaceMembershipDecisions",
-      "path": "workspaceMembershipDecisions/{decisionId}",
-      "rulesMatch": "/workspaceMembershipDecisions/{decisionId}",
-      "typescriptInterface": "WorkspaceMembershipDecisionDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
-      ],
-      "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
-      ]
-    },
-    {
-      "id": "programLodgingSourceVersions",
-      "path": "programLodgingSourceVersions/{programId}",
-      "rulesMatch": "/programLodgingSourceVersions/{programId}",
-      "typescriptInterface": "ProgramLodgingSourceVersionDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep",
-        "manageProgramLodging"
-      ],
-      "migrationNotes": [
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
-        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
-      ]
-    },
-    {
-      "id": "programLodgingConfigs",
-      "path": "programLodgingConfigs/{programId}",
-      "rulesMatch": "/programLodgingConfigs/{programId}",
-      "typescriptInterface": "ProgramLodgingConfigDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": [
-        "denies direct access for guests, managers and unauthenticated viewers"
-      ],
-      "owner": "private program lodging server operations",
-      "read": "server only; scoped operational projections",
-      "write": "server only",
-      "exportedFunctions": [
-        "anonymizeDueProgramsSweep",
-        "manageProgramLodging"
-      ],
-      "migrationNotes": [
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
-        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     }
   ]

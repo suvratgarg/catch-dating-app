@@ -14,6 +14,9 @@ export {programLodgingWorkflowDocumentSchema} from "./schemas/programLodgingWork
 export {programLodgingReceiptDocumentSchema} from "./schemas/programLodgingReceiptDocument";
 export {workspaceMembershipAssertionDocumentSchema} from "./schemas/workspaceMembershipAssertionDocument";
 export {workspaceMembershipDecisionDocumentSchema} from "./schemas/workspaceMembershipDecisionDocument";
+export {catchWhatsappReadinessApprovalDocumentSchema} from "./schemas/catchWhatsappReadinessApprovalDocument";
+export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsappReadinessIngressDocument";
+export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";
 export {catchWhatsappReplyOperationDocumentSchema} from "./schemas/catchWhatsappReplyOperationDocument";
 export {catchWhatsappEndpointStopDocumentSchema} from "./schemas/catchWhatsappEndpointStopDocument";
 export {catchWhatsappReplyReadinessDocumentSchema} from "./schemas/catchWhatsappReplyReadinessDocument";

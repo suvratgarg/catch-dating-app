@@ -817,6 +817,67 @@ export interface WorkspaceMembershipDecisionDocument {
 }
 
 /**
+ * Server-only independently authorized review. Provisioning consumes it atomically with readiness and immutable audit; this source provides no approval writer. No TTL, token, endpoint or message body.
+ */
+export interface CatchWhatsappReadinessApprovalDocument {
+  schemaVersion: 1;
+  approvalId: string;
+  state: "approved" | "consumed";
+  approval: {
+    approvalId: string;
+    action: "create" | "revoke";
+    scope: {
+      projectId: string;
+      wabaId: string;
+      phoneNumberId: string;
+      recipientUid: string;
+      endpointHash: string;
+      evidenceSha256: string;
+    };
+    reviewerUid: string;
+    reviewedAtMillis: number;
+    expiresAtMillis: number;
+    atomicIngressStartedAtMillis: number;
+    expectedRecordSha256: string | null;
+  };
+  ingressEvidenceSha256: string;
+  consumedAtMillis: number | null;
+  recordSha256: string | null;
+}
+
+/**
+ * Server-only audited atomic-ingress cutover evidence; not an enablement flag. Approval pins evidence digest; transaction checks identity and state. No writer or live ingress attestation is provided.
+ */
+export interface CatchWhatsappReadinessIngressDocument {
+  schemaVersion: 1;
+  ingressId: string;
+  projectId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  state: "active" | "revoked";
+  atomicIngressStartedAtMillis: number;
+  evidenceSha256: string;
+  verifiedAtMillis: number;
+}
+
+/**
+ * Immutable server-only provisioning audit created with approval consumption and readiness mutation. Hashes bind archive, exact readiness and independently audited external authority fence. No TTL or private message/contact content.
+ */
+export interface CatchWhatsappReadinessAuditDocument {
+  schemaVersion: 1;
+  auditId: string;
+  approvalId: string;
+  action: "create" | "revoke";
+  projectId: string;
+  actorUid: string;
+  atMillis: number;
+  provenanceSha256: string | null;
+  recordSha256: string;
+  readinessId: string;
+  authorityFenceSha256: string;
+}
+
+/**
  * Private one-reply-per-inbound support claim and saved provider delivery projection. Explicit human review of the exact inbound support request is service evidence, never marketing permission. No body, credential or pricing data. No automatic retry or TTL; uncertain and completed claims remain consumed beyond receipt retention. Source-only and disabled pending atomic STOP ingress and scoped activation.
  */
 export interface CatchWhatsappReplyOperationDocument {

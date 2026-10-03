@@ -12,6 +12,9 @@ import {
   programLodgingReceiptDocumentSchema,
   workspaceMembershipAssertionDocumentSchema,
   workspaceMembershipDecisionDocumentSchema,
+  catchWhatsappReadinessApprovalDocumentSchema,
+  catchWhatsappReadinessIngressDocumentSchema,
+  catchWhatsappReadinessAuditDocumentSchema,
   catchWhatsappReplyOperationDocumentSchema,
   catchWhatsappEndpointStopDocumentSchema,
   catchWhatsappReplyReadinessDocumentSchema,
@@ -1211,6 +1214,9 @@ export const validateProgramLodgingWorkflowDocument = ajv.compile(programLodging
 export const validateProgramLodgingReceiptDocument = ajv.compile(programLodgingReceiptDocumentSchema);
 export const validateWorkspaceMembershipAssertionDocument = ajv.compile(workspaceMembershipAssertionDocumentSchema);
 export const validateWorkspaceMembershipDecisionDocument = ajv.compile(workspaceMembershipDecisionDocumentSchema);
+export const validateCatchWhatsappReadinessApprovalDocument = ajv.compile(catchWhatsappReadinessApprovalDocumentSchema);
+export const validateCatchWhatsappReadinessIngressDocument = ajv.compile(catchWhatsappReadinessIngressDocumentSchema);
+export const validateCatchWhatsappReadinessAuditDocument = ajv.compile(catchWhatsappReadinessAuditDocumentSchema);
 export const validateCatchWhatsappReplyOperationDocument = ajv.compile(catchWhatsappReplyOperationDocumentSchema);
 export const validateCatchWhatsappEndpointStopDocument = ajv.compile(catchWhatsappEndpointStopDocumentSchema);
 export const validateCatchWhatsappReplyReadinessDocument = ajv.compile(catchWhatsappReplyReadinessDocumentSchema);
