@@ -3,6 +3,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -30,11 +31,41 @@ class ProgramLodgingRepository {
     (value) {
       final map = _kind(value, 'readSetup');
       return ProgramLodgingSetup(
+        catalog: ProgramLodgingCatalog.fromMap(
+          map['catalog'],
+          programId: programId,
+        ),
         configuration: map['configuration'] == null
             ? null
             : lodgingJsonMap(map['configuration']),
         accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       );
+    },
+  );
+
+  Future<({int startsAtMillis, int endsAtMillis})> resolveDates(
+    String programId,
+    String timezone,
+    String arrival,
+    String departure,
+  ) => _call(
+    programId,
+    {'action': 'resolveDates', 'arrival': arrival, 'departure': departure},
+    (value) {
+      final map = _kind(value, 'resolvedDates');
+      if (map['timezone'] != timezone ||
+          map['arrival'] != arrival ||
+          map['departure'] != departure) {
+        throw const FormatException(
+          'Lodging date context changed. Refresh setup.',
+        );
+      }
+      final start = requiredInt(map, 'startsAtMillis');
+      final end = requiredInt(map, 'endsAtMillis');
+      if (start >= end) {
+        throw const FormatException('Invalid lodging date window.');
+      }
+      return (startsAtMillis: start, endsAtMillis: end);
     },
   );
 
@@ -205,7 +236,9 @@ class ProgramLodgingSetup {
   const ProgramLodgingSetup({
     required this.configuration,
     required this.accessExpiresAt,
+    this.catalog,
   });
+  final ProgramLodgingCatalog? catalog;
   final Map<String, Object?>? configuration;
   final DateTime? accessExpiresAt;
 }
@@ -224,4 +257,26 @@ Map<Object?, Object?> _kind(Object? value, String kind) {
     throw const FormatException('Wrong lodging response kind.');
   }
   return map;
+}
+
+/// Only known domain CAS rejections prove that the pending command was not
+/// applied. Generic transport/precondition failures remain uncertain and keep
+/// their original receipt identity. Never classify by user-facing error copy.
+bool isDefinitiveLodgingRejection(Object error) {
+  Object? cause = error;
+  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
+    cause = cause.cause;
+  }
+  if (cause is! FirebaseFunctionsException) return false;
+  return switch ((cause.code, cause.message)) {
+    ('aborted', 'Record changed since you loaded it. Reload and retry.') =>
+      true,
+    (
+      'failed-precondition',
+      'Stale lodging proposal; regenerate against current data.',
+    ) =>
+      true,
+    ('failed-precondition', 'Stale lodging workflow revision.') => true,
+    _ => false,
+  };
 }

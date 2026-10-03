@@ -24689,4 +24689,126 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get programsLodgingSetup => 'Set up lodging';
+
+  @override
+  String get programsLodgingEditSetup => 'Edit dates, sharing and inventory';
+
+  @override
+  String get programsLodgingDemand => 'Guests who need rooms';
+
+  @override
+  String get programsLodgingSharingHint =>
+      'Invitation households and social groups do not confirm room sharing. Select and confirm each party explicitly.';
+
+  @override
+  String get programsLodgingArrival => 'Arrival date (YYYY-MM-DD)';
+
+  @override
+  String get programsLodgingDeparture => 'Checkout date (YYYY-MM-DD)';
+
+  @override
+  String get programsLodgingBeds => 'Beds needed';
+
+  @override
+  String get programsLodgingFeatures => 'Functional features (comma separated)';
+
+  @override
+  String get programsLodgingAddDemand => 'Keep these stay dates';
+
+  @override
+  String get programsLodgingParty => 'Sharing party';
+
+  @override
+  String get programsLodgingConfirmed => 'Guests have confirmed sharing';
+
+  @override
+  String get programsLodgingAddParty => 'Keep this sharing party';
+
+  @override
+  String get programsLodgingPriority => 'Room priority';
+
+  @override
+  String get programsLodgingRoomType => 'Required room type';
+
+  @override
+  String get programsLodgingInventory => 'Contracted inventory';
+
+  @override
+  String get programsLodgingContract => 'Room block';
+
+  @override
+  String get programsLodgingZone => 'Floor area or corridor';
+
+  @override
+  String get programsLodgingBuilding => 'Building';
+
+  @override
+  String get programsLodgingFloor => 'Floor';
+
+  @override
+  String get programsLodgingWing => 'Wing';
+
+  @override
+  String get programsLodgingRoomLabel =>
+      'Hotel room number (leave empty until released)';
+
+  @override
+  String get programsLodgingOccupants => 'Verified occupant capacity';
+
+  @override
+  String get programsLodgingAddInventory => 'Keep this inventory unit';
+
+  @override
+  String get programsLodgingInventoryHint =>
+      'Verify beds, capacity and functional features with the hotel. A type-only unit keeps its identity while the physical room is pending.';
+
+  @override
+  String get programsLodgingNesting => 'Nested social groups';
+
+  @override
+  String get programsLodgingParents => 'Parent groups';
+
+  @override
+  String get programsLodgingAddNesting => 'Keep this nesting';
+
+  @override
+  String get programsLodgingAdoptions => 'Verify existing stays';
+
+  @override
+  String get programsLodgingAdopt => 'Keep this verified stay link';
+
+  @override
+  String get programsLodgingSaveSetup => 'Save setup and plan rooms';
+
+  @override
+  String get programsLodgingAdd => 'Add new';
+
+  @override
+  String get programsLodgingRemove => 'Remove selected item';
+
+  @override
+  String get programsLodgingPinHotel => 'Pin to hotel';
+
+  @override
+  String get programsLodgingPinRoom => 'Pin to room';
+
+  @override
+  String get programsLodgingPinZone => 'Pin to floor area';
+
+  @override
+  String get programsLodgingSaveHint =>
+      'Add dated demand, confirmed sharing choices and verified contracted inventory before planning.';
+
+  @override
+  String get programsLodgingResources => 'Shared component rooms';
+
+  @override
+  String get programsLodgingResourcesHint =>
+      'For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.';
+
+  @override
+  String get programsLodgingVerified => 'Verified unchanged stay';
 }

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final lodgingFixtureId = List.filled(64, 'a').join();
@@ -86,6 +87,100 @@ Map<String, Object?> lodgingReviewJson() {
   };
 }
 
+Map<String, Object?> lodgingSetupCatalogJson() {
+  final start = DateTime.utc(2026, 10, 1, 12).millisecondsSinceEpoch;
+  final end = DateTime.utc(2026, 10, 3, 12).millisecondsSinceEpoch;
+  return {
+    'programId': 'program',
+    'organizerId': 'organizer',
+    'timezone': 'Asia/Kolkata',
+    'calendarDates': {
+      start.toString(): '2026-10-01',
+      end.toString(): '2026-10-03',
+    },
+    'guests': [
+      {
+        'id': 'guest',
+        'label': 'Guest',
+        'householdId': 'household',
+        'groupIds': ['friends'],
+      },
+      {
+        'id': 'local',
+        'label': 'Local guest',
+        'householdId': 'household',
+        'groupIds': ['friends'],
+      },
+    ],
+    'groups': [
+      {'id': 'friends', 'label': 'Friends'},
+    ],
+    'hotels': [
+      {'id': 'hotel', 'label': 'Hotel', 'active': true},
+    ],
+    'contracts': [
+      {
+        'id': 'block',
+        'hotelId': 'hotel',
+        'label': 'Room block',
+        'roomType': 'standard',
+        'totalRooms': 2,
+        'maxOccupantsPerRoom': 2,
+        'startsAtMillis': start,
+        'endsAtMillis': end,
+      },
+    ],
+    'activeStays': <Object?>[],
+  };
+}
+
+Map<String, Object?> lodgingSetupConfigurationJson() {
+  final review = lodgingReviewJson();
+  final snapshot = (review['context']! as Map)['snapshot']! as Map;
+  final contract =
+      (lodgingSetupCatalogJson()['contracts']! as List).single as Map;
+  return {
+    'programId': 'program',
+    'organizerId': 'organizer',
+    'revision': 1,
+    'demand': [
+      {
+        'guestId': 'guest',
+        'startsAtMillis': contract['startsAtMillis'],
+        'endsAtMillis': contract['endsAtMillis'],
+        'beds': 1,
+        'requiredFeatures': <String>[],
+      },
+    ],
+    'parties': [
+      {
+        'id': 'party',
+        'guestIds': ['guest'],
+        'confirmed': true,
+        'priority': 0,
+        'requiredRoomType': null,
+        'pin': null,
+      },
+    ],
+    'groupParents': <Object?>[],
+    'rooms': snapshot['rooms'],
+    'inventory': [
+      {
+        'id': 'unit',
+        'physicalRoomId': 'room',
+        'provisional': null,
+        'contractId': 'block',
+        'availability': [
+          {'arrival': '2026-10-01', 'departure': '2026-10-03'},
+        ],
+      },
+    ],
+    'labels': [
+      {'inventoryId': 'unit', 'roomLabel': '101'},
+    ],
+  };
+}
+
 class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
   ProgramLodgingReview current = ProgramLodgingReview.fromCallableData(
     lodgingReviewJson(),
@@ -94,18 +189,43 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
   Future<ProgramLodgingReview>? pendingPreview;
   Object? previewFailure;
   Object? transitionFailure;
+  Object? setupFailure;
   Future<ProgramLodgingProposal>? pendingSave;
   Future<Map<String, Object?>>? pendingTransition;
   var previews = 0;
   var saves = 0;
+  var setupSaves = 0;
+  Future<int>? pendingSetupSave;
+  Map<String, Object?>? savedSetup;
+  int? savedConfigurationRevision;
+  List<Map<String, Object?>>? savedAdoptions;
   final commands = <Map<String, Object?>>[];
 
   @override
   Future<ProgramLodgingSetup> readSetup(String programId) async =>
       ProgramLodgingSetup(
-        configuration: hasSetup ? current.configuration : null,
+        configuration: hasSetup ? lodgingSetupConfigurationJson() : null,
+        catalog: ProgramLodgingCatalog.fromMap(
+          lodgingSetupCatalogJson(),
+          programId: programId,
+        ),
         accessExpiresAt: null,
       );
+  @override
+  Future<int> saveSetup(
+    String programId,
+    Map<String, Object?> setup,
+    int expectedRevision, {
+    List<Map<String, Object?>> adoptions = const [],
+  }) async {
+    setupSaves++;
+    if (setupFailure != null) throw setupFailure!;
+    savedSetup = setup;
+    savedConfigurationRevision = expectedRevision;
+    savedAdoptions = adoptions;
+    return pendingSetupSave ?? expectedRevision + 1;
+  }
+
   @override
   Future<ProgramLodgingReview> preview(String programId) async {
     previews++;

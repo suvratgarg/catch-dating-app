@@ -7,8 +7,10 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_lodging_setup_editor.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,9 @@ class ProgramLodgingScreen extends ConsumerStatefulWidget {
 }
 
 class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
+  ProgramLodgingDraft? _editing;
+  ProgramLodgingSetup? _editingSetup;
+
   ProgramLodgingController get _controller =>
       ref.read(programLodgingControllerProvider(widget.programId).notifier);
 
@@ -43,6 +48,22 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
         // The controller owns the visible mutation error and exact retry.
       }
     }());
+  }
+
+  Future<void> _openSetup() async {
+    final setup = await _controller.loadSetup();
+    if (!mounted) return;
+    final catalog = setup.catalog;
+    if (catalog == null) {
+      throw const FormatException('Setup catalog is absent.');
+    }
+    setState(() {
+      _editingSetup = setup;
+      _editing = ProgramLodgingDraft(
+        catalog: catalog,
+        configuration: setup.configuration,
+      );
+    });
   }
 
   Widget _scaffold(BuildContext context, Widget body) => CatchRouteScaffold(
@@ -78,13 +99,70 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
       ),
     ),
     builder: (context, view) {
+      if (_editing != null && !identical(view.setup, _editingSetup)) {
+        // Account/authority rebuild or a new source read cannot retain a
+        // private draft from the previous projection lifetime.
+        _editing = null;
+        _editingSetup = null;
+      }
+      final editing = _editing;
+      if (editing != null) {
+        return CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            title: context.l10n.programsLodgingSetup,
+            subtitle: editing.catalog.timezone,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
+          ),
+          body: CatchRouteBody.standardSections(
+            sections: [
+              CatchSectionListItem(
+                child: ProgramLodgingSetupEditor(
+                  key: ObjectKey(editing),
+                  initial: editing,
+                  busy: view.busy,
+                  error: view.error,
+                  resolveDates: (arrival, departure) =>
+                      _controller.resolveDates(
+                        editing.catalog.timezone,
+                        arrival,
+                        departure,
+                      ),
+                  onSave: (draft, adoptions) async {
+                    await _controller.saveDraft(draft, adoptions: adoptions);
+                    if (mounted) setState(() => _editing = null);
+                  },
+                  onCancel: () {
+                    setState(() => _editing = null);
+                    _controller.refresh();
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      }
       final review = view.review;
       if (review == null) {
         return _scaffold(
           context,
-          CatchEmptyState(
-            icon: CatchIcons.hotel,
-            message: context.l10n.programsLodgingSetupMissing,
+          Column(
+            children: [
+              CatchEmptyState(
+                icon: CatchIcons.hotel,
+                message: context.l10n.programsLodgingSetupMissing,
+              ),
+              if (view.error != null)
+                CatchLocalizedErrorBanner(
+                  view.error!,
+                  context: AppErrorContext.event,
+                ),
+              CatchButton(
+                label: context.l10n.programsLodgingSetup,
+                onPressed: view.busy ? null : () => _action(_openSetup),
+              ),
+            ],
           ),
         );
       }
@@ -127,6 +205,13 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
                       Text(context.l10n.programsLodgingBoundedSearch),
                     for (final explanation in proposal.explanations)
                       Text(explanation),
+                    CatchButton(
+                      label: context.l10n.programsLodgingEditSetup,
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: view.busy || retry != null
+                          ? null
+                          : () => _action(_openSetup),
+                    ),
                     CatchButton(
                       label: context.l10n.programsLodgingRegenerate,
                       variant: CatchButtonVariant.secondary,

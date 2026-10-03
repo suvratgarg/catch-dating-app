@@ -103,6 +103,95 @@ void main() {
     },
   );
 
+  test(
+    'setup catalog retains no-travel identities and rejects foreign scope',
+    () async {
+      final catalog = <String, Object?>{
+        'programId': 'program',
+        'organizerId': 'organizer',
+        'timezone': 'Asia/Kolkata',
+        'calendarDates': <String, Object?>{},
+        'guests': [
+          {
+            'id': 'local',
+            'label': 'Local guest',
+            'householdId': null,
+            'groupIds': <String>[],
+          },
+        ],
+        'groups': <Object?>[],
+        'hotels': <Object?>[],
+        'contracts': <Object?>[],
+        'activeStays': <Object?>[],
+      };
+      final functions = _Functions()
+        ..response = {
+          'kind': 'readSetup',
+          'configuration': null,
+          'catalog': catalog,
+          'accessExpiresAtMillis': null,
+        };
+      final repository = ProgramLodgingRepository(
+        functions,
+        _Snapshots(),
+        () => 'actor',
+      );
+      final setup = await repository.readSetup('program');
+      expect(setup.catalog!.rows('guests').single['id'], 'local');
+      catalog['programId'] = 'foreign';
+      await expectLater(
+        repository.readSetup('program'),
+        _wrappedFormat('Lodging catalog belongs to another program.'),
+      );
+      expect(setup.catalog!.programId, 'program');
+    },
+  );
+
+  test(
+    'date resolution sends civil dates and fences changed program timezone',
+    () async {
+      final functions = _Functions()
+        ..response = {
+          'kind': 'resolvedDates',
+          'timezone': 'Asia/Kolkata',
+          'arrival': '2026-10-01',
+          'departure': '2026-10-03',
+          'startsAtMillis': 100,
+          'endsAtMillis': 300,
+          'accessExpiresAtMillis': null,
+        };
+      final repository = ProgramLodgingRepository(
+        functions,
+        _Snapshots(),
+        () => 'actor',
+      );
+      expect(
+        await repository.resolveDates(
+          'program',
+          'Asia/Kolkata',
+          '2026-10-01',
+          '2026-10-03',
+        ),
+        (startsAtMillis: 100, endsAtMillis: 300),
+      );
+      expect(functions.payload, {
+        'programId': 'program',
+        'action': 'resolveDates',
+        'arrival': '2026-10-01',
+        'departure': '2026-10-03',
+      });
+      await expectLater(
+        repository.resolveDates(
+          'program',
+          'Pacific/Kiritimati',
+          '2026-10-01',
+          '2026-10-03',
+        ),
+        _wrappedFormat('Lodging date context changed. Refresh setup.'),
+      );
+    },
+  );
+
   test('account change during callable discards private result', () async {
     final gate = Completer<Object?>();
     final functions = _Functions()..pending = gate.future;
@@ -344,3 +433,11 @@ class _Snapshots extends Fake implements ProgramReadSnapshotStore {
     return currentGeneration;
   }
 }
+
+Matcher _wrappedFormat(String message) => throwsA(
+  isA<BackendOperationException>().having(
+    (error) => error.cause,
+    'cause',
+    isA<FormatException>().having((cause) => cause.message, 'message', message),
+  ),
+);

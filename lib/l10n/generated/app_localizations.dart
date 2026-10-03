@@ -39831,6 +39831,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{One party still needs a room.} other{{count} parties still need rooms.}}'**
   String programsLodgingUnplaced({required int count});
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up lodging'**
+  String get programsLodgingSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit dates, sharing and inventory'**
+  String get programsLodgingEditSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests who need rooms'**
+  String get programsLodgingDemand;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation households and social groups do not confirm room sharing. Select and confirm each party explicitly.'**
+  String get programsLodgingSharingHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival date (YYYY-MM-DD)'**
+  String get programsLodgingArrival;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout date (YYYY-MM-DD)'**
+  String get programsLodgingDeparture;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Beds needed'**
+  String get programsLodgingBeds;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Functional features (comma separated)'**
+  String get programsLodgingFeatures;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep these stay dates'**
+  String get programsLodgingAddDemand;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing party'**
+  String get programsLodgingParty;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests have confirmed sharing'**
+  String get programsLodgingConfirmed;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this sharing party'**
+  String get programsLodgingAddParty;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room priority'**
+  String get programsLodgingPriority;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Required room type'**
+  String get programsLodgingRoomType;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Contracted inventory'**
+  String get programsLodgingInventory;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room block'**
+  String get programsLodgingContract;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor area or corridor'**
+  String get programsLodgingZone;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get programsLodgingBuilding;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get programsLodgingFloor;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Wing'**
+  String get programsLodgingWing;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel room number (leave empty until released)'**
+  String get programsLodgingRoomLabel;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified occupant capacity'**
+  String get programsLodgingOccupants;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this inventory unit'**
+  String get programsLodgingAddInventory;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify beds, capacity and functional features with the hotel. A type-only unit keeps its identity while the physical room is pending.'**
+  String get programsLodgingInventoryHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nested social groups'**
+  String get programsLodgingNesting;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent groups'**
+  String get programsLodgingParents;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this nesting'**
+  String get programsLodgingAddNesting;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify existing stays'**
+  String get programsLodgingAdoptions;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this verified stay link'**
+  String get programsLodgingAdopt;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save setup and plan rooms'**
+  String get programsLodgingSaveSetup;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new'**
+  String get programsLodgingAdd;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove selected item'**
+  String get programsLodgingRemove;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to hotel'**
+  String get programsLodgingPinHotel;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to room'**
+  String get programsLodgingPinRoom;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to floor area'**
+  String get programsLodgingPinZone;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add dated demand, confirmed sharing choices and verified contracted inventory before planning.'**
+  String get programsLodgingSaveHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared component rooms'**
+  String get programsLodgingResources;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.'**
+  String get programsLodgingResourcesHint;
+
+  /// Private lodging setup editor copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified unchanged stay'**
+  String get programsLodgingVerified;
 }
 
 class _AppLocalizationsDelegate

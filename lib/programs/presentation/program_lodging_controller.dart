@@ -7,6 +7,7 @@ import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_lodging_controller.g.dart';
@@ -121,8 +122,15 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       if (!ref.mounted || epoch != _epoch) throw programReadSuperseded;
       state = AsyncData(next(result));
       return result;
-    } catch (error) {
+    } catch (error, stack) {
       if (ref.mounted && epoch == _epoch) {
+        if (isDefinitiveLodgingRejection(error)) {
+          // A domain rejection cannot have published this command. Its old
+          // source is unusable; offer a new read, not an endless stale retry.
+          _command = null;
+          _hideStaleView(error, stack);
+          rethrow;
+        }
         state = AsyncData(
           ProgramLodgingView(
             setup: view.setup,
@@ -138,7 +146,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
 
   void refresh() {
     _ensureEditing();
-    _current();
+    if (!state.hasError) _current();
     ref.invalidateSelf(asReload: true);
   }
 
@@ -183,17 +191,63 @@ class ProgramLodgingController extends _$ProgramLodgingController {
     );
   }
 
+  Future<ProgramLodgingSetup> loadSetup() {
+    _ensureEditing();
+    final view = _current();
+    return _run(
+      view,
+      () => _repository.readSetup(_programId),
+      (setup) => ProgramLodgingView(setup: setup, review: view.review),
+    );
+  }
+
+  Future<({int startsAtMillis, int endsAtMillis})> resolveDates(
+    String timezone,
+    String arrival,
+    String departure,
+  ) {
+    _ensureEditing();
+    final view = _current();
+    return _run(
+      view,
+      () => _repository.resolveDates(_programId, timezone, arrival, departure),
+      (_) => view,
+    );
+  }
+
+  Future<void> saveDraft(
+    ProgramLodgingDraft draft, {
+    List<Map<String, Object?>> adoptions = const [],
+  }) async {
+    _ensureEditing();
+    final view = _current();
+    if (draft.catalog.programId != _programId) throw programReadSuperseded;
+    await _run(view, () async {
+      final actionEpoch = _epoch;
+      await _repository.saveSetup(
+        _programId,
+        draft.setup,
+        draft.expectedRevision,
+        adoptions: adoptions,
+      );
+      if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
+      return _reloadAcknowledgedWrite(actionEpoch);
+    }, _reviewView);
+  }
+
   Future<void> saveSetup(Map<String, Object?> fields) async {
     _ensureEditing();
     final view = _current();
     final revision = view.setup.configuration?['revision'];
     await _run(view, () async {
+      final actionEpoch = _epoch;
       await _repository.saveSetup(
         _programId,
         fields,
         revision == null ? 0 : (revision as num).toInt(),
       );
-      return _repository.preview(_programId);
+      if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
+      return _reloadAcknowledgedWrite(actionEpoch);
     }, _reviewView);
   }
 
@@ -227,18 +281,26 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       );
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       _command = null;
-      try {
-        return await _repository.preview(_programId);
-      } catch (error, stack) {
-        // The decision was acknowledged. Hide stale controls if its new
-        // source cannot be read; refreshing must not repeat that decision.
-        if (ref.mounted && actionEpoch == _epoch) {
-          _epoch++;
-          state = AsyncError(error, stack);
-        }
-        rethrow;
-      }
+      return _reloadAcknowledgedWrite(actionEpoch);
     }, _reviewView);
+  }
+
+  void _hideStaleView(Object error, StackTrace stack) {
+    _epoch++;
+    state = AsyncError(error, stack);
+  }
+
+  Future<ProgramLodgingReview> _reloadAcknowledgedWrite(int actionEpoch) async {
+    try {
+      return await _repository.preview(_programId);
+    } catch (error, stack) {
+      // The write was acknowledged. An unavailable new projection must never
+      // restore the prior revision or offer to repeat the successful write.
+      if (ref.mounted && actionEpoch == _epoch) {
+        _hideStaleView(error, stack);
+      }
+      rethrow;
+    }
   }
 }
 

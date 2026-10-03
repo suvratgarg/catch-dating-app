@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -85,6 +89,141 @@ void main() {
     );
     expect(refresh.onPressed, isNull);
     expect(repository.commands, hasLength(1));
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'routed setup saves the reviewed revision without inventing sharing',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository);
+      await tester.tap(find.text('Edit dates, sharing and inventory'));
+      await pumpFeatureUi(tester);
+      await tester.scrollUntilVisible(
+        find.text('Save setup and plan rooms'),
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Save setup and plan rooms'));
+      await pumpFeatureUi(tester);
+      expect(repository.setupSaves, 1);
+      expect(repository.savedConfigurationRevision, 1);
+      expect(
+        ((repository.savedSetup!['parties']! as List).single
+            as Map<Object?, Object?>)['guestIds'],
+        ['guest'],
+      );
+      expect(find.text('Save setup and plan rooms'), findsNothing);
+      expect(find.text('Publish rooms to guests'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'routed acknowledged setup reload failure hides stale save controls',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository);
+      await tester.tap(find.text('Edit dates, sharing and inventory'));
+      await pumpFeatureUi(tester);
+      repository.previewFailure = TimeoutException(
+        'Reload after acknowledged setup failed',
+      );
+      await tester.scrollUntilVisible(
+        find.text('Save setup and plan rooms'),
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Save setup and plan rooms'));
+      await pumpFeatureUi(tester);
+      expect(repository.setupSaves, 1);
+      expect(find.text('Save setup and plan rooms'), findsNothing);
+      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      repository.previewFailure = null;
+      tester
+          .widget<CatchLocalizedErrorState>(
+            find.byType(CatchLocalizedErrorState),
+          )
+          .onRetry!();
+      await pumpFeatureUi(tester);
+      expect(repository.setupSaves, 1);
+      expect(find.text('Publish rooms to guests'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'routed stale setup rejection offers a fresh read without repeating write',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository);
+      await tester.tap(find.text('Edit dates, sharing and inventory'));
+      await pumpFeatureUi(tester);
+      repository.setupFailure = normalizeBackendError(
+        FirebaseFunctionsException(
+          code: 'aborted',
+          message: 'Record changed since you loaded it. Reload and retry.',
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'manage hotel rooms',
+          resource: 'manageProgramLodging',
+        ),
+      );
+      await tester.scrollUntilVisible(
+        find.text('Save setup and plan rooms'),
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Save setup and plan rooms'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Save setup and plan rooms'), findsNothing);
+      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      repository.setupFailure = null;
+      tester
+          .widget<CatchLocalizedErrorState>(
+            find.byType(CatchLocalizedErrorState),
+          )
+          .onRetry!();
+      await pumpFeatureUi(tester);
+      expect(repository.setupSaves, 1);
+      expect(find.text('Edit dates, sharing and inventory'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('session change discards the private routed setup draft', (
+    tester,
+  ) async {
+    final repository = FakeLodgingRepository();
+    await _pump(tester, repository);
+    await tester.tap(find.text('Edit dates, sharing and inventory'));
+    await pumpFeatureUi(tester);
+    await tester.scrollUntilVisible(
+      find.text('Save setup and plan rooms'),
+      500,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Save setup and plan rooms'), findsOneWidget);
+    repository.hasSetup = false;
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(ProgramLodgingScreen)),
+    );
+    container.updateOverrides([
+      uidProvider.overrideWithValue(const AsyncData('other')),
+      programReadSnapshotStoreProvider.overrideWithValue(
+        emptyProgramSnapshots(),
+      ),
+      programLodgingRepositoryProvider.overrideWithValue(repository),
+    ]);
+    await pumpFeatureUi(tester);
+    expect(find.text('Save setup and plan rooms'), findsNothing);
+    expect(find.textContaining('Add lodging dates'), findsOneWidget);
+    expect(repository.setupSaves, 0);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });

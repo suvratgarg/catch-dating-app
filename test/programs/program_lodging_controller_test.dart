@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -252,4 +256,153 @@ void main() {
     await controller.decide(ProgramLodgingAction.publishGuests);
     expect(repository.commands.last, command);
   });
+  test(
+    'staged setup save binds exact configuration revision and adoptions',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final setup = await controller.loadSetup();
+      final draft = ProgramLodgingDraft(
+        catalog: setup.catalog!,
+        configuration: setup.configuration,
+      );
+      final adoptions = <Map<String, Object?>>[
+        {
+          'stayId': 'stay',
+          'partyId': 'party',
+          'inventoryId': 'unit',
+          'expectedRevision': 7,
+        },
+      ];
+      await controller.saveDraft(draft, adoptions: adoptions);
+      expect(repository.savedConfigurationRevision, 1);
+      expect(repository.savedAdoptions, adoptions);
+      expect(repository.savedSetup!.containsKey('programId'), false);
+      expect(repository.commands, isEmpty);
+    },
+  );
+
+  test('disposed setup save cannot start late preview', () async {
+    await container.read(provider.future);
+    final controller = container.read(provider.notifier);
+    final setup = await controller.loadSetup();
+    final gate = Completer<int>();
+    repository.pendingSetupSave = gate.future;
+    final pending = controller.saveDraft(
+      ProgramLodgingDraft(
+        catalog: setup.catalog!,
+        configuration: setup.configuration,
+      ),
+    );
+    final previews = repository.previews;
+    subscription.close();
+    await container.pump();
+    gate.complete(2);
+    await expectLater(pending, throwsA(same(programReadSuperseded)));
+    expect(repository.previews, previews);
+  });
+
+  for (final staged in [true, false]) {
+    test(
+      'acknowledged ${staged ? 'draft' : 'setup'} save reload failure hides old write',
+      () async {
+        await container.read(provider.future);
+        final controller = container.read(provider.notifier);
+        final setup = await controller.loadSetup();
+        repository.previewFailure = TimeoutException(
+          'Reload after save failed',
+        );
+        final draft = ProgramLodgingDraft(
+          catalog: setup.catalog!,
+          configuration: setup.configuration,
+        );
+        await expectLater(
+          staged
+              ? controller.saveDraft(draft)
+              : controller.saveSetup(draft.setup),
+          throwsA(isA<TimeoutException>()),
+        );
+        expect(repository.setupSaves, 1);
+        expect(container.read(provider).hasError, true);
+        expect(container.read(provider).asData, isNull);
+        await expectLater(
+          controller.saveDraft(draft),
+          throwsA(same(programReadSuperseded)),
+        );
+        expect(repository.setupSaves, 1);
+        repository.previewFailure = null;
+        controller.refresh();
+        await container.read(provider.future);
+        expect(repository.setupSaves, 1);
+      },
+    );
+  }
+
+  for (final rejected in [
+    ('aborted', 'Record changed since you loaded it. Reload and retry.'),
+    (
+      'failed-precondition',
+      'Stale lodging proposal; regenerate against current data.',
+    ),
+    ('failed-precondition', 'Stale lodging workflow revision.'),
+  ]) {
+    test(
+      'definitive ${rejected.$2} permits fresh source instead of stale retry',
+      () async {
+        await container.read(provider.future);
+        final controller = container.read(provider.notifier);
+        repository.transitionFailure = normalizeBackendError(
+          FirebaseFunctionsException(code: rejected.$1, message: rejected.$2),
+          context: const BackendErrorContext(
+            service: BackendService.functions,
+            action: 'manage hotel rooms',
+            resource: 'manageProgramLodging',
+          ),
+        );
+        await expectLater(
+          controller.decide(ProgramLodgingAction.publishGuests),
+          throwsA(isA<AppException>()),
+        );
+        final old = Map.of(repository.commands.single);
+        expect(container.read(provider).hasError, true);
+        expect(container.read(provider).asData, isNull);
+        repository.transitionFailure = null;
+        controller.refresh();
+        await container.read(provider.future);
+        await controller.decide(ProgramLodgingAction.publishGuests);
+        expect(
+          repository.commands.last['operationId'],
+          isNot(old['operationId']),
+        );
+      },
+    );
+  }
+
+  test(
+    'unrecognized failed precondition retains exact uncertain command',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      repository.transitionFailure = normalizeBackendError(
+        FirebaseFunctionsException(
+          code: 'failed-precondition',
+          message: 'Unknown transport failure',
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'manage hotel rooms',
+          resource: 'manageProgramLodging',
+        ),
+      );
+      await expectLater(
+        controller.decide(ProgramLodgingAction.publishGuests),
+        throwsA(isA<AppException>()),
+      );
+      final old = Map.of(repository.commands.single);
+      expect(controller.refresh, throwsA(isA<StateError>()));
+      repository.transitionFailure = null;
+      await controller.decide(ProgramLodgingAction.publishGuests);
+      expect(repository.commands.last, old);
+    },
+  );
 }
