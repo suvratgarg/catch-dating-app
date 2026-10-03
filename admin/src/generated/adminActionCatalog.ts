@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.5.0",
+  "catalogVersion": "1.6.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -27,6 +27,38 @@ export const adminActionCatalog = {
       ],
       "summary": "Load the bounded admin overview, queue, and data-quality snapshot.",
       "controlPlane": false
+    },
+    {
+      "actionId": "catch.whatsapp.inbound.review",
+      "callable": "adminReviewCatchWhatsappInbound",
+      "workflowIds": [
+        "overview"
+      ],
+      "guiPath": "/overview",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "support",
+        "adminOwner"
+      ],
+      "summary": "Review one exact inbound support request in the default-disabled DEV-only panel.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "catch.whatsapp.inbound.send",
+      "callable": "adminSendCatchWhatsappReply",
+      "workflowIds": [
+        "overview"
+      ],
+      "guiPath": "/overview",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "support",
+        "adminOwner"
+      ],
+      "summary": "Send one explicitly confirmed support reply within the separately authorized controlled scope; uncertain attempts remain consumed.",
+      "controlPlane": true
     },
     {
       "actionId": "safety.get",
@@ -1959,7 +1991,9 @@ export const adminActionCatalog = {
       "guiPath": "/overview",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "catch.whatsapp.inbound.review",
+        "catch.whatsapp.inbound.send"
       ]
     },
     {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 15,
-  "updated": "2026-09-28",
+  "version": 16,
+  "updated": "2026-10-03",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -17,6 +17,11 @@
     {
       "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
       "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/catch-support/controllers/useCatchWhatsappTrialController.ts",
+      "test": "admin/src/features/catch-support/controllers/useCatchWhatsappTrialController.test.tsx",
       "status": "required"
     },
     {
