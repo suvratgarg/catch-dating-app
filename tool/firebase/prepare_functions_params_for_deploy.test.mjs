@@ -37,6 +37,15 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
+    'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
+    'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
+    'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
+    'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
+    'CATCH_WHATSAPP_REPLY_RECIPIENT_E164=" "',
+    'CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION=" "',
+    'CATCH_WHATSAPP_REPLY_GRAPH_VERSION=" "',
+    'CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256=" "',
     'CATCH_WHATSAPP_WABA_ID=" "',
     'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
@@ -74,6 +83,15 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
+    'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
+    'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
+    'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
+    'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
+    'CATCH_WHATSAPP_REPLY_RECIPIENT_E164=" "',
+    'CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION=" "',
+    'CATCH_WHATSAPP_REPLY_GRAPH_VERSION=" "',
+    'CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256=" "',
     'CATCH_WHATSAPP_WABA_ID=" "',
     'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
@@ -304,6 +322,57 @@ test("Catch webhook activation rejects absent or unsafe sender ids", () => {
       environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
         ...patch},
     }), /Catch WABA|numeric Meta/);
+    assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
+      false);
+  }
+});
+
+
+test("Catch receipt consumers materialize false independently of ingress", () => {
+  for (const value of [undefined, "", "  ", "false", " FALSE "]) {
+    const functionsDir = fixture();
+    // Regeneration must replace a stale file, not preserve a prior true value.
+    const output = path.join(functionsDir, ".env.catchdates-dev");
+    fs.writeFileSync(output, 'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="true"\n');
+    const result = prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
+        CATCH_WHATSAPP_WABA_ID: "123", CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
+        CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: value},
+    });
+    const contents = fs.readFileSync(result.outputPath, "utf8");
+    assert.match(contents, /^CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"$/m);
+    assert.match(contents, /^CATCH_WHATSAPP_WEBHOOK_ENABLED="true"$/m);
+    assert.equal(result.enabled, false);
+  }
+});
+
+test("Catch consumer enablement and malformed overrides fail before writing", () => {
+  for (const value of ["true", " TRUE ", "1", "yes", "false\nINJECTED=true"]) {
+    const functionsDir = fixture();
+    const output = path.join(functionsDir, ".env.catchdates-dev");
+    const environment = {...publicIds, CATCH_WHATSAPP_WABA_ID: "123",
+      CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
+      CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: value};
+    const generate = () => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev", environment,
+    });
+    assert.throws(generate, /CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED must/);
+    assert.equal(fs.existsSync(output), false);
+    fs.writeFileSync(output, "previous-file-must-survive\n");
+    assert.throws(generate, /CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED must/);
+    assert.equal(fs.readFileSync(output, "utf8"), "previous-file-must-survive\n");
+  }
+});
+
+
+test("offline reply gates and scoped configuration cannot be provisioned", () => {
+  const names = ["CATCH_WHATSAPP_REPLIES_ENABLED", "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY", "CATCH_WHATSAPP_REPLY_ACTOR_UID", "CATCH_WHATSAPP_REPLY_RECIPIENT_UID", "CATCH_WHATSAPP_REPLY_RECIPIENT_E164", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION", "CATCH_WHATSAPP_REPLY_GRAPH_VERSION", "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256"];
+  for (const name of names) {
+    const functionsDir = fixture();
+    assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir,
+      projectId: "catchdates-dev", environment: {...publicIds, [name]: "true"},
+    }), /must remain/);
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
   }

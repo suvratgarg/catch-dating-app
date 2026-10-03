@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_review_catch_whatsapp_inbound_payload.schema.json",
+  "title": "AdminReviewCatchWhatsappInboundCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "purpose",
+    "inboundEventId"
+  ],
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "serviceSupport"
+    },
+    "inboundEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 69,
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    }
+  }
+}

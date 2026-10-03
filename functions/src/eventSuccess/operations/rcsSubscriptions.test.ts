@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {createHmac, randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {Request, Response} from "express";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {RcsCallbackStore} from "./rcsCallbackStore";
@@ -296,8 +297,8 @@ test("Firestore subscription races retain both observations", {
   const projectId = "demo-rcs-sub-" + key.slice(0, 8);
   const firstApp = initializeApp({projectId}, "rcs-sub-first-" + key);
   const secondApp = initializeApp({projectId}, "rcs-sub-second-" + key);
-  const db = getFirestore(firstApp);
-  const other = getFirestore(secondApp);
+  const db = getEmulatorFirestore(firstApp);
+  const other = getEmulatorFirestore(secondApp);
   const first = new RcsCallbackStore(db, () => at);
   const second = new RcsCallbackStore(other, () => at);
   const stop = verified();

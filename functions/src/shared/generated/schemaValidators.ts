@@ -5,6 +5,13 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateCatchWhatsappReplyOperationDocument} from "./validators/catchWhatsappReplyOperationDocument";
+export {validateCatchWhatsappEndpointStopDocument} from "./validators/catchWhatsappEndpointStopDocument";
+export {validateCatchWhatsappReplyReadinessDocument} from "./validators/catchWhatsappReplyReadinessDocument";
+export {validateAdminReviewCatchWhatsappInboundCallablePayload} from "./validators/adminReviewCatchWhatsappInboundInput";
+export {validateAdminReviewCatchWhatsappInboundCallableResponse} from "./validators/adminReviewCatchWhatsappInboundOutput";
+export {validateAdminSendCatchWhatsappReplyCallablePayload} from "./validators/adminSendCatchWhatsappReplyInput";
+export {validateAdminSendCatchWhatsappReplyCallableResponse} from "./validators/adminSendCatchWhatsappReplyOutput";
 export {validateGetOrganizerTrackingSettingsCallablePayload} from "./validators/getOrganizerTrackingSettingsInput";
 export {validateSetOrganizerTrackingSettingsCallablePayload} from "./validators/setOrganizerTrackingSettingsInput";
 export {validateReadPublicOrganizerTrackingSettingsCallablePayload} from "./validators/readPublicOrganizerTrackingSettingsInput";
@@ -417,6 +424,8 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateGetEventViewerStateCallablePayload} from "./validators/getEventViewerStateInput";
+export {validateGetEventViewerStateCallableResponse} from "./validators/getEventViewerStateOutput";
 export {validateListParticipantActivityCallablePayload} from "./validators/listParticipantActivityInput";
 export {validateListParticipantActivityCallableResponse} from "./validators/listParticipantActivityOutput";
 export {validateGetParticipantActivityCallablePayload} from "./validators/getParticipantActivityInput";

@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationResourceLeaseId} from
   "../../operations/firestoreLeaseRepository";
@@ -430,7 +431,7 @@ test("Firestore serializes live checkpoints and queries persisted due work", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await workHarness(getFirestore(app));
+    const h = await workHarness(getEmulatorFirestore(app));
     const starts = await Promise.all([h.work.start(h.input),
       h.work.start(h.input)]);
     assert.equal(starts.filter((s) => s.replayed).length, 1);
@@ -451,7 +452,7 @@ test("Firestore serializes live checkpoints and queries persisted due work", {
     const closed = await h.work.evaluate(h.ids.workItemId, 2, lease);
     assert.equal(closed.item.outcome, "resolved");
     assert.equal(closed.payload.checkpoint.dueAt, null);
-    const receipts = await getFirestore(app).collection(
+    const receipts = await getEmulatorFirestore(app).collection(
       operationCollections.actionReceipts).where("workItemId", "==",
       h.ids.workItemId).get();
     assert.equal(receipts.size, 3);

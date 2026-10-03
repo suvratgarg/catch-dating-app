@@ -18,6 +18,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart'
     as saved_domain;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -309,21 +310,26 @@ Future<void> pumpEventsTestApp(
   Widget child, {
   Iterable overrides = const [],
   String? signedInUid = 'runner-1',
+  EventViewerState? viewerState,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         if (signedInUid != null)
           uidProvider.overrideWith((ref) => Stream.value(signedInUid)),
+        if (viewerState != null && signedInUid != null)
+          eventViewerStateProvider(
+            viewerState.eventId,
+            signedInUid,
+          ).overrideWithValue(AsyncData(viewerState)),
         ...overrides,
       ],
       child: _EventTestProviderPrimer(
         primeUid: signedInUid != null,
         child: MaterialApp(
           theme: AppTheme.light,
-          builder: (context, appChild) => CatchNoticeOverlay(
-            child: appChild ?? const SizedBox.shrink(),
-          ),
+          builder: (context, appChild) =>
+              CatchNoticeOverlay(child: appChild ?? const SizedBox.shrink()),
           home: child,
         ),
       ),

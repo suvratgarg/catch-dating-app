@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import type {CallableRequest, Request} from "firebase-functions/v2/https";
 import type {Response} from "express";
 import {SmsWithdrawalStore} from "./smsWithdrawalStore";
@@ -9,7 +10,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
 import {ProgressFirestore, seedJoiningProgress} from
@@ -441,7 +442,7 @@ test("Firestore atomically arbitrates different SMS budget claims", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "sms-" + id);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     await contestedBudget(await harness(db, id));
   } finally {
@@ -693,7 +694,7 @@ test("Firestore deduplicates competing message-link withdrawals", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "withdraw-" + id);
   try {
-    const h = await withdrawalHarness(getFirestore(app), id);
+    const h = await withdrawalHarness(getEmulatorFirestore(app), id);
     await h.worker.dispatch(h.messageId, h.link.linkId);
     const results = await Promise.all(Array.from({length: 8}, () =>
       h.withdrawal.withdraw(h.request)));
@@ -931,7 +932,7 @@ test("Firestore deduplicates competing SMS delivery reports", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "sms-dlr-" + id);
   try {
-    await competingReports(await harness(getFirestore(app), id));
+    await competingReports(await harness(getEmulatorFirestore(app), id));
   } finally {
     await deleteApp(app);
   }

@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync, writeFileSync} from "node:fs";
@@ -177,7 +178,7 @@ test("Firestore help uses exact Host receipts and reset cleanup", {
     controlEventRehearsalHandler: control, resetEventRehearsalHandler: reset} =
       await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-help-" + id;

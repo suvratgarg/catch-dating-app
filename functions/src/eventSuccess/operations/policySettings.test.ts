@@ -1,10 +1,11 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync, writeFileSync} from "node:fs";
 import path from "node:path";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import type {EventDocument} from "../../shared/generated/eventDocument";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
@@ -242,7 +243,7 @@ test("Firestore saves one preference; recreated events require review", {
   assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await harness(db);
     const input = configure((await h.store.get(manager, h.scope)).view);

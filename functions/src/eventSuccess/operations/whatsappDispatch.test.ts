@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash, createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
@@ -591,7 +592,7 @@ test("Firestore retains ambiguous delivery until complete signed evidence", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "wa-errors-" + id);
   try {
-    const h = await harness(getFirestore(app), id);
+    const h = await harness(getEmulatorFirestore(app), id);
     await rejectsIncompleteDeliveryEvidence(h);
   } finally {
     await deleteApp(app);
@@ -844,7 +845,7 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
   const app = initializeApp({projectId: "demo-catch-rules"},
     "wa-dispatch-" + id);
   try {
-    const h = await harness(getFirestore(app), id);
+    const h = await harness(getEmulatorFirestore(app), id);
     let sends = 0;
     let correlation = "";
     const service = worker(h, async (_, init) => {
@@ -875,7 +876,7 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
     assert.equal(withdrawals.filter((r) => r.outcome === "applied").length, 1);
     assert.equal((await w.store.get(w.credential)).view.revision, 2);
     // Different outboxes must contend on spending, not just on message CAS.
-    const shared = await harness(getFirestore(app), id + "-shared");
+    const shared = await harness(getEmulatorFirestore(app), id + "-shared");
     for (const path of shared.budgetPaths) {
       await shared.write(path, {...(await shared.read(path)),
         limitMicros: 500_000});

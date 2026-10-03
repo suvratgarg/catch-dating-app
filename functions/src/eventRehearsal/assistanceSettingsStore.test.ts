@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {EVENT_ASSISTANCE_MESSAGES} from
   "../eventSuccess/operations/firestoreMessageOutbox";
 import assert from "node:assert/strict";
@@ -18,7 +19,7 @@ test("practice settings commit once, isolate effects and fence reset",
     if (!admin.apps.length) {
       admin.initializeApp({projectId: "demo-catch-rules"});
     }
-    const db = admin.firestore(); const h = harness();
+    const db = getEmulatorFirestore(); const h = harness();
     h.session.organizerId = "practice-settings-" + h.id;
     h.session.clubId = h.session.organizerId;
     const sessionRef = db.collection("eventRehearsals").doc(h.id);

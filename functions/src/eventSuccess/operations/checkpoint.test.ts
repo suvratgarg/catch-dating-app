@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
@@ -447,7 +448,7 @@ test("Firestore competing report retries commit one immutable observation", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await harness(getFirestore(app), true, 1);
+    const h = await harness(getEmulatorFirestore(app), true, 1);
     const input = command(await h.view("sweep"), h.ids);
     const results = await Promise.all(Array.from({length: 8}, () =>
       h.checkpoints.record("sweep", input)));

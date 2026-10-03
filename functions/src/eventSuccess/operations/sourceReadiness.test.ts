@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {setupRuntimePublication} from "./runtimeConfigTestHarness";
 import {newLiveWorkRecords} from "./liveWorkRecords";
@@ -235,7 +236,7 @@ test("Firestore arbitrates multi-event readiness and stable cursors", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    await paginatedDiscovery(getFirestore(app));
+    await paginatedDiscovery(getEmulatorFirestore(app));
   } finally {
     await deleteApp(app);
   }

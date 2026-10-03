@@ -281,3 +281,28 @@ test("owned public paid admission needs no Consumer participation or profile",
       eventId: paidEventId, publicPaymentId: h.paymentId,
       nowMillis: paidNow + 100}), null);
   });
+
+
+test("live offer acceptance still needs current membership",
+  async () => {
+    const h = fixture();
+    h.gated();
+    h.participation({waitlistOfferStatus: "active"});
+    h.store.put("eventWaitlistOffers/event1_person", {
+      eventId, uid, clubId: organizerId, organizerId,
+      cohortAtOffer: "menInterestedInWomen", status: "active", source: "host",
+      offeredBy: "host", offeredAt: stamp(now - 1000),
+      expiresAt: stamp(now + 1000), decidedAt: null,
+      createdAt: stamp(now - 1000), updatedAt: stamp(now - 1000)});
+    assert.equal((await h.readSource())?.futureBooking.reason,
+      "membershipRequired");
+    for (const [path, row] of Object.entries(communityMembershipRows(
+      organizerId, uid))) h.store.put(path, row);
+    const allowed = await h.readSource();
+    assert.equal(allowed?.futureBooking.allowed, true);
+    assert.equal(allowed?.route, "catchWaitlistOffer");
+    assert.equal(allowed?.admission, "none");
+    assert.deepEqual(h.store.writes, []);
+    h.store.get("eventWaitlistOffers/event1_person")!.uid = "foreign";
+    assert.equal(await h.readSource(), null);
+  });

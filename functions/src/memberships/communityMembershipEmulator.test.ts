@@ -1,7 +1,8 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {communityMembershipFixture, communityMembershipRows} from
   "./communityMembershipFixture";
@@ -20,7 +21,7 @@ test("real transactions serialize community revocation and last-seat booking", {
     "Only a local Firestore emulator may run this synthetic race.");
   const app = initializeApp({projectId: "demo-catch-membership"},
     "community-membership-races");
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   const h = communityMembershipFixture();
   const future = Date.now() + 3600000;
   const user = {name: "Synthetic Guest", firstName: "Synthetic",

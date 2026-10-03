@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {start, keys} from "./whatsappTestHarness";
 import {RCS_DISPATCHES, parseRcsDispatch, parseRcsBudget,
@@ -353,7 +354,7 @@ test("Firestore concurrent RCS workers send once and debit both budgets once", {
   const key = randomUUID();
   const app = initializeApp({projectId: "demo-rcs-dispatch-" + key.slice(0, 8)},
     "rcs-dispatch-" + key);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await rcsHarness(db, "real", [...onlyRcs]);
     await Promise.all(Array.from({length: 4}, () => h.dispatch()));

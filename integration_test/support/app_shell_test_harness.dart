@@ -34,6 +34,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -239,6 +240,7 @@ List<Object> appShellTestOverrides({
   List<Event> recommendedEvents = const [],
   Map<String, List<Event>> clubEvents = const {},
   Map<String, List<EventParticipation>> eventParticipations = const {},
+  List<EventViewerState> eventViewerStates = const [],
   Map<String, List<Review>> clubReviews = const {},
   Map<String, List<Review>> eventReviews = const {},
   List<Review> reviewsByUser = const [],
@@ -312,6 +314,14 @@ List<Object> appShellTestOverrides({
         });
 
   return [
+    // Canonical observations are explicit test inputs, independent of local
+    // membership, participation and capacity fixtures. Missing reads fail closed.
+    if (uid != null)
+      for (final viewer in eventViewerStates)
+        eventViewerStateProvider(
+          viewer.eventId,
+          uid,
+        ).overrideWithValue(AsyncData(viewer)),
     forceUpdateRequiredProvider.overrideWithValue(const AsyncData(false)),
     forceUpdateRefreshProvider.overrideWithValue(
       (ref, {required invalidatePackageInfo, shouldInvalidate}) async {},

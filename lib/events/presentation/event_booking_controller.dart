@@ -57,37 +57,53 @@ class EventBookingController extends _$EventBookingController {
     required UserProfile user,
     String? inviteCode,
     String? inviteLinkId,
+    int? quotedPriceInPaise,
   }) async {
     _requireSignedIn(action: 'book an event');
     final paymentRepo = ref.read(paymentRepositoryProvider);
-    final quotedPriceInPaise = event.priceInPaiseFor(user);
+    final currentPriceInPaise =
+        quotedPriceInPaise ?? event.priceInPaiseFor(user);
 
-    if (quotedPriceInPaise == 0) {
+    if (currentPriceInPaise == 0) {
       await paymentRepo.bookFreeEvent(
         eventId: event.id,
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,
       );
       return null;
-    } else {
-      if (!paymentRepo.supportsPaidBookingsForCurrency(event.currency)) {
-        throw PaidBookingUnsupportedException(
-          message: 'Paid bookings in ${event.currency} are not available yet.',
-        );
-      }
-      return paymentRepo.processPayment(
-        eventId: event.id,
-        currencyCode: event.currency,
-        description:
-            // copy:allow-inline(Composes governed event title and date separator copy)
-            '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
-        userName: user.name,
-        userEmail: user.email,
-        userContact: user.phoneNumber,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
+    }
+    return _startCheckout(
+      event: event,
+      user: user,
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+    );
+  }
+
+  Future<PaymentConfirmationData> _startCheckout({
+    required Event event,
+    required UserProfile user,
+    String? inviteCode,
+    String? inviteLinkId,
+  }) {
+    final paymentRepo = ref.read(paymentRepositoryProvider);
+    if (!paymentRepo.supportsPaidBookingsForCurrency(event.currency)) {
+      throw PaidBookingUnsupportedException(
+        message: 'Paid bookings in ${event.currency} are not available yet.',
       );
     }
+    return paymentRepo.processPayment(
+      eventId: event.id,
+      currencyCode: event.currency,
+      description:
+          // copy:allow-inline(Composes governed event title and date separator copy)
+          '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
+      userName: user.name,
+      userEmail: user.email,
+      userContact: user.phoneNumber,
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+    );
   }
 
   /// Cancels the user's sign-up for [event] via the [cancelEventSignUp] Cloud
@@ -135,7 +151,9 @@ class EventBookingController extends _$EventBookingController {
         .read(eventRepositoryProvider)
         .acceptWaitlistOffer(eventId: event.id);
     if (response.requiresPayment) {
-      return book(
+      // Acceptance is the current server-owned route; a stale local zero price
+      // cannot turn the accepted paid offer into a free booking command.
+      return _startCheckout(
         event: event,
         user: user,
         inviteCode: inviteCode,

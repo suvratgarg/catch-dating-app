@@ -813,7 +813,14 @@
         "functions/src/organizers/organizerFormConversions.ts",
         "functions/src/organizers/organizerFormConversions.test.ts",
         "functions/src/events/eventAttendees.ts",
-        "functions/src/events/eventAttendees.test.ts"
+        "functions/src/events/eventAttendees.test.ts",
+        "functions/src/shared/organizerHosts.ts",
+        "functions/src/shared/clubHosts.ts",
+        "functions/src/shared/organizerHosts.test.ts",
+        "functions/src/organizers/manageOrganizerTeam.ts",
+        "functions/src/profiles/syncPublicProfile.ts",
+        "functions/src/profiles/syncPublicProfile.test.ts",
+        "functions/src/profiles/syncPublicProfileEmulator.test.ts"
       ]},
       "components": ["backend.organizer-authority"],
       "terminal": true
@@ -1046,7 +1053,7 @@
     {"id": "content.native", "owner": "content_system", "risk": "high", "operationProfile": "content-native", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Native permission catalog and deterministic shared iOS projection."},
     {"id": "content.event-success", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Event Success questionnaire catalog and deterministic Flutter projection."},
     {"id": "content.structured", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Structured domain-copy catalog, templates, and deterministic Flutter projections."},
-    {"id": "backend.organizer-authority", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "terminal", "dependsOn": ["contracts.source"], "alsoAffects": ["backend.firestore-rules"], "description": "Organizer authority, form conversions, and their test command retain Functions ownership and additionally validate real Firestore authorization races."},
+    {"id": "backend.organizer-authority", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "terminal", "dependsOn": ["contracts.source"], "alsoAffects": ["backend.firestore-rules"], "description": "Organizer authority, form conversions, profile projection sync, and their test command retain Functions ownership and additionally validate real Firestore authorization races."},
     {"id": "backend.functions", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "component", "ownedPaths": {"include": ["functions/**"], "exclude": ["functions/README.md", "functions/src/shared/generated/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Handwritten Cloud Functions source."},
     {"id": "backend.functions-doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "functions-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Functions export inventory contract."},
     {"id": "backend.firestore-indexes", "owner": "backend_platform", "risk": "high", "operationProfile": "firestore-indexes-source", "pathType": "component", "ownedPaths": {"include": ["firestore.indexes.json"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore composite-index configuration."},

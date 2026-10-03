@@ -51,7 +51,7 @@ final class ProgramAttendanceActionsProvider
 }
 
 String _$programAttendanceActionsHash() =>
-    r'29613bbe56ab9313712c5b9d0fffca6a6116fac6';
+    r'6416bf8de66492f36c162dbef9ceb60d5502f7d6';
 
 /// Attendance-report actions for the reconciliation surface. Widgets go
 /// through this controller rather than reaching into repository or share
