@@ -1,10 +1,16 @@
 import {useMutation} from "@tanstack/react-query";
 import {useEffect, useMemo, useRef, useState} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
-import {CatchWhatsappReplySession} from
+import {CatchWhatsappReplyAttempts, CatchWhatsappReplySession} from
   "../../../shared/controllers/catchWhatsappReplySession";
 import {catchWhatsappTrialApi, type CatchTrialApi, type CatchTrialScope} from
   "../api/catchWhatsappTrialRepository";
+
+// Page-lifetime tombstones live outside the session-keyed provider subtree.
+// Retain only project + opaque inbound ID across account changes/remounts, never
+// review text, reply text, tokens, actor IDs or results. No browser persistence;
+// server claims remain authoritative across reloads and other tabs/devices.
+const replyAttempts = new CatchWhatsappReplyAttempts();
 
 export function useCatchWhatsappTrialController({scope, enabled,
   api = catchWhatsappTrialApi}: {
@@ -12,9 +18,11 @@ export function useCatchWhatsappTrialController({scope, enabled,
 }) {
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const holder = useMemo(() => {
-    const session = new CatchWhatsappReplySession();
-    session.setContext({...scope, enabled});
-    return {session, active: true, busy: false, error: "", eventId: ""};
+    const session = new CatchWhatsappReplySession(replyAttempts);
+    const context = {actorUid: scope.actorUid, projectId: scope.projectId,
+      sessionKey: scope.sessionKey, enabled};
+    session.setContext(context);
+    return {session, context, active: true, busy: false, error: "", eventId: ""};
   }, [scope.actorUid, scope.projectId, scope.sessionKey, enabled]);
   const latest = useRef({holder, scope});
   latest.current = {holder, scope};
@@ -25,9 +33,13 @@ export function useCatchWhatsappTrialController({scope, enabled,
 
   useEffect(() => {
     holder.active = true;
+    // StrictMode may retire and restore this effect without another render.
+    holder.session.setContext(holder.context);
     return () => {
       holder.active = false;
       holder.session.setContext(null);
+      holder.eventId = "";
+      holder.error = "";
     };
   }, [holder]);
   const view = holder.session.snapshot();

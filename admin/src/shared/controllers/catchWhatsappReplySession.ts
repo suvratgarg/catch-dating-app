@@ -16,6 +16,22 @@ type SendTicket = Readonly<{
 type Phase = "disabled" | "empty" | "reviewing" | "reviewed" |
   "confirmed" | "unknown" | "sent";
 
+/** Only opaque receipt IDs and their project scope; never private payloads. */
+export class CatchWhatsappReplyAttempts {
+  private readonly consumed = new Set<string>();
+
+  has(projectId: string, eventId: string): boolean {
+    return this.consumed.has(JSON.stringify([projectId, eventId]));
+  }
+
+  reserve(projectId: string, eventId: string): boolean {
+    const key = JSON.stringify([projectId, eventId]);
+    if (this.consumed.has(key)) return false;
+    this.consumed.add(key);
+    return true;
+  }
+}
+
 /**
  * In-memory state for a single controlled reply. No I/O, persistence, routing
  * or provider authority. A future mounted caller must use canonical runtime
@@ -33,8 +49,7 @@ export class CatchWhatsappReplySession {
   private replyBody = "";
   private phase: Phase = "disabled";
   private result: Readonly<CatchReplyResult> | null = null;
-  // Survives context changes; server claims provide durable cross-tab protection.
-  private consumed = new Set<string>();
+  constructor(private readonly attempts = new CatchWhatsappReplyAttempts()) {}
 
   setContext(context: Context | null): void {
     if (context && this.context &&
@@ -60,7 +75,8 @@ export class CatchWhatsappReplySession {
   startReview(eventId: string): ReviewTicket {
     this.requireEnabled();
     if (this.phase === "unknown" || this.phase === "sent" ||
-        this.consumed.has(eventId) || !/^cwhe_[a-f0-9]{64}$/u.test(eventId)) {
+        this.attempts.has(this.context!.projectId, eventId) ||
+        !/^cwhe_[a-f0-9]{64}$/u.test(eventId)) {
       throw new Error("A fresh eligible inbound review is required.");
     }
     this.inbound = null;
@@ -120,7 +136,8 @@ export class CatchWhatsappReplySession {
   takeConfirmedCommand(nowMillis: number): SendTicket {
     this.requireReviewed(nowMillis);
     if (this.phase !== "confirmed" || !this.inbound ||
-        this.consumed.has(this.inbound.inboundEventId)) {
+        !this.attempts.reserve(this.context!.projectId,
+          this.inbound.inboundEventId)) {
       throw new Error("Explicit confirmation is required.");
     }
     const command: Readonly<CatchReplyCommand> = Object.freeze({
@@ -128,7 +145,6 @@ export class CatchWhatsappReplySession {
       reviewedInboundTextHash: this.inbound.reviewedInboundTextHash,
       confirmSupportRequest: true, body: this.replyBody,
     });
-    this.consumed.add(this.inbound.inboundEventId);
     this.sendTicket = Object.freeze({generation: this.generation,
       request: ++this.sequence, command});
     // Reserve before dispatch. Every error, timeout or missing settlement stays

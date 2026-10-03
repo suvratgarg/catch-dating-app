@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {CatchWhatsappReplySession} from "./catchWhatsappReplySession";
+import {CatchWhatsappReplyAttempts, CatchWhatsappReplySession} from "./catchWhatsappReplySession";
 
 const eventId = "cwhe_" + "a".repeat(64);
 const context = {sessionKey: "session-1", actorUid: "staff",
@@ -10,9 +10,10 @@ const inbound = {purpose: "serviceSupport" as const, inboundEventId: eventId,
 const result = {operationId: "cwreply_" + "c".repeat(64),
   providerMessageId: "wamid.test", deliveryStatus: "accepted" as const,
   replayed: false};
-function reviewed() {
-  const session = new CatchWhatsappReplySession();
-  session.setContext(context);
+function reviewed(attempts?: CatchWhatsappReplyAttempts,
+  scope = context) {
+  const session = new CatchWhatsappReplySession(attempts);
+  session.setContext(scope);
   const ticket = session.startReview(eventId);
   session.acceptReview(ticket, inbound, 1000);
   session.editReply("Exact reviewed reply");
@@ -105,4 +106,30 @@ describe("controlled Catch reply operator state", () => {
     expect(() => session.startReview(eventId)).toThrow();
     expect(session.acceptResult(ticket, result)).toBe(false);
   });
+});
+
+it("shares only project-scoped attempt markers across new private sessions", () => {
+  const attempts = new CatchWhatsappReplyAttempts();
+  const first = reviewed(attempts);
+  first.confirmSupportRequest(2000);
+  first.takeConfirmedCommand(2000);
+  first.setContext(null);
+  expect(first.snapshot()).toEqual({phase: "disabled", inbound: null,
+    replyBody: "", result: null});
+  const replacement = new CatchWhatsappReplySession(attempts);
+  replacement.setContext({...context, actorUid: "other", sessionKey: "new"});
+  expect(() => replacement.startReview(eventId)).toThrow(/fresh eligible/);
+  replacement.setContext({...context, projectId: "different"});
+  expect(() => replacement.startReview(eventId)).not.toThrow();
+  replacement.setContext(context);
+  expect(() => replacement.startReview(eventId)).toThrow(/fresh eligible/);
+});
+it("reserves synchronously across sessions that already reviewed the same inbound", () => {
+  const attempts = new CatchWhatsappReplyAttempts();
+  const first = reviewed(attempts);
+  const second = reviewed(attempts);
+  first.confirmSupportRequest(2000);
+  second.confirmSupportRequest(2000);
+  first.takeConfirmedCommand(2000);
+  expect(() => second.takeConfirmedCommand(2000)).toThrow(/confirmation/);
 });
