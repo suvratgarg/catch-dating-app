@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  buildInventory,
+  extractRouterSemanticClosure,
   extractGoRouterConfigurationBlock,
   extractImperativePageRoutesFromSource,
   extractRuntimeRouteEntries,
@@ -117,8 +119,8 @@ Future<void> open(BuildContext context) {
 }
 `, "lib/feature/open.dart");
 
-  assert.deepEqual(routes, [{
-    siteId: "material-page:lib/feature/open.dart:1",
+  assert.match(routes[0].siteId, /^material-page:lib\/feature\/open.dart:[a-f0-9]{64}:1$/u);
+  assert.deepEqual(routes.map(({siteId, routeExpression, ...route}) => route), [{
     sourcePath: "lib/feature/open.dart",
     line: 4,
     ordinal: 1,
@@ -248,4 +250,69 @@ test("fails closed on unsupported full-screen PageRoute constructors", () => {
       new RegExp(`${routeType} is a full-screen PageRoute`, "u"),
     );
   }
+});
+
+const contract = "enum Routes {\n fixture('/fixture'),\n ;\n }";
+const router = `GoRouter buildRouter() {
+  return GoRouter(routes: [GoRoute(path: Routes.fixture.path,
+    name: Routes.fixture.name, builder: (_, _) => fixtureScreen())]);
+}
+Widget fixtureScreen() => const FixtureScreen();
+void unrelated() { print('diagnostic'); }
+`;
+const inventory = (routerSource = router, imperativePageRoutes = []) => buildInventory({
+  routeContractSource: contract, routerSource, imperativePageRoutes,
+});
+
+test("unrelated router code and imperative line movement do not stale semantic inventory", () => {
+  assert.deepEqual(inventory(router.replace("print('diagnostic')", "print('changed diagnostic')")), inventory());
+  const source = "void open() { MaterialPageRoute(builder: (_) => const FixtureScreen()); }";
+  assert.deepEqual(
+    inventory(router, extractImperativePageRoutesFromSource(source, "lib/open.dart")),
+    inventory(router, extractImperativePageRoutesFromSource("\n".repeat(55) + source, "lib/open.dart")),
+  );
+  assert.equal("normalizedFileSha256" in inventory().source, false);
+});
+
+test("route deletion, retargeting, helper presentation and shell composition still invalidate inventory", () => {
+  assert.throws(() => inventory("return GoRouter(routes: []);"), /declared but not wired/);
+  assert.notDeepEqual(inventory(router.replace("FixtureScreen()", "OtherScreen()")), inventory());
+  assert.notDeepEqual(inventory(router.replace("fixtureScreen())]);", "fixtureScreen(), parentNavigatorKey: rootKey)]);")), inventory());
+  assert.throws(() => inventory(router.replace("Routes.fixture.path", "'/wrong'")), /composed runtime path/);
+  assert.match(extractRouterSemanticClosure(router), /Widget|fixtureScreen/);
+});
+
+test("imperative identities survive independent insertion and retain target, composition and multiplicity", () => {
+  const first = "MaterialPageRoute(builder: (_) => const FixtureScreen())";
+  const second = "MaterialPageRoute(builder: (_) => const OtherScreen())";
+  const read = source => inventory(router, extractImperativePageRoutesFromSource(source, "lib/open.dart")).imperativePageRoutes;
+  const original = read(first)[0];
+  assert.ok(read(`${second}; ${first}`).some(route => route.siteId === original.siteId));
+  assert.equal(read(`${first}; ${first}`).length, 2);
+  assert.notEqual(read(`${first}; ${first}`)[0].siteId, read(`${first}; ${first}`)[1].siteId);
+  assert.notDeepEqual(read(first), read(second));
+  assert.notDeepEqual(read(first), read(first.replace("builder:", "fullscreenDialog: true, builder:")));
+  assert.equal("line" in original, false); assert.equal(original.ordinal, 1);
+});
+
+test("semantic closure preserves named-parameter bodies and arrow defaults", () => {
+  const body = router.replace("Widget fixtureScreen() => const FixtureScreen();",
+    "Widget fixtureScreen({bool enabled = true}) { return const FixtureScreen(); }");
+  assert.notDeepEqual(inventory(body), inventory(body.replace("FixtureScreen();", "OtherScreen();")));
+  const arrow = router.replace("Widget fixtureScreen() =>", "Widget fixtureScreen({bool enabled = true}) =>");
+  assert.notDeepEqual(inventory(arrow), inventory(arrow.replace("enabled = true", "enabled = false")));
+});
+
+test("switch expressions do not bind unrelated functions as callable helpers", () => {
+  const source = "Widget other() {\n  return switch (mode) { _ => const OtherScreen() };\n}\n" +
+    router.replace("Widget fixtureScreen() => const FixtureScreen();",
+      "Widget fixtureScreen() {\n  return switch (mode) { _ => const FixtureScreen() };\n}");
+  assert.deepEqual(inventory(source), inventory(source.replace("OtherScreen()", "AnotherScreen()")));
+  assert.notDeepEqual(inventory(source), inventory(source.replace("FixtureScreen()", "OtherScreen()")));
+});
+
+test("a return invocation before the declaration cannot hide a reachable helper body", () => {
+  const source = router.replace("Widget fixtureScreen() => const FixtureScreen();",
+    "Widget fixtureScreen() {\n  return nestedScreen();\n}\nWidget nestedScreen() => const FixtureScreen();");
+  assert.notDeepEqual(inventory(source), inventory(source.replace("FixtureScreen()", "OtherScreen()")));
 });

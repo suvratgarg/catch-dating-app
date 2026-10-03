@@ -58,13 +58,14 @@ jobs:
 
   plan:
     needs: admission
-    if: ${{ always() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
     name: Plan affected targets
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       admin: ${{ steps.plan.outputs.admin }}
       app_roles: ${{ steps.plan.outputs.app_roles }}
+      capture_freshness: ${{ steps.plan.outputs.capture_freshness }}
       contracts: ${{ steps.plan.outputs.contracts }}
       docs: ${{ steps.plan.outputs.docs }}
       docs_checkout: ${{ steps.plan.outputs.docs_checkout }}
@@ -88,6 +89,8 @@ jobs:
       full: ${{ steps.plan.outputs.full }}
       commit_window: ${{ steps.plan.outputs.commit_window }}
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
+      tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
+      tools_owns_design_handoff: ${{ steps.plan.outputs.tools_owns_design_handoff }}
 
     steps:
       - name: Checkout planner closure
@@ -99,6 +102,7 @@ jobs:
           sparse-checkout: |
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
+            /tool/harness/compare_selectors.mjs
             /tool/ci/main_ci_baseline.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
@@ -185,6 +189,10 @@ jobs:
             git merge-base --is-ancestor "$base_sha" "$HEAD_SHA"
           fi
 
+          mkdir -p build/ci
+          node tool/harness/compare_selectors.mjs --base "$base_sha" --head "$HEAD_SHA" \
+            --mode "$event_mode" > build/ci/selector-comparison.json
+
           node tool/harness/verify_local.mjs --preflight \
             --base "$base_sha" --head "$HEAD_SHA" --mode "$event_mode" \
             "${full_flag[@]}" "${window_flag[@]}"
@@ -210,11 +218,13 @@ jobs:
             }' \
             build/ci/impact-plan.unbound.json > build/ci/impact-plan.json
           rm build/ci/impact-plan.unbound.json
+          node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
+            --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {toolsOwnUiLintSmoke} from './tool/lib/tool_impact.mjs';
+          import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
           const owned = toolsOwnUiLintSmoke({
             plan: read('build/ci/impact-plan.json'),
@@ -222,6 +232,12 @@ jobs:
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
+          const design = toolsOwnDesignChecks({
+            plan: read('build/ci/impact-plan.json'), manifest: read('tool/tools_manifest.json'),
+            componentGraph: read('tool/harness/component_graph.json'),
+          });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            `tools_owns_design_parity=${design.parity}\ntools_owns_design_handoff=${design.handoff}\n`);
           NODE
 
       - name: Report Audience documentation impact
@@ -268,6 +284,14 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      - name: Upload selector comparison
+        uses: actions/upload-artifact@v7
+        with:
+          name: selector-comparison-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/selector-comparison.json
+          if-no-files-found: error
+          retention-days: 7
+
   tools:
     needs: plan
     if: ${{ needs.plan.outputs.tools == 'true' }}
@@ -307,6 +331,8 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
+      design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
+      design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
     secrets: inherit
 
   visual-integration:
@@ -329,7 +355,13 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
+      capture_freshness_in_ci: true
     secrets: inherit
+
+  capture-freshness:
+    needs: plan
+    if: ${{ needs.plan.outputs.capture_freshness == 'true' }}
+    uses: ./.github/workflows/capture-freshness-ci.yml
 
   operations:
     needs: plan
@@ -443,7 +475,7 @@ jobs:
   finalize-plan:
     name: Finalize the ordered delivery plan
     if: >-
-      always() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs:
@@ -456,6 +488,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -525,7 +558,7 @@ jobs:
   package-firebase:
     name: Package approved Firebase backend
     if: >-
-      always() &&
+      !cancelled() &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
@@ -542,6 +575,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -662,7 +696,7 @@ jobs:
   required:
     # Metadata notifications never publish a replacement Required CI context.
     name: ${{ github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted' && 'Ignored PR metadata' || 'Required CI' }}
-    if: ${{ always() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
+    if: ${{ !cancelled() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
     needs:
       - admission
       - plan
@@ -675,6 +709,7 @@ jobs:
       - visual-integration
       - admin
       - marketing
+      - capture-freshness
       - operations
       - docs-policy
       - app-builds
@@ -724,6 +759,22 @@ jobs:
             exit 1
           fi
           test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
+          # Selection only counts when its owning job actually succeeded.
+          jq -e '
+            . as $needs |
+            {admin: "admin", capture_freshness: "capture-freshness", contracts: "contracts",
+             docs: "docs-policy", policy_docs: "docs-policy", firestore_rules: "firestore-rules",
+             flutter: "flutter", functions: "functions", marketing: "marketing",
+             operations: "operations", tools: "tools", visual_integration: "visual-integration",
+             flutter_build_android: "app-builds", flutter_build_ios: "app-builds",
+             flutter_build_web: "app-builds", flutter_web_smoke: "app-builds"} |
+            to_entries | all(.[];
+              . as $lane | $needs.plan.outputs[$lane.key] as $selected |
+              if $selected == "false" then true
+              elif $selected == "true" and $needs[$lane.value].result == "success" then true
+              else error("Selected lane " + $lane.key + " lacks successful execution or selection output")
+              end)
+          ' <<< "$NEEDS_JSON" > /dev/null
           if [[ "$EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
             test "$(jq -er '.["finalize-plan"].result' <<< "$NEEDS_JSON")" = success
           fi

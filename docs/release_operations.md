@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.20
-updated: 2026-10-02
+version: 2.7.25
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -333,11 +333,54 @@ retain source selection only when both committed component graphs classify the
 prose as documentation-only and neither snapshot's package manifests could bundle
 it as an asset. Markdown in test or asset directories is never exempt. Assets,
 dependency manifests, test configuration, other non-Dart changes, unsupported
-inputs, and changes with no provable dependent test retain the full suite.
+inputs, and any changed source with no provable dependent test retain the full
+suite, including when another changed source has proven coverage.
 Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
+
+### Selected Check Contracts
+
+The graph selects obligations; selection is not execution evidence. Selector-control
+edits compare the actual Git base and head graph/engine snapshots on identical
+changed paths and require the union of their full validation targets. Main
+comparison includes transient and reverted paths in the committed window.
+Comparison artifacts record selected IDs, differences, source and selector-input
+hashes; they are not executed-test evidence or a cross-SHA reuse permission.
+Missing snapshot dependencies and incomplete selection fail closed.
+
+Orchestration job guards use `!cancelled()` so cancellation can terminate the
+planner and aggregate instead of leaving an `always()` job holding the serial
+slot. Failed or unadmitted runs still execute the rejecting aggregate; every
+selected target requires a successful owning job. A cancelled workflow has no
+successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
+single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+
+Preserve these contracts when narrowing work:
+
+| Invariant and owner | Inputs and trigger | Environment and evidence | Failure action |
+|---|---|---|---|
+| Backend permissions and transaction behavior; backend platform | Functions source/tests/package inputs, Rules, and generated backend contracts conservatively select backend integration | Pinned Node/Java/Firebase CLI, Firestore and Storage emulators; strict runner rejects missing emulators, zero executed tests, failures, skips and TODOs. Seven-day artifact records selected/executed tests, summaries, source SHA, Node version and input hashes | Repair the failing assertion or missing execution; do not replace an emulator run with ordinary Functions discovery |
+| Root Flutter behavior; app platform | Every changed Dart source needs a base/head import-path proof; unproven mixed paths retain full selection | Pinned Flutter; existing selected-file/shard artifacts and actual test results | Repair coverage or retain full fallback; filesystem probes do not establish coverage for unrelated files |
+| App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
+| Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
+| Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
+| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned Node-only Ubuntu lane runs source-stamp/input-hash, PNG/copy and derived metadata checks; selected lane must succeed in finalization and Required CI | Regenerate through the real capture tool after reviewing changed inputs; do not restamp or copy stale images |
+| Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
+
+Whole-product widget similarity is advisory and has no product acceptance
+threshold. Request it explicitly with `check_design_parity.mjs --check --reports`
+or run its registered report command. Its extractor/clustering probes and focused
+generator regressions remain blocking. Scoped snapshot/export checks prove only their documented source/metadata
+invariants; the explicit handoff command checks all of them together.
+
+Use GitHub run/job timestamps and execution artifacts to measure time to first
+actionable failure, ready-to-merge latency, completed job-seconds by runner,
+reruns, selector misses, unexpected skips and regeneration-conflict effort.
+Record source/toolchain identity and deduplicate retained job IDs across retry
+attempts. These observations are not money saved or proof permitting cross-SHA
+result reuse. Keep run measurements in task/CI evidence, not tracked ledgers.
 
 The same planner follows the lint engine's seeded and generated probe imports.
 The expensive Catch UI plugin smoke check runs when its engine, configuration,
@@ -387,6 +430,56 @@ or cancelled React check still blocks CI. Reusable and standalone Tools runs
 default to executing their own browser checks. No result crosses source commits
 or CI attempts, and altered commands lose the omission until their equivalence
 is verified again.
+
+On a Marketing main push, `ci.yml` owns React validation and its separate
+capture-freshness lane. `marketing-website.yml` waits up to 35 minutes for those
+two successful jobs on the exact source SHA, canonical workflow, repository,
+run and attempt. It records their job IDs in a seven-day artifact and omits its
+duplicate React invocation. It does not wait for unrelated lanes. Missing,
+failed, cancelled or ambiguous evidence blocks packaging; inspect the linked
+same-source CI jobs, repair the failure and rerun the source workflow. Only an
+explicitly skipped Marketing lane requests standalone React validation. Manual
+validation still executes the complete reusable validation workflow. Source,
+workflow and toolchain changes invalidate reuse across commits; dependency
+caches are not execution evidence.
+
+Native app source and test changes select capture freshness through the impact
+graph without triggering a Marketing production build. Actual website, shared
+web UI, media and production snapshot inputs retain their validation and release
+triggers. Reused validation authorizes only the next packaging step: the release
+workflow still materializes read-only live organizer listings, checks production
+environment inputs, builds exact production bytes and verifies artifact hashes,
+promotion authorization and readback. A PR bundle never supplies production
+bytes. The check contract is enforced by `ci:main-marketing-validation` and
+`ci:web-hosting-delivery-workflow`; no cross-SHA validation reuse is supported.
+
+Flutter reuses design parity and handoff checks only when the actual required
+Tools plan owns their complete registered checks. Standalone Flutter runs default
+to executing them. Otherwise its handoff step selects Figma/Claude/context checks
+from the exact committed input window; full runs and control changes retain all
+handoff checks. Ordinary unrelated app logic no longer regenerates the context
+pack. Failure or cancellation of the owning Tools lane still fails Required CI.
+
+Design parity source checks are explicit commands in `tool/tools_manifest.json`,
+shared by the local umbrella and the tool runner. Identical scanner commands run
+once within the Marketing/design tool bucket. Figma/Claude snapshot checks and
+portable context exports select from their recorded inputs; local handoff work
+can request `check_design_parity.mjs --check --handoff`. Whole-product similarity
+and advisory migration reports remain explicit `--reports` output. These prove
+source contracts or export freshness, never live visual parity. Missing snapshot
+metadata still fails its selected check; generated reports do not replace UI
+journeys, renderer tests or ownership checks.
+
+Route inventory version 5 records semantic presentation identities, not physical
+line positions or a hash of the entire router file. Its router fingerprint includes
+the configuration and reachable local callable signatures/bodies; route deletion,
+retargeting and composition changes still invalidate it. Imperative identities hash
+the normalized builder and fullscreen-dialog expressions, with an occurrence
+counter for identical presentations. The resolved Dart checker independently
+reconstructs those identities and verifies each typed presentation owner. Use
+`node tool/ui_capture/check_route_inventory.mjs --locations` for current diagnostic
+lines and `--update` to regenerate after a semantic route change. Review the
+resulting route/capture obligations rather than editing hashes by hand.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job

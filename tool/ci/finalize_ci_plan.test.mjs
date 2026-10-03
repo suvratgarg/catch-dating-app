@@ -13,7 +13,7 @@ const read = (file) => JSON.parse(fs.readFileSync(new URL(file, import.meta.url)
 const graph = read("../harness/component_graph.json");
 const manifest = read("../tools_manifest.json");
 const needs = Object.fromEntries(["plan", "tools", "contracts", "functions", "firestore-rules", "flutter",
-  "visual-integration", "admin", "marketing", "operations", "docs-policy", "app-builds"]
+  "visual-integration", "admin", "marketing", "capture-freshness", "operations", "docs-policy", "app-builds"]
   .map((name) => [name, {result: "success"}]));
 
 function fixture(context) {
@@ -176,5 +176,16 @@ test("finalizer CLI rejects incomplete options without creating output", () => {
     const result = run(args);
     assert.notEqual(result.status, 0);
     assert.equal(result.stdout, "");
+  }
+});
+
+test("capture freshness must execute successfully when selected", () => {
+  const plan = planAffected({graph, mode: "main", changedPaths: ["test/example_test.dart"]});
+  assert.ok(plan.operations.ciTargets.includes("capture_freshness"));
+  assert.ok(!plan.operations.ciTargets.includes("marketing"));
+  for (const result of ["skipped", "failure", "cancelled", undefined]) {
+    const incomplete = structuredClone(needs);
+    incomplete["capture-freshness"] = {result};
+    assert.throws(() => requireValidationLanes(plan, incomplete), /capture_freshness did not succeed/);
   }
 });

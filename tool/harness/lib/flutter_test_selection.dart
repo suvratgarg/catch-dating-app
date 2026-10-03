@@ -99,16 +99,26 @@ Map<String, Object> selectFlutterTests({
     final oldGraph = _Imports(before);
     final newGraph = _Imports(after);
     final selected = <String>[];
-    var provenImpact = false;
+    final coveredChanges = <String>{
+      // Removed test files cannot execute at head. Their deletion does not
+      // establish coverage for any changed production source.
+      for (final name in sourceChanges)
+        if (_testFile(name) &&
+            before.containsKey(name) &&
+            !after.containsKey(name))
+          name,
+    };
     for (final test in all) {
       final current = newGraph.closure(test);
       final previous = before.containsKey(test)
           ? oldGraph.closure(test)
           : <String>{};
-      final impacted =
-          !before.containsKey(test) ||
-          {...current, ...previous}.any(sourceChanges.contains);
-      provenImpact = provenImpact || impacted;
+      final impactedChanges = {
+        ...current,
+        ...previous,
+      }.intersection(sourceChanges);
+      coveredChanges.addAll(impactedChanges);
+      final impacted = !before.containsKey(test) || impactedChanges.isNotEmpty;
       if (impacted ||
           current.contains(_Imports.fileSystemProbe) ||
           previous.contains(_Imports.fileSystemProbe)) {
@@ -117,8 +127,12 @@ Map<String, Object> selectFlutterTests({
     }
     // An untested source or an unsupported relationship must not turn the
     // required test gate into a green no-op.
-    if (!provenImpact || selected.isEmpty) {
-      return result(all, 'No impacted test could be proven; full fallback');
+    final uncovered = sourceChanges.difference(coveredChanges).toList()..sort();
+    if (uncovered.isNotEmpty || selected.isEmpty) {
+      return result(
+        all,
+        'No impacted test could be proven for: ${uncovered.join(', ')}; full fallback',
+      );
     }
     return result(
       selected,
