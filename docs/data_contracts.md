@@ -4937,5 +4937,12 @@ retained only within the event and deleted by the archive sweep. The authenticat
 role-specific responses, derives the actor from authentication, and exposes
 revision-fenced manual proposals and independently checked destinations. Private
 reviews include the exact snapshot and labels read in the same transaction;
-native guest corrections invalidate that snapshot. Routed UI integration and
-real Firestore validation remain pending.
+native guest corrections invalidate that snapshot. The private Host stay-planner
+route connects the current proposal to manual room moves, regeneration, host
+approval and explicit guest publication. It clears session-invalid projections
+and preserves exact operation IDs for uncertain decision retries. Initial setup,
+party/inventory/pin editors and persisted import membership decisions remain
+pending. A strict demo-only Firestore integration fixture verifies concurrent
+configuration edits, publication replay, canonical roommate counting, transactional
+rollback and stale native edits; private collection deny rules are also exercised.
+Fresh captures and full combined release validation remain pending.

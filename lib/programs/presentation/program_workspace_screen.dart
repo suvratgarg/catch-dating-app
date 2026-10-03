@@ -287,6 +287,18 @@ class _ProgramWorkspacePageBodyState
               child: Column(
                 children: [
                   CatchFieldRow.standard(
+                    leading: Icon(CatchIcons.hotel),
+                    body: Text(
+                      context.l10n.programsLodgingTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    trailing: Icon(CatchIcons.chevronRightRounded),
+                    onTap: () => context.pushNamed(
+                      Routes.hostProgramLodgingScreen.name,
+                      pathParameters: {'programId': program.programId},
+                    ),
+                  ),
+                  CatchFieldRow.standard(
                     leading: Icon(CatchIcons.groupsOutlined),
                     body: Text(
                       context.l10n.programsWorkspaceGuestsTitle,
@@ -612,4 +624,3 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
     );
   }
 }
-
