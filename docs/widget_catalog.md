@@ -1044,13 +1044,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentHistoryTile</code> | <code>lib/payments/presentation/payment_history_screen.dart:215</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryTileSkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart:169</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentReceiptSheet</code> | <code>lib/payments/presentation/payment_history_screen.dart:313</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramArrivalActionMenu</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:415</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramArrivalReadinessBadge</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:376</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramArrivalRow</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:261</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramArrivalActionMenu</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:400</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramArrivalReadinessBadge</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:361</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramArrivalRow</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:246</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionAttendanceRow</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart:210</code> | — | — | One function's attendance reconciliation: invited vs attended vs checked-in, plus the exception counts needing follow-up. |
 | <code>ProgramAttentionRow</code> | <code>lib/programs/presentation/program_attention_screen.dart:107</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:240</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:311</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
+| <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:225</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:296</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
 | <code>ProgramDoorAttendanceBadge</code> | <code>lib/programs/presentation/program_door_screen.dart:574</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorGuestRow</code> | <code>lib/programs/presentation/program_door_screen.dart:465</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPageBody</code> | <code>lib/programs/presentation/program_door_screen.dart:193</code> | — | — | No class documentation or registry summary. |
@@ -1059,7 +1059,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:590</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
 | <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:138</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:262</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:250</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:291</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
 | <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:219</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
 | <code>ProgramStaySheet</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:340</code> | — | — | Assign or manage one guest's stay: block, room label, lifecycle status, and the desk's room-ready / guest-arrived marks. |
@@ -1076,9 +1076,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramHotelOccupancyRow</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:237</code> | — | — | Per-hotel occupancy row for the stakeholder counts view. |
 | <code>ProgramStaffAccessDialog</code> | <code>lib/programs/presentation/program_team_screen.dart:304</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTeamPageBody</code> | <code>lib/programs/presentation/program_team_screen.dart:70</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:269</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:402</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:149</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:254</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:387</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:131</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:520</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:73</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:24</code> | — | — | No class documentation or registry summary. |
