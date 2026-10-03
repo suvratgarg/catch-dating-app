@@ -174,6 +174,11 @@ const AdminActionExecutionsScreen = lazy(() =>
     (module) => ({default: module.AdminActionExecutionsScreen})
   )
 );
+const CatchWhatsappTrialWorkspace = lazy(() =>
+  import("../features/catch-support/ui/CatchWhatsappTrialWorkspace")
+    .then((module) => ({default: module.CatchWhatsappTrialWorkspace}))
+);
+
 const SalesWorkspaceScreen = lazy(() =>
   import("../features/sales/ui/SalesWorkspaceScreen").then((module) => ({
     default: module.SalesWorkspaceScreen,
@@ -682,6 +687,16 @@ function AdminRouteApp() {
               {notice}
             </StatusBanner>
           )}
+
+          {currentNav === "overview" &&
+            (adminRoles.includes("support") || adminRoles.includes("adminOwner")) ? (
+            <Suspense fallback={<AdminFeatureLoadingState label="Loading support trial" />}>
+              <CatchWhatsappTrialWorkspace
+                scope={{actorUid: user?.uid ?? "", projectId: "catchdates-dev",
+                  sessionKey, isCurrent: session.isCurrent}}
+              />
+            </Suspense>
+          ) : null}
 
           {currentNav === "sales" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Sales" />}>
