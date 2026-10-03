@@ -3712,13 +3712,58 @@
       ],
       "owner": "Catch support reply service",
       "read": "server only; exact controlled support/adminOwner callable scope",
-      "write": "no writer in this feature; separately reviewed evidence required, never inferred from receipt absence",
+      "write": "disconnected readiness transaction adapter; audited external authority fence and complete archive evidence required; no live callable writer",
       "exportedFunctions": [
         "adminReviewCatchWhatsappInbound",
         "adminSendCatchWhatsappReply",
         "onCatchWhatsappWebhookEventCreated",
         "onCatchWhatsappReplyOperationWritten"
       ]
+    },
+    {
+      "id": "catchWhatsappReadinessApprovals",
+      "path": "catchWhatsappReadinessApprovals/{approvalId}",
+      "rulesMatch": "/catchWhatsappReadinessApprovals/{approvalId}",
+      "typescriptInterface": "CatchWhatsappReadinessApprovalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "disconnected provisioning transaction only; no deployed writer or client authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "catchWhatsappReadinessIngress",
+      "path": "catchWhatsappReadinessIngress/{ingressId}",
+      "rulesMatch": "/catchWhatsappReadinessIngress/{ingressId}",
+      "typescriptInterface": "CatchWhatsappReadinessIngressDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "no writer provided; separately audited ingress cutover attestation required",
+      "exportedFunctions": []
+    },
+    {
+      "id": "catchWhatsappReadinessAudits",
+      "path": "catchWhatsappReadinessAudits/{auditId}",
+      "rulesMatch": "/catchWhatsappReadinessAudits/{auditId}",
+      "typescriptInterface": "CatchWhatsappReadinessAuditDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestNames": [
+        "readiness control documents deny every SDK client including staff"
+      ],
+      "owner": "Catch support readiness provisioning",
+      "read": "server only; exact protected review and independently audited authority fence",
+      "write": "disconnected provisioning transaction only; no deployed writer or client authority",
+      "exportedFunctions": []
     }
   ]
 }

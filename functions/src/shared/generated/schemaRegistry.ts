@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {catchWhatsappReadinessApprovalDocumentSchema} from "./schemas/catchWhatsappReadinessApprovalDocument";
+export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsappReadinessIngressDocument";
+export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";
 export {catchWhatsappReplyOperationDocumentSchema} from "./schemas/catchWhatsappReplyOperationDocument";
 export {catchWhatsappEndpointStopDocumentSchema} from "./schemas/catchWhatsappEndpointStopDocument";
 export {catchWhatsappReplyReadinessDocumentSchema} from "./schemas/catchWhatsappReplyReadinessDocument";
