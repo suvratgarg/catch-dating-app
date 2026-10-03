@@ -47,8 +47,13 @@ void main() {
       unit['physicalRoomId'] = null;
       unit['provisional'] = facts;
       snapshot['rooms'] = <Object?>[];
+      final configuration = (input['context'] as Map)['configuration'] as Map;
+      configuration['labels'] = <Object?>[
+        <String, Object?>{'inventoryId': 'unit', 'roomLabel': null},
+      ];
       final review = ProgramLodgingReview.fromCallableData(input);
       expect(review.units.single.provisional, true);
+      expect(review.units.single.layoutUnit.label, 'unit');
       expect(review.units.single.inventoryId, 'unit');
       expect(review.units.single.layoutUnit.gridX, 0);
     },

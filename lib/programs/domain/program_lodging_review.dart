@@ -110,7 +110,10 @@ class ProgramLodgingReview {
     };
     final roomLabels = {
       for (final item in mapList(configuration['labels'], 'labels'))
-        requiredString(item, 'inventoryId'): requiredString(item, 'roomLabel'),
+        requiredString(item, 'inventoryId'): requiredNullableString(
+          item,
+          'roomLabel',
+        ),
     };
     final layerCounts = <String, int>{};
     units = List.unmodifiable([
@@ -145,7 +148,7 @@ class ProgramLodgingReview {
   ProgramLodgingBoardUnit _unit(
     Map<Object?, Object?> unit,
     Map<String, Map<Object?, Object?>> rooms,
-    Map<String, String> labels,
+    Map<String, String?> labels,
     Map<String, int> counts,
   ) {
     final id = requiredString(unit, 'id');
