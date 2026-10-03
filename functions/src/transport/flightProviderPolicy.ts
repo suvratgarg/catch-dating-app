@@ -6,6 +6,9 @@ import {HttpsError} from "firebase-functions/v2/https";
 export const flightProviderPolicy = defineString(
   "FLIGHT_PROVIDER_POLICY", {default: ""});
 
+const POLL_SECOND_MILLIS = 1000;
+const POLL_DAY_MILLIS = 86_400_000;
+
 export interface FlightProviderPolicy {
   schema: "catch.flight-policy/v1";
   mode: "polling-pilot";
@@ -74,8 +77,8 @@ export async function reserveFlightPoll(
     throw new HttpsError("failed-precondition", "Flight pilot is inactive.");
   }
   const windows = [
-    {action: "flightPollSecond", millis: 1000, limit: 1},
-    {action: "flightPollDay", millis: 86_400_000,
+    {action: "flightPollSecond", millis: POLL_SECOND_MILLIS, limit: 1},
+    {action: "flightPollDay", millis: POLL_DAY_MILLIS,
       limit: policy.maxRequestsPerDay},
   ].map((window) => ({...window,
     key: Math.floor(now / window.millis)}));
@@ -98,16 +101,26 @@ export async function reserveFlightPoll(
   });
 }
 
-/** Recheck the deadline after reservation and before provider I/O. */
+/** Recheck expiry and reserved windows immediately before provider I/O. */
 export async function runFlightPoll<T>(
   policy: FlightProviderPolicy,
   now: () => number,
   reserve: (now: number) => Promise<void>,
   poll: () => Promise<T>,
 ): Promise<T> {
-  await reserve(now());
-  if (!readFlightProviderPolicy(JSON.stringify(policy), now())) {
+  const reservedAt = now();
+  await reserve(reservedAt);
+  const dispatchAt = now();
+  if (!readFlightProviderPolicy(JSON.stringify(policy), dispatchAt)) {
     throw new HttpsError("failed-precondition", "Flight pilot is inactive.");
+  }
+  if ([POLL_SECOND_MILLIS, POLL_DAY_MILLIS].some((windowMillis) =>
+    Math.floor(reservedAt / windowMillis) !==
+      Math.floor(dispatchAt / windowMillis))) {
+    // Keep the old debit. Retrying here would silently spend another token;
+    // dispatching would charge work to a window that no longer applies.
+    throw new HttpsError("resource-exhausted",
+      "Flight pilot reservation window elapsed.");
   }
   return poll();
 }
