@@ -176,6 +176,54 @@ void main() {
       );
     });
 
+    test('current offer survives a missing local participation snapshot', () {
+      final state = dock(
+        viewerFixture(route: 'catchWaitlistOffer', waitlisted: true),
+      );
+      expect(
+        state.primaryAction,
+        EventDetailBookingDockAction.acceptWaitlistOffer,
+      );
+      expect(state.isPrimaryActionEnabled, isTrue);
+      expect(state.waitlistOfferExpiresAt, isNull);
+    });
+
+    test(
+      'current offer overrides a stale confirmed participation snapshot',
+      () {
+        final state = dock(
+          viewerFixture(route: 'catchWaitlistOffer', waitlisted: true),
+          confirmed: true,
+        );
+        expect(
+          state.primaryAction,
+          EventDetailBookingDockAction.acceptWaitlistOffer,
+        );
+      },
+    );
+
+    for (final reason in ['cohortCapacityUnavailable', 'balanceUnavailable']) {
+      test('waitlisted viewer can leave despite $reason', () {
+        final state = dock(viewerFixture(reason: reason, waitlisted: true));
+        expect(state.primaryAction, EventDetailBookingDockAction.leaveWaitlist);
+        expect(state.isPrimaryActionEnabled, isTrue);
+      });
+    }
+
+    test('retained admission overrides a stale local waitlist offer', () {
+      final state = dock(
+        viewerFixture(
+          reason: 'membershipRequired',
+          membership: 'revoked',
+          admission: 'nativeParticipation',
+        ),
+        offered: true,
+      );
+      expect(state.primaryAction, EventDetailBookingDockAction.cancelBooking);
+      expect(state.leadingKind, EventDetailBookingDockLeadingKind.booked);
+      expect(state.secondaryAction, EventDetailBookingDockAction.none);
+    });
+
     test('unknown scope cannot enable any action', () {
       expect(
         () => dock(viewerFixture(organizerId: 'foreign')),

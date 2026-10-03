@@ -261,7 +261,8 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       availability.status ==
       ViewerEventAvailabilityStatus.runPreferencesRequired;
 
-  if (hasActiveWaitlistOffer) {
+  if (currentViewer?.hasAdmission != true &&
+      (currentViewer?.canAcceptOffer == true || hasActiveWaitlistOffer)) {
     final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
     final currentOfferAllows =
         currentViewer == null || currentViewer.canAcceptOffer;
@@ -277,7 +278,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
           ? EventDetailBookingDockAction.none
           : EventDetailBookingDockAction.acceptWaitlistOffer,
       leadingKind: EventDetailBookingDockLeadingKind.waitlistOffer,
-      waitlistOfferExpiresAt: participation.waitlistOfferExpiresAt,
+      waitlistOfferExpiresAt: participation?.waitlistOfferExpiresAt,
       secondaryAction: EventDetailBookingDockAction.declineWaitlistOffer,
       isLoading: mutationState.acceptWaitlistOfferPending,
       isSecondaryLoading: mutationState.declineWaitlistOfferPending,

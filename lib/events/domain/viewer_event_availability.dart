@@ -299,7 +299,13 @@ ViewerEventAvailability viewerEventAvailabilityFromState({
                 : ViewerEventAvailabilityStatus.full,
           EventViewerRestriction.cohortCapacityUnavailable ||
           EventViewerRestriction.balanceUnavailable =>
-            event.effectiveEventPolicy.admissionPolicy.waitlistPolicy.isEnabled
+            viewer.waitlisted
+                ? ViewerEventAvailabilityStatus.waitlisted
+                : event
+                      .effectiveEventPolicy
+                      .admissionPolicy
+                      .waitlistPolicy
+                      .isEnabled
                 ? ViewerEventAvailabilityStatus.waitlistAvailable
                 : ViewerEventAvailabilityStatus.fullForViewer,
           EventViewerRestriction.runPreferencesRequired =>
