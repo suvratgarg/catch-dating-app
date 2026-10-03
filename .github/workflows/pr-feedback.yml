@@ -24,6 +24,7 @@ jobs:
           sparse-checkout: |
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
+            /tool/harness/compare_selectors.mjs
             /tool/ci/main_ci_baseline.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
@@ -49,5 +50,14 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          mkdir -p build/ci
+          node tool/harness/compare_selectors.mjs --base "$BASE_SHA" --head HEAD --mode pr > build/ci/selector-comparison.json
           node tool/harness/verify_local.mjs --preflight --base "$BASE_SHA" --head HEAD --mode pr
           echo 'This is inexpensive feedback, not merge approval. Full validation requires the sole ci:admitted label.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload selector comparison
+        uses: actions/upload-artifact@v7
+        with:
+          name: selector-comparison-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/selector-comparison.json
+          if-no-files-found: error
+          retention-days: 7
