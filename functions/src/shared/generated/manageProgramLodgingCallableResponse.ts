@@ -9,6 +9,43 @@ import type {ProgramLodgingConfigDocument} from "./programLodgingConfigDocument"
  */
 export type ManageProgramLodgingCallableResponse =
   | {
+      kind: "membership";
+      programId: string;
+      guestId: string;
+      revision: number;
+      label: string;
+      /**
+       * @maxItems 20
+       */
+      groupIds: string[];
+      /**
+       * @maxItems 240
+       */
+      groups: {
+        id: string;
+        label: string;
+      }[];
+      /**
+       * @maxItems 200
+       */
+      evidence: {
+        assertionId: string;
+        groupId: string;
+        selected: boolean;
+        included: boolean;
+        sourceKind: "manualEntry" | "manifestRow" | "contributorList";
+        sourceLabel: string;
+        sourceVersion: number;
+        observedAtMillis: number;
+      }[];
+      accessExpiresAtMillis: number | null;
+    }
+  | {
+      kind: "membershipSaved";
+      guestId: string;
+      revision: number;
+    }
+  | {
       kind: "readSetup";
       configuration: ProgramLodgingConfigDocument | null;
       accessExpiresAtMillis: number | null;

@@ -194,6 +194,41 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
   Object? setupFailure;
   Future<ProgramLodgingProposal>? pendingSave;
   Future<Map<String, Object?>>? pendingTransition;
+  DateTime? setupAccessExpiresAt;
+  DateTime? membershipAccessExpiresAt;
+  int membershipSaves = 0;
+  Object? membershipFailure;
+  Future<int>? pendingMembershipSave;
+  Future<ProgramLodgingMembership>? pendingMembershipRead;
+  int? savedMembershipRevision;
+  List<String>? savedMembershipGroups;
+  @override
+  Future<ProgramLodgingMembership> readMembership(
+    String programId,
+    String guestId,
+  ) async =>
+      pendingMembershipRead ??
+      ProgramLodgingMembership.fromMap(
+        {
+          ...lodgingMembershipJson(guestId),
+          'accessExpiresAtMillis':
+              membershipAccessExpiresAt?.millisecondsSinceEpoch,
+        },
+        programId: programId,
+        guestId: guestId,
+      );
+  @override
+  Future<int> decideMembership(
+    ProgramLodgingMembership membership,
+    List<String> groupIds,
+  ) async {
+    membershipSaves++;
+    savedMembershipRevision = membership.revision;
+    savedMembershipGroups = List.of(groupIds);
+    if (membershipFailure != null) throw membershipFailure!;
+    return pendingMembershipSave ?? membership.revision + 1;
+  }
+
   var previews = 0;
   var saves = 0;
   var setupSaves = 0;
@@ -211,7 +246,7 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
           lodgingSetupCatalogJson(),
           programId: programId,
         ),
-        accessExpiresAt: null,
+        accessExpiresAt: setupAccessExpiresAt,
       );
   @override
   Future<int> saveSetup(
@@ -311,3 +346,28 @@ Map<String, Object?> lodgingTwoHotelReviewJson() {
   (labels['hotels']! as Map<String, Object?>)['hotel2'] = 'Hotel Two';
   return json;
 }
+
+Map<String, Object?> lodgingMembershipJson([String guestId = 'guest']) => {
+  'kind': 'membership',
+  'programId': 'program',
+  'guestId': guestId,
+  'label': guestId == 'local' ? 'Local guest' : 'Guest',
+  'revision': 7,
+  'groupIds': <String>[],
+  'groups': [
+    {'id': 'friends', 'label': 'Friends'},
+  ],
+  'evidence': [
+    {
+      'assertionId': 'wma_${List.filled(64, 'a').join()}',
+      'groupId': 'friends',
+      'selected': false,
+      'included': true,
+      'sourceKind': 'contributorList',
+      'sourceLabel': 'Family contributor list',
+      'sourceVersion': 1,
+      'observedAtMillis': 1800000000000,
+    },
+  ],
+  'accessExpiresAtMillis': null,
+};

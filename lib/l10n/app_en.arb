@@ -31545,5 +31545,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "programsLodgingMembershipTitle": "Review social memberships",
+  "@programsLodgingMembershipTitle": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipHint": "Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.",
+  "@programsLodgingMembershipHint": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipIncluded": "Included",
+  "@programsLodgingMembershipIncluded": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipExcluded": "Excluded",
+  "@programsLodgingMembershipExcluded": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipSuggested": "Suggestion awaiting review",
+  "@programsLodgingMembershipSuggested": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipCanonical": "Existing membership; source not verified",
+  "@programsLodgingMembershipCanonical": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipSave": "Save membership choices",
+  "@programsLodgingMembershipSave": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipExpired": "Access expired. Return and refresh before reviewing memberships.",
+  "@programsLodgingMembershipExpired": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
+  "programsLodgingMembershipEvidence": "{group}: {status} · {source}",
+  "@programsLodgingMembershipEvidence": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen", "placeholders": {"group": {"type": "String"}, "status": {"type": "String"}, "source": {"type": "String"}}}
 }

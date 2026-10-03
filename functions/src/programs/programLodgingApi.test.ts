@@ -6,6 +6,9 @@ import type {ProgramDataDeps} from "../shared/programDataDeps";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {manageProgramLodgingHandler} from "./programLodgingApi";
 
+import {planImportedMembership} from
+  "../workspaces/programMembershipPersistence";
+
 function setup() {
   const start = Date.parse("2026-10-01T00:00:00Z");
   const end = Date.parse("2026-10-03T00:00:00Z");
@@ -238,4 +241,157 @@ test("date-only lodging choices resolve in program timezone across DST",
       departure: "2026-10-03"}, "hotelier-1"), /programCoordinator/);
     await assert.rejects(resolve("Pacific/Apia", "2011-12-30", "2011-12-31"),
       /does not exist/);
+  });
+
+function membershipSetup() {
+  const h = setup();
+  h.fake.setDoc("programGuestGroups/friends", {programId: "program-1",
+    organizerId: "org-1", label: "Friends", memberCount: 0, revision: 1,
+    createdAt: now, updatedAt: now});
+  const guest = h.fake.getDoc("programGuests/guest-1")!;
+  const imported = planImportedMembership({guest, programId: "program-1",
+    organizerId: "org-1", guestId: "guest-1", groupIds: ["friends"],
+    operationId: "import-1", rowIndex: 0, actorUid: "manager-1",
+    observedAtMillis: now.toMillis()});
+  h.fake.updateDoc("programGuests/guest-1", {groupIds: [],
+    membershipSelections: imported.projection.selections,
+    membershipSuggestions: imported.projection.suggestions,
+    privateAffinityNote: "Private note"});
+  for (const write of imported.writes) {
+    h.fake.setDoc(write.path, {...write.data});
+  }
+  const read = () => h.call({action: "readMembership", guestId: "guest-1"});
+  return {...h, read, assertionPath: imported.writes[0].path};
+}
+
+test("membership review labels suggestions without approving or exposing CRM",
+  async () => {
+    const h = membershipSetup();
+    const result = await h.read();
+    if (result.kind !== "membership") throw new Error("Wrong membership kind");
+    assert.deepEqual(result.groupIds, []);
+    assert.deepEqual(result.groups, [{id: "friends", label: "Friends"}]);
+    assert.equal(result.evidence[0].sourceKind, "manifestRow");
+    assert.equal(result.evidence[0].sourceLabel, "Manifest row 1");
+    assert.equal(result.evidence[0].selected, false);
+    assert.equal(result.evidence[0].included, true);
+    assert.equal(JSON.stringify(result).includes("Private note"), false);
+    assert.equal(JSON.stringify(result).includes("actorUid"), false);
+    assert.equal(JSON.stringify(result).includes("phone"), false);
+    await assert.rejects(h.call({action: "readMembership", guestId: "guest-1"},
+      "hotelier-1"), /programCoordinator/);
+  });
+
+test("membership decisions fence revisions and preserve scalar/household data",
+  async () => {
+    const h = membershipSetup();
+    const before = {...h.fake.getDoc("programGuests/guest-1")!};
+    const result = await h.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: before.revision, groupIds: ["friends"]});
+    if (result.kind !== "membershipSaved") throw new Error("Wrong save kind");
+    const after = h.fake.getDoc("programGuests/guest-1")!;
+    assert.equal(after.displayName, before.displayName);
+    assert.equal(after.phoneE164, before.phoneE164);
+    assert.equal(after.householdId, before.householdId);
+    assert.deepEqual(after.groupIds, ["friends"]);
+    assert.equal(h.fake.getDoc("programGuestGroups/friends")!.memberCount, 1);
+    const reviewed = await h.read();
+    if (reviewed.kind !== "membership") throw new Error("Wrong review kind");
+    assert.equal(reviewed.evidence.length, 1);
+    assert.equal(reviewed.evidence[0].sourceKind, "manualEntry");
+    assert.equal(reviewed.evidence[0].selected, true);
+    await assert.rejects(h.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: before.revision, groupIds: []}),
+    /Record changed since you loaded it/);
+    assert.equal(h.fake.getDoc("programGuestGroups/friends")!.memberCount, 1);
+    assert.ok(h.fake.getDoc(h.assertionPath));
+  });
+
+test("explicit exclusion remains a selected source after repeated import",
+  async () => {
+    const h = membershipSetup();
+    await h.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: 1, groupIds: []});
+    const guest = h.fake.getDoc("programGuests/guest-1")!;
+    const imported = planImportedMembership({guest, programId: "program-1",
+      organizerId: "org-1", guestId: "guest-1", groupIds: ["friends"],
+      operationId: "import-2", rowIndex: 0, actorUid: "manager-1",
+      observedAtMillis: now.toMillis()});
+    h.fake.updateDoc("programGuests/guest-1", {
+      membershipSelections: imported.projection.selections,
+      membershipSuggestions: imported.projection.suggestions});
+    for (const write of imported.writes) {
+      h.fake.setDoc(write.path, {...write.data});
+    }
+    const reviewed = await h.read();
+    if (reviewed.kind !== "membership") throw new Error("Wrong review kind");
+    assert.deepEqual(reviewed.groupIds, []);
+    assert.equal(reviewed.evidence.find((e) => e.selected)!.included, false);
+    assert.equal(reviewed.evidence.find((e) => !e.selected)!.included, true);
+    assert.equal(h.fake.getDoc("programGuestGroups/friends")!.memberCount, 0);
+  });
+
+test("membership review fails closed for malformed/foreign/altered pointers",
+  async () => {
+    for (const corruption of ["null", "foreign", "identity", "selected"]) {
+      const h = membershipSetup();
+      if (corruption === "null") {
+        h.fake.updateDoc("programGuests/guest-1",
+          {membershipSuggestions: null});
+      }
+      if (corruption === "foreign") {
+        h.fake.updateDoc(h.assertionPath,
+          {organizerId: "foreign"});
+      }
+      if (corruption === "identity") {
+        h.fake.updateDoc(h.assertionPath,
+          {sourceVersion: 2});
+      }
+      if (corruption === "selected") {
+        h.fake.updateDoc("programGuests/guest-1",
+          {membershipSelections: [{groupId: "friends",
+            assertionId: h.assertionPath.split("/")[1]}],
+          membershipSuggestions: []});
+      }
+      await assert.rejects(h.read(), /reconciliation/);
+    }
+  });
+
+test("membership writes reject foreign groups and expiry after evidence reads",
+  async () => {
+    const h = membershipSetup();
+    h.fake.updateDoc("programGuestGroups/friends", {organizerId: "foreign"});
+    await assert.rejects(h.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: 1, groupIds: ["friends"]}), /reconciliation/);
+    assert.deepEqual(h.fake.getDoc("programGuests/guest-1")!.groupIds, []);
+    const e = membershipSetup();
+    const expiry = now.toMillis() + 100;
+    let clock = now.toMillis();
+    e.dependencies.now = () => Timestamp.fromMillis(clock);
+    e.fake.updateDoc("programStaffGrants/program-1__hotelier-1", {
+      duties: [{duty: "programCoordinator", expiresAtMillis: expiry,
+        pickupPointIds: [], hotelIds: []}]});
+    const get = e.fake.getDoc.bind(e.fake);
+    e.fake.getDoc = (path) => {
+      const result = get(path);
+      if (path === e.assertionPath) clock = expiry;
+      return result;
+    };
+    await assert.rejects(e.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: 1, groupIds: ["friends"]}, "hotelier-1"),
+    (error: unknown) => (error as {code?: string}).code ===
+      "permission-denied");
+    assert.deepEqual(get("programGuests/guest-1")!.groupIds, []);
+    assert.equal(get("programGuestGroups/friends")!.memberCount, 0);
+  });
+
+test("membership decision invalidates an older native lodging proposal",
+  async () => {
+    const h = membershipSetup();
+    const preview = await h.preview();
+    await h.call({action: "decideMembership", guestId: "guest-1",
+      expectedRevision: 1, groupIds: ["friends"]});
+    await assert.rejects(h.call({action: "propose",
+      expectedRevisions: preview.proposal.revisions,
+      placements: preview.proposal.placements}), /Stale/);
   });

@@ -24821,4 +24821,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String programsLodgingHotelConfirmed({required String hotel}) {
     return 'Hotel confirmed: $hotel';
   }
+
+  @override
+  String get programsLodgingMembershipTitle => 'Review social memberships';
+
+  @override
+  String get programsLodgingMembershipHint =>
+      'Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.';
+
+  @override
+  String get programsLodgingMembershipIncluded => 'Included';
+
+  @override
+  String get programsLodgingMembershipExcluded => 'Excluded';
+
+  @override
+  String get programsLodgingMembershipSuggested => 'Suggestion awaiting review';
+
+  @override
+  String get programsLodgingMembershipCanonical =>
+      'Existing membership; source not verified';
+
+  @override
+  String get programsLodgingMembershipSave => 'Save membership choices';
+
+  @override
+  String get programsLodgingMembershipExpired =>
+      'Access expired. Return and refresh before reviewing memberships.';
+
+  @override
+  String programsLodgingMembershipEvidence({
+    required String group,
+    required String status,
+    required String source,
+  }) {
+    return '$group: $status · $source';
+  }
 }

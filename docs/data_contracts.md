@@ -5036,8 +5036,17 @@ retains the same hotel and operation ID. It clears session-invalid projections
 and preserves exact operation IDs for uncertain decision retries. Routed setup
 edits dates, explicit sharing parties, inventory and pins against the current
 configuration revision. Acknowledged writes with failed reloads require a fresh
-read instead of repeating an old write. Source-labelled membership decision
-controls remain pending. Coordinator-only `readSetup` also returns a bounded live catalog of
+read instead of repeating an old write. Coordinator-only `readMembership`
+projects one guest's bounded, immutable source-labelled assertions, canonical
+memberships and selected inclusions/exclusions. `decideMembership` fences the
+complete explicit group choice by the current guest revision and reuses the
+existing evidence ledger and group-count writer, without editing contact or
+household fields. Repeated imports leave selected manual choices authoritative;
+new lists remain suggestions. The routed membership editor expires its complete
+private catalog at the earliest setup/evidence deadline. Uncertain membership
+CAS results require a fresh read rather than repeating an old revision; lodging
+publication retains its separate exact operation receipt. Coordinator-only
+`readSetup` also returns a bounded live catalog of
 canonical guests, groups, hotels, contracted room blocks and consuming stays.
 It includes guests without travel records, omits contact details and notes, and
 keeps invitation households separate from explicit sharing decisions. Unknown

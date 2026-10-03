@@ -6,7 +6,8 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
 import {dutyAssignments, programProjectionExpiresAt, requireProgramAccess,
-  requireProgramDuty} from "../shared/programAuthority";
+  requireProgramDuty, requireProgramMutable, assertRevision, nextRevision}
+  from "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import type {ManageProgramLodgingCallablePayload} from
   "../shared/generated/manageProgramLodgingCallablePayload";
@@ -30,6 +31,126 @@ import {assertLodgingProposalCurrent, immutableLodgingProposal,
   "./programLodgingPlanner";
 import {prepareLodgingValidator, validateLodgingPlacements} from
   "./programLodgingValidation";
+
+import type {ScopedMembershipGuest} from
+  "../workspaces/programMembershipPersistence";
+import {planManualMembership, programMembershipContext,
+  programMembershipProjection} from
+  "../workspaces/programMembershipPersistence";
+import {membershipAssertionMatches} from
+  "../workspaces/workspaceMembershipAuthority";
+import type {WorkspaceMembershipAssertion} from
+  "../workspaces/workspaceMembershipAuthority";
+import {validateWorkspaceMembershipAssertionDocument} from
+  "../shared/generated/validators/workspaceMembershipAssertionDocument";
+import {applyGroupMembershipWrites, readProgramGuestGroups} from
+  "./programGuestGroups";
+
+/** One guest at a time: bounded pointer reads, no contact/actor/private notes
+ * projection. Only selected evidence may explain canonical membership. */
+async function guestMembership(deps: ProgramDataDeps, programId: string,
+  guestId: string, actorUid: string,
+  choice?: {expectedRevision: number; groupIds: string[]}) {
+  const db = deps.firestore();
+  return db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({db, transaction: tx, programId,
+      actorUid, now: deps.now()});
+    requireProgramDuty(access, "programCoordinator");
+    if (choice) requireProgramMutable(access.program);
+    const ref = db.collection("programGuests").doc(guestId);
+    const guest = (await tx.get(ref)).data() as
+      ScopedMembershipGuest | undefined;
+    if (!guest || guest.programId !== programId ||
+        guest.organizerId !== access.program.organizerId) {
+      throw new HttpsError("not-found", "Guest not found in this program.");
+    }
+    if (!Number.isSafeInteger(guest.revision) || guest.revision < 1 ||
+        typeof guest.displayName !== "string") {
+      throw new HttpsError("failed-precondition", "Invalid membership guest.");
+    }
+    const projection = programMembershipProjection(guest);
+    if (choice) assertRevision(guest.revision, choice.expectedRevision);
+    const groupIds = [...new Set([...projection.groupIds,
+      ...projection.selections.map((p) => p.groupId),
+      ...projection.suggestions.map((p) => p.groupId),
+      ...(choice?.groupIds ?? [])])];
+    // 20 canonical + 100 selected + 100 suggestions + 20 requested, at most.
+    if (groupIds.length > 240) {
+      throw new HttpsError("resource-exhausted", "Too many membership groups.");
+    }
+    const groups = await readProgramGuestGroups(db, tx, programId,
+      access.program.organizerId, groupIds);
+    for (const id of groupIds) {
+      const group = groups.get(id);
+      if (!group || typeof group.label !== "string") {
+        throw new HttpsError("failed-precondition",
+          "Membership groups need reconciliation.");
+      }
+    }
+    const selectedIds = new Set(projection.selections
+      .map((p) => p.assertionId));
+    const pointers = [...projection.selections, ...projection.suggestions];
+    if (new Set(pointers.map((p) => p.assertionId)).size !== pointers.length) {
+      throw new HttpsError("failed-precondition",
+        "Membership evidence pointers need reconciliation.");
+    }
+    const evidence = [];
+    for (const pointer of pointers) {
+      const assertion = (await tx.get(db.collection(
+        "workspaceMembershipAssertions").doc(pointer.assertionId))).data() as
+          WorkspaceMembershipAssertion | undefined;
+      const context = programMembershipContext(programId,
+        access.program.organizerId, guestId, pointer.groupId);
+      if (!validateWorkspaceMembershipAssertionDocument(assertion) ||
+          !membershipAssertionMatches(assertion,
+            pointer.assertionId, context) ||
+          (selectedIds.has(pointer.assertionId) &&
+          assertion.included !==
+            projection.groupIds.includes(pointer.groupId))) {
+        throw new HttpsError("failed-precondition",
+          "Membership evidence needs reconciliation.");
+      }
+      evidence.push({assertionId: pointer.assertionId, groupId: pointer.groupId,
+        selected: selectedIds.has(pointer.assertionId),
+        included: assertion.included, sourceKind: assertion.sourceKind,
+        sourceLabel: assertion.sourceLabel,
+        sourceVersion: assertion.sourceVersion,
+        observedAtMillis: assertion.observedAtMillis});
+    }
+    const now = deps.now();
+    const revision = choice ?
+      nextRevision(guest.revision, now) : guest.revision;
+    const membership = choice ? await planManualMembership({db, tx, guest,
+      programId, organizerId: access.program.organizerId, guestId,
+      groupIds: choice.groupIds, currentRevision: guest.revision,
+      nextRevision: revision, actorUid,
+      observedAtMillis: now.toMillis()}) : null;
+    const expiry = programProjectionExpiresAt(access,
+      dutyAssignments(access, "programCoordinator").filter((d) =>
+        d.expiresAtMillis > deps.now().toMillis()));
+    if (expiry !== null && expiry <= deps.now().toMillis()) {
+      throw new HttpsError("permission-denied", "Membership duty expired.");
+    }
+    if (membership) {
+      applyGroupMembershipWrites(db, tx, groups, projection.groupIds,
+        membership.projection.groupIds, now);
+      for (const write of membership.writes) {
+        tx.create(db.doc(write.path),
+          write.data);
+      }
+      tx.update(ref, {groupIds: membership.projection.groupIds,
+        membershipSelections: membership.projection.selections,
+        membershipSuggestions: membership.projection.suggestions,
+        updatedAt: now, revision});
+      return {kind: "membershipSaved", guestId, revision};
+    }
+    return {kind: "membership", programId, guestId, revision,
+      label: guest.displayName.slice(0, 140), groupIds: projection.groupIds,
+      groups: [...groups].map(([id, group]) => ({id,
+        label: group.label.slice(0, 140)})), evidence,
+      accessExpiresAtMillis: expiry};
+  });
+}
 
 async function readSetup(deps: ProgramDataDeps, programId: string,
   actorUid: string) {
@@ -148,6 +269,15 @@ export async function manageProgramLodgingHandler(
     case "resolveDates":
       result = await resolveDates(deps, data.programId, actorUid,
         data.arrival, data.departure);
+      break;
+    case "readMembership":
+      result = await guestMembership(deps, data.programId, data.guestId,
+        actorUid);
+      break;
+    case "decideMembership":
+      result = await guestMembership(deps, data.programId, data.guestId,
+        actorUid, {expectedRevision: data.expectedRevision,
+          groupIds: data.groupIds});
       break;
     case "readSetup":
       result = await readSetup(deps, data.programId, actorUid);

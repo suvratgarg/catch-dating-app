@@ -19,6 +19,173 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'kind',
+        'programId',
+        'guestId',
+        'revision',
+        'label',
+        'groupIds',
+        'groups',
+        'evidence',
+        'accessExpiresAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'membership',
+        },
+        'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'guestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'label': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 140,
+        },
+        'groupIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+        },
+        'groups': <String, Object?>{
+          'type': 'array',
+          'maxItems': 240,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'id',
+              'label',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 140,
+              },
+            },
+          },
+        },
+        'evidence': <String, Object?>{
+          'type': 'array',
+          'maxItems': 200,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'assertionId',
+              'groupId',
+              'selected',
+              'included',
+              'sourceKind',
+              'sourceLabel',
+              'sourceVersion',
+              'observedAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'assertionId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^wma_[a-f0-9]{64}\$',
+              },
+              'groupId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'selected': <String, Object?>{
+                'type': 'boolean',
+              },
+              'included': <String, Object?>{
+                'type': 'boolean',
+              },
+              'sourceKind': <String, Object?>{
+                'enum': <Object?>[
+                  'manualEntry',
+                  'manifestRow',
+                  'contributorList',
+                ],
+              },
+              'sourceLabel': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 140,
+              },
+              'sourceVersion': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 9007199254740991,
+              },
+              'observedAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 9007199254740991,
+              },
+            },
+          },
+        },
+        'accessExpiresAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'guestId',
+        'revision',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'membershipSaved',
+        },
+        'guestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
         'configuration',
         'accessExpiresAtMillis',
         'catalog',

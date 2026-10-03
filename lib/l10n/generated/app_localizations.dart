@@ -40077,6 +40077,64 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hotel confirmed: {hotel}'**
   String programsLodgingHotelConfirmed({required String hotel});
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review social memberships'**
+  String get programsLodgingMembershipTitle;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.'**
+  String get programsLodgingMembershipHint;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Included'**
+  String get programsLodgingMembershipIncluded;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded'**
+  String get programsLodgingMembershipExcluded;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion awaiting review'**
+  String get programsLodgingMembershipSuggested;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing membership; source not verified'**
+  String get programsLodgingMembershipCanonical;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save membership choices'**
+  String get programsLodgingMembershipSave;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expired. Return and refresh before reviewing memberships.'**
+  String get programsLodgingMembershipExpired;
+
+  /// Private source-labelled social membership review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{group}: {status} · {source}'**
+  String programsLodgingMembershipEvidence({
+    required String group,
+    required String status,
+    required String source,
+  });
 }
 
 class _AppLocalizationsDelegate

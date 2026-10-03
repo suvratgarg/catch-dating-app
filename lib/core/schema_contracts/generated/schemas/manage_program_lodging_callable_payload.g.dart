@@ -17,6 +17,71 @@ const schemaManageProgramLodgingCallablePayloadSchema = <String, Object?>{
       'required': <Object?>[
         'action',
         'programId',
+        'guestId',
+      ],
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'readMembership',
+        },
+        'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'guestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'action',
+        'programId',
+        'guestId',
+        'expectedRevision',
+        'groupIds',
+      ],
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'decideMembership',
+        },
+        'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'guestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'expectedRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'groupIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'action',
+        'programId',
       ],
       'properties': <String, Object?>{
         'action': <String, Object?>{

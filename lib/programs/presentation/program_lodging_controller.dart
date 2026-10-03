@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
@@ -70,7 +71,8 @@ class ProgramLodgingController extends _$ProgramLodgingController {
     _epoch++;
     _command = null;
     ref.onDispose(() => _epoch++);
-    final account = ref.watch(uidProvider).asData?.value;
+    final accountState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final account = accountState.isSettledData ? accountState.value : null;
     if (account == null || account.isEmpty) {
       throw const SignInRequiredException('manage hotel rooms');
     }
@@ -108,6 +110,17 @@ class ProgramLodgingController extends _$ProgramLodgingController {
         view.busy ||
         (proposalId != null && view.review?.proposal.id != proposalId)) {
       throw programReadSuperseded;
+    }
+    if (!isProgramProjectionActive(
+      programProjectionDeadline(
+        view.setup.accessExpiresAt,
+        view.review?.accessExpiresAt,
+      ),
+      ref.read(programProjectionClockProvider)(),
+    )) {
+      throw const PermissionException(
+        'Program access expired. Refresh this view.',
+      );
     }
     return view;
   }
@@ -155,7 +168,12 @@ class ProgramLodgingController extends _$ProgramLodgingController {
 
   void refresh() {
     _ensureEditing();
-    if (!state.hasError) _current();
+    // Expired projections may request a new read; busy/uncertain commands
+    // still cannot discard their acknowledgement identity.
+    if (!state.hasError &&
+        (state.asData?.value == null || state.requireValue.busy)) {
+      throw programReadSuperseded;
+    }
     ref.invalidateSelf(asReload: true);
   }
 
@@ -198,6 +216,44 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       ),
       _reviewView,
     );
+  }
+
+  Future<ProgramLodgingMembership> loadMembership(String guestId) {
+    _ensureEditing();
+    final view = _current();
+    return _run(
+      view,
+      () => _repository.readMembership(_programId, guestId),
+      (_) => view,
+    );
+  }
+
+  Future<void> saveMembership(
+    ProgramLodgingMembership membership,
+    List<String> groupIds,
+  ) async {
+    _ensureEditing();
+    final view = _current();
+    if (membership.programId != _programId ||
+        !isProgramProjectionActive(
+          membership.accessExpiresAt,
+          ref.read(programProjectionClockProvider)(),
+        )) {
+      throw programReadSuperseded;
+    }
+    await _run(view, () async {
+      final actionEpoch = _epoch;
+      try {
+        await _repository.decideMembership(membership, groupIds);
+      } catch (error, stack) {
+        // A membership CAS is not a publication receipt. An uncertain write
+        // needs a current read, never an automatic repeat of an old revision.
+        if (ref.mounted && actionEpoch == _epoch) _hideStaleView(error, stack);
+        rethrow;
+      }
+      if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
+      return _reloadAcknowledgedWrite(actionEpoch);
+    }, _reviewView);
   }
 
   Future<ProgramLodgingSetup> loadSetup() {

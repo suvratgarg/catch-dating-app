@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
+import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
@@ -22,12 +24,15 @@ import 'program_operations_fixture.dart';
 
 Future<void> _pump(
   WidgetTester tester,
-  FakeLodgingRepository repository,
-) async {
+  FakeLodgingRepository repository, {
+  DateTime Function()? clock,
+}) async {
   await tester.pumpWidget(
     ProviderScope(
       retry: (_, _) => null,
       overrides: [
+        if (clock != null)
+          programProjectionClockProvider.overrideWithValue(clock),
         uidProvider.overrideWithValue(const AsyncData('actor')),
         programReadSnapshotStoreProvider.overrideWithValue(
           emptyProgramSnapshots(),
@@ -46,6 +51,177 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets('expired refresh retains uncertain publication receipt fence', (
+    tester,
+  ) async {
+    var clock = DateTime.utc(2027);
+    final repository = FakeLodgingRepository();
+    await _pump(tester, repository, clock: () => clock);
+    repository.setupAccessExpiresAt = clock.add(const Duration(minutes: 1));
+    await tester.tap(find.text('Review social memberships'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Cancel'));
+    await pumpFeatureUi(tester);
+    repository.transitionFailure = TimeoutException('Uncertain publication');
+    await tester.tap(find.text('Publish rooms to guests'));
+    await pumpFeatureUi(tester);
+    expect(repository.commands, hasLength(1));
+    clock = clock.add(const Duration(minutes: 2));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 2));
+    final refresh = tester.widget<CatchButton>(
+      find.byWidgetPredicate(
+        (w) => w is CatchButton && w.label == 'Refresh rooms',
+      ),
+    );
+    expect(refresh.onPressed, isNull);
+    expect(repository.commands, hasLength(1));
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('membership chooser can explicitly clear an existing inclusion', (
+    tester,
+  ) async {
+    final json = lodgingMembershipJson();
+    json['groupIds'] = ['friends'];
+    final row = (json['evidence']! as List).single as Map;
+    row['selected'] = true;
+    row['sourceKind'] = 'manualEntry';
+    row['sourceLabel'] = 'Host membership choice';
+    final repository = FakeLodgingRepository()
+      ..pendingMembershipRead = Future.value(
+        ProgramLodgingMembership.fromMap(
+          json,
+          programId: 'program',
+          guestId: 'guest',
+        ),
+      );
+    await _pump(tester, repository);
+    await tester.tap(find.text('Review social memberships'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Guest name'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Guest'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Groups'));
+    await pumpFeatureUi(tester);
+    await tester.tap(
+      find.ancestor(of: find.text('Friends'), matching: find.byType(CatchChip)),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Save membership choices'));
+    await pumpFeatureUi(tester);
+    expect(repository.savedMembershipGroups, isEmpty);
+    expect(repository.membershipSaves, 1);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'membership setup expiry hides private chooser before selection',
+    (tester) async {
+      var clock = DateTime.utc(2027);
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository, clock: () => clock);
+      repository.setupAccessExpiresAt = clock.add(const Duration(minutes: 1));
+      await tester.tap(find.text('Review social memberships'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Guest name'), findsOneWidget);
+      clock = clock.add(const Duration(minutes: 2));
+      await pumpFeatureUiFor(tester, const Duration(minutes: 2));
+      await pumpFeatureUi(tester);
+      expect(find.text('Guest name'), findsNothing);
+      expect(find.text('Local guest'), findsNothing);
+      expect(
+        find.text(
+          'Access expired. Return and refresh before reviewing memberships.',
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets('membership evidence expiry hides the complete private editor', (
+    tester,
+  ) async {
+    var clock = DateTime.utc(2027);
+    final repository = FakeLodgingRepository();
+    await _pump(tester, repository, clock: () => clock);
+    repository.setupAccessExpiresAt = clock.add(const Duration(minutes: 3));
+    repository.membershipAccessExpiresAt = clock.add(
+      const Duration(minutes: 1),
+    );
+    await tester.tap(find.text('Review social memberships'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Guest name'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Local guest'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Save membership choices'), findsOneWidget);
+    clock = clock.add(const Duration(minutes: 2));
+    await pumpFeatureUiFor(tester, const Duration(minutes: 2));
+    await pumpFeatureUi(tester);
+    expect(find.text('Guest name'), findsNothing);
+    expect(find.textContaining('Family contributor list'), findsNothing);
+    expect(find.text('Save membership choices'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'routed membership review includes no-travel guests and records explicit choices',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository);
+      await tester.tap(find.text('Review social memberships'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Guest name'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Local guest'));
+      await pumpFeatureUi(tester);
+      expect(find.textContaining('Suggestion awaiting review'), findsOneWidget);
+      expect(find.textContaining('Family contributor list'), findsOneWidget);
+      await tester.tap(find.text('Groups'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Friends'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Save membership choices'));
+      await pumpFeatureUi(tester);
+      expect(repository.membershipSaves, 1);
+      expect(repository.savedMembershipRevision, 7);
+      expect(repository.savedMembershipGroups, ['friends']);
+      expect(find.text('Publish rooms to guests'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets(
+    'uncertain membership save offers fresh read without old save controls',
+    (tester) async {
+      final repository = FakeLodgingRepository()
+        ..membershipFailure = TimeoutException('Unknown result');
+      await _pump(tester, repository);
+      await tester.tap(find.text('Review social memberships'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Guest name'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Guest'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Save membership choices'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Save membership choices'), findsNothing);
+      expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+      tester
+          .widget<CatchLocalizedErrorState>(
+            find.byType(CatchLocalizedErrorState),
+          )
+          .onRetry!();
+      await pumpFeatureUi(tester);
+      expect(repository.membershipSaves, 1);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   testWidgets(
     'route renders current private proposal with explicit publication',
     (tester) async {
@@ -56,7 +232,9 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('ROOM-SHARING PARTIES'),
         250,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findVerticalScrollable(
+          within: find.byType(ProgramLodgingScreen),
+        ),
       );
       expect(find.text('ROOM-SHARING PARTIES'), findsOneWidget);
       expect(repository.commands, isEmpty);
@@ -104,7 +282,9 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Save setup and plan rooms'),
         500,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findVerticalScrollable(
+          within: find.byType(ProgramLodgingScreen),
+        ),
       );
       await tester.tap(find.text('Save setup and plan rooms'));
       await pumpFeatureUi(tester);
@@ -135,7 +315,9 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Save setup and plan rooms'),
         500,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findVerticalScrollable(
+          within: find.byType(ProgramLodgingScreen),
+        ),
       );
       await tester.tap(find.text('Save setup and plan rooms'));
       await pumpFeatureUi(tester);
@@ -177,7 +359,9 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Save setup and plan rooms'),
         500,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findVerticalScrollable(
+          within: find.byType(ProgramLodgingScreen),
+        ),
       );
       await tester.tap(find.text('Save setup and plan rooms'));
       await pumpFeatureUi(tester);
@@ -207,7 +391,9 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Save setup and plan rooms'),
       500,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findVerticalScrollable(
+        within: find.byType(ProgramLodgingScreen),
+      ),
     );
     expect(find.text('Save setup and plan rooms'), findsOneWidget);
     repository.hasSetup = false;

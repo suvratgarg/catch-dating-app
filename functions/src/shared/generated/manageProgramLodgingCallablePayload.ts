@@ -7,6 +7,21 @@
  */
 export type ManageProgramLodgingCallablePayload =
   | {
+      action: "readMembership";
+      programId: string;
+      guestId: string;
+    }
+  | {
+      action: "decideMembership";
+      programId: string;
+      guestId: string;
+      expectedRevision: number;
+      /**
+       * @maxItems 20
+       */
+      groupIds: string[];
+    }
+  | {
       action: "readSetup";
       programId: string;
     }

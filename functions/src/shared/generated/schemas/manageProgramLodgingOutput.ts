@@ -17,6 +17,173 @@ export const manageProgramLodgingCallableResponseSchema: Record<string, unknown>
       "additionalProperties": false,
       "required": [
         "kind",
+        "programId",
+        "guestId",
+        "revision",
+        "label",
+        "groupIds",
+        "groups",
+        "evidence",
+        "accessExpiresAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "membership"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "groupIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "assertionId",
+              "groupId",
+              "selected",
+              "included",
+              "sourceKind",
+              "sourceLabel",
+              "sourceVersion",
+              "observedAtMillis"
+            ],
+            "properties": {
+              "assertionId": {
+                "type": "string",
+                "pattern": "^wma_[a-f0-9]{64}$"
+              },
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "selected": {
+                "type": "boolean"
+              },
+              "included": {
+                "type": "boolean"
+              },
+              "sourceKind": {
+                "enum": [
+                  "manualEntry",
+                  "manifestRow",
+                  "contributorList"
+                ]
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "sourceVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "observedAtMillis": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "accessExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "guestId",
+        "revision"
+      ],
+      "properties": {
+        "kind": {
+          "const": "membershipSaved"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
         "configuration",
         "accessExpiresAtMillis",
         "catalog"

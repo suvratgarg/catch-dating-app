@@ -8,7 +8,87 @@ import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'program_lodging_test_fixtures.dart';
+
 void main() {
+  test(
+    'membership read preserves source-labelled suggestions and exact scope',
+    () async {
+      final functions = _Functions()..response = lodgingMembershipJson();
+      final repository = ProgramLodgingRepository(
+        functions,
+        _Snapshots(),
+        () => 'actor',
+      );
+      final membership = await repository.readMembership('program', 'guest');
+      expect(functions.payload, {
+        'programId': 'program',
+        'action': 'readMembership',
+        'guestId': 'guest',
+      });
+      expect(membership.groupIds, isEmpty);
+      expect(membership.evidence.single['selected'], false);
+      expect(
+        membership.evidence.single['sourceLabel'],
+        'Family contributor list',
+      );
+      expect(() => membership.json['revision'] = 100, throwsUnsupportedError);
+      functions.response = {
+        'kind': 'membershipSaved',
+        'guestId': 'guest',
+        'revision': 8,
+      };
+      await repository.decideMembership(membership, []);
+      expect(functions.payload, {
+        'programId': 'program',
+        'action': 'decideMembership',
+        'guestId': 'guest',
+        'expectedRevision': 7,
+        'groupIds': <String>[],
+      });
+    },
+  );
+  test(
+    'membership projections reject foreign identity and incompatible selected evidence',
+    () {
+      var value = lodgingMembershipJson();
+      value['guestId'] = 'foreign';
+      expect(
+        () => ProgramLodgingMembership.fromMap(
+          value,
+          programId: 'program',
+          guestId: 'guest',
+        ),
+        throwsFormatException,
+      );
+      value = lodgingMembershipJson();
+      ((value['evidence']! as List).single as Map)['selected'] = true;
+      expect(
+        () => ProgramLodgingMembership.fromMap(
+          value,
+          programId: 'program',
+          guestId: 'guest',
+        ),
+        throwsFormatException,
+      );
+    },
+  );
+  test('account change rejects late private membership evidence', () async {
+    final functions = _Functions();
+    final gate = Completer<Object?>();
+    functions.pending = gate.future;
+    var actor = 'actor';
+    final repository = ProgramLodgingRepository(
+      functions,
+      _Snapshots(),
+      () => actor,
+    );
+    final pending = repository.readMembership('program', 'guest');
+    actor = 'other';
+    gate.complete(lodgingMembershipJson());
+    await expectLater(pending, throwsA(isA<SignInRequiredException>()));
+  });
+
   test('review keeps exact proposal, scoped layers and checked-in locks', () {
     final input = _review();
     final review = ProgramLodgingReview.fromCallableData(input);

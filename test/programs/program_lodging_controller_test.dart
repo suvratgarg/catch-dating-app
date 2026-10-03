@@ -38,6 +38,110 @@ void main() {
   });
   tearDown(() => container.dispose());
 
+  test(
+    'membership save binds guest revision and explicit empty exclusion',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final membership = await controller.loadMembership('guest');
+      await controller.saveMembership(membership, []);
+      expect(repository.membershipSaves, 1);
+      expect(repository.savedMembershipRevision, 7);
+      expect(repository.savedMembershipGroups, isEmpty);
+    },
+  );
+  test(
+    'uncertain membership write hides old choices and refresh never repeats it',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final membership = await controller.loadMembership('guest');
+      repository.membershipFailure = TimeoutException(
+        'Unknown membership result',
+      );
+      await expectLater(
+        controller.saveMembership(membership, ['friends']),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(container.read(provider).hasError, true);
+      controller.refresh();
+      await container.read(provider.future);
+      expect(repository.membershipSaves, 1);
+    },
+  );
+  test(
+    'acknowledged membership save failed reload never repeats prior revision',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final membership = await controller.loadMembership('guest');
+      repository.previewFailure = TimeoutException('Reload failed');
+      await expectLater(
+        controller.saveMembership(membership, ['friends']),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(container.read(provider).hasError, true);
+      repository.previewFailure = null;
+      controller.refresh();
+      await container.read(provider.future);
+      expect(repository.membershipSaves, 1);
+    },
+  );
+  test('disposed membership save cannot launch a late preview', () async {
+    await container.read(provider.future);
+    final controller = container.read(provider.notifier);
+    final membership = await controller.loadMembership('guest');
+    final gate = Completer<int>();
+    repository.pendingMembershipSave = gate.future;
+    final previews = repository.previews;
+    final pending = controller.saveMembership(membership, []);
+    subscription.close();
+    container.invalidate(provider);
+    await container.pump();
+    gate.complete(8);
+    await expectLater(pending, throwsA(same(programReadSuperseded)));
+    expect(repository.previews, previews);
+  });
+  test(
+    'late membership read cannot deliver after account authority changes',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final gate = Completer<ProgramLodgingMembership>();
+      repository.pendingMembershipRead = gate.future;
+      final pending = controller.loadMembership('guest');
+      container.updateOverrides([
+        uidProvider.overrideWithValue(const AsyncData('other')),
+        programReadSnapshotStoreProvider.overrideWithValue(snapshots),
+        programLodgingRepositoryProvider.overrideWithValue(repository),
+      ]);
+      await container.pump();
+      gate.complete(
+        ProgramLodgingMembership.fromMap(
+          lodgingMembershipJson(),
+          programId: 'program',
+          guestId: 'guest',
+        ),
+      );
+      await expectLater(pending, throwsA(same(programReadSuperseded)));
+    },
+  );
+  test(
+    'earlier loaded setup expiry blocks imperative membership access but permits refresh',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      repository.setupAccessExpiresAt = DateTime.utc(2020);
+      await controller.loadSetup();
+      expect(
+        () => controller.loadMembership('guest'),
+        throwsA(isA<PermissionException>()),
+      );
+      repository.setupAccessExpiresAt = null;
+      controller.refresh();
+      await container.read(provider.future);
+    },
+  );
   test('initial private view uses exact current proposal and setup', () async {
     final view = await container.read(provider.future);
     expect(view.review?.proposal.id, lodgingFixtureId);
