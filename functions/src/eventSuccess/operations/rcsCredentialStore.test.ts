@@ -1,3 +1,5 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import assert from "node:assert/strict";
 import {generateKeyPairSync, verify} from "node:crypto";
 import test from "node:test";
@@ -9,6 +11,8 @@ const pair = generateKeyPairSync("rsa", {modulusLength: 2048});
 const privateKey = pair.privateKey.export({type: "pkcs8", format: "pem"})
   .toString();
 const config = rcsTestConfig();
+const references = () => new SecretVersionReferenceGuard(() => "fixture",
+  async () => "123456");
 const envelope = () => ({schema: "catch.event-rcs-credential/v1" as const,
   senderId: config.senderId, agentId: config.agentId, region: config.region,
   clientEmail: "rcs@test-project.iam.gserviceaccount.com", privateKey});
@@ -74,7 +78,7 @@ test("Google OAuth signs the exact RCS scope and cannot redirect credentials",
             expires_in: 3600, token_type: "Bearer"}} as never;
       };
       return client;
-    });
+    }, Date.now, references());
     const first = await store.access(config);
     assert.equal(first.accessToken, "fixture-access-token");
     assert.equal(first.senderId, config.senderId);
@@ -100,7 +104,7 @@ test("secret versions remain pinned and failures cannot leak or reuse tokens",
       created++;
       return {credentials: {expiry_date: h.clock.now + 3_600_000},
         getAccessToken: async () => ({token: "fixture-token"})};
-    }, () => h.clock.now);
+    }, () => h.clock.now, references());
     for (const version of ["latest", "0", "01", "1\n"]) {
       await assert.rejects(store.access({...config, credentialVersion:
         config.credentialVersion.replace(/\/1$/, "/" + version)}),
@@ -139,7 +143,7 @@ test("invalid, stale and backwards-clock token results are never authority",
         if (invalid === "failure") throw new Error("private-provider-token");
         if (invalid === "clock") h.clock.now--;
         return {token: invalid === "newline" ? "token\n" : "fixture-token"};
-      }}), () => h.clock.now);
+      }}), () => h.clock.now, references());
       await assert.rejects(store.access(config), (e: Error) => {
         assert.equal(e.message, "RCS sender credential unavailable", invalid);
         assert.equal(e.cause, undefined);
@@ -155,7 +159,7 @@ test("OAuth client retention is bounded", async () => {
     created++;
     return {credentials: {expiry_date: h.clock.now + 3_600_000},
       getAccessToken: async () => ({token: "fixture-token"})};
-  }, () => h.clock.now);
+  }, () => h.clock.now, references());
   for (let version = 1; version <= 33; version++) {
     await store.access({...config, credentialVersion:
       config.credentialVersion.replace(/\/1$/, "/" + version)});
@@ -164,3 +168,25 @@ test("OAuth client retention is bounded", async () => {
   await store.access(config);
   assert.equal(created, 34, "oldest cached client has been evicted");
 });
+
+test("foreign project credentials cannot read secrets or acquire OAuth tokens",
+  async () => {
+    const h = fixture();
+    let created = 0;
+    const store = new RcsCredentialStore(h.secret, () => {
+      created++;
+      return {credentials: {expiry_date: h.clock.now + 3_600_000},
+        getAccessToken: async () => ({token: "fixture-token"})};
+    }, () => h.clock.now, references());
+    for (const project of ["foreign", "654321"]) {
+      await assert.rejects(store.access({...config, credentialVersion:
+        config.credentialVersion.replace("fixture", project)}),
+      /^Error: RCS sender credential unavailable$/);
+    }
+    assert.deepEqual(h.reads, []);
+    assert.equal(created, 0);
+    await store.access({...config, credentialVersion:
+      config.credentialVersion.replace("fixture", "123456")});
+    assert.equal(h.reads.length, 1);
+    assert.equal(created, 1);
+  });

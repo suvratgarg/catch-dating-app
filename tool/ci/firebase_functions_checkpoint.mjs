@@ -281,21 +281,31 @@ export async function executeFunctionsCheckpointCli(argv, {readFunctions = liveF
     if (Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE)) await writeJsonAtomic(proofPath, entries[FUNCTIONS_DEPLOYMENT_FILE]);
     return {restored: true, hasFunctionsDeployment: Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE)};
   }
-  assert.ok(["record", "verify"].includes(command), "Expected record, verify or restore.");
+  assert.ok(["record", "verify", "verify-completed"].includes(command), "Expected record, verify, verify-completed or restore.");
   const state = fs.existsSync(checkpointPath) ?
     validateCheckpointState(manifest, await readJsonFile(checkpointPath), scope) : createCheckpointState(manifest, scope);
-  assert.equal(resolveFirstIncompleteStage(manifest, state, scope).stage, "functions",
-    "Functions deployment proof is only usable at the first incomplete Functions stage.");
+  if (command === "verify-completed") {
+    assert.ok(state.stageCheckpoints.some((entry) => entry.stage === "functions" && entry.postcondition.status === "passed"),
+      "Completed Functions verification requires an already passed Functions checkpoint.");
+    assert.ok(fs.existsSync(proofPath), "Completed Functions verification requires an exact deployment proof.");
+  } else {
+    assert.equal(resolveFirstIncompleteStage(manifest, state, scope).stage, "functions",
+      "Functions deployment proof is only usable at the first incomplete Functions stage.");
+  }
   const expected = {manifest, scope, baseSha: required(args, "base-sha"),
     selectedTargets: required(args, "targets").split(","),
     paramsSha256: paramsDigest(required(args, "params-file"), projectFromScope(scope))};
   assert.match(expected.baseSha, shaPattern);
   targets(expected.selectedTargets);
   if (command === "verify" && !fs.existsSync(proofPath)) return {postconditionsOnly: false};
-  const proof = command === "verify" ? await readJsonFile(proofPath) : undefined;
-  if (command === "verify") validateFunctionsDeployment(proof, expected);
+  const checking = command === "verify" || command === "verify-completed";
+  const proof = checking ? await readJsonFile(proofPath) : undefined;
+  if (checking) validateFunctionsDeployment(proof, expected);
   const functions = await readFunctions(projectFromScope(scope), expected.selectedTargets);
-  if (command === "verify") return verifyFunctionsDeployment(proof, {...expected, functions});
+  if (checking) {
+    const result = verifyFunctionsDeployment(proof, {...expected, functions});
+    return command === "verify-completed" ? {verifiedCompleted: true} : result;
+  }
   const result = prepareFunctionsDeployment({...expected, functions});
   // A Functions-only plan may not have written a checkpoint yet. Persist the
   // unchanged portable empty prefix before its optional deployment companion.

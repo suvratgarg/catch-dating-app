@@ -1,3 +1,5 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {readRcsSecret, RcsSecretClient} from "./rcsCredentialStore";
 import {rcsSubscriptionId} from "./rcsSubscriptions";
@@ -45,7 +47,8 @@ export class RcsWebhookKeyStore {
   constructor(private readonly version: () => string = () =>
     process.env.EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION ?? "",
   private readonly client: RcsSecretClient =
-  new SecretManagerServiceClient()) {}
+  new SecretManagerServiceClient(),
+  private readonly references = new SecretVersionReferenceGuard()) {}
 
   async access(endpointId: string): Promise<Readonly<RcsWebhookEndpoint>> {
     try {
@@ -53,7 +56,7 @@ export class RcsWebhookKeyStore {
       const name = this.version();
       if (!versionPattern.test(name)) throw unavailable();
       const endpoints = parseRcsWebhookEndpoints(
-        await readRcsSecret(this.client, name, 32_768));
+        await readRcsSecret(this.client, name, 32_768, this.references));
       const selected = endpoints.find((e) => e.endpointId === endpointId);
       if (!selected) throw unavailable();
       return selected;

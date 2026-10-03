@@ -313,3 +313,29 @@ test("unchanged v2 core and actual legacy Delivery reader ignore a valid compani
   assert.equal(core.status, 0, core.stderr);
   assert.deepEqual(JSON.parse(core.stdout).next, {complete: false, index: 0, stage: "functions", status: "failed"});
 });
+
+test("completed verification is read-only and cannot authorize replay or accept drift", async (t) => {
+  const f = await fixture(t, ["functions", "firestore-rules"]);
+  let reads = 0;
+  const dependencies = {readFunctions: async () => { reads++; return f.functions; }};
+  await assert.rejects(executeFunctionsCheckpointCli(["verify-completed", ...f.cliArgs], dependencies), /already passed/);
+  assert.equal(reads, 0);
+  await executeFunctionsCheckpointCli(["record", ...f.cliArgs], dependencies);
+  const state = recordStageCheckpoint({manifest: f.manifest, state: createCheckpointState(f.manifest, scope),
+    scope, stage: "functions", status: "passed"}).state;
+  await writeJsonAtomic(f.checkpointPath, state);
+  const proofPath = path.join(path.dirname(f.checkpointPath), FUNCTIONS_DEPLOYMENT_FILE);
+  const original = [fs.readFileSync(f.checkpointPath, "utf8"), fs.readFileSync(proofPath, "utf8")];
+  assert.deepEqual(await executeFunctionsCheckpointCli(["verify-completed", ...f.cliArgs], dependencies), {verifiedCompleted: true});
+  await assert.rejects(executeFunctionsCheckpointCli(["verify", ...f.cliArgs], dependencies), /first incomplete/);
+  await assert.rejects(executeFunctionsCheckpointCli(["record", ...f.cliArgs], dependencies), /first incomplete/);
+  const drifted = structuredClone(f.functions); drifted[0].updateTime = "2026-09-06T13:00:00Z";
+  await assert.rejects(executeFunctionsCheckpointCli(["verify-completed", ...f.cliArgs], {readFunctions: async () => drifted}), /Live Functions changed/);
+  fs.appendFileSync(f.paramsFile, "CHANGED=true\n");
+  const before = reads;
+  await assert.rejects(executeFunctionsCheckpointCli(["verify-completed", ...f.cliArgs], dependencies), /params changed/);
+  assert.equal(reads, before);
+  assert.deepEqual([fs.readFileSync(f.checkpointPath, "utf8"), fs.readFileSync(proofPath, "utf8")], original);
+  fs.unlinkSync(proofPath);
+  await assert.rejects(executeFunctionsCheckpointCli(["verify-completed", ...f.cliArgs], dependencies), /requires an exact deployment proof/);
+});

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 import {
   MetaWhatsappProvider,
   MetaProviderError,
@@ -598,13 +599,15 @@ test("bound vault reads reject another owner, aliases and raw legacy tokens",
       return [{payload: {data: Buffer.from(typeof credential === "string" ?
         credential : JSON.stringify(credential))}}];
     }};
-    const store = new OrganizerTokenStore(client as never, "VAULT");
+    const store = new OrganizerTokenStore(client as never, "VAULT",
+      new SecretVersionReferenceGuard(() => "p1"));
     const params = {versionResource: "projects/p1/secrets/VAULT/versions/7",
       organizerId: "o1", connectionId: "c1"};
     assert.equal(await store.accessBound(params), "secret-token");
     for (const overrides of [
       {organizerId: "o2"}, {connectionId: "c2"},
       {versionResource: "projects/p1/secrets/VAULT/versions/latest"},
+      {versionResource: "projects/other-project/secrets/VAULT/versions/7"},
       {versionResource: "projects/p1/secrets/OTHER/versions/7"},
       {versionResource: params.versionResource + "\n"},
     ]) {
@@ -621,7 +624,7 @@ test("bound vault reads reject another owner, aliases and raw legacy tokens",
     }
     const failing = new OrganizerTokenStore({accessSecretVersion: async () => {
       throw new Error("secret-token");
-    }} as never, "VAULT");
+    }} as never, "VAULT", new SecretVersionReferenceGuard(() => "p1"));
     await assert.rejects(failing.accessBound(params),
       /^Error: Organizer sender credential unavailable\.$/);
   });
@@ -644,3 +647,32 @@ interface TemplateRequest {
 function jsonResponse(value: unknown): Response {
   return new Response(JSON.stringify(value), {status: 200});
 }
+
+test("legacy reads and disables reject foreign references before I/O",
+  async () => {
+    const calls: string[] = [];
+    const client = {
+      accessSecretVersion: async () => {
+        calls.push("access");
+        return [{payload: {data: Buffer.from("legacy-fake-token")}}];
+      },
+      disableSecretVersion: async () => {
+        calls.push("disable"); return [{}];
+      },
+    };
+    const store = new OrganizerTokenStore(client as never, "VAULT",
+      new SecretVersionReferenceGuard(() => "local-project",
+        async () => "123456"));
+    for (const ref of ["projects/foreign-project/secrets/VAULT/versions/7",
+      "projects/654321/secrets/VAULT/versions/7",
+      "projects/local-project/secrets/OTHER/versions/7",
+      "projects/local-project/secrets/VAULT/versions/latest"]) {
+      await assert.rejects(store.access(ref));
+      await assert.rejects(store.disable(ref));
+    }
+    assert.deepEqual(calls, []);
+    const valid = "projects/123456/secrets/VAULT/versions/7";
+    assert.equal(await store.access(valid), "legacy-fake-token");
+    await store.disable(valid);
+    assert.deepEqual(calls, ["access", "disable"]);
+  });

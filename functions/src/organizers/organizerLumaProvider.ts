@@ -1,6 +1,7 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
+import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 
 export interface LumaCalendar {
   id: string;
@@ -52,7 +53,13 @@ export class LumaProviderError extends Error {
 }
 
 export class OrganizerProviderCredentialStore {
-  constructor(private readonly client = new SecretManagerServiceClient()) {}
+  constructor(private readonly client = new SecretManagerServiceClient(),
+    private readonly references = new SecretVersionReferenceGuard()) {}
+
+  private assertVersion(version: string): Promise<void> {
+    return this.references.assert(version,
+      /^organizer-provider-[a-f0-9]{32}$/u);
+  }
 
   async store(params: {
     organizerId: string;
@@ -80,10 +87,12 @@ export class OrganizerProviderCredentialStore {
       payload: {data: Buffer.from(params.credential, "utf8")},
     });
     if (!version.name) throw new Error("Secret Manager returned no version.");
+    await this.references.assert(version.name, secretId);
     return version.name;
   }
 
   async access(versionResource: string): Promise<string> {
+    await this.assertVersion(versionResource);
     const [version] = await this.client.accessSecretVersion({
       name: versionResource,
     });
@@ -93,6 +102,7 @@ export class OrganizerProviderCredentialStore {
   }
 
   async disable(versionResource: string): Promise<void> {
+    await this.assertVersion(versionResource);
     await this.client.disableSecretVersion({name: versionResource});
   }
 }

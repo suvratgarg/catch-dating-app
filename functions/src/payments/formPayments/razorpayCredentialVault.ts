@@ -1,4 +1,5 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
+import {SecretVersionReferenceGuard} from "../../shared/secretVersionReference";
 import type {RazorpayMerchantToken} from "./razorpayFormProvider";
 
 export interface RazorpayCredentialBinding {
@@ -23,9 +24,11 @@ export interface FormCredentialSecretStore {
 export class RazorpayCredentialVault {
   private readonly parent: string;
 
-  constructor(projectId: string, secretId: string,
+  constructor(projectId: string, private readonly secretId: string,
     private readonly store: FormCredentialSecretStore
-    = new GoogleSecretStore()) {
+    = new GoogleSecretStore(),
+    private readonly references = new SecretVersionReferenceGuard(
+      () => projectId)) {
     if (!/^[a-z][a-z0-9-]{4,61}[a-z0-9]$/u.test(projectId) ||
         !/^[A-Za-z0-9_-]{1,255}$/u.test(secretId)) {
       throw new Error("Invalid Razorpay credential vault configuration.");
@@ -38,14 +41,14 @@ export class RazorpayCredentialVault {
     const version = await this.store.add(this.parent, JSON.stringify({
       schema: "catch.organizer-razorpay/v1", ...credential,
     }));
-    this.assertVersion(version);
+    await this.assertVersion(version);
     return version;
   }
 
   async access(version: string, binding: RazorpayCredentialBinding):
     Promise<RazorpayStoredCredential> {
     try {
-      this.assertVersion(version);
+      await this.assertVersion(version);
       const raw = await this.store.read(version);
       if (Buffer.byteLength(raw, "utf8") > 60 * 1024) unavailable();
       const envelope: unknown = JSON.parse(raw);
@@ -61,14 +64,16 @@ export class RazorpayCredentialVault {
   }
 
   async disable(version: string): Promise<void> {
-    this.assertVersion(version);
+    await this.assertVersion(version);
     await this.store.disable(version);
   }
 
-  private assertVersion(version: string): void {
-    const prefix = `${this.parent}/versions/`;
-    if (!version.startsWith(prefix) ||
-        !/^[1-9][0-9]*$/u.test(version.slice(prefix.length))) unavailable();
+  private async assertVersion(version: string): Promise<void> {
+    try {
+      await this.references.assert(version, this.secretId);
+    } catch {
+      unavailable();
+    }
   }
 }
 
