@@ -101,7 +101,7 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
   const enabledTargets = listFirebaseFunctionTargets();
   const enabledTargetSet = new Set(enabledTargets);
 
-  assert.equal(dormantFirebaseFunctionTargets.length, 32);
+  assert.equal(dormantFirebaseFunctionTargets.length, 33);
   for (const target of dormantFirebaseFunctionTargets) {
     assert.equal(
       sourceExports.has(target), true, `${target} must remain implemented`,
@@ -124,6 +124,30 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
     }),
     /not enabled by source policy/u,
   );
+});
+
+test("program anonymizer stays implemented but cannot be activated by full or exact deployment", () => {
+  const scheduler = "functions:anonymizeDueProgramsSweep";
+  const enabledTargets = listFirebaseFunctionTargets();
+  assert.ok(listFirebaseFunctionExports().includes(scheduler));
+  assert.ok(dormantFirebaseFunctionTargets.includes(scheduler));
+  assert.equal(enabledTargets.includes(scheduler), false);
+  for (const plan of planFirebaseDeployGroups([
+    "functions", "firestore-indexes", "firestore-rules", "storage-rules",
+  ], {functionTargets: enabledTargets})) {
+    assert.equal(plan.deployOnly.split(",").includes(scheduler), false);
+  }
+  assert.throws(() => planFirebaseDeployTargets(scheduler, {
+    functionTargets: enabledTargets,
+  }), /not enabled by source policy/u);
+  const retained = ["functions:archiveProgram", "functions:unarchiveProgram"];
+  for (const target of retained) assert.ok(enabledTargets.includes(target));
+  const [historicalPlan] = planFirebaseDeployTargets(
+    [...retained, scheduler].join(","), {
+      filterDormantExactTargets: true,
+      functionTargets: enabledTargets,
+    });
+  assert.deepEqual(historicalPlan.deployOnly.split(","), retained);
 });
 
 test("historical delivery may remove only known dormant exact targets", () => {
