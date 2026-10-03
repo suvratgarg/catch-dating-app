@@ -788,10 +788,13 @@ export const getOrganizerWhatsappThread = onCall(
 );
 
 export const sendOrganizerWhatsappReply = onCall(
-  appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
-    callableLimits
-  ),
+  {
+    ...appCheckCallableOptionsWithSecrets(
+      [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+      callableLimits
+    ),
+    serviceAccount: "catch-whatsapp-reader@",
+  },
   (request) => sendOrganizerWhatsappReplyHandler(request)
 );
 
