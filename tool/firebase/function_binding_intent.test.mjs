@@ -401,7 +401,7 @@ test("equivalent parenthesized and asserted mutation syntax remains unresolved",
 test("WhatsApp source separates exactly five readers from the default connection writers in DEV and PROD", () => {
   const consumers = discoverFunctionExportNames(fs.readFileSync(
     path.join(repo, "functions/src/index.ts"), "utf8"));
-  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catchdates-prod"]]) {
+  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
     const intent = collect(repo, {environment, projectId, consumers});
     const readerAccount = `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`;
     const readers = intent.functions.filter((row) => row.serviceAccount === readerAccount);
@@ -417,7 +417,7 @@ test("WhatsApp source separates exactly five readers from the default connection
 });
 
 test("WhatsApp reader cannot inherit connection-writer secret permissions", () => {
-  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catchdates-prod"]]) {
+  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
     const intent = collect(repo, {environment, projectId,
       consumers: [...whatsappReaderConsumers, ...whatsappWriterConsumers]});
     const reader = intent.functions.find((row) => row.consumer === "getOrganizerMessagingSetup").serviceAccount;
