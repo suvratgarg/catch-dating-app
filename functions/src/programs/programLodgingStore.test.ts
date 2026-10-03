@@ -4,6 +4,7 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
 import {baseSeed, deps} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
+import {immutableLodgingProposal} from "./programLodgingPlanner";
 import {ProgramLodgingStore} from "./programLodgingStore";
 import type {LodgingSnapshot} from "./programLodgingTypes";
 import type {LodgingCommand} from "./programLodgingTransitions";
@@ -167,4 +168,52 @@ test("saved proposal replay rejects expiry during its final read", async () => {
     /expired/);
   assert.equal(h.controls.nowMillis, expiry);
   assert.equal(h.count("programLodgingProposals"), 1);
+});
+
+
+test("altered stored placements reject save, transition and hotel reads",
+  async () => {
+    const h = setup();
+    const proposal = await h.store.preview("program-1", "manager-1");
+    await h.store.save("program-1", "manager-1", proposal);
+    await h.store.transition("program-1", "manager-1", h.approve(proposal.id));
+    h.db.updateDoc("programLodgingProposals/" + proposal.id,
+      {proposal: {...proposal, placements: []}});
+    await assert.rejects(h.store.save("program-1", "manager-1", proposal),
+      /content does not match/);
+    await assert.rejects(h.store.hotelBoard(
+      "program-1", "hotelier-1", "hotel-1"), /content does not match/);
+    await assert.rejects(h.store.transition("program-1", "manager-1",
+      h.approve(proposal.id)), /content does not match/);
+    assert.equal(h.count("programLodgingReceipts"), 1);
+  });
+
+test("valid partial proposal cannot become an approved hotel board",
+  async () => {
+    const h = setup();
+    const partial = immutableLodgingProposal(h.snapshot, []);
+    await h.store.save("program-1", "manager-1", partial);
+    h.db.setDoc("programLodgingWorkflows/program-1", {
+      ...h.snapshot.scope, workflow: {revision: 1,
+        approvedProposalId: partial.id, confirmedHotelIds: [],
+        guestPublishedProposalId: null},
+    });
+    await assert.rejects(h.store.hotelBoard(
+      "program-1", "hotelier-1", "hotel-1"), /complete and feasible/);
+  });
+
+
+test("stored map key order does not change proposal identity", async () => {
+  const h = setup();
+  const proposal = await h.store.preview("program-1", "manager-1");
+  await h.store.save("program-1", "manager-1", proposal);
+  const reverse = (value: object) =>
+    Object.fromEntries(Object.entries(value).reverse());
+  h.db.updateDoc("programLodgingProposals/" + proposal.id, {proposal: {
+    ...proposal, scope: reverse(proposal.scope),
+    revisions: reverse(proposal.revisions),
+    placements: proposal.placements.map(reverse),
+  }});
+  const replay = await h.store.save("program-1", "manager-1", proposal);
+  assert.equal(replay.id, proposal.id);
 });

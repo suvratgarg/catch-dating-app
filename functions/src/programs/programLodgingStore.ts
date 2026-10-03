@@ -4,12 +4,14 @@ import {dutyAssignments, dutyCoversHotel, requireProgramAccess,
   requireProgramDuty, requireProgramMutable} from "../shared/programAuthority";
 import type {ProgramAccess} from "../shared/programAuthority";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
-import {assertLodgingProposalCurrent, immutableLodgingProposal, planLodging}
+import {assertLodgingProposalCurrent, immutableLodgingProposal, lodgingProposalId,
+  planLodging}
   from "./programLodgingPlanner";
 import {lodgingHotelProjection, lodgingTransition}
   from "./programLodgingTransitions";
 import type {LodgingAuthority, LodgingCommand, LodgingReceipt, LodgingWorkflow}
   from "./programLodgingTransitions";
+import {validateLodgingPlacements} from "./programLodgingValidation";
 import type {LodgingProposal, LodgingSnapshot} from "./programLodgingTypes";
 
 export interface TransactionLodgingSource {
@@ -91,11 +93,7 @@ export class ProgramLodgingStore {
       this.authority(access, actorUid, snapshot);
       if (existing.exists) {
         const stored = existing.data() as StoredProposal;
-        this.assertStoredScope(stored, access, programId);
-        if (stored.proposal.id !== canonical.id) {
-          throw new HttpsError("failed-precondition",
-            "Invalid saved proposal.");
-        }
+        this.assertStoredProposal(stored, access, programId, canonical.id);
         return stored.proposal;
       }
       tx.create(ref, {programId, organizerId: access.program.organizerId,
@@ -124,7 +122,8 @@ export class ProgramLodgingStore {
         throw new HttpsError("not-found", "No proposal.");
       }
       const storedProposal = proposalSnap.data() as StoredProposal;
-      this.assertStoredScope(storedProposal, access, programId);
+      this.assertStoredProposal(storedProposal, access, programId,
+        command.proposalId);
       const storedWorkflow = workflowSnap.data() as StoredWorkflow | undefined;
       const storedReceipt = receiptSnap.data() as StoredReceipt | undefined;
       if (storedWorkflow) {
@@ -174,11 +173,36 @@ export class ProgramLodgingStore {
         throw new HttpsError("not-found", "No proposal.");
       }
       const proposal = proposalSnap.data() as StoredProposal;
-      this.assertStoredScope(proposal, access, programId);
-      return lodgingHotelProjection(this.approvedSnapshot(snapshot,
-        proposal.proposal, stored.workflow), proposal.proposal, authority,
-      hotelId, this.deps.now().toMillis());
+      this.assertStoredProposal(proposal, access, programId,
+        stored.workflow.approvedProposalId);
+      const approved = this.approvedSnapshot(snapshot,
+        proposal.proposal, stored.workflow);
+      if (validateLodgingPlacements(approved,
+        proposal.proposal.placements, true).length) {
+        throw new HttpsError("failed-precondition",
+          "Approved lodging proposal must be complete and feasible.");
+      }
+      return lodgingHotelProjection(approved, proposal.proposal, authority,
+        hotelId, this.deps.now().toMillis());
     });
+  }
+
+  private assertStoredProposal(stored: StoredProposal, access: ProgramAccess,
+    programId: string, expectedId: string) {
+    this.assertStoredScope(stored, access, programId);
+    const proposal = stored.proposal;
+    try {
+      if (proposal.scope.programId !== programId ||
+          proposal.scope.organizerId !== access.program.organizerId ||
+          proposal.id !== expectedId ||
+          lodgingProposalId(proposal.scope, proposal.revisions,
+            proposal.placements) !== expectedId) {
+        throw new Error("Invalid proposal identity");
+      }
+    } catch {
+      throw new HttpsError("failed-precondition",
+        "Saved lodging proposal content does not match its identity.");
+    }
   }
 
   private approvedSnapshot(snapshot: LodgingSnapshot,

@@ -241,15 +241,33 @@ export function immutableLodgingProposal(snapshot: LodgingSnapshot,
     .map((row) => Object.freeze({...row}));
   const revisions = Object.freeze({...snapshot.revisions});
   const scope = Object.freeze({...snapshot.scope});
-  const id = createHash("sha256")
-    .update(JSON.stringify({scope, revisions, rows}))
-    .digest("hex");
+  const id = lodgingProposalId(scope, revisions, rows);
   return Object.freeze({id, scope, revisions, placements: Object.freeze(rows),
     unplacedPartyIds: Object.freeze(snapshot.parties.filter((p) =>
       !rows.some((r) => r.partyId === p.id)).map((p) => p.id).sort()),
     explanations: Object.freeze([...explanations]),
     score: Object.freeze(lodgingScore(snapshot, rows)),
     search: Object.freeze({...search})});
+}
+
+/** Identity covers immutable source revisions and canonical placements.
+ * Stored proposals use the same function without reinterpreting historical
+ * placements against a newer source during receipt replay. */
+export function lodgingProposalId(scope: LodgingProposal["scope"],
+  revisions: LodgingProposal["revisions"],
+  placements: readonly LodgingPlacement[]): string {
+  const rows = [...placements].sort((a, b) =>
+    a.partyId.localeCompare(b.partyId)).map((row) => ({
+    partyId: row.partyId, inventoryId: row.inventoryId,
+  }));
+  // Firestore map key order is not an identity input.
+  const canonical = {
+    scope: {organizerId: scope.organizerId, programId: scope.programId},
+    revisions: {source: revisions.source, inventory: revisions.inventory,
+      layout: revisions.layout, published: revisions.published},
+    rows,
+  };
+  return createHash("sha256").update(JSON.stringify(canonical)).digest("hex");
 }
 
 /** Publication must perform this comparison inside its authoritative write
