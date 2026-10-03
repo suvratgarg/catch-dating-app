@@ -294,6 +294,21 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         return result;
       });
     const index = load(path.join(src, "index.ts"));
+    const checkGlobalSetterUse = (node) => {
+      if (ts.isImportDeclaration(node)) return;
+      const binding = ts.isIdentifier(node) ? index.imports.get(node.text) :
+        ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) &&
+        index.imports.get(node.expression.text)?.namespace ?
+          {...index.imports.get(node.expression.text), name: node.name.text} : null;
+      if (binding?.name === "setGlobalOptions" &&
+          ["firebase-functions", "firebase-functions/v2", "firebase-functions/v2/options"]
+            .includes(binding.module) &&
+          !(ts.isCallExpression(node.parent) && node.parent.expression === node &&
+            ts.isExpressionStatement(node.parent.parent) &&
+            node.parent.parent.parent === index.ast)) fail();
+      ts.forEachChild(node, checkGlobalSetterUse);
+    };
+    checkGlobalSetterUse(index.ast);
     let globalOptions = {};
     let globals = 0;
     for (const statement of index.ast.statements) {
@@ -305,6 +320,8 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         .includes(callee.sdk) && callee.name === "setGlobalOptions") {
         if (++globals > 1 || call.arguments.length !== 1) fail();
         const earlierImports = index.ast.statements.filter((s) => s.pos < statement.pos);
+        if (earlierImports.some((s) => ts.isVariableStatement(s) &&
+          s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword))) fail();
         if (earlierImports.some((s) =>
           (ts.isExportDeclaration(s) || ts.isImportDeclaration(s)) &&
             s.moduleSpecifier?.text?.startsWith(".") &&
@@ -320,6 +337,10 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       const module = factory.sdk?.match(/^firebase-functions\/v2\/([a-z]+)$/u)?.[1];
       if (!module || !factories.get(module)?.has(factory.name) ||
           ![1, 2].includes(call.arguments.length)) fail();
+      const handler = unwrap(call.arguments.at(-1));
+      if (!ts.isArrowFunction(handler) && !ts.isFunctionExpression(handler) &&
+          !ts.isIdentifier(handler) && !ts.isPropertyAccessExpression(handler) &&
+          !ts.isCallExpression(handler)) fail();
       let local = {};
       if (call.arguments.length === 2) {
         const arg = unwrap(call.arguments[0]);

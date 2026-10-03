@@ -124,6 +124,7 @@ test("source option mutation and escaping references cannot masquerade as litera
 test("unresolved, v1, malformed and circular exports never infer default identity", (t) => {
   for (const source of [`export {selected} from './missing';`,
     `export const selected = () => {};`,
+    `${imports} export const selected=request({serviceAccount:'reader@'});`,
     `import {onRequest as request} from 'firebase-functions/v1/https';
       export const selected=request({},()=>{});`,
     `${imports} const a=b; const b=a; export const selected=request(a,()=>{});`,
@@ -134,6 +135,14 @@ test("unresolved, v1, malformed and circular exports never infer default identit
 
 test("global option ordering and other-module global setters are unsupported", (t) => {
   for (const files of [
+    {"index.ts": `${imports}
+      import {setGlobalOptions} from 'firebase-functions';
+      export const selected=request(()=>{});
+      setGlobalOptions({serviceAccount:'reader@'});`},
+    {"index.ts": `${imports}
+      import {setGlobalOptions as configure} from 'firebase-functions';
+      function change(){configure({serviceAccount:'reader@'});}
+      change(); export const selected=request(()=>{});`},
     {"index.ts": `export {selected} from './consumer';
       import {setGlobalOptions} from 'firebase-functions';
       setGlobalOptions({serviceAccount:'reader@'});`,
