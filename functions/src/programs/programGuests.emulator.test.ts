@@ -1,3 +1,11 @@
+import {importProgramManifestHandler} from "./programManifestImport";
+import {deleteProgramGuestGroupHandler} from "./programGuestGroups";
+import {planImportedMembership} from
+  "../workspaces/programMembershipPersistence";
+import {validateWorkspaceMembershipAssertionDocument} from
+  "../shared/generated/validators/workspaceMembershipAssertionDocument";
+import {validateWorkspaceMembershipDecisionDocument} from
+  "../shared/generated/validators/workspaceMembershipDecisionDocument";
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -331,6 +339,229 @@ test("Firestore lodging commits one publication and rolls back prepared writes",
           .where("programId", "==", programId).limit(100).get();
         await Promise.all(rows.docs.map((row) => row.ref.delete()));
       }
+      await Promise.all(roots.map((ref) => ref.delete()));
+      await db.terminate();
+      await deleteApp(app);
+    }
+  });
+
+
+// Synthetic source lists exercise the production import/manual handlers.
+test("Firestore imports preserve manual includes/excludes and exact replay",
+  {skip: !enabled}, async () => {
+    const id = randomUUID();
+    const app = initializeApp({projectId: "demo-catch-rules"}, id);
+    const db = getEmulatorFirestore(app);
+    const programId = `membership-${id}`;
+    const organizerId = `membership-org-${id}`;
+    const seed = baseSeed();
+    const dependencies: ProgramDataDeps = {firestore: () => db,
+      checkRateLimit: async () => undefined, now: () => now};
+    const roots = [db.doc(`organizers/${organizerId}`),
+      db.doc(`organizerPrograms/${programId}`)];
+    const collections = ["programGuests", "programGuestGroups",
+      "programTravelLegs", "programHouseholds", "programTravelParties",
+      "workspaceFieldAssertions", "workspaceFieldDecisions",
+      "workspaceMembershipAssertions", "workspaceMembershipDecisions",
+      "transportOperationReceipts"];
+    const row = {displayName: "Synthetic local guest",
+      externalReference: `source-${id}`, groupLabels: "Friends; Family"};
+    const importList = (operation: string) => importProgramManifestHandler(
+      request({programId, mode: "commit", clientOperationId: operation,
+        rows: [row]}, "manager-1"), dependencies);
+    try {
+      await roots[0].set(seed["organizers/org-1"]);
+      await roots[1].set({...seed["organizerPrograms/program-1"], organizerId});
+      const first = await importList("initial-list");
+      assert.deepEqual(first.rowErrors, []);
+      assert.equal(first.guestsCreated, 1);
+      const guests = await db.collection("programGuests")
+        .where("programId", "==", programId).limit(2).get();
+      assert.equal(guests.size, 1);
+      const ref = guests.docs[0].ref;
+      const imported = guests.docs[0].data();
+      assert.deepEqual(imported.groupIds, []);
+      assert.equal(imported.membershipSuggestions.length, 2);
+      const groups = await db.collection("programGuestGroups")
+        .where("programId", "==", programId).limit(3).get();
+      assert.equal(groups.size, 2);
+      assert.ok(groups.docs.every((d) => d.data().memberCount === 0));
+      const ids = groups.docs.map((d) => d.id);
+      const edit = (expectedRevision: number, groupId: string) =>
+        upsertProgramGuestHandler(request({programId, guestId: ref.id,
+          displayName: row.displayName, expectedRevision, groupIds: [groupId]},
+        "manager-1"), dependencies);
+      await edit(imported.revision, ids[0]);
+      const beforeRace = (await ref.get()).data()!;
+      const race = await Promise.allSettled(ids.map((groupId) =>
+        edit(beforeRace.revision, groupId)));
+      assert.equal(race.filter((r) => r.status === "fulfilled").length, 1);
+      const rejected = race.find((r) => r.status === "rejected");
+      assert.ok(rejected?.status === "rejected" &&
+        rejected.reason.code === "aborted" && rejected.reason.message ===
+          "Record changed since you loaded it. Reload and retry.",
+      JSON.stringify(rejected?.status === "rejected" ?
+        {code: rejected.reason.code, message: rejected.reason.message} : {}));
+      const chosen = (await ref.get()).data()!;
+      assert.equal(chosen.membershipSelections.length, 2);
+      assert.deepEqual(chosen.membershipSuggestions, []);
+      for (let i = 0; i < 3; i++) {
+        const applied = await importList(`reimport-${i}`);
+        assert.equal(applied.guestsCreated, 0);
+        assert.equal(applied.guestsUpdated, 1);
+        const current = (await ref.get()).data()!;
+        assert.deepEqual(current.groupIds, chosen.groupIds);
+        assert.deepEqual(current.membershipSelections,
+          chosen.membershipSelections);
+      }
+      const beforeReplay = (await ref.get()).data()!;
+      const evidenceCount = (await db.collection(
+        "workspaceMembershipAssertions")
+        .where("programId", "==", programId).limit(100).get()).size;
+      const replay = await importList("reimport-2");
+      assert.equal(replay.alreadyApplied, true);
+      assert.deepEqual((await ref.get()).data(), beforeReplay);
+      assert.equal((await db.collection("workspaceMembershipAssertions")
+        .where("programId", "==", programId).limit(100).get()).size,
+      evidenceCount);
+      for (const group of groups.docs) {
+        assert.equal((await group.ref.get()).data()!.memberCount,
+          chosen.groupIds.includes(group.id) ? 1 : 0);
+      }
+      for (const [name, validate] of [
+        ["workspaceMembershipAssertions",
+          validateWorkspaceMembershipAssertionDocument],
+        ["workspaceMembershipDecisions",
+          validateWorkspaceMembershipDecisionDocument],
+      ] as const) {
+        const rows = await db.collection(name)
+          .where("programId", "==", programId).limit(100).get();
+        assert.ok(rows.size > 0);
+        for (const doc of rows.docs) {
+          assert.equal(validate(doc.data()), true,
+            JSON.stringify(validate.errors));
+        }
+      }
+    } finally {
+      for (const name of collections) {
+        const rows = await db.collection(name)
+          .where("programId", "==", programId).limit(100).get();
+        await Promise.all(rows.docs.map((d) => d.ref.delete()));
+      }
+      await Promise.all(roots.map((ref) => ref.delete()));
+      await db.terminate();
+      await deleteApp(app);
+    }
+  });
+
+test("Firestore group cleanup traverses unchanged pages and frees exclusions",
+  {skip: !enabled}, async () => {
+    const id = randomUUID();
+    const app = initializeApp({projectId: "demo-catch-rules"}, id);
+    const db = getEmulatorFirestore(app);
+    const programId = `group-cleanup-${id}`;
+    const organizerId = `group-cleanup-org-${id}`;
+    const seed = baseSeed();
+    const dependencies: ProgramDataDeps = {firestore: () => db,
+      checkRateLimit: async () => undefined, now: () => now};
+    const roots = [db.doc(`organizers/${organizerId}`),
+      db.doc(`organizerPrograms/${programId}`)];
+    const scope = {programId, organizerId};
+    const unchangedIds = Array.from({length: 401}, (_, i) =>
+      `a-${id}-${String(i).padStart(3, "0")}`);
+    const suggestedId = `z-suggested-${id}`;
+    const excludedId = `z-excluded-${id}`;
+    const foreign = db.doc(`programGuests/foreign-${id}`);
+    const groupIds = Array.from({length: 100}, (_, i) => `${id}-group-${i}`);
+    const newGroupId = `${id}-new-group`;
+    const group = (label: string) => ({...scope, label, dimension: "custom",
+      sortOrder: 0, memberCount: 0, hotelId: null, createdAt: now,
+      updatedAt: now, revision: 1});
+    const guest = {...seed["programGuests/guest-1"], ...scope, groupIds: []};
+    const evidence = async () => {
+      const result = [];
+      for (const name of ["workspaceMembershipAssertions",
+        "workspaceMembershipDecisions"]) {
+        const rows = await db.collection(name)
+          .where("programId", "==", programId).limit(400).get();
+        result.push(rows.docs.map((d) => ({path: d.ref.path, data: d.data()})));
+      }
+      return result;
+    };
+    try {
+      await roots[0].set(seed["organizers/org-1"]);
+      await roots[1].set({...seed["organizerPrograms/program-1"], organizerId});
+      const entries = [...unchangedIds.map((guestId) =>
+        [db.doc(`programGuests/${guestId}`), guest] as const),
+      ...[...groupIds, newGroupId].map((groupId) =>
+        [db.doc(`programGuestGroups/${groupId}`), group(groupId)] as const)];
+      for (let i = 0; i < entries.length; i += 400) {
+        const batch = db.batch();
+        for (const [ref, value] of entries.slice(i, i + 400)) {
+          batch.set(ref, value);
+        }
+        await batch.commit();
+      }
+      const imported = planImportedMembership({guest,
+        ...scope, guestId: excludedId, groupIds, operationId: "excluded-list",
+        rowIndex: 0, actorUid: "manager-1", observedAtMillis: now.toMillis()});
+      const suggested = planImportedMembership({guest,
+        ...scope, guestId: suggestedId, groupIds: groupIds.slice(0, 2),
+        operationId: "suggested-list", rowIndex: 0, actorUid: "manager-1",
+        observedAtMillis: now.toMillis()});
+      const batch = db.batch();
+      for (const write of [...imported.writes, ...suggested.writes]) {
+        batch.create(db.doc(write.path), write.data);
+      }
+      batch.set(db.doc(`programGuests/${excludedId}`), {...guest,
+        membershipSuggestions: imported.projection.suggestions});
+      batch.set(db.doc(`programGuests/${suggestedId}`), {...guest,
+        membershipSuggestions: suggested.projection.suggestions});
+      const foreignData = {...guest, programId: `foreign-${id}`,
+        organizerId: `foreign-org-${id}`,
+        membershipSuggestions: suggested.projection.suggestions};
+      batch.set(foreign, foreignData);
+      await batch.commit();
+      const excluded = db.doc(`programGuests/${excludedId}`);
+      await upsertProgramGuestHandler(request({programId, guestId: excludedId,
+        displayName: "Synthetic excluded guest", expectedRevision: 1,
+        groupIds: []}, "manager-1"), dependencies);
+      const full = (await excluded.get()).data()!;
+      assert.equal(full.membershipSelections.length, 100);
+      const history = await evidence();
+      await deleteProgramGuestGroupHandler(request({programId,
+        groupId: groupIds[0], expectedRevision: 1}, "manager-1"), dependencies);
+      const cleaned = (await excluded.get()).data()!;
+      assert.equal(cleaned.membershipSelections.length, 99);
+      assert.deepEqual((await db.doc(`programGuests/${suggestedId}`).get())
+        .data()!.membershipSuggestions, suggested.projection.suggestions
+        .filter((p) => p.groupId !== groupIds[0]));
+      assert.deepEqual((await foreign.get()).data(), foreignData);
+      const unchanged = await db.getAll(...unchangedIds.map((guestId) =>
+        db.doc(`programGuests/${guestId}`)));
+      assert.ok(unchanged.every((d) => d.data()!.revision === 1));
+      assert.deepEqual(await evidence(), history);
+      await upsertProgramGuestHandler(request({programId, guestId: excludedId,
+        displayName: "Synthetic excluded guest",
+        expectedRevision: cleaned.revision, groupIds: [newGroupId]},
+      "manager-1"), dependencies);
+      assert.deepEqual((await excluded.get()).data()!.groupIds, [newGroupId]);
+      assert.equal((await db.doc(`programGuestGroups/${newGroupId}`).get())
+        .data()!.memberCount, 1);
+    } finally {
+      for (const name of ["programGuests", "programGuestGroups",
+        "workspaceFieldAssertions", "workspaceFieldDecisions",
+        "workspaceMembershipAssertions", "workspaceMembershipDecisions"]) {
+        while (true) {
+          const rows = await db.collection(name)
+            .where("programId", "==", programId).limit(400).get();
+          const batch = db.batch();
+          for (const doc of rows.docs) batch.delete(doc.ref);
+          if (rows.size > 0) await batch.commit();
+          if (rows.size < 400) break;
+        }
+      }
+      await foreign.delete();
       await Promise.all(roots.map((ref) => ref.delete()));
       await db.terminate();
       await deleteApp(app);
