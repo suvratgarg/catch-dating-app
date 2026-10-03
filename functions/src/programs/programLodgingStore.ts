@@ -87,6 +87,8 @@ export class ProgramLodgingStore {
       }
       const ref = this.proposalRef(canonical.id);
       const existing = await tx.get(ref);
+      // Reads can cross a duty expiry, including an idempotent save replay.
+      this.authority(access, actorUid, snapshot);
       if (existing.exists) {
         const stored = existing.data() as StoredProposal;
         this.assertStoredScope(stored, access, programId);
@@ -96,8 +98,6 @@ export class ProgramLodgingStore {
         }
         return stored.proposal;
       }
-      // Recheck expiry after all reads and immediately before the first write.
-      this.authority(access, actorUid, snapshot);
       tx.create(ref, {programId, organizerId: access.program.organizerId,
         proposal: canonical, createdByUid: actorUid,
         createdAtMillis: this.deps.now().toMillis()} satisfies StoredProposal);

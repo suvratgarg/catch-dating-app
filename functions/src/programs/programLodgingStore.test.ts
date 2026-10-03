@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
 import {baseSeed, deps} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
@@ -28,8 +29,9 @@ function setup() {
   };
   const db = new FakeFirestore({...baseSeed(),
     "plannerTestSources/program-1": {snapshot}});
-  const controls = {failPublish: false};
-  const dependencies = deps(db) as ProgramDataDeps;
+  const controls = {failPublish: false, nowMillis: 1_800_000_000_000};
+  const dependencies = deps(db, {now: () =>
+    Timestamp.fromMillis(controls.nowMillis)}) as ProgramDataDeps;
   const store = new ProgramLodgingStore(dependencies, async (tx) => {
     const ref = dependencies.firestore()
       .collection("plannerTestSources").doc("program-1");
@@ -140,4 +142,29 @@ test("source revisions fence approval; hotel data is allowlisted", async () => {
       expectedWorkflowRevision: 1}),
   /Stale/);
   assert.equal(h.count("programLodgingReceipts"), 1);
+});
+
+
+test("saved proposal replay rejects expiry during its final read", async () => {
+  const h = setup();
+  const proposal = await h.store.preview("program-1", "manager-1");
+  await h.store.save("program-1", "manager-1", proposal);
+  const expiry = h.controls.nowMillis + 100;
+  h.db.setDoc("programStaffGrants/program-1__coordinator", {
+    ...h.db.getDoc("programStaffGrants/program-1__hotelier-1"),
+    uid: "coordinator", duties: [{duty: "programCoordinator",
+      expiresAtMillis: expiry, pickupPointIds: [], hotelIds: []}],
+  });
+  const read = h.db.getDoc.bind(h.db);
+  h.db.getDoc = (path) => {
+    const doc = read(path);
+    if (path === "programLodgingProposals/" + proposal.id) {
+      h.controls.nowMillis = expiry;
+    }
+    return doc;
+  };
+  await assert.rejects(h.store.save("program-1", "coordinator", proposal),
+    /expired/);
+  assert.equal(h.controls.nowMillis, expiry);
+  assert.equal(h.count("programLodgingProposals"), 1);
 });
