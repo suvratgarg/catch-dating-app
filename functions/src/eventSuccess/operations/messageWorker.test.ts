@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {harness, worker, keys, start, queuedStatus} from
   "./whatsappTestHarness";
 import {EventMessageWorker} from "./messageWorker";
@@ -352,7 +353,7 @@ test("Firestore arbitrates mixed-channel workers and their fallback budgets", {
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "channels-" + id);
   try {
-    const h = await mixed(getFirestore(app), id);
+    const h = await mixed(getEmulatorFirestore(app), id);
     const contend = () => Promise.all(Array.from({length: 8}, h.dispatch));
     assert.equal((await contend()).filter((r) =>
       r.kind === "submitted").length, 1);

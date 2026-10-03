@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
@@ -259,7 +260,7 @@ test("Firestore group messages follow handover in Host and guest projections", {
     submitEventRehearsalGuestActionHandler: guestAction} =
       await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const id = randomUUID();
   const h = harness(Date.now(), id);
   h.session.organizerId = "guidance-" + id;

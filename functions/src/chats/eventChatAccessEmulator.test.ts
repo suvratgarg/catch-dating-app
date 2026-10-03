@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {eventChatMembershipId, getEventChatAccessHandler as get,
   updateEventChatAccessHandler as update, requireEventChatMember} from
@@ -26,7 +27,7 @@ test("Firestore room access follows current authority and explicit choices",
     const imported = `imported-${suffix}`;
     const stranger = `stranger-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const deps = {db: () => db, now: () => Timestamp.now(),
       rateLimit: async () => undefined};
     const ref = (collection: string, id: string) => db.collection(collection)

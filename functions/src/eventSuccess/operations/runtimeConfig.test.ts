@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {EventAssistanceRuntimeConfigStore} from "./runtimeConfigStore";
 import {configureRuntime} from "./runtimeConfigTestHarness";
 import {setup} from "./liveLateJoinTestHarness";
@@ -236,7 +237,7 @@ test("Firestore serializes runtime edits and replays exact requests", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const h = await setup(getFirestore(app));
+    const h = await setup(getEmulatorFirestore(app));
     const r = await configureRuntime(h);
     const next = {...r.input, requestId: randomUUID(), expectedRevision: 1,
       command: {kind: "pause"}};

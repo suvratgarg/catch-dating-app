@@ -1,7 +1,8 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {reserveFormPayment, finalizeCapturedFormPayment,
@@ -25,7 +26,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
     assert.match(emulator!, /^(127\.0\.0\.1|localhost):[0-9]+$/u);
     const app = initializeApp({projectId: "demo-catch-form-payments"},
       `form-payments-${Date.now()}`);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const fixture = createFormPaymentFixture();
     const collections = ["organizers", "organizerForms",
       "organizerFormVersions",

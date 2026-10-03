@@ -7,6 +7,12 @@ import {
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
 import {defaultProfilePromptIds} from "../shared/generated/schemaRegistry";
+import {removeOrganizerManagerHandler, transferOrganizerOwnershipHandler} from
+  "../organizers/manageOrganizerTeam";
+import {getOrganizerEventSetupDefaultsHandler} from
+  "../organizers/eventSetupDefaults/callables";
+import {isOrganizerManager} from "../shared/organizerHosts";
+import {isClubHost} from "../shared/clubHosts";
 
 type FakeData = Record<string, unknown>;
 
@@ -34,7 +40,27 @@ class FakeBatch {
   }
 }
 
+class FakeTransaction extends FakeBatch {
+  async get(ref: FakeDocRef) {
+    const data = ref.firestore.get(ref.path);
+    return {ref, exists: data !== undefined, data: () => data};
+  }
+
+  update(ref: FakeDocRef, data: FakeData) {
+    assert.ok(ref.firestore.get(ref.path));
+    this.set(ref, data, {merge: true});
+  }
+}
+
 class FakeFirestore {
+  afterQuery?: (collectionPath: string, field?: string) => Promise<void>;
+
+  async runTransaction<T>(body: (tx: FakeTransaction) => Promise<T>) {
+    const tx = new FakeTransaction();
+    const result = await body(tx);
+    await tx.commit();
+    return result;
+  }
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(collectionPath: string) {
@@ -94,6 +120,7 @@ function queryRef(
           ref: new FakeDocRef(firestore, path),
           data: () => cloneFakeData(data),
         }));
+      await firestore.afterQuery?.(collectionPath, filters[0]?.field);
       return {empty: docs.length === 0, docs};
     },
   };
@@ -410,3 +437,134 @@ test("syncUserProfileProjectionsHandler deletes public profile on user delete",
     assert.equal(firestore.get("publicProfiles/host-1"), undefined);
   }
 );
+
+function teamFirestore() {
+  return new FakeFirestore({
+    "organizers/org-1": {
+      ownerUserId: "owner", hostUserId: "owner",
+      hostUserIds: ["owner", "manager"], hostName: "Owner",
+      status: "active", archived: false,
+      hostProfiles: [
+        {uid: "owner", displayName: "Owner", avatarUrl: null, role: "owner"},
+        {uid: "manager", displayName: "Manager", avatarUrl: null, role: "host"},
+      ],
+    },
+    "organizerTeamMemberships/org-1_manager": {
+      status: "active", role: "manager",
+    },
+    "hostProfiles/manager": {displayName: "Manager", avatarUrl: null},
+    "hostProfiles/owner": {displayName: "Owner", avatarUrl: null},
+  });
+}
+
+function teamRequest(uid: string, target: string) {
+  return {auth: {uid}, data: {organizerId: "org-1", uid: target}} as never;
+}
+
+function teamDeps(db: FakeFirestore) {
+  return {firestore: () => db as never,
+    checkRateLimit: async () => undefined};
+}
+
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return {promise, resolve};
+}
+
+function delayTeamQuery(db: FakeFirestore) {
+  const captured = deferred();
+  const release = deferred();
+  db.afterQuery = async (collection, field) => {
+    if (collection === "organizers" && field === "hostUserIds") {
+      captured.resolve();
+      await release.promise;
+    }
+  };
+  return {captured: captured.promise, release: release.resolve};
+}
+
+for (const syncingUid of ["manager", "owner"]) {
+  test(`delayed ${syncingUid} sync cannot undo actual manager removal`,
+    async () => {
+      const db = teamFirestore();
+      const gate = delayTeamQuery(db);
+      const syncing = syncOrganizerHostProfile(syncingUid,
+        {hostName: "Updated", hostAvatarUrl: null}, teamDeps(db));
+      await gate.captured;
+      try {
+        await removeOrganizerManagerHandler(teamRequest("owner", "manager"),
+          teamDeps(db));
+      } finally {
+        gate.release();
+      }
+      await syncing;
+      assert.equal(db.get("organizerTeamMemberships/org-1_manager")?.status,
+        "removed");
+      const organizer = db.get("organizers/org-1")!;
+      assert.deepEqual(organizer.hostUserIds, ["owner"]);
+      assert.equal(isOrganizerManager(organizer as never, "manager"), false);
+      assert.equal(isClubHost(organizer as never, "manager"), false);
+      assert.deepEqual((organizer.hostProfiles as Array<{uid: string}>)
+        .map((host) => host.uid), ["owner"]);
+      await assert.rejects(getOrganizerEventSetupDefaultsHandler({
+        auth: {uid: "manager"}, data: {organizerId: "org-1"},
+      } as never, teamDeps(db)), {code: "permission-denied"});
+    });
+}
+
+test("delayed old-owner sync preserves transfer roles and new owner display",
+  async () => {
+    const db = teamFirestore();
+    const gate = delayTeamQuery(db);
+    const syncing = syncOrganizerHostProfile("owner",
+      {hostName: "Updated old owner", hostAvatarUrl: null}, teamDeps(db));
+    await gate.captured;
+    try {
+      await transferOrganizerOwnershipHandler(teamRequest("owner", "manager"),
+        teamDeps(db));
+    } finally {
+      gate.release();
+    }
+    await syncing;
+    const organizer = db.get("organizers/org-1")!;
+    assert.equal(organizer.ownerUserId, "manager");
+    assert.equal(organizer.hostName, "Manager");
+    assert.deepEqual(organizer.hostProfiles, [
+      {uid: "manager", displayName: "Manager", avatarUrl: null, role: "owner"},
+      {uid: "owner", displayName: "Updated old owner", avatarUrl: null,
+        role: "host"},
+    ]);
+    assert.equal(isOrganizerManager(organizer as never, "owner"), true);
+    await removeOrganizerManagerHandler(teamRequest("manager", "owner"),
+      teamDeps(db));
+    assert.equal(isOrganizerManager(db.get("organizers/org-1") as never,
+      "owner"), false);
+  });
+
+test("delayed sync cannot recreate a deleted organizer", async () => {
+  const db = teamFirestore();
+  const gate = delayTeamQuery(db);
+  const syncing = syncOrganizerHostProfile("owner",
+    {hostName: "Updated", hostAvatarUrl: null}, teamDeps(db));
+  await gate.captured;
+  db.delete("organizers/org-1");
+  gate.release();
+  await syncing;
+  assert.equal(db.get("organizers/org-1"), undefined);
+});
+
+test("sync filters stale display entries without changing team authority",
+  async () => {
+    const db = teamFirestore();
+    const organizer = db.get("organizers/org-1")!;
+    db.set("organizers/org-1", {...organizer, hostUserIds: ["owner"]});
+    await syncOrganizerHostProfile("owner",
+      {hostName: "Updated", hostAvatarUrl: null}, teamDeps(db));
+    assert.deepEqual(db.get("organizers/org-1")?.hostProfiles, [
+      {uid: "owner", displayName: "Updated", avatarUrl: null, role: "owner"},
+    ]);
+    assert.deepEqual(db.get("organizers/org-1")?.hostUserIds, ["owner"]);
+  });

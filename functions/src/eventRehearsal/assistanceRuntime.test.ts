@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -331,7 +332,7 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const {controlEventRehearsalHandler, submitEventRehearsalGuestActionHandler,
     resetEventRehearsalHandler} = await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-owner-" + id;
@@ -646,7 +647,7 @@ test("Firestore automates a 50-guest rehearsal in the existing callables", {
     submitEventRehearsalGuestActionHandler, resetEventRehearsalHandler} =
       await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore();
+  const db = getEmulatorFirestore();
   const id = randomUUID();
   const session = {...practiceSession(), actorCount: 50};
   session.organizerId = "practice-owner-" + id;

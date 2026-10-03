@@ -1,8 +1,9 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {listEventChatsHandler as list} from "./listEventChats";
 import type {ListEventChatsCallableResponse as Result} from
@@ -19,7 +20,7 @@ test("Firestore directory discovers admitted native and imported rooms only",
     const uid = `guest-${suffix}`; const other = `other-${suffix}`;
     const organizerId = `organizer-${suffix}`;
     const app = initializeApp({projectId: "demo-catch-form-payments"}, suffix);
-    const db = getFirestore(app);
+    const db = getEmulatorFirestore(app);
     const deps = {db: () => db, rateLimit: async () => undefined};
     const written: FirebaseFirestore.DocumentReference[] = [];
     const put = async (collection: string, id: string, data: object) => {

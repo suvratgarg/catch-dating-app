@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
-import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {ProgressFirestore} from "./groupProgressTestFixtures";
 import {validateEventDocument} from
@@ -392,7 +393,7 @@ test("Firestore contenders record one departure; replacement source is stale", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const id = randomUUID();
   const app = initializeApp({projectId: "demo-catch-rules"}, "progress-" + id);
-  const db = getFirestore(app);
+  const db = getEmulatorFirestore(app);
   try {
     const h = await harness(db, id);
     const input = command((await h.store.get(manager, h.scope)).view);

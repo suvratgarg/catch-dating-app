@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
@@ -453,7 +454,7 @@ test(
     if (!admin.apps.length) {
       admin.initializeApp({projectId: "demo-catch-rules"});
     }
-    const db = admin.firestore();
+    const db = getEmulatorFirestore();
     const id = randomUUID();
     const session = practiceSession();
     session.setup.moduleIds.push("accountability");

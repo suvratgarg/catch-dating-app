@@ -1,9 +1,10 @@
+import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {readFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
   "../../events/planChangeRecords";
@@ -220,7 +221,7 @@ test("Firestore arbitrates notice fanout and indexed due work", {
     /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   try {
-    const f = await setup(2, getFirestore(app));
+    const f = await setup(2, getEmulatorFirestore(app));
     const id = f.queued.item.workItemId;
     assert.ok((await f.fanout.listDue(100)).includes(id));
     const results = await Promise.all([

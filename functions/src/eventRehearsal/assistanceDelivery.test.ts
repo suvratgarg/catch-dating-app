@@ -1,3 +1,4 @@
+import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync, writeFileSync} from "node:fs";
@@ -319,7 +320,7 @@ test("Firestore fences practice handoffs, retries, replies and reset", {
     resetEventRehearsalHandler: reset,
     expireEventRehearsalsHandler: expire} = await import("./handlers.js");
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
-  const db = admin.firestore(); const id = randomUUID();
+  const db = getEmulatorFirestore(); const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-delivery-" + id;
   session.clubId = session.organizerId;
