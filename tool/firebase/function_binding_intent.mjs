@@ -13,6 +13,12 @@ const helperNames = new Map([
   ["shared/organizerFormUploadIdentity.ts", new Set([
     "appCheckCallableOptionsForFormUpload", "appCheckCallableOptionsForFormReview"])],
 ]);
+const endpointWrappers = new Map([
+  ["eventSuccess/operations/liveWorkTriggers.ts", new Set(["sourceTrigger"])],
+  ["admin/sales/callables.ts", new Set(["read", "write"])],
+  ["admin/salesIntelligence/callables.ts", new Set(["read", "write"])],
+  ["admin/salesPrivacy/callables.ts", new Set(["privacyCallable"])],
+]);
 const factories = new Map([
   ["https", new Set(["onCall", "onRequest"])],
   ["scheduler", new Set(["onSchedule"])],
@@ -35,6 +41,38 @@ const unwrap = (node) => {
     ts.isSatisfiesExpression(node) || ts.isNonNullExpression(node)) node = node.expression;
   return node;
 };
+
+/** Discover explicit authored exports without executing the source module. */
+export function discoverFunctionExportNames(indexSource) {
+  try {
+    if (typeof indexSource !== "string" || indexSource.length > 2 * 1024 * 1024) fail();
+    const ast = ts.createSourceFile("index.ts", indexSource, ts.ScriptTarget.Latest, true);
+    if (ast.parseDiagnostics.length) fail();
+    const names = [];
+    for (const statement of ast.statements) {
+      if (ts.isExportDeclaration(statement)) {
+        if (statement.isTypeOnly) continue;
+        if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) fail();
+        for (const item of statement.exportClause.elements) {
+          if (!item.isTypeOnly) names.push(item.name.text);
+        }
+      } else if (ts.isExportAssignment(statement)) fail();
+      else if (statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
+        if (statement.modifiers.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword)) fail();
+        if (ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement)) continue;
+        if (ts.isFunctionDeclaration(statement) && statement.name) names.push(statement.name.text);
+        else if (ts.isVariableStatement(statement)) {
+          for (const declaration of statement.declarationList.declarations) {
+            if (!ts.isIdentifier(declaration.name)) fail();
+            names.push(declaration.name.text);
+          }
+        } else fail();
+      }
+    }
+    if (!names.every(validName) || new Set(names).size !== names.length) fail();
+    return names.sort();
+  } catch { fail(); }
+}
 
 /** sourceSha is an assertion: the caller must verify approved source bytes. */
 export function collectFunctionBindingIntent({sourceRoot, environment, projectId,
@@ -75,6 +113,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     };
     inspectGlobals(src);
     const modules = new Map();
+    const watched = new Map();
     const active = new Set();
     let steps = 0;
     const enter = (key, fn) => {
@@ -155,8 +194,15 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       if (mod.imports.has(name)) return imported(mod.imports.get(name), mod);
       const value = mod.defs.get(name);
       if (!value?.node || !value.constant) fail();
+      watched.set(`${mod.file}:${name}`, {mod, name});
       // Const does not prevent object mutation. Refuse post-declaration writes.
       const visit = (node) => {
+        // An alias would escape the local proof, including aliases passed to an
+        // unknown mutator later. Reject the escape rather than assuming const
+        // also freezes the referenced object.
+        if (ts.isVariableDeclaration(node) && node.initializer &&
+            ts.isIdentifier(unwrap(node.initializer)) &&
+            unwrap(node.initializer).text === name) fail();
         if (ts.isBinaryExpression(node) &&
             node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
             node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
@@ -296,6 +342,10 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     const index = load(path.join(src, "index.ts"));
     const checkGlobalSetterUse = (node) => {
       if (ts.isImportDeclaration(node)) return;
+      if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression) &&
+          index.imports.get(node.expression.text)?.namespace &&
+          ["firebase-functions", "firebase-functions/v2", "firebase-functions/v2/options"]
+            .includes(index.imports.get(node.expression.text).module)) fail();
       const binding = ts.isIdentifier(node) ? index.imports.get(node.text) :
         ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) &&
         index.imports.get(node.expression.text)?.namespace ?
@@ -320,6 +370,10 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         .includes(callee.sdk) && callee.name === "setGlobalOptions") {
         if (++globals > 1 || call.arguments.length !== 1) fail();
         const earlierImports = index.ast.statements.filter((s) => s.pos < statement.pos);
+        // A non-exported endpoint may be exported later. Proving initialization
+        // order by export position alone would silently apply the wrong globals.
+        if (earlierImports.some((s) => ts.isVariableStatement(s) &&
+            s.declarationList.declarations.some((d) => d.initializer))) fail();
         if (earlierImports.some((s) => ts.isVariableStatement(s) &&
           s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword))) fail();
         if (earlierImports.some((s) =>
@@ -329,12 +383,32 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         globalOptions = options(call.arguments[0], index);
       }
     }
-    const functions = [...consumers].sort().map((consumer) => {
-      const target = exported(consumer, index);
+    const endpointOptions = (target) => enter(
+      `endpoint:${target.mod.file}:${target.node?.pos}`, () => {
       const call = target.node && unwrap(target.node);
       if (!call || !ts.isCallExpression(call)) fail();
       const factory = resolve(call.expression, target.mod, target.locals);
-      const module = factory.sdk?.match(/^firebase-functions\/v2\/([a-z]+)$/u)?.[1];
+      if (!factory.sdk) {
+        const def = factory.node && unwrap(factory.node);
+        const wrapperName = ts.isIdentifier(call.expression) ? call.expression.text : null;
+        const relative = path.relative(src, factory.mod.file).split(path.sep).join("/");
+        if (!def || !endpointWrappers.get(relative)?.has(def.name?.text ?? wrapperName) ||
+            (!ts.isFunctionDeclaration(def) && !ts.isArrowFunction(def)) ||
+            !def.body || def.modifiers?.some((m) => m.kind === ts.SyntaxKind.AsyncKeyword) ||
+            def.asteriskToken || call.arguments.length !== def.parameters.length) fail();
+        const body = ts.isBlock(def.body) ?
+          def.body.statements.length === 1 && ts.isReturnStatement(def.body.statements[0]) ?
+            def.body.statements[0].expression : null : def.body;
+        if (!body) fail();
+        const args = new Map();
+        def.parameters.forEach((parameter, i) => {
+          if (!ts.isIdentifier(parameter.name) || parameter.dotDotDotToken) fail();
+          args.set(parameter.name.text, {node: call.arguments[i],
+            mod: target.mod, locals: target.locals});
+        });
+        return endpointOptions({node: body, mod: factory.mod, locals: args});
+      }
+      const module = factory.sdk.match(/^firebase-functions\/v2\/([a-z]+)$/u)?.[1];
       if (!module || !factories.get(module)?.has(factory.name) ||
           ![1, 2].includes(call.arguments.length)) fail();
       const handler = unwrap(call.arguments.at(-1));
@@ -343,12 +417,18 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
           !ts.isCallExpression(handler)) fail();
       let local = {};
       if (call.arguments.length === 2) {
-        const arg = unwrap(call.arguments[0]);
-        // String trigger selectors cannot contain runtime options.
+        const resolved = resolve(call.arguments[0], target.mod, target.locals);
+        if (!resolved.node) fail();
+        const arg = unwrap(resolved.node);
+        // Resolve imported const selectors, but never evaluate dynamic selectors.
         if (!ts.isStringLiteral(arg) && !ts.isNoSubstitutionTemplateLiteral(arg) &&
-            !ts.isTemplateExpression(arg)) local = options(arg, target.mod, target.locals);
+            !ts.isTemplateExpression(arg)) local = options(arg, resolved.mod, resolved.locals);
         else if (module === "https" || module === "tasks") fail();
-      } else if (module !== "https") fail();
+      } else if (module !== "https" && module !== "storage") fail();
+      return local;
+    });
+    const functions = [...consumers].sort().map((consumer) => {
+      const local = endpointOptions(exported(consumer, index));
       const opts = {...globalOptions, ...local};
       if (globalOptions.preserveExternalChanges === true ||
           local.preserveExternalChanges === true || opts.omit === true) fail();
@@ -363,6 +443,78 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       return {consumer, platform: "gcfv2", serviceAccount,
         secretNames: [...new Set(opts.secretNames ?? [])].sort()};
     });
+    // Importer mutations are outside the defining module. Resolve named import
+    // provenance to the watched source binding and scan the importing local name
+    // with the same mutation/escape rules, without evaluating either module.
+    const origin = (name, mod, seen = new Set()) => {
+      const key = `${mod.file}:${name}`;
+      if (seen.has(key)) fail();
+      seen.add(key);
+      const entry = mod.imports.get(name);
+      if (!entry) return key;
+      if (!entry.module.startsWith(".") || entry.namespace) return null;
+      const importedMod = modules.get(path.resolve(path.dirname(mod.file), entry.module + ".ts"));
+      if (!importedMod) return null;
+      const ex = importedMod.exports.get(entry.name);
+      if (!ex) return null;
+      if (ex.module) {
+        if (!ex.module.startsWith(".")) return null;
+        const reexportedMod = modules.get(path.resolve(path.dirname(importedMod.file), ex.module + ".ts"));
+        if (!reexportedMod) return null;
+        const reexport = reexportedMod.exports.get(ex.name);
+        if (!reexport || reexport.module) fail();
+        return origin(reexport.name, reexportedMod, seen);
+      }
+      return origin(ex.name, importedMod, seen);
+    };
+    for (const mod of modules.values()) {
+      for (const [name, entry] of mod.imports) {
+        if (!entry.module.startsWith(".")) continue;
+        const key = entry.namespace ? null : origin(name, mod);
+        const namespaceTarget = path.resolve(path.dirname(mod.file), entry.module + ".ts");
+        if (!watched.has(key) && !(entry.namespace && [...watched.values()]
+          .some((binding) => binding.mod.file === namespaceTarget))) continue;
+        const scan = (node) => {
+          if (ts.isVariableDeclaration(node) && node.initializer &&
+              ts.isIdentifier(unwrap(node.initializer)) &&
+              unwrap(node.initializer).text === name) fail();
+          if (ts.isBinaryExpression(node) &&
+              node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+              node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+            let left = unwrap(node.left);
+            while (ts.isPropertyAccessExpression(left) || ts.isElementAccessExpression(left))
+              left = unwrap(left.expression);
+            if (ts.isIdentifier(left) && left.text === name) fail();
+          }
+          if (ts.isCallExpression(node) && node.arguments.some((arg) =>
+              ts.isIdentifier(unwrap(arg)) && unwrap(arg).text === name)) {
+            const callee = resolve(node.expression, mod, new Map());
+            const sdkFactory = callee.sdk?.startsWith("firebase-functions/v2/") &&
+              [...factories.values()].some((names) => names.has(callee.name));
+            const helper = callee.node && ts.isFunctionDeclaration(callee.node) &&
+              helperNames.get(path.relative(src, callee.mod.file).split(path.sep).join("/"))
+                ?.has(callee.node.name.text);
+            if (!sdkFactory && !helper) fail();
+          }
+          if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
+            let receiver = node.expression.expression;
+            while (ts.isPropertyAccessExpression(receiver) || ts.isElementAccessExpression(receiver))
+              receiver = receiver.expression;
+            if (ts.isIdentifier(receiver) && receiver.text === name &&
+                node.expression.name.text !== "value") fail();
+          }
+          if (ts.isDeleteExpression(node) || ts.isPostfixUnaryExpression(node) ||
+              ts.isPrefixUnaryExpression(node)) {
+            let operand = node.expression ?? node.operand;
+            while (ts.isPropertyAccessExpression(operand) || ts.isElementAccessExpression(operand))
+              operand = operand.expression;
+            if (ts.isIdentifier(operand) && operand.text === name) fail();
+          }
+          ts.forEachChild(node, scan);
+        };
+        scan(mod.ast);
+      }
+    }
     return {schemaVersion: 1, sourceSha, environment, projectId, projectNumber, functions};
   } catch {
     // Never serialize ASTs, option values, process env, parser/FS errors or causes.

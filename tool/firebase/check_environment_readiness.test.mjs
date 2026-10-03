@@ -1108,3 +1108,32 @@ test("an active feature identity with unrelated WhatsApp grants fails the explic
   assert.equal(absent.metadata.effectiveAccessVerified, false);
   assert.equal(classifyForbiddenSecretAccess({serviceAccount, secret, result: {status: 1, stderr: "PERMISSION_DENIED"}}).status, "unknown");
 });
+
+test("promotion binds the same parameter inputs before deployment and checks the receipt before stage success", () => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_firebase-promote.yml"), "utf8");
+  const section = (name) => {
+    const start = workflow.indexOf(`      - name: ${name}`);
+    assert.ok(start >= 0);
+    const end = workflow.indexOf("\n      - ", start + 1);
+    return workflow.slice(start, end < 0 ? undefined : end);
+  };
+  const provenance = section("Record names-only Functions parameter provenance");
+  const materialize = section("Materialize non-secret Functions params in the deploy copy");
+  const inputNames = (text) => [...text.matchAll(/^          ([A-Z_]+): \$\{\{ vars\.([A-Z_]+) \}\}$/gm)]
+    .map((match) => { assert.equal(match[1], match[2]); return match[1]; }).sort();
+  assert.deepEqual(inputNames(provenance), inputNames(materialize));
+  assert.ok(inputNames(provenance).includes("EVENT_ASSISTANCE_GUEST_KEY_VERSION"));
+  assert.ok(inputNames(provenance).includes("EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"));
+  assert.match(provenance, /--provenance-only/);
+  assert.match(materialize, /--provenance build\/delivery\/params-provenance.json/);
+  const readiness = section("Verify environment prerequisites for the approved targets");
+  assert.match(readiness, /--phase candidate/);
+  assert.match(readiness, /--source-root build\/delivery\/source-checkout --source-sha/);
+  const deploy = workflow.indexOf("--functions-deploy-only");
+  const postconditions = workflow.indexOf("--functions-postconditions-only", deploy);
+  const compare = workflow.indexOf("--candidate build/delivery/secret-bindings.json --phase deployed", postconditions);
+  const checkpoint = workflow.indexOf("node tool/ci/delivery_core.mjs checkpoint", compare);
+  assert.ok(deploy > 0 && postconditions > deploy && compare > postconditions && checkpoint > compare);
+  assert.match(workflow.slice(postconditions, checkpoint), /--phase deployed \|\| stage_status=\$\?/);
+  assert.match(workflow, /--params-file/);
+});

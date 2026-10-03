@@ -5,7 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
-import {collectFunctionBindingIntent, runCli} from "./function_binding_intent.mjs";
+import {collectFunctionBindingIntent, discoverFunctionExportNames, runCli} from "./function_binding_intent.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const base = {environment: "dev", projectId: "test-project", projectNumber: "123456",
@@ -174,7 +174,7 @@ test("current manifest consumers and direct readers resolve from current source"
     .flatMap((r) => r.requiredWhen.anyDeployTarget ?? [])
     .filter((v) => v.startsWith("functions:")).map((v) => v.slice(10)))];
   assert.ok(consumers.length > 0);
-  consumers.push("refreshProgramFlightStatuses", "refreshProgramTravelLeg",
+  consumers.push("cancelEvent", "refreshProgramFlightStatuses", "refreshProgramTravelLeg",
     "eventAssistanceRcsWebhook", "onAssistanceWorkChanged",
     "evaluateDueEventAssistanceWork", "adminSendCatchWhatsappReply");
   const result = collect(repo, {consumers: [...new Set(consumers)]});
@@ -195,16 +195,9 @@ test("literal readiness manifest matches selected source consumers", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(repo,
     "tool/firebase/environment_readiness.json"), "utf8"));
   const requirements = manifest.requirements.filter((r) => r.kind === "secret-version");
-  const consumers = [...new Set([
-    ...requirements.flatMap((r) => r.requiredWhen.anyDeployTarget ?? [])
-      .filter((v) => v.startsWith("functions:")).map((v) => v.slice(10)),
-    // Source regressions: these existing secret consumers were omitted entirely.
-    "reviewOrganizerApplication", "convertOrganizerFormResponse",
-    "onOrganizerFormResponseAutomated", "onOrganizerApplicationAutomated",
-    "onOrganizerAttendanceAutomated", "retryOrganizerAutomations",
-    "sendOrganizerWhatsappReply", "onNativeCancellationRefund",
-    "recoverNativeCancellationRefunds",
-  ])];
+  // Enumerate source independently: an entirely omitted manifest consumer must fail.
+  const consumers = discoverFunctionExportNames(fs.readFileSync(
+    path.join(repo, "functions/src/index.ts"), "utf8"));
   assert.ok(consumers.length > 0);
   const intent = collect(repo, {consumers});
   const mismatches = intent.functions.flatMap((row) => {
@@ -224,4 +217,65 @@ test("unreviewed SDK semantics cannot establish a source default identity", (t) 
   fs.writeFileSync(path.join(sourceRoot, "functions/package-lock.json"),
     JSON.stringify({packages:{"node_modules/firebase-functions":{version:"99.0.0"}}}));
   assert.throws(() => collect(sourceRoot), unresolved);
+});
+
+
+test("export discovery includes direct and local exports and refuses unknown forms", () => {
+  assert.deepEqual(discoverFunctionExportNames(`export {a, b as renamed} from './x';
+    const local = 1; export {local}; export const inline = 2;
+    export function named() {} export type {Ignored} from './types';
+    export interface Shape {} export type Type = string;`),
+  ["a", "inline", "local", "named", "renamed"]);
+  for (const source of ["export * from './x';", "export default selected;",
+    "export * as nested from './x';", "export const {selected} = unknown();",
+    "export class Selected {}"])
+    assert.throws(() => discoverFunctionExportNames(source), unresolved);
+});
+
+test("reviewed endpoint wrappers, storage overload and imported selectors resolve", (t) => {
+  const root = fixture(t, {
+    "index.ts": `export {selected} from './admin/sales/callables';
+      export {image, document} from './events';`,
+    "admin/sales/callables.ts": `${imports}
+      const read = (opts) => request(opts, () => {});
+      export const selected = read({serviceAccount:'sales-reader@',secrets:['SALES_SECRET']});`,
+    "events.ts": `import {onObjectFinalized} from 'firebase-functions/v2/storage';
+      import {onDocumentCreated} from 'firebase-functions/v2/firestore';
+      import {selector} from './selector';
+      export const image = onObjectFinalized(async () => {});
+      export const document = onDocumentCreated(selector, () => {});`,
+    "selector.ts": `export const selector = 'items/{id}';`,
+  });
+  const result = collect(root, {consumers: ['selected','image','document']});
+  assert.deepEqual(result.functions.find((r) => r.consumer === 'selected').secretNames,
+    ['SALES_SECRET']);
+  assert.equal(result.functions.find((r) => r.consumer === 'selected').serviceAccount,
+    'sales-reader@test-project.iam.gserviceaccount.com');
+  for (const body of ["{const copy = opts; return request(copy,()=>{});}",
+    "process.env.CHANGED ? request(opts,()=>{}) : request({},()=>{})",
+    "request({...opts,serviceAccount:process.env.IDENTITY},()=>{})"]) {
+    fs.writeFileSync(path.join(root, 'functions/src/admin/sales/callables.ts'),
+      `${imports} const read=(opts)=>${body}; export const selected=read({});`);
+    assert.throws(() => collect(root), unresolved);
+  }
+});
+
+test("alias escapes, importing module writes and late globals remain unresolved", (t) => {
+  for (const files of [
+    {'index.ts': `${imports} const opts={secrets:['ORIGINAL']}; const alias=opts;
+      alias.secrets[0]='CHANGED'; export const selected=request(opts,()=>{});`},
+    {'index.ts': `${imports} import {opts as imported} from './options';
+      imported.serviceAccount='writer@'; export const selected=request(imported,()=>{});`,
+      'options.ts': `export const opts={serviceAccount:'reader@'};`},
+    {'index.ts': `${imports} import * as imported from './options';
+      imported.opts.serviceAccount='writer@'; export const selected=request(imported.opts,()=>{});`,
+      'options.ts': `export const opts={serviceAccount:'reader@'};`},
+    {'index.ts': `${imports} import {setGlobalOptions} from 'firebase-functions';
+      const local=request(()=>{});setGlobalOptions({serviceAccount:'writer@'});
+      export {local as selected};`},
+    ...["'setGlobalOptions'", "'set'+'GlobalOptions'"].map((access) => ({
+      'index.ts': `${imports} import * as options from 'firebase-functions/v2/options';
+        options[${access}]({serviceAccount:'writer@'}); export const selected=request(()=>{});`,
+    })),
+  ]) assert.throws(() => collect(fixture(t, files)), unresolved);
 });

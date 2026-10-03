@@ -5,7 +5,7 @@ import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 
 import {materializedNonSecretParams} from "./prepare_functions_params_for_deploy.mjs";
-import {collectFunctionBindingIntent} from "./function_binding_intent.mjs";
+import {collectFunctionBindingIntent, discoverFunctionExportNames} from "./function_binding_intent.mjs";
 
 import {inspectUploadIdentity, uploadIdentityTarget} from "./form_upload_identity.mjs";
 
@@ -466,27 +466,11 @@ function bindingRequirements(manifest) {
 }
 
 export function parseFirebaseFunctionTargets(indexSource) {
-  const targets = new Set();
-  for (const match of indexSource.matchAll(
-    /export\s*\{([\s\S]*?)\}\s*from\s*["']/gu,
-  )) {
-    for (const rawPart of match[1].split(",")) {
-      const part = rawPart.trim();
-      if (!part) continue;
-      const alias = part.match(/\s+as\s+([A-Za-z_$][\w$]*)$/u)?.[1];
-      const name = alias ?? part.match(/^([A-Za-z_$][\w$]*)/u)?.[1];
-      if (!name) {
-        throw new ReadinessUsageError(
-          `Could not parse Firebase Function export: ${part}.`,
-        );
-      }
-      targets.add(`functions:${name}`);
-    }
+  try {
+    return new Set(discoverFunctionExportNames(indexSource).map((name) => `functions:${name}`));
+  } catch {
+    throw new ReadinessUsageError("Firebase Function exports require statically resolved explicit names.");
   }
-  if (targets.size === 0) {
-    throw new ReadinessUsageError("No Firebase Function exports were found.");
-  }
-  return targets;
 }
 
 export function parseFirebaseProjectAliases(contents) {
@@ -1210,7 +1194,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
     {cwd: repoRoot, encoding: "utf8"}).stdout?.trim();
   if (args.sourceRoot && (spawnSync("git", ["rev-parse", "HEAD"],
     {cwd: repoRoot, encoding: "utf8"}).stdout?.trim() !== sourceSha ||
-    spawnSync("git", ["diff", "HEAD", "--quiet", "--", "functions/src", "tool/firebase/environment_readiness.json", ".firebaserc"],
+    spawnSync("git", ["diff", "HEAD", "--quiet", "--", "functions/src", "functions/package-lock.json", "tool/firebase/environment_readiness.json", ".firebaserc"],
       {cwd: repoRoot}).status !== 0)) {
     throw new ReadinessUsageError("Approved source checkout does not match the receipt SHA.");
   }
@@ -1543,6 +1527,8 @@ Usage:
     (--env <dev|staging|prod> | --all) \\
     [--targets <csv>] [--capabilities <csv>] [--json]
     [--candidate <names-only-receipt.json>] [--phase deployed|candidate]
+    [--source-root <approved-checkout> --source-sha <sha>]
+    [--params-provenance <receipt.json> --write-candidate <new-receipt.json>]
 
 The live checker resolves projects only from .firebaserc and uses metadata-only
 gcloud commands. It has no apply mode and never accesses secret payloads.
