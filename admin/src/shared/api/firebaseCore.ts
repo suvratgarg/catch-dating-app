@@ -35,9 +35,7 @@ export function firebaseConfig() {
 export const firebaseApp = initializeApp(firebaseConfig());
 const appCheckSiteKey = import.meta.env.VITE_ADMIN_APPCHECK_SITE_KEY;
 
-if (appCheckSiteKey) {
-  initializeAppCheck(firebaseApp, {
-    provider: new ReCaptchaV3Provider(appCheckSiteKey),
-    isTokenAutoRefreshEnabled: true,
-  });
-}
+export const adminAppCheck = appCheckSiteKey ? initializeAppCheck(firebaseApp, {
+  provider: new ReCaptchaV3Provider(appCheckSiteKey),
+  isTokenAutoRefreshEnabled: true,
+}) : null;
