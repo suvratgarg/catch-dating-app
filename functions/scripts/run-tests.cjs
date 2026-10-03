@@ -3,6 +3,7 @@
 "use strict";
 
 const fs = require("node:fs");
+const {createHash} = require("node:crypto");
 const path = require("node:path");
 const {spawnSync} = require("node:child_process");
 
@@ -90,8 +91,21 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
       failed = true;
     }
   }
-  console.log(JSON.stringify({kind: "backend-integration-execution", node: process.version,
-    selected, executed, summaries: Object.fromEntries(summaries), success: !failed}));
+  const source = spawnSync("git", ["rev-parse", "HEAD"], {cwd: root, encoding: "utf8"});
+  const inputFiles = [...selected, path.join(root, "package-lock.json"), __filename]
+    .filter((file) => fs.existsSync(file));
+  const evidence = {kind: "backend-integration-execution", node: process.version,
+    sourceSha: source.status === 0 ? source.stdout.trim() : null,
+    platform: process.platform, architecture: process.arch,
+    inputHashes: Object.fromEntries(inputFiles.map(file => [path.relative(root, file),
+      createHash("sha256").update(fs.readFileSync(file)).digest("hex")])),
+    selected, executed, summaries: Object.fromEntries(summaries), success: !failed};
+  if (process.env.CATCH_TEST_EVIDENCE_PATH) {
+    const output = path.resolve(process.env.CATCH_TEST_EVIDENCE_PATH);
+    fs.mkdirSync(path.dirname(output), {recursive: true});
+    fs.writeFileSync(output, `${JSON.stringify(evidence, null, 2)}\n`);
+  }
+  console.log(JSON.stringify(evidence));
   return failed ? 1 : 0;
 }
 

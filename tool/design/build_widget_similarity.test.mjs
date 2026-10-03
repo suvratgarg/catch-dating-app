@@ -65,3 +65,35 @@ function fingerprint(name, marker) {
     hasWidgetHelpers: false,
   };
 }
+
+test("merge parity retains focused similarity and product invariants, with reports opt-in", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "tool/design/check_design_parity.mjs"), "utf8");
+  const blocking = source.split("const blocking = [")[1].split("];", 1)[0];
+  assert.match(blocking, /node --test tool\/design\/build_widget_similarity.test.mjs/u);
+  assert.match(blocking, /check_widget_dedupe_probes.mjs/u);
+  for (const invariant of ["check_component_contracts", "check_widget_classification",
+    "check_new_widget_inventory", "check_widget_pattern_families", "check_route_inventory",
+    "check_capture_coverage", "check_screen_contracts", "build_feature_contracts",
+    "check_screen_top_bar_contracts", "check_widgetbook_coverage"]) {
+    assert.ok(blocking.includes(invariant), `${invariant} must remain blocking`);
+  }
+  assert.doesNotMatch(blocking, /extract_fingerprints|build_widget_similarity.mjs --/u);
+  assert.match(source, /const advisory = args.includes\("--reports"\) \? \[/u);
+  assert.match(source, /"node tool\/design\/build_widget_similarity.mjs"/u);
+});
+
+test("similarity check is advisory even for identical widget fingerprints", (t) => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-similarity-advisory-"));
+  t.after(() => fs.rmSync(tempRoot, {recursive: true, force: true}));
+  const fingerprints = path.join(tempRoot, "fingerprints.json");
+  fs.writeFileSync(fingerprints, JSON.stringify({version: 1, widgets: [
+    fingerprint("FixtureAlphaCard", "a"), fingerprint("FixtureBetaCard", "a"),
+  ], failures: []}));
+  const result = spawnSync(process.execPath, [script, "--fingerprints",
+    path.relative(repoRoot, fingerprints), "--check", "--json"], {cwd: repoRoot, encoding: "utf8"});
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.summary.widgets, 2);
+  assert.ok(report.clusters.some(cluster => cluster.members.includes("FixtureAlphaCard") &&
+    cluster.members.includes("FixtureBetaCard")), "known identical widgets must still be detected");
+});

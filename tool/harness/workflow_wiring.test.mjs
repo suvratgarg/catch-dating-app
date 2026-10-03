@@ -1050,3 +1050,29 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
     assert.equal(runName("pull_request", action, "documentation"), "CI pull_request");
   }
 });
+
+test("headless journeys start independently of macOS rendering and native smoke", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const headless = source.split("  headless-journeys:\n")[1]?.split("  visual-and-integration:\n")[0];
+  assert.ok(headless);
+  assert.match(headless, /runs-on: ubuntu-latest/u);
+  assert.match(headless, /timeout-minutes: 20/u);
+  assert.match(headless, /run: bash tool\/test_app_shell_integration.sh/u);
+  assert.doesNotMatch(headless, /needs:|goldens|Widgetbook|CocoaPods/u);
+  const native = source.split("  visual-and-integration:\n")[1];
+  assert.match(native, /flutter test --concurrency=1 test\/goldens/u);
+  assert.match(native, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(native, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
+  assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);
+  assert.doesNotMatch(native, /Deterministic app-shell integration suites/u);
+});
+
+test("backend integration runs strict execution inside both emulators with a bounded job", () => {
+  const source = workflow("firestore-rules-ci.yml");
+  assert.match(source, /timeout-minutes: 35/u);
+  assert.match(source, /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
+  const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
+  assert.match(pkg.scripts["test:rules"], /^npm run build && node scripts\/run-tests.cjs --require-emulators /u);
+  assert.ok(pkg.scripts["test:rules"].includes("test/firestore.rules.test.cjs"));
+  assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
+});

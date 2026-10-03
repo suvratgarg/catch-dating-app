@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.20
-updated: 2026-10-02
+version: 2.7.21
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -333,11 +333,39 @@ retain source selection only when both committed component graphs classify the
 prose as documentation-only and neither snapshot's package manifests could bundle
 it as an asset. Markdown in test or asset directories is never exempt. Assets,
 dependency manifests, test configuration, other non-Dart changes, unsupported
-inputs, and changes with no provable dependent test retain the full suite.
+inputs, and any changed source with no provable dependent test retain the full
+suite, including when another changed source has proven coverage.
 Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
+
+### Selected Check Contracts
+
+The graph selects obligations; selection is not execution evidence. Preserve
+these contracts when narrowing work:
+
+| Invariant and owner | Inputs and trigger | Environment and evidence | Failure action |
+|---|---|---|---|
+| Backend permissions and transaction behavior; backend platform | Functions source/tests/package inputs, Rules, and generated backend contracts conservatively select backend integration | Pinned Node/Java/Firebase CLI, Firestore and Storage emulators; strict runner rejects missing emulators, zero executed tests, failures, skips and TODOs. Seven-day artifact records selected/executed tests, summaries, source SHA, Node version and input hashes | Repair the failing assertion or missing execution; do not replace an emulator run with ordinary Functions discovery |
+| Root Flutter behavior; app platform | Every changed Dart source needs a base/head import-path proof; unproven mixed paths retain full selection | Pinned Flutter; existing selected-file/shard artifacts and actual test results | Repair coverage or retain full fallback; filesystem probes do not establish coverage for unrelated files |
+| App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
+| Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
+| Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
+| Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
+
+Whole-product widget similarity is advisory and has no product acceptance
+threshold. Request it explicitly with `check_design_parity.mjs --check --reports`
+or run its registered report command. Its extractor/clustering probes and focused
+generator regressions remain blocking. Snapshot/export checks retained in the
+current gate still prove only their documented source/metadata invariants.
+
+Use GitHub run/job timestamps and execution artifacts to measure time to first
+actionable failure, ready-to-merge latency, completed job-seconds by runner,
+reruns, selector misses, unexpected skips and regeneration-conflict effort.
+Record source/toolchain identity and deduplicate retained job IDs across retry
+attempts. These observations are not money saved or proof permitting cross-SHA
+result reuse. Keep run measurements in task/CI evidence, not tracked ledgers.
 
 The same planner follows the lint engine's seeded and generated probe imports.
 The expensive Catch UI plugin smoke check runs when its engine, configuration,

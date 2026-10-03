@@ -702,7 +702,7 @@ test("shared Flutter presentation change selects tests and role-bounded web smok
 
   assert.deepEqual(v2Plan.directComponents, ["app.shared"]);
   assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host", "web.marketing"]);
-  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
+  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing", "visual_integration"]);
   assert.deepEqual(v2Plan.operations.buildTargets, [
     "consumer-web-smoke",
     "host-web-smoke",
@@ -713,7 +713,7 @@ test("host-only Flutter source keeps Host smoke while validating Marketing captu
   const result = plan("lib/hosts/presentation/host_home.dart");
   assert.deepEqual(result.directComponents, ["app.host"]);
   assert.deepEqual(result.affectedComponents, ["web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke", "marketing", "visual_integration"]);
   assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
@@ -893,7 +893,7 @@ test("generated Flutter bindings validate Flutter and Marketing without expandin
   const result = plan("lib/core/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
   assert.deepEqual(result.affectedComponents, ["web.marketing"]);
-  assert.deepEqual(result.operations.ciTargets, ["flutter", "marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["contracts", "flutter", "marketing"]);
   assert.deepEqual(result.operations.codegenIds, ["contracts.schema-projections"]);
 });
 
@@ -911,7 +911,7 @@ test("form conversion authority selects emulator validation in every CI mode", (
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
       assert.deepEqual(result.operations.ciTargets,
-        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+        mode === "release" ? [] : ["contracts", "firestore_rules", "functions"], `${file} ${mode}`);
       assert.deepEqual(result.operations.deployGroups,
         ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
       for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
@@ -921,15 +921,15 @@ test("form conversion authority selects emulator validation in every CI mode", (
   }
 });
 
-test("form conversion routing preserves unrelated Functions and mixed lanes", () => {
+test("backend integration conservatively covers runtime and mixed lanes", () => {
   assert.deepEqual(plan("functions/src/events/cancelEventSignUp.ts")
-    .operations.ciTargets, ["functions"]);
+    .operations.ciTargets, ["contracts", "firestore_rules", "functions"]);
   const mixed = planAffected({graph, mode: "pr", changedPaths: [
     formConversionEmulatorPaths[1], "admin/src/App.tsx",
   ]});
   assert.equal(mixed.complete, true);
   assert.deepEqual(mixed.operations.ciTargets,
-    ["admin", "firestore_rules", "functions"]);
+    ["admin", "contracts", "firestore_rules", "functions"]);
   assert.deepEqual(mixed.operations.deployGroups, []);
 });
 
@@ -937,7 +937,7 @@ test("rules command executes both form conversion and attendee regressions", () 
   const packageJson = JSON.parse(fs.readFileSync(
     new URL("../../functions/package.json", import.meta.url), "utf8"));
   const command = packageJson.scripts["test:rules"];
-  assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+  assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
   for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
     "lib/events/eventAttendees.test.js"]) {
     assert.equal(command.split(/\s+/u).filter((part) => part === compiled).length,
@@ -1338,5 +1338,33 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
     const nativeOnly = plan("lib/auth/presentation/phone_page.dart", mode);
     assert.deepEqual(result.operations.releaseTargets, nativeOnly.operations.releaseTargets);
     assert.deepEqual(result.operations.releaseRoles, nativeOnly.operations.releaseRoles);
+  }
+});
+
+test("minimum safety obligations cover source, tests, lockfiles and generated outputs", () => {
+  const fixtures = [
+    {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
+    {paths: ["functions/test/firestore.rules.test.cjs"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},
+    {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/core/theme/app_theme.dart"], required: ["flutter", "visual_integration"]},
+    {paths: ["lib/core/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
+    {paths: ["functions/src/shared/generated/schemaRegistry.ts"], required: ["contracts", "functions", "firestore_rules"]},
+    {paths: ["website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"], required: ["contracts", "marketing"]},
+    // Renames retain both sides; additions/deletions use the same path obligation.
+    {paths: ["functions/src/chats/old.ts", "functions/src/chats/new.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["docs/feature.md", "functions/src/chats/eventChatAccess.ts"], required: ["docs", "functions", "firestore_rules"]},
+  ];
+  for (const fixture of fixtures) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = planAffected({graph, mode, changedPaths: fixture.paths});
+      assert.equal(result.complete, true, fixture.paths.join(","));
+      for (const target of fixture.required) {
+        assert.ok(result.operations.ciTargets.includes(target), `${mode} ${fixture.paths}: missing ${target}`);
+      }
+    }
   }
 });
