@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'CatchWhatsappReadinessApprovalDocument',
+    source: 'firestore/catch_whatsapp_readiness_approval.schema.json',
+    schema: schemaCatchWhatsappReadinessApprovalDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappReadinessIngressDocument',
+    source: 'firestore/catch_whatsapp_readiness_ingress.schema.json',
+    schema: schemaCatchWhatsappReadinessIngressDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappReadinessAuditDocument',
+    source: 'firestore/catch_whatsapp_readiness_audit.schema.json',
+    schema: schemaCatchWhatsappReadinessAuditDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappReplyOperationDocument',
     source: 'firestore/catch_whatsapp_reply_operations.schema.json',
     schema: schemaCatchWhatsappReplyOperationDocumentSchema,
@@ -5849,6 +5864,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'CatchWhatsappReadinessApprovalDocument': schemaCatchWhatsappReadinessApprovalDocumentSchema,
+  'CatchWhatsappReadinessIngressDocument': schemaCatchWhatsappReadinessIngressDocumentSchema,
+  'CatchWhatsappReadinessAuditDocument': schemaCatchWhatsappReadinessAuditDocumentSchema,
   'CatchWhatsappReplyOperationDocument': schemaCatchWhatsappReplyOperationDocumentSchema,
   'CatchWhatsappEndpointStopDocument': schemaCatchWhatsappEndpointStopDocumentSchema,
   'CatchWhatsappReplyReadinessDocument': schemaCatchWhatsappReplyReadinessDocumentSchema,
@@ -7018,6 +7036,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/catch_whatsapp_readiness_approval.schema.json': schemaCatchWhatsappReadinessApprovalDocumentSchema,
+  'firestore/catch_whatsapp_readiness_ingress.schema.json': schemaCatchWhatsappReadinessIngressDocumentSchema,
+  'firestore/catch_whatsapp_readiness_audit.schema.json': schemaCatchWhatsappReadinessAuditDocumentSchema,
   'firestore/catch_whatsapp_reply_operations.schema.json': schemaCatchWhatsappReplyOperationDocumentSchema,
   'firestore/catch_whatsapp_endpoint_stops.schema.json': schemaCatchWhatsappEndpointStopDocumentSchema,
   'firestore/catch_whatsapp_reply_readiness.schema.json': schemaCatchWhatsappReplyReadinessDocumentSchema,

@@ -78,3 +78,21 @@ test("empty and duplicate selections fail before execution", () => {
     assert.match(result.stderr, /nonempty, unique test files/u);
   }
 });
+
+test("canonical rules command selects readiness exactly once in strict mode", () => {
+  const packageJson = JSON.parse(fs.readFileSync(
+    path.resolve(__dirname, "../package.json"), "utf8"));
+  const selected = "lib/catchMessaging/whatsappReadinessFirestore.test.js";
+  const command = packageJson.scripts["test:rules"];
+  function assertSelected(value) {
+    assert.match(value,
+      /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
+    assert.equal(value.split(/\s+/u).filter(token => token === selected).length,
+      1, "readiness must run exactly once in the canonical strict rules lane");
+  }
+  assertSelected(command);
+  for (const broken of [command.replace(selected, ""),
+    `${command} ${selected}`, command.replace("--require-emulators ", "")]) {
+    assert.throws(() => assertSelected(broken));
+  }
+});

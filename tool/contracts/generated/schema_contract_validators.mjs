@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  catchWhatsappReadinessApprovalDocumentSchema,
+  catchWhatsappReadinessIngressDocumentSchema,
+  catchWhatsappReadinessAuditDocumentSchema,
   catchWhatsappReplyOperationDocumentSchema,
   catchWhatsappEndpointStopDocumentSchema,
   catchWhatsappReplyReadinessDocumentSchema,
@@ -1193,6 +1196,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateCatchWhatsappReadinessApprovalDocument = ajv.compile(catchWhatsappReadinessApprovalDocumentSchema);
+export const validateCatchWhatsappReadinessIngressDocument = ajv.compile(catchWhatsappReadinessIngressDocumentSchema);
+export const validateCatchWhatsappReadinessAuditDocument = ajv.compile(catchWhatsappReadinessAuditDocumentSchema);
 export const validateCatchWhatsappReplyOperationDocument = ajv.compile(catchWhatsappReplyOperationDocumentSchema);
 export const validateCatchWhatsappEndpointStopDocument = ajv.compile(catchWhatsappEndpointStopDocumentSchema);
 export const validateCatchWhatsappReplyReadinessDocument = ajv.compile(catchWhatsappReplyReadinessDocumentSchema);

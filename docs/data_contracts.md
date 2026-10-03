@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.161.0
-updated: 2026-10-02
+version: 1.161.2
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -4838,7 +4838,7 @@ original 30-day expiry and immutable payload. Claims are permanent per sender
 and provider inbound ID; changed bodies and uncertain attempts cannot resend.
 Status projection never grants sending, retry, consent or billing authority.
 
-Readiness is a read-only prerequisite in this feature, not an attestation API.
+The reply runtime only reads readiness; there is no attestation API.
 A separately reviewed record must bind the exact sender, recipient UID/endpoint,
 configured evidence digest, complete historical STOP coverage through verified
 atomic ingress, current owner reviewer and an expiry no later than 24 hours
@@ -4850,9 +4850,92 @@ STOP are read again in the final send-claim transaction after credential loading
 Future STOP commits block later claims; a claim already committed before STOP
 may have dispatched. Marketing-purpose withdrawal is not service permission.
 
-Both outbound gates and the receipt-consumer gate remain false in the offline
-source milestone. The parameter materializer rejects enablement or provisioning
-of scoped reply values. There is no readiness writer, automatic history repair
-approval, live credential read, provider send, deployment or activation in these
-tests. Runtime history collection and all scoped live approvals remain separate.
-The 24-hour cutoff is a transport eligibility rule, not a verified pricing claim.
+The disconnected readiness adapter consumes one protected
+`catchWhatsappReadinessApprovals/{approvalId}` review and writes the exact
+readiness mutation plus create-only `catchWhatsappReadinessAudits/{auditId}`
+in one Firestore transaction. It validates the actual project and default
+database, complete scope, pinned `catchWhatsappReadinessIngress/{ingressId}`
+evidence and current STOP, withdrawal, deletion and readiness records. These
+three collections deny all client reads/writes, have no TTL, and contain no
+message body, raw endpoint or credential. No approval or ingress writer is
+provided. An existing readiness cannot be renewed or reactivated; revocation
+requires the approved digest of its exact current record. Ingress state is checked
+during provisioning; the existing send path reads readiness, not this ingress
+record. Later ingress revocation must also revoke readiness or disable outbound
+gates: changing the ingress record alone is not a sending kill switch.
+
+The required external authority fence remains unimplemented. It must cover
+reviewer roles, enabled/session state and recipient identity through the actual
+Firestore commit; Firebase Auth reads or role-assignment documents alone cannot
+provide that guarantee. All relevant Auth mutations, including administrative
+changes, must participate in an independently audited protocol before a live
+caller can be wired. The adapter itself invokes the bounded offline
+`catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
+not a native Meta export parser. The trusted immutable source loader must pin
+exact bytes and an independent authenticity/completeness audit. Empty history,
+unsupported or truncated records, and historical STOP fail closed. No live authenticated
+history producer is provided. Independent complete historical STOP provenance is also
+mandatory: archive validation, current receipt queries and evidence hashes do
+not establish missing historical truth. No live readiness write is authorized
+by the source implementation or its synthetic fixtures.
+
+The adapter disables SDK automatic retries and retries only definite ABORTED
+conflicts, at most three attempts, reloading all facts each time. Unknown commit
+outcomes propagate without an automatic retry; an approved review cannot be
+reused after consumption. Create-only audit records are immutable through this
+adapter, not against arbitrary privileged Admin SDK mutation. Outbound gates
+remain off by default; this milestone makes no provider call, credential change,
+backend deployment or activation. The 24-hour cutoff is a transport eligibility
+rule, not a verified pricing claim.
+
+
+`whatsappReadinessEvidence.ts` provides disconnected protected producer and
+read-only loader protocols. Preparation accepts an opaque review reference and
+requires independent authenticated-review, actual atomic-ingress audit and
+immutable archive/pin sources. It validates existing contracts, exact decision
+binding and historical session observations; unexpected fields and private
+backend errors are rejected without exposing their values. Dependency arguments,
+results and archive bytes are copied across awaits. Its create-only publisher is
+an interface only: there is no implementation, new collection, live producer,
+publication call or enabled readiness output. Hashes and synthetic tests prove
+neither source authenticity nor historical completeness.
+
+The review observation binds the verified token UID/project/auth_time and token
+expiry to the observed tokens-valid-after cutoff, enabled owner role, review
+time, exact decision digest and authenticated source provenance. Token expiry
+bounds the proposed approval expiry. This records authentication at that review;
+it is not `sessionCurrent`, an authority epoch, protection against revoke/regrant
+or delete/recreate races, or the mandatory full-span Auth fence. The protected
+archive loader revalidates the exact approval and existing history verifier but
+cannot authenticate arbitrary caller-supplied bytes or pins. Actual immutable
+storage, authorized publication and independently audited sources remain absent.
+
+### Readiness authority mutation boundary
+
+The scoped source inventory identifies these paths; it is not an inventory of
+live IAM, tenant configuration or every authorized principal:
+
+| Path | Relevant behavior and limit |
+|---|---|
+| `functions/src/admin/adminUserRoles.ts` | Writes Auth custom claims, then projects `adminRoleAssignments` separately. The projection does not fence Auth changes inside a readiness transaction. |
+| `functions/src/safety/accountDeletion.ts` | Writes the recipient `deletedUsers` tombstone before Auth deletion. Readiness reads that guard; direct Auth deletion bypasses this application path. |
+| `tool/demo/cross_paths_demo_core.mjs` | Privileged fixture tooling can clear/reassign phone numbers, create users and alter test-phone configuration. It has scoped guards including an explicitly pinned production path, not a readiness lock. |
+| `tool/firebase/probe_chat_storage_rules.mjs` | Mints and exchanges a custom token for a selected user after its own data preflight; it does not establish a readiness authority fence. |
+| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
+
+The client SDK also exposes account deletion, linking/unlinking, password and
+phone mutation capabilities independently of whether the current application UI
+uses them. Their actual availability depends on provider configuration. Firebase
+console, other Admin SDK/REST clients, privileged imports and automation, and
+provider self-service routes remain outside this source inventory. No production
+session-revocation or bulk-import writer was found in this scoped search; that
+absence does not establish absence of external capability.
+
+The send path observes actor roles, disabled state and token revocation cutoff,
+plus the recipient's enabled state and exact verified phone. The readiness
+reviewer check observes current enabled/adminOwner status but not the reviewer's
+session revocation. None of those external Auth reads participates atomically in
+Firestore commits. A future audited fence must address role removal/regrant,
+enable/delete/recreate, session revocation and phone unlink/reassign/restore,
+including changes through external principals. No application epoch protocol or
+live authority fence is introduced by these producer interfaces.

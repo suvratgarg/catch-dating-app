@@ -1,6 +1,367 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const catchWhatsappReadinessApprovalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_readiness_approval.schema.json",
+  "title": "CatchWhatsappReadinessApprovalDocument",
+  "description": "Server-only independently authorized review. Provisioning consumes it atomically with readiness and immutable audit; this source provides no approval writer. No TTL, token, endpoint or message body.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "approvalId",
+    "state",
+    "approval",
+    "ingressEvidenceSha256",
+    "consumedAtMillis",
+    "recordSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "approvalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "consumed"
+      ]
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalId",
+        "action",
+        "scope",
+        "reviewerUid",
+        "reviewedAtMillis",
+        "expiresAtMillis",
+        "atomicIngressStartedAtMillis",
+        "expectedRecordSha256"
+      ],
+      "properties": {
+        "approvalId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "create",
+            "revoke"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "wabaId",
+            "phoneNumberId",
+            "recipientUid",
+            "endpointHash",
+            "evidenceSha256"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+              "minLength": 6,
+              "maxLength": 30
+            },
+            "wabaId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^[0-9]{1,32}$"
+            },
+            "phoneNumberId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^[0-9]{1,32}$"
+            },
+            "recipientUid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "endpointHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            "evidenceSha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            }
+          }
+        },
+        "reviewerUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "reviewedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "atomicIngressStartedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedRecordSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ingressEvidenceSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "consumedAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recordSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "catchWhatsappReadinessApprovals",
+  "x-firestore-path": "catchWhatsappReadinessApprovals/{approvalId}",
+  "x-document-id-field": "approvalId",
+  "x-owner": "Catch support readiness provisioning"
+};
+
+export const catchWhatsappReadinessIngressDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_readiness_ingress.schema.json",
+  "title": "CatchWhatsappReadinessIngressDocument",
+  "description": "Server-only audited atomic-ingress cutover evidence; not an enablement flag. Approval pins evidence digest; transaction checks identity and state. No writer or live ingress attestation is provided.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ingressId",
+    "projectId",
+    "wabaId",
+    "phoneNumberId",
+    "state",
+    "atomicIngressStartedAtMillis",
+    "evidenceSha256",
+    "verifiedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "ingressId": {
+      "type": "string",
+      "pattern": "^cwingress_[a-f0-9]{64}$",
+      "minLength": 74,
+      "maxLength": 74
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "minLength": 6,
+      "maxLength": 30
+    },
+    "wabaId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "phoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "atomicIngressStartedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "evidenceSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "verifiedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "catchWhatsappReadinessIngress",
+  "x-firestore-path": "catchWhatsappReadinessIngress/{ingressId}",
+  "x-document-id-field": "ingressId",
+  "x-owner": "Catch support readiness provisioning"
+};
+
+export const catchWhatsappReadinessAuditDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_readiness_audit.schema.json",
+  "title": "CatchWhatsappReadinessAuditDocument",
+  "description": "Immutable server-only provisioning audit created with approval consumption and readiness mutation. Hashes bind archive, exact readiness and independently audited external authority fence. No TTL or private message/contact content.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "auditId",
+    "approvalId",
+    "action",
+    "projectId",
+    "actorUid",
+    "atMillis",
+    "provenanceSha256",
+    "recordSha256",
+    "readinessId",
+    "authorityFenceSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "approvalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "create",
+        "revoke"
+      ]
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "minLength": 6,
+      "maxLength": 30
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "atMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "provenanceSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recordSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "readinessId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 72,
+      "pattern": "^cwready_[a-f0-9]{64}$"
+    },
+    "authorityFenceSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    }
+  },
+  "x-firestore-collection": "catchWhatsappReadinessAudits",
+  "x-firestore-path": "catchWhatsappReadinessAudits/{auditId}",
+  "x-document-id-field": "auditId",
+  "x-owner": "Catch support readiness provisioning"
+};
+
 export const catchWhatsappReplyOperationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_reply_operations.schema.json",
