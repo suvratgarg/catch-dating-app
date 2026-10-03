@@ -98,6 +98,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     const src = fs.realpathSync(path.join(functionsDir, "src"));
     // SDK global options are shared process state. Only the entry point may
     // establish them; another module would make import ordering significant.
+    const sourceFiles = [];
     let inspected = 0;
     const inspectGlobals = (directory) => {
       for (const item of fs.readdirSync(directory, {withFileTypes: true})) {
@@ -107,7 +108,28 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         else if (item.isFile() && item.name.endsWith(".ts") &&
             !item.name.endsWith(".test.ts") && filename !== path.join(src, "index.ts")) {
           if (fs.statSync(filename).size > 2 * 1024 * 1024) fail();
-          if (/\bsetGlobalOptions\b/u.test(fs.readFileSync(filename, "utf8"))) fail();
+          sourceFiles.push(filename);
+          const source = fs.readFileSync(filename, "utf8");
+          if (/\bsetGlobalOptions\b/u.test(source)) fail();
+          // Computed property names can hide the setter token. Other source
+          // modules cannot import the global-options namespace at all.
+          const ast = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true);
+          if (ast.parseDiagnostics.length) fail();
+          const globalModules = new Set(["firebase-functions", "firebase-functions/v2",
+            "firebase-functions/v2/options"]);
+          const visit = (node) => {
+            if (ts.isImportDeclaration(node) &&
+                (node.moduleSpecifier.text === "firebase-functions/v2/options" ||
+                  globalModules.has(node.moduleSpecifier.text) &&
+                  node.importClause?.namedBindings &&
+                  ts.isNamespaceImport(node.importClause.namedBindings))) fail();
+            if (ts.isCallExpression(node) &&
+                (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+                  ts.isIdentifier(node.expression) && node.expression.text === "require") &&
+                node.arguments.some((a) => ts.isStringLiteral(a) && globalModules.has(a.text))) fail();
+            ts.forEachChild(node, visit);
+          };
+          visit(ast);
         }
       }
     };
@@ -121,7 +143,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       active.add(key);
       try { return fn(); } finally { active.delete(key); }
     };
-    const load = (filename) => {
+    const load = (filename, scanOnly = false) => {
       const real = fs.realpathSync(filename);
       if (!real.startsWith(src + path.sep) || !real.endsWith(".ts") ||
           real.endsWith(".test.ts") || fs.lstatSync(filename).isSymbolicLink()) fail();
@@ -131,7 +153,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         ts.ScriptTarget.Latest, true);
       if (ast.parseDiagnostics.length) fail();
       const mod = {ast, file: real, imports: new Map(), defs: new Map(),
-        exports: new Map()};
+        exports: new Map(), stars: []};
       modules.set(real, mod);
       const add = (map, name, value) => {
         if (map.has(name)) fail();
@@ -141,6 +163,8 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         if (ts.isImportDeclaration(statement)) {
           const bindings = statement.importClause?.namedBindings;
           if (statement.importClause?.isTypeOnly) continue;
+          if (statement.importClause?.name) add(mod.imports, statement.importClause.name.text,
+            {module: statement.moduleSpecifier.text, name: "default"});
           if (bindings && ts.isNamedImports(bindings)) {
             for (const item of bindings.elements) {
               if (!item.isTypeOnly) add(mod.imports, item.name.text,
@@ -161,13 +185,21 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
             }
           }
         } else if (ts.isFunctionDeclaration(statement) && statement.name) {
+          if (scanOnly && !statement.body) continue;
           add(mod.defs, statement.name.text, {node: statement, constant: true});
           if (statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
             add(mod.exports, statement.name.text, {name: statement.name.text});
           }
+        } else if (ts.isExportAssignment(statement)) {
+          if (!scanOnly || !ts.isIdentifier(unwrap(statement.expression))) fail();
+          add(mod.exports, "default", {name: unwrap(statement.expression).text});
         } else if (ts.isExportDeclaration(statement)) {
           if (statement.isTypeOnly) continue;
-          if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) fail();
+          if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
+            if (!scanOnly || statement.exportClause || !statement.moduleSpecifier?.text?.startsWith(".")) fail();
+            mod.stars.push(statement.moduleSpecifier.text);
+            continue;
+          }
           for (const item of statement.exportClause.elements) {
             if (!item.isTypeOnly) add(mod.exports, item.name.text, {
               module: statement.moduleSpecifier?.text,
@@ -189,6 +221,23 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       if (!entry) fail();
       return entry.module ? imported(entry, mod) : symbol(entry.name, mod, new Map());
     });
+    const rootedAt = (node, name) => {
+      node = unwrap(node);
+      while (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+        node = unwrap(node.expression);
+      return ts.isIdentifier(node) && node.text === name;
+    };
+    const captures = (node, name) => {
+      node = unwrap(node);
+      if (rootedAt(node, name)) return true;
+      if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) return false;
+      if (ts.isPropertyAssignment(node)) return captures(node.initializer, name);
+      if (ts.isArrowFunction(node) || ts.isFunctionExpression(node) ||
+          ts.isFunctionDeclaration(node) || ts.isCallExpression(node)) return false;
+      let found = false;
+      ts.forEachChild(node, (child) => { if (captures(child, name)) found = true; });
+      return found;
+    };
     const symbol = (name, mod, locals) => {
       if (locals.has(name)) return locals.get(name);
       if (mod.imports.has(name)) return imported(mod.imports.get(name), mod);
@@ -201,8 +250,14 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         // unknown mutator later. Reject the escape rather than assuming const
         // also freezes the referenced object.
         if (ts.isVariableDeclaration(node) && node.initializer &&
-            ts.isIdentifier(unwrap(node.initializer)) &&
-            unwrap(node.initializer).text === name) fail();
+            captures(node.initializer, name) && (!ts.isIdentifier(node.name) || !watched.has(`${mod.file}:${node.name.text}`))) fail();
+        if (ts.isReturnStatement(node) && node.expression && captures(node.expression, name) &&
+          !(ts.isFunctionDeclaration(node.parent?.parent) &&
+            helperNames.get(path.relative(src, mod.file).split(path.sep).join("/"))
+              ?.has(node.parent.parent.name?.text))) fail();
+        if (ts.isBinaryExpression(node) &&
+            node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+            node.operatorToken.kind <= ts.SyntaxKind.LastAssignment && captures(node.right, name)) fail();
         if (ts.isBinaryExpression(node) &&
             node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
             node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
@@ -217,7 +272,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
             node.expression.expression.text === "Object" &&
             ["assign", "defineProperty", "defineProperties", "setPrototypeOf"]
               .includes(node.expression.name.text) &&
-            node.arguments.some((arg) => ts.isIdentifier(arg) && arg.text === name)) fail();
+            node.arguments.some((arg) => rootedAt(arg, name) || captures(arg, name))) fail();
         if (ts.isDeleteExpression(node) || ts.isPostfixUnaryExpression(node) ||
             ts.isPrefixUnaryExpression(node)) {
           let expression = node.expression ?? node.operand;
@@ -233,7 +288,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
               node.expression.name.text !== "value") fail();
         }
         if (ts.isCallExpression(node) && node.arguments.some((arg) =>
-          ts.isIdentifier(arg) && arg.text === name)) {
+          rootedAt(arg, name) || captures(arg, name))) {
           const callee = resolve(node.expression, mod, new Map());
           const sdkFactory = callee.sdk?.startsWith("firebase-functions/v2/") &&
             [...factories.values()].some((names) => names.has(callee.name));
@@ -341,7 +396,19 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       });
     const index = load(path.join(src, "index.ts"));
     const checkGlobalSetterUse = (node) => {
-      if (ts.isImportDeclaration(node)) return;
+      if (ts.isImportDeclaration(node)) {
+        if (node.importClause?.namedBindings &&
+            ts.isNamespaceImport(node.importClause.namedBindings) &&
+            ["firebase-functions", "firebase-functions/v2", "firebase-functions/v2/options"]
+              .includes(node.moduleSpecifier.text)) fail();
+        return;
+      }
+      if (ts.isCallExpression(node) &&
+          (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+            ts.isIdentifier(node.expression) && node.expression.text === "require") &&
+          node.arguments.some((a) => ts.isStringLiteral(a) &&
+            ["firebase-functions", "firebase-functions/v2", "firebase-functions/v2/options"]
+              .includes(a.text))) fail();
       if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression) &&
           index.imports.get(node.expression.text)?.namespace &&
           ["firebase-functions", "firebase-functions/v2", "firebase-functions/v2/options"]
@@ -446,38 +513,65 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     // Importer mutations are outside the defining module. Resolve named import
     // provenance to the watched source binding and scan the importing local name
     // with the same mutation/escape rules, without evaluating either module.
+    // Mutation can occur in a different imported module, even if that module
+    // does not export the selected endpoint. Inspect every authored source file.
+    for (const filename of sourceFiles) load(filename, true);
+    const importedSource = (mod, specifier) => {
+      const target = path.resolve(path.dirname(mod.file), specifier);
+      return modules.get(target + ".ts") ?? modules.get(path.join(target, "index.ts"));
+    };
+    const exportOrigin = (name, mod, seen) => {
+      const key = `export:${mod.file}:${name}`;
+      if (seen.has(key)) fail();
+      seen = new Set([...seen, key]);
+      const ex = mod.exports.get(name);
+      if (ex) {
+        if (!ex.module) return origin(ex.name, mod, seen);
+        if (!ex.module.startsWith(".")) return null;
+        const target = importedSource(mod, ex.module);
+        return target ? exportOrigin(ex.name, target, seen) : null;
+      }
+      const matches = mod.stars.flatMap((specifier) => {
+        const target = importedSource(mod, specifier);
+        const value = target ? exportOrigin(name, target, seen) : null;
+        return value ? [value] : [];
+      });
+      if (new Set(matches).size > 1) fail();
+      return matches[0] ?? null;
+    };
     const origin = (name, mod, seen = new Set()) => {
       const key = `${mod.file}:${name}`;
       if (seen.has(key)) fail();
-      seen.add(key);
+      seen = new Set([...seen, key]);
       const entry = mod.imports.get(name);
       if (!entry) return key;
       if (!entry.module.startsWith(".") || entry.namespace) return null;
-      const importedMod = modules.get(path.resolve(path.dirname(mod.file), entry.module + ".ts"));
-      if (!importedMod) return null;
-      const ex = importedMod.exports.get(entry.name);
-      if (!ex) return null;
-      if (ex.module) {
-        if (!ex.module.startsWith(".")) return null;
-        const reexportedMod = modules.get(path.resolve(path.dirname(importedMod.file), ex.module + ".ts"));
-        if (!reexportedMod) return null;
-        const reexport = reexportedMod.exports.get(ex.name);
-        if (!reexport || reexport.module) fail();
-        return origin(reexport.name, reexportedMod, seen);
-      }
-      return origin(ex.name, importedMod, seen);
+      const importedMod = importedSource(mod, entry.module);
+      return importedMod ? exportOrigin(entry.name, importedMod, seen) : null;
+    };
+    const namespaceHasWatchedExport = (mod, seen = new Set()) => {
+      if (!mod || seen.has(mod.file)) return false;
+      seen = new Set([...seen, mod.file]);
+      if ([...mod.exports.keys()].some((name) => watched.has(exportOrigin(name, mod, new Set()))))
+        return true;
+      return mod.stars.some((specifier) => namespaceHasWatchedExport(importedSource(mod, specifier), seen));
     };
     for (const mod of modules.values()) {
       for (const [name, entry] of mod.imports) {
         if (!entry.module.startsWith(".")) continue;
         const key = entry.namespace ? null : origin(name, mod);
-        const namespaceTarget = path.resolve(path.dirname(mod.file), entry.module + ".ts");
-        if (!watched.has(key) && !(entry.namespace && [...watched.values()]
-          .some((binding) => binding.mod.file === namespaceTarget))) continue;
+        if (!watched.has(key) && !(entry.namespace &&
+          namespaceHasWatchedExport(importedSource(mod, entry.module)))) continue;
         const scan = (node) => {
           if (ts.isVariableDeclaration(node) && node.initializer &&
-              ts.isIdentifier(unwrap(node.initializer)) &&
-              unwrap(node.initializer).text === name) fail();
+              captures(node.initializer, name) && (!ts.isIdentifier(node.name) || !watched.has(`${mod.file}:${node.name.text}`))) fail();
+          if (ts.isReturnStatement(node) && node.expression && captures(node.expression, name) &&
+          !(ts.isFunctionDeclaration(node.parent?.parent) &&
+            helperNames.get(path.relative(src, mod.file).split(path.sep).join("/"))
+              ?.has(node.parent.parent.name?.text))) fail();
+          if (ts.isBinaryExpression(node) &&
+              node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+              node.operatorToken.kind <= ts.SyntaxKind.LastAssignment && captures(node.right, name)) fail();
           if (ts.isBinaryExpression(node) &&
               node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
               node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
@@ -487,7 +581,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
             if (ts.isIdentifier(left) && left.text === name) fail();
           }
           if (ts.isCallExpression(node) && node.arguments.some((arg) =>
-              ts.isIdentifier(unwrap(arg)) && unwrap(arg).text === name)) {
+              rootedAt(arg, name) || captures(arg, name))) {
             const callee = resolve(node.expression, mod, new Map());
             const sdkFactory = callee.sdk?.startsWith("firebase-functions/v2/") &&
               [...factories.values()].some((names) => names.has(callee.name));

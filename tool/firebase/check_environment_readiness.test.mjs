@@ -790,6 +790,7 @@ test("candidate readiness is distinct from deployed equivalence and preserves ex
   const requirement = manifest.requirements.find((entry) => entry.name === "ALGOLIA_SEARCH_API_KEY");
   const sourceSha = "a".repeat(40);
   const candidate = {version: 1, environment: "staging", projectId: "catchdates-staging", sourceSha,
+    paramsSha256: "c".repeat(64), functions: [{consumer: "exploreSearch", serviceAccount: "123-compute@developer.gserviceaccount.com"}],
     bindings: [{requirementId: requirement.id, consumer: "exploreSearch", active: true,
       serviceAccount: "123-compute@developer.gserviceaccount.com",
       reference: "projects/catchdates-staging/secrets/ALGOLIA_SEARCH_API_KEY/versions/2"}]};
@@ -801,7 +802,7 @@ test("candidate readiness is distinct from deployed equivalence and preserves ex
   assert.equal(proposed.providerUsabilityVerified, false);
   const deployed = runEnvironmentReadiness({...options, phase: "deployed"});
   assert.equal(deployed.exitCode, 1);
-  assert.equal(deployed.environments[0].results[1].reason, "deployed-binding-outdated");
+  assert.ok(deployed.environments[0].results.some((result) => result.reason === "deployed-binding-outdated"));
   for (const mutate of [
     (c) => { c.sourceSha = "b".repeat(40); },
     (c) => { c.bindings[0].consumer = "unsupportedConsumer"; },
@@ -1136,4 +1137,60 @@ test("promotion binds the same parameter inputs before deployment and checks the
   assert.ok(deploy > 0 && postconditions > deploy && compare > postconditions && checkpoint > compare);
   assert.match(workflow.slice(postconditions, checkpoint), /--phase deployed \|\| stage_status=\$\?/);
   assert.match(workflow, /--params-file/);
+});
+
+test("explicit malformed candidate receipts never fall back to deployed-only readiness", () => {
+  for (const invalid of [null, false, 0, "", "text", [], {}]) {
+    let probes = 0;
+    assert.throws(() => executeReadinessCli(["--env", "dev", "--targets", "functions:exploreSearch", "--candidate", "fake-receipt.json"], {
+      manifest, aliases, repositoryValidation: false, functionTargets: new Set(["functions:exploreSearch"]),
+      sourceSha: "a".repeat(40), readFile: () => JSON.stringify(invalid), runCommand: () => { probes++; throw new Error("no probe"); },
+    }), /Invalid candidate binding metadata/);
+    assert.equal(probes, 0);
+  }
+});
+
+test("deployed config digest covers secret-free functions and never serializes raw environment", () => {
+  const candidate = {version: 1, sourceSha: "a".repeat(40), environment: "dev", projectId: "catchdates-dev",
+    paramsSha256: "c".repeat(64), functions: [{consumer: "secretFreeFunction", serviceAccount: "123-compute@developer.gserviceaccount.com"}], bindings: []};
+  const fn = fakeFunction("secretFreeFunction", "UNUSED");
+  fn.serviceConfig.secretEnvironmentVariables = [];
+  fn.serviceConfig.environmentVariables = {CATCH_DEPLOY_CONFIG_SHA256: candidate.paramsSha256, PRIVATE_VALUE: "never-print-this"};
+  const run = (functions) => runEnvironmentReadiness({aliases, environments: ["dev"], manifest,
+    sourceSha: candidate.sourceSha, candidate, phase: "deployed", targets: ["functions:secretFreeFunction"],
+    runCommand: (spec) => spec.args[0] === "functions" ? metadata(functions) : readyMetadataRunner(spec)});
+  assert.equal(run([fn]).exitCode, 0);
+  assert.equal(JSON.stringify(run([fn])).includes("never-print-this"), false);
+  for (const functions of [[], [fn, fn], [{...fn, state: "FAILED"}],
+    [{...fn, serviceConfig: {...fn.serviceConfig, environmentVariables: {}}}],
+    [{...fn, serviceConfig: {...fn.serviceConfig, environmentVariables: {CATCH_DEPLOY_CONFIG_SHA256: "d".repeat(64)}}}],
+    [{...fn, serviceConfig: {...fn.serviceConfig, serviceAccountEmail: "other@catchdates-dev.iam.gserviceaccount.com"}}]]) {
+    assert.equal(run(functions).exitCode, 1);
+  }
+});
+
+test("promotion checks restored completed Functions and skips materialization for a narrowed no-op", () => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_firebase-promote.yml"), "utf8");
+  for (const name of ["Materialize non-secret Functions params in the deploy copy", "Gate Functions param coverage before any deploy mutation"]) {
+    assert.ok(workflow.includes(`- name: ${name}\n        if: \${{ steps.verify.outputs.has_functions == 'true' }}`));
+  }
+  const final = workflow.indexOf("- name: Verify deployed configuration including restored completed Functions");
+  const stageLoop = workflow.indexOf("- id: promote");
+  assert.ok(final > stageLoop);
+  assert.match(workflow.slice(final, workflow.indexOf("\n      - ", final + 1)), /--candidate build\/delivery\/secret-bindings.json --phase deployed/);
+});
+
+test("flight credentials remain inactive when the separately controlled policy is blank", () => {
+  const reader = manifest.directReaders.find((r) => r.id === "functions.reference.flight");
+  const requirement = {...reader, kind: "secret-reference"};
+  const fn = fakeFunction("refreshProgramFlightStatuses", "UNUSED");
+  fn.serviceConfig.environmentVariables = {
+    FLIGHT_PROVIDER_CONFIG_VERSION: "projects/catchdates-dev/secrets/FLIGHT_PROVIDER_CONFIG/versions/1",
+    FLIGHT_PROVIDER_POLICY: " ",
+  };
+  const result = observeFunctionBinding({requirement, consumer: "refreshProgramFlightStatuses", functions: [fn],
+    projectId: "catchdates-dev", projectNumber: "123"});
+  assert.equal(result.active, false);
+  assert.equal(result.reason, "consumer-disabled");
+  assert.equal(result.reference, fn.serviceConfig.environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION);
 });

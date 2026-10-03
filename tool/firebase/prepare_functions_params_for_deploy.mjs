@@ -258,7 +258,7 @@ const referenceNames = Object.freeze([
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ]);
 const activationNames = Object.freeze([
-  "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
+  "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
 ]);
 function paramsContents(params) {
   return Object.entries(params).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";
@@ -275,7 +275,7 @@ export function functionsParamsProvenance({projectId, sourceSha, environment = p
       source: name === "FLIGHT_PROVIDER_POLICY" ? "source-disabled" :
         environment[name]?.trim() ? "deployment-environment" : "source-default"})),
     references: Object.fromEntries(referenceNames.map((name) => [name, params[name].trim() || null])),
-    activation: Object.fromEntries(activationNames.map((name) => [name, params[name] === "true"])),
+    activation: Object.fromEntries(activationNames.map((name) => [name, name === "FLIGHT_PROVIDER_POLICY" ? Boolean(params[name].trim()) : params[name] === "true"])),
   };
 }
 
@@ -300,6 +300,8 @@ export function prepareFunctionsParamsForDeploy({
     "Functions deploy path must be a directory");
   assert(fs.existsSync(path.join(resolvedFunctionsDir, "package.json")),
     "Functions deploy path must contain package.json");
+  assert(environment.CATCH_DEPLOY_CONFIG_SHA256 === undefined,
+    "CATCH_DEPLOY_CONFIG_SHA256 is reserved for verified materialization");
   const params = normalizedProviderParams(environment, projectId);
   const outputPath = path.join(resolvedFunctionsDir, `.env.${projectId}`);
   const contents = paramsContents(params);
@@ -308,7 +310,9 @@ export function prepareFunctionsParamsForDeploy({
     assert(JSON.stringify(actual) === JSON.stringify(expectedProvenance),
       "Deployment parameter provenance changed after readiness; repeat preflight");
   }
-  writePrivateOutput(outputPath, contents);
+  const verifiedContents = expectedProvenance !== undefined ?
+    contents + `CATCH_DEPLOY_CONFIG_SHA256=${JSON.stringify(expectedProvenance.paramsSha256)}\n` : contents;
+  writePrivateOutput(outputPath, verifiedContents);
   return {outputPath, enabled: params.META_WHATSAPP_ENABLED === "true"};
 }
 

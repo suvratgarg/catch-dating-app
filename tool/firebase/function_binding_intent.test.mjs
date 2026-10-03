@@ -279,3 +279,63 @@ test("alias escapes, importing module writes and late globals remain unresolved"
     })),
   ]) assert.throws(() => collect(fixture(t, files)), unresolved);
 });
+
+
+test("nonentry options namespaces and computed setters cannot change binding intent", (t) => {
+  for (const module of ['firebase-functions', 'firebase-functions/v2',
+    'firebase-functions/v2/options']) {
+    for (const other of [`import * as sdk from '${module}';
+      sdk['set'+'GlobalOptions']({serviceAccount:'writer@'});`,
+      `const sdk=require('${module}'); sdk['set'+'GlobalOptions']({secrets:['CHANGED']});`,
+      `const sdk=import('${module}');`]) {
+      const root=fixture(t, {'index.ts': `${imports}
+        import './other';export const selected=request(()=>{});`, 'other.ts':other});
+      assert.throws(()=>collect(root),unresolved);
+    }
+    const root=fixture(t, {'index.ts': `${imports}
+      import * as sdk from '${module}';export const selected=request(()=>{});`});
+    assert.throws(()=>collect(root),unresolved);
+  }
+});
+
+
+test("nested references and unmodeled containers cannot escape the binding proof", (t) => {
+  for (const code of [
+    "const alias=opts.secrets;alias[0]='CHANGED';",
+    "const {secrets:alias}=opts;alias[0]='CHANGED';",
+    "const box={opts};box.opts.secrets[0]='CHANGED';",
+    "const copy={...opts};copy.secrets[0]='CHANGED';",
+    "unknown(opts.secrets);", "unknown({nested:opts});",
+    "let alias;alias=opts;alias.secrets[0]='CHANGED';",
+    "function expose(){return opts;}const alias=expose();alias.secrets[0]='CHANGED';",
+  ]) {
+    const root=fixture(t, {'index.ts': `${imports}
+      const opts={secrets:['ORIGINAL']};${code}
+      export const selected=request(opts,()=>{});`});
+    assert.throws(()=>collect(root),unresolved);
+  }
+});
+
+test("unselected importing modules cannot mutate source binding objects", (t) => {
+  for (const importStatement of ["import './mutator';",
+    "import {unselected} from './mutator';unselected();"]) {
+    for (const mutation of ["opts.secrets[0]='CHANGED';",
+      "unknown(opts.secrets);", "const copy={...opts};copy.secrets[0]='CHANGED';"]) {
+      for (const optionsImport of ["import {opts} from './options';",
+        "import {opts} from './barrel';", "import {opts} from './directory';",
+        "import opts from './defaultOptions';", "import * as wrapper from './barrel';"]) {
+        const root=fixture(t, {
+          'index.ts': `${importStatement}export {selected} from './consumer';`,
+          'consumer.ts': `${imports}import {opts} from './options';
+            export const selected=request(opts,()=>{});`,
+          'options.ts': `export const opts={secrets:['ORIGINAL']};`,
+          'barrel.ts': `export {opts} from './options';`,
+          'directory/index.ts': `export * from '../options';`,
+          'defaultOptions.ts': `import {opts} from './options';export default opts;`,
+          'mutator.ts': `${optionsImport}${optionsImport.includes('wrapper') ? mutation.replaceAll('opts','wrapper.opts') : mutation}export function unselected(){}`,
+        });
+        assert.throws(()=>collect(root),unresolved);
+      }
+    }
+  }
+});

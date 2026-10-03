@@ -478,6 +478,7 @@ jobs:
           fi
 
       - name: Materialize non-secret Functions params in the deploy copy
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
           ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
           RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
@@ -521,6 +522,7 @@ jobs:
           fi
 
       - name: Gate Functions param coverage before any deploy mutation
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
         run: |
@@ -702,6 +704,36 @@ jobs:
               exit "$stage_status"
             fi
           done
+
+      - name: Verify deployed configuration including restored completed Functions
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: |
+          set -euo pipefail
+          function_targets="$(jq -er '.stages as $stages | .targets as $targets |
+            ($stages | index("functions")) as $index | select($index != null) |
+            $targets[$index] | select(length > 0)' build/delivery/execution-plan.json)"
+          proof="$(node tool/ci/firebase_functions_checkpoint.mjs verify-completed \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha "$SOURCE_SHA" --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" --scope "$CHECKPOINT_SCOPE" \
+            --checkpoint build/delivery/checkpoint/checkpoint.json \
+            --base-sha "$BASE_SHA" --targets "$function_targets" \
+            --params-file "build/delivery/deploy-tree/functions/.env.$PROJECT_ID")"
+          test "$(jq -r '.verifiedCompleted' <<< "$proof")" = "true"
+          node tool/firebase/check_environment_readiness.mjs \
+            --env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS" \
+            --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA" \
+            --candidate build/delivery/secret-bindings.json --phase deployed
 
       - name: Verify active rules match the exact approved source
         env:

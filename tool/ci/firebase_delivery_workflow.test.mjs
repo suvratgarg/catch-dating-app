@@ -632,7 +632,10 @@ test("promotion is ordered dev to protected prod", () => {
   assert.ok(
     (promotion.match(/--ci-run-attempt "\$SOURCE_CI_RUN_ATTEMPT"/g) ?? []).length >= 7,
   );
-  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 5);
+  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 6);
+  assert.match(promotion, /firebase_functions_checkpoint\.mjs verify-completed/);
+  assert.ok(promotion.indexOf("Verify deployed configuration including restored completed Functions") >
+    promotion.indexOf("--status passed"));
   assert.match(promotion, /wait_firestore_indexes_ready\.mjs/);
   assert.ok(
     promotion.indexOf("wait_firestore_indexes_ready.mjs") <

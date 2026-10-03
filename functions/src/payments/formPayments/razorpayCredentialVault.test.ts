@@ -88,29 +88,37 @@ test("vault rejects malformed envelopes and mismatched token mode/account",
   });
 
 
-test("canonical numeric project responses require independent runtime proof", async () => {
-  const store = new MemorySecrets();
-  store.add = async (resource, value) => {
-    assert.equal(resource, parent);
-    const version = "projects/123/secrets/FORM_RAZORPAY_TOKENS/versions/7";
-    store.values.set(version, value);
-    return version;
-  };
-  let resolutions = 0;
-  const guard = new SecretVersionReferenceGuard(() => "catch-test", async () => {
-    resolutions++;
-    return "123";
+test("canonical numeric project responses require independent runtime proof",
+  async () => {
+    const store = new MemorySecrets();
+    store.add = async (resource, value) => {
+      assert.equal(resource, parent);
+      const version = "projects/123/secrets/FORM_RAZORPAY_TOKENS/versions/7";
+      store.values.set(version, value);
+      return version;
+    };
+    let resolutions = 0;
+    const guard = new SecretVersionReferenceGuard(() => "catch-test",
+      async () => {
+        resolutions++;
+        return "123";
+      });
+    const vault = new RazorpayCredentialVault("catch-test",
+      "FORM_RAZORPAY_TOKENS", store, guard);
+    const version = await vault.save(credential);
+    assert.deepEqual(await vault.access(version, credential), credential);
+    assert.equal(resolutions, 1);
+    await vault.disable(version);
+    const before = store.reads;
+    await assert.rejects(vault.access(
+      version.replace("projects/123/", "projects/456/"), credential));
+    assert.equal(store.reads, before);
+    const unproven = new RazorpayCredentialVault("catch-test",
+      "FORM_RAZORPAY_TOKENS", store,
+      new SecretVersionReferenceGuard(() => "catch-test", async () => {
+        throw new Error("fake metadata failure");
+      }));
+    await assert.rejects(unproven.access(version, credential),
+      /Organizer payment credential unavailable/);
+    assert.equal(store.reads, before);
   });
-  const vault = new RazorpayCredentialVault("catch-test", "FORM_RAZORPAY_TOKENS", store, guard);
-  const version = await vault.save(credential);
-  assert.deepEqual(await vault.access(version, credential), credential);
-  assert.equal(resolutions, 1);
-  await vault.disable(version);
-  const before = store.reads;
-  await assert.rejects(vault.access(version.replace("projects/123/", "projects/456/"), credential));
-  assert.equal(store.reads, before);
-  const unproven = new RazorpayCredentialVault("catch-test", "FORM_RAZORPAY_TOKENS", store,
-    new SecretVersionReferenceGuard(() => "catch-test", async () => { throw new Error("fake metadata failure"); }));
-  await assert.rejects(unproven.access(version, credential), /Organizer payment credential unavailable/);
-  assert.equal(store.reads, before);
-});

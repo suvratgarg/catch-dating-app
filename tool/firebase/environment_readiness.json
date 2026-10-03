@@ -788,7 +788,8 @@
         "optional": true,
         "forbiddenSecretAccess": [
           "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
-        ]
+        ],
+        "policyParameter": "FLIGHT_PROVIDER_POLICY"
       },
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",

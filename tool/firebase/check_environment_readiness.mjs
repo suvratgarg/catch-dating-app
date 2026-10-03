@@ -834,12 +834,12 @@ export function parseSecretReference(value, projectId, projectNumber) {
 export function buildFunctionBindingsCommand({projectId, requirements}) {
   validateProjectId(projectId);
   const params = [...new Set(requirements.flatMap((entry) =>
-    [entry.binding?.parameter, entry.binding?.enabledParameter].filter(Boolean)))].sort();
+    [entry.binding?.parameter, entry.binding?.enabledParameter, entry.binding?.policyParameter].filter(Boolean)))].sort();
   if (params.some((name) => !secretNamePattern.test(name))) {
     throw new ReadinessUsageError("Invalid binding metadata parameter name.");
   }
   const fields = ["name", "state", "serviceConfig.serviceAccountEmail",
-    "serviceConfig.secretEnvironmentVariables", ...params.map((name) =>
+    "serviceConfig.secretEnvironmentVariables", "serviceConfig.environmentVariables.CATCH_DEPLOY_CONFIG_SHA256", ...params.map((name) =>
       `serviceConfig.environmentVariables.${name}`)];
   return metadataOnlyCommand(["functions", "list", "--v2", "--regions=-",
     `--project=${projectId}`, `--format=json(${fields.join(",")})`, "--quiet"]);
@@ -851,10 +851,17 @@ export function validateCandidateBindings(candidate, {environment, projectId, so
   const invalid = () => { throw new ReadinessUsageError("Invalid candidate binding metadata; use names/references only for the exact source and environment."); };
   const keys = (value, expected) => value && typeof value === "object" && !Array.isArray(value) &&
     Object.keys(value).sort().join(",") === [...expected].sort().join(",");
-  if (!keys(candidate, ["version", "sourceSha", "environment", "projectId", "bindings"]) ||
+  if (!keys(candidate, ["version", "sourceSha", "environment", "projectId", "bindings", "paramsSha256", "functions"]) ||
       candidate.version !== 1 || candidate.environment !== environment ||
       candidate.projectId !== projectId || !/^[a-f0-9]{40}$/u.test(candidate.sourceSha ?? "") ||
-      !sourceSha || candidate.sourceSha !== sourceSha || !Array.isArray(candidate.bindings)) invalid();
+      !sourceSha || candidate.sourceSha !== sourceSha || !Array.isArray(candidate.bindings) ||
+      !/^[a-f0-9]{64}$/u.test(candidate.paramsSha256 ?? "") || !Array.isArray(candidate.functions)) invalid();
+  const functionNames = new Set();
+  for (const fn of candidate.functions) {
+    if (!keys(fn, ["consumer", "serviceAccount"]) || !/^[A-Za-z][A-Za-z0-9_]*$/u.test(fn.consumer ?? "") ||
+        !serviceAccountPattern.test(fn.serviceAccount ?? "") || functionNames.has(fn.consumer)) invalid();
+    functionNames.add(fn.consumer);
+  }
   const seen = new Set();
   for (const entry of candidate.bindings) {
     if (!keys(entry, ["requirementId", "consumer", "serviceAccount", "reference", "active"])) invalid();
@@ -862,11 +869,12 @@ export function validateCandidateBindings(candidate, {environment, projectId, so
     if (!requirement || !["secret-version", "secret-reference"].includes(requirement.kind) ||
         !(requirement.requiredWhen.anyDeployTarget ?? []).includes(`functions:${entry.consumer}`) ||
         !serviceAccountPattern.test(entry.serviceAccount ?? "") || typeof entry.active !== "boolean") invalid();
+    if (!candidate.functions.some((fn) => fn.consumer === entry.consumer && fn.serviceAccount === entry.serviceAccount)) invalid();
     const selected = parseSecretReference(entry.reference, projectId);
     if (selected && requirement.name && selected.secret !== requirement.name) invalid();
     if (entry.active ? !selected || requirement.name && selected.secret !== requirement.name :
       (entry.reference !== null && !selected) || requirement.binding?.optional !== true ||
-        entry.reference !== null && !requirement.binding.enabledParameter) invalid();
+        entry.reference !== null && !requirement.binding.enabledParameter && !requirement.binding.policyParameter) invalid();
     const key = `${entry.requirementId}:${entry.consumer}`;
     if (seen.has(key)) invalid();
     seen.add(key);
@@ -901,7 +909,10 @@ export function observeFunctionBinding({requirement, consumer, functions, projec
     const raw = params[requirement.binding.parameter];
     if (raw != null && typeof raw !== "string") return fail("invalid-selected-secret-reference");
     const enabledName = requirement.binding.enabledParameter;
-    const enabled = enabledName ? params[enabledName] : null;
+    const policyName = requirement.binding.policyParameter;
+    const policy = policyName ? params[policyName] : null;
+    if (policy != null && typeof policy !== "string") return fail("invalid-activation-state");
+    const enabled = policyName ? (policy?.trim() ? "true" : "false") : enabledName ? params[enabledName] : null;
     if (enabledName && enabled != null && !["true", "false"].includes(enabled)) return fail("invalid-activation-state");
     if (!raw?.trim()) {
       if (requirement.binding.optional && enabled !== "true") {
@@ -913,7 +924,7 @@ export function observeFunctionBinding({requirement, consumer, functions, projec
     const selected = parseSecretReference(raw.trim(), projectId);
     if (!selected || requirement.name && selected.secret !== requirement.name) return fail("invalid-selected-secret-reference");
     reference = selected.reference;
-    active = enabledName ? enabled === "true" : true;
+    active = enabledName || policyName ? enabled === "true" : true;
   }
   return {status: active ? "ready" : "inactive", reason: active ? "binding-observed" : "consumer-disabled", serviceAccount, reference, active};
 }
@@ -928,7 +939,7 @@ export function buildCandidateBindings({environment, projectId, projectNumber, s
   const refs = ["FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
     "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
     "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"];
-  const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED"];
+  const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY"];
   if (!exactKeys(paramsProvenance, ["version", "projectId", "sourceSha", "paramsSha256", "names", "references", "activation"]) ||
       paramsProvenance.version !== 1 || paramsProvenance.projectId !== projectId || paramsProvenance.sourceSha !== sourceSha ||
       !/^[a-f0-9]{64}$/u.test(paramsProvenance.paramsSha256 ?? "") ||
@@ -972,7 +983,7 @@ export function buildCandidateBindings({environment, projectId, projectNumber, s
         reference = resolved.get(requirement.name); active = true;
       } else {
         reference = paramsProvenance.references[requirement.binding.parameter] ?? null;
-        const flag = requirement.binding.enabledParameter;
+        const flag = requirement.binding.enabledParameter ?? requirement.binding.policyParameter;
         active = flag ? paramsProvenance.activation[flag] === true : Boolean(reference);
         if (active && !reference || !reference && !requirement.binding.optional ||
             reference && requirement.name && parseSecretReference(reference, projectId).secret !== requirement.name) invalid();
@@ -986,7 +997,8 @@ export function buildCandidateBindings({environment, projectId, projectNumber, s
       entry.requiredWhen.anyDeployTarget.includes(`functions:${fn.consumer}`)).map((entry) => entry.name).sort();
     if (JSON.stringify([...fn.secretNames].sort()) !== JSON.stringify(contracted)) invalid();
   }
-  return {version: 1, sourceSha, environment, projectId, bindings};
+  return {version: 1, sourceSha, environment, projectId, paramsSha256: paramsProvenance.paramsSha256,
+    functions: intent.functions.map(({consumer, serviceAccount}) => ({consumer, serviceAccount})), bindings};
 }
 
 export function classifyForbiddenSecretAccess({serviceAccount, secret, result}) {
@@ -1090,7 +1102,7 @@ export function runEnvironmentReadiness({
       );
     }
     const projectId = resolveFirebaseProjectId({environment, aliases});
-    if (candidate) validateCandidateBindings(candidate, {environment, projectId, sourceSha, manifest});
+    if (candidate !== undefined) validateCandidateBindings(candidate, {environment, projectId, sourceSha, manifest});
     const requirements = selectReadinessRequirements({
       capabilities,
       environment,
@@ -1115,9 +1127,24 @@ export function runEnvironmentReadiness({
     }
     const secretRequirements = requirements.filter((entry) =>
       ["secret-version", "secret-reference"].includes(entry.kind));
-    const functionsResult = secretRequirements.length && identityResult.status === "ready" && !candidateProbeFailed
+    const functionsResult = (secretRequirements.length || candidate?.functions.length) && identityResult.status === "ready" && !candidateProbeFailed
       ? executeMetadataCommand(buildFunctionBindingsCommand({projectId, requirements: secretRequirements}), runCommand)
       : {status: null, stdout: "", stderr: ""};
+    if (candidate && phase === "deployed" && !candidateProbeFailed && identityResult.status === "ready") {
+      const functions = parseJsonOutput(functionsResult.stdout);
+      for (const intended of candidate.functions) {
+        const matches = Array.isArray(functions) ? functions.filter((fn) =>
+          [projectId, identityResult.metadata.projectNumber].some((project) =>
+            fn.name === `projects/${project}/locations/asia-south1/functions/${intended.consumer}`)) : [];
+        const observed = matches.length === 1 ? matches[0] : null;
+        const matchesReceipt = observed?.state === "ACTIVE" && observed?.serviceConfig?.serviceAccountEmail === intended.serviceAccount &&
+          observed?.serviceConfig?.environmentVariables?.CATCH_DEPLOY_CONFIG_SHA256 === candidate.paramsSha256;
+        results.push(readinessResult({id: `configuration:${intended.consumer}`, kind: "configuration-provenance", resource: intended.consumer,
+          ...(classifyCommandFailure(functionsResult) ?? {status: matchesReceipt ? "ready" : "not-ready",
+            reason: matchesReceipt ? "deployed-configuration-matches" : "deployed-configuration-outdated"}),
+          metadata: {sourceSha: candidate.sourceSha, paramsSha256: candidate.paramsSha256, serviceAccount: intended.serviceAccount}}));
+      }
+    }
     for (const requirement of requirements) {
       if (["secret-version", "secret-reference"].includes(requirement.kind)) {
         if (identityResult.status === "ready" && !candidateProbeFailed) results.push(...assessSecretBindings({
@@ -1267,7 +1294,16 @@ export function executeReadinessCli(argv, dependencies = {}) {
   const environments = args.all
     ? [...manifest.environments]
     : [args.environment];
-  const candidate = args.candidate ? readJsonFile(args.candidate, readFile) : null;
+  const candidate = args.candidate ? readJsonFile(args.candidate, readFile) : undefined;
+  if (args.candidate) {
+    validateCandidateBindings(candidate, {environment: args.environment,
+      projectId: resolveFirebaseProjectId({environment: args.environment, aliases}), sourceSha, manifest});
+    const expectedConsumers = [...functionTargets].filter((target) => targetMatches(target, new Set(args.targets)))
+      .map((target) => target.slice("functions:".length)).sort();
+    if (JSON.stringify(candidate.functions.map((fn) => fn.consumer).sort()) !== JSON.stringify(expectedConsumers)) {
+      throw new ReadinessUsageError("Candidate function set differs from the approved deployment targets.");
+    }
+  }
   let generatedCandidate;
   const paramsProvenance = args.paramsProvenance ? readJsonFile(args.paramsProvenance, readFile) : null;
   const candidateFactory = args.writeCandidate ? ({environment, projectId, projectNumber, requirements}) => {

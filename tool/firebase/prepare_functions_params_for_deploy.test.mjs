@@ -647,3 +647,16 @@ test("promotion forwards scoped Catch non-secret configuration without secret pa
   }
   assert.doesNotMatch(step, /secrets\.|CATCH_WHATSAPP_ACCESS_TOKEN:|CATCH_WHATSAPP_APP_SECRET:|CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN:/);
 });
+
+test("verified materialization alone owns the canonical deployment digest marker", () => {
+  const functionsDir = fixture();
+  try {
+    const sourceSha = "a".repeat(40), projectId = "catchdates-dev";
+    const expectedProvenance = functionsParamsProvenance({projectId, sourceSha, environment: publicIds});
+    const result = prepareFunctionsParamsForDeploy({functionsDir, projectId, sourceSha, expectedProvenance, environment: publicIds});
+    const contents = fs.readFileSync(result.outputPath, "utf8");
+    assert.ok(contents.endsWith(`CATCH_DEPLOY_CONFIG_SHA256="${expectedProvenance.paramsSha256}"\n`));
+    for (const marker of ["", "c".repeat(64)]) assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId,
+      environment: {...publicIds, CATCH_DEPLOY_CONFIG_SHA256: marker}}), /reserved/);
+  } finally { fs.rmSync(functionsDir, {recursive: true, force: true}); }
+});
