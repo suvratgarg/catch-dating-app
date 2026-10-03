@@ -382,6 +382,15 @@ test("Firestore imports preserve manual includes/excludes and exact replay",
       const imported = guests.docs[0].data();
       assert.deepEqual(imported.groupIds, []);
       assert.equal(imported.membershipSuggestions.length, 2);
+      const sourceReview = await manageProgramLodgingHandler(request({programId,
+        action: "readMembership", guestId: ref.id}, "manager-1"), dependencies);
+      assert.equal(sourceReview.kind, "membership");
+      if (sourceReview.kind !== "membership") throw new Error("Wrong review");
+      assert.deepEqual(sourceReview.groupIds, []);
+      assert.equal(sourceReview.evidence.length, 2);
+      assert.ok(sourceReview.evidence.every((e) => !e.selected &&
+        e.sourceKind === "manifestRow"));
+      assert.equal(JSON.stringify(sourceReview).includes("phoneE164"), false);
       const groups = await db.collection("programGuestGroups")
         .where("programId", "==", programId).limit(3).get();
       assert.equal(groups.size, 2);
@@ -424,9 +433,42 @@ test("Firestore imports preserve manual includes/excludes and exact replay",
       assert.equal((await db.collection("workspaceMembershipAssertions")
         .where("programId", "==", programId).limit(100).get()).size,
       evidenceCount);
+      const immutableSources = await db.collection(
+        "workspaceMembershipAssertions").where("programId", "==", programId)
+        .limit(100).get();
+      const apiRace = await Promise.allSettled([chosen.groupIds, []].map(
+        (groupIds) => manageProgramLodgingHandler(request({programId,
+          action: "decideMembership", guestId: ref.id,
+          expectedRevision: beforeReplay.revision, groupIds}, "manager-1"),
+        dependencies)));
+      assert.equal(apiRace.filter((r) => r.status === "fulfilled").length, 1);
+      const apiRejected = apiRace.find((r) => r.status === "rejected");
+      assert.ok(apiRejected?.status === "rejected" &&
+        apiRejected.reason.code === "aborted" && apiRejected.reason.message ===
+          "Record changed since you loaded it. Reload and retry.",
+      JSON.stringify(apiRejected?.status === "rejected" ?
+        {code: apiRejected.reason.code,
+          message: apiRejected.reason.message} : {}));
+      const apiChosen = (await ref.get()).data()!;
+      for (const field of ["displayName", "phoneE164", "email", "householdId",
+        "contactId", "fieldSelections"]) {
+        assert.deepEqual(apiChosen[field], beforeReplay[field]);
+      }
+      for (const source of immutableSources.docs) {
+        assert.deepEqual((await source.ref.get()).data(), source.data());
+      }
+      const manualReview = await manageProgramLodgingHandler(request({programId,
+        action: "readMembership", guestId: ref.id}, "manager-1"), dependencies);
+      assert.equal(manualReview.kind, "membership");
+      if (manualReview.kind !== "membership") throw new Error("Wrong review");
+      assert.deepEqual(manualReview.groupIds, apiChosen.groupIds);
+      assert.equal(manualReview.revision, apiChosen.revision);
+      assert.ok(manualReview.evidence.every((e) => e.selected &&
+        e.sourceKind === "manualEntry" &&
+        e.included === apiChosen.groupIds.includes(e.groupId)));
       for (const group of groups.docs) {
         assert.equal((await group.ref.get()).data()!.memberCount,
-          chosen.groupIds.includes(group.id) ? 1 : 0);
+          apiChosen.groupIds.includes(group.id) ? 1 : 0);
       }
       for (const [name, validate] of [
         ["workspaceMembershipAssertions",
