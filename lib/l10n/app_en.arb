@@ -31521,5 +31521,29 @@
   "programsLodgingResourcesHint": "For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.",
   "@programsLodgingResourcesHint": {"description": "Private lodging setup editor copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_setup_editor"},
   "programsLodgingVerified": "Verified unchanged stay",
-  "@programsLodgingVerified": {"description": "Private lodging setup editor copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_setup_editor"}
+  "@programsLodgingVerified": {"description": "Private lodging setup editor copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_setup_editor"},
+  "programsLodgingConfirmHotel": "Record hotel confirmation: {hotel}",
+  "@programsLodgingConfirmHotel": {
+    "description": "Record an explicit received hotel confirmation for the currently approved room proposal. Does not contact or book a hotel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_lodging_screen",
+    "placeholders": {
+      "hotel": {
+        "type": "String"
+      }
+    }
+  },
+  "programsLodgingHotelConfirmed": "Hotel confirmed: {hotel}",
+  "@programsLodgingHotelConfirmed": {
+    "description": "Hotel confirmation recorded for this exact approved proposal.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_lodging_screen",
+    "placeholders": {
+      "hotel": {
+        "type": "String"
+      }
+    }
+  }
 }

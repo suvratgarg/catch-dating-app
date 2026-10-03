@@ -234,6 +234,32 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
                               ),
                             ),
                     ),
+                    for (final hotelId in review.allocatedHotelIds)
+                      CatchButton(
+                        label: review.isHotelConfirmed(hotelId)
+                            ? context.l10n.programsLodgingHotelConfirmed(
+                                hotel: review.hotelLabels[hotelId] ?? hotelId,
+                              )
+                            : context.l10n.programsLodgingConfirmHotel(
+                                hotel: review.hotelLabels[hotelId] ?? hotelId,
+                              ),
+                        variant: CatchButtonVariant.secondary,
+                        onPressed:
+                            view.busy ||
+                                !approved ||
+                                review.isHotelConfirmed(hotelId) ||
+                                (retry != null &&
+                                    (retry !=
+                                            ProgramLodgingAction.confirmHotel ||
+                                        view.retryHotelId != hotelId))
+                            ? null
+                            : () => _action(
+                                () => _controller.decide(
+                                  ProgramLodgingAction.confirmHotel,
+                                  hotelId: hotelId,
+                                ),
+                              ),
+                      ),
                     CatchButton(
                       label: context.l10n.programsLodgingPublish,
                       onPressed:

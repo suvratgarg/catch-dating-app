@@ -40065,6 +40065,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verified unchanged stay'**
   String get programsLodgingVerified;
+
+  /// Record an explicit received hotel confirmation for the currently approved room proposal. Does not contact or book a hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Record hotel confirmation: {hotel}'**
+  String programsLodgingConfirmHotel({required String hotel});
+
+  /// Hotel confirmation recorded for this exact approved proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel confirmed: {hotel}'**
+  String programsLodgingHotelConfirmed({required String hotel});
 }
 
 class _AppLocalizationsDelegate

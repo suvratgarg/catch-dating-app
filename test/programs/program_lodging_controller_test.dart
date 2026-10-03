@@ -405,4 +405,81 @@ void main() {
       expect(repository.commands.last, old);
     },
   );
+
+  test(
+    'uncertain hotel confirmation retries exact hotel and operation identity',
+    () async {
+      repository.current = ProgramLodgingReview.fromCallableData(
+        lodgingTwoHotelReviewJson(),
+      );
+      container.invalidate(provider);
+      final view = await container.read(provider.future);
+      expect(view.review!.allocatedHotelIds, ['hotel', 'hotel2']);
+      final controller = container.read(provider.notifier);
+      repository.transitionFailure = TimeoutException(
+        'Uncertain hotel confirmation',
+      );
+      await expectLater(
+        controller.decide(ProgramLodgingAction.confirmHotel, hotelId: 'hotel2'),
+        throwsA(isA<TimeoutException>()),
+      );
+      final command = Map.of(repository.commands.single);
+      expect(command['hotelId'], 'hotel2');
+      expect(container.read(provider).requireValue.retryHotelId, 'hotel2');
+      await expectLater(
+        controller.decide(ProgramLodgingAction.confirmHotel, hotelId: 'hotel'),
+        throwsA(isA<StateError>()),
+      );
+      expect(controller.refresh, throwsA(isA<StateError>()));
+      repository.transitionFailure = null;
+      await controller.decide(
+        ProgramLodgingAction.confirmHotel,
+        hotelId: 'hotel2',
+      );
+      expect(repository.commands.last, command);
+      expect(repository.saves, 0);
+      expect(container.read(provider).requireValue.retryHotelId, isNull);
+    },
+  );
+
+  test(
+    'confirmation rejects missing or unallocated hotel before a write',
+    () async {
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      for (final hotelId in [null, 'foreign-hotel']) {
+        await expectLater(
+          controller.decide(
+            ProgramLodgingAction.confirmHotel,
+            hotelId: hotelId,
+          ),
+          throwsA(isA<StateError>()),
+        );
+      }
+      await expectLater(
+        controller.decide(ProgramLodgingAction.publishGuests, hotelId: 'hotel'),
+        throwsA(isA<StateError>()),
+      );
+      expect(repository.commands, isEmpty);
+    },
+  );
+
+  test(
+    'acknowledged hotel confirmation never republishes on failed reload',
+    () async {
+      await container.read(provider.future);
+      repository.previewFailure = TimeoutException('Reload failed');
+      final controller = container.read(provider.notifier);
+      await expectLater(
+        controller.decide(ProgramLodgingAction.confirmHotel, hotelId: 'hotel'),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(container.read(provider).hasError, true);
+      repository.previewFailure = null;
+      controller.refresh();
+      await container.read(provider.future);
+      expect(repository.commands, hasLength(1));
+      expect(repository.commands.single['action'], 'confirmHotel');
+    },
+  );
 }

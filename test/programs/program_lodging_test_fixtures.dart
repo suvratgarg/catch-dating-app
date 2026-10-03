@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
@@ -268,4 +270,44 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
       'replayed': false,
     };
   }
+}
+
+Map<String, Object?> lodgingTwoHotelReviewJson() {
+  // JSON round-trip creates mutable broad lists, matching callable SDK data.
+  final json =
+      jsonDecode(jsonEncode(lodgingReviewJson())) as Map<String, Object?>;
+  final proposal = json['proposal']! as Map<String, Object?>;
+  (proposal['placements']! as List<Object?>).add({
+    'partyId': 'party2',
+    'inventoryId': 'unit2',
+  });
+  final context = json['context']! as Map<String, Object?>;
+  final snapshot = context['snapshot']! as Map<String, Object?>;
+  (snapshot['parties']! as List<Object?>).add({
+    'id': 'party2',
+    'guestIds': ['guest2'],
+  });
+  final rooms = snapshot['rooms']! as List<Object?>;
+  rooms.add({
+    ...rooms.first! as Map<String, Object?>,
+    'id': 'room2',
+    'hotelId': 'hotel2',
+    'resourceIds': ['room2'],
+  });
+  (snapshot['inventory']! as List<Object?>).add({
+    'id': 'unit2',
+    'physicalRoomId': 'room2',
+    'provisional': null,
+    'contractId': 'block2',
+    'availability': <Object?>[],
+  });
+  final configuration = context['configuration']! as Map<String, Object?>;
+  (configuration['labels']! as List<Object?>).add({
+    'inventoryId': 'unit2',
+    'roomLabel': '202',
+  });
+  final labels = context['labels']! as Map<String, Object?>;
+  (labels['guests']! as Map<String, Object?>)['guest2'] = 'Guest Two';
+  (labels['hotels']! as Map<String, Object?>)['hotel2'] = 'Hotel Two';
+  return json;
 }

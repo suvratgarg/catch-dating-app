@@ -144,6 +144,19 @@ class ProgramLodgingReview {
   late final Map<String, String> hotelLabels;
   late final List<ProgramLodgingBoardParty> parties;
   late final List<ProgramLodgingBoardUnit> units;
+  final _inventoryHotels = <String, String>{};
+
+  List<String> get allocatedHotelIds => List.unmodifiable(
+    proposal.placements
+        .map((p) => _inventoryHotels[requiredString(p, 'inventoryId')]!)
+        .toSet()
+        .toList()
+      ..sort(),
+  );
+
+  bool isHotelConfirmed(String hotelId) =>
+      workflow['approvedProposalId'] == proposal.id &&
+      stringList(workflow['confirmedHotelIds']).contains(hotelId);
 
   ProgramLodgingBoardUnit _unit(
     Map<Object?, Object?> unit,
@@ -160,6 +173,7 @@ class ProgramLodgingReview {
       throw const FormatException('Missing lodging room facts.');
     }
     final hotelId = requiredString(facts, 'hotelId');
+    _inventoryHotels[id] = hotelId;
     final zoneId = requiredString(facts, 'zoneId');
     final layer = [
       hotelId,

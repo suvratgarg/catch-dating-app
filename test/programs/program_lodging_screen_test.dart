@@ -8,6 +8,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -227,4 +228,64 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
+
+  testWidgets(
+    'recording hotel confirmation is separate from guest publication',
+    (tester) async {
+      final repository = FakeLodgingRepository()
+        ..transitionFailure = TimeoutException('Uncertain confirmation');
+      await _pump(tester, repository);
+      await tester.tap(find.text('Record hotel confirmation: Hotel'));
+      await pumpFeatureUi(tester);
+      final first = Map.of(repository.commands.single);
+      expect(first['action'], 'confirmHotel');
+      expect(first['hotelId'], 'hotel');
+      final publish = tester.widget<CatchButton>(
+        find.byWidgetPredicate(
+          (w) => w is CatchButton && w.label == 'Publish rooms to guests',
+        ),
+      );
+      expect(publish.onPressed, isNull);
+      repository.transitionFailure = null;
+      await tester.tap(find.text('Record hotel confirmation: Hotel'));
+      await pumpFeatureUi(tester);
+      expect(repository.commands.last, first);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'hotel confirmation is displayed only for the exact approved proposal',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      final json = lodgingReviewJson();
+      final context = json['context']! as Map<String, Object?>;
+      final workflow = context['workflow']! as Map<String, Object?>;
+      workflow['confirmedHotelIds'] = ['hotel'];
+      repository.current = ProgramLodgingReview.fromCallableData(json);
+      await _pump(tester, repository);
+      final confirmed = tester.widget<CatchButton>(
+        find.byWidgetPredicate(
+          (w) => w is CatchButton && w.label == 'Hotel confirmed: Hotel',
+        ),
+      );
+      expect(confirmed.onPressed, isNull);
+      expect(repository.commands, isEmpty);
+      await tester.pumpWidget(const SizedBox.shrink());
+      workflow['approvedProposalId'] = List.filled(64, 'b').join();
+      repository.current = ProgramLodgingReview.fromCallableData(json);
+      await _pump(tester, repository);
+      expect(find.text('Hotel confirmed: Hotel'), findsNothing);
+      final record = tester.widget<CatchButton>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is CatchButton && w.label == 'Record hotel confirmation: Hotel',
+        ),
+      );
+      expect(record.onPressed, isNull);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 }

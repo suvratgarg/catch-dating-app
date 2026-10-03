@@ -5030,10 +5030,14 @@ revision-fenced manual proposals and independently checked destinations. Private
 reviews include the exact snapshot and labels read in the same transaction;
 native guest corrections invalidate that snapshot. The private Host stay-planner
 route connects the current proposal to manual room moves, regeneration, host
-approval and explicit guest publication. It clears session-invalid projections
-and preserves exact operation IDs for uncertain decision retries. Initial setup,
-party/inventory/pin editors and persisted import membership decisions remain
-pending. Coordinator-only `readSetup` also returns a bounded live catalog of
+approval, per-hotel confirmation and explicit guest publication. Confirmation is
+bound to a hotel allocated by the exact approved proposal; an uncertain response
+retains the same hotel and operation ID. It clears session-invalid projections
+and preserves exact operation IDs for uncertain decision retries. Routed setup
+edits dates, explicit sharing parties, inventory and pins against the current
+configuration revision. Acknowledged writes with failed reloads require a fresh
+read instead of repeating an old write. Source-labelled membership decision
+controls remain pending. Coordinator-only `readSetup` also returns a bounded live catalog of
 canonical guests, groups, hotels, contracted room blocks and consuming stays.
 It includes guests without travel records, omits contact details and notes, and
 keeps invitation households separate from explicit sharing decisions. Unknown

@@ -19,29 +19,37 @@ class ProgramLodgingView {
     this.busy = false,
     this.error,
     this.retryAction,
+    this.retryHotelId,
   });
   final ProgramLodgingSetup setup;
   final ProgramLodgingReview? review;
   final bool busy;
   final Object? error;
   final ProgramLodgingAction? retryAction;
+  final String? retryHotelId;
 
   ProgramLodgingView pending() => ProgramLodgingView(
     setup: setup,
     review: review,
     busy: true,
     retryAction: retryAction,
+    retryHotelId: retryHotelId,
   );
 }
 
 class _LodgingPendingCommand {
-  _LodgingPendingCommand(this.proposal, this.action, this.revision)
-    : operationId =
+  _LodgingPendingCommand(
+    this.proposal,
+    this.action,
+    this.revision,
+    this.hotelId,
+  ) : operationId =
           'lodging_${List.generate(4, (_) => Random.secure().nextInt(1 << 32).toRadixString(16).padLeft(8, '0')).join()}';
   final ProgramLodgingProposal proposal;
   final ProgramLodgingAction action;
   final int revision;
   final String operationId;
+  final String? hotelId;
   bool saved = false;
 }
 
@@ -137,6 +145,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
             review: view.review,
             error: error,
             retryAction: _command?.action,
+            retryHotelId: _command?.hotelId,
           ),
         );
       }
@@ -251,17 +260,26 @@ class ProgramLodgingController extends _$ProgramLodgingController {
     }, _reviewView);
   }
 
-  Future<void> decide(ProgramLodgingAction action) async {
+  Future<void> decide(ProgramLodgingAction action, {String? hotelId}) async {
     final view = _current();
     final review = view.review;
     if (review == null) throw programReadSuperseded;
-    if (_command != null && _command!.action != action) {
+    if (action == ProgramLodgingAction.confirmHotel) {
+      if (hotelId == null || !review.allocatedHotelIds.contains(hotelId)) {
+        throw StateError('Choose a hotel allocated by this exact proposal.');
+      }
+    } else if (hotelId != null) {
+      throw StateError('Only hotel confirmation accepts a hotel choice.');
+    }
+    if (_command != null &&
+        (_command!.action != action || _command!.hotelId != hotelId)) {
       throw StateError('Retry the pending lodging decision first.');
     }
     final command = _command ??= _LodgingPendingCommand(
       review.proposal,
       action,
       review.workflowRevision,
+      hotelId,
     );
     await _run(view, () async {
       final actionEpoch = _epoch;
@@ -278,6 +296,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
         operationId: command.operationId,
         expectedWorkflowRevision: command.revision,
         action: command.action,
+        hotelId: command.hotelId,
       );
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       _command = null;

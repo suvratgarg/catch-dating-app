@@ -24811,4 +24811,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsLodgingVerified => 'Verified unchanged stay';
+
+  @override
+  String programsLodgingConfirmHotel({required String hotel}) {
+    return 'Record hotel confirmation: $hotel';
+  }
+
+  @override
+  String programsLodgingHotelConfirmed({required String hotel}) {
+    return 'Hotel confirmed: $hotel';
+  }
 }
