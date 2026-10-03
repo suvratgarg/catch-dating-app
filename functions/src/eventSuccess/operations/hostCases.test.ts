@@ -429,10 +429,11 @@ test("guest-help names and manager choices remain bound to current sources",
 test("native help queue fixtures use actual case projections", async () => {
   const h = await harness(undefined, "00000000-0000-0000-0000-000000000123");
   const path = "organizers/" + h.context.organizerId;
-  await h.write(path, {...await h.read(path), hostProfiles: [
-    {uid: manager, displayName: "Sam", avatarUrl: null, role: "host"},
-    {uid: "host-2", displayName: "Priya", avatarUrl: null, role: "host"},
-  ]});
+  await h.write(path, {...await h.read(path),
+    hostUserIds: [manager, "host-2"], hostProfiles: [
+      {uid: manager, displayName: "Sam", avatarUrl: null, role: "host"},
+      {uid: "host-2", displayName: "Priya", avatarUrl: null, role: "host"},
+    ]});
   await h.write(h.attendeePath, {...await h.read(h.attendeePath),
     displayName: "Alex Morgan"});
   const initial = await h.list();

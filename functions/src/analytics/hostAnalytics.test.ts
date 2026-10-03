@@ -544,7 +544,7 @@ test("getHostAnalytics verifies fresh manager " +
   "authority before any cached aggregate read", async () => {
   const fixture = hostCallableFixture();
   fixture.organizer.hostProfiles = [{uid: "manager", role: "host"}];
-  fixture.organizer.hostUserIds = [];
+  fixture.organizer.hostUserIds = ["manager"];
   const result = await getHostAnalyticsHandler(
     fixture.request("manager", {organizerId: "org"}),
     fixture.deps
@@ -563,7 +563,8 @@ test("getHostAnalytics verifies fresh manager " +
     fixture.request("manager", {organizerId: "org"}), fixture.deps
   );
   assert.equal(fixture.factReads(), firstReads);
-  fixture.organizer.hostProfiles = [];
+  // A stale display profile must not revive authority or serve cached data.
+  fixture.organizer.hostUserIds = [];
   await assert.rejects(
     getHostAnalyticsHandler(
       fixture.request("manager", {organizerId: "org"}),
