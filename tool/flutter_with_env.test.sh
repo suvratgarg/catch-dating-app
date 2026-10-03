@@ -272,20 +272,20 @@ for (const status of [0, 17]) {
   assert.equal((result.stdout + result.stderr).includes(key), false);
 }
 fs.writeFileSync(output, 'fake-existing-file');
-assert.notEqual(invoke(['--temporary', '--', '/bin/true']).status, 0);
+assert.notEqual(invoke(['--temporary', '--', '/bin/bash', '-c', 'exit 0']).status, 0);
 assert.equal(fs.readFileSync(output, 'utf8'), 'fake-existing-file', 'preserve existing output');
 fs.unlinkSync(output);
 const symlinkTarget = path.join(root, 'existing-target');
 fs.writeFileSync(symlinkTarget, 'fake-existing-target');
 fs.symlinkSync(symlinkTarget, output);
-assert.notEqual(invoke(['--temporary', '--', '/bin/true']).status, 0);
+assert.notEqual(invoke(['--temporary', '--', '/bin/bash', '-c', 'exit 0']).status, 0);
 assert.equal(fs.readFileSync(symlinkTarget, 'utf8'), 'fake-existing-target');
 assert.equal(fs.lstatSync(output).isSymbolicLink(), true);
 fs.unlinkSync(output);
 const missingCommand = invoke(['--temporary', '--', path.join(root, 'absent-build-command')]);
-assert.equal(missingCommand.status, 127);
+assert.notEqual(missingCommand.status, 0, 'startup failure remains a failure across Bash versions');
 assert.equal(fs.existsSync(output), false, 'startup failure output cleanup');
-const traced = spawnSync('/bin/bash', ['-x', helper, 'dev', output, '--temporary', '--', '/bin/true'], {
+const traced = spawnSync('/bin/bash', ['-x', helper, 'dev', output, '--temporary', '--', '/bin/bash', '-c', 'exit 0'], {
   env, encoding: 'utf8', timeout: 10000,
 });
 assert.equal(traced.status, 0);
@@ -311,7 +311,7 @@ for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP']) {
   assert.equal(logs.includes(key), false);
   fs.unlinkSync(marker);
 }
-const missing = invoke(['--temporary', '--', '/bin/true'], {GOOGLE_MAPS_IOS_API_KEY_DEV: ''});
+const missing = invoke(['--temporary', '--', '/bin/bash', '-c', 'exit 0'], {GOOGLE_MAPS_IOS_API_KEY_DEV: ''});
 assert.notEqual(missing.status, 0);
 assert.equal(fs.existsSync(output), false);
 console.log('Names-only provenance and temporary Maps lifecycle checks passed.');
