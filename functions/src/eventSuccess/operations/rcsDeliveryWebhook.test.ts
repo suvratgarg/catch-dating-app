@@ -1,3 +1,5 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import assert from "node:assert/strict";
 import {createHmac} from "node:crypto";
 import test from "node:test";
@@ -32,7 +34,8 @@ function fixture() {
     if (state.fail) throw new Error("private-secret-value");
     return [{payload: {data: Buffer.from(JSON.stringify(state.value))}}];
   }} as unknown as RcsSecretClient;
-  const keys = new RcsWebhookKeyStore(() => state.name, client);
+  const keys = new RcsWebhookKeyStore(() => state.name, client,
+    new SecretVersionReferenceGuard(() => "demo", async () => "123456"));
   const clock = () => 1788825600000;
   const errors: string[] = [];
   const deps = {enabled: () => state.enabled, keys,
@@ -74,11 +77,14 @@ test("webhook keys retain exact endpoints and reject ambiguous configuration",
       assert.throws(() => parseRcsWebhookEndpoints(invalid));
     }
     for (const invalid of ["", version.replace("/1", "/latest"),
-      version.replace("WEBHOOK_KEYS", "OTHER_KEYS")]) {
+      version.replace("WEBHOOK_KEYS", "OTHER_KEYS"),
+      version.replace("demo", "foreign"), version.replace("demo", "654321")]) {
       h.state.name = invalid;
       await assert.rejects(h.keys.access("old"), /credential unavailable/);
     }
     assert.equal(h.reads.length, 2);
+    h.state.name = version.replace("demo", "123456");
+    assert.deepEqual(await h.keys.access("old"), envelope().endpoints[0]);
     h.state.name = version;
     h.state.fail = true;
     await assert.rejects(h.keys.access("old"), (e: Error) =>
