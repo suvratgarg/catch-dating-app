@@ -210,3 +210,32 @@ test("setup catalog rechecks coordinator expiry after final native reads",
       (error: unknown) => (error as {code?: string}).code ===
         "permission-denied");
   });
+
+
+test("date-only lodging choices resolve in program timezone across DST",
+  async () => {
+    const h = setup();
+    const resolve = async (timezone: string, arrival: string,
+      departure: string) => {
+      h.fake.updateDoc("organizerPrograms/program-1", {timezone});
+      const result = await h.call({action: "resolveDates", arrival, departure});
+      if (result.kind !== "resolvedDates") throw new Error("Wrong date kind");
+      assert.equal(result.timezone, timezone);
+      return result;
+    };
+    const india = await resolve("Asia/Kolkata", "2026-10-01", "2026-10-03");
+    assert.equal(india.startsAtMillis, Date.parse("2026-10-01T06:30:00Z"));
+    const pacific = await resolve("Pacific/Kiritimati", "2026-10-01",
+      "2026-10-02");
+    assert.equal(pacific.startsAtMillis, Date.parse("2026-09-30T22:00:00Z"));
+    const dst = await resolve("America/New_York", "2026-03-07", "2026-03-09");
+    assert.equal(dst.endsAtMillis - dst.startsAtMillis, 47 * 3_600_000);
+    await assert.rejects(h.call({action: "resolveDates", arrival: "2026-02-30",
+      departure: "2026-03-03"}), /Invalid local date/);
+    await assert.rejects(h.call({action: "resolveDates", arrival: "2026-10-03",
+      departure: "2026-10-01"}), /Checkout must follow/);
+    await assert.rejects(h.call({action: "resolveDates", arrival: "2026-10-01",
+      departure: "2026-10-03"}, "hotelier-1"), /programCoordinator/);
+    await assert.rejects(resolve("Pacific/Apia", "2011-12-30", "2011-12-31"),
+      /does not exist/);
+  });

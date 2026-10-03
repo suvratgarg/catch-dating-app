@@ -1157,7 +1157,8 @@
         "groups",
         "hotels",
         "contracts",
-        "activeStays"
+        "activeStays",
+        "calendarDates"
       ],
       "properties": {
         "programId": {
@@ -1469,6 +1470,17 @@
                 "maximum": 9007199254740991
               }
             }
+          }
+        },
+        "calendarDates": {
+          "type": "object",
+          "maxProperties": 6000,
+          "propertyNames": {
+            "pattern": "^[0-9]+$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }
         }
       }

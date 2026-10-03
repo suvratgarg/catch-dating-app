@@ -573,7 +573,8 @@ export const manageProgramLodgingCallableResponseSchema: Record<string, unknown>
             "groups",
             "hotels",
             "contracts",
-            "activeStays"
+            "activeStays",
+            "calendarDates"
           ],
           "properties": {
             "programId": {
@@ -885,6 +886,17 @@ export const manageProgramLodgingCallableResponseSchema: Record<string, unknown>
                     "maximum": 9007199254740991
                   }
                 }
+              }
+            },
+            "calendarDates": {
+              "type": "object",
+              "maxProperties": 6000,
+              "propertyNames": {
+                "pattern": "^[0-9]+$"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
               }
             }
           }
@@ -2739,6 +2751,59 @@ export const manageProgramLodgingCallableResponseSchema: Record<string, unknown>
               }
             }
           }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timezone",
+        "arrival",
+        "departure",
+        "startsAtMillis",
+        "endsAtMillis",
+        "accessExpiresAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "resolvedDates"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "arrival": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "departure": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8640000000000000
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8640000000000000
+        },
+        "accessExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }

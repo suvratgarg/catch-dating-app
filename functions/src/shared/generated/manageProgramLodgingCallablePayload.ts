@@ -227,4 +227,10 @@ export type ManageProgramLodgingCallablePayload =
       action: "hotelBoard";
       programId: string;
       hotelId: string;
+    }
+  | {
+      action: "resolveDates";
+      programId: string;
+      arrival: string;
+      departure: string;
     };

@@ -73,6 +73,9 @@ export type ManageProgramLodgingCallableResponse =
           status: "held" | "confirmed" | "checkedIn";
           revision: number;
         }[];
+        calendarDates: {
+          [k: string]: string;
+        };
       };
     }
   | {
@@ -379,4 +382,13 @@ export type ManageProgramLodgingCallableResponse =
           departure: string;
         }[];
       }[];
+    }
+  | {
+      kind: "resolvedDates";
+      timezone: string;
+      arrival: string;
+      departure: string;
+      startsAtMillis: number;
+      endsAtMillis: number;
+      accessExpiresAtMillis: number | null;
     };

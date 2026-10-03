@@ -125053,6 +125053,52 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['notInvited', 'invited', 'delivered', 'responded'],
   );
 
+  static const programGuestDocumentMembershipSelections = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSelections',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentMembershipSelectionsItemsAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSelections.items.assertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wma_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentMembershipSelectionsItemsGroupId = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSelections.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestDocumentMembershipSuggestions = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSuggestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentMembershipSuggestionsItemsAssertionId = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSuggestions.items.assertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wma_[a-f0-9]{64}\$',
+  );
+
+  static const programGuestDocumentMembershipSuggestionsItemsGroupId = CatchContractFieldConstraints(
+    path: 'programGuestDocument.membershipSuggestions.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programGuestDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'programGuestDocument.organizerId',
     maxLength: 180,
@@ -175718,6 +175764,12 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.groupIds.items': programGuestDocumentGroupIdsItems,
     'programGuestDocument.householdId': programGuestDocumentHouseholdId,
     'programGuestDocument.invitationStatus': programGuestDocumentInvitationStatus,
+    'programGuestDocument.membershipSelections': programGuestDocumentMembershipSelections,
+    'programGuestDocument.membershipSelections.items.assertionId': programGuestDocumentMembershipSelectionsItemsAssertionId,
+    'programGuestDocument.membershipSelections.items.groupId': programGuestDocumentMembershipSelectionsItemsGroupId,
+    'programGuestDocument.membershipSuggestions': programGuestDocumentMembershipSuggestions,
+    'programGuestDocument.membershipSuggestions.items.assertionId': programGuestDocumentMembershipSuggestionsItemsAssertionId,
+    'programGuestDocument.membershipSuggestions.items.groupId': programGuestDocumentMembershipSuggestionsItemsGroupId,
     'programGuestDocument.organizerId': programGuestDocumentOrganizerId,
     'programGuestDocument.phoneE164': programGuestDocumentPhoneE164,
     'programGuestDocument.programId': programGuestDocumentProgramId,

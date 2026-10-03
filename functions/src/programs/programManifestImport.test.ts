@@ -14,19 +14,16 @@ import {validateTransportOperationReceiptDocument} from
   "../shared/generated/validators/transportOperationReceiptDocument";
 import type {ValidateFunction} from "ajv";
 
-const validators: Record<string, ValidateFunction> = {
-  workspaceFieldAssertions: validateWorkspaceFieldAssertionDocument,
-  programGuests: validateProgramGuestDocument,
-  programTravelLegs: validateProgramTravelLegDocument,
-  programHouseholds: validateProgramHouseholdDocument,
-  programTravelParties: validateProgramTravelPartyDocument,
-  programGuestGroups: validateProgramGuestGroupDocument,
-  transportOperationReceipts: validateTransportOperationReceiptDocument,
-};
+
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 
+import {upsertProgramGuestHandler} from "./programGuests";
+import {validateWorkspaceMembershipAssertionDocument} from
+  "../shared/generated/validators/workspaceMembershipAssertionDocument";
+import {validateWorkspaceMembershipDecisionDocument} from
+  "../shared/generated/validators/workspaceMembershipDecisionDocument";
 import {importProgramManifestHandler} from "./programManifestImport";
 import {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -34,6 +31,18 @@ import {ProgramTravelLegDocument} from
 import {seed, request, deps, row, ts, NOW} from "./programManifestFixture";
 import {FakeFirestore as MiniFirestore} from
   "../shared/testing/programFirestore";
+
+const validators: Record<string, ValidateFunction> = {
+  workspaceFieldAssertions: validateWorkspaceFieldAssertionDocument,
+  workspaceMembershipAssertions: validateWorkspaceMembershipAssertionDocument,
+  workspaceMembershipDecisions: validateWorkspaceMembershipDecisionDocument,
+  programGuests: validateProgramGuestDocument,
+  programTravelLegs: validateProgramTravelLegDocument,
+  programHouseholds: validateProgramHouseholdDocument,
+  programTravelParties: validateProgramTravelPartyDocument,
+  programGuestGroups: validateProgramGuestGroupDocument,
+  transportOperationReceipts: validateTransportOperationReceiptDocument,
+};
 
 test("preview plans writes without touching storage", async () => {
   const store = new MiniFirestore(seed());
@@ -509,7 +518,7 @@ test("import rejects incompatible routes in a new party", async () => {
   assert.match(commit.rowErrors[1].message, /same pickup and destination/);
 });
 
-test("groupLabels resolve or create groups and keep memberCount", async () => {
+test("groupLabels suggest membership without accepting it", async () => {
   const store = new MiniFirestore(seed());
   const grouped = {...row, groupLabels: "side:Groom side; Friends"};
   const preview = await importProgramManifestHandler(request({
@@ -535,10 +544,11 @@ test("groupLabels resolve or create groups and keep memberCount", async () => {
   const guest = [...store.docs.entries()].find(([k]) =>
     k.startsWith("programGuests/"))![1];
   for (const [, doc] of groups) {
-    assert.equal(doc.memberCount, 1);
-    assert.ok((guest.groupIds as string[]).includes(
-      [...store.docs.entries()].find(([, d]) => d === doc)![0]
-        .split("/")[1]));
+    assert.equal(doc.memberCount, 0);
+    const groupId = [...store.docs.entries()].find(([, d]) => d === doc)![0]
+      .split("/")[1];
+    assert.ok((guest.membershipSuggestions as Array<{groupId: string}>)
+      .some((p) => p.groupId === groupId));
   }
   // Re-importing the same labels is idempotent: the leg-identity match
   // updates the existing guest, creates no groups, and never recounts.
@@ -550,9 +560,51 @@ test("groupLabels resolve or create groups and keep memberCount", async () => {
   assert.equal(again.guestsUpdated, 1);
   assert.equal(again.groupsCreated, 0);
   for (const [, doc] of store.docs) {
-    if ("memberCount" in doc) assert.equal(doc.memberCount, 1);
+    if ("memberCount" in doc) assert.equal(doc.memberCount, 0);
   }
 });
+
+test("manual includes/excludes survive repeated import handlers",
+  async () => {
+    const store = new MiniFirestore(seed());
+    const grouped = {...row, groupLabels: "side:Groom side; Friends"};
+    await importProgramManifestHandler(request({programId: "program-1",
+      mode: "commit", clientOperationId: "override-first", rows: [grouped]}),
+    deps(store));
+    const [guestPath, guest] = [...store.docs.entries()].find(([path]) =>
+      path.startsWith("programGuests/"))!;
+    const guestId = guestPath.split("/")[1];
+    const groups = [...store.docs.entries()].filter(([path]) =>
+      path.startsWith("programGuestGroups/"));
+    const included = groups.find(([, doc]) => doc.label === "Friends")![0]
+      .split("/")[1];
+    const excluded = groups.find(([, doc]) => doc.label === "Groom side")![0]
+      .split("/")[1];
+    assert.deepEqual(guest.groupIds, []);
+    await upsertProgramGuestHandler(request({programId: "program-1", guestId,
+      displayName: "Rohan Sharma", expectedRevision: guest.revision,
+      groupIds: [included]}), deps(store));
+    const selections = store.getDoc(guestPath)!.membershipSelections;
+    for (let i = 0; i < 3; i++) {
+      await importProgramManifestHandler(request({programId: "program-1",
+        mode: "commit", clientOperationId: `override-next-${i}`,
+        rows: [grouped]}), deps(store));
+      assert.deepEqual(store.getDoc(guestPath)!.groupIds, [included]);
+      assert.deepEqual(store.getDoc(guestPath)!.membershipSelections,
+        selections);
+      assert.equal(store.getDoc(`programGuestGroups/${included}`)!
+        .memberCount, 1);
+      assert.equal(store.getDoc(`programGuestGroups/${excluded}`)!
+        .memberCount, 0);
+    }
+    for (const [path, doc] of store.docs) {
+      const validator = validators[path.split("/")[0]];
+      if (validator) {
+        assert.equal(validator(doc), true,
+          `${path}: ${JSON.stringify(validator.errors)}`);
+      }
+    }
+  });
 
 test("groupLabels entries report row errors instead of writing", async () => {
   const store = new MiniFirestore(seed());

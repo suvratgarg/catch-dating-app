@@ -6,6 +6,7 @@
   programId:ASCENDING,
   guestId:ASCENDING
 ) */
+import {planManualMembership} from "../workspaces/programMembershipPersistence";
 import * as admin from "firebase-admin";
 import {householdMemberIds, planHouseholdMembership} from
   "./programHouseholdMembership";
@@ -19,6 +20,8 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   assertRevision,
+  dutyAssignments,
+  programProjectionExpiresAt,
   nextRevision,
   requireProgramAccess,
   requireProgramMutable,
@@ -144,6 +147,12 @@ export async function upsertProgramGuestHandler(
         ...(data.email === undefined ? {} : {email: data.email}),
       }, choices, source: {sourceKind: "manualEntry", sourceId: ref.id,
         sourceVersion: revision, actorUid, observedAtMillis: now.toMillis()}});
+    const membership = data.groupIds === undefined ? null :
+      await planManualMembership({db, tx, guest: existing ?? {},
+        programId: data.programId, organizerId: access.program.organizerId,
+        guestId: ref.id, groupIds: nextGroupIds,
+        currentRevision: existing?.revision ?? 1, nextRevision: revision,
+        actorUid, observedAtMillis: now.toMillis()});
     const document: ScopedProgramGuest = {
       ...existing,
       programId: data.programId,
@@ -158,7 +167,11 @@ export async function upsertProgramGuestHandler(
       fieldConflicts: fields.fieldConflicts,
       externalReference: data.externalReference === undefined ?
         existing?.externalReference ?? null : data.externalReference,
-      groupIds: nextGroupIds,
+      groupIds: membership?.projection.groupIds ?? nextGroupIds,
+      ...(membership ? {
+        membershipSelections: membership.projection.selections,
+        membershipSuggestions: membership.projection.suggestions,
+      } : {}),
       invitationStatus: existing?.invitationStatus ?? "notInvited",
       rsvpStatus: data.rsvpStatus ?? existing?.rsvpStatus ?? "pending",
       source: existing?.source ?? "manual",
@@ -172,6 +185,12 @@ export async function upsertProgramGuestHandler(
       access.program.organizerId, households, [{guestId: ref.id,
         previousHouseholdId: existing?.householdId ?? null,
         nextHouseholdId: document.householdId}]);
+    const expiry = programProjectionExpiresAt(access,
+      dutyAssignments(access, "programCoordinator").filter((d) =>
+        d.expiresAtMillis > deps.now().toMillis()));
+    if (expiry !== null && expiry <= deps.now().toMillis()) {
+      throw new HttpsError("permission-denied", "Guest duty expired.");
+    }
     for (const [id, memberGuestIds] of memberships) {
       tx.update(db.collection("programHouseholds").doc(id), {memberGuestIds,
         updatedAt: now, revision: nextRevision(households.get(id)!.revision,
@@ -186,6 +205,9 @@ export async function upsertProgramGuestHandler(
     for (const decision of fields.decisions) {
       tx.create(db.collection("workspaceFieldDecisions").doc(decision.id),
         decision.data);
+    }
+    for (const write of membership?.writes ?? []) {
+      tx.create(db.doc(write.path), write.data);
     }
     committedRevision = document.revision;
     tx.set(ref, document);

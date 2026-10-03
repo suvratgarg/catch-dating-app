@@ -1,7 +1,5 @@
-/* firestore-index: programGuests (
-  programId:ASCENDING,
-  groupIds:CONTAINS
-) */
+import {programMembershipProjection} from
+  "../workspaces/programMembershipPersistence";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -12,6 +10,8 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {
   assertRevision,
   nextRevision,
+  dutyAssignments,
+  programProjectionExpiresAt,
   requireProgramAccess,
   requireProgramMutable,
   requireProgramDuty,
@@ -254,6 +254,7 @@ export async function deleteProgramGuestGroupHandler(
   await deps.checkRateLimit(db, actorUid, "deleteProgramGuestGroup");
   const ref = db.collection("programGuestGroups").doc(data.groupId);
   let deletedRevision = 0;
+  let organizerId = "";
   await db.runTransaction(async (tx) => {
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(),
@@ -269,30 +270,66 @@ export async function deleteProgramGuestGroupHandler(
     }
     assertRevision(existing.revision, data.expectedRevision);
     deletedRevision = existing.revision;
+    organizerId = access.program.organizerId;
     tx.delete(ref);
   });
-  // The delete commits before the membership scrub: post-delete upserts can
-  // no longer attach this id, so groupIds left on guests are dangling only
-  // until these paged transactions land. Reads tolerate the window.
+  // Scan all program guests, including suggestion-only and excluded choices.
+  // Advance by stable document identity even when a page has no matching
+  // references; only matching guests get a new revision. Evidence is immutable.
+  let cursor: string | undefined;
   while (true) {
-    const removed = await db.runTransaction(async (tx) => {
+    const page = await db.runTransaction(async (tx) => {
+      const access = await requireProgramAccess({
+        db, programId: data.programId, actorUid, now: deps.now(),
+        transaction: tx,
+      });
+      requireProgramMutable(access.program);
+      requireProgramDuty(access, "programCoordinator");
+      if (access.program.organizerId !== organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Guest group ownership needs reconciliation.");
+      }
       let query = db.collection("programGuests")
         .where("programId", "==", data.programId)
+        .orderBy(admin.firestore.FieldPath.documentId())
         .limit(groupScrubPageSize);
-      query = query.where("groupIds", "array-contains", data.groupId);
+      if (cursor !== undefined) query = query.startAfter(cursor);
       const snap = await tx.get(query);
       const now = deps.now();
+      const expiry = programProjectionExpiresAt(access,
+        dutyAssignments(access, "programCoordinator").filter((d) =>
+          d.expiresAtMillis > now.toMillis()));
+      if (expiry !== null && expiry <= now.toMillis()) {
+        throw new HttpsError("permission-denied", "Guest duty expired.");
+      }
       for (const doc of snap.docs) {
         const guest = doc.data() as ProgramGuestDocument;
+        if (guest.programId !== data.programId ||
+            guest.organizerId !== organizerId) {
+          throw new HttpsError("failed-precondition",
+            "Guest ownership needs reconciliation.");
+        }
+        const {groupIds, selections, suggestions} =
+          programMembershipProjection(guest);
+        if (!groupIds.includes(data.groupId) &&
+            !selections.some((p) => p.groupId === data.groupId) &&
+            !suggestions.some((p) => p.groupId === data.groupId)) {
+          continue;
+        }
         tx.update(doc.ref, {
-          groupIds: guest.groupIds.filter((id) => id !== data.groupId),
+          groupIds: groupIds.filter((id) => id !== data.groupId),
+          membershipSelections: selections
+            .filter((p) => p.groupId !== data.groupId),
+          membershipSuggestions: suggestions
+            .filter((p) => p.groupId !== data.groupId),
           updatedAt: now,
           revision: nextRevision(guest.revision, now),
         });
       }
-      return snap.size;
+      return {scanned: snap.size, lastId: snap.docs.at(-1)?.id};
     });
-    if (removed < groupScrubPageSize) break;
+    if (page.scanned < groupScrubPageSize) break;
+    cursor = page.lastId;
   }
   return {entityId: data.groupId, revision: deletedRevision,
     alreadyApplied: false};

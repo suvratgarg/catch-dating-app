@@ -266,6 +266,7 @@ function retentionScrub(
       email: null,
       externalReference: null,
       fieldSelections: {}, fieldConflicts: {},
+      membershipSelections: [], membershipSuggestions: [],
     };
   case "programHouseholds":
     return {

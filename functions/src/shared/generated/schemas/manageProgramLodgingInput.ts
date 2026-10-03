@@ -1013,6 +1013,34 @@ export const manageProgramLodgingCallablePayloadSchema: Record<string, unknown> 
           "maxLength": 180
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "arrival",
+        "departure"
+      ],
+      "properties": {
+        "action": {
+          "const": "resolveDates"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "arrival": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "departure": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
     }
   ]
 } as const;

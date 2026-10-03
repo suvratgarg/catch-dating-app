@@ -576,6 +576,7 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
             'hotels',
             'contracts',
             'activeStays',
+            'calendarDates',
           ],
           'properties': <String, Object?>{
             'programId': <String, Object?>{
@@ -887,6 +888,17 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
                     'maximum': 9007199254740991,
                   },
                 },
+              },
+            },
+            'calendarDates': <String, Object?>{
+              'type': 'object',
+              'maxProperties': 6000,
+              'propertyNames': <String, Object?>{
+                'pattern': '^[0-9]+\$',
+              },
+              'additionalProperties': <String, Object?>{
+                'type': 'string',
+                'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
               },
             },
           },
@@ -2741,6 +2753,59 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
               },
             },
           },
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timezone',
+        'arrival',
+        'departure',
+        'startsAtMillis',
+        'endsAtMillis',
+        'accessExpiresAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'resolvedDates',
+        },
+        'timezone': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'arrival': <String, Object?>{
+          'type': 'string',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
+        },
+        'departure': <String, Object?>{
+          'type': 'string',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
+        },
+        'startsAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 8640000000000000,
+        },
+        'endsAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 8640000000000000,
+        },
+        'accessExpiresAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
         },
       },
     },

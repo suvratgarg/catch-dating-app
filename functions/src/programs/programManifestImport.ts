@@ -4,7 +4,8 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {requireProgramAccess, requireProgramDuty, requireProgramMutable} from
+import {dutyAssignments, programProjectionExpiresAt, requireProgramAccess,
+  requireProgramDuty, requireProgramMutable} from
   "../shared/programAuthority";
 import type {ProgramAccess} from "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -60,6 +61,20 @@ function requireManifestImportAccess(access: ProgramAccess): void {
     (assignment.functionIds ?? []).length === 0)) {
     throw new HttpsError("permission-denied",
       "Program-wide guest relations access is required to import.");
+  }
+}
+
+function assertManifestImportCurrent(access: ProgramAccess,
+  nowMillis: number): void {
+  const active = dutyAssignments(access, "guestRelations")
+    .filter((assignment) =>
+      assignment.expiresAtMillis > nowMillis &&
+    assignment.pickupPointIds.length === 0 &&
+    assignment.hotelIds.length === 0 &&
+    (assignment.functionIds ?? []).length === 0);
+  const expiry = programProjectionExpiresAt(access, active);
+  if (expiry !== null && expiry <= nowMillis) {
+    throw new HttpsError("permission-denied", "Manifest duty expired.");
   }
 }
 
@@ -221,6 +236,7 @@ export async function importProgramManifestHandler(
         ProgramManifestImportCallableResponse : emptyResult();
       const completed = completedManifestRows(receipt, data.rows.length);
       if (completed.length === data.rows.length) {
+        assertManifestImportCurrent(access, deps.now().toMillis());
         return {result: previous, done: true, applied: false};
       }
       const state = await loadManifest(db, data.programId,
@@ -236,8 +252,10 @@ export async function importProgramManifestHandler(
       const result = addResult(previous, planned);
       const completedRowIndices = [...completed, ...resolvedIndices]
         .sort((a, b) => a - b);
+      assertManifestImportCurrent(access, deps.now().toMillis());
       for (const write of writes) {
-        if (write.path.startsWith("workspaceFieldAssertions/")) {
+        if (write.path.startsWith("workspaceFieldAssertions/") ||
+            write.path.startsWith("workspaceMembershipAssertions/")) {
           tx.create(db.doc(write.path), write.data);
         } else {
           tx.set(db.doc(write.path), write.data);

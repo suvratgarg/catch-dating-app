@@ -1016,5 +1016,33 @@ const schemaManageProgramLodgingCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'action',
+        'programId',
+        'arrival',
+        'departure',
+      ],
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'resolveDates',
+        },
+        'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'arrival': <String, Object?>{
+          'type': 'string',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
+        },
+        'departure': <String, Object?>{
+          'type': 'string',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
+        },
+      },
+    },
   ],
 };

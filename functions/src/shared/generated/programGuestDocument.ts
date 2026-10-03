@@ -24,7 +24,7 @@ export interface ProgramGuestDocument {
    */
   externalReference: string | null;
   /**
-   * Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import.
+   * Current canonical social membership truth. Host selections update it through upsertProgramGuest; imported group labels append source-labelled suggestions without changing this projection.
    *
    * @maxItems 20
    */
@@ -82,4 +82,22 @@ export interface ProgramGuestDocument {
      */
     email?: string[];
   };
+  /**
+   * Exact immutable host membership choices; includes and excludes survive every import.
+   *
+   * @maxItems 100
+   */
+  membershipSelections?: {
+    groupId: string;
+    assertionId: string;
+  }[];
+  /**
+   * Source-labelled unapproved membership assertions. Never add canonical groupIds without a host choice.
+   *
+   * @maxItems 100
+   */
+  membershipSuggestions?: {
+    groupId: string;
+    assertionId: string;
+  }[];
 }
