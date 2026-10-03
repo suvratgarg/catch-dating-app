@@ -3454,7 +3454,9 @@ all direct client access. The server adapter validates stored document shapes,
 proposal content identity independent of map key order, current authority after
 reads, and complete approved hotel projections. Its required publication callback
 must enqueue canonical stay writes in the same transaction as workflow/receipt
-writes. No lodging callable or canonical publication adapter is exported yet.
+writes. The authenticated `manageProgramLodging` source export uses the canonical
+configuration/source/publication adapter; real emulator and combined release
+validation remain required.
 
 `workspaceMembershipAssertions` and `workspaceMembershipDecisions` are typed,
 program/guest/group evidence beside the existing scalar field ledger. Imports
@@ -3463,7 +3465,7 @@ Canonical `programGuests.groupIds` remains membership truth. Canonical import an
 selection transaction adapters are still required; these schemas do not grant
 membership or infer room sharing from a household.
 
-All six private collections join the existing archive retention sweep by exact
+All seven private collections join the existing archive retention sweep by exact
 program scope. Membership workspace scope and lodging proposal scope must agree
 with the archived program and organizer; mismatches block completion. Records
 are deleted rather than retaining guest/group pointers as aggregate counts.
@@ -4930,5 +4932,10 @@ its revision, dates, room and existing occupancy; it does not infer sharing.
 Configuration references canonical guest/group/hotel/block IDs and has no copied
 contact records. Native membership with unknown acquisition evidence is marked
 `canonical`; it is never relabelled as a manual decision. The private config is
-retained only within the event and deleted by the archive sweep. Callable and
-routed UI integration plus real Firestore validation remain pending.
+retained only within the event and deleted by the archive sweep. The authenticated
+`manageProgramLodging` callable validates strict action-specific requests and
+role-specific responses, derives the actor from authentication, and exposes
+revision-fenced manual proposals and independently checked destinations. Private
+reviews include the exact snapshot and labels read in the same transaction;
+native guest corrections invalidate that snapshot. Routed UI integration and
+real Firestore validation remain pending.

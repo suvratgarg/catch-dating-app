@@ -154,7 +154,13 @@ export function canonicalLodgingSource(deps: ProgramDataDeps):
       programId);
     const snapshot = canonicalLodgingSnapshot(config, records, access);
     const fence = await prepareLodgingRevisionFence(tx, db, snapshot.scope, {
-      source: {timezone: access.program.timezone, demand: config.demand,
+      source: {timezone: access.program.timezone, revision: config.revision,
+        guests: records.guests.map(({id, data}) => {
+          const fields: Record<string, unknown> = {...data};
+          delete fields.revision;
+          delete fields.updatedAt;
+          return {id, data: fields};
+        }), demand: config.demand,
         parties: config.parties, parents: config.groupParents,
         groups: records.groups,
         memberships: snapshot.memberships},
@@ -174,7 +180,15 @@ export function canonicalLodgingSource(deps: ProgramDataDeps):
       snapshot, config.demand, Object.fromEntries(config.labels.map((r) =>
         [r.inventoryId, r.roomLabel])), access.program.timezone, deps.now(),
       fence.publish);
-    return {snapshot, persistSource: fence.persist, publish};
+    const label = (value: string) => value.slice(0, 200);
+    return {snapshot, configuration: config, labels: {
+      guests: Object.fromEntries(records.guests.map((r) =>
+        [r.id, label(r.data.displayName)])),
+      groups: Object.fromEntries(records.groups.map((r) =>
+        [r.id, label(r.data.label)])),
+      hotels: Object.fromEntries(records.hotels.map((r) =>
+        [r.id, label(r.data.name)])),
+    }, persistSource: fence.persist, publish};
   };
 }
 

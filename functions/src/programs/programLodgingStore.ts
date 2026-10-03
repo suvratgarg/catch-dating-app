@@ -28,8 +28,16 @@ function requireStoredShape(valid: boolean): void {
   }
 }
 
+export interface LodgingPresentation {
+  guests: Record<string, string>;
+  groups: Record<string, string>;
+  hotels: Record<string, string>;
+}
 export interface TransactionLodgingSource {
   snapshot: LodgingSnapshot;
+  configuration?: import("../shared/generated/programLodgingConfigDocument")
+    .ProgramLodgingConfigDocument;
+  labels?: LodgingPresentation;
   persistSource?: () => void;
   /** Prepared using reads in loadSource. This callback may only enqueue
    * canonical stay/occupancy writes in this same transaction, with no IO.
@@ -68,6 +76,32 @@ const emptyWorkflow = (): LodgingWorkflow => ({revision: 0,
 export class ProgramLodgingStore {
   constructor(private readonly deps: ProgramDataDeps,
     private readonly loadSource: LoadLodgingSource) {}
+
+  async review(programId: string, actorUid: string) {
+    return this.deps.firestore().runTransaction(async (tx) => {
+      const access = await this.access(tx, programId, actorUid);
+      requireProgramDuty(access, "programCoordinator");
+      const source = await this.loadSource(tx, access, programId);
+      this.assertScope(source.snapshot, access, programId);
+      const state = await tx.get(this.deps.firestore()
+        .collection("programLodgingWorkflows").doc(programId));
+      const stored = state.data() as StoredWorkflow | undefined;
+      if (stored) {
+        requireStoredShape(validateProgramLodgingWorkflowDocument(stored));
+        this.assertStoredScope(stored, access, programId);
+      }
+      const authority = this.authority(access, actorUid, source.snapshot);
+      if (!source.configuration || !source.labels) {
+        throw new HttpsError("failed-precondition",
+          "Canonical lodging review context is unavailable.");
+      }
+      source.persistSource?.();
+      return {snapshot: source.snapshot, configuration: source.configuration,
+        labels: source.labels, workflow: stored?.workflow ?? emptyWorkflow(),
+        accessExpiresAtMillis: authority.role === "manager" ? null :
+          authority.expiresAtMillis};
+    });
+  }
 
   async preview(programId: string, actorUid: string): Promise<LodgingProposal> {
     const snapshot = await this.deps.firestore().runTransaction(async (tx) => {

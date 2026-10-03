@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.93.0
-updated: 2026-10-02
+version: 1.94.0
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -716,3 +716,15 @@ of scoped reply values. There is no readiness writer, automatic history repair
 approval, live credential read, provider send, deployment or activation in these
 tests. Runtime history collection and all scoped live approvals remain separate.
 The 24-hour cutoff is a transport eligibility rule, not a verified pricing claim.
+
+### Program Lodging Planner
+
+`manageProgramLodging` provides authenticated private setup/review/preview,
+independently validated manual proposals and alternatives, immutable proposal
+save, and host approval/hotel confirmation/guest publication commands. Actor
+identity comes from `requireAuth`; current canonical authority and source are
+read in the same transaction as writes. Setup requires coordinator authority
+and exact revisions. Lifecycle receipts bind actor, operation ID and command.
+Hotel-desk reads return only the hotel-scoped operational projection; setup,
+affinity memberships and functional requirements remain coordinator-private.
+Canonical stay publication does not activate a provider or make a booking.

@@ -272,7 +272,8 @@ export function lodgingProposalId(scope: LodgingProposal["scope"],
 
 /** Publication must perform this comparison inside its authoritative write
  * transaction, alongside current access, lock and receipt checks. */
-export function assertLodgingProposalCurrent(proposal: LodgingProposal,
+export function assertLodgingProposalCurrent(
+  proposal: Pick<LodgingProposal, "revisions">,
   current: LodgingRevisions): void {
   if ((["source", "inventory", "layout", "published"] as const).some((key) =>
     proposal.revisions[key] !== current[key])) {

@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  manageProgramLodgingCallablePayloadSchema,
+  manageProgramLodgingCallableResponseSchema,
   programLodgingConfigDocumentSchema,
   programLodgingSourceVersionDocumentSchema,
   programLodgingProposalDocumentSchema,
@@ -1200,6 +1202,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateManageProgramLodgingCallablePayload = ajv.compile(manageProgramLodgingCallablePayloadSchema);
+export const validateManageProgramLodgingCallableResponse = ajv.compile(manageProgramLodgingCallableResponseSchema);
 export const validateProgramLodgingConfigDocument = ajv.compile(programLodgingConfigDocumentSchema);
 export const validateProgramLodgingSourceVersionDocument = ajv.compile(programLodgingSourceVersionDocumentSchema);
 export const validateProgramLodgingProposalDocument = ajv.compile(programLodgingProposalDocumentSchema);

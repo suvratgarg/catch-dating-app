@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ManageProgramLodgingCallablePayload',
+    source: 'callables/manage_program_lodging_payload.schema.json',
+    schema: schemaManageProgramLodgingCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManageProgramLodgingCallableResponse',
+    source: 'callable_responses/manage_program_lodging_response.schema.json',
+    schema: schemaManageProgramLodgingCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProgramLodgingConfigDocument',
     source: 'firestore/program_lodging_configs.schema.json',
     schema: schemaProgramLodgingConfigDocumentSchema,
@@ -5884,6 +5894,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ManageProgramLodgingCallablePayload': schemaManageProgramLodgingCallablePayloadSchema,
+  'ManageProgramLodgingCallableResponse': schemaManageProgramLodgingCallableResponseSchema,
   'ProgramLodgingConfigDocument': schemaProgramLodgingConfigDocumentSchema,
   'ProgramLodgingSourceVersionDocument': schemaProgramLodgingSourceVersionDocumentSchema,
   'ProgramLodgingProposalDocument': schemaProgramLodgingProposalDocumentSchema,
@@ -7060,6 +7072,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/manage_program_lodging_payload.schema.json': schemaManageProgramLodgingCallablePayloadSchema,
+  'callable_responses/manage_program_lodging_response.schema.json': schemaManageProgramLodgingCallableResponseSchema,
   'firestore/program_lodging_configs.schema.json': schemaProgramLodgingConfigDocumentSchema,
   'firestore/program_lodging_source_versions.schema.json': schemaProgramLodgingSourceVersionDocumentSchema,
   'firestore/program_lodging_proposals.schema.json': schemaProgramLodgingProposalDocumentSchema,

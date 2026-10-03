@@ -680,6 +680,8 @@ export 'manage_organizer_form_payment_connection_callable_payload.g.dart';
 export 'manage_organizer_form_payment_connection_callable_response.g.dart';
 export 'manage_payment_routing_policy_callable_payload.g.dart';
 export 'manage_payment_routing_policy_callable_response.g.dart';
+export 'manage_program_lodging_callable_payload.g.dart';
+export 'manage_program_lodging_callable_response.g.dart';
 export 'manage_public_event_checkout_callable_payload.g.dart';
 export 'manage_public_event_checkout_callable_response.g.dart';
 export 'mark_event_attendance_callable_payload.g.dart';

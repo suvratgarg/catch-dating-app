@@ -15,6 +15,8 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ManageProgramLodgingCallablePayload", "source": "callables/manage_program_lodging_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallablePayload.ts"},
+  {"name": "ManageProgramLodgingCallableResponse", "source": "callable_responses/manage_program_lodging_response.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallableResponse.ts"},
   {"name": "ProgramLodgingConfigDocument", "source": "firestore/program_lodging_configs.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingConfigDocument.ts"},
   {"name": "ProgramLodgingSourceVersionDocument", "source": "firestore/program_lodging_source_versions.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingSourceVersionDocument.ts"},
   {"name": "ProgramLodgingProposalDocument", "source": "firestore/program_lodging_proposals.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingProposalDocument.ts"},

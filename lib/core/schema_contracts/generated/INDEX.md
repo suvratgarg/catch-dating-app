@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallablePayload.ts` |
+| ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallableResponse.ts` |
 | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `functions/src/shared/generated/programLodgingConfigDocument.ts` |
 | ProgramLodgingSourceVersionDocument | `firestore/program_lodging_source_versions.schema.json` | `functions/src/shared/generated/programLodgingSourceVersionDocument.ts` |
 | ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `functions/src/shared/generated/programLodgingProposalDocument.ts` |
@@ -1190,6 +1192,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaManageProgramLodgingCallablePayloadSchema` | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_payload.g.dart` |
+| `schemaManageProgramLodgingCallableResponseSchema` | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_response.g.dart` |
 | `schemaProgramLodgingConfigDocumentSchema` | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_config_document.g.dart` |
 | `schemaProgramLodgingSourceVersionDocumentSchema` | ProgramLodgingSourceVersionDocument | `firestore/program_lodging_source_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_source_version_document.g.dart` |
 | `schemaProgramLodgingProposalDocumentSchema` | ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_proposal_document.g.dart` |
@@ -2786,6 +2790,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| ManageProgramLodgingCallablePayload | not an object schema |
 | DecideOrganizerCommunityMembershipCallablePayload | cannot map field "action" (no type) |
 | AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |
 | AdminReviewSalesOutreachDraftRequest | cannot map field "factualValidity" (no type) |

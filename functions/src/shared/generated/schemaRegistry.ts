@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {manageProgramLodgingCallablePayloadSchema} from "./schemas/manageProgramLodgingInput";
+export {manageProgramLodgingCallableResponseSchema} from "./schemas/manageProgramLodgingOutput";
 export {programLodgingConfigDocumentSchema} from "./schemas/programLodgingConfigDocument";
 export {programLodgingSourceVersionDocumentSchema} from "./schemas/programLodgingSourceVersionDocument";
 export {programLodgingProposalDocumentSchema} from "./schemas/programLodgingProposalDocument";

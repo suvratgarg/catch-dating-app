@@ -2186,6 +2186,9 @@
       "migrationNotes": [
         "One document per invited person; householdId links party membership and contactId optionally links a CRM contact.",
         "A shared phone or email never merges two guest records."
+      ],
+      "exportedFunctions": [
+        "manageProgramLodging"
       ]
     },
     {
@@ -3734,11 +3737,12 @@
       "read": "server only; scoped operational projections",
       "write": "server only",
       "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
       ],
       "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     },
     {
@@ -3755,11 +3759,12 @@
       "read": "server only; scoped operational projections",
       "write": "server only",
       "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
       ],
       "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     },
     {
@@ -3776,11 +3781,12 @@
       "read": "server only; scoped operational projections",
       "write": "server only",
       "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
       ],
       "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     },
     {
@@ -3839,11 +3845,12 @@
       "read": "server only; scoped operational projections",
       "write": "server only",
       "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
       ],
       "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     },
     {
@@ -3860,11 +3867,12 @@
       "read": "server only; scoped operational projections",
       "write": "server only",
       "exportedFunctions": [
-        "anonymizeDueProgramsSweep"
+        "anonymizeDueProgramsSweep",
+        "manageProgramLodging"
       ],
       "migrationNotes": [
-        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
-        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+        "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
       ]
     }
   ]
