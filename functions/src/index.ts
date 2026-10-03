@@ -10,6 +10,11 @@ setGlobalOptions({
 admin.initializeApp();
 
 export {catchWhatsappWebhook} from "./catchMessaging/whatsappWebhook";
+export {adminReviewCatchWhatsappInbound, adminSendCatchWhatsappReply} from
+  "./catchMessaging/whatsappReplyHandlers";
+export {onCatchWhatsappWebhookEventCreated,
+  onCatchWhatsappReplyOperationWritten} from
+  "./catchMessaging/whatsappReceiptConsumer";
 
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
@@ -442,6 +447,7 @@ export {
 } from "./profiles/syncPublicProfile";
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
+export {getEventViewerState} from "./events/eventViewerState";
 export {listParticipantActivity, getParticipantActivity}
   from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}

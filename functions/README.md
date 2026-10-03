@@ -46,11 +46,35 @@ real messages; a source `expiresAt` field alone is not proof of retention.
 Protocol: [Meta webhook overview](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/overview/)
 and [endpoint setup](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/create-webhook-endpoint).
 
+## Catch-owned WhatsApp receipt consumers
+
+`onCatchWhatsappWebhookEventCreated` processes exact sender-scoped receipts;
+`onCatchWhatsappReplyOperationWritten` reconciles early statuses when a reply
+operation first saves its provider message ID. Bounded queries correlate the
+Catch WABA, phone number, endpoint and saved message ID. Replay does not send a
+message, release a send claim, overwrite raw receipts or extend their TTL.
+Delivery-only operation updates do not schedule another reconciliation.
+
+`CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED` defaults to false independently of
+the receiving endpoint. The deployment parameter materializer explicitly emits
+false and rejects true or malformed overrides in this offline milestone.
+These consumers have no provider credentials or sending authority. Signed STOP
+receipts and sender/endpoint suppression commit atomically at ingress even when
+consumers are disabled; retained STOP processing only repairs suppression and
+cannot establish completeness of history lost to TTL. Historical evidence,
+authenticated reply callables, outbound activation and deployment remain
+separately gated work. The private operation/STOP/readiness contracts are canonical; actual historical
+evidence and scoped live approvals remain prerequisites for activation.
+
 ## Function inventory
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `adminReviewCatchWhatsappInbound` | `src/catchMessaging/whatsappReplyHandlers.ts` | Disabled App-Check/rate-limited exact inbound support review for the configured current staff actor and verified recipient; no organizer/workspace projection. |
+| `adminSendCatchWhatsappReply` | `src/catchMessaging/whatsappReplyHandlers.ts` | Disabled single controlled service reply with current readiness/STOP/withdrawal checks, durable idempotency and saved provider status; no campaigns or templates. |
 | `catchWhatsappWebhook` | `src/catchMessaging/whatsappWebhook.ts` | Separate Catch-owned signed message/status ingress, disabled by default; private immutable receipts and no outgoing messages. |
+| `onCatchWhatsappWebhookEventCreated` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled Catch receipt projection and idempotent STOP repair; scoped to the configured sender, no sends. |
+| `onCatchWhatsappReplyOperationWritten` | `src/catchMessaging/whatsappReceiptConsumer.ts` | Disabled bounded reconciliation of early delivery receipts after provider message ID save; ignores delivery-only writes. |
 
 ### Sales and related workflow registrations (September 2026)
 
@@ -177,6 +201,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `listEventChatParticipants` | `src/chats/listEventChatParticipants.ts` | Current joined/claimed participant names and roles; account-bound cursor and bidirectional block filtering |
 | `getEventChatProfile` / `getEventChatProfileSharing` / `updateEventChatProfileSharing` | `src/chats/eventChatProfiles.ts` | Private sharing choices and current admission-protected participant mini profiles; only explicitly selected core and same-organizer applicant fields |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | `src/messaging/participantMessagingPreferences.ts` | Own-account paginated WhatsApp permission reads and sender-specific idempotent withdrawals; preserves other senders and SMS |
+| `getEventViewerState` | `src/events/eventViewerState.ts` | Auth-derived private current eligibility and independent admission/attendance facts; shared canonical readers, bounded source queries, no seat or identity writes |
 | `listParticipantActivity` / `getParticipantActivity` | `src/profiles/participantActivity.ts` | Auth-derived own form submission metadata, exact source/version/deletion proof and bounded subject-bound pagination; no profile claim or admission inference |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | `src/profiles/` | Verified owner-only form profile directory, designated-answer review, metadata-free private photo preview, and explicit revision-fenced claim; no event admission or sharing grant |
 | `createOrganizerFormAssetIntent` / `finalizeOrganizerFormAsset` | `src/organizers/organizerFormAssets.ts` | Authorize and finalize form/version/question-scoped respondent uploads without exposing raw Storage authority |

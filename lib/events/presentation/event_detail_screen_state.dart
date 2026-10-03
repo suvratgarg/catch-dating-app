@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -166,11 +167,17 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   bool isSaved = false,
   bool isHosted = false,
   bool isClubMember = false,
+  EventViewerState? currentViewer,
   EventDetailBookingDockMutationState mutationState =
       const EventDetailBookingDockMutationState(),
 }) {
   if (!organizerCapabilities.bookable) {
     return const EventDetailBookingDockState.hidden();
+  }
+  if (currentViewer != null &&
+      (currentViewer.eventId != event.id ||
+          currentViewer.organizerId != event.organizerId)) {
+    throw const FormatException('Mismatched current viewer scope');
   }
   if (event.isCancelled) {
     return EventDetailBookingDockState(
@@ -180,7 +187,9 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     );
   }
   if (!event.endTime.isAfter(now)) {
-    if (participation?.status == EventParticipationStatus.attended) {
+    if (currentViewer == null
+        ? participation?.status == EventParticipationStatus.attended
+        : currentViewer.attendance == EventViewerAttendance.attended) {
       return EventDetailBookingDockState(
         label: l10n.eventsEventDetailScreenStateLabelYouAttendedThisEvent,
         primaryAction: EventDetailBookingDockAction.none,
@@ -201,16 +210,32 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       error: mutationState.error,
     );
   }
-  final availability = resolveViewerEventAvailability(
-    event: event,
-    userProfile: userProfile,
-    participation: participation,
-    isSaved: isSaved,
-    isHosted: isHosted,
-    isClubMember: isClubMember,
-    now: now,
-    hasValidInvite: hasInviteCode,
-  );
+  if (currentViewer?.admission == EventViewerAdmission.publicPaidRoster) {
+    return EventDetailBookingDockState(
+      label: l10n.eventsEventDetailCtaLabelYouReIn,
+      primaryAction: EventDetailBookingDockAction.none,
+      leadingKind: EventDetailBookingDockLeadingKind.booked,
+      error: mutationState.error,
+    );
+  }
+  final availability = currentViewer == null
+      ? resolveViewerEventAvailability(
+          event: event,
+          userProfile: userProfile,
+          participation: participation,
+          isSaved: isSaved,
+          isHosted: isHosted,
+          isClubMember: isClubMember,
+          now: now,
+          hasValidInvite: hasInviteCode,
+        )
+      : viewerEventAvailabilityFromState(
+          viewer: currentViewer,
+          event: event,
+          userProfile: userProfile,
+          now: now,
+          isSaved: isSaved,
+        );
   final eligibility = availability.eligibility;
   final signUpStatus = eventSignUpStatusForViewerAvailability(
     availability.status,
@@ -236,23 +261,44 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       availability.status ==
       ViewerEventAvailabilityStatus.runPreferencesRequired;
 
-  if (hasActiveWaitlistOffer) {
+  if (currentViewer?.hasAdmission != true &&
+      (currentViewer?.canAcceptOffer == true || hasActiveWaitlistOffer)) {
     final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
+    final currentOfferAllows =
+        currentViewer == null || currentViewer.canAcceptOffer;
     return EventDetailBookingDockState(
-      label: paidUnsupported
+      label: !currentOfferAllows
+          ? l10n.eventsEventViewerBookingUnavailable
+          : paidUnsupported
           ? l10n.eventsEventDetailScreenStateLabelPaidBookingUnavailable
           : isFreeForViewer
           ? l10n.eventsEventDetailScreenStateLabelAcceptSpot
           : l10n.eventsEventDetailScreenStateLabelAcceptSpotAndPay,
-      primaryAction: paidUnsupported
+      primaryAction: paidUnsupported || !currentOfferAllows
           ? EventDetailBookingDockAction.none
           : EventDetailBookingDockAction.acceptWaitlistOffer,
       leadingKind: EventDetailBookingDockLeadingKind.waitlistOffer,
-      waitlistOfferExpiresAt: participation.waitlistOfferExpiresAt,
+      waitlistOfferExpiresAt: participation?.waitlistOfferExpiresAt,
       secondaryAction: EventDetailBookingDockAction.declineWaitlistOffer,
       isLoading: mutationState.acceptWaitlistOfferPending,
       isSecondaryLoading: mutationState.declineWaitlistOfferPending,
       useAccent: true,
+      error: mutationState.error,
+    );
+  }
+
+  if (currentViewer != null &&
+      !currentViewer.hasAdmission &&
+      !currentViewer.allowed &&
+      {
+        EventViewerRestriction.bookingDetailsRequired,
+        EventViewerRestriction.scheduleConflict,
+        EventViewerRestriction.eventUnavailable,
+        EventViewerRestriction.unsupportedRoute,
+      }.contains(currentViewer.restriction)) {
+    return EventDetailBookingDockState(
+      label: l10n.eventsEventViewerBookingUnavailable,
+      primaryAction: EventDetailBookingDockAction.none,
       error: mutationState.error,
     );
   }

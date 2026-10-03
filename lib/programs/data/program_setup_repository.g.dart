@@ -197,7 +197,7 @@ final class OrganizerProgramListProvider
 }
 
 String _$organizerProgramListHash() =>
-    r'73ddc5c47c2edebcd88cb56b06b609b311dbebf2';
+    r'd97aa1efc68b9abd0231849940af89736fd5317f';
 
 final class OrganizerProgramListFamily extends $Family
     with
