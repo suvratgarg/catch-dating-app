@@ -91,7 +91,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       if (fs.lstatSync(filename).isSymbolicLink()) fail();
     }
     if (fs.statSync(lockPath).size > 5 * 1024 * 1024) fail();
-    // These reset/merge/shorthand semantics were inspected in this pinned SDK.
+    // These reset/merge/project-expression semantics were inspected in this pinned SDK.
     // An SDK change needs review, not an assumed default runtime identity.
     const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
     if (lock.packages?.["node_modules/firebase-functions"]?.version !== "7.4.0") fail();
@@ -322,6 +322,63 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       if (n.kind === ts.SyntaxKind.FalseKeyword) return false;
       fail();
     };
+    // Only this SDK builtin expression is modeled; no authored expression is
+    // evaluated. Lexical symbols and confined uses prevent shadowing or mutation
+    // from changing the SDK's PROJECT_ID deployment expression.
+    const projectAccount = (node, mod) => {
+      if (!ts.isTaggedTemplateExpression(node) || !ts.isIdentifier(node.tag) ||
+          !ts.isTemplateExpression(node.template) || node.template.templateSpans.length !== 1 ||
+          node.template.head.text !== "catch-whatsapp-reader@" ||
+          node.template.templateSpans[0].literal.text !== ".iam.gserviceaccount.com" ||
+          !ts.isIdentifier(node.template.templateSpans[0].expression)) fail();
+      if (!mod.checker) {
+        const host = {getSourceFile: (name) => name === mod.file ? mod.ast : undefined,
+          getDefaultLibFileName: () => "", writeFile: () => {},
+          getCurrentDirectory: () => path.dirname(mod.file), getDirectories: () => [],
+          fileExists: (name) => name === mod.file, readFile: () => undefined,
+          getCanonicalFileName: (name) => name, useCaseSensitiveFileNames: () => true,
+          getNewLine: () => "\n"};
+        mod.checker = ts.createProgram([mod.file], {noLib: true, noResolve: true}, host).getTypeChecker();
+      }
+      const importedBuiltin = (identifier, expected) => {
+        const symbol = mod.checker.getSymbolAtLocation(identifier);
+        const declarations = symbol?.declarations ?? [];
+        const binding = declarations[0];
+        if (declarations.length !== 1 || !binding || !ts.isImportSpecifier(binding) ||
+            binding.isTypeOnly || (binding.propertyName ?? binding.name).text !== expected ||
+            binding.parent.parent.isTypeOnly ||
+            binding.parent.parent.parent.moduleSpecifier.text !== "firebase-functions/params") fail();
+        return {symbol, binding};
+      };
+      const tag = importedBuiltin(node.tag, "expr");
+      const project = importedBuiltin(node.template.templateSpans[0].expression, "projectID");
+      const exactUse = (candidate) => ts.isTaggedTemplateExpression(candidate) &&
+        ts.isIdentifier(candidate.tag) && mod.checker.getSymbolAtLocation(candidate.tag) === tag.symbol &&
+        ts.isTemplateExpression(candidate.template) && candidate.template.templateSpans.length === 1 &&
+        candidate.template.head.text === "catch-whatsapp-reader@" &&
+        candidate.template.templateSpans[0].literal.text === ".iam.gserviceaccount.com" &&
+        ts.isIdentifier(candidate.template.templateSpans[0].expression) &&
+        mod.checker.getSymbolAtLocation(candidate.template.templateSpans[0].expression) === project.symbol;
+      const inspect = (reference) => {
+        if (ts.isIdentifier(reference)) {
+          const symbol = ts.isShorthandPropertyAssignment(reference.parent) ?
+            mod.checker.getShorthandAssignmentValueSymbol(reference.parent) :
+            ts.isExportSpecifier(reference.parent) ?
+              mod.checker.getExportSpecifierLocalTargetSymbol(reference.parent) :
+              mod.checker.getSymbolAtLocation(reference);
+          if (symbol === tag.symbol && reference !== tag.binding.name &&
+              reference !== tag.binding.propertyName &&
+              !(reference.parent.tag === reference && exactUse(reference.parent))) fail();
+          if (symbol === project.symbol && reference !== project.binding.name &&
+              reference !== project.binding.propertyName &&
+              !(ts.isTemplateSpan(reference.parent) &&
+                reference.parent.expression === reference && exactUse(reference.parent.parent.parent))) fail();
+        }
+        ts.forEachChild(reference, inspect);
+      };
+      inspect(mod.ast);
+      return `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`;
+    };
     const secret = (node, mod, locals) => {
       const value = resolve(node, mod, locals);
       if (!value.node) fail();
@@ -381,7 +438,8 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
           const expression = ts.isPropertyAssignment(item) ? item.initializer : item.name;
           if (name === "secrets") result.secretNames = secrets(expression, value.mod, value.locals);
           else if (["serviceAccount", "preserveExternalChanges", "omit"].includes(name)) {
-            result[name] = scalar(expression, value.mod, value.locals);
+            result[name] = name === "serviceAccount" && ts.isTaggedTemplateExpression(unwrap(expression)) ?
+              projectAccount(unwrap(expression), value.mod) : scalar(expression, value.mod, value.locals);
             if (name !== "serviceAccount" && result[name] !== null &&
                 typeof result[name] !== "boolean") fail();
           } else if (["serviceAccountEmail", "secretEnvironmentVariables", "__proto__"]
@@ -498,6 +556,10 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
       if (serviceAccount === undefined || serviceAccount === null || serviceAccount === "default") {
         serviceAccount = `${projectNumber}-compute@developer.gserviceaccount.com`;
       } else if (publicString(serviceAccount, /^[a-z][a-z0-9-]{4,28}[a-z0-9]@$/u)) {
+        // The pinned v2 endpoint manifest preserves shorthand literally. The
+        // CLI secret IAM path does not expand it, so this composition cannot
+        // establish deployment readiness even if trigger annotations expand it.
+        if ((opts.secretNames ?? []).length) fail();
         serviceAccount += `${projectId}.iam.gserviceaccount.com`;
       } else if (!publicString(serviceAccount,
         /^[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z][a-z0-9-]+\.iam\.gserviceaccount\.com$/u)) fail();
