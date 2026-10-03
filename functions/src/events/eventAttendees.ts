@@ -232,6 +232,11 @@ export async function importEventAttendeesForHost(
   params: {
     hostUid: string;
     payload: ImportEventAttendeesCallablePayload;
+    // Read-only source/actor check, rerun in the destination transaction.
+    // A proven import replay does not create or update an attendee.
+    authorizeSource?: (
+      tx: FirebaseFirestore.Transaction, replayed: boolean
+    ) => Promise<void>;
   },
   deps: EventAttendeeDeps = defaultDeps
 ): Promise<EventAttendeeImportResult> {
@@ -285,8 +290,10 @@ export async function importEventAttendeesForHost(
         throw new HttpsError("failed-precondition",
           "This import key was already used for different roster data.");
       }
+      await params.authorizeSource?.(tx, true);
       return importResult(importId, existing, true);
     }
+    await params.authorizeSource?.(tx, false);
     const existingAttendeeSnaps = await Promise.all(attendeeRefs.map((ref) =>
       tx.get(ref)));
     const existingById = new Map(existingAttendeeSnaps
