@@ -222,6 +222,11 @@ const retentionCollections = [
   "transportTrips",
   "workspaceFieldAssertions",
   "workspaceFieldDecisions",
+  "programLodgingProposals",
+  "programLodgingWorkflows",
+  "programLodgingReceipts",
+  "workspaceMembershipAssertions",
+  "workspaceMembershipDecisions",
 ] as const;
 
 function shortId(docId: string): string {
@@ -243,6 +248,11 @@ function retentionScrub(
   switch (collection) {
   case "workspaceFieldAssertions":
   case "workspaceFieldDecisions":
+  case "programLodgingProposals":
+  case "programLodgingWorkflows":
+  case "programLodgingReceipts":
+  case "workspaceMembershipAssertions":
+  case "workspaceMembershipDecisions":
     return null; // Historical field values are PII, not operational counts.
   case "programGuests":
     return {
@@ -391,13 +401,24 @@ export async function anonymizeProgram(
         let pending = 0;
         for (const doc of snap.docs) {
           const data = doc.data();
-          if (["workspaceFieldAssertions", "workspaceFieldDecisions"]
+          if (["workspaceFieldAssertions", "workspaceFieldDecisions",
+            "workspaceMembershipAssertions", "workspaceMembershipDecisions"]
             .includes(collection) &&
               (data.workspaceRef?.kind !== "program" ||
                 data.workspaceRef.id !== programId ||
                 data.organizerId !== claimed.program.organizerId)) {
             throw new HttpsError("failed-precondition",
               "Field assertion retention scope needs reconciliation.");
+          }
+          if (["programLodgingProposals", "programLodgingWorkflows",
+            "programLodgingReceipts"].includes(collection) &&
+              (data.organizerId !== claimed.program.organizerId ||
+                (collection === "programLodgingProposals" &&
+                  (data.proposal?.scope?.programId !== programId ||
+                    data.proposal.scope.organizerId !==
+                      claimed.program.organizerId)))) {
+            throw new HttpsError("failed-precondition",
+              "Lodging retention scope needs reconciliation.");
           }
           if (data.anonymizedAt) continue; // Idempotent re-entry.
           if (collection === "programTravelLegs") {

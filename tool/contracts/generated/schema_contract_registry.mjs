@@ -1,6 +1,593 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const programLodgingProposalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_proposals.schema.json",
+  "title": "ProgramLodgingProposalDocument",
+  "description": "Private immutable placement proposal tied to source, inventory, layout and published revisions. Server validates content identity and current canonical Programs scope; no hotel affinity or medical projection is public.",
+  "x-firestore-collection": "programLodgingProposals",
+  "x-firestore-path": "programLodgingProposals/{proposalId}",
+  "x-document-id-field": "proposalId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "proposal",
+    "createdByUid",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "id",
+        "revisions",
+        "placements",
+        "unplacedPartyIds",
+        "explanations",
+        "score",
+        "search"
+      ],
+      "properties": {
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "programId",
+            "organizerId"
+          ],
+          "properties": {
+            "programId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "inventory",
+            "layout",
+            "published"
+          ],
+          "properties": {
+            "source": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inventory": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "layout": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "placements": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "partyId",
+              "inventoryId"
+            ],
+            "properties": {
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            }
+          }
+        },
+        "unplacedPartyIds": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          }
+        },
+        "explanations": {
+          "type": "array",
+          "maxItems": 502,
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "score": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "search": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "complete",
+            "explored"
+          ],
+          "properties": {
+            "complete": {
+              "type": "boolean"
+            },
+            "explored": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingWorkflowDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_workflows.schema.json",
+  "title": "ProgramLodgingWorkflowDocument",
+  "description": "Private program workflow. Host approval, individual hotel confirmation and guest publication are distinct states. Publication changes canonical stays and this workflow atomically.",
+  "x-firestore-collection": "programLodgingWorkflows",
+  "x-firestore-path": "programLodgingWorkflows/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "workflow"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "approvedProposalId",
+        "confirmedHotelIds",
+        "guestPublishedProposalId"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvedProposalId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirmedHotelIds": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "uniqueItems": true
+        },
+        "guestPublishedProposalId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_receipts.schema.json",
+  "title": "ProgramLodgingReceiptDocument",
+  "description": "Immutable private operation receipt bound to program, actor and exact request. Replay rechecks current authority and returns current workflow; it never restores a prior approval.",
+  "x-firestore-collection": "programLodgingReceipts",
+  "x-firestore-path": "programLodgingReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "receipt"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationId",
+        "requestHash",
+        "actorUid",
+        "resultingRevision"
+      ],
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,100}$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        },
+        "resultingRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const workspaceMembershipAssertionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/workspace_membership_assertions.schema.json",
+  "title": "WorkspaceMembershipAssertionDocument",
+  "description": "Immutable source-labelled suggestion or manual membership evidence. Exact program/guest/group scope and program retention index are checked by the server. Import suggestions cannot overwrite selected manual inclusion or exclusion.",
+  "x-firestore-collection": "workspaceMembershipAssertions",
+  "x-firestore-path": "workspaceMembershipAssertions/{assertionId}",
+  "x-document-id-field": "assertionId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "programId",
+    "workspaceRef",
+    "relationshipRef",
+    "groupId",
+    "included",
+    "sourceKind",
+    "sourceId",
+    "sourceVersion",
+    "sourceLabel",
+    "actorUid",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workspaceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "program"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "programGuest"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "included": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceKind": {
+      "enum": [
+        "manualEntry",
+        "manifestRow",
+        "contributorList"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const workspaceMembershipDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/workspace_membership_decisions.schema.json",
+  "title": "WorkspaceMembershipDecisionDocument",
+  "description": "Immutable explicit membership selection, preserving previous evidence identity and reviewed guest revision. Canonical programGuests.groupIds remains membership truth, updated with this decision in one authorized transaction.",
+  "x-firestore-collection": "workspaceMembershipDecisions",
+  "x-firestore-path": "workspaceMembershipDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "programId",
+    "workspaceRef",
+    "relationshipRef",
+    "groupId",
+    "selectedAssertionId",
+    "previousAssertionId",
+    "relationshipRevision",
+    "actorUid",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workspaceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "program"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "programGuest"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "selectedAssertionId": {
+      "type": "string",
+      "pattern": "^wma_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "previousAssertionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^wma_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const catchWhatsappReplyOperationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_reply_operations.schema.json",
@@ -170835,7 +171422,7 @@ export const programRetentionRunDocumentSchema = {
     },
     "phases": {
       "type": "array",
-      "maxItems": 16,
+      "maxItems": 21,
       "description": "Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.",
       "items": {
         "type": "object",

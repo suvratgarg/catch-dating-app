@@ -1766,6 +1766,21 @@ service cloud.firestore {
     }
 
     // Relationship acquisition and membership authority are server-owned.
+    match /programLodgingProposals/{proposalId} {
+      allow read, write: if false;
+    }
+    match /programLodgingWorkflows/{programId} {
+      allow read, write: if false;
+    }
+    match /programLodgingReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+    match /workspaceMembershipAssertions/{assertionId} {
+      allow read, write: if false;
+    }
+    match /workspaceMembershipDecisions/{decisionId} {
+      allow read, write: if false;
+    }
     match /workspaceFieldAssertions/{assertionId} {
       allow read, write: if false;
     }

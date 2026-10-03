@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ProgramLodgingProposalDocument',
+    source: 'firestore/program_lodging_proposals.schema.json',
+    schema: schemaProgramLodgingProposalDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingWorkflowDocument',
+    source: 'firestore/program_lodging_workflows.schema.json',
+    schema: schemaProgramLodgingWorkflowDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingReceiptDocument',
+    source: 'firestore/program_lodging_receipts.schema.json',
+    schema: schemaProgramLodgingReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceMembershipAssertionDocument',
+    source: 'firestore/workspace_membership_assertions.schema.json',
+    schema: schemaWorkspaceMembershipAssertionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceMembershipDecisionDocument',
+    source: 'firestore/workspace_membership_decisions.schema.json',
+    schema: schemaWorkspaceMembershipDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappReplyOperationDocument',
     source: 'firestore/catch_whatsapp_reply_operations.schema.json',
     schema: schemaCatchWhatsappReplyOperationDocumentSchema,
@@ -5849,6 +5874,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ProgramLodgingProposalDocument': schemaProgramLodgingProposalDocumentSchema,
+  'ProgramLodgingWorkflowDocument': schemaProgramLodgingWorkflowDocumentSchema,
+  'ProgramLodgingReceiptDocument': schemaProgramLodgingReceiptDocumentSchema,
+  'WorkspaceMembershipAssertionDocument': schemaWorkspaceMembershipAssertionDocumentSchema,
+  'WorkspaceMembershipDecisionDocument': schemaWorkspaceMembershipDecisionDocumentSchema,
   'CatchWhatsappReplyOperationDocument': schemaCatchWhatsappReplyOperationDocumentSchema,
   'CatchWhatsappEndpointStopDocument': schemaCatchWhatsappEndpointStopDocumentSchema,
   'CatchWhatsappReplyReadinessDocument': schemaCatchWhatsappReplyReadinessDocumentSchema,
@@ -7018,6 +7048,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/program_lodging_proposals.schema.json': schemaProgramLodgingProposalDocumentSchema,
+  'firestore/program_lodging_workflows.schema.json': schemaProgramLodgingWorkflowDocumentSchema,
+  'firestore/program_lodging_receipts.schema.json': schemaProgramLodgingReceiptDocumentSchema,
+  'firestore/workspace_membership_assertions.schema.json': schemaWorkspaceMembershipAssertionDocumentSchema,
+  'firestore/workspace_membership_decisions.schema.json': schemaWorkspaceMembershipDecisionDocumentSchema,
   'firestore/catch_whatsapp_reply_operations.schema.json': schemaCatchWhatsappReplyOperationDocumentSchema,
   'firestore/catch_whatsapp_endpoint_stops.schema.json': schemaCatchWhatsappEndpointStopDocumentSchema,
   'firestore/catch_whatsapp_reply_readiness.schema.json': schemaCatchWhatsappReplyReadinessDocumentSchema,

@@ -3719,6 +3719,111 @@
         "onCatchWhatsappWebhookEventCreated",
         "onCatchWhatsappReplyOperationWritten"
       ]
+    },
+    {
+      "id": "programLodgingProposals",
+      "path": "programLodgingProposals/{proposalId}",
+      "rulesMatch": "/programLodgingProposals/{proposalId}",
+      "typescriptInterface": "ProgramLodgingProposalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "programLodgingWorkflows",
+      "path": "programLodgingWorkflows/{programId}",
+      "rulesMatch": "/programLodgingWorkflows/{programId}",
+      "typescriptInterface": "ProgramLodgingWorkflowDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "programLodgingReceipts",
+      "path": "programLodgingReceipts/{receiptId}",
+      "rulesMatch": "/programLodgingReceipts/{receiptId}",
+      "typescriptInterface": "ProgramLodgingReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "workspaceMembershipAssertions",
+      "path": "workspaceMembershipAssertions/{assertionId}",
+      "rulesMatch": "/workspaceMembershipAssertions/{assertionId}",
+      "typescriptInterface": "WorkspaceMembershipAssertionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
+    },
+    {
+      "id": "workspaceMembershipDecisions",
+      "path": "workspaceMembershipDecisions/{decisionId}",
+      "rulesMatch": "/workspaceMembershipDecisions/{decisionId}",
+      "typescriptInterface": "WorkspaceMembershipDecisionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "denies direct access for guests, managers and unauthenticated viewers"
+      ],
+      "owner": "private program lodging server operations",
+      "read": "server only; scoped operational projections",
+      "write": "server only",
+      "exportedFunctions": [
+        "anonymizeDueProgramsSweep"
+      ],
+      "migrationNotes": [
+        "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+        "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+      ]
     }
   ]
 }

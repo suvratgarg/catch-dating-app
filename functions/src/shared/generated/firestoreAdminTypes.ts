@@ -550,6 +550,132 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Private immutable placement proposal tied to source, inventory, layout and published revisions. Server validates content identity and current canonical Programs scope; no hotel affinity or medical projection is public.
+ */
+export interface ProgramLodgingProposalDocument {
+  programId: string;
+  organizerId: string;
+  proposal: {
+    scope: {
+      programId: string;
+      organizerId: string;
+    };
+    id: string;
+    revisions: {
+      source: number;
+      inventory: number;
+      layout: number;
+      published: number;
+    };
+    /**
+     * @maxItems 500
+     */
+    placements: {
+      partyId: string;
+      inventoryId: string;
+    }[];
+    /**
+     * @maxItems 500
+     */
+    unplacedPartyIds: string[];
+    /**
+     * @maxItems 502
+     */
+    explanations: string[];
+    /**
+     * @minItems 5
+     * @maxItems 5
+     */
+    score: number[];
+    search: {
+      complete: boolean;
+      explored: number;
+    };
+  };
+  createdByUid: string;
+  createdAtMillis: number;
+}
+
+/**
+ * Private program workflow. Host approval, individual hotel confirmation and guest publication are distinct states. Publication changes canonical stays and this workflow atomically.
+ */
+export interface ProgramLodgingWorkflowDocument {
+  programId: string;
+  organizerId: string;
+  workflow: {
+    revision: number;
+    approvedProposalId: string | null;
+    /**
+     * @maxItems 500
+     */
+    confirmedHotelIds: string[];
+    guestPublishedProposalId: string | null;
+  };
+}
+
+/**
+ * Immutable private operation receipt bound to program, actor and exact request. Replay rechecks current authority and returns current workflow; it never restores a prior approval.
+ */
+export interface ProgramLodgingReceiptDocument {
+  programId: string;
+  organizerId: string;
+  receipt: {
+    operationId: string;
+    requestHash: string;
+    actorUid: string;
+    resultingRevision: number;
+  };
+}
+
+/**
+ * Immutable source-labelled suggestion or manual membership evidence. Exact program/guest/group scope and program retention index are checked by the server. Import suggestions cannot overwrite selected manual inclusion or exclusion.
+ */
+export interface WorkspaceMembershipAssertionDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  programId: string;
+  workspaceRef: {
+    kind: "program";
+    id: string;
+  };
+  relationshipRef: {
+    kind: "programGuest";
+    id: string;
+  };
+  groupId: string;
+  included: boolean;
+  sourceKind: "manualEntry" | "manifestRow" | "contributorList";
+  sourceId: string;
+  sourceVersion: number;
+  sourceLabel: string;
+  actorUid: string;
+  observedAtMillis: number;
+}
+
+/**
+ * Immutable explicit membership selection, preserving previous evidence identity and reviewed guest revision. Canonical programGuests.groupIds remains membership truth, updated with this decision in one authorized transaction.
+ */
+export interface WorkspaceMembershipDecisionDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  programId: string;
+  workspaceRef: {
+    kind: "program";
+    id: string;
+  };
+  relationshipRef: {
+    kind: "programGuest";
+    id: string;
+  };
+  groupId: string;
+  selectedAssertionId: string;
+  previousAssertionId: string | null;
+  relationshipRevision: number;
+  actorUid: string;
+  observedAtMillis: number;
+}
+
+/**
  * Private one-reply-per-inbound support claim and saved provider delivery projection. Explicit human review of the exact inbound support request is service evidence, never marketing permission. No body, credential or pricing data. No automatic retry or TTL; uncertain and completed claims remain consumed beyond receipt retention. Source-only and disabled pending atomic STOP ingress and scoped activation.
  */
 export interface CatchWhatsappReplyOperationDocument {
@@ -12416,7 +12542,7 @@ export interface ProgramRetentionRunDocument {
   /**
    * Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.
    *
-   * @maxItems 16
+   * @maxItems 21
    */
   phases: {
     collection: string;

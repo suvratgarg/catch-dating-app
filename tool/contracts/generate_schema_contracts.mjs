@@ -15,6 +15,11 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ProgramLodgingProposalDocument", "source": "firestore/program_lodging_proposals.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingProposalDocument.ts"},
+  {"name": "ProgramLodgingWorkflowDocument", "source": "firestore/program_lodging_workflows.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingWorkflowDocument.ts"},
+  {"name": "ProgramLodgingReceiptDocument", "source": "firestore/program_lodging_receipts.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingReceiptDocument.ts"},
+  {"name": "WorkspaceMembershipAssertionDocument", "source": "firestore/workspace_membership_assertions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipAssertionDocument.ts"},
+  {"name": "WorkspaceMembershipDecisionDocument", "source": "firestore/workspace_membership_decisions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipDecisionDocument.ts"},
   {"name": "CatchWhatsappReplyOperationDocument", "source": "firestore/catch_whatsapp_reply_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts"},
   {"name": "CatchWhatsappEndpointStopDocument", "source": "firestore/catch_whatsapp_endpoint_stops.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts"},
   {"name": "CatchWhatsappReplyReadinessDocument", "source": "firestore/catch_whatsapp_reply_readiness.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts"},

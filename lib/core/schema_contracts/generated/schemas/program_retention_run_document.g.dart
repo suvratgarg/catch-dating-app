@@ -48,7 +48,7 @@ const schemaProgramRetentionRunDocumentSchema = <String, Object?>{
     },
     'phases': <String, Object?>{
       'type': 'array',
-      'maxItems': 16,
+      'maxItems': 21,
       'description': 'Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.',
       'items': <String, Object?>{
         'type': 'object',

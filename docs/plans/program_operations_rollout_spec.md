@@ -1,6 +1,6 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.2.0
+version: 1.3.0
 updated: 2026-10-03
 owner: product
 status: active
@@ -131,17 +131,23 @@ and lodging demand independent of inbound travel remain integration work.
 Invitation households, room-sharing parties and overlapping social groups
 must remain separate; household membership may only suggest sharing.
 
-Approved follow-on work includes typed import membership suggestions and
-manual decisions that survive re-import, nested groups with cycle checks,
-reusable property/room facts separated from dated contracted inventory and
-private assignments, and bed/accessibility/whole-villa exclusion constraints.
-Type-only inventory must remain useful before exact room rosters arrive.
-The planner must pass an independent feasibility validator before considering
-social proximity, including coherent 21-room spillover across a 20-room wing.
-Manual room/zone/hotel pins and unlocked regeneration share that validator.
-Immutable proposals bind source/inventory/layout revisions; publication needs
-current authority, operation receipts and stale-write rejection. Host approval,
-hotel confirmation and guest publication are separate states.
+Reviewed source slices now provide nested groups with cycle checks, typed
+membership suggestions and manual decisions, a bounded planner with independent
+hard-feasibility validation, dated inventory including provisional types, and
+bed/accessibility/whole-villa constraints. The 21-room case penalizes isolated
+spillover and produces a coherent 19+2 split in the focused benchmark. Manual
+pins and unlocked regeneration use the same validator. These are private
+snapshot inputs; canonical property/party/inventory editors remain to be wired.
+
+The layered 2D/list board includes empty-room moves, locked-party protection,
+explicit selection, and stale async-result rejection. It is an injected-callback
+component, not yet a routed Host feature. Immutable proposal storage and scoped
+operation receipts have transaction adapter tests; host approval, hotel
+confirmation and guest publication remain separate. Private generated document
+contracts, direct-access denial and archive retention are being integrated.
+Canonical source/revision reads, same-transaction stay publication, membership
+import/choice writes, real emulator verification, native editors and combined
+UI/capture acceptance remain required before operational release.
 
 Photo/PDF ingestion is a later, optional path into editable layered 2D drafts
 with a source overlay and mandatory human/room-roster verification. Private

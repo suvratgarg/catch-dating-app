@@ -126880,6 +126880,277 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programLodgingProposalDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalExplanations = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.explanations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 502,
+  );
+
+  static const programLodgingProposalDocumentProposalExplanationsItems = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.explanations.items',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingProposalDocumentProposalPlacements = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.placements',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programLodgingProposalDocumentProposalPlacementsItemsInventoryId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.placements.items.inventoryId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalPlacementsItemsPartyId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.placements.items.partyId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalRevisionsInventory = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.revisions.inventory',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentProposalRevisionsLayout = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.revisions.layout',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentProposalRevisionsPublished = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.revisions.published',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentProposalRevisionsSource = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.revisions.source',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentProposalScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalScopeProgramId = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingProposalDocumentProposalScore = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.score',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['number'],
+    minItems: 5,
+    maxItems: 5,
+  );
+
+  static const programLodgingProposalDocumentProposalScoreItems = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.score.items',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+  );
+
+  static const programLodgingProposalDocumentProposalSearchComplete = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.search.complete',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programLodgingProposalDocumentProposalSearchExplored = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.search.explored',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingProposalDocumentProposalUnplacedPartyIds = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.unplacedPartyIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 500,
+  );
+
+  static const programLodgingProposalDocumentProposalUnplacedPartyIdsItems = CatchContractFieldConstraints(
+    path: 'programLodgingProposalDocument.proposal.unplacedPartyIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingReceiptDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingReceiptDocumentReceiptActorUid = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.receipt.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingReceiptDocumentReceiptOperationId = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.receipt.operationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,100}\$',
+  );
+
+  static const programLodgingReceiptDocumentReceiptRequestHash = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.receipt.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingReceiptDocumentReceiptResultingRevision = CatchContractFieldConstraints(
+    path: 'programLodgingReceiptDocument.receipt.resultingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programLodgingWorkflowDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingWorkflowDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingWorkflowDocumentWorkflowApprovedProposalId = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.workflow.approvedProposalId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingWorkflowDocumentWorkflowConfirmedHotelIds = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.workflow.confirmedHotelIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 500,
+    uniqueItems: true,
+  );
+
+  static const programLodgingWorkflowDocumentWorkflowConfirmedHotelIdsItems = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.workflow.confirmedHotelIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programLodgingWorkflowDocumentWorkflowGuestPublishedProposalId = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.workflow.guestPublishedProposalId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const programLodgingWorkflowDocumentWorkflowRevision = CatchContractFieldConstraints(
+    path: 'programLodgingWorkflowDocument.workflow.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const programManifestImportCallableResponseAlreadyApplied = CatchContractFieldConstraints(
     path: 'programManifestImportCallableResponse.alreadyApplied',
     required: true,
@@ -127156,7 +127427,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 16,
+    maxItems: 21,
   );
 
   static const programRetentionRunDocumentPhasesItemsCollection = CatchContractFieldConstraints(
@@ -157690,6 +157961,205 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const workspaceMembershipAssertionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentGroupId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentIncluded = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.included',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const workspaceMembershipAssertionDocumentObservedAtMillis = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceMembershipAssertionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentProgramId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentRelationshipRefId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.relationshipRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentRelationshipRefKind = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.relationshipRef.kind',
+    required: true,
+  );
+
+  static const workspaceMembershipAssertionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const workspaceMembershipAssertionDocumentSourceId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.sourceId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.sourceKind',
+    required: true,
+    enumValues: <String>['manualEntry', 'manifestRow', 'contributorList'],
+  );
+
+  static const workspaceMembershipAssertionDocumentSourceLabel = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.sourceLabel',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentSourceVersion = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.sourceVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceMembershipAssertionDocumentWorkspaceRefId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.workspaceRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipAssertionDocumentWorkspaceRefKind = CatchContractFieldConstraints(
+    path: 'workspaceMembershipAssertionDocument.workspaceRef.kind',
+    required: true,
+  );
+
+  static const workspaceMembershipDecisionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentGroupId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentObservedAtMillis = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceMembershipDecisionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentPreviousAssertionId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.previousAssertionId',
+    valueTypes: <String>['string'],
+    pattern: '^wma_[a-f0-9]{64}\$',
+  );
+
+  static const workspaceMembershipDecisionDocumentProgramId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentRelationshipRefId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.relationshipRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentRelationshipRefKind = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.relationshipRef.kind',
+    required: true,
+  );
+
+  static const workspaceMembershipDecisionDocumentRelationshipRevision = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.relationshipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const workspaceMembershipDecisionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const workspaceMembershipDecisionDocumentSelectedAssertionId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.selectedAssertionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^wma_[a-f0-9]{64}\$',
+  );
+
+  static const workspaceMembershipDecisionDocumentWorkspaceRefId = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.workspaceRef.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const workspaceMembershipDecisionDocumentWorkspaceRefKind = CatchContractFieldConstraints(
+    path: 'workspaceMembershipDecisionDocument.workspaceRef.kind',
+    required: true,
+  );
+
   static const all = <String, CatchContractFieldConstraints>{
     'accessApplicationDocument.applicationVersion': accessApplicationDocumentApplicationVersion,
     'accessApplicationDocument.availabilityWindows': accessApplicationDocumentAvailabilityWindows,
@@ -174931,6 +175401,41 @@ abstract final class CatchContractConstraints {
     'programIdCallablePayload.programId': programIdCallablePayloadProgramId,
     'programInviteClaimCallableResponse.alreadyApplied': programInviteClaimCallableResponseAlreadyApplied,
     'programInviteClaimCallableResponse.programId': programInviteClaimCallableResponseProgramId,
+    'programLodgingProposalDocument.createdAtMillis': programLodgingProposalDocumentCreatedAtMillis,
+    'programLodgingProposalDocument.createdByUid': programLodgingProposalDocumentCreatedByUid,
+    'programLodgingProposalDocument.organizerId': programLodgingProposalDocumentOrganizerId,
+    'programLodgingProposalDocument.programId': programLodgingProposalDocumentProgramId,
+    'programLodgingProposalDocument.proposal.explanations': programLodgingProposalDocumentProposalExplanations,
+    'programLodgingProposalDocument.proposal.explanations.items': programLodgingProposalDocumentProposalExplanationsItems,
+    'programLodgingProposalDocument.proposal.id': programLodgingProposalDocumentProposalId,
+    'programLodgingProposalDocument.proposal.placements': programLodgingProposalDocumentProposalPlacements,
+    'programLodgingProposalDocument.proposal.placements.items.inventoryId': programLodgingProposalDocumentProposalPlacementsItemsInventoryId,
+    'programLodgingProposalDocument.proposal.placements.items.partyId': programLodgingProposalDocumentProposalPlacementsItemsPartyId,
+    'programLodgingProposalDocument.proposal.revisions.inventory': programLodgingProposalDocumentProposalRevisionsInventory,
+    'programLodgingProposalDocument.proposal.revisions.layout': programLodgingProposalDocumentProposalRevisionsLayout,
+    'programLodgingProposalDocument.proposal.revisions.published': programLodgingProposalDocumentProposalRevisionsPublished,
+    'programLodgingProposalDocument.proposal.revisions.source': programLodgingProposalDocumentProposalRevisionsSource,
+    'programLodgingProposalDocument.proposal.scope.organizerId': programLodgingProposalDocumentProposalScopeOrganizerId,
+    'programLodgingProposalDocument.proposal.scope.programId': programLodgingProposalDocumentProposalScopeProgramId,
+    'programLodgingProposalDocument.proposal.score': programLodgingProposalDocumentProposalScore,
+    'programLodgingProposalDocument.proposal.score.items': programLodgingProposalDocumentProposalScoreItems,
+    'programLodgingProposalDocument.proposal.search.complete': programLodgingProposalDocumentProposalSearchComplete,
+    'programLodgingProposalDocument.proposal.search.explored': programLodgingProposalDocumentProposalSearchExplored,
+    'programLodgingProposalDocument.proposal.unplacedPartyIds': programLodgingProposalDocumentProposalUnplacedPartyIds,
+    'programLodgingProposalDocument.proposal.unplacedPartyIds.items': programLodgingProposalDocumentProposalUnplacedPartyIdsItems,
+    'programLodgingReceiptDocument.organizerId': programLodgingReceiptDocumentOrganizerId,
+    'programLodgingReceiptDocument.programId': programLodgingReceiptDocumentProgramId,
+    'programLodgingReceiptDocument.receipt.actorUid': programLodgingReceiptDocumentReceiptActorUid,
+    'programLodgingReceiptDocument.receipt.operationId': programLodgingReceiptDocumentReceiptOperationId,
+    'programLodgingReceiptDocument.receipt.requestHash': programLodgingReceiptDocumentReceiptRequestHash,
+    'programLodgingReceiptDocument.receipt.resultingRevision': programLodgingReceiptDocumentReceiptResultingRevision,
+    'programLodgingWorkflowDocument.organizerId': programLodgingWorkflowDocumentOrganizerId,
+    'programLodgingWorkflowDocument.programId': programLodgingWorkflowDocumentProgramId,
+    'programLodgingWorkflowDocument.workflow.approvedProposalId': programLodgingWorkflowDocumentWorkflowApprovedProposalId,
+    'programLodgingWorkflowDocument.workflow.confirmedHotelIds': programLodgingWorkflowDocumentWorkflowConfirmedHotelIds,
+    'programLodgingWorkflowDocument.workflow.confirmedHotelIds.items': programLodgingWorkflowDocumentWorkflowConfirmedHotelIdsItems,
+    'programLodgingWorkflowDocument.workflow.guestPublishedProposalId': programLodgingWorkflowDocumentWorkflowGuestPublishedProposalId,
+    'programLodgingWorkflowDocument.workflow.revision': programLodgingWorkflowDocumentWorkflowRevision,
     'programManifestImportCallableResponse.alreadyApplied': programManifestImportCallableResponseAlreadyApplied,
     'programManifestImportCallableResponse.groupsCreated': programManifestImportCallableResponseGroupsCreated,
     'programManifestImportCallableResponse.guestsCreated': programManifestImportCallableResponseGuestsCreated,
@@ -179199,5 +179704,33 @@ abstract final class CatchContractConstraints {
     'workspaceFieldDecisionDocument.selectedAssertionId': workspaceFieldDecisionDocumentSelectedAssertionId,
     'workspaceFieldDecisionDocument.workspaceRef.id': workspaceFieldDecisionDocumentWorkspaceRefId,
     'workspaceFieldDecisionDocument.workspaceRef.kind': workspaceFieldDecisionDocumentWorkspaceRefKind,
+    'workspaceMembershipAssertionDocument.actorUid': workspaceMembershipAssertionDocumentActorUid,
+    'workspaceMembershipAssertionDocument.groupId': workspaceMembershipAssertionDocumentGroupId,
+    'workspaceMembershipAssertionDocument.included': workspaceMembershipAssertionDocumentIncluded,
+    'workspaceMembershipAssertionDocument.observedAtMillis': workspaceMembershipAssertionDocumentObservedAtMillis,
+    'workspaceMembershipAssertionDocument.organizerId': workspaceMembershipAssertionDocumentOrganizerId,
+    'workspaceMembershipAssertionDocument.programId': workspaceMembershipAssertionDocumentProgramId,
+    'workspaceMembershipAssertionDocument.relationshipRef.id': workspaceMembershipAssertionDocumentRelationshipRefId,
+    'workspaceMembershipAssertionDocument.relationshipRef.kind': workspaceMembershipAssertionDocumentRelationshipRefKind,
+    'workspaceMembershipAssertionDocument.schemaVersion': workspaceMembershipAssertionDocumentSchemaVersion,
+    'workspaceMembershipAssertionDocument.sourceId': workspaceMembershipAssertionDocumentSourceId,
+    'workspaceMembershipAssertionDocument.sourceKind': workspaceMembershipAssertionDocumentSourceKind,
+    'workspaceMembershipAssertionDocument.sourceLabel': workspaceMembershipAssertionDocumentSourceLabel,
+    'workspaceMembershipAssertionDocument.sourceVersion': workspaceMembershipAssertionDocumentSourceVersion,
+    'workspaceMembershipAssertionDocument.workspaceRef.id': workspaceMembershipAssertionDocumentWorkspaceRefId,
+    'workspaceMembershipAssertionDocument.workspaceRef.kind': workspaceMembershipAssertionDocumentWorkspaceRefKind,
+    'workspaceMembershipDecisionDocument.actorUid': workspaceMembershipDecisionDocumentActorUid,
+    'workspaceMembershipDecisionDocument.groupId': workspaceMembershipDecisionDocumentGroupId,
+    'workspaceMembershipDecisionDocument.observedAtMillis': workspaceMembershipDecisionDocumentObservedAtMillis,
+    'workspaceMembershipDecisionDocument.organizerId': workspaceMembershipDecisionDocumentOrganizerId,
+    'workspaceMembershipDecisionDocument.previousAssertionId': workspaceMembershipDecisionDocumentPreviousAssertionId,
+    'workspaceMembershipDecisionDocument.programId': workspaceMembershipDecisionDocumentProgramId,
+    'workspaceMembershipDecisionDocument.relationshipRef.id': workspaceMembershipDecisionDocumentRelationshipRefId,
+    'workspaceMembershipDecisionDocument.relationshipRef.kind': workspaceMembershipDecisionDocumentRelationshipRefKind,
+    'workspaceMembershipDecisionDocument.relationshipRevision': workspaceMembershipDecisionDocumentRelationshipRevision,
+    'workspaceMembershipDecisionDocument.schemaVersion': workspaceMembershipDecisionDocumentSchemaVersion,
+    'workspaceMembershipDecisionDocument.selectedAssertionId': workspaceMembershipDecisionDocumentSelectedAssertionId,
+    'workspaceMembershipDecisionDocument.workspaceRef.id': workspaceMembershipDecisionDocumentWorkspaceRefId,
+    'workspaceMembershipDecisionDocument.workspaceRef.kind': workspaceMembershipDecisionDocumentWorkspaceRefKind,
   };
 }

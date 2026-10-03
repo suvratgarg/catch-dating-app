@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `functions/src/shared/generated/programLodgingProposalDocument.ts` |
+| ProgramLodgingWorkflowDocument | `firestore/program_lodging_workflows.schema.json` | `functions/src/shared/generated/programLodgingWorkflowDocument.ts` |
+| ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `functions/src/shared/generated/programLodgingReceiptDocument.ts` |
+| WorkspaceMembershipAssertionDocument | `firestore/workspace_membership_assertions.schema.json` | `functions/src/shared/generated/workspaceMembershipAssertionDocument.ts` |
+| WorkspaceMembershipDecisionDocument | `firestore/workspace_membership_decisions.schema.json` | `functions/src/shared/generated/workspaceMembershipDecisionDocument.ts` |
 | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts` |
 | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts` |
 | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts` |
@@ -1183,6 +1188,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaProgramLodgingProposalDocumentSchema` | ProgramLodgingProposalDocument | `firestore/program_lodging_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_proposal_document.g.dart` |
+| `schemaProgramLodgingWorkflowDocumentSchema` | ProgramLodgingWorkflowDocument | `firestore/program_lodging_workflows.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_workflow_document.g.dart` |
+| `schemaProgramLodgingReceiptDocumentSchema` | ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_receipt_document.g.dart` |
+| `schemaWorkspaceMembershipAssertionDocumentSchema` | WorkspaceMembershipAssertionDocument | `firestore/workspace_membership_assertions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_membership_assertion_document.g.dart` |
+| `schemaWorkspaceMembershipDecisionDocumentSchema` | WorkspaceMembershipDecisionDocument | `firestore/workspace_membership_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_membership_decision_document.g.dart` |
 | `schemaCatchWhatsappReplyOperationDocumentSchema` | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_operation_document.g.dart` |
 | `schemaCatchWhatsappEndpointStopDocumentSchema` | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_endpoint_stop_document.g.dart` |
 | `schemaCatchWhatsappReplyReadinessDocumentSchema` | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_readiness_document.g.dart` |

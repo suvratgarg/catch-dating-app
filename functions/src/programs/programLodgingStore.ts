@@ -14,6 +14,20 @@ import type {LodgingAuthority, LodgingCommand, LodgingReceipt, LodgingWorkflow}
 import {validateLodgingPlacements} from "./programLodgingValidation";
 import type {LodgingProposal, LodgingSnapshot} from "./programLodgingTypes";
 
+import {validateProgramLodgingProposalDocument} from
+  "../shared/generated/validators/programLodgingProposalDocument";
+import {validateProgramLodgingWorkflowDocument} from
+  "../shared/generated/validators/programLodgingWorkflowDocument";
+import {validateProgramLodgingReceiptDocument} from
+  "../shared/generated/validators/programLodgingReceiptDocument";
+
+function requireStoredShape(valid: boolean): void {
+  if (!valid) {
+    throw new HttpsError("failed-precondition",
+      "Invalid stored lodging document shape.");
+  }
+}
+
 export interface TransactionLodgingSource {
   snapshot: LodgingSnapshot;
   /** Prepared using reads in loadSource. This callback may only enqueue
@@ -127,9 +141,13 @@ export class ProgramLodgingStore {
       const storedWorkflow = workflowSnap.data() as StoredWorkflow | undefined;
       const storedReceipt = receiptSnap.data() as StoredReceipt | undefined;
       if (storedWorkflow) {
+        requireStoredShape(validateProgramLodgingWorkflowDocument(
+          storedWorkflow));
         this.assertStoredScope(storedWorkflow, access, programId);
       }
       if (storedReceipt) {
+        requireStoredShape(validateProgramLodgingReceiptDocument(
+          storedReceipt));
         this.assertStoredScope(storedReceipt, access, programId);
       }
       const workflow = storedWorkflow?.workflow ?? emptyWorkflow();
@@ -165,6 +183,7 @@ export class ProgramLodgingStore {
         .collection("programLodgingWorkflows").doc(programId));
       if (!state.exists) return [];
       const stored = state.data() as StoredWorkflow;
+      requireStoredShape(validateProgramLodgingWorkflowDocument(stored));
       this.assertStoredScope(stored, access, programId);
       if (!stored.workflow.approvedProposalId) return [];
       const proposalSnap = await tx.get(this.proposalRef(
@@ -189,6 +208,7 @@ export class ProgramLodgingStore {
 
   private assertStoredProposal(stored: StoredProposal, access: ProgramAccess,
     programId: string, expectedId: string) {
+    requireStoredShape(validateProgramLodgingProposalDocument(stored));
     this.assertStoredScope(stored, access, programId);
     const proposal = stored.proposal;
     try {

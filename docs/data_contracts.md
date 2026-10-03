@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.162.0
+version: 1.163.0
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -3443,6 +3443,32 @@ checked in or checking out; allocation edits cannot move them or downgrade
 status first. Desk responses remain hotel-scoped operational projections.
 The shared validator is available to future automatic proposals; current
 writes are manual and do not publish or confirm a hotel booking.
+
+### Private Lodging Proposals And Membership Evidence
+
+`programLodgingProposals` stores immutable, scoped placement proposals with
+source/inventory/layout/published revisions. `programLodgingWorkflows` separates
+host approval, hotel confirmation and guest publication; `programLodgingReceipts`
+binds each operation to its actor and exact request. These collections deny
+all direct client access. The server adapter validates stored document shapes,
+proposal content identity independent of map key order, current authority after
+reads, and complete approved hotel projections. Its required publication callback
+must enqueue canonical stay writes in the same transaction as workflow/receipt
+writes. No lodging callable or canonical publication adapter is exported yet.
+
+`workspaceMembershipAssertions` and `workspaceMembershipDecisions` are typed,
+program/guest/group evidence beside the existing scalar field ledger. Imports
+suggest memberships; explicit included/excluded selections survive re-import.
+Canonical `programGuests.groupIds` remains membership truth. Canonical import and
+selection transaction adapters are still required; these schemas do not grant
+membership or infer room sharing from a household.
+
+All five private collections join the existing archive retention sweep by exact
+program scope. Membership workspace scope and lodging proposal scope must agree
+with the archived program and organizer; mismatches block completion. Records
+are deleted rather than retaining guest/group pointers as aggregate counts.
+The resumable retention journal supports 21 collection phases. Real emulator
+rules, transaction integration and combined feature acceptance remain gates.
 
 ### Organizer Application Intake
 
