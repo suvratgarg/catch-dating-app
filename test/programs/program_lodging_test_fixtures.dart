@@ -95,6 +95,8 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
   Object? previewFailure;
   Object? transitionFailure;
   Future<ProgramLodgingProposal>? pendingSave;
+  Future<Map<String, Object?>>? pendingTransition;
+  var previews = 0;
   var saves = 0;
   final commands = <Map<String, Object?>>[];
 
@@ -106,6 +108,7 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
       );
   @override
   Future<ProgramLodgingReview> preview(String programId) async {
+    previews++;
     if (previewFailure != null) throw previewFailure!;
     return pendingPreview ?? current;
   }
@@ -136,6 +139,7 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
       'action': action.name,
       'hotelId': hotelId,
     });
+    if (pendingTransition != null) return pendingTransition!;
     if (transitionFailure != null) throw transitionFailure!;
     return {
       'kind': 'transition',

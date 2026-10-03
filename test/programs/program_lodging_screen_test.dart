@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,6 +67,24 @@ void main() {
     expect(find.textContaining('Add lodging dates'), findsOneWidget);
     expect(find.text('Publish rooms to guests'), findsNothing);
     expect(repository.commands, isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('pending decision disables refresh without losing retry', (
+    tester,
+  ) async {
+    final repository = FakeLodgingRepository()
+      ..transitionFailure = TimeoutException('Uncertain transport');
+    await _pump(tester, repository);
+    await tester.tap(find.text('Publish rooms to guests'));
+    await pumpFeatureUi(tester);
+    final refresh = tester.widget<CatchButton>(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchButton && widget.label == 'Refresh rooms',
+      ),
+    );
+    expect(refresh.onPressed, isNull);
+    expect(repository.commands, hasLength(1));
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });

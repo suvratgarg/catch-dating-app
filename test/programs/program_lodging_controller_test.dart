@@ -189,4 +189,67 @@ void main() {
       expect(repository.commands, isEmpty);
     },
   );
+  test('late transition cannot clear a rebuilt pending decision', () async {
+    await container.read(provider.future);
+    final controller = container.read(provider.notifier);
+    final gate = Completer<Map<String, Object?>>();
+    repository.pendingTransition = gate.future;
+    final old = controller.decide(ProgramLodgingAction.publishGuests);
+    container.invalidate(provider);
+    await container.read(provider.future);
+    repository.pendingTransition = null;
+    repository.transitionFailure = TimeoutException('New uncertain decision');
+    await expectLater(
+      container.read(provider.notifier).decide(ProgramLodgingAction.approve),
+      throwsA(isA<TimeoutException>()),
+    );
+    final newer = Map.of(repository.commands.last);
+    final previews = repository.previews;
+    gate.complete({'kind': 'transition'});
+    await expectLater(old, throwsA(same(programReadSuperseded)));
+    expect(repository.previews, previews);
+    expect(
+      container.read(provider).requireValue.retryAction,
+      ProgramLodgingAction.approve,
+    );
+    repository.transitionFailure = null;
+    await container
+        .read(provider.notifier)
+        .decide(ProgramLodgingAction.approve);
+    expect(repository.commands.last, newer);
+  });
+
+  test('disposing during transition cannot start a late preview', () async {
+    await container.read(provider.future);
+    final gate = Completer<Map<String, Object?>>();
+    repository.pendingTransition = gate.future;
+    final pending = container
+        .read(provider.notifier)
+        .decide(ProgramLodgingAction.publishGuests);
+    final previews = repository.previews;
+    subscription.close();
+    await container.pump();
+    gate.complete({'kind': 'transition'});
+    await expectLater(pending, throwsA(same(programReadSuperseded)));
+    expect(repository.previews, previews);
+  });
+
+  test('refresh cannot discard an uncertain decision identity', () async {
+    await container.read(provider.future);
+    final controller = container.read(provider.notifier);
+    repository.transitionFailure = TimeoutException('Uncertain transport');
+    await expectLater(
+      controller.decide(ProgramLodgingAction.publishGuests),
+      throwsA(isA<TimeoutException>()),
+    );
+    final command = Map.of(repository.commands.single);
+    expect(controller.refresh, throwsA(isA<StateError>()));
+    expect(
+      container.read(provider).requireValue.retryAction,
+      ProgramLodgingAction.publishGuests,
+    );
+    repository.transitionFailure = null;
+    await controller.decide(ProgramLodgingAction.publishGuests);
+    expect(repository.commands.last, command);
+  });
 }

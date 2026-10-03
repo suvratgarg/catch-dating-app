@@ -137,6 +137,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
   }
 
   void refresh() {
+    _ensureEditing();
     _current();
     ref.invalidateSelf(asReload: true);
   }
@@ -224,6 +225,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
         expectedWorkflowRevision: command.revision,
         action: command.action,
       );
+      if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       _command = null;
       try {
         return await _repository.preview(_programId);
