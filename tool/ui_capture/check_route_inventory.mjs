@@ -24,6 +24,10 @@ function runCli() {
     updateInventory();
   } else if (command === "--check" || command === "check") {
     checkInventory();
+  } else if (command === "--locations") {
+    for (const route of extractImperativePageRouteInventory()) {
+      console.log(`${route.siteId} ${route.sourcePath}:${route.line}`);
+    }
   } else if (command === "--list" || command === "list") {
     listInventory();
   } else {
@@ -67,9 +71,11 @@ function listInventory() {
   }
 }
 
-function buildInventory() {
-  const routeContractSource = fs.readFileSync(routeContractPath, "utf8");
-  const routerSource = fs.readFileSync(routerPath, "utf8");
+export function buildInventory({
+  routeContractSource = fs.readFileSync(routeContractPath, "utf8"),
+  routerSource = fs.readFileSync(routerPath, "utf8"),
+  imperativePageRoutes = extractImperativePageRouteInventory(),
+} = {}) {
   const enumBlock = extractBalancedBlock(
     routeContractSource,
     "enum Routes",
@@ -81,7 +87,9 @@ function buildInventory() {
   const routes = extractRouteEnumEntries(enumBlock.body);
   const runtimeRoutes = extractRuntimeRouteEntries(routeGraph.text, routes);
   validateRuntimeRoutes(routes, runtimeRoutes);
-  const routeContract = normalizeRouteContract(`${enumBlock.text}\n${routeGraph.text}`);
+  const routeContract = normalizePresentationExpression(
+    `${enumBlock.text}\n${extractRouterSemanticClosure(routerSource, goRouterBlock)}`,
+  );
   const routeReferences = uniqueSorted(
     [...routeGraph.text.matchAll(/\bRoutes\.([A-Za-z0-9_]+)/g)].map(
       (match) => match[1]
@@ -91,17 +99,13 @@ function buildInventory() {
   const runtimeRoutesById = new Map(
     runtimeRoutes.map((route) => [route.id, route])
   );
-  const imperativePageRoutes = extractImperativePageRouteInventory();
 
   return {
-    version: 4,
+    version: 5,
     generatedBy: "tool/ui_capture/check_route_inventory.mjs",
     source: {
       path: "lib/routing/route_contract.dart",
       runtimePath: "lib/routing/go_router.dart",
-      normalizedFileSha256: sha256(
-        normalizeRouteContract(`${routeContractSource}\n${routerSource}`),
-      ),
       routeContractSha256: sha256(routeContract),
       goRouteCount: countMatches(routeGraph.text, /\bGoRoute\s*\(/g),
       shellBranchCount: countMatches(routeGraph.text, /\bStatefulShellBranch\s*\(/g),
@@ -130,7 +134,8 @@ function buildInventory() {
         referencedByGoRouter: routeReferenceIds.has(route.id),
       };
     }),
-    imperativePageRoutes,
+    imperativePageRoutes: imperativePageRoutes.map(({line, ...route}) => route)
+      .sort((a, b) => a.siteId.localeCompare(b.siteId)),
     goRouterRouteReferences: routeReferences,
   };
 }
@@ -162,7 +167,8 @@ export function extractImperativePageRoutesFromSource(source, sourcePath) {
       );
     }
   }
-  return extractCallBlocks(source, "MaterialPageRoute").map((block, index) => {
+  const occurrences = new Map();
+  return extractCallBlocks(source, "MaterialPageRoute").map((block) => {
     const builderExpression = extractTopLevelNamedArgumentExpression(
       block.body,
       "builder",
@@ -178,17 +184,22 @@ export function extractImperativePageRoutesFromSource(source, sourcePath) {
         `${sourcePath}:${lineNumberAt(source, block.labelIndex)} MaterialPageRoute must expose one deterministic full-screen builder target named *Screen, *Dialog, or *Page.`,
       );
     }
-    const ordinal = index + 1;
+    const routeExpression = normalizePresentationExpression(block.text);
+    const fullscreenDialogExpression = normalizePresentationExpression(
+      extractTopLevelNamedArgumentExpression(block.body, "fullscreenDialog"),
+    ) || null;
+    const identity = `${sourcePath}:${sha256(JSON.stringify([presentationExpression, fullscreenDialogExpression]))}`;
+    const occurrence = (occurrences.get(identity) ?? 0) + 1;
+    occurrences.set(identity, occurrence);
     return {
-      siteId: `material-page:${sourcePath}:${ordinal}`,
+      siteId: `material-page:${identity}:${occurrence}`,
+      routeExpression,
       sourcePath,
       line: lineNumberAt(source, block.labelIndex),
-      ordinal,
+      ordinal: occurrence,
       presentationExpression,
       presentationTarget,
-      fullscreenDialogExpression: normalizePresentationExpression(
-        extractTopLevelNamedArgumentExpression(block.body, "fullscreenDialog"),
-      ) || null,
+      fullscreenDialogExpression,
     };
   });
 }
@@ -326,6 +337,25 @@ export function extractRuntimeRouteGraph(source, goRouterBlock) {
     text: [routeListBlock.text, ...routeHelperBlocks].join("\n"),
     routeHelperNames,
   };
+}
+
+// Hash only the router configuration and the locally declared callable closure
+// it references. This retains route/shell composition, guards and presentation
+// helper bodies while excluding unrelated imports, providers and diagnostics.
+export function extractRouterSemanticClosure(source, configuration = extractGoRouterConfigurationBlock(source)) {
+  const blocks = new Map([["GoRouter", configuration.text]]);
+  const queue = [configuration.text];
+  for (const text of queue) {
+    for (const name of new Set(text.match(/[A-Za-z_$][A-Za-z0-9_$]*/gu) ?? [])) {
+      if (blocks.has(name)) continue;
+      const block = extractRouteFactoryBlock(source, name, {requireRouteType: false});
+      if (!block) continue;
+      blocks.set(name, block.text);
+      queue.push(block.text);
+    }
+  }
+  return [...blocks].sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, text]) => `${name}:${text}`).join("\n");
 }
 
 function containsRouteConstructor(source) {
@@ -476,9 +506,9 @@ function extractRouteHelperCalls(source) {
   return uniqueInOrder(names);
 }
 
-function extractRouteFactoryBlock(source, functionName) {
+function extractRouteFactoryBlock(source, functionName, {requireRouteType = true} = {}) {
   const match = findFunctionDefinition(source, functionName);
-  if (!match || !isRouteFactoryReturnType(match.returnType)) return null;
+  if (!match || (requireRouteType && !isRouteFactoryReturnType(match.returnType))) return null;
 
   const signature = extractBalancedBlock(
     source,
@@ -488,22 +518,16 @@ function extractRouteFactoryBlock(source, functionName) {
     match.signatureStart
   );
   const bodyStart = firstNonWhitespaceIndex(source, signature.closeIndex + 1);
+  let body;
   if (source.startsWith("=>", bodyStart)) {
-    return extractArrowRouteFactoryExpression(
-      source,
-      functionName,
-      bodyStart + 2,
-    );
+    body = extractArrowRouteFactoryExpression(source, functionName, bodyStart + 2);
+  } else if (source[bodyStart] === "{") {
+    // Named parameter braces belong to the signature, not the function body.
+    body = extractBalancedBlock(source, functionName, "{", "}", bodyStart);
+  } else {
+    return null;
   }
-  if (source[bodyStart] !== "{") return null;
-
-  return extractBalancedBlock(
-    source,
-    functionName,
-    "{",
-    "}",
-    match.signatureStart
-  );
+  return {...body, text: source.slice(match.signatureStart, body.closeIndex + 1)};
 }
 
 function extractArrowRouteFactoryExpression(source, functionName, startIndex) {
@@ -569,9 +593,11 @@ function findFunctionDefinition(source, functionName) {
     `(^|\\n)\\s*([A-Za-z_][A-Za-z0-9_<>?,]*(?:\\s+[A-Za-z_][A-Za-z0-9_<>?,]*)*)\\s+${escapeRegExp(
       functionName
     )}(?:<[^>(){}]+>)?\\s*\\(`,
-    "u"
+    "gu"
   );
-  const match = source.match(pattern);
+  if (["if", "switch", "while", "for", "catch", "assert"].includes(functionName)) return null;
+  const match = [...source.matchAll(pattern)].find(candidate =>
+    !/\b(?:return|throw|yield|case|const|final|var|new)\b/u.test(candidate[2]));
   if (!match) return null;
 
   return {
@@ -991,7 +1017,7 @@ function validateRuntimeRoutes(enumRoutes, runtimeRoutes) {
     }
   }
 
-  if (errors.length > 0) fail(errors);
+  if (errors.length > 0) throw new Error(errors.join("\n"));
 }
 
 function extractRouteEnumEntries(enumBody) {
@@ -1097,13 +1123,6 @@ function extractBalancedBlock(source, label, openChar, closeChar, startAt = null
   throw new Error(`Could not find balanced ${openChar}${closeChar} block for ${label}.`);
 }
 
-function normalizeRouteContract(value) {
-  return value
-    .replace(/\/\/.*$/gmu, "")
-    .replace(/\s+/gu, " ")
-    .trim();
-}
-
 function normalizeExpression(value) {
   return (value ?? "").replace(/\s+/gu, " ").trim();
 }
@@ -1163,5 +1182,6 @@ Commands:
   --update  Regenerate tool/ui_capture/route_inventory.json from the route contract and runtime router.
   --check   Fail if the route inventory is stale.
   --list    Print the current route ids and paths.
+  --locations Print live imperative route source locations (not stored in the inventory).
 `);
 }

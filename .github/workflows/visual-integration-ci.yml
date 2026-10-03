@@ -5,6 +5,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  headless-journeys:
+    name: Headless app journeys
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get
+      - name: Deterministic app-shell integration suites
+        run: bash tool/test_app_shell_integration.sh
+
   visual-and-integration:
     name: macOS goldens, Widgetbook corpus & native smoke
     runs-on: macos-26
@@ -157,9 +168,6 @@ jobs:
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test/primitive_goldens_test.dart)
-
-      - name: Deterministic app-shell integration suites
-        run: bash tool/test_app_shell_integration.sh
 
       - name: Restore CocoaPods downloads
         uses: ./.github/actions/cache-cocoapods

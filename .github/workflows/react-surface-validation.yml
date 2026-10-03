@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: false
+      capture_freshness_in_ci:
+        description: The required same-run capture lane owns screenshot provenance and copies.
+        required: false
+        type: boolean
+        default: false
       skip_deployable_build:
         description: Skip the generic site build when the caller will build one exact production artifact.
         required: false
@@ -68,11 +73,11 @@ jobs:
         run: node tool/design/check_component_lexicon.mjs --surfaces-only
 
       - name: Check marketing media
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci }}
         run: node tool/marketing/sync_website_media.mjs --check
 
       - name: Check marketing screenshot design context
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci }}
         run: node tool/marketing/export_app_screenshots.mjs --check-design-json
 
       - name: Check public surface behavior matrix

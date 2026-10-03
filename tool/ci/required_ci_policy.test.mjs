@@ -18,10 +18,15 @@ function command(name) {
   return step.run;
 }
 const selectedLanes = ["tools", "contracts", "functions", "firestore-rules", "flutter",
-  "visual-integration", "admin", "marketing", "operations", "docs-policy", "app-builds"];
+  "visual-integration", "admin", "marketing", "capture-freshness", "operations", "docs-policy", "app-builds"];
 const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match) => match[1]);
-const successfulNeeds = () => Object.fromEntries(dependencies.map((job) =>
-  [job, {result: ["admission", "plan", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
+const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
+const successfulNeeds = () => {
+  const needs = Object.fromEntries(dependencies.map((job) =>
+    [job, {result: ["admission", "plan", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
+  needs.plan.outputs = Object.fromEntries(graph.targets.map(target => [target, "false"]));
+  return needs;
+};
 function run(name, env = {}, cwd = root) {
   return spawnSync("bash", ["-e", "-o", "pipefail", "-c", command(name)], {
     cwd, encoding: "utf8", timeout: 10000,
@@ -199,3 +204,22 @@ for (const index of [0, 1]) {
 test("Required CI rejects a plan from another source CI run", () => {
   failed(mainGuard({mutateArtifacts: (artifacts) => {artifacts[0].name = artifacts[0].name.replace(`-${runId}-`, "-999-");}}));
 });
+
+for (const target of graph.targets) {
+  test(`Required CI rejects selected but skipped ${target} on PR and nightly`, () => {
+    const needs = successfulNeeds();
+    for (const lane of selectedLanes) needs[lane].result = "skipped";
+    needs.plan.outputs[target] = "true";
+    for (const EVENT_NAME of ["pull_request", "schedule"]) {
+      const output = run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), EVENT_NAME});
+      failed(output);
+      assert.match(output.stderr, new RegExp(`Selected lane ${target} lacks successful execution`));
+    }
+    // Positive controls ensure each declared target is understood by the gate.
+    const passedNeeds = successfulNeeds();
+    passedNeeds.plan.outputs[target] = "true";
+    passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(passedNeeds)}));
+    delete passedNeeds.plan.outputs[target];
+    failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(passedNeeds)}));
+  });
+}
