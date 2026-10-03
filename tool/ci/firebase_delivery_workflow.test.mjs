@@ -181,7 +181,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(promotion, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ inputs\.control_plane_sha \}\}/);
   assert.match(promotion, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
   assert.match(promotion, /test "\$control_project_id" = "\$project_id"/);
-  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 4);
+  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 6);
   assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
   assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
   assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
@@ -284,6 +284,7 @@ test("actual Functions recovery branch records only completed deployments and ne
   fs.mkdirSync(path.join(directory, "bin"));
   fs.mkdirSync(path.join(directory, "tool"));
   fs.writeFileSync(path.join(directory, "bin/node"), '#!/bin/sh\n' +
+    'if [ "$1" = tool/firebase/check_environment_readiness.mjs ]; then echo binding-check >> "$RECOVERY_EVENTS"; exit "$READINESS_STATUS"; fi\n' +
     'printf \'%s\\n\' "$2" >> "$RECOVERY_EVENTS"\n' +
     'if [ "$2" = verify ]; then printf \'%s\\n\' "$VERIFY_RESULT"; exit "$VERIFY_STATUS"; fi\n' +
     'exit "$RECORD_STATUS"\n', {mode: 0o755});
@@ -292,8 +293,9 @@ test("actual Functions recovery branch records only completed deployments and ne
     'if [ "$1" = --functions-deploy-only ]; then exit "$DEPLOY_STATUS"; fi\n' +
     'exit "$POSTCONDITIONS_STATUS"\n', {mode: 0o755});
   const scenarios = [
-    {label: "no prior proof", expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only"]},
-    {label: "verified prior deployment", proof: true, expected: ["verify", "--functions-postconditions-only"]},
+    {label: "no prior proof", expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only", "binding-check"]},
+    {label: "verified prior deployment", proof: true, expected: ["verify", "--functions-postconditions-only", "binding-check"]},
+    {label: "binding drift", readiness: 5, expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only", "binding-check"]},
     {label: "partial batch failed", deploy: 9, expected: ["verify", "--functions-deploy-only"]},
     {label: "recording deployment failed", record: 8, expected: ["verify", "--functions-deploy-only", "record"]},
     {label: "postcondition failed", postconditions: 7, expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only"]},
@@ -309,13 +311,14 @@ test("actual Functions recovery branch records only completed deployments and ne
       ...process.env, PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`,
       RECOVERY_EVENTS: events, VERIFY_RESULT: scenario.result ?? JSON.stringify({postconditionsOnly: Boolean(scenario.proof)}),
       VERIFY_STATUS: String(scenario.verify ?? 0), RECORD_STATUS: String(scenario.record ?? 0),
+      READINESS_STATUS: String(scenario.readiness ?? 0),
       DEPLOY_STATUS: String(scenario.deploy ?? 0), POSTCONDITIONS_STATUS: String(scenario.postconditions ?? 0),
       SOURCE_SHA: "a".repeat(40), BASE_SHA: "b".repeat(40), SOURCE_CI_RUN_ID: "700", SOURCE_CI_RUN_ATTEMPT: "1",
       CHECKPOINT_SCOPE: "firebase:dev:demo-project", CHECKPOINT: "checkpoint.json", PROJECT_ID: "demo-project",
       DELIVERY_FUNCTIONS_DIR: "package/functions", SOURCE_CHECKOUT: "source", DEPLOY_ENVIRONMENT: "dev",
     }});
     if (scenario.invalid) assert.notEqual(result.status, 0, scenario.label);
-    else assert.equal(result.status, scenario.verify ?? scenario.deploy ?? scenario.record ?? scenario.postconditions ?? 0,
+    else assert.equal(result.status, scenario.verify ?? scenario.deploy ?? scenario.record ?? scenario.postconditions ?? scenario.readiness ?? 0,
       `${scenario.label}: ${result.stderr}`);
     assert.deepEqual(fs.readFileSync(events, "utf8").trim().split("\n"), scenario.expected, scenario.label);
   }
@@ -632,7 +635,10 @@ test("promotion is ordered dev to protected prod", () => {
   assert.ok(
     (promotion.match(/--ci-run-attempt "\$SOURCE_CI_RUN_ATTEMPT"/g) ?? []).length >= 7,
   );
-  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 5);
+  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 6);
+  assert.match(promotion, /firebase_functions_checkpoint\.mjs verify-completed/);
+  assert.ok(promotion.indexOf("Verify deployed configuration including restored completed Functions") >
+    promotion.indexOf("--status passed"));
   assert.match(promotion, /wait_firestore_indexes_ready\.mjs/);
   assert.ok(
     promotion.indexOf("wait_firestore_indexes_ready.mjs") <

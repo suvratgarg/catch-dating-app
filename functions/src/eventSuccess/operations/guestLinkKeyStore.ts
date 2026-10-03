@@ -1,8 +1,8 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import type {GuestLinkSigningKeys} from "./guestLinkTokens";
 
-const resourcePattern = new RegExp("^projects/[A-Za-z0-9:-]+/secrets/" +
-  "EVENT_ASSISTANCE_GUEST_KEYS/versions/[1-9][0-9]*$");
 const schema = "catch.event-assistance-guest-keys/v1";
 const unavailable = () => new Error("Guest response signing keys unavailable");
 
@@ -41,11 +41,13 @@ export function parseGuestLinkKeys(value: unknown): GuestLinkSigningKeys {
 export class GuestLinkKeyStore {
   constructor(private readonly versionResource = (
     process.env.EVENT_ASSISTANCE_GUEST_KEY_VERSION ?? ""),
-  private readonly client = new SecretManagerServiceClient()) {}
+  private readonly client = new SecretManagerServiceClient(),
+  private readonly references = new SecretVersionReferenceGuard()) {}
 
   async access(): Promise<GuestLinkSigningKeys> {
     try {
-      if (!resourcePattern.test(this.versionResource)) throw unavailable();
+      await this.references.assert(this.versionResource,
+        "EVENT_ASSISTANCE_GUEST_KEYS");
       const [response] = await this.client.accessSecretVersion({
         name: this.versionResource});
       const data = response.payload?.data;

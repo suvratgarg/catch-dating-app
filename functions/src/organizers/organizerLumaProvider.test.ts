@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {LumaProvider, LumaProviderError} from "./organizerLumaProvider";
+import {LumaProvider, LumaProviderError, OrganizerProviderCredentialStore} from
+  "./organizerLumaProvider";
+import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 
 test("verifies calendar and event with a server-side key", async () => {
   const seen: Array<{url: URL; key: string | null}> = [];
@@ -141,3 +143,34 @@ function jsonResponse(value: unknown, status = 200): Response {
     headers: {"content-type": "application/json"},
   });
 }
+
+
+test("provider reads and disables require local numbered provider secrets",
+  async () => {
+    const calls: string[] = [];
+    const store = new OrganizerProviderCredentialStore({
+      accessSecretVersion: async () => {
+        calls.push("access");
+        return [{payload: {data: Buffer.from("fake-api-key")}}];
+      },
+      disableSecretVersion: async () => {
+        calls.push("disable"); return [{}];
+      },
+    } as never, new SecretVersionReferenceGuard(() => "local-project",
+      async () => "123456"));
+    const name = "organizer-provider-" + "a".repeat(32);
+    const ref = `projects/local-project/secrets/${name}/versions/7`;
+    for (const invalid of [ref.replace("local-project", "other-project"),
+      ref.replace("local-project", "654321"), ref.replace("/7", "/latest"),
+      ref.replace(name, "UNRELATED"), ref.replace(name, "organizer-provider-x"),
+      ref + "\n"]) {
+      await assert.rejects(store.access(invalid),
+        /^Error: Secret version reference unavailable\.$/);
+      await assert.rejects(store.disable(invalid),
+        /^Error: Secret version reference unavailable\.$/);
+    }
+    assert.deepEqual(calls, []);
+    assert.equal(await store.access(ref), "fake-api-key");
+    await store.disable(ref.replace("local-project", "123456"));
+    assert.deepEqual(calls, ["access", "disable"]);
+  });
