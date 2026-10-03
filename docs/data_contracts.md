@@ -4942,7 +4942,12 @@ route connects the current proposal to manual room moves, regeneration, host
 approval and explicit guest publication. It clears session-invalid projections
 and preserves exact operation IDs for uncertain decision retries. Initial setup,
 party/inventory/pin editors and persisted import membership decisions remain
-pending. A strict demo-only Firestore integration fixture verifies concurrent
+pending. Coordinator-only `readSetup` also returns a bounded live catalog of
+canonical guests, groups, hotels, contracted room blocks and consuming stays.
+It includes guests without travel records, omits contact details and notes, and
+keeps invitation households separate from explicit sharing decisions. Unknown
+legacy occupancy bindings remain null and require explicit verified adoption;
+contract occupant limits do not establish bed types or accessibility. A strict demo-only Firestore integration fixture verifies concurrent
 configuration edits, publication replay, canonical roommate counting, transactional
 rollback and stale native edits; private collection deny rules are also exercised.
 Fresh captures and full combined release validation remain pending.

@@ -12,6 +12,68 @@ export type ManageProgramLodgingCallableResponse =
       kind: "readSetup";
       configuration: ProgramLodgingConfigDocument | null;
       accessExpiresAtMillis: number | null;
+      catalog: {
+        programId: string;
+        organizerId: string;
+        timezone: string;
+        /**
+         * @maxItems 500
+         */
+        guests: {
+          id: string;
+          label: string;
+          householdId: string | null;
+          /**
+           * @maxItems 20
+           */
+          groupIds: string[];
+        }[];
+        /**
+         * @maxItems 500
+         */
+        groups: {
+          id: string;
+          label: string;
+        }[];
+        /**
+         * @maxItems 500
+         */
+        hotels: {
+          id: string;
+          label: string;
+          active: boolean;
+        }[];
+        /**
+         * @maxItems 500
+         */
+        contracts: {
+          id: string;
+          hotelId: string;
+          label: string;
+          roomType: string | null;
+          totalRooms: number;
+          maxOccupantsPerRoom: number;
+          startsAtMillis: number;
+          endsAtMillis: number;
+        }[];
+        /**
+         * @maxItems 2000
+         */
+        activeStays: {
+          id: string;
+          guestId: string;
+          hotelId: string;
+          roomBlockId: string | null;
+          roomLabel: string | null;
+          roomOccupancyId: string | null;
+          lodgingPartyId: string | null;
+          lodgingInventoryId: string | null;
+          startsAtMillis: number | null;
+          endsAtMillis: number | null;
+          status: "held" | "confirmed" | "checkedIn";
+          revision: number;
+        }[];
+      };
     }
   | {
       kind: "setup";

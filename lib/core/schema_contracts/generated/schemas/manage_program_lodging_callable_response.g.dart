@@ -21,6 +21,7 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
         'kind',
         'configuration',
         'accessExpiresAtMillis',
+        'catalog',
       ],
       'properties': <String, Object?>{
         'kind': <String, Object?>{
@@ -562,6 +563,333 @@ const schemaManageProgramLodgingCallableResponseSchema = <String, Object?>{
               'type': 'null',
             },
           ],
+        },
+        'catalog': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'programId',
+            'organizerId',
+            'timezone',
+            'guests',
+            'groups',
+            'hotels',
+            'contracts',
+            'activeStays',
+          ],
+          'properties': <String, Object?>{
+            'programId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'timezone': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 80,
+            },
+            'guests': <String, Object?>{
+              'type': 'array',
+              'maxItems': 500,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'label',
+                  'householdId',
+                  'groupIds',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 200,
+                  },
+                  'householdId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'groupIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                  },
+                },
+              },
+            },
+            'groups': <String, Object?>{
+              'type': 'array',
+              'maxItems': 500,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'label',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 200,
+                  },
+                },
+              },
+            },
+            'hotels': <String, Object?>{
+              'type': 'array',
+              'maxItems': 500,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'label',
+                  'active',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 200,
+                  },
+                  'active': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                },
+              },
+            },
+            'contracts': <String, Object?>{
+              'type': 'array',
+              'maxItems': 500,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'hotelId',
+                  'label',
+                  'roomType',
+                  'totalRooms',
+                  'maxOccupantsPerRoom',
+                  'startsAtMillis',
+                  'endsAtMillis',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'hotelId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 200,
+                  },
+                  'roomType': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 80,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'totalRooms': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 500,
+                  },
+                  'maxOccupantsPerRoom': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 100,
+                  },
+                  'startsAtMillis': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 8640000000000000,
+                  },
+                  'endsAtMillis': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 8640000000000000,
+                  },
+                },
+              },
+            },
+            'activeStays': <String, Object?>{
+              'type': 'array',
+              'maxItems': 2000,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'guestId',
+                  'hotelId',
+                  'roomBlockId',
+                  'roomLabel',
+                  'roomOccupancyId',
+                  'lodgingPartyId',
+                  'lodgingInventoryId',
+                  'startsAtMillis',
+                  'endsAtMillis',
+                  'status',
+                  'revision',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'guestId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'hotelId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'roomBlockId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'roomLabel': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 80,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'roomOccupancyId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'lodgingPartyId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'lodgingInventoryId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'startsAtMillis': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 8640000000000000,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'endsAtMillis': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 8640000000000000,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'status': <String, Object?>{
+                    'enum': <Object?>[
+                      'held',
+                      'confirmed',
+                      'checkedIn',
+                    ],
+                  },
+                  'revision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },

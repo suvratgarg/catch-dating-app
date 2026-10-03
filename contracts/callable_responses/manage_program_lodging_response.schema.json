@@ -14,7 +14,8 @@
       "required": [
         "kind",
         "configuration",
-        "accessExpiresAtMillis"
+        "accessExpiresAtMillis",
+        "catalog"
       ],
       "properties": {
         "kind": {
@@ -41,6 +42,9 @@
               "type": "null"
             }
           ]
+        },
+        "catalog": {
+          "$ref": "../shared/program_lodging_common.schema.json#/definitions/setupCatalog"
         }
       }
     },

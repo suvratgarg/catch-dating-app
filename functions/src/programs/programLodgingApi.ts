@@ -21,6 +21,8 @@ import {validateProgramLodgingConfigDocument} from
   "../shared/generated/validators/programLodgingConfigDocument";
 import {canonicalLodgingSource, saveCanonicalLodgingConfig} from
   "./programLodgingConfig";
+import {readCanonicalLodgingRecords} from "./programLodgingSource";
+import {consumesRoom} from "./programRoomOccupancy";
 import {ProgramLodgingStore} from "./programLodgingStore";
 import {assertLodgingProposalCurrent, immutableLodgingProposal,
   planLodging} from
@@ -43,13 +45,42 @@ async function readSetup(deps: ProgramDataDeps, programId: string,
         configuration.organizerId !== access.program.organizerId)) {
       throw new HttpsError("failed-precondition", "Invalid lodging setup.");
     }
+    // All native guests are offered, including guests without travel rows.
+    // This is a live-only allowlist, not a copied CRM or a sharing inference.
+    const records = await readCanonicalLodgingRecords(tx, db, access,
+      programId);
+    const label = (value: string) => value.slice(0, 200);
+    const catalog = {programId, organizerId: access.program.organizerId,
+      timezone: access.program.timezone,
+      guests: records.guests.map(({id, data}) => ({id,
+        label: label(data.displayName), householdId: data.householdId,
+        groupIds: data.groupIds ?? []})),
+      groups: records.groups.map(({id, data}) => ({id,
+        label: label(data.label)})),
+      hotels: records.hotels.map(({id, data}) => ({id, label: label(data.name),
+        active: data.active})),
+      contracts: records.blocks.map(({id, data}) => ({id, hotelId: data.hotelId,
+        label: label(data.label), roomType: data.roomType,
+        totalRooms: data.totalRooms,
+        maxOccupantsPerRoom: data.maxOccupantsPerRoom ?? 1,
+        startsAtMillis: data.startsAt.toMillis(),
+        endsAtMillis: data.endsAt.toMillis()})),
+      activeStays: records.stays.filter(({data}) => consumesRoom(data))
+        .map(({id, data}) => ({id, guestId: data.guestId, hotelId: data.hotelId,
+          roomBlockId: data.roomBlockId, roomLabel: data.roomLabel,
+          roomOccupancyId: data.roomOccupancyId ?? null,
+          lodgingPartyId: data.lodgingPartyId ?? null,
+          lodgingInventoryId: data.lodgingInventoryId ?? null,
+          startsAtMillis: data.startsAt?.toMillis() ?? null,
+          endsAtMillis: data.endsAt?.toMillis() ?? null,
+          status: data.status, revision: data.revision}))};
     const active = dutyAssignments(access, "programCoordinator")
       .filter((d) => d.expiresAtMillis > deps.now().toMillis());
     const expiry = programProjectionExpiresAt(access, active);
     if (expiry !== null && expiry <= deps.now().toMillis()) {
       throw new HttpsError("permission-denied", "Lodging duty expired.");
     }
-    return {kind: "readSetup", configuration: configuration ?? null,
+    return {kind: "readSetup", configuration: configuration ?? null, catalog,
       accessExpiresAtMillis: expiry};
   });
 }

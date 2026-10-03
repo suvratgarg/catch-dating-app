@@ -130,3 +130,83 @@ test("setup derives organizer scope and enforces revision", async () => {
   assert.equal(read.configuration?.organizerId, "org-1");
   assert.equal(read.accessExpiresAtMillis, null);
 });
+
+test("setup catalog offers native no-travel guests without copying contacts",
+  async () => {
+    const h = setup();
+    h.fake.deleteDoc("programLodgingConfigs/program-1");
+    h.fake.setDoc("programGuests/no-travel", {
+      ...h.fake.getDoc("programGuests/guest-1"), displayName: "Local guest",
+      householdId: "invitation-household", groupIds: ["friends", "family"],
+    });
+    h.fake.setDoc("programGuests/foreign", {
+      ...h.fake.getDoc("programGuests/guest-1"), organizerId: "other",
+    });
+    h.fake.updateDoc("programHotels/hotel-1", {notes: "Private hotel note"});
+    const result = await h.call({action: "readSetup"});
+    if (result.kind !== "readSetup") throw new Error("Wrong catalog kind");
+    assert.equal(result.configuration, null);
+    assert.equal(result.catalog.programId, "program-1");
+    const guest = result.catalog.guests.find((g) => g.id === "no-travel");
+    assert.deepEqual(guest, {id: "no-travel", label: "Local guest",
+      householdId: "invitation-household", groupIds: ["friends", "family"]});
+    assert.equal(result.catalog.guests.some((g) => g.id === "foreign"), false);
+    assert.equal(result.catalog.contracts[0].totalRooms, 1);
+    assert.equal(result.catalog.contracts[0].maxOccupantsPerRoom, 1);
+    const text = JSON.stringify(result.catalog);
+    for (const field of ["phoneE164", "email", "contactId", "notes",
+      "Private hotel note", "requiredFeatures", "parties"]) {
+      assert.equal(text.includes(field), false);
+    }
+  });
+
+test("setup catalog keeps legacy occupancy explicit and omits released stays",
+  async () => {
+    const h = setup();
+    const row = {programId: "program-1", organizerId: "org-1",
+      guestId: "guest-1", hotelId: "hotel-1", roomBlockId: "block",
+      roomLabel: "101", startsAt: now, endsAt: null,
+      status: "checkedIn", revision: 7};
+    h.fake.setDoc("programStays/legacy", row);
+    h.fake.setDoc("programStays/released", {...row, status: "checkedOut"});
+    const result = await h.call({action: "readSetup"});
+    if (result.kind !== "readSetup") throw new Error("Wrong catalog kind");
+    assert.deepEqual(result.catalog.activeStays, [{id: "legacy",
+      guestId: "guest-1", hotelId: "hotel-1", roomBlockId: "block",
+      roomLabel: "101", roomOccupancyId: null, lodgingPartyId: null,
+      lodgingInventoryId: null, startsAtMillis: now.toMillis(),
+      endsAtMillis: null, status: "checkedIn", revision: 7}]);
+  });
+
+test("setup catalog rejects partial source rather than hiding excess guests",
+  async () => {
+    const h = setup();
+    const guest = h.fake.getDoc("programGuests/guest-1")!;
+    for (let i = 0; i < 501; i++) {
+      h.fake.setDoc(`programGuests/catalog-${i}`, {...guest});
+    }
+    await assert.rejects(h.call({action: "readSetup"}),
+      (error: unknown) => (error as {code?: string}).code ===
+        "resource-exhausted");
+  });
+
+test("setup catalog rechecks coordinator expiry after final native reads",
+  async () => {
+    const h = setup();
+    const expiry = now.toMillis() + 100;
+    let clock = now.toMillis();
+    h.dependencies.now = () => Timestamp.fromMillis(clock);
+    h.fake.updateDoc("programStaffGrants/program-1__hotelier-1", {
+      duties: [{duty: "programCoordinator", expiresAtMillis: expiry,
+        pickupPointIds: [], hotelIds: []}],
+    });
+    const read = h.fake.runQuery.bind(h.fake);
+    h.fake.runQuery = async (query) => {
+      const result = await read(query);
+      clock = expiry;
+      return result;
+    };
+    await assert.rejects(h.call({action: "readSetup"}, "hotelier-1"),
+      (error: unknown) => (error as {code?: string}).code ===
+        "permission-denied");
+  });
