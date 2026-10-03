@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
-import {defineSecret, defineString} from "firebase-functions/params";
+import {defineSecret, defineString, expr, projectID} from
+  "firebase-functions/params";
 import {
   CallableRequest,
   HttpsError,
@@ -545,7 +546,8 @@ export const getOrganizerMessagingSetup = onCall(
       [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
       messagingCallableLimits
     ),
-    serviceAccount: "catch-whatsapp-reader@",
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   (request) => getOrganizerMessagingSetupHandler(request)
 );
@@ -555,7 +557,8 @@ export const syncOrganizerWhatsappTemplates = onCall(
       [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
       messagingCallableLimits
     ),
-    serviceAccount: "catch-whatsapp-reader@",
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   (request) => syncOrganizerWhatsappTemplatesHandler(request)
 );
@@ -565,7 +568,8 @@ export const sendOrganizerWhatsappTest = onCall(
       [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
       messagingCallableLimits
     ),
-    serviceAccount: "catch-whatsapp-reader@",
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   (request) => sendOrganizerWhatsappTestHandler(request)
 );

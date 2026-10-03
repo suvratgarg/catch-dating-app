@@ -1,3 +1,4 @@
+import {expr, projectID} from "firebase-functions/params";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -793,7 +794,8 @@ export const sendOrganizerWhatsappReply = onCall(
       [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
       callableLimits
     ),
-    serviceAccount: "catch-whatsapp-reader@",
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   (request) => sendOrganizerWhatsappReplyHandler(request)
 );

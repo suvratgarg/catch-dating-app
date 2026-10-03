@@ -64,7 +64,7 @@ test("known helper bodies and form identity shorthand are inspected, not assumed
     "index.ts": `export {selected} from "./consumer";`,
     "consumer.ts": `${imports}
       import {appCheckCallableOptionsForFormUpload} from "./shared/organizerFormUploadIdentity";
-      export const selected = request(appCheckCallableOptionsForFormUpload({secrets:["EXACT_SECRET"]}), () => {});`,
+      export const selected = request(appCheckCallableOptionsForFormUpload({timeoutSeconds:30}), () => {});`,
     "shared/callableOptions.ts": `export function appCheckCallableOptionsWithLimits(limits) {
       return {enforceAppCheck: true, ...limits}; }`,
     "shared/organizerFormUploadIdentity.ts": `import {appCheckCallableOptionsWithLimits} from "./callableOptions";
@@ -74,7 +74,7 @@ test("known helper bodies and form identity shorthand are inspected, not assumed
   assert.deepEqual(collect(sourceRoot).functions[0], {
     consumer: "selected", platform: "gcfv2",
     serviceAccount: "catch-form-upload@test-project.iam.gserviceaccount.com",
-    secretNames: ["EXACT_SECRET"],
+    secretNames: [],
   });
   fs.appendFileSync(path.join(sourceRoot, "functions/src/shared/callableOptions.ts"),
     "\nappCheckCallableOptionsWithLimits = () => ({secrets:[]});");
@@ -245,7 +245,7 @@ test("reviewed endpoint wrappers, storage overload and imported selectors resolv
       export {image, document} from './events';`,
     "admin/sales/callables.ts": `${imports}
       const read = (opts) => request(opts, () => {});
-      export const selected = read({serviceAccount:'sales-reader@',secrets:['SALES_SECRET']});`,
+      export const selected = read({serviceAccount:'sales-reader@test-project.iam.gserviceaccount.com',secrets:['SALES_SECRET']});`,
     "events.ts": `import {onObjectFinalized} from 'firebase-functions/v2/storage';
       import {onDocumentCreated} from 'firebase-functions/v2/firestore';
       import {selector} from './selector';
@@ -441,4 +441,94 @@ test("WhatsApp reader cannot inherit connection-writer secret permissions", () =
     assert.equal(classifySecretRuntimeAccess({serviceAccount: reader, requirement,
       result: policy([accessor, versionManager], writer)}).reason, "runtime-secret-access-unproven");
   }
+});
+
+
+test("SDK project expression resolves exactly the WhatsApp reader in DEV and PROD", (t) => {
+  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
+    const root = fixture(t, {"index.ts": `${imports}
+      import {expr, projectID} from "firebase-functions/params";
+      export const selected = request({serviceAccount: expr\`catch-whatsapp-reader@\${projectID}.iam.gserviceaccount.com\`}, () => {});`});
+    assert.equal(collect(root, {environment, projectId}).functions[0].serviceAccount,
+      `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`);
+    const aliases = fixture(t, {"index.ts": `${imports}
+      import {expr as sdkExpr, projectID as sdkProject} from "firebase-functions/params";
+      export const selected=request({serviceAccount:sdkExpr\`catch-whatsapp-reader@\${sdkProject}.iam.gserviceaccount.com\`},()=>{});`});
+    assert.equal(collect(aliases, {environment, projectId}).functions[0].serviceAccount,
+      `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`);
+  }
+});
+
+test("project expression rejects arbitrary interpolation, shadowing and builtin overrides", (t) => {
+  const exact = 'expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`';
+  for (const expression of [
+    'expr`catch-whatsapp-reader@${process.env.PROJECT}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID.value()}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID}${projectID}.iam.gserviceaccount.com`',
+    'expr`other-reader@${projectID}.iam.gserviceaccount.com`',
+    'expr`catch-whatsapp-reader@${projectID}.example.com`',
+    '`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`',
+  ]) {
+    const root = fixture(t, {"index.ts": `${imports}
+      import {expr, projectID} from "firebase-functions/params";
+      export const selected=request({serviceAccount:${expression}},()=>{});`});
+    assert.throws(() => collect(root), unresolved);
+  }
+  for (const preamble of [
+    'const expr = () => "fake";', 'const projectID = "foreign";',
+    'projectID.name = "FOREIGN";', 'projectID.value = () => "foreign";',
+    'expr = () => "fake";', 'Object.assign(projectID, {name:"FOREIGN"});',
+    'unknown(projectID);', 'const alias = projectID;',
+    'const alias = {projectID}; alias.projectID.name = "FOREIGN";',
+    'const alias = {expr}; alias.expr = () => "fake";',
+    'export {projectID};', 'export {expr};',
+    'export {projectID as escapedProject};', 'export {expr as escapedTag};',
+  ]) {
+    const root = fixture(t, {"index.ts": `${imports}
+      import {expr, projectID} from "firebase-functions/params";
+      ${preamble} export const selected=request({serviceAccount:${exact}},()=>{});`});
+    assert.throws(() => collect(root), unresolved);
+  }
+  const aliased = exact.replace('expr`', 'sdkExpr`').replace('${projectID}', '${sdkProject}');
+  for (const escape of ['const alias = {sdkProject}; alias.sdkProject.name = "FOREIGN";',
+    'const alias = {sdkExpr};', 'export {sdkProject};', 'export {sdkExpr};',
+    'export {sdkProject as escapedProject};', 'export {sdkExpr as escapedTag};']) {
+    const root = fixture(t, {"index.ts": `${imports}
+      import {expr as sdkExpr, projectID as sdkProject} from "firebase-functions/params";
+      ${escape} export const selected=request({serviceAccount:${aliased}},()=>{});`});
+    assert.throws(() => collect(root), unresolved);
+  }
+  for (const parameter of ["expr", "projectID"]) {
+    const root = fixture(t, {"index.ts": `${imports}
+      import {appCheckCallableOptionsWithLimits} from './shared/callableOptions';
+      export const selected=request(appCheckCallableOptionsWithLimits({}),()=>{});`,
+      "shared/callableOptions.ts": `import {expr, projectID} from "firebase-functions/params";
+        export function appCheckCallableOptionsWithLimits(${parameter}) {
+          return {serviceAccount:${exact}}; }`});
+    assert.throws(() => collect(root), unresolved);
+  }
+  for (const sdkImport of [
+    'import {expr, projectID} from "./fake";',
+    'import type {expr, projectID} from "firebase-functions/params";',
+    'import {expr, type projectID} from "firebase-functions/params";',
+  ]) {
+    const root = fixture(t, {"index.ts": `${imports} ${sdkImport}
+      export const selected=request({serviceAccount:${exact}},()=>{});`,
+      "fake.ts": 'export const expr = () => "fake"; export const projectID = "foreign";'});
+    assert.throws(() => collect(root), unresolved);
+  }
+});
+
+
+test("v2 shorthand with secrets cannot claim deployment readiness", (t) => {
+  for (const options of ["{serviceAccount:'reader@',secrets:['EXACT_SECRET']}",
+    "{serviceAccount:'catch-form-upload@',secrets:['EXACT_SECRET']}"]) {
+    const root = fixture(t, {"index.ts": `${imports} export const selected=request(${options},()=>{});`});
+    assert.throws(() => collect(root), unresolved);
+  }
+  const root = fixture(t, {"index.ts": `${imports}
+    import {setGlobalOptions} from 'firebase-functions';
+    setGlobalOptions({serviceAccount:'reader@'});
+    export const selected=request({secrets:['EXACT_SECRET']},()=>{});`});
+  assert.throws(() => collect(root), unresolved);
 });

@@ -10,6 +10,7 @@
 import * as admin from "firebase-admin";
 import * as crypto from "node:crypto";
 import * as logger from "firebase-functions/logger";
+import {expr, projectID} from "firebase-functions/params";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   CallableRequest,
@@ -346,7 +347,8 @@ export const dispatchOrganizerCampaign = onCall(
       [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
       dispatcherCallableLimits,
     ),
-    serviceAccount: "catch-whatsapp-reader@",
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   (request) => dispatchOrganizerCampaignHandler(request),
 );
