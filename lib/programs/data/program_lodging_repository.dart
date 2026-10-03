@@ -56,8 +56,12 @@ class ProgramLodgingRepository {
     },
   );
 
-  Future<ProgramLodgingReview> preview(String programId) => _call(programId, {
+  Future<ProgramLodgingReview> preview(
+    String programId, {
+    bool regenerate = false,
+  }) => _call(programId, {
     'action': 'preview',
+    if (regenerate) 'regenerate': true,
   }, ProgramLodgingReview.fromCallableData);
 
   Future<ProgramLodgingSetup> readSetup(String programId) => _call(
@@ -119,12 +123,15 @@ class ProgramLodgingRepository {
   Future<ProgramLodgingReview> propose(
     String programId,
     ProgramLodgingProposal current,
-    List<Map<String, Object?>> placements,
-  ) {
+    List<Map<String, Object?>> placements, {
+    Map<String, Object?>? expectedRevisions,
+  }) {
     _scope(current, programId);
     return _call(programId, {
       'action': 'propose',
-      'expectedRevisions': current.revisions,
+      'expectedRevisions': lodgingJsonMap(
+        expectedRevisions ?? current.revisions,
+      ),
       'placements': placements.map(lodgingJsonMap).toList(growable: false),
     }, ProgramLodgingReview.fromCallableData);
   }
@@ -132,22 +139,24 @@ class ProgramLodgingRepository {
   Future<List<ProgramLodgingDestination>> destinations(
     String programId,
     ProgramLodgingProposal current,
-    String partyId,
-  ) {
+    String partyId, {
+    Map<String, Object?>? expectedRevisions,
+  }) {
     _scope(current, programId);
+    final revisions = lodgingJsonMap(expectedRevisions ?? current.revisions);
     return _call(
       programId,
       {
         'action': 'destinations',
         'partyId': partyId,
-        'expectedRevisions': current.revisions,
+        'expectedRevisions': revisions,
         'placements': current.placements,
       },
       (value) {
         final map = _kind(value, 'destinations');
-        final revisions = requiredMap(map['revisions'], 'revisions');
-        if (!current.revisions.entries.every(
-          (e) => revisions[e.key] == e.value,
+        final returnedRevisions = requiredMap(map['revisions'], 'revisions');
+        if (!revisions.entries.every(
+          (e) => returnedRevisions[e.key] == e.value,
         )) {
           throw const FormatException('Destination revisions differ.');
         }

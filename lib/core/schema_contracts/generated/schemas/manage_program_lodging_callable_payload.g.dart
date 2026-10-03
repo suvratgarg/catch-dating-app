@@ -663,6 +663,10 @@ const schemaManageProgramLodgingCallablePayloadSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
         },
+        'regenerate': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Explicitly generate a new current candidate instead of retaining a compatible approved proposal.',
+        },
       },
     },
     <String, Object?>{

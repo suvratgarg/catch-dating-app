@@ -264,7 +264,10 @@ class FakeLodgingRepository extends Fake implements ProgramLodgingRepository {
   }
 
   @override
-  Future<ProgramLodgingReview> preview(String programId) async {
+  Future<ProgramLodgingReview> preview(
+    String programId, {
+    bool regenerate = false,
+  }) async {
     previews++;
     if (previewFailure != null) throw previewFailure!;
     return pendingPreview ?? current;

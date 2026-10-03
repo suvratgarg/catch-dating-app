@@ -51,6 +51,27 @@ void main() {
     },
   );
   test(
+    'membership save without lodging setup reloads an honest empty view',
+    () async {
+      repository.hasSetup = false;
+      repository.previewFailure = StateError('Lodging configuration is absent');
+      container.invalidate(provider);
+      await container.read(provider.future);
+      final controller = container.read(provider.notifier);
+      final membership = await controller.loadMembership('guest');
+      final previews = repository.previews;
+      await controller.saveMembership(membership, ['friends']);
+      final view = container.read(provider).requireValue;
+      expect(repository.membershipSaves, 1);
+      expect(repository.previews, previews);
+      expect(view.setup.configuration, isNull);
+      expect(view.review, isNull);
+      expect(view.setup.catalog?.rows('guests'), isNotEmpty);
+      expect(view.error, isNull);
+    },
+  );
+
+  test(
     'uncertain membership write hides old choices and refresh never repeats it',
     () async {
       await container.read(provider.future);

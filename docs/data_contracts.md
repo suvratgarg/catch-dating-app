@@ -5035,8 +5035,14 @@ bound to a hotel allocated by the exact approved proposal; an uncertain response
 retains the same hotel and operation ID. It clears session-invalid projections
 and preserves exact operation IDs for uncertain decision retries. Routed setup
 edits dates, explicit sharing parties, inventory and pins against the current
-configuration revision. Acknowledged writes with failed reloads require a fresh
-read instead of repeating an old write. Coordinator-only `readMembership`
+configuration revision. Ordinary preview preserves the exact approved proposal
+while its source remains compatible, including precisely its own publication
+revision advance and unchanged native placements; explicit `regenerate: true`
+creates a new current candidate without changing approval. Manual edits use the
+current snapshot revisions. Acknowledged writes with failed reloads require a
+fresh read instead of repeating an old write. Membership decisions work before
+lodging setup exists and reload the current no-configuration view honestly.
+Coordinator-only `readMembership`
 projects one guest's bounded, immutable source-labelled assertions, canonical
 memberships and selected inclusions/exclusions. `decideMembership` fences the
 complete explicit group choice by the current guest revision and reuses the

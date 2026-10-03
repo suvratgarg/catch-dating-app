@@ -114,6 +114,133 @@ test("callable publication is idempotent and hotel output stays operational",
       "hotelier-1"), /Hotel duty/);
   });
 
+async function approvedManualSetup() {
+  const h = setup();
+  h.fake.updateDoc("programLodgingConfigs/program-1", {
+    rooms: [...h.config.rooms, {...h.config.rooms[0], id: "room-b",
+      resourceIds: ["room-b"]}],
+    inventory: [...h.config.inventory, {...h.config.inventory[0],
+      id: "unit-b", physicalRoomId: "room-b"}],
+    labels: [...h.config.labels, {inventoryId: "unit-b", roomLabel: "102"}],
+  });
+  h.fake.updateDoc("programRoomBlocks/block", {totalRooms: 2});
+  const automatic = await h.preview();
+  const other = automatic.proposal.placements[0].inventoryId === "unit" ?
+    "unit-b" : "unit";
+  const manual = await h.call({action: "propose",
+    expectedRevisions: automatic.proposal.revisions,
+    placements: [{partyId: "party", inventoryId: other}]});
+  if (manual.kind !== "proposal") throw new Error("Wrong manual kind");
+  assert.notEqual(manual.proposal.id, automatic.proposal.id);
+  await h.call({action: "save", proposal: manual.proposal});
+  await h.call({action: "transition", command: {
+    proposalId: manual.proposal.id, operationId: "manual-approve",
+    expectedWorkflowRevision: 0, action: "approve", hotelId: null}});
+  return {...h, automatic, manual};
+}
+
+test("ordinary preview preserves an approved manual alternative", async () => {
+  const h = await approvedManualSetup();
+  const review = await h.preview();
+  assert.equal(review.context.workflow.approvedProposalId,
+    h.manual.proposal.id);
+  assert.equal(review.proposal.id, h.manual.proposal.id);
+  assert.deepEqual(review.proposal.placements, h.manual.proposal.placements);
+});
+
+test("ordinary preview preserves published and confirmed manual identity",
+  async () => {
+    const h = await approvedManualSetup();
+    await h.call({action: "transition", command: {
+      proposalId: h.manual.proposal.id, operationId: "manual-publish",
+      expectedWorkflowRevision: 1, action: "publishGuests", hotelId: null}});
+    await h.call({action: "transition", command: {
+      proposalId: h.manual.proposal.id, operationId: "manual-confirm",
+      expectedWorkflowRevision: 2, action: "confirmHotel",
+      hotelId: "hotel-1"}});
+    const review = await h.preview();
+    assert.equal(review.context.workflow.guestPublishedProposalId,
+      h.manual.proposal.id);
+    assert.deepEqual(review.context.workflow.confirmedHotelIds, ["hotel-1"]);
+    assert.equal(review.context.snapshot.revisions.published,
+      h.manual.proposal.revisions.published + 1);
+    assert.equal(review.proposal.id, h.manual.proposal.id);
+    assert.deepEqual(review.proposal.placements, h.manual.proposal.placements);
+  });
+
+test("explicit regeneration creates a candidate without changing approval",
+  async () => {
+    const h = await approvedManualSetup();
+    const result = await h.call({action: "preview", regenerate: true});
+    if (result.kind !== "proposal") throw new Error("Wrong regeneration kind");
+    assert.equal(result.proposal.id, h.automatic.proposal.id);
+    assert.equal(result.context.workflow.approvedProposalId,
+      h.manual.proposal.id);
+    assert.equal((await h.preview()).proposal.id, h.manual.proposal.id);
+  });
+
+test("native changes never revive an older approved proposal", async () => {
+  const h = await approvedManualSetup();
+  h.fake.updateDoc("programGuests/guest-1", {displayName: "Updated guest"});
+  const review = await h.preview();
+  assert.notEqual(review.proposal.id, h.manual.proposal.id);
+  assert.ok(review.proposal.revisions.source >
+    h.manual.proposal.revisions.source);
+  assert.equal(review.context.workflow.approvedProposalId,
+    h.manual.proposal.id);
+});
+
+test("manual replacement after publication uses current source revisions",
+  async () => {
+    const h = await approvedManualSetup();
+    await h.call({action: "transition", command: {
+      proposalId: h.manual.proposal.id, operationId: "manual-publish",
+      expectedWorkflowRevision: 1, action: "publishGuests", hotelId: null}});
+    const review = await h.preview();
+    const replacement = await h.call({action: "propose",
+      expectedRevisions: review.context.snapshot.revisions,
+      placements: h.automatic.proposal.placements});
+    if (replacement.kind !== "proposal") throw new Error("Wrong proposal");
+    assert.notEqual(replacement.proposal.id, h.manual.proposal.id);
+    assert.equal(replacement.proposal.revisions.published,
+      h.manual.proposal.revisions.published + 1);
+    await h.call({action: "save", proposal: replacement.proposal});
+    await h.call({action: "transition", command: {
+      proposalId: replacement.proposal.id, operationId: "replace-approve",
+      expectedWorkflowRevision: 2, action: "approve", hotelId: null}});
+    assert.equal((await h.preview()).proposal.id, replacement.proposal.id);
+  });
+
+test("ordinary review rejects changed immutable approved content",
+  async () => {
+    const h = await approvedManualSetup();
+    h.fake.updateDoc(`programLodgingProposals/${h.manual.proposal.id}`, {
+      proposal: {...h.manual.proposal, placements: []}});
+    await assert.rejects(h.preview(), /content does not match its identity/);
+  });
+
+test("ordinary review rechecks duty after reading approved proposal",
+  async () => {
+    const h = await approvedManualSetup();
+    const expiry = now.toMillis() + 100;
+    let clock = now.toMillis();
+    h.dependencies.now = () => Timestamp.fromMillis(clock);
+    h.fake.updateDoc("programStaffGrants/program-1__hotelier-1", {
+      duties: [{duty: "programCoordinator", expiresAtMillis: expiry,
+        pickupPointIds: [], hotelIds: []}]});
+    const get = h.fake.getDoc.bind(h.fake);
+    h.fake.getDoc = (path) => {
+      const result = get(path);
+      if (path === `programLodgingProposals/${h.manual.proposal.id}`) {
+        clock = expiry;
+      }
+      return result;
+    };
+    await assert.rejects(h.call({action: "preview"}, "hotelier-1"),
+      (error: unknown) => (error as {code?: string}).code ===
+        "permission-denied");
+  });
+
 test("setup derives organizer scope and enforces revision", async () => {
   const h = setup();
   const fields = {demand: h.config.demand, parties: h.config.parties,

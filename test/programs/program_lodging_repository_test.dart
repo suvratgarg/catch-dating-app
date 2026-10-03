@@ -272,6 +272,78 @@ void main() {
     },
   );
 
+  test(
+    'published review retains immutable identity and sends current edit revisions',
+    () async {
+      final input = _review();
+      final context = input['context']! as Map;
+      final snapshot = context['snapshot']! as Map;
+      final revisions = snapshot['revisions']! as Map;
+      revisions['published'] = (revisions['published']! as num).toInt() + 1;
+      final workflow = context['workflow']! as Map;
+      workflow['approvedProposalId'] = _id;
+      workflow['guestPublishedProposalId'] = _id;
+      final review = ProgramLodgingReview.fromCallableData(input);
+      expect(review.proposal.id, _id);
+      final functions = _Functions()..response = input;
+      final repository = ProgramLodgingRepository(
+        functions,
+        _Snapshots(),
+        () => 'actor',
+      );
+      await repository.propose(
+        'program',
+        review.proposal,
+        [
+          for (final p in review.proposal.placements)
+            Map<String, Object?>.from(p),
+        ],
+        expectedRevisions: lodgingJsonMap(review.snapshot['revisions']),
+      );
+      expect(
+        (functions.payload as Map)['expectedRevisions'],
+        review.snapshot['revisions'],
+      );
+      expect(
+        (functions.payload as Map)['expectedRevisions'],
+        isNot(review.proposal.revisions),
+      );
+      for (final alteration in [
+        'source',
+        'inventory',
+        'layout',
+        'published',
+        'binding',
+        'workflow',
+      ]) {
+        final invalid = jsonDecode(jsonEncode(input)) as Map<String, Object?>;
+        final invalidContext = invalid['context']! as Map;
+        final invalidSnapshot = invalidContext['snapshot']! as Map;
+        if (alteration == 'binding') {
+          ((invalidSnapshot['published']! as List).single
+                  as Map)['inventoryId'] =
+              'other';
+        } else if (alteration == 'workflow') {
+          (invalidContext['workflow']! as Map)['guestPublishedProposalId'] =
+              null;
+        } else {
+          final values = invalidSnapshot['revisions']! as Map;
+          values[alteration] = (values[alteration]! as num).toInt() + 1;
+        }
+        expect(
+          () => ProgramLodgingReview.fromCallableData(invalid),
+          throwsFormatException,
+        );
+      }
+      await repository.preview('program', regenerate: true);
+      expect(functions.payload, {
+        'programId': 'program',
+        'action': 'preview',
+        'regenerate': true,
+      });
+    },
+  );
+
   test('account change during callable discards private result', () async {
     final gate = Completer<Object?>();
     final functions = _Functions()..pending = gate.future;

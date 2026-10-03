@@ -660,6 +660,10 @@ export const manageProgramLodgingCallablePayloadSchema: Record<string, unknown> 
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        },
+        "regenerate": {
+          "type": "boolean",
+          "description": "Explicitly generate a new current candidate instead of retaining a compatible approved proposal."
         }
       }
     },

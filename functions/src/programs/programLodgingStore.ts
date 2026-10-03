@@ -77,7 +77,7 @@ export class ProgramLodgingStore {
   constructor(private readonly deps: ProgramDataDeps,
     private readonly loadSource: LoadLodgingSource) {}
 
-  async review(programId: string, actorUid: string) {
+  async review(programId: string, actorUid: string, includeApproved = false) {
     return this.deps.firestore().runTransaction(async (tx) => {
       const access = await this.access(tx, programId, actorUid);
       requireProgramDuty(access, "programCoordinator");
@@ -90,16 +90,39 @@ export class ProgramLodgingStore {
         requireStoredShape(validateProgramLodgingWorkflowDocument(stored));
         this.assertStoredScope(stored, access, programId);
       }
+      const workflow = stored?.workflow ?? emptyWorkflow();
+      let approvedProposal: LodgingProposal | null = null;
+      if (includeApproved && workflow.approvedProposalId) {
+        const proposalSnap = await tx.get(this.proposalRef(
+          workflow.approvedProposalId));
+        if (!proposalSnap.exists) {
+          throw new HttpsError("not-found", "No approved proposal.");
+        }
+        const saved = proposalSnap.data() as StoredProposal;
+        this.assertStoredProposal(saved, access, programId,
+          workflow.approvedProposalId);
+        const compatible = this.approvedSnapshot(source.snapshot,
+          saved.proposal, workflow);
+        const keys = ["source", "inventory", "layout", "published"] as const;
+        if (keys.every((key) => compatible.revisions[key] ===
+            saved.proposal.revisions[key]) &&
+            validateLodgingPlacements(compatible,
+              saved.proposal.placements, true).length === 0) {
+          approvedProposal = saved.proposal;
+        }
+        // Any other native/configuration change produces a fresh candidate.
+        // Workflow history remains visible, but never approves that new ID.
+      }
       const authority = this.authority(access, actorUid, source.snapshot);
       if (!source.configuration || !source.labels) {
         throw new HttpsError("failed-precondition",
           "Canonical lodging review context is unavailable.");
       }
       source.persistSource?.();
-      return {snapshot: source.snapshot, configuration: source.configuration,
-        labels: source.labels, workflow: stored?.workflow ?? emptyWorkflow(),
+      return {context: {snapshot: source.snapshot,
+        configuration: source.configuration, labels: source.labels, workflow,
         accessExpiresAtMillis: authority.role === "manager" ? null :
-          authority.expiresAtMillis};
+          authority.expiresAtMillis}, approvedProposal};
     });
   }
 

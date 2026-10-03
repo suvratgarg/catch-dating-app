@@ -288,13 +288,14 @@ export async function manageProgramLodgingHandler(
         data.expectedConfigurationRevision, data.adoptions)};
       break;
     case "preview": {
-      const context = await store.review(data.programId, actorUid);
+      const {context, approvedProposal} = await store.review(data.programId,
+        actorUid, !data.regenerate);
       result = {kind: "proposal", context,
-        proposal: planLodging(context.snapshot)};
+        proposal: approvedProposal ?? planLodging(context.snapshot)};
       break;
     }
     case "propose": {
-      const context = await store.review(data.programId, actorUid);
+      const {context} = await store.review(data.programId, actorUid);
       assertLodgingProposalCurrent({revisions: data.expectedRevisions},
         context.snapshot.revisions);
       const issues = validateLodgingPlacements(context.snapshot,
@@ -308,7 +309,7 @@ export async function manageProgramLodgingHandler(
       break;
     }
     case "destinations": {
-      const context = await store.review(data.programId, actorUid);
+      const {context} = await store.review(data.programId, actorUid);
       assertLodgingProposalCurrent({revisions: data.expectedRevisions},
         context.snapshot.revisions);
       if (!context.snapshot.parties.some((p) => p.id === data.partyId)) {

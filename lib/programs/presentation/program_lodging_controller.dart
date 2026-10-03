@@ -81,13 +81,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       ref,
       account,
       programId,
-      () async {
-        final setup = await _repository.readSetup(programId);
-        if (setup.configuration == null) {
-          return ProgramLodgingView(setup: setup);
-        }
-        return _reviewView(await _repository.preview(programId));
-      },
+      () => _readView(_epoch),
       onAuthorityChanged: () {
         _epoch++;
         _command = null;
@@ -179,7 +173,11 @@ class ProgramLodgingController extends _$ProgramLodgingController {
 
   Future<void> regenerate() async {
     _ensureEditing();
-    await _run(_current(), () => _repository.preview(_programId), _reviewView);
+    await _run(
+      _current(),
+      () => _repository.preview(_programId, regenerate: true),
+      _reviewView,
+    );
   }
 
   Future<List<ProgramLodgingDestination>> destinations(
@@ -190,8 +188,12 @@ class ProgramLodgingController extends _$ProgramLodgingController {
     final view = _current(proposalId);
     return _run(
       view,
-      () =>
-          _repository.destinations(_programId, view.review!.proposal, partyId),
+      () => _repository.destinations(
+        _programId,
+        view.review!.proposal,
+        partyId,
+        expectedRevisions: lodgingJsonMap(view.review!.snapshot['revisions']),
+      ),
       (_) => view,
     );
   }
@@ -213,6 +215,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
         _programId,
         proposal,
         proposal.moving(partyId, inventoryId),
+        expectedRevisions: lodgingJsonMap(view.review!.snapshot['revisions']),
       ),
       _reviewView,
     );
@@ -253,7 +256,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       }
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       return _reloadAcknowledgedWrite(actionEpoch);
-    }, _reviewView);
+    }, (next) => next);
   }
 
   Future<ProgramLodgingSetup> loadSetup() {
@@ -297,7 +300,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       );
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       return _reloadAcknowledgedWrite(actionEpoch);
-    }, _reviewView);
+    }, (next) => next);
   }
 
   Future<void> saveSetup(Map<String, Object?> fields) async {
@@ -313,7 +316,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       );
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       return _reloadAcknowledgedWrite(actionEpoch);
-    }, _reviewView);
+    }, (next) => next);
   }
 
   Future<void> decide(ProgramLodgingAction action, {String? hotelId}) async {
@@ -357,7 +360,7 @@ class ProgramLodgingController extends _$ProgramLodgingController {
       if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
       _command = null;
       return _reloadAcknowledgedWrite(actionEpoch);
-    }, _reviewView);
+    }, (next) => next);
   }
 
   void _hideStaleView(Object error, StackTrace stack) {
@@ -365,9 +368,18 @@ class ProgramLodgingController extends _$ProgramLodgingController {
     state = AsyncError(error, stack);
   }
 
-  Future<ProgramLodgingReview> _reloadAcknowledgedWrite(int actionEpoch) async {
+  Future<ProgramLodgingView> _readView(int actionEpoch) async {
+    final setup = await _repository.readSetup(_programId);
+    if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
+    if (setup.configuration == null) return ProgramLodgingView(setup: setup);
+    final review = await _repository.preview(_programId);
+    if (!ref.mounted || actionEpoch != _epoch) throw programReadSuperseded;
+    return _reviewView(review);
+  }
+
+  Future<ProgramLodgingView> _reloadAcknowledgedWrite(int actionEpoch) async {
     try {
-      return await _repository.preview(_programId);
+      return await _readView(actionEpoch);
     } catch (error, stack) {
       // The write was acknowledged. An unavailable new projection must never
       // restore the prior revision or offer to repeat the successful write.

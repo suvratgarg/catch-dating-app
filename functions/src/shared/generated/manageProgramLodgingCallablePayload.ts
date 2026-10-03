@@ -150,6 +150,10 @@ export type ManageProgramLodgingCallablePayload =
   | {
       action: "preview";
       programId: string;
+      /**
+       * Explicitly generate a new current candidate instead of retaining a compatible approved proposal.
+       */
+      regenerate?: boolean;
     }
   | {
       action: "propose";

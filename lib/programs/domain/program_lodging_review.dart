@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -80,8 +82,33 @@ class ProgramLodgingReview {
       }
     }
     final revisions = requiredMap(snapshot['revisions'], 'snapshot revisions');
+    final currentPublished = requiredInt(revisions, 'published');
+    final proposalPublished = requiredInt(proposal.revisions, 'published');
+    String placementKey(Iterable<Map<Object?, Object?>> rows) {
+      final keys =
+          rows
+              .map(
+                (row) => jsonEncode([
+                  requiredString(row, 'partyId'),
+                  requiredString(row, 'inventoryId'),
+                ]),
+              )
+              .toList()
+            ..sort();
+      return jsonEncode(keys);
+    }
+
+    // Preserve immutable approved identity across precisely its own publication.
+    // Editing uses current snapshot revisions; arbitrary stale sources fail.
+    final ownPublication =
+        workflow['approvedProposalId'] == proposal.id &&
+        workflow['guestPublishedProposalId'] == proposal.id &&
+        currentPublished == proposalPublished + 1 &&
+        placementKey(mapList(snapshot['published'], 'published')) ==
+            placementKey(proposal.placements);
     for (final key in proposal.revisions.keys) {
-      if (revisions[key] != proposal.revisions[key]) {
+      if (revisions[key] != proposal.revisions[key] &&
+          !(key == 'published' && ownPublication)) {
         throw const FormatException('Lodging review revisions differ.');
       }
     }
