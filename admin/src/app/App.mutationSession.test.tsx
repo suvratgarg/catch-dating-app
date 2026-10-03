@@ -52,7 +52,8 @@ describe("App mutation session isolation", () => {
     let fail!: (error: Error) => void;
     mocks.save.mockReturnValue(new Promise((resolve, reject) => { complete = resolve; fail = reject; }));
     const user = userEvent.setup();
-    render(<App />);
+    await act(async () => { render(<App />); });
+    await act(async () => { await vi.dynamicImportSettled(); });
     await screen.findByRole("button", {name: "Save role change"});
     await user.click(screen.getByRole("checkbox", {name: /Analytics viewer/iu}));
     await user.type(screen.getByLabelText("Review note"), "Synthetic approved review.");
@@ -76,7 +77,8 @@ describe("App mutation session isolation", () => {
   it("keeps private content hidden and exposes sign-out failure recovery", async () => {
     mocks.signOut.mockRejectedValue(new Error("Synthetic signout storage failure"));
     const user = userEvent.setup();
-    render(<App />);
+    await act(async () => { render(<App />); });
+    await act(async () => { await vi.dynamicImportSettled(); });
     await screen.findByRole("button", {name: "Save role change"});
     await user.click(screen.getByText(owner.email!));
     await user.click(screen.getByRole("button", {name: "Sign out"}));
