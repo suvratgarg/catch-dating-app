@@ -30,7 +30,7 @@ function fixture(source, {emulators = true, files = ["case.test.cjs"]} = {}) {
 }
 
 test("strict integration emits actual executed test IDs and counts", () => {
-  const result = fixture("require('node:test').test('permission denied', () => {});");
+  const result = fixture("require('node:test').test('permission denied', () => { const assert = require('node:assert/strict'); assert.ok(process.env.FIRESTORE_EMULATOR_HOST); assert.ok(process.env.FIREBASE_STORAGE_EMULATOR_HOST); });");
   assert.equal(result.status, 0, result.stderr);
   const evidence = JSON.parse(result.stdout.trim().split("\n").at(-1));
   assert.equal(evidence.success, true);

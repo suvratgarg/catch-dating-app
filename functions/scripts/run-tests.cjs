@@ -45,9 +45,9 @@ if (require.main === module) {
 
 // The ordinary Functions lane intentionally allows emulator-only tests to skip.
 // Its integration owner must use this mode inside emulators:exec instead.
-async function runStrictFiles(files, {root = functionsRoot, env = process.env} = {}) {
+async function runStrictFiles(files, {root = functionsRoot} = {}) {
   for (const key of ["FIRESTORE_EMULATOR_HOST", "FIREBASE_STORAGE_EMULATOR_HOST"]) {
-    if (!env[key]) throw new Error(`${key} is required for backend integration tests.`);
+    if (!process.env[key]) throw new Error(`${key} is required for backend integration tests.`);
   }
   if (!files.length || new Set(files).size !== files.length) {
     throw new Error("Backend integration requires nonempty, unique test files.");
