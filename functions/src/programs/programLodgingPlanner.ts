@@ -21,11 +21,19 @@ export function lodgingScore(snapshot: LodgingSnapshot,
   rows: readonly LodgingPlacement[]): number[] {
   const membership = effectiveMemberships(snapshot.groups,
     snapshot.memberships);
-  const partyGroups = new Map(snapshot.parties.map((p) => [p.id,
-    new Set(p.guestIds.flatMap((id) => [...membership.get(id) ?? []]))]));
-  const partyNights = new Map(snapshot.parties.map((p) => [p.id,
-    new Set(p.guestIds.flatMap((id) => lodgingNights(
-      snapshot.guests.find((g) => g.id === id)!)))]));
+  const presence = new Map<string, Map<string, Set<number>>>();
+  for (const party of snapshot.parties) {
+    const groups = new Map<string, Set<number>>();
+    for (const guestId of party.guestIds) {
+      const guest = snapshot.guests.find((g) => g.id === guestId)!;
+      for (const groupId of membership.get(guestId) ?? []) {
+        const nights = groups.get(groupId) ?? new Set<number>();
+        for (const night of lodgingNights(guest)) nights.add(night);
+        groups.set(groupId, nights);
+      }
+    }
+    presence.set(party.id, groups);
+  }
   const units = new Map(snapshot.inventory.map((unit) =>
     [unit.id, inventoryFacts(snapshot, unit)]));
   const assigned = new Map(rows.map((r) => [r.partyId, r.inventoryId]));
@@ -37,19 +45,29 @@ export function lodgingScore(snapshot: LodgingSnapshot,
     for (let j = i + 1; j < rows.length; j++) {
       const a = rows[i];
       const b = rows[j];
-      const shared = [...partyGroups.get(a.partyId)!].filter((id) =>
-        partyGroups.get(b.partyId)!.has(id)).length;
-      if (!shared || ![...partyNights.get(a.partyId)!].some((night) =>
-        partyNights.get(b.partyId)!.has(night))) continue;
-      hasFriend.add(a.partyId);
-      hasFriend.add(b.partyId);
+      const sharedNights = new Map<number, number>();
+      for (const [groupId, nights] of presence.get(a.partyId)!) {
+        const other = presence.get(b.partyId)!.get(groupId);
+        for (const night of nights) {
+          if (other?.has(night)) {
+            sharedNights.set(night, (sharedNights.get(night) ?? 0) + 1);
+          }
+        }
+      }
+      if (sharedNights.size === 0) continue;
+      for (const night of sharedNights.keys()) {
+        hasFriend.add(JSON.stringify([a.partyId, night]));
+        hasFriend.add(JSON.stringify([b.partyId, night]));
+      }
       const left = units.get(a.inventoryId)!;
       const right = units.get(b.inventoryId)!;
       const sameZone = left.hotelId === right.hotelId &&
         left.zoneId === right.zoneId;
       if (sameZone) {
-        hasNearbyFriend.add(a.partyId);
-        hasNearbyFriend.add(b.partyId);
+        for (const night of sharedNights.keys()) {
+          hasNearbyFriend.add(JSON.stringify([a.partyId, night]));
+          hasNearbyFriend.add(JSON.stringify([b.partyId, night]));
+        }
       }
       const separation = left.hotelId !== right.hotelId ? 100 :
         left.building !== right.building ? 25 :
@@ -59,7 +77,9 @@ export function lodgingScore(snapshot: LodgingSnapshot,
       const geometric = sameZone && left.position && right.position ?
         Math.min(1, Math.hypot(left.position.x - right.position.x,
           left.position.y - right.position.y) / 1000) : 0;
-      distance += (separation + geometric) * Math.min(shared, 3);
+      for (const shared of sharedNights.values()) {
+        distance += (separation + geometric) * Math.min(shared, 3);
+      }
     }
   }
   const changes = snapshot.published.filter((p) =>
@@ -119,6 +139,26 @@ export function planLodging(snapshot: LodgingSnapshot,
   let states = [state(locked)];
   let explored = 0;
   let complete = exact;
+  // Seed a complete greedy pass before spending the budget on alternatives.
+  // Otherwise a wide beam can exhaust its budget after only a few parties.
+  let seed = state(locked);
+  for (const party of pending) {
+    const occupied = new Set(seed.rows.map((r) => r.inventoryId));
+    const prior = snapshot.published.find((p) => p.partyId === party.id);
+    const choices = [...candidates.get(party.id)!].sort((a, b) =>
+      Number(b === prior?.inventoryId) - Number(a === prior?.inventoryId) ||
+      Number(occupied.has(a)) - Number(occupied.has(b)) || a.localeCompare(b));
+    for (const inventoryId of choices) {
+      if (explored >= maxStates) {
+        complete = false; break;
+      }
+      explored++;
+      const rows = [...seed.rows, {partyId: party.id, inventoryId}];
+      if (validate(rows).length === 0) {
+        seed = state(rows); break;
+      }
+    }
+  }
   for (const party of pending) {
     const next: State[] = [];
     for (const current of states) {
@@ -136,10 +176,13 @@ export function planLodging(snapshot: LodgingSnapshot,
     }
     next.sort(order);
     states = exact ? next : next.slice(0, beamWidth);
-    if (explored >= maxStates) break;
+    if (explored >= maxStates) {
+      complete = false;
+      break;
+    }
   }
   states.sort(order);
-  let best = states[0];
+  let best = order(seed, states[0]) < 0 ? seed : states[0];
   // Single moves solve coherent overflow (20+1 ->19+2). Swaps let a scarce
   // accessible/suite unit change hands without temporarily breaking capacity.
   for (let pass = 0; pass < 6 && explored < maxStates; pass++) {
@@ -178,7 +221,7 @@ export function planLodging(snapshot: LodgingSnapshot,
     (candidates.get(id)?.length ? "feasible units compete with other parties" :
       [...rejected.get(id) ?? []].sort().join(", ") ||
         "no contracted inventory"));
-  explanations.push(`${best.score[3]} socially isolated parties; ` +
+  explanations.push(`${best.score[3]} socially isolated party-nights; ` +
     `${best.score[2]} changes to published placements.`);
   explanations.push(complete ? "Exhaustive search completed." :
     "Bounded search; a better feasible allocation may exist.");

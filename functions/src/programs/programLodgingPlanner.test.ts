@@ -260,3 +260,38 @@ test("invalid demand and dates fail closed", () => {
   s.inventory[0].availability[0].departure = "2026-10-06";
   assert.throws(() => assertLodgingSnapshot(s), /contracted dates/);
 });
+
+
+test("a bounded wide search retains its feasible full-roster seed", () => {
+  const s = fixture(40, 40);
+  const result = planLodging(s, {maxStates: 100, beamWidth: 24});
+  assert.equal(result.placements.length, 40);
+  assert.deepEqual(validateLodgingPlacements(s, result.placements, true), []);
+  assert.equal(result.search.complete, false);
+  assert.ok(result.search.explored <= 100);
+});
+
+
+test("exact budget exhaustion never claims exhaustive completion", () => {
+  const result = planLodging(fixture(2, 2), {maxStates: 2});
+  assert.equal(result.placements.length, 2);
+  assert.equal(result.search.complete, false);
+  assert.match(result.explanations.join(" "), /Bounded search/);
+});
+
+test("roommate date unions cannot invent social co-presence", () => {
+  const s = fixture(3, 2);
+  s.guests[0].departure = "2026-10-02";
+  s.guests[1].arrival = "2026-10-02";
+  s.guests[2].arrival = "2026-10-02";
+  s.parties[0].guestIds.push("guest1");
+  s.parties.splice(1, 1);
+  s.groups = [{id: "friends", parentIds: []}];
+  s.memberships = members(["guest0", "guest2"], "friends");
+  s.rooms[1].zoneId = "B";
+  const rows = [{partyId: "party0", inventoryId: "unit0"},
+    {partyId: "party2", inventoryId: "unit1"}];
+  assert.deepEqual(lodgingScore(s, rows).slice(3), [0, 0]);
+  s.memberships.push(...members(["guest1"], "friends"));
+  assert.deepEqual(lodgingScore(s, rows).slice(3), [2, 2]);
+});
