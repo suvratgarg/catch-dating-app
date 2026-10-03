@@ -89,6 +89,12 @@ export const upsertProgramRoomBlockCallablePayloadSchema: Record<string, unknown
         "null"
       ],
       "maxLength": 500
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 } as const;

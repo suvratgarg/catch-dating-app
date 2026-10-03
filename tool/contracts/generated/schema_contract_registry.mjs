@@ -169537,7 +169537,7 @@ export const programStayDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_stays.schema.json",
   "title": "ProgramStayDocument",
-  "description": "Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.",
+  "description": "Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programStays",
@@ -169577,7 +169577,7 @@ export const programStayDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
-      "description": "Exactly one guest per stay; roommates are separate stays sharing roomLabel."
+      "description": "Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups."
     },
     "hotelId": {
       "type": "string",
@@ -169814,6 +169814,12 @@ export const programStayDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "roomOccupancyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing."
     }
   }
 };
@@ -169886,7 +169892,7 @@ export const programRoomBlockDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 500,
-      "description": "Server-maintained count of live programStays rows bound to this block; never written by clients."
+      "description": "Peak simultaneous occupied rooms across local contract nights; recomputed from explicit occupancy identities, not guest rows."
     },
     "heldForGroupIds": {
       "type": "array",
@@ -170019,6 +170025,12 @@ export const programRoomBlockDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 };
@@ -182300,7 +182312,7 @@ export const upsertProgramStayCallablePayloadSchema = {
       ],
       "minLength": 1,
       "maxLength": 40,
-      "description": "Room or suite label shared by roommates (e.g. \"312\")."
+      "description": "Display-only room or suite label; never used as room identity."
     },
     "status": {
       "type": "string",
@@ -182345,6 +182357,21 @@ export const upsertProgramStayCallablePayloadSchema = {
     "markHotelArrived": {
       "type": "boolean",
       "description": "When true, stamps hotelArrivedAt with the server time."
+    },
+    "shareWithStayId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicitly join this live stay at the same hotel and block; requires its reviewed revision and verified block occupancy limit. Never inferred from labels or households."
+    },
+    "shareWithStayRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "separateRoom": {
+      "type": "boolean",
+      "description": "Explicitly leave a shared occupancy for a newly minted room occupancy."
     }
   }
 };
@@ -182436,6 +182463,12 @@ export const upsertProgramRoomBlockCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 500
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 };
@@ -185847,6 +185880,11 @@ export const programHotelRoomsCallableResponseSchema = {
             "type": "integer",
             "minimum": 0,
             "maximum": 253402300799999
+          },
+          "maxOccupantsPerRoom": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
           }
         }
       }
@@ -185948,6 +185986,11 @@ export const programHotelRoomsCallableResponseSchema = {
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "roomOccupancyId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }

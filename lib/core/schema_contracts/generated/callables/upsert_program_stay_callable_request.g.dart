@@ -21,6 +21,9 @@ final class UpsertProgramStayCallableRequest {
     this.notes,
     this.markRoomReady,
     this.markHotelArrived,
+    this.shareWithStayId,
+    this.shareWithStayRevision,
+    this.separateRoom,
   });
 
   final String programId;
@@ -36,6 +39,9 @@ final class UpsertProgramStayCallableRequest {
   final String? notes;
   final bool? markRoomReady;
   final bool? markHotelArrived;
+  final String? shareWithStayId;
+  final int? shareWithStayRevision;
+  final bool? separateRoom;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
@@ -51,5 +57,8 @@ final class UpsertProgramStayCallableRequest {
     'notes': ?notes,
     'markRoomReady': ?markRoomReady,
     'markHotelArrived': ?markHotelArrived,
+    'shareWithStayId': ?shareWithStayId,
+    'shareWithStayRevision': ?shareWithStayRevision,
+    'separateRoom': ?separateRoom,
   };
 }

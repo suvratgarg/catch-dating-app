@@ -25,7 +25,7 @@ export interface UpsertProgramStayCallablePayload {
    */
   roomBlockId?: string | null;
   /**
-   * Room or suite label shared by roommates (e.g. "312").
+   * Display-only room or suite label; never used as room identity.
    */
   roomLabel?: string | null;
   /**
@@ -49,4 +49,13 @@ export interface UpsertProgramStayCallablePayload {
    * When true, stamps hotelArrivedAt with the server time.
    */
   markHotelArrived?: boolean;
+  /**
+   * Explicitly join this live stay at the same hotel and block; requires its reviewed revision and verified block occupancy limit. Never inferred from labels or households.
+   */
+  shareWithStayId?: string;
+  shareWithStayRevision?: number;
+  /**
+   * Explicitly leave a shared occupancy for a newly minted room occupancy.
+   */
+  separateRoom?: boolean;
 }

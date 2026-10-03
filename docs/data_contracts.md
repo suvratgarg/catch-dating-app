@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.161.0
-updated: 2026-10-02
+version: 1.162.0
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -3418,6 +3418,31 @@ drift with later catalog edits.
 with function selection, RSVP-status filters, and household dedupe. The
 document field ships ahead of its callable payload and dispatcher wiring;
 clients cannot set it through `upsertOrganizerCampaign` today.
+
+### Program Room Occupancy
+
+`programStays` remains the per-guest lodging record. `roomOccupancyId` is a
+server-minted shared-room identity; a legacy row without it uses its own stay
+ID. Labels, invitation households and social group membership never establish
+sharing. An explicit `shareWithStayId` plus its reviewed revision joins a live
+stay at the same hotel and block. `separateRoom` mints a new occupancy identity.
+The current native room sheet does not yet expose these sharing controls.
+
+`programRoomOccupancy.ts` counts peak simultaneous distinct occupancies over
+calendar nights `[check-in, checkout)` in the program timezone. Unknown dates
+reserve the entire window; malformed legacy dates cannot release capacity.
+Complete bounded snapshots, not old guest-count rollups, own room availability.
+Contract windows and `maxOccupantsPerRoom` are hard limits; an unknown occupant
+limit defaults to one. This is not evidence of bed type or accessibility.
+Multi-timezone properties require explicit property timezones in a later slice.
+
+The stay/block callables require revisions for updates, reject overlapping
+assignments for the same guest across hotels, and serialize competing writes
+through guest and block documents. Checked-in stays permit only remaining
+checked in or checking out; allocation edits cannot move them or downgrade
+status first. Desk responses remain hotel-scoped operational projections.
+The shared validator is available to future automatic proposals; current
+writes are manual and do not publish or confirm a hotel booking.
 
 ### Organizer Application Intake
 

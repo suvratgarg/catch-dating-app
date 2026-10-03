@@ -59,7 +59,7 @@ export const upsertProgramStayCallablePayloadSchema: Record<string, unknown> = {
       ],
       "minLength": 1,
       "maxLength": 40,
-      "description": "Room or suite label shared by roommates (e.g. \"312\")."
+      "description": "Display-only room or suite label; never used as room identity."
     },
     "status": {
       "type": "string",
@@ -104,6 +104,21 @@ export const upsertProgramStayCallablePayloadSchema: Record<string, unknown> = {
     "markHotelArrived": {
       "type": "boolean",
       "description": "When true, stamps hotelArrivedAt with the server time."
+    },
+    "shareWithStayId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicitly join this live stay at the same hotel and block; requires its reviewed revision and verified block occupancy limit. Never inferred from labels or households."
+    },
+    "shareWithStayRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "separateRoom": {
+      "type": "boolean",
+      "description": "Explicitly leave a shared occupancy for a newly minted room occupancy."
     }
   }
 } as const;

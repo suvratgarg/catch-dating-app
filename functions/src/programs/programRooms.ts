@@ -1,3 +1,8 @@
+/* firestore-index: programStays (
+  programId:ASCENDING,
+  organizerId:ASCENDING,
+  guestId:ASCENDING
+) */
 /* firestore-index: programRoomBlocks (
   programId:ASCENDING,
   organizerId:ASCENDING,
@@ -48,9 +53,10 @@ import type {ProgramDataDeps} from "../shared/programDataDeps";
 import {
   blockRemainingRooms,
   suggestStayBlock,
-  staysConsumingBlock,
   unplacedGuests,
 } from "./programStayAllocation";
+import {consumesRoom, occupancyId, peakRoomOccupancy,
+  validateRoomOccupancy} from "./programRoomOccupancy";
 import type {RoomBlockRow, StayRow} from "./programStayAllocation";
 import type {
   ProgramGuestDocument,
@@ -107,21 +113,28 @@ export async function getProgramHotelRoomsHandler(
       .where("programId", "==", data.programId)
       .where("organizerId", "==", access.program.organizerId)
       .where("hotelId", "==", data.hotelId)
+      .limit(501)
       .get(),
     db.collection("programStays")
       .where("programId", "==", data.programId)
       .where("organizerId", "==", access.program.organizerId)
       .where("hotelId", "==", data.hotelId)
-      .limit(roomsReadCap)
+      .limit(roomsReadCap + 1)
       .get(),
     db.collection("programTravelLegs")
       .where("programId", "==", data.programId)
       .where("organizerId", "==", access.program.organizerId)
       .where("destinationHotelId", "==", data.hotelId)
       .where("kind", "==", "inbound")
-      .limit(roomsReadCap)
+      .limit(roomsReadCap + 1)
       .get(),
   ]);
+  if (staysSnap.size > roomsReadCap || legsSnap.size > roomsReadCap ||
+      blocksSnap.size > 500) {
+    throw new HttpsError("resource-exhausted",
+      "Room board exceeds the supported complete-read limit.");
+  }
+  const timezone = access.program.timezone;
   const blocks: ProgramRoomBlockDocument[] = [];
   for (const doc of blocksSnap.docs) {
     blocks.push(doc.data() as ProgramRoomBlockDocument);
@@ -129,25 +142,9 @@ export async function getProgramHotelRoomsHandler(
   blocks.sort((a, b) => a.label.localeCompare(b.label));
   const stayDocs = staysSnap.docs.map((doc) =>
     ({id: doc.id, doc: doc.data() as ProgramStayDocument}));
-  const stayRows: StayRow[] = stayDocs.map(({id, doc}) => ({
-    stayId: id,
-    guestId: doc.guestId,
-    hotelId: doc.hotelId,
-    roomBlockId: doc.roomBlockId,
-    roomLabel: doc.roomLabel,
-    status: doc.status,
-  }));
-  const blockRows: RoomBlockRow[] = blocksSnap.docs.map((doc) => {
-    const block = doc.data() as ProgramRoomBlockDocument;
-    return {
-      roomBlockId: doc.id,
-      hotelId: block.hotelId,
-      label: block.label,
-      totalRooms: block.totalRooms,
-      assignedCount: block.assignedCount,
-      heldForGroupIds: block.heldForGroupIds,
-    };
-  });
+  const stayRows = stayDocs.map(({id, doc}) => stayRow(id, doc));
+  const blockRows = blocksSnap.docs.map((doc) =>
+    blockRow(doc.id, doc.data() as ProgramRoomBlockDocument));
   // Guests expected at this hotel: inbound legs that did not no-show, plus
   // anyone with a stay row here (cancelled stays re-appear for re-placement).
   const routedGuestIds = new Set<string>();
@@ -184,8 +181,10 @@ export async function getProgramHotelRoomsHandler(
         label: row.label,
         roomType: (doc.data() as ProgramRoomBlockDocument).roomType,
         totalRooms: row.totalRooms,
-        assignedCount: row.assignedCount,
-        remainingRooms: blockRemainingRooms(row, stayRows),
+        assignedCount: peakRoomOccupancy(stayRows.filter((stay) =>
+          stay.roomBlockId === row.roomBlockId), timezone),
+        remainingRooms: blockRemainingRooms(row, stayRows, timezone),
+        maxOccupantsPerRoom: row.maxOccupantsPerRoom ?? 1,
         heldForGroupIds: [...row.heldForGroupIds],
         startsAtMillis: staffTimestampMillis(
           (doc.data() as ProgramRoomBlockDocument).startsAt),
@@ -199,6 +198,7 @@ export async function getProgramHotelRoomsHandler(
       guestDisplayName: guests.get(doc.guestId)?.displayName ?? "Guest",
       roomBlockId: doc.roomBlockId,
       roomLabel: doc.roomLabel,
+      roomOccupancyId: doc.roomOccupancyId ?? id,
       status: doc.status,
       startsAtMillis: millisOrNull(doc.startsAt),
       endsAtMillis: millisOrNull(doc.endsAt),
@@ -211,7 +211,7 @@ export async function getProgramHotelRoomsHandler(
       guestId: row.guestId,
       displayName: guests.get(row.guestId)?.displayName ?? "Guest",
       suggestedRoomBlockId: suggestStayBlock(
-        row, data.hotelId, blockRows, stayRows)?.roomBlockId ?? null,
+        row, data.hotelId, blockRows, stayRows, timezone)?.roomBlockId ?? null,
     })).sort((a, b) => a.displayName.localeCompare(b.displayName)),
   };
 }
@@ -228,6 +228,7 @@ export async function upsertProgramStayHandler(
   const ref = data.stayId ?
     db.collection("programStays").doc(data.stayId) :
     db.collection("programStays").doc();
+  const newOccupancyId = db.collection("programStays").doc().id;
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
     const access = await requireProgramAccess({
@@ -267,6 +268,10 @@ export async function upsertProgramStayHandler(
           existing.organizerId !== access.program.organizerId))) {
       throw new HttpsError("not-found", "Stay not found in this program.");
     }
+    if (existing && data.expectedRevision === undefined) {
+      throw new HttpsError("failed-precondition",
+        "Reload the stay and supply its current revision.");
+    }
     assertRevision(existing?.revision ?? 0, staySnap.exists ?
       data.expectedRevision : undefined);
     if (existing && (existing.guestId !== data.guestId ||
@@ -283,6 +288,12 @@ export async function upsertProgramStayHandler(
     const roomBlockId = data.roomBlockId === undefined ?
       existing?.roomBlockId ?? null : data.roomBlockId;
     const status = data.status ?? existing?.status ?? "held";
+    if (existing?.status === "checkedIn" &&
+        status !== "checkedIn" && status !== "checkedOut") {
+      throw new HttpsError("failed-precondition",
+        "A checked-in stay can only remain checked in or check out.");
+    }
+
     const affectedBlockIds = new Set<string>();
     if (existing?.roomBlockId) affectedBlockIds.add(existing.roomBlockId);
     if (roomBlockId) affectedBlockIds.add(roomBlockId);
@@ -299,46 +310,56 @@ export async function upsertProgramStayHandler(
       }
       blocks.set(snap.id, block);
     }
-    // Re-count live stays per affected block inside the transaction so the
-    // rollup and the capacity check use the post-write truth.
+    if (data.shareWithStayId && data.separateRoom) {
+      throw new HttpsError("invalid-argument",
+        "Choose either joining a room or a separate room.");
+    }
+    let roomOccupancyId = existing?.roomOccupancyId ??
+      (existing ? ref.id : undefined);
+    if (!roomOccupancyId || data.separateRoom ||
+        (existing && existing.roomBlockId !== roomBlockId)) {
+      roomOccupancyId = newOccupancyId;
+    }
+    if (data.shareWithStayId) {
+      const targetSnap = await tx.get(db.collection("programStays")
+        .doc(data.shareWithStayId));
+      const target = targetSnap.data() as ProgramStayDocument | undefined;
+      if (!target || target.programId !== data.programId ||
+          target.organizerId !== access.program.organizerId ||
+          target.hotelId !== data.hotelId || !roomBlockId ||
+          target.roomBlockId !== roomBlockId || !consumesRoom(target) ||
+          targetSnap.id === ref.id) {
+        throw new HttpsError("failed-precondition",
+          "Choose a current roommate in this hotel and room block.");
+      }
+      if (data.shareWithStayRevision === undefined) {
+        throw new HttpsError("failed-precondition",
+          "Reload the roommate and supply its current revision.");
+      }
+      assertRevision(target.revision, data.shareWithStayRevision);
+      roomOccupancyId = target.roomOccupancyId ?? targetSnap.id;
+    }
+    // Complete block snapshots own capacity, never the old guest-count
+    // rollup. Guest reads include other hotels so duplicate lodging cannot
+    // slip past a hotel-scoped board.
     const stayLists = await Promise.all([...affectedBlockIds].map((id) =>
       tx.get(db.collection("programStays")
         .where("programId", "==", data.programId)
         .where("organizerId", "==", access.program.organizerId)
-        .where("roomBlockId", "==", id))));
+        .where("roomBlockId", "==", id).limit(roomsReadCap + 1))));
+    const guestStays = await tx.get(db.collection("programStays")
+      .where("programId", "==", data.programId)
+      .where("organizerId", "==", access.program.organizerId)
+      .where("guestId", "==", data.guestId).limit(roomsReadCap + 1));
+    if ([...stayLists, guestStays].some((snap) => snap.size > roomsReadCap)) {
+      throw new HttpsError("resource-exhausted",
+        "Too many stays to verify complete room capacity.");
+    }
     const liveByBlock = new Map<string, StayRow[]>();
     [...affectedBlockIds].forEach((blockId, index) => {
-      const rows: StayRow[] = stayLists[index].docs.map((doc) => {
-        const stay = doc.data() as ProgramStayDocument;
-        return {
-          stayId: doc.id,
-          guestId: stay.guestId,
-          hotelId: stay.hotelId,
-          roomBlockId: stay.roomBlockId,
-          roomLabel: stay.roomLabel,
-          status: stay.status,
-        };
-      });
-      liveByBlock.set(blockId, rows);
+      liveByBlock.set(blockId, stayLists[index].docs.map((doc) =>
+        stayRow(doc.id, doc.data() as ProgramStayDocument)));
     });
-    const consuming = status === "held" || status === "confirmed" ||
-      status === "checkedIn";
-    if (roomBlockId && consuming) {
-      const live = liveByBlock.get(roomBlockId)!.filter((row) =>
-        row.stayId !== ref.id);
-      const block = blocks.get(roomBlockId)!;
-      const remaining = Math.max(0, block.totalRooms -
-        Math.max(live.filter((r) => consumingStatus(r.status)).length,
-          block.assignedCount));
-      // A stay already consuming this block keeps its room — exclude it
-      // from the capacity rejection.
-      if (remaining <= 0 && !(existing?.roomBlockId === roomBlockId &&
-          consumingStatus(existing.status))) {
-        throw new HttpsError("failed-precondition",
-          `"${block.label}" has no rooms left. Choose another block ` +
-          "or assign outside the blocks.");
-      }
-    }
     const now = deps.now();
     const document: ProgramStayDocument = {
       programId: data.programId,
@@ -346,6 +367,7 @@ export async function upsertProgramStayHandler(
       guestId: data.guestId,
       hotelId: data.hotelId,
       roomBlockId,
+      roomOccupancyId,
       roomLabel: data.roomLabel === undefined ?
         existing?.roomLabel ?? null : data.roomLabel,
       startsAt: data.startsAtMillis === undefined ?
@@ -368,25 +390,42 @@ export async function upsertProgramStayHandler(
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
+    const proposed = stayRow(ref.id, document);
+    if (existing?.status === "checkedIn" &&
+        (occupancyId(stayRow(ref.id, existing)) !== roomOccupancyId ||
+         existing.roomBlockId !== roomBlockId ||
+         millisOrNull(existing.startsAt) !== proposed.startsAtMillis ||
+         millisOrNull(existing.endsAt) !== proposed.endsAtMillis ||
+         document.roomLabel !== existing.roomLabel)) {
+      throw new HttpsError("failed-precondition",
+        "A checked-in stay cannot be moved by allocation edits.");
+    }
+    const allRows = new Map<string, StayRow>();
+    for (const rows of liveByBlock.values()) {
+      for (const row of rows) allRows.set(row.stayId, row);
+    }
+    for (const doc of guestStays.docs) {
+      allRows.set(doc.id, stayRow(doc.id, doc.data() as ProgramStayDocument));
+    }
+    allRows.set(ref.id, proposed);
+    assertOccupancy([...allRows.values()], [...blocks].map(([id, block]) =>
+      blockRow(id, block)), access.program.timezone);
     committedRevision = document.revision;
     tx.set(ref, document);
-    // Rewrite each affected block's rollup from live stays, including the
-    // row just staged (set-then-count keeps the invariant exact).
+    // A shared guest write fences simultaneous empty-query assignments at
+    // different hotels, even when neither transaction touches a common block.
+    tx.update(guestSnap.ref, {updatedAt: now,
+      revision: nextRevision(guest.revision, now)});
     for (const [blockId, rows] of liveByBlock) {
-      const live = rows.filter((row) => row.stayId !== ref.id);
-      if (roomBlockId === blockId && consuming) {
-        live.push({stayId: ref.id, guestId: data.guestId,
-          hotelId: data.hotelId, roomBlockId, roomLabel: document.roomLabel,
-          status});
-      }
+      const nextRows = rows.filter((row) => row.stayId !== ref.id);
+      if (roomBlockId === blockId) nextRows.push(proposed);
       const block = blocks.get(blockId)!;
-      const next = live.filter((row) => consumingStatus(row.status)).length;
-      if (block.assignedCount !== next) {
-        tx.update(db.collection("programRoomBlocks").doc(blockId), {
-          assignedCount: next, updatedAt: now,
-          revision: nextRevision(block.revision, now),
-        });
-      }
+      const next = peakRoomOccupancy(nextRows, access.program.timezone);
+      // Always touch the block to serialize concurrent room/roommate writes.
+      tx.update(db.collection("programRoomBlocks").doc(blockId), {
+        assignedCount: next, updatedAt: now,
+        revision: nextRevision(block.revision, now),
+      });
     }
   });
   return {entityId: ref.id, revision: committedRevision,
@@ -433,6 +472,10 @@ export async function upsertProgramRoomBlockHandler(
       throw new HttpsError("not-found",
         "Room block not found in this program.");
     }
+    if (existing && data.expectedRevision === undefined) {
+      throw new HttpsError("failed-precondition",
+        "Reload the room block and supply its current revision.");
+    }
     assertRevision(existing?.revision ?? 0, snap.exists ?
       data.expectedRevision : undefined);
     if (existing && existing.hotelId !== data.hotelId) {
@@ -442,24 +485,14 @@ export async function upsertProgramRoomBlockHandler(
     const liveSnap = await tx.get(db.collection("programStays")
       .where("programId", "==", data.programId)
       .where("organizerId", "==", access.program.organizerId)
-      .where("roomBlockId", "==", ref.id));
-    const liveStays: StayRow[] = liveSnap.docs.map((doc) => {
-      const stay = doc.data() as ProgramStayDocument;
-      return {
-        stayId: doc.id,
-        guestId: stay.guestId,
-        hotelId: stay.hotelId,
-        roomBlockId: stay.roomBlockId,
-        roomLabel: stay.roomLabel,
-        status: stay.status,
-      };
-    });
-    const liveCount = staysConsumingBlock(liveStays, ref.id).length;
-    if (data.totalRooms < liveCount) {
-      throw new HttpsError("failed-precondition",
-        `${liveCount} guests already hold rooms in this block — ` +
-        "capacity cannot drop below that.");
+      .where("roomBlockId", "==", ref.id).limit(roomsReadCap + 1));
+    if (liveSnap.size > roomsReadCap) {
+      throw new HttpsError("resource-exhausted",
+        "Too many stays to verify complete room capacity.");
     }
+    const liveStays = liveSnap.docs.map((doc) =>
+      stayRow(doc.id, doc.data() as ProgramStayDocument));
+    const liveCount = peakRoomOccupancy(liveStays, access.program.timezone);
     const now = deps.now();
     const document: ProgramRoomBlockDocument = {
       programId: data.programId,
@@ -469,6 +502,8 @@ export async function upsertProgramRoomBlockHandler(
       roomType: data.roomType === undefined ?
         existing?.roomType ?? null : data.roomType,
       totalRooms: data.totalRooms,
+      maxOccupantsPerRoom: data.maxOccupantsPerRoom ??
+        existing?.maxOccupantsPerRoom ?? 1,
       assignedCount: liveCount,
       heldForGroupIds: data.heldForGroupIds,
       startsAt: data.startsAtMillis === undefined ?
@@ -483,6 +518,8 @@ export async function upsertProgramRoomBlockHandler(
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
+    assertOccupancy(liveStays, [blockRow(ref.id, document)],
+      access.program.timezone);
     committedRevision = document.revision;
     tx.set(ref, document);
   });
@@ -508,9 +545,35 @@ function requireBlockWindow(
   return existing[field];
 }
 
-function consumingStatus(status: StayRow["status"]): boolean {
-  return status === "held" || status === "confirmed" ||
-    status === "checkedIn";
+function stayRow(id: string, stay: ProgramStayDocument): StayRow {
+  return {
+    stayId: id, guestId: stay.guestId, hotelId: stay.hotelId,
+    roomBlockId: stay.roomBlockId, roomLabel: stay.roomLabel,
+    roomOccupancyId: stay.roomOccupancyId ?? id, status: stay.status,
+    startsAtMillis: millisOrNull(stay.startsAt),
+    endsAtMillis: millisOrNull(stay.endsAt),
+  };
+}
+
+function blockRow(id: string, block: ProgramRoomBlockDocument): RoomBlockRow {
+  return {
+    roomBlockId: id, hotelId: block.hotelId, label: block.label,
+    totalRooms: block.totalRooms, assignedCount: block.assignedCount,
+    maxOccupantsPerRoom: block.maxOccupantsPerRoom ?? 1,
+    heldForGroupIds: block.heldForGroupIds,
+    startsAtMillis: staffTimestampMillis(block.startsAt),
+    endsAtMillis: staffTimestampMillis(block.endsAt),
+  };
+}
+
+function assertOccupancy(stays: StayRow[], blocks: RoomBlockRow[],
+  timezone: string): void {
+  const violations = validateRoomOccupancy(stays, blocks, timezone);
+  if (violations.length > 0) {
+    throw new HttpsError("failed-precondition",
+      "Room allocation conflicts with current inventory or stays.",
+      {violations});
+  }
 }
 
 async function requireHotel(
@@ -559,7 +622,7 @@ function normalizePayload(value: unknown): unknown {
   const input = value as Record<string, unknown>;
   const trimmed = {...input};
   for (const key of ["programId", "hotelId", "guestId", "stayId",
-    "roomBlockId", "roomLabel", "label", "roomType"]) {
+    "roomBlockId", "roomLabel", "label", "roomType", "shareWithStayId"]) {
     if (typeof trimmed[key] === "string") {
       trimmed[key] = (trimmed[key] as string).trim();
     }

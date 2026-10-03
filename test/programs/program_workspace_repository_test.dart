@@ -1,8 +1,10 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/import_program_manifest_callable_payload.g.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_manifest_mapper.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_schema/json_schema.dart';
 
 void main() {
   group('organizerProgramDetail', () {
@@ -322,45 +324,45 @@ void main() {
       },
     );
 
-    test('upsertGuestGroup distinguishes hotel set, clear and preserve', () async {
-      final functions = _Functions()
-        ..response = {
-          'entityId': 'grp-1',
-          'revision': 2,
-          'alreadyApplied': false,
-        };
-      final repository = ProgramSetupRepository(functions);
+    test(
+      'upsertGuestGroup distinguishes hotel set, clear and preserve',
+      () async {
+        final functions = _Functions()
+          ..response = {
+            'entityId': 'grp-1',
+            'revision': 2,
+            'alreadyApplied': false,
+          };
+        final repository = ProgramSetupRepository(functions);
 
-      await repository.upsertGuestGroup(
-        programId: 'program',
-        label: 'Bride side',
-        dimension: 'side',
-        hotelId: 'hotel-1',
-      );
-      expect((functions.payload! as Map)['hotelId'], 'hotel-1');
+        await repository.upsertGuestGroup(
+          programId: 'program',
+          label: 'Bride side',
+          dimension: 'side',
+          hotelId: 'hotel-1',
+        );
+        expect((functions.payload! as Map)['hotelId'], 'hotel-1');
 
-      await repository.upsertGuestGroup(
-        programId: 'program',
-        groupId: 'grp-1',
-        label: 'Bride side',
-        dimension: 'side',
-        clearHotel: true,
-      );
-      final cleared = functions.payload! as Map;
-      expect(cleared.containsKey('hotelId'), isTrue);
-      expect(cleared['hotelId'], isNull);
+        await repository.upsertGuestGroup(
+          programId: 'program',
+          groupId: 'grp-1',
+          label: 'Bride side',
+          dimension: 'side',
+          clearHotel: true,
+        );
+        final cleared = functions.payload! as Map;
+        expect(cleared.containsKey('hotelId'), isTrue);
+        expect(cleared['hotelId'], isNull);
 
-      await repository.upsertGuestGroup(
-        programId: 'program',
-        groupId: 'grp-1',
-        label: 'Bride side',
-        dimension: 'side',
-      );
-      expect(
-        (functions.payload! as Map).containsKey('hotelId'),
-        isFalse,
-      );
-    });
+        await repository.upsertGuestGroup(
+          programId: 'program',
+          groupId: 'grp-1',
+          label: 'Bride side',
+          dimension: 'side',
+        );
+        expect((functions.payload! as Map).containsKey('hotelId'), isFalse);
+      },
+    );
   });
 
   group('importManifest', () {
@@ -468,10 +470,48 @@ void main() {
       );
       expect(mapped.rows, hasLength(2));
       expect(mapped.rows.first['displayName'], 'Asha Mehta');
-      expect(mapped.rows.first['groupLabels'], ['Bride side', 'Family']);
+      expect(mapped.rows.first['groupLabels'], 'Bride side; Family');
       expect(mapped.rows.first['passengers'], 3);
       expect(mapped.rows[1].containsKey('groupLabels'), isFalse);
       expect(mapped.rowIssues.single.index, 1);
+    });
+
+    test('mapped groups satisfy the backend string contract', () {
+      final mapped = mapProgramManifestRows(
+        headers: const ['name', 'groups'],
+        rows: const [
+          ['Asha', 'side:Bride; Friends, College| Family'],
+        ],
+        mapping: const {
+          ProgramManifestField.displayName: 0,
+          ProgramManifestField.groupLabels: 1,
+        },
+      );
+      expect(
+        mapped.rows.single['groupLabels'],
+        'side:Bride; Friends; College; Family',
+      );
+      final schema = JsonSchema.create(
+        schemaImportProgramManifestCallablePayloadSchema,
+      );
+      final payload = {
+        'programId': 'program',
+        'mode': 'preview',
+        'clientOperationId': 'review-groups',
+        'rows': mapped.rows,
+      };
+      final validation = schema.validate(payload);
+      expect(validation.isValid, isTrue, reason: '${validation.errors}');
+      final legacyPayload = {
+        ...payload,
+        'rows': [
+          {
+            ...mapped.rows.single,
+            'groupLabels': ['Bride', 'Friends'],
+          },
+        ],
+      };
+      expect(schema.validate(legacyPayload).isValid, isFalse);
     });
 
     test('accepts epoch millis or ISO strings for arrival times', () {
