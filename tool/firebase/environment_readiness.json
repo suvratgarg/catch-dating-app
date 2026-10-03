@@ -777,7 +777,6 @@
       "consumers": [
         "refreshProgramTravelLeg",
         "refreshProgramFlightStatuses",
-        "flightAlertWebhook",
         "anonymizeDueProgramsSweep"
       ],
       "binding": {

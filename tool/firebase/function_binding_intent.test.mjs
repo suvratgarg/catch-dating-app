@@ -339,3 +339,53 @@ test("unselected importing modules cannot mutate source binding objects", (t) =>
     }
   }
 });
+
+
+test("implicit returns, computed methods and iteration cannot escape binding references", (t) => {
+  for (const code of [
+    "const expose=()=>opts;const alias=expose();alias.secrets[0]='CHANGED';",
+    "const expose=()=>({opts});const alias=expose();alias.opts.secrets[0]='CHANGED';",
+    "opts.secrets['push']('CHANGED');",
+    "opts['secrets']['splice'](0,1,'CHANGED');",
+    "for(const secret of opts.secrets){unknown(secret);}",
+    "for(const key in opts){unknown(key);}",
+    "function* expose(){yield opts;}const alias=expose().next().value;",
+  ]) {
+    const root=fixture(t, {'index.ts': `${imports}
+      const opts={secrets:['ORIGINAL']};${code}
+      export const selected=request(opts,()=>{});`});
+    assert.throws(()=>collect(root),unresolved);
+    const imported=fixture(t, {
+      'index.ts': `export {selected} from './consumer';`,
+      'consumer.ts': `${imports}import {opts} from './options';
+        export const selected=request(opts,()=>{});`,
+      'options.ts': `export const opts={secrets:['ORIGINAL']};`,
+      'unselected.ts': `import {opts} from './options';${code}`,
+    });
+    assert.throws(()=>collect(imported),unresolved);
+  }
+});
+
+
+test("equivalent parenthesized and asserted mutation syntax remains unresolved", (t) => {
+  for (const code of [
+    "(opts.secrets)['push']('CHANGED');", "((opts.secrets)['push'])('CHANGED');",
+    "(opts).serviceAccount='writer@';", "(opts as any).serviceAccount='writer@';",
+    "(opts!).serviceAccount='writer@';", "(opts satisfies object).serviceAccount='writer@';",
+    "delete (opts).serviceAccount;", "(opts.secrets).length++;",
+    "++((opts as any).secrets).length;",
+  ]) {
+    const own=fixture(t, {'index.ts': `${imports}
+      const opts={secrets:['ORIGINAL']};${code}
+      export const selected=request(opts,()=>{});`});
+    assert.throws(()=>collect(own),unresolved);
+    const imported=fixture(t, {
+      'index.ts': `export {selected} from './consumer';`,
+      'consumer.ts': `${imports}import {opts} from './options';
+        export const selected=request(opts,()=>{});`,
+      'options.ts': `export const opts={secrets:['ORIGINAL']};`,
+      'unselected.ts': `import {opts} from './options';${code}`,
+    });
+    assert.throws(()=>collect(imported),unresolved);
+  }
+});

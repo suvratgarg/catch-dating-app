@@ -251,6 +251,9 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         // also freezes the referenced object.
         if (ts.isVariableDeclaration(node) && node.initializer &&
             captures(node.initializer, name) && (!ts.isIdentifier(node.name) || !watched.has(`${mod.file}:${node.name.text}`))) fail();
+        if (ts.isArrowFunction(node) && !ts.isBlock(node.body) && captures(node.body, name)) fail();
+        if ((ts.isForOfStatement(node) || ts.isForInStatement(node) ||
+            ts.isYieldExpression(node)) && node.expression && captures(node.expression, name)) fail();
         if (ts.isReturnStatement(node) && node.expression && captures(node.expression, name) &&
           !(ts.isFunctionDeclaration(node.parent?.parent) &&
             helperNames.get(path.relative(src, mod.file).split(path.sep).join("/"))
@@ -261,11 +264,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         if (ts.isBinaryExpression(node) &&
             node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
             node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
-          let left = node.left;
-          while (ts.isPropertyAccessExpression(left) || ts.isElementAccessExpression(left)) {
-            left = left.expression;
-          }
-          if (ts.isIdentifier(left) && left.text === name) fail();
+          if (rootedAt(node.left, name)) fail();
         }
         if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
             ts.isIdentifier(node.expression.expression) &&
@@ -275,17 +274,13 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
             node.arguments.some((arg) => rootedAt(arg, name) || captures(arg, name))) fail();
         if (ts.isDeleteExpression(node) || ts.isPostfixUnaryExpression(node) ||
             ts.isPrefixUnaryExpression(node)) {
-          let expression = node.expression ?? node.operand;
-          while (ts.isPropertyAccessExpression(expression) ||
-              ts.isElementAccessExpression(expression)) expression = expression.expression;
-          if (ts.isIdentifier(expression) && expression.text === name) fail();
+          if (rootedAt(node.expression ?? node.operand, name)) fail();
         }
-        if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-          let receiver = node.expression.expression;
-          while (ts.isPropertyAccessExpression(receiver) ||
-              ts.isElementAccessExpression(receiver)) receiver = receiver.expression;
-          if (ts.isIdentifier(receiver) && receiver.text === name &&
-              node.expression.name.text !== "value") fail();
+        if (ts.isCallExpression(node)) {
+          const method = unwrap(node.expression);
+          if ((ts.isPropertyAccessExpression(method) || ts.isElementAccessExpression(method)) &&
+              rootedAt(method.expression, name) &&
+              !(ts.isPropertyAccessExpression(method) && method.name.text === "value")) fail();
         }
         if (ts.isCallExpression(node) && node.arguments.some((arg) =>
           rootedAt(arg, name) || captures(arg, name))) {
@@ -565,6 +560,9 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         const scan = (node) => {
           if (ts.isVariableDeclaration(node) && node.initializer &&
               captures(node.initializer, name) && (!ts.isIdentifier(node.name) || !watched.has(`${mod.file}:${node.name.text}`))) fail();
+          if (ts.isArrowFunction(node) && !ts.isBlock(node.body) && captures(node.body, name)) fail();
+          if ((ts.isForOfStatement(node) || ts.isForInStatement(node) ||
+              ts.isYieldExpression(node)) && node.expression && captures(node.expression, name)) fail();
           if (ts.isReturnStatement(node) && node.expression && captures(node.expression, name) &&
           !(ts.isFunctionDeclaration(node.parent?.parent) &&
             helperNames.get(path.relative(src, mod.file).split(path.sep).join("/"))
@@ -575,10 +573,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
           if (ts.isBinaryExpression(node) &&
               node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
               node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
-            let left = unwrap(node.left);
-            while (ts.isPropertyAccessExpression(left) || ts.isElementAccessExpression(left))
-              left = unwrap(left.expression);
-            if (ts.isIdentifier(left) && left.text === name) fail();
+            if (rootedAt(node.left, name)) fail();
           }
           if (ts.isCallExpression(node) && node.arguments.some((arg) =>
               rootedAt(arg, name) || captures(arg, name))) {
@@ -590,19 +585,15 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
                 ?.has(callee.node.name.text);
             if (!sdkFactory && !helper) fail();
           }
-          if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-            let receiver = node.expression.expression;
-            while (ts.isPropertyAccessExpression(receiver) || ts.isElementAccessExpression(receiver))
-              receiver = receiver.expression;
-            if (ts.isIdentifier(receiver) && receiver.text === name &&
-                node.expression.name.text !== "value") fail();
+          if (ts.isCallExpression(node)) {
+            const method = unwrap(node.expression);
+            if ((ts.isPropertyAccessExpression(method) || ts.isElementAccessExpression(method)) &&
+                rootedAt(method.expression, name) &&
+                !(ts.isPropertyAccessExpression(method) && method.name.text === "value")) fail();
           }
           if (ts.isDeleteExpression(node) || ts.isPostfixUnaryExpression(node) ||
               ts.isPrefixUnaryExpression(node)) {
-            let operand = node.expression ?? node.operand;
-            while (ts.isPropertyAccessExpression(operand) || ts.isElementAccessExpression(operand))
-              operand = operand.expression;
-            if (ts.isIdentifier(operand) && operand.text === name) fail();
+            if (rootedAt(node.expression ?? node.operand, name)) fail();
           }
           ts.forEachChild(node, scan);
         };

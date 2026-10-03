@@ -171,7 +171,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
-      ["flightAlertWebhook", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
+      ["flightAlertWebhook", []],
       ["refreshProgramFlightStatuses", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
       ["startSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
       ["getSalesDemoSession", ["SALES_DEMO_GRANT_KEY"]],
@@ -983,7 +983,6 @@ function validateFlightConsumerWitnesses(facts, manifest) {
   const reader = manifest.directReaders.find(r => r.id === 'functions.reference.flight');
   if (!reader) throw new Error('Flight reader contract missing');
   const refresh = 'functions/src/transport/programFlightRefresh.ts';
-  const alerts = 'functions/src/transport/flightAlerts.ts';
   const retention = 'functions/src/programs/programRetention.ts';
   const witnesses = [
     ['refreshProgramTravelLeg', refresh, [
@@ -992,11 +991,6 @@ function validateFlightConsumerWitnesses(facts, manifest) {
     ]],
     ['refreshProgramFlightStatuses', refresh, [
       ['refreshProgramFlightStatuses', 'loadFlightProviderConfig'],
-    ]],
-    ['flightAlertWebhook', alerts, [
-      ['defaultFlightAlertWebhookDeps.secret', 'loadFlightProviderConfig'],
-      ['flightAlertWebhookHandler', 'deps.secret'],
-      ['flightAlertWebhook', 'flightAlertWebhookHandler'],
     ]],
     ['anonymizeDueProgramsSweep', retention, [
       ['defaultRetentionDeps.loadFlightApiKey', 'loadFlightProviderConfig'],
@@ -1007,9 +1001,6 @@ function validateFlightConsumerWitnesses(facts, manifest) {
   ];
   // Explicitly bounded current behavior, not a second runtime inventory. A new
   // flight entry point changes these assertions in the same source review.
-  if (!facts.hasDefaultParameter(alerts, 'flightAlertWebhookHandler', 'deps', 'defaultFlightAlertWebhookDeps')) {
-    throw new Error('Review changed flight webhook default dependency');
-  }
   const expected = witnesses.map(([consumer]) => consumer).sort();
   if (JSON.stringify([...reader.consumers].sort()) !== JSON.stringify(expected)) {
     throw new Error('Flight consumer contract does not match reviewed runtime witnesses');
@@ -1039,6 +1030,10 @@ test("authored source witnesses catch omitted flight retention and unrelated dir
   const facts = sourceConsumerFacts(ts, sources);
   validateConsumerExclusions(facts, manifest);
   validateFlightConsumerWitnesses(facts, manifest);
+  const webhook = structuredClone(manifest);
+  webhook.directReaders.find((reader) => reader.id === "functions.reference.flight").consumers.push("flightAlertWebhook");
+  assert.throws(() => validateConsumerExclusions(facts, webhook), /Unrelated direct-reader/u);
+  assert.ok(facts.exports.has("flightAlertWebhook"), "disabled webhook still participates in deployment provenance");
   const removed = structuredClone(manifest);
   removed.directReaders.find((r) => r.id === "functions.reference.flight").consumers =
     removed.directReaders.find((r) => r.id === "functions.reference.flight").consumers.filter((name) => name !== "anonymizeDueProgramsSweep");
