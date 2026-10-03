@@ -98,30 +98,49 @@ function normalizedProviderParams(environment = process.env, projectId) {
 
   const catchWebhookEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_WEBHOOK_ENABLED");
-  // Offline consumer milestone: ordinary Delivery must not activate workers.
-  // Reject attempted enablement rather than silently accepting an override.
   const catchConsumersEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
-  assert(catchConsumersEnabled === "false",
-    "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED must remain false in this milestone");
-  // No runtime scoped reply configuration is provisioned by this source slice.
-  for (const name of ["CATCH_WHATSAPP_REPLIES_ENABLED",
-    "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY"]) {
-    assert(normalizedBooleanParam(environment, name) === "false",
-      `${name} must remain false in this milestone`);
+  const catchRepliesEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_REPLIES_ENABLED");
+  const catchAtomicIngressReady = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY");
+  // These are configuration checks, not historical STOP attestation or sending
+  // authority. The runtime still requires current Auth/App Check, independently
+  // reviewed readiness, verified recipient consent and an atomic one-shot claim.
+  const catchReplyScope = Object.fromEntries([
+    "CATCH_WHATSAPP_REPLY_ACTOR_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256",
+  ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const hasReplyScope = Object.values(catchReplyScope).some(Boolean);
+  if (hasReplyScope || catchRepliesEnabled === "true") {
+    assert(Object.values(catchReplyScope).every(Boolean),
+      "Catch reply scope must be complete or entirely unconfigured");
+    for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
+      "CATCH_WHATSAPP_REPLY_RECIPIENT_UID"]) {
+      assert(/^[A-Za-z0-9_-]{1,128}$/.test(catchReplyScope[name]),
+        `${name} must be a controlled Firebase UID`);
+    }
+    assert(/^\+[1-9][0-9]{6,14}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164),
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must be an E.164 endpoint");
+    const credentialPrefix = secretPrefix +
+      "CATCH_WHATSAPP_ACCESS_TOKEN/versions/";
+    const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
+    assert(credential.startsWith(credentialPrefix) &&
+      /^[1-9][0-9]*$/.test(credential.slice(credentialPrefix.length)),
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION must pin a numeric " +
+      "CATCH_WHATSAPP_ACCESS_TOKEN version in this project");
+    assert(/^v[1-9][0-9]*\.[0-9]+$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION),
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must be an explicit Graph version");
+    assert(/^[a-f0-9]{64}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
   }
-  assert(!environment.CATCH_WHATSAPP_REPLY_ACTOR_UID?.trim(),
-    "CATCH_WHATSAPP_REPLY_ACTOR_UID must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_RECIPIENT_UID?.trim(),
-    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_RECIPIENT_E164?.trim(),
-    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION?.trim(),
-    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_GRAPH_VERSION?.trim(),
-    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256?.trim(),
-    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must remain unconfigured in this milestone");
   const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
   const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
     ?.trim() ?? "";
@@ -129,9 +148,24 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "CATCH_WHATSAPP_WABA_ID must be a numeric Meta account id");
   assert(!catchPhoneNumberId || /^[0-9]{1,32}$/.test(catchPhoneNumberId),
     "CATCH_WHATSAPP_PHONE_NUMBER_ID must be a numeric Meta phone number id");
-  if (catchWebhookEnabled === "true") {
+  assert(Boolean(catchWabaId) === Boolean(catchPhoneNumberId),
+    "Catch WABA and phone number ids must be configured together");
+  if (catchWebhookEnabled === "true" || hasReplyScope) {
     assert(catchWabaId && catchPhoneNumberId,
-      "Catch WABA and phone number ids are required when webhook is enabled");
+      "Catch WABA and phone number ids are required for ingress or reply scope");
+  }
+  if (catchAtomicIngressReady === "true") {
+    assert(catchWebhookEnabled === "true",
+      "Catch atomic STOP ingress requires the webhook to be enabled");
+  }
+  if (catchConsumersEnabled === "true") {
+    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true",
+      "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED requires enabled atomic ingress");
+  }
+  if (catchRepliesEnabled === "true") {
+    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true" &&
+      catchConsumersEnabled === "true",
+    "CATCH_WHATSAPP_REPLIES_ENABLED requires enabled atomic ingress and consumers");
   }
 
   const eventAssistance = {
@@ -186,15 +220,21 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
     CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookEnabled,
-    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "false",
-    CATCH_WHATSAPP_REPLIES_ENABLED: "false",
-    CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "false",
-    CATCH_WHATSAPP_REPLY_ACTOR_UID: " ",
-    CATCH_WHATSAPP_REPLY_RECIPIENT_UID: " ",
-    CATCH_WHATSAPP_REPLY_RECIPIENT_E164: " ",
-    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: " ",
-    CATCH_WHATSAPP_REPLY_GRAPH_VERSION: " ",
-    CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: " ",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: catchConsumersEnabled,
+    CATCH_WHATSAPP_REPLIES_ENABLED: catchRepliesEnabled,
+    CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: catchAtomicIngressReady,
+    CATCH_WHATSAPP_REPLY_ACTOR_UID:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_ACTOR_UID || " ",
+    CATCH_WHATSAPP_REPLY_RECIPIENT_UID:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_UID || " ",
+    CATCH_WHATSAPP_REPLY_RECIPIENT_E164:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164 || " ",
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION || " ",
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION || " ",
+    CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 || " ",
     CATCH_WHATSAPP_WABA_ID: catchWabaId || " ",
     CATCH_WHATSAPP_PHONE_NUMBER_ID: catchPhoneNumberId || " ",
     ...eventAssistance,
