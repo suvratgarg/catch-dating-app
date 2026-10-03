@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
@@ -310,6 +311,8 @@ function executorFixture(t) {
     "tool/firebase/list_firebase_function_targets.mjs",
     "tool/firebase/check_deploy_parity.mjs",
     "tool/firebase/check_environment_readiness.mjs",
+    "tool/firebase/prepare_functions_params_for_deploy.mjs",
+    "tool/firebase/function_binding_intent.mjs",
     "tool/firebase/form_upload_identity.mjs",
     "tool/firebase/storage_rules_firestore_iam.mjs",
     "tool/lib/repo_paths.mjs",
@@ -317,6 +320,11 @@ function executorFixture(t) {
   ]) {
     write(relativePath, fs.readFileSync(path.join(repoRoot, relativePath)), 0o755);
   }
+  // Readiness statically parses source using the pinned TypeScript dependency.
+  // Link only that public package; do not replace or stub the readiness check.
+  fs.mkdirSync(path.join(directory, "node_modules"));
+  fs.symlinkSync(path.dirname(createRequire(import.meta.url).resolve("typescript/package.json")),
+    path.join(directory, "node_modules/typescript"), "dir");
   write("tool/firebase/check_deploy_ref.mjs", "// Git freshness is independently tested.\n");
   const aliases = JSON.stringify({projects: {dev: "demo-project"}});
   write(".firebaserc", aliases);
