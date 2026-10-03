@@ -359,15 +359,60 @@ jobs:
       - name: Install authenticated Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v3
 
+      - name: Record names-only Functions parameter provenance
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
+          RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
+          FLIGHT_PROVIDER_CONFIG_VERSION: ${{ vars.FLIGHT_PROVIDER_CONFIG_VERSION }}
+          FLIGHT_WEBHOOK_BASE_URL: ${{ vars.FLIGHT_WEBHOOK_BASE_URL }}
+          FORM_RAZORPAY_PARTNER_CONFIG_VERSION: ${{ vars.FORM_RAZORPAY_PARTNER_CONFIG_VERSION }}
+          RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: ${{ vars.RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION }}
+          META_WHATSAPP_APP_ID: ${{ vars.META_WHATSAPP_APP_ID }}
+          META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: ${{ vars.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID }}
+          META_WHATSAPP_GRAPH_VERSION: ${{ vars.META_WHATSAPP_GRAPH_VERSION }}
+          META_WHATSAPP_ENABLED: ${{ vars.META_WHATSAPP_ENABLED }}
+          CATCH_WHATSAPP_WEBHOOK_ENABLED: ${{ vars.CATCH_WHATSAPP_WEBHOOK_ENABLED }}
+          # Non-secret scoped settings only; runtime readiness remains mandatory.
+          CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: ${{ vars.CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED }}
+          CATCH_WHATSAPP_REPLIES_ENABLED: ${{ vars.CATCH_WHATSAPP_REPLIES_ENABLED }}
+          CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: ${{ vars.CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY }}
+          CATCH_WHATSAPP_REPLY_ACTOR_UID: ${{ vars.CATCH_WHATSAPP_REPLY_ACTOR_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_UID: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_E164: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_E164 }}
+          CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION }}
+          CATCH_WHATSAPP_REPLY_GRAPH_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_GRAPH_VERSION }}
+          CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: ${{ vars.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 }}
+          CATCH_WHATSAPP_WABA_ID: ${{ vars.CATCH_WHATSAPP_WABA_ID }}
+          CATCH_WHATSAPP_PHONE_NUMBER_ID: ${{ vars.CATCH_WHATSAPP_PHONE_NUMBER_ID }}
+          EVENT_ASSISTANCE_GUEST_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_GUEST_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_ENABLED }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED }}
+          EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: ${{ vars.EVENT_ASSISTANCE_SMS_REPORTS_ENABLED }}
+        run: |
+          set -euo pipefail
+          node tool/firebase/prepare_functions_params_for_deploy.mjs \
+            --provenance-only --project "${{ steps.verify.outputs.project_id }}" \
+            --source-sha "${{ inputs.source_sha }}" \
+            --output build/delivery/params-provenance.json
+
       - name: Verify environment prerequisites for the approved targets
         if: ${{ steps.verify.outputs.has_targets == 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
-        run: >-
-          node tool/firebase/check_environment_readiness.mjs
-          --env "$DEPLOY_ENVIRONMENT"
-          --targets "$DEPLOY_TARGETS"
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          HAS_FUNCTIONS: ${{ steps.verify.outputs.has_functions }}
+        run: |
+          set -euo pipefail
+          args=(--env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS"
+            --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA")
+          if [[ "$HAS_FUNCTIONS" == "true" ]]; then
+            args+=(--phase candidate --params-provenance build/delivery/params-provenance.json
+              --write-candidate build/delivery/secret-bindings.json)
+          fi
+          node tool/firebase/check_environment_readiness.mjs "${args[@]}"
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
@@ -433,6 +478,7 @@ jobs:
           fi
 
       - name: Materialize non-secret Functions params in the deploy copy
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
           ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
           RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
@@ -457,6 +503,8 @@ jobs:
           CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: ${{ vars.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 }}
           CATCH_WHATSAPP_WABA_ID: ${{ vars.CATCH_WHATSAPP_WABA_ID }}
           CATCH_WHATSAPP_PHONE_NUMBER_ID: ${{ vars.CATCH_WHATSAPP_PHONE_NUMBER_ID }}
+          EVENT_ASSISTANCE_GUEST_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_GUEST_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION }}
           EVENT_ASSISTANCE_RCS_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_ENABLED }}
           EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED }}
           EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: ${{ vars.EVENT_ASSISTANCE_SMS_REPORTS_ENABLED }}
@@ -466,12 +514,15 @@ jobs:
           if [[ -d "$functions_dir" ]]; then
             node tool/firebase/prepare_functions_params_for_deploy.mjs \
               --functions-dir "$functions_dir" \
-              --project "${{ steps.verify.outputs.project_id }}"
+              --project "${{ steps.verify.outputs.project_id }}" \
+              --source-sha "${{ inputs.source_sha }}" \
+              --provenance build/delivery/params-provenance.json
           else
             echo "Verified package has no Functions payload; skipping Functions parameter materialization."
           fi
 
       - name: Gate Functions param coverage before any deploy mutation
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
         run: |
@@ -605,6 +656,12 @@ jobs:
                   ./tool/deploy_firebase_targets.sh --functions-postconditions-only \
                     "$DEPLOY_ENVIRONMENT" "$target" "${deploy_args[@]}" || stage_status=$?
               fi
+              if [[ "$stage_status" == "0" ]]; then
+                node tool/firebase/check_environment_readiness.mjs \
+                  --env "$DEPLOY_ENVIRONMENT" --targets "$target" \
+                  --source-root "$SOURCE_CHECKOUT" --source-sha "$SOURCE_SHA" \
+                  --candidate build/delivery/secret-bindings.json --phase deployed || stage_status=$?
+              fi
               failure_detail="Functions deployment or postcondition failed; exact recovery proof determines the next subphase."
             else
               CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
@@ -648,6 +705,36 @@ jobs:
             fi
           done
 
+      - name: Verify deployed configuration including restored completed Functions
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: |
+          set -euo pipefail
+          function_targets="$(jq -er '.stages as $stages | .targets as $targets |
+            ($stages | index("functions")) as $index | select($index != null) |
+            $targets[$index] | select(length > 0)' build/delivery/execution-plan.json)"
+          proof="$(node tool/ci/firebase_functions_checkpoint.mjs verify-completed \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha "$SOURCE_SHA" --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" --scope "$CHECKPOINT_SCOPE" \
+            --checkpoint build/delivery/checkpoint/checkpoint.json \
+            --base-sha "$BASE_SHA" --targets "$function_targets" \
+            --params-file "build/delivery/deploy-tree/functions/.env.$PROJECT_ID")"
+          test "$(jq -r '.verifiedCompleted' <<< "$proof")" = "true"
+          node tool/firebase/check_environment_readiness.mjs \
+            --env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS" \
+            --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA" \
+            --candidate build/delivery/secret-bindings.json --phase deployed
+
       - name: Verify active rules match the exact approved source
         env:
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
@@ -666,5 +753,16 @@ jobs:
           path: |
             build/delivery/checkpoint/checkpoint.json
             build/delivery/checkpoint/functions-deployment.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload names-only configuration provenance
+        if: ${{ always() && hashFiles('build/delivery/params-provenance.json') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: firebase-config-provenance-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: |
+            build/delivery/params-provenance.json
+            build/delivery/secret-bindings.json
           if-no-files-found: error
           retention-days: 90

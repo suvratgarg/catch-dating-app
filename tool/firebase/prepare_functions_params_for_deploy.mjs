@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -39,6 +40,9 @@ export const materializedNonSecretParams = [
   "FORM_DOMAIN_CNAME_TARGET",
   "FLIGHT_WEBHOOK_BASE_URL",
   "FLIGHT_PROVIDER_CONFIG_VERSION",
+  "FLIGHT_PROVIDER_POLICY",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
+  "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ];
 
 function option(name) {
@@ -189,6 +193,20 @@ function normalizedProviderParams(environment = process.env, projectId) {
       flightConfigVersion.slice(secretPrefix.length))),
   "FLIGHT_PROVIDER_CONFIG_VERSION must pin a secret in this project");
 
+  // Inactive preparation only: a later reviewed rollout must explicitly
+  // admit policy materialization. Credentials alone never enable polling.
+  assert(!environment.FLIGHT_PROVIDER_POLICY?.trim(),
+    "FLIGHT_PROVIDER_POLICY must remain unconfigured in this milestone");
+
+  const assistanceReferences = {};
+  for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
+    ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
+    const reference = environment[name]?.trim() || "";
+    const prefix = `projects/${projectId}/secrets/${secret}/versions/`;
+    assert(!reference || reference.startsWith(prefix) && /^[1-9][0-9]*$/.test(reference.slice(prefix.length)),
+      `${name} must pin its expected secret in this project`);
+    assistanceReferences[name] = reference || " ";
+  }
   const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
@@ -225,6 +243,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     // Empty lets the function derive the URL from GCLOUD_PROJECT.
     FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
+    FLIGHT_PROVIDER_POLICY: " ",
+    ...assistanceReferences,
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
@@ -232,10 +252,46 @@ function normalizedProviderParams(environment = process.env, projectId) {
   return params;
 }
 
+const referenceNames = Object.freeze([
+  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+  "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+]);
+const activationNames = Object.freeze([
+  "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
+]);
+function paramsContents(params) {
+  return Object.entries(params).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";
+}
+
+export function functionsParamsProvenance({projectId, sourceSha, environment = process.env}) {
+  assert(/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(projectId), "invalid Firebase project id");
+  assert(/^[a-f0-9]{40}$/u.test(sourceSha ?? ""), "an exact source SHA is required for provenance");
+  const params = normalizedProviderParams(environment, projectId);
+  // No arbitrary environment entries or parameter values can enter this receipt.
+  return {version: 1, projectId, sourceSha,
+    paramsSha256: createHash("sha256").update(paramsContents(params)).digest("hex"),
+    names: materializedNonSecretParams.map((name) => ({name,
+      source: name === "FLIGHT_PROVIDER_POLICY" ? "source-disabled" :
+        environment[name]?.trim() ? "deployment-environment" : "source-default"})),
+    references: Object.fromEntries(referenceNames.map((name) => [name, params[name].trim() || null])),
+    activation: Object.fromEntries(activationNames.map((name) => [name, name === "FLIGHT_PROVIDER_POLICY" ? Boolean(params[name].trim()) : params[name] === "true"])),
+  };
+}
+
+function writePrivateOutput(outputPath, contents) {
+  const descriptor = fs.openSync(outputPath,
+    fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | fs.constants.O_NOFOLLOW, 0o600);
+  try { fs.fchmodSync(descriptor, 0o600); fs.writeFileSync(descriptor, contents, "utf8"); }
+  finally { fs.closeSync(descriptor); }
+}
+
 export function prepareFunctionsParamsForDeploy({
   functionsDir,
   projectId,
   environment = process.env,
+  expectedProvenance,
+  sourceSha,
 }) {
   assert(/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(projectId),
     "invalid Firebase project id");
@@ -244,26 +300,39 @@ export function prepareFunctionsParamsForDeploy({
     "Functions deploy path must be a directory");
   assert(fs.existsSync(path.join(resolvedFunctionsDir, "package.json")),
     "Functions deploy path must contain package.json");
+  assert(environment.CATCH_DEPLOY_CONFIG_SHA256 === undefined,
+    "CATCH_DEPLOY_CONFIG_SHA256 is reserved for verified materialization");
   const params = normalizedProviderParams(environment, projectId);
   const outputPath = path.join(resolvedFunctionsDir, `.env.${projectId}`);
-  const contents = Object.entries(params)
-    .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
-    .join("\n") + "\n";
-  fs.writeFileSync(outputPath, contents, {encoding: "utf8", mode: 0o600});
-  fs.chmodSync(outputPath, 0o600);
+  const contents = paramsContents(params);
+  if (expectedProvenance !== undefined) {
+    const actual = functionsParamsProvenance({projectId, sourceSha, environment});
+    assert(JSON.stringify(actual) === JSON.stringify(expectedProvenance),
+      "Deployment parameter provenance changed after readiness; repeat preflight");
+  }
+  const verifiedContents = expectedProvenance !== undefined ?
+    contents + `CATCH_DEPLOY_CONFIG_SHA256=${JSON.stringify(expectedProvenance.paramsSha256)}\n` : contents;
+  writePrivateOutput(outputPath, verifiedContents);
   return {outputPath, enabled: params.META_WHATSAPP_ENABLED === "true"};
 }
 
 function runCli() {
+  if (process.argv.includes("--provenance-only")) {
+    const receipt = functionsParamsProvenance({projectId: option("--project"), sourceSha: option("--source-sha")});
+    writePrivateOutput(path.resolve(option("--output")), JSON.stringify(receipt, null, 2) + "\n");
+    console.log("Wrote names/reference-only Functions parameter provenance.");
+    return;
+  }
+  let expectedProvenance;
+  if (process.argv.includes("--provenance")) {
+    try { expectedProvenance = JSON.parse(fs.readFileSync(option("--provenance"), "utf8")); }
+    catch { throw new Error("Invalid Functions parameter provenance file."); }
+  }
   const result = prepareFunctionsParamsForDeploy({
-    functionsDir: path.resolve(option("--functions-dir")),
-    projectId: option("--project"),
+    functionsDir: path.resolve(option("--functions-dir")), projectId: option("--project"),
+    ...(process.argv.includes("--provenance") ? {expectedProvenance, sourceSha: option("--source-sha")} : {}),
   });
-  console.log(JSON.stringify({
-    ok: true,
-    path: result.outputPath,
-    metaWhatsappEnabled: result.enabled,
-  }));
+  console.log(`Materialized non-secret Functions params; Meta enabled: ${result.enabled}.`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) runCli();

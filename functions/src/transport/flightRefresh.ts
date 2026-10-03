@@ -68,6 +68,8 @@ export function applyFlightSnapshot(
 
 export interface FlightRefreshDeps {
   now: () => Date;
+  pilotLegIds?: readonly string[];
+  allowsLeg?: (programId: string, legId: string) => boolean;
   apiKey: () => string;
   fetchStatus: typeof fetchFlightStatus;
   /** Webhook subscription plumbing; omitted in tests and dry contexts. */
@@ -87,7 +89,9 @@ export async function refreshTravelLeg(
   const legRef = db.collection("programTravelLegs").doc(legId);
   const legSnap = await legRef.get();
   const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-  if (!leg) return "settled";
+  if (!leg || deps.allowsLeg?.(leg.programId, legId) === false) {
+    return "settled";
+  }
   const nowMillis = deps.now().getTime();
   const tier = flightRefreshTier(leg, nowMillis);
   await deps.syncAlert?.(legRef);
@@ -210,7 +214,14 @@ export async function refreshDueFlightLegs(
   limit = 50,
 ): Promise<{updated: number; skipped: number; failed: number}> {
   const nowMillis = deps.now().getTime();
-  const due = await db.collection("programTravelLegs")
+  // Exact pilot targets avoid scanning unrelated programs or starving the
+  // pilot behind older non-pilot cursors. No new Firestore index is needed.
+  const due = deps.pilotLegIds ? {docs: (await Promise.all(
+    deps.pilotLegIds.map((id) => db.collection("programTravelLegs")
+      .doc(id).get()))).filter((doc) => {
+    const next = timestampMillis(doc.data()?.flightNextRefreshAt);
+    return next != null && next <= nowMillis;
+  })} : await db.collection("programTravelLegs")
     .where("flightNextRefreshAt", "<=",
       admin.firestore.Timestamp.fromMillis(nowMillis))
     .orderBy("flightNextRefreshAt")
@@ -240,6 +251,9 @@ export async function refreshTravelLegForRequest(
   const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
   if (!leg || leg.programId !== programId) {
     throw new HttpsError("not-found", "Leg not found in this program.");
+  }
+  if (deps.allowsLeg?.(programId, legId) === false) {
+    throw new HttpsError("failed-precondition", "Flight pilot is inactive.");
   }
   return refreshTravelLeg(db, legId, deps);
 }

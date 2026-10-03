@@ -1,3 +1,5 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import {createHash, createPrivateKey} from "node:crypto";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {JWT} from "google-auth-library";
@@ -10,6 +12,7 @@ export const RCS_OAUTH_SCOPE =
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const versionPattern = new RegExp("^projects/[A-Za-z0-9-]+/secrets/" +
   "[A-Za-z0-9_-]+/versions/[1-9][0-9]*$");
+const defaultReferences = new SecretVersionReferenceGuard();
 const keyPattern = new RegExp("^-----BEGIN PRIVATE KEY-----\\n" +
   "[A-Za-z0-9+/=\\n]+\\n-----END PRIVATE KEY-----\\n?$");
 const unavailable = () => new Error("RCS sender credential unavailable");
@@ -30,9 +33,10 @@ interface OAuthClient {
 
 /** Only numbered versions; no request body or ambient credential discovery. */
 export async function readRcsSecret(client: RcsSecretClient, name: string,
-  maxBytes: number): Promise<unknown> {
+  maxBytes: number, references = defaultReferences): Promise<unknown> {
   if (typeof name !== "string" || name.length > 240 || /\s/.test(name) ||
       !versionPattern.test(name)) throw unavailable();
+  await references.assert(name, /^[A-Za-z0-9_-]+$/u);
   const [version] = await client.accessSecretVersion({name},
     {timeout: 3000, retry: null});
   const data = version.payload?.data;
@@ -98,7 +102,8 @@ export class RcsCredentialStore {
   new SecretManagerServiceClient(),
   private readonly createClient: (value: Readonly<RcsServiceAccount>) =>
     OAuthClient = createRcsOAuthClient,
-  private readonly clock: () => number = Date.now) {}
+  private readonly clock: () => number = Date.now,
+  private readonly references = new SecretVersionReferenceGuard()) {}
 
   async access(config: RcsConfig): Promise<RcsCredentials> {
     let cacheKey: string | undefined;
@@ -107,7 +112,7 @@ export class RcsCredentialStore {
       const startedAt = this.clock();
       if (!rbmTime(startedAt)) throw unavailable();
       const account = parseRcsServiceAccount(await readRcsSecret(this.secrets,
-        config.credentialVersion, 16_384), config);
+        config.credentialVersion, 16_384, this.references), config);
       cacheKey = createHash("sha256").update(JSON.stringify([
         config.credentialVersion, account])).digest("hex");
       let client = this.clients.get(cacheKey);

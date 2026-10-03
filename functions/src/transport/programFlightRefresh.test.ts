@@ -407,3 +407,50 @@ test("rebooking resets old flight facts while retaining subscription cleanup",
     assert.equal(unchanged.flightProviderUpdatedAt,
       old.flightProviderUpdatedAt);
   });
+
+test("pilot excludes other programs and legs without writes or provider work",
+  async () => {
+    const initial = leg({flightNextRefreshAt: ts(NOW - 1)});
+    const store = new MiniFirestore({
+      "programTravelLegs/other-leg": initial as unknown as FakeData,
+    });
+    const outcome = await refreshTravelLeg(store as never, "other-leg", {
+      now: () => new Date(NOW), allowsLeg: () => false,
+      apiKey: () => {
+        throw new Error("must not read key");
+      },
+      fetchStatus: async () => {
+        throw new Error("must not call provider");
+      },
+      syncAlert: async () => {
+        throw new Error("must not subscribe");
+      },
+    });
+    assert.equal(outcome, "settled");
+    assert.deepEqual(store.getDoc("programTravelLegs/other-leg"), initial);
+  });
+
+test("pilot sweep reads only exact due targets despite older non-pilot legs",
+  async () => {
+    const other = leg({programId: "other",
+      flightNextRefreshAt: ts(NOW - 9000)});
+    const store = new MiniFirestore({
+      "programTravelLegs/other": other as unknown as FakeData,
+      "programTravelLegs/pilot":
+        leg({flightNextRefreshAt: ts(NOW - 1)}) as unknown as FakeData,
+      "programTravelLegs/future":
+        leg({flightNextRefreshAt: ts(NOW + 1)}) as unknown as FakeData,
+      "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
+    });
+    let calls = 0;
+    const summary = await refreshDueFlightLegs(store as never, {
+      now: () => new Date(NOW), pilotLegIds: ["pilot", "future", "missing"],
+      allowsLeg: (programId) => programId === "program-1",
+      apiKey: () => "fake-key", fetchStatus: async () => {
+        calls++; return snapshot();
+      },
+    });
+    assert.equal(calls, 1);
+    assert.equal(summary.updated, 1);
+    assert.deepEqual(store.getDoc("programTravelLegs/other"), other);
+  });
