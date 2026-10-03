@@ -2445,23 +2445,29 @@ debuggable, version-name, and version-code identity before any Play edit.
 ## Optional Flight Provider Configuration
 
 Airport coordination and manual arrival updates deploy without a flight-provider
-account. `FLIGHT_PROVIDER_CONFIG_VERSION` defaults to blank: the scheduled sweep
-returns before reading Firestore or calling a provider, manual provider refresh
-returns a failed-precondition response, and the flight webhook rejects requests.
-No placeholder API key or webhook secret is provisioned.
+account. Credential storage is separate from rollout. Keep
+`FLIGHT_PROVIDER_CONFIG_VERSION` and `FLIGHT_PROVIDER_POLICY` blank while
+inactive. Even a populated numeric credential reference cannot enable enrichment
+without a valid policy. Deployment materialization forces the policy blank and
+rejects all nonblank overrides. The inactive scheduler returns before reading
+Firestore or calling a provider, manual provider refresh fails closed, and the
+webhook rejects requests. No placeholder API key or webhook secret is provisioned.
 
-To enable flight enrichment, provision a Secret Manager JSON object with exactly
-`schema: "catch.flight-provider/v1"`, `apiKey`, and `webhookSecret`. Use a random
-webhook secret of at least 32 non-whitespace characters. Grant the deployed
-functions' runtime identity access only to that secret, verify access, and set
-the environment's GitHub variable `FLIGHT_PROVIDER_CONFIG_VERSION` to a numeric
-version in the same Firebase project (never `latest`). The deploy parameter
-preflight rejects cross-project or unpinned references. Set
-`FLIGHT_WEBHOOK_BASE_URL` only when an explicit HTTPS override is required;
-otherwise the function uses its project-owned endpoint. Redeploy the affected
-functions to enable or disable sync, then verify the provider and webhook using
-a synthetic flight. Secret access and parsing failures fail closed without
-logging credential contents.
+The credential envelope remains a Secret Manager JSON object with exactly
+`schema: "catch.flight-provider/v1"`, `apiKey`, and `webhookSecret`; the webhook
+secret must contain at least 32 non-whitespace characters. Any future runtime
+reference must pin a numeric version in the same Firebase project, never
+`latest`. The deploy parameter preflight rejects cross-project or unpinned
+references. Secret access and parsing failures fail closed without logging
+credential contents. `FLIGHT_WEBHOOK_BASE_URL` is only an explicit HTTPS override;
+otherwise the function derives its project-owned endpoint.
+
+Storing credentials authorizes no provider activity. A later reviewed source
+and rollout change must admit the bounded polling pilot only after plan-specific
+observation retention, subscription cleanup, and runtime-identity acceptance.
+Alerts and webhook ingestion remain disabled. See the
+[flight preparation guide](../functions/src/transport/README.md) for secure
+user-only credential entry, exact controls, and activation blockers.
 
 ## TestFlight Status
 
