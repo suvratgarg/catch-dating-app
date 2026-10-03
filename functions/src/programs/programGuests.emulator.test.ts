@@ -7,6 +7,9 @@ import {baseSeed, request, now} from "../shared/testing/programFixtures";
 import {listProgramGuestsHandler, upsertProgramGuestHandler,
   upsertProgramHouseholdHandler} from "./programGuests";
 
+import {upsertProgramStayHandler, upsertProgramRoomBlockHandler,
+  getProgramHotelRoomsHandler} from "./programRooms";
+
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 
 test("Firestore paginates equal names and serializes household moves",
@@ -101,8 +104,6 @@ test("Firestore paginates equal names and serializes household moves",
 // cannot silently lose recurring emulator coverage.
 test("Firestore serializes room sharing and cross-hotel assignments",
   {skip: !enabled}, async () => {
-    const {upsertProgramStayHandler, upsertProgramRoomBlockHandler,
-      getProgramHotelRoomsHandler} = await import("./programRooms");
     const id = randomUUID();
     const app = initializeApp({projectId: "demo-catch-rules"}, id);
     const db = getEmulatorFirestore(app);
