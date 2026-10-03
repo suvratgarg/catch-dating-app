@@ -1,5 +1,6 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import * as admin from "firebase-admin";
+import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../operations/durableActions";
 import type {OrganizerMessageTemplateDocument} from
@@ -71,6 +72,7 @@ export class OrganizerTokenStore {
       process.env.ORGANIZER_WHATSAPP_TOKEN_SECRET_ID ??
         "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
     ),
+    private readonly references = new SecretVersionReferenceGuard(),
   ) {}
 
   async store(params: {
@@ -93,10 +95,12 @@ export class OrganizerTokenStore {
       payload: {data: Buffer.from(credential, "utf8")},
     });
     if (!version.name) throw new Error("Secret Manager returned no version.");
+    await this.references.assert(version.name, this.secretId);
     return version.name;
   }
 
   async access(versionResource: string): Promise<string> {
+    await this.references.assert(versionResource, this.secretId);
     const [version] = await this.client.accessSecretVersion({
       name: versionResource,
     });
@@ -109,6 +113,7 @@ export class OrganizerTokenStore {
   }
 
   async disable(versionResource: string): Promise<void> {
+    await this.references.assert(versionResource, this.secretId);
     await this.client.disableSecretVersion({name: versionResource});
   }
 
@@ -117,13 +122,8 @@ export class OrganizerTokenStore {
     versionResource: string; organizerId: string; connectionId: string;
   }): Promise<string> {
     try {
-      const parts = params.versionResource.split("/");
-      if (parts.length !== 6 || parts[0] !== "projects" ||
-          !/^[A-Za-z0-9:-]+$/u.test(parts[1]) ||
-          /\s/u.test(params.versionResource) ||
-          parts[2] !== "secrets" || parts[3] !== this.secretId ||
-          parts[4] !== "versions" || !/^[1-9][0-9]*$/u.test(parts[5]) ||
-          !params.organizerId || !params.connectionId) {
+      await this.references.assert(params.versionResource, this.secretId);
+      if (!params.organizerId || !params.connectionId) {
         throw new Error("Invalid credential scope");
       }
       const [version] = await this.client.accessSecretVersion({

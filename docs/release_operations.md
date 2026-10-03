@@ -81,13 +81,16 @@ node tool/firebase/check_environment_readiness.mjs \
   --targets firestore:indexes,functions,firestore:rules,storage
 ```
 
-`tool/firebase/environment_readiness.json` is the source of truth for enabled
-Secret Manager versions and Firestore TTL policies required by deploy targets.
-The offline mode reconciles every literal Functions `defineSecret` declaration,
-exported Function target, and owning source path. The live mode resolves project
-ids only from `.firebaserc` and permits three metadata-only `gcloud` command
-families: project describe, secret-version list, and Firestore TTL list. It has
-no apply mode and never accesses or prints secret payloads.
+`tool/firebase/environment_readiness.json` owns required secret bindings, direct
+readers and Firestore TTL policies. Offline checks reconcile source declarations,
+consumers and binding intent. The command above inspects deployed state; Delivery
+first produces an approved-source candidate receipt and later compares it with
+deployed metadata. Projects resolve only through `.firebaserc`. Metadata commands
+describe projects and exact secret versions, project allowlisted Function fields,
+and read secret IAM/TTL policies; identity-specific checks also read IAM metadata.
+There is no apply mode or secret-payload access. See
+[Credential readiness and deployment provenance](#credential-readiness-and-deployment-provenance)
+for evidence limits and recovery.
 
 Confirmed missing state exits `1`; authentication, authorization, unavailable
 tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
@@ -979,12 +982,12 @@ Use at least 32 random bytes, encoded as a secret string, and use different
 material in dev, staging, and prod. Rotating it intentionally invalidates every
 outstanding ten-minute suggestion token. Never place the value in Remote
 Config, a client build, repository files, or CI logs. Verify secret metadata
-without printing the value before deploying the callable. The default
-Functions runtime service account for that project must also hold
-`roles/secretmanager.secretAccessor` on the individual secret. The metadata-
-only environment-readiness gate verifies both the enabled version and that
-secret-level runtime binding before Firebase can attempt to mutate IAM during
-deployment.
+without printing the value before deploying the callable. The source-intended
+runtime service account must hold `roles/secretmanager.secretAccessor` on the
+individual secret. Readiness verifies the selected numeric version and that
+explicit secret-level grant before deployment, then compares the observed runtime
+identity/binding. It does not assume the default compute identity or prove
+absence of inherited access.
 
 Configure a Firestore TTL policy on
 `crossPathsSuggestionExposures.expiresAt` in every environment. The callable
@@ -2445,23 +2448,29 @@ debuggable, version-name, and version-code identity before any Play edit.
 ## Optional Flight Provider Configuration
 
 Airport coordination and manual arrival updates deploy without a flight-provider
-account. `FLIGHT_PROVIDER_CONFIG_VERSION` defaults to blank: the scheduled sweep
-returns before reading Firestore or calling a provider, manual provider refresh
-returns a failed-precondition response, and the flight webhook rejects requests.
-No placeholder API key or webhook secret is provisioned.
+account. Credential storage is separate from rollout. Keep
+`FLIGHT_PROVIDER_CONFIG_VERSION` and `FLIGHT_PROVIDER_POLICY` blank while
+inactive. Even a populated numeric credential reference cannot enable enrichment
+without a valid policy. Deployment materialization forces the policy blank and
+rejects all nonblank overrides. The inactive scheduler returns before reading
+Firestore or calling a provider, manual provider refresh fails closed, and the
+webhook rejects requests. No placeholder API key or webhook secret is provisioned.
 
-To enable flight enrichment, provision a Secret Manager JSON object with exactly
-`schema: "catch.flight-provider/v1"`, `apiKey`, and `webhookSecret`. Use a random
-webhook secret of at least 32 non-whitespace characters. Grant the deployed
-functions' runtime identity access only to that secret, verify access, and set
-the environment's GitHub variable `FLIGHT_PROVIDER_CONFIG_VERSION` to a numeric
-version in the same Firebase project (never `latest`). The deploy parameter
-preflight rejects cross-project or unpinned references. Set
-`FLIGHT_WEBHOOK_BASE_URL` only when an explicit HTTPS override is required;
-otherwise the function uses its project-owned endpoint. Redeploy the affected
-functions to enable or disable sync, then verify the provider and webhook using
-a synthetic flight. Secret access and parsing failures fail closed without
-logging credential contents.
+The credential envelope remains a Secret Manager JSON object with exactly
+`schema: "catch.flight-provider/v1"`, `apiKey`, and `webhookSecret`; the webhook
+secret must contain at least 32 non-whitespace characters. Any future runtime
+reference must pin a numeric version in the same Firebase project, never
+`latest`. The deploy parameter preflight rejects cross-project or unpinned
+references. Secret access and parsing failures fail closed without logging
+credential contents. `FLIGHT_WEBHOOK_BASE_URL` is only an explicit HTTPS override;
+otherwise the function derives its project-owned endpoint.
+
+Storing credentials authorizes no provider activity. A later reviewed source
+and rollout change must admit the bounded polling pilot only after plan-specific
+observation retention, subscription cleanup, and runtime-identity acceptance.
+Alerts and webhook ingestion remain disabled. See the
+[flight preparation guide](../functions/src/transport/README.md) for secure
+user-only credential entry, exact controls, and activation blockers.
 
 ## TestFlight Status
 
@@ -2755,3 +2764,126 @@ another Codex audit checklist.
 | Observability | Capture Crashlytics visibility/symbolication and Analytics DebugView proof with a release-like dev/staging build. |
 | Feature toggles and A/B testing | Defer until there is a concrete rollout problem; do not introduce a toggle framework as release ceremony. |
 | Shorebird/code push | Defer for first release. Reconsider only after app-store release operations are stable and rollback policy is explicit. |
+
+## Credential readiness and deployment provenance
+
+`tool/firebase/environment_readiness.json` is the credential contract. Its
+literal Firebase secret bindings and direct-reader entries record owners,
+consumers, credential class, exact-reference requirements, runtime identity,
+activation policy, and rotation compatibility. Keep names and references here;
+never add values, private keys, passwords, signing material, or raw environment
+dumps to Git, reports, or CI logs.
+
+Readiness has two distinct phases. Candidate preflight parses the approved
+Functions source without executing it, validates names-only parameter provenance,
+and checks the intended runtime identity. For SDK `SecretParam` bindings,
+Firebase CLI 15.20 resolves `latest` and deploys that numeric version; the SDK has
+no supported numeric version option. Preflight uses the same metadata-only
+resolution. Direct-reader contracts still require same-project positive numeric
+references and reject aliases. A disabled selected version fails even when some
+other version is enabled. After deployment, the same receipt must match observed
+function identity, numeric bindings, and activation state. A new version created
+between preflight and deployment can change SDK resolution: fail the comparison
+and resolve the discrepancy before any revocation. A variable or version change
+alone does not redeploy a Function.
+
+The mode-0600 names/reference receipt records source SHA, parameter names and
+resolution sources, selected references, activation booleans, and a digest of the
+canonical generated non-secret parameters before the digest marker is appended.
+Materialization must reproduce that receipt before writing the deploy copy and
+alone emits the reserved `CATCH_DEPLOY_CONFIG_SHA256` marker. The final metadata
+comparison checks that marker and source-intended identity for every selected
+Function, including secret-free Functions and restored already-completed stages.
+Missing/malformed markers and stale digests fail; environment input cannot
+supply the reserved marker. The existing Functions deployment checkpoint
+binds the actual generated file digest, package/source provenance, build and
+serving revision; recovery must still validate that proof. Neither receipt is
+permission to deploy a different source or to bypass normal main CI authority.
+GitHub OIDC federation remains the deployment authentication path; do not add
+service-account JSON keys.
+
+Metadata readiness proves neither provider usability nor effective IAM isolation.
+A missing explicit secret-level grant is unproven access, not proof of effective
+denial: inherited and conditional policies require a separate effective-access
+review. Record-bound and retained historical references are reported as
+unverified, not silently classified inactive from a blank current parameter.
+Source guards reject foreign-project/secret-family references before access.
+No readiness command retrieves a secret payload.
+
+Recovery rechecks current configuration and resolves SDK `latest` again. If a
+version changed after the original deployment, the fresh candidate may differ
+from the retained deployment proof. Do not suppress that mismatch or substitute
+a receipt: use the existing explicitly authorized restart/redeploy path after
+reviewing which version should serve. A retained secret version is not evidence
+that it is safe to reactivate.
+
+### Runtime identity proposals and activation proof
+
+Use separate feature identities and separate provisioning duties where the
+runtime architecture supports that split. The proposed DEV flight reader is
+`flight-provider@catchdates-dev.iam.gserviceaccount.com`, with accessor only on
+its approved flight secret; no account or grant is created by this source work.
+A dedicated reader must not inherit organizer WhatsApp accessor/version-manager
+permissions. WhatsApp connection completion/disconnection needs version-management
+duties, while message readers require accessor only. Payment OAuth refresh is
+currently a runtime write operation: do not remove its grant until the refresh
+lease/provisioning path has been safely separated and tested. Keep default
+identities as observed facts until an explicitly approved deployment changes them.
+
+For each live identity change, approval must name project, service-account,
+consumer functions, secret resources, exact roles to add/remove, and rollback
+that does not reuse compromised material. Verify effective inherited/conditional
+access, a positive intended read, and negative unrelated-secret access under the
+actual deployed identity. No IAM change, persistent access, provider activation,
+paid subscription, or credential entry is authorized by this runbook.
+
+### Rotation and retained copies
+
+Rotation is specific to the credential contract. Provider keys may overlap only
+where the provider supports it; verify the new binding and deployment before
+revocation. OAuth refresh credentials use the existing transactional lease and
+outcome-unknown recovery; never blindly replay an old refresh token. Retain
+payment credential versions required for refunds and reconciliation. Guest-link
+signing keyrings retain verification keys for valid outstanding links; venue QR
+key rotation can invalidate outstanding QR codes. Changing
+`ORGANIZER_CONTACT_IDENTITY_KEY` changes stored identity HMACs and requires an
+explicit migration strategy. Do not roll back to compromised material. Each
+rotation/revocation/deletion needs exact action-time approval and secure user
+entry; this source change performs none.
+
+`prod-mobile` is the mobile release authority. Older `prod` Android/App Store
+Connect names and repository-scoped PROD Maps names are retained migration and
+recovery copies, not demonstrated duplicates by value. Before proposing a
+specific name's retirement, retain successful consumer and host iOS distribution
+and signed Android lane receipts that identify the authority scope, source SHA,
+artifact/build, signing identity, and names used. Verify installation/distribution
+and a documented recovery path with the replacement authority. Then request
+approval for the exact old scope/name list. Do not read values to prove equality,
+remove copies speculatively, or treat TestFlight as a secrets vault.
+
+Public Firebase client identifiers/API keys, constrained native Maps SDK keys,
+and environment flags are reviewed application configuration. App Store signing
+keys, OAuth/provider credentials, and server Places keys remain privileged.
+Per-invitation bearer tokens are intentional server-only Firestore application
+data; moving every token to Secret Manager requires a separate threat model.
+
+### Local and cloud build inputs
+
+`tool/flutter_with_env.sh <environment> --config-sources` reports only reviewed names, source,
+and set/empty/unset state. Existing process environment (including an explicit
+empty value) wins, then `.env.<environment>.local`, then `.env.local`. Use this
+mode to identify stale fallback provenance; do not print private-file contents.
+`tool/write_ios_maps_key_xcconfig.sh <environment> <output> --temporary -- <command>`
+creates an absent mode-0600 compatibility output for a foreground command and
+cleans it on normal exit, failure, HUP, INT, and TERM. It refuses an existing
+output/symlink. SIGKILL, host failure, or power loss cannot run cleanup; inspect
+names/ownership before separately authorized recovery. Prefer these temporary
+outputs to additional manually maintained master copies.
+
+Codex Cloud bootstrap remains key-free. PersonalVault is per-user input, not
+GCP synchronization. The optional personal DEV Android Maps key is staged only
+at runtime by the existing helper. Raw environment secrets are available to task
+programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
+Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
+Changes to saved setup configuration require separate coordination; source helper
+changes must first pass offline fake-input tests.

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -39,6 +40,9 @@ export const materializedNonSecretParams = [
   "FORM_DOMAIN_CNAME_TARGET",
   "FLIGHT_WEBHOOK_BASE_URL",
   "FLIGHT_PROVIDER_CONFIG_VERSION",
+  "FLIGHT_PROVIDER_POLICY",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
+  "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ];
 
 function option(name) {
@@ -94,30 +98,49 @@ function normalizedProviderParams(environment = process.env, projectId) {
 
   const catchWebhookEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_WEBHOOK_ENABLED");
-  // Offline consumer milestone: ordinary Delivery must not activate workers.
-  // Reject attempted enablement rather than silently accepting an override.
   const catchConsumersEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
-  assert(catchConsumersEnabled === "false",
-    "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED must remain false in this milestone");
-  // No runtime scoped reply configuration is provisioned by this source slice.
-  for (const name of ["CATCH_WHATSAPP_REPLIES_ENABLED",
-    "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY"]) {
-    assert(normalizedBooleanParam(environment, name) === "false",
-      `${name} must remain false in this milestone`);
+  const catchRepliesEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_REPLIES_ENABLED");
+  const catchAtomicIngressReady = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY");
+  // These are configuration checks, not historical STOP attestation or sending
+  // authority. The runtime still requires current Auth/App Check, independently
+  // reviewed readiness, verified recipient consent and an atomic one-shot claim.
+  const catchReplyScope = Object.fromEntries([
+    "CATCH_WHATSAPP_REPLY_ACTOR_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256",
+  ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const hasReplyScope = Object.values(catchReplyScope).some(Boolean);
+  if (hasReplyScope || catchRepliesEnabled === "true") {
+    assert(Object.values(catchReplyScope).every(Boolean),
+      "Catch reply scope must be complete or entirely unconfigured");
+    for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
+      "CATCH_WHATSAPP_REPLY_RECIPIENT_UID"]) {
+      assert(/^[A-Za-z0-9_-]{1,128}$/.test(catchReplyScope[name]),
+        `${name} must be a controlled Firebase UID`);
+    }
+    assert(/^\+[1-9][0-9]{6,14}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164),
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must be an E.164 endpoint");
+    const credentialPrefix = secretPrefix +
+      "CATCH_WHATSAPP_ACCESS_TOKEN/versions/";
+    const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
+    assert(credential.startsWith(credentialPrefix) &&
+      /^[1-9][0-9]*$/.test(credential.slice(credentialPrefix.length)),
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION must pin a numeric " +
+      "CATCH_WHATSAPP_ACCESS_TOKEN version in this project");
+    assert(/^v[1-9][0-9]*\.[0-9]+$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION),
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must be an explicit Graph version");
+    assert(/^[a-f0-9]{64}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
   }
-  assert(!environment.CATCH_WHATSAPP_REPLY_ACTOR_UID?.trim(),
-    "CATCH_WHATSAPP_REPLY_ACTOR_UID must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_RECIPIENT_UID?.trim(),
-    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_RECIPIENT_E164?.trim(),
-    "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION?.trim(),
-    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_GRAPH_VERSION?.trim(),
-    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must remain unconfigured in this milestone");
-  assert(!environment.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256?.trim(),
-    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must remain unconfigured in this milestone");
   const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
   const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
     ?.trim() ?? "";
@@ -125,9 +148,24 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "CATCH_WHATSAPP_WABA_ID must be a numeric Meta account id");
   assert(!catchPhoneNumberId || /^[0-9]{1,32}$/.test(catchPhoneNumberId),
     "CATCH_WHATSAPP_PHONE_NUMBER_ID must be a numeric Meta phone number id");
-  if (catchWebhookEnabled === "true") {
+  assert(Boolean(catchWabaId) === Boolean(catchPhoneNumberId),
+    "Catch WABA and phone number ids must be configured together");
+  if (catchWebhookEnabled === "true" || hasReplyScope) {
     assert(catchWabaId && catchPhoneNumberId,
-      "Catch WABA and phone number ids are required when webhook is enabled");
+      "Catch WABA and phone number ids are required for ingress or reply scope");
+  }
+  if (catchAtomicIngressReady === "true") {
+    assert(catchWebhookEnabled === "true",
+      "Catch atomic STOP ingress requires the webhook to be enabled");
+  }
+  if (catchConsumersEnabled === "true") {
+    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true",
+      "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED requires enabled atomic ingress");
+  }
+  if (catchRepliesEnabled === "true") {
+    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true" &&
+      catchConsumersEnabled === "true",
+    "CATCH_WHATSAPP_REPLIES_ENABLED requires enabled atomic ingress and consumers");
   }
 
   const eventAssistance = {
@@ -155,6 +193,20 @@ function normalizedProviderParams(environment = process.env, projectId) {
       flightConfigVersion.slice(secretPrefix.length))),
   "FLIGHT_PROVIDER_CONFIG_VERSION must pin a secret in this project");
 
+  // Inactive preparation only: a later reviewed rollout must explicitly
+  // admit policy materialization. Credentials alone never enable polling.
+  assert(!environment.FLIGHT_PROVIDER_POLICY?.trim(),
+    "FLIGHT_PROVIDER_POLICY must remain unconfigured in this milestone");
+
+  const assistanceReferences = {};
+  for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
+    ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
+    const reference = environment[name]?.trim() || "";
+    const prefix = `projects/${projectId}/secrets/${secret}/versions/`;
+    assert(!reference || reference.startsWith(prefix) && /^[1-9][0-9]*$/.test(reference.slice(prefix.length)),
+      `${name} must pin its expected secret in this project`);
+    assistanceReferences[name] = reference || " ";
+  }
   const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
@@ -168,15 +220,21 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
     CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookEnabled,
-    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "false",
-    CATCH_WHATSAPP_REPLIES_ENABLED: "false",
-    CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "false",
-    CATCH_WHATSAPP_REPLY_ACTOR_UID: " ",
-    CATCH_WHATSAPP_REPLY_RECIPIENT_UID: " ",
-    CATCH_WHATSAPP_REPLY_RECIPIENT_E164: " ",
-    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: " ",
-    CATCH_WHATSAPP_REPLY_GRAPH_VERSION: " ",
-    CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: " ",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: catchConsumersEnabled,
+    CATCH_WHATSAPP_REPLIES_ENABLED: catchRepliesEnabled,
+    CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: catchAtomicIngressReady,
+    CATCH_WHATSAPP_REPLY_ACTOR_UID:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_ACTOR_UID || " ",
+    CATCH_WHATSAPP_REPLY_RECIPIENT_UID:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_UID || " ",
+    CATCH_WHATSAPP_REPLY_RECIPIENT_E164:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164 || " ",
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION || " ",
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION || " ",
+    CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 || " ",
     CATCH_WHATSAPP_WABA_ID: catchWabaId || " ",
     CATCH_WHATSAPP_PHONE_NUMBER_ID: catchPhoneNumberId || " ",
     ...eventAssistance,
@@ -185,6 +243,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     // Empty lets the function derive the URL from GCLOUD_PROJECT.
     FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
+    FLIGHT_PROVIDER_POLICY: " ",
+    ...assistanceReferences,
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
@@ -192,10 +252,46 @@ function normalizedProviderParams(environment = process.env, projectId) {
   return params;
 }
 
+const referenceNames = Object.freeze([
+  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+  "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+  "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+]);
+const activationNames = Object.freeze([
+  "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
+]);
+function paramsContents(params) {
+  return Object.entries(params).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";
+}
+
+export function functionsParamsProvenance({projectId, sourceSha, environment = process.env}) {
+  assert(/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(projectId), "invalid Firebase project id");
+  assert(/^[a-f0-9]{40}$/u.test(sourceSha ?? ""), "an exact source SHA is required for provenance");
+  const params = normalizedProviderParams(environment, projectId);
+  // No arbitrary environment entries or parameter values can enter this receipt.
+  return {version: 1, projectId, sourceSha,
+    paramsSha256: createHash("sha256").update(paramsContents(params)).digest("hex"),
+    names: materializedNonSecretParams.map((name) => ({name,
+      source: name === "FLIGHT_PROVIDER_POLICY" ? "source-disabled" :
+        environment[name]?.trim() ? "deployment-environment" : "source-default"})),
+    references: Object.fromEntries(referenceNames.map((name) => [name, params[name].trim() || null])),
+    activation: Object.fromEntries(activationNames.map((name) => [name, name === "FLIGHT_PROVIDER_POLICY" ? Boolean(params[name].trim()) : params[name] === "true"])),
+  };
+}
+
+function writePrivateOutput(outputPath, contents) {
+  const descriptor = fs.openSync(outputPath,
+    fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | fs.constants.O_NOFOLLOW, 0o600);
+  try { fs.fchmodSync(descriptor, 0o600); fs.writeFileSync(descriptor, contents, "utf8"); }
+  finally { fs.closeSync(descriptor); }
+}
+
 export function prepareFunctionsParamsForDeploy({
   functionsDir,
   projectId,
   environment = process.env,
+  expectedProvenance,
+  sourceSha,
 }) {
   assert(/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(projectId),
     "invalid Firebase project id");
@@ -204,26 +300,39 @@ export function prepareFunctionsParamsForDeploy({
     "Functions deploy path must be a directory");
   assert(fs.existsSync(path.join(resolvedFunctionsDir, "package.json")),
     "Functions deploy path must contain package.json");
+  assert(environment.CATCH_DEPLOY_CONFIG_SHA256 === undefined,
+    "CATCH_DEPLOY_CONFIG_SHA256 is reserved for verified materialization");
   const params = normalizedProviderParams(environment, projectId);
   const outputPath = path.join(resolvedFunctionsDir, `.env.${projectId}`);
-  const contents = Object.entries(params)
-    .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
-    .join("\n") + "\n";
-  fs.writeFileSync(outputPath, contents, {encoding: "utf8", mode: 0o600});
-  fs.chmodSync(outputPath, 0o600);
+  const contents = paramsContents(params);
+  if (expectedProvenance !== undefined) {
+    const actual = functionsParamsProvenance({projectId, sourceSha, environment});
+    assert(JSON.stringify(actual) === JSON.stringify(expectedProvenance),
+      "Deployment parameter provenance changed after readiness; repeat preflight");
+  }
+  const verifiedContents = expectedProvenance !== undefined ?
+    contents + `CATCH_DEPLOY_CONFIG_SHA256=${JSON.stringify(expectedProvenance.paramsSha256)}\n` : contents;
+  writePrivateOutput(outputPath, verifiedContents);
   return {outputPath, enabled: params.META_WHATSAPP_ENABLED === "true"};
 }
 
 function runCli() {
+  if (process.argv.includes("--provenance-only")) {
+    const receipt = functionsParamsProvenance({projectId: option("--project"), sourceSha: option("--source-sha")});
+    writePrivateOutput(path.resolve(option("--output")), JSON.stringify(receipt, null, 2) + "\n");
+    console.log("Wrote names/reference-only Functions parameter provenance.");
+    return;
+  }
+  let expectedProvenance;
+  if (process.argv.includes("--provenance")) {
+    try { expectedProvenance = JSON.parse(fs.readFileSync(option("--provenance"), "utf8")); }
+    catch { throw new Error("Invalid Functions parameter provenance file."); }
+  }
   const result = prepareFunctionsParamsForDeploy({
-    functionsDir: path.resolve(option("--functions-dir")),
-    projectId: option("--project"),
+    functionsDir: path.resolve(option("--functions-dir")), projectId: option("--project"),
+    ...(process.argv.includes("--provenance") ? {expectedProvenance, sourceSha: option("--source-sha")} : {}),
   });
-  console.log(JSON.stringify({
-    ok: true,
-    path: result.outputPath,
-    metaWhatsappEnabled: result.enabled,
-  }));
+  console.log(`Materialized non-secret Functions params; Meta enabled: ${result.enabled}.`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) runCli();

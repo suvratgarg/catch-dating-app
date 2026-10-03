@@ -1,3 +1,5 @@
+import {SecretVersionReferenceGuard} from
+  "../../shared/secretVersionReference";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {operationContentHash} from "../../operations/durableActions";
 import type {LiveDispatchPermit} from "./messageOutbox";
@@ -37,11 +39,14 @@ export function parseSmsCredentials(value: unknown,
 
 /** Exact numbered secret version; no token is stored in an outbox or error. */
 export class SmsCredentialStore {
-  constructor(private readonly client = new SecretManagerServiceClient()) {}
+  constructor(private readonly client = new SecretManagerServiceClient(),
+    private readonly references = new SecretVersionReferenceGuard()) {}
 
   async access(config: SmsConfig): Promise<SmsCredentials> {
     parseSmsConfig(config);
     try {
+      await this.references.assert(config.credentialVersion,
+        /^[A-Za-z0-9_-]+$/u);
       const [version] = await this.client.accessSecretVersion({
         name: config.credentialVersion,
       });

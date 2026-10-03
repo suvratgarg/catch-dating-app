@@ -77,3 +77,29 @@ test("disabled flight entry points never access Firestore or a provider",
       }
     }
   });
+
+test("a pinned secret reference alone cannot activate any entry point",
+  async () => {
+    const oldVersion = process.env.FLIGHT_PROVIDER_CONFIG_VERSION;
+    const oldPolicy = process.env.FLIGHT_PROVIDER_POLICY;
+    process.env.FLIGHT_PROVIDER_CONFIG_VERSION = version;
+    try {
+      for (const policy of ["", "{}", JSON.stringify({mode: "alerts"})]) {
+        process.env.FLIGHT_PROVIDER_POLICY = policy;
+        await refreshProgramFlightStatuses.run({
+          scheduleTime: "2026-10-03T00:00:00Z",
+        });
+        await assert.rejects(refreshProgramTravelLegHandler({
+          auth: {uid: "test-actor"}, data: {},
+        } as CallableRequest<unknown>), {code: "failed-precondition"});
+        await assert.rejects(flightAlertWebhookHandler({key: "guess"}, {}),
+          FlightAlertAuthError);
+      }
+    } finally {
+      if (oldVersion === undefined) {
+        delete process.env.FLIGHT_PROVIDER_CONFIG_VERSION;
+      } else process.env.FLIGHT_PROVIDER_CONFIG_VERSION = oldVersion;
+      if (oldPolicy === undefined) delete process.env.FLIGHT_PROVIDER_POLICY;
+      else process.env.FLIGHT_PROVIDER_POLICY = oldPolicy;
+    }
+  });

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+set +x  # Local configuration values must never enter shell tracing.
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: ./tool/flutter_with_env.sh <local|dev|staging|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] <flutter args...>"
+  echo "Usage: ./tool/flutter_with_env.sh <local|dev|staging|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] [--config-sources | <flutter args...>]"
   exit 1
 fi
 
@@ -27,6 +28,16 @@ fi
 if [[ $# -ge 2 && "$1" == "--platform" ]]; then
   target_platform="$2"
   shift 2
+fi
+
+config_sources_only=false
+if [[ "${1:-}" == --config-sources ]]; then
+  config_sources_only=true
+  shift
+  if [[ $# -ne 0 ]]; then
+    echo "--config-sources does not accept Flutter arguments." >&2
+    exit 64
+  fi
 fi
 
 case "$environment" in
@@ -65,8 +76,29 @@ if [[ ! -f "$define_file" ]]; then
   exit 1
 fi
 
+# Report only reviewed names and fixed source labels, never arbitrary environment
+# names, values, file text or hashes. Empty process values deliberately mask files.
+config_names=(
+  FIREBASE_APP_CHECK_DEBUG_TOKEN USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER
+  ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN VERBOSE_AUTH_DEBUG_LOGS
+  DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING ENABLE_OBSERVABILITY_COLLECTION
+  EMIT_OBSERVABILITY_SMOKE_EVENT GOOGLE_MAPS_ANDROID_API_KEY
+  GOOGLE_MAPS_ANDROID_API_KEY_DEV GOOGLE_MAPS_ANDROID_API_KEY_STAGING
+  GOOGLE_MAPS_ANDROID_API_KEY_PROD GOOGLE_MAPS_IOS_API_KEY_DEV
+  GOOGLE_MAPS_IOS_API_KEY_STAGING GOOGLE_MAPS_IOS_API_KEY_PROD
+)
+config_sources=()
+for config_name in "${config_names[@]}"; do
+  if [[ "${!config_name+x}" == x ]]; then
+    config_sources+=(processenv)
+  else
+    config_sources+=(unset)
+  fi
+done
+
 load_local_env_file() {
   local env_file="$1"
+  local source_label="$2"
   [[ -f "$env_file" ]] || return 0
 
   while IFS= read -r line || [[ -n "$line" ]]; do
@@ -83,7 +115,7 @@ load_local_env_file() {
     local value="${line#*=}"
 
     if [[ ! "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
-      echo "Ignoring invalid env key '$key' in $env_file" >&2
+      echo "Ignoring an invalid local configuration name." >&2
       continue
     fi
 
@@ -93,8 +125,14 @@ load_local_env_file() {
       value="${value:1:${#value}-2}"
     fi
 
-    if [[ -z "${!key:-}" ]]; then
+    if [[ "${!key+x}" != x ]]; then
       export "$key=$value"
+      local config_index
+      for ((config_index = 0; config_index < ${#config_names[@]}; config_index++)); do
+        if [[ "$key" == "${config_names[$config_index]}" ]]; then
+          config_sources[$config_index]="$source_label"
+        fi
+      done
     fi
   done <"$env_file"
 }
@@ -251,8 +289,24 @@ run_flutter_with_bounded_ci_retry() {
 }
 
 if [[ "$local_emulators" != true ]]; then
-  load_local_env_file "$repo_root/.env.$environment.local"
-  load_local_env_file "$repo_root/.env.local"
+  load_local_env_file "$repo_root/.env.$environment.local" environment-local
+  load_local_env_file "$repo_root/.env.local" local-fallback
+fi
+
+if [[ "$config_sources_only" == true ]]; then
+  # This describes wrapper resolution only, not native compatibility-file
+  # contents, deployed bindings, validity or provider access.
+  printf 'Configuration sources (wrapper only; values omitted)\n'
+  for ((config_index = 0; config_index < ${#config_names[@]}; config_index++)); do
+    config_name="${config_names[$config_index]}"
+    config_state=unset
+    if [[ "${!config_name+x}" == x ]]; then
+      config_state=empty
+      [[ -z "${!config_name}" ]] || config_state=set
+    fi
+    printf '%s source=%s state=%s\n' "$config_name" "${config_sources[$config_index]}" "$config_state"
+  done
+  exit 0
 fi
 
 flutter_args=("$@")
@@ -477,7 +531,7 @@ debug token to .env.local, for example:
 
 If you are intentionally minting a one-time token for first setup, rerun with:
 
-  ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN=1 ./tool/flutter_with_env.sh $environment ${flutter_args[*]}
+  ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN=1 ./tool/flutter_with_env.sh $environment <same Flutter arguments>
 EOF
   exit 1
 fi
