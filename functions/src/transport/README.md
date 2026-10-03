@@ -21,9 +21,11 @@ expired policies fail closed before credential access. The prepared pilot
 shape has exactly `schema`, `mode`, `programIds`, `legIds`, `startsAt`,
 `expiresAt`, `maxRequestsPerDay`; mode is `polling-pilot`, timestamps identify
 an explicit window of at most 24 hours, and the daily limit is 1–100 attempts.
-No active policy is supplied by this document. Existing deployment parameter
-plumbing must be reviewed with the release owner before activation; no CI or
-workflow changes are included here.
+No active policy is supplied by this document. The existing deployment
+materializer always writes a blank policy and rejects nonblank overrides,
+including otherwise valid pilots. Activation therefore also needs a later
+reviewed source change to admit policy materialization. No CI workflow changes
+are included here.
 
 Both scheduler and manual refresh reserve before each HTTP attempt in the
 existing server-only `rateLimits` collection, sharing `flight-provider`

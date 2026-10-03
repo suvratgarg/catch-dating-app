@@ -54,6 +54,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
+    'FLIGHT_PROVIDER_POLICY=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -100,6 +101,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
+    'FLIGHT_PROVIDER_POLICY=" "',
     "",
   ].join("\n"));
 });
@@ -375,5 +377,47 @@ test("offline reply gates and scoped configuration cannot be provisioned", () =>
     }), /must remain/);
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
+  }
+});
+
+
+test("flight policy stays blank across environments even with stored credentials", () => {
+  for (const projectId of ["catchdates-dev", "catchdates-staging",
+    "catch-dating-app-64e51"]) {
+    for (const policy of [undefined, "", "  "]) {
+      const functionsDir = fixture();
+      const output = path.join(functionsDir, `.env.${projectId}`);
+      fs.writeFileSync(output, 'FLIGHT_PROVIDER_POLICY="old-pilot"\n');
+      const version = `projects/${projectId}/secrets/FLIGHT_PROVIDER_CONFIG/versions/1`;
+      const result = prepareFunctionsParamsForDeploy({functionsDir, projectId,
+        environment: {...publicIds, FLIGHT_PROVIDER_CONFIG_VERSION: version,
+          FLIGHT_PROVIDER_POLICY: policy},
+      });
+      const contents = fs.readFileSync(result.outputPath, "utf8");
+      assert.match(contents, /^FLIGHT_PROVIDER_POLICY=" "$/m);
+      assert.doesNotMatch(contents, /old-pilot/);
+      assert.ok(contents.includes(`FLIGHT_PROVIDER_CONFIG_VERSION="${version}"`));
+    }
+  }
+});
+
+test("flight activation overrides fail before writing deployment config", () => {
+  for (const policy of ["true", "polling-pilot", "{}", JSON.stringify({
+    schema: "catch.flight-policy/v1", mode: "polling-pilot",
+    programIds: ["program-1"], legIds: ["leg-1"],
+    startsAt: "2026-10-03T11:00:00Z", expiresAt: "2026-10-03T12:00:00Z",
+    maxRequestsPerDay: 5,
+  })]) {
+    const functionsDir = fixture();
+    const output = path.join(functionsDir, ".env.catchdates-dev");
+    const generate = () => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, FLIGHT_PROVIDER_POLICY: policy},
+    });
+    assert.throws(generate, /FLIGHT_PROVIDER_POLICY must remain unconfigured/);
+    assert.equal(fs.existsSync(output), false);
+    fs.writeFileSync(output, "previous-file-must-survive\n");
+    assert.throws(generate, /FLIGHT_PROVIDER_POLICY must remain unconfigured/);
+    assert.equal(fs.readFileSync(output, "utf8"), "previous-file-must-survive\n");
   }
 });
