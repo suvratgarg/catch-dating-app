@@ -1,7 +1,7 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.1.1
-updated: 2026-09-28
+version: 1.2.0
+updated: 2026-10-03
 owner: product
 status: active
 ---
@@ -120,6 +120,35 @@ never CRM, saved audiences, sender connections, or payouts.
 | Taxi/transport tracking | **built backend + staff UI** | `transportTrips` (vehicle class, vendor, plate, parties/legs, depart/arrive, rate snapshot), dispatch + hotel-inbound + trips-ledger screens. **How it's exposed:** dispatcher creates trip at `/dispatch/:pickupPointId`; hotel desk sees inbound at `/hotel/:hotelId`; ledger at `/trips`. No guest-facing tracking. |
 | Vendors / rate cards | **partial** | `transportVendors` + `rateSnapshot` on trips; no rate-card management UI |
 | Distance-aware reminder lead times | **in review** | `travelTimeLead` flag on `functionGuests` audiences; planner wakes runs early by the farthest hotel→venue lead and defers nearer recipients individually (pure haversine seam, Routes API replaceable) — #456 |
+
+#### Socially aware lodging extension (CAT-149)
+
+The occupancy foundation is in review: explicit roommate identity, local-night
+capacity, occupant limits, cross-hotel duplicate protection and checked-in
+placement protection extend the existing Programs stay/block service. The
+current room board remains the native entry point; explicit sharing controls
+and lodging demand independent of inbound travel remain integration work.
+Invitation households, room-sharing parties and overlapping social groups
+must remain separate; household membership may only suggest sharing.
+
+Approved follow-on work includes typed import membership suggestions and
+manual decisions that survive re-import, nested groups with cycle checks,
+reusable property/room facts separated from dated contracted inventory and
+private assignments, and bed/accessibility/whole-villa exclusion constraints.
+Type-only inventory must remain useful before exact room rosters arrive.
+The planner must pass an independent feasibility validator before considering
+social proximity, including coherent 21-room spillover across a 20-room wing.
+Manual room/zone/hotel pins and unlocked regeneration share that validator.
+Immutable proposals bind source/inventory/layout revisions; publication needs
+current authority, operation receipts and stale-write rejection. Host approval,
+hotel confirmation and guest publication are separate states.
+
+Photo/PDF ingestion is a later, optional path into editable layered 2D drafts
+with a source overlay and mandatory human/room-roster verification. Private
+reusable versions are immutable. A shared hotel catalog needs a separate
+rights and verification policy. No 3D model, external AI credentials,
+cross-event guest data, real guest import, booking or deployment is part of
+this source foundation. Core allocation must work without photos.
 
 ### 3.4 Messaging / Moments
 
