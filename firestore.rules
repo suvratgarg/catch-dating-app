@@ -1519,6 +1519,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /catchWhatsappReadinessApprovals/{approvalId} {
+      allow read, write: if false;
+    }
+
+    match /catchWhatsappReadinessIngress/{ingressId} {
+      allow read, write: if false;
+    }
+
+    match /catchWhatsappReadinessAudits/{auditId} {
+      allow read, write: if false;
+    }
+
     match /catchWhatsappReplyReadiness/{readinessId} {
       allow read, write: if false;
     }

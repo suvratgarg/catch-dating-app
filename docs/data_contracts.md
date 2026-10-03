@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.161.0
-updated: 2026-10-02
+version: 1.161.1
+updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -4838,7 +4838,7 @@ original 30-day expiry and immutable payload. Claims are permanent per sender
 and provider inbound ID; changed bodies and uncertain attempts cannot resend.
 Status projection never grants sending, retry, consent or billing authority.
 
-Readiness is a read-only prerequisite in this feature, not an attestation API.
+The reply runtime only reads readiness; there is no attestation API.
 A separately reviewed record must bind the exact sender, recipient UID/endpoint,
 configured evidence digest, complete historical STOP coverage through verified
 atomic ingress, current owner reviewer and an expiry no later than 24 hours
@@ -4850,9 +4850,40 @@ STOP are read again in the final send-claim transaction after credential loading
 Future STOP commits block later claims; a claim already committed before STOP
 may have dispatched. Marketing-purpose withdrawal is not service permission.
 
-Both outbound gates and the receipt-consumer gate remain false in the offline
-source milestone. The parameter materializer rejects enablement or provisioning
-of scoped reply values. There is no readiness writer, automatic history repair
-approval, live credential read, provider send, deployment or activation in these
-tests. Runtime history collection and all scoped live approvals remain separate.
-The 24-hour cutoff is a transport eligibility rule, not a verified pricing claim.
+The disconnected readiness adapter consumes one protected
+`catchWhatsappReadinessApprovals/{approvalId}` review and writes the exact
+readiness mutation plus create-only `catchWhatsappReadinessAudits/{auditId}`
+in one Firestore transaction. It validates the actual project and default
+database, complete scope, pinned `catchWhatsappReadinessIngress/{ingressId}`
+evidence and current STOP, withdrawal, deletion and readiness records. These
+three collections deny all client reads/writes, have no TTL, and contain no
+message body, raw endpoint or credential. No approval or ingress writer is
+provided. An existing readiness cannot be renewed or reactivated; revocation
+requires the approved digest of its exact current record. Ingress state is checked
+during provisioning; the existing send path reads readiness, not this ingress
+record. Later ingress revocation must also revoke readiness or disable outbound
+gates: changing the ingress record alone is not a sending kill switch.
+
+The required external authority fence remains unimplemented. It must cover
+reviewer roles, enabled/session state and recipient identity through the actual
+Firestore commit; Firebase Auth reads or role-assignment documents alone cannot
+provide that guarantee. All relevant Auth mutations, including administrative
+changes, must participate in an independently audited protocol before a live
+caller can be wired. The adapter itself invokes the bounded offline
+`catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
+not a native Meta export parser. The trusted immutable source loader must pin
+exact bytes and an independent authenticity/completeness audit. Empty history,
+unsupported or truncated records, and historical STOP fail closed. No approved
+history producer is provided. Independent complete historical STOP provenance is also
+mandatory: archive validation, current receipt queries and evidence hashes do
+not establish missing historical truth. No live readiness write is authorized
+by the source implementation or its synthetic fixtures.
+
+The adapter disables SDK automatic retries and retries only definite ABORTED
+conflicts, at most three attempts, reloading all facts each time. Unknown commit
+outcomes propagate without an automatic retry; an approved review cannot be
+reused after consumption. Create-only audit records are immutable through this
+adapter, not against arbitrary privileged Admin SDK mutation. Outbound gates
+remain off by default; this milestone makes no provider call, credential change,
+backend deployment or activation. The 24-hour cutoff is a transport eligibility
+rule, not a verified pricing claim.
