@@ -166,6 +166,10 @@ enum Routes {
     '/host/programs/:programId',
     AppRouteAudience.host,
   ),
+  hostProgramLodgingScreen(
+    '/host/programs/:programId/lodging',
+    AppRouteAudience.host,
+  ),
   hostProgramGuestsScreen(
     '/host/programs/:programId/guests',
     AppRouteAudience.host,

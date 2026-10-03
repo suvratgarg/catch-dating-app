@@ -3,6 +3,15 @@
 
 import {createRequire} from "node:module";
 import {
+  manageProgramLodgingCallablePayloadSchema,
+  manageProgramLodgingCallableResponseSchema,
+  programLodgingConfigDocumentSchema,
+  programLodgingSourceVersionDocumentSchema,
+  programLodgingProposalDocumentSchema,
+  programLodgingWorkflowDocumentSchema,
+  programLodgingReceiptDocumentSchema,
+  workspaceMembershipAssertionDocumentSchema,
+  workspaceMembershipDecisionDocumentSchema,
   catchWhatsappReplyOperationDocumentSchema,
   catchWhatsappEndpointStopDocumentSchema,
   catchWhatsappReplyReadinessDocumentSchema,
@@ -1193,6 +1202,15 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateManageProgramLodgingCallablePayload = ajv.compile(manageProgramLodgingCallablePayloadSchema);
+export const validateManageProgramLodgingCallableResponse = ajv.compile(manageProgramLodgingCallableResponseSchema);
+export const validateProgramLodgingConfigDocument = ajv.compile(programLodgingConfigDocumentSchema);
+export const validateProgramLodgingSourceVersionDocument = ajv.compile(programLodgingSourceVersionDocumentSchema);
+export const validateProgramLodgingProposalDocument = ajv.compile(programLodgingProposalDocumentSchema);
+export const validateProgramLodgingWorkflowDocument = ajv.compile(programLodgingWorkflowDocumentSchema);
+export const validateProgramLodgingReceiptDocument = ajv.compile(programLodgingReceiptDocumentSchema);
+export const validateWorkspaceMembershipAssertionDocument = ajv.compile(workspaceMembershipAssertionDocumentSchema);
+export const validateWorkspaceMembershipDecisionDocument = ajv.compile(workspaceMembershipDecisionDocumentSchema);
 export const validateCatchWhatsappReplyOperationDocument = ajv.compile(catchWhatsappReplyOperationDocumentSchema);
 export const validateCatchWhatsappEndpointStopDocument = ajv.compile(catchWhatsappEndpointStopDocumentSchema);
 export const validateCatchWhatsappReplyReadinessDocument = ajv.compile(catchWhatsappReplyReadinessDocumentSchema);

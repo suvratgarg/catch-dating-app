@@ -886,3 +886,5 @@ export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
 export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
   readPublicOrganizerTrackingSettings}
   from "./analytics/organizerTrackingSettings";
+
+export {manageProgramLodging} from "./programs/programLodgingApi";

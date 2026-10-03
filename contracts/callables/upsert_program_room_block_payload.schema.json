@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "callables/upsert_program_room_block_payload.schema.json",
   "title": "UpsertProgramRoomBlockCallablePayload",
-  "description": "Create or update reserved room inventory at a program hotel. Coordinator/manager only — hotelDesk consumes inventory but cannot define it. totalRooms may not be lowered below the block's live consuming stays.",
+  "description": "Create or update reserved room inventory at a program hotel. Coordinator/manager only \u2014 hotelDesk consumes inventory but cannot define it. totalRooms may not be lowered below the block's live consuming stays.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -85,6 +85,12 @@
         "null"
       ],
       "maxLength": 500
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 }

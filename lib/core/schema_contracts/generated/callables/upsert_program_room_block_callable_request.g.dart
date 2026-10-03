@@ -19,6 +19,7 @@ final class UpsertProgramRoomBlockCallableRequest {
     this.startsAtMillis,
     this.endsAtMillis,
     this.notes,
+    this.maxOccupantsPerRoom,
   });
 
   final String programId;
@@ -32,6 +33,7 @@ final class UpsertProgramRoomBlockCallableRequest {
   final int? startsAtMillis;
   final int? endsAtMillis;
   final String? notes;
+  final int? maxOccupantsPerRoom;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
@@ -45,5 +47,6 @@ final class UpsertProgramRoomBlockCallableRequest {
     'startsAtMillis': ?startsAtMillis,
     'endsAtMillis': ?endsAtMillis,
     'notes': ?notes,
+    'maxOccupantsPerRoom': ?maxOccupantsPerRoom,
   };
 }

@@ -24630,4 +24630,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostOfferPaymentReviewBody => 'New offers will use these terms';
+
+  @override
+  String get programsLodgingTitle => 'Stay planner';
+
+  @override
+  String get programsLodgingSubtitle =>
+      'Plan rooms around people, dates and verified needs.';
+
+  @override
+  String get programsLodgingSetupMissing =>
+      'Add lodging dates, confirmed sharing parties and contracted rooms to start planning.';
+
+  @override
+  String get programsLodgingReview => 'Review this proposal';
+
+  @override
+  String get programsLodgingBoundedSearch =>
+      'The search reached its limit. Review this proposal before approval.';
+
+  @override
+  String get programsLodgingRegenerate => 'Regenerate unlocked placements';
+
+  @override
+  String get programsLodgingApprove => 'Approve proposal';
+
+  @override
+  String get programsLodgingPublish => 'Publish rooms to guests';
+
+  @override
+  String get programsLodgingParties => 'Room-sharing parties';
+
+  @override
+  String get programsLodgingList => 'List';
+
+  @override
+  String get programsLodgingMap => 'Floor map';
+
+  @override
+  String get programsLodgingMove => 'Move party';
+
+  @override
+  String get programsLodgingLocked => 'Locked';
+
+  @override
+  String get programsLodgingProvisional => 'Exact room pending';
+
+  @override
+  String get programsLodgingEmpty => 'No contracted rooms on this floor.';
+
+  @override
+  String programsLodgingUnplaced({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parties still need rooms.',
+      one: 'One party still needs a room.',
+    );
+    return '$_temp0';
+  }
 }

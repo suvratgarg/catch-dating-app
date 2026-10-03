@@ -193,7 +193,7 @@ ProgramManifestMappedRows mapProgramManifestRows({
       if (cell(row, ProgramManifestField.householdLabel) != null)
         'householdLabel': cell(row, ProgramManifestField.householdLabel),
       if (groupLabels != null && groupLabels.isNotEmpty)
-        'groupLabels': groupLabels,
+        'groupLabels': groupLabels.join('; '),
       if (cell(row, ProgramManifestField.partyLabel) != null)
         'partyLabel': cell(row, ProgramManifestField.partyLabel),
       if (cell(row, ProgramManifestField.flightNumber) != null)

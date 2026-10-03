@@ -34,9 +34,9 @@ const guest = (
 ): StayGuestRow => ({guestId, groupIds});
 
 describe("blockRemainingRooms", () => {
-  it("subtracts the assigned rollup and never overbooks on drift", () => {
+  it("uses complete occupancy rather than a stale guest-count rollup", () => {
     const b = block("b-1", {totalRooms: 3, assignedCount: 2});
-    assert.equal(blockRemainingRooms(b, []), 1);
+    assert.equal(blockRemainingRooms(b, []), 3);
     // Live stays exceed the stale rollup — live count wins.
     const stays = [
       stay("s-1", "g-1", {roomBlockId: "b-1"}),
