@@ -256,3 +256,23 @@ test("canonical multiple owner roles work; duplicates and nested values fail",
         prepareCatchReadinessEvidence("review_1", f.sources));
     }
   });
+
+
+test("shared archive backing is detached by both preparation and loading",
+  async () => {
+    for (const operation of ["prepare", "load"]) {
+      const f = fixture();
+      const bytes = f.publication.archive.archiveBytes;
+      const shared = new Uint8Array(new SharedArrayBuffer(bytes.byteLength));
+      shared.set(bytes);
+      f.publication.archive.archiveBytes = shared;
+      const archive = operation === "prepare" ?
+        (await prepareCatchReadinessEvidence("review_1", f.sources)).archive :
+        await loadProtectedCatchReadinessArchive(
+          f.publication.approval.approval, f.reader);
+      shared.fill(0);
+      assert.deepEqual(archive.archiveBytes, Uint8Array.from(bytes));
+      assert.equal(archive.archiveBytes.buffer instanceof SharedArrayBuffer,
+        false);
+    }
+  });

@@ -216,7 +216,9 @@ export async function prepareCatchReadinessEvidence(reference: string,
     if (!ingress) fail();
     const archive = structuredClone(await sources.loadAuditedArchive(
       structuredClone(review.approval.approval)));
-    if (!archive) fail();
+    if (!archive || !(archive.archiveBytes instanceof Uint8Array)) fail();
+    // structuredClone preserves SharedArrayBuffer backing; detach explicitly.
+    archive.archiveBytes = Uint8Array.from(archive.archiveBytes);
     const publication = {...review, ingress, archive};
     validatePublication(publication, projectId, sources.now());
     return publication;
@@ -237,7 +239,10 @@ export async function loadProtectedCatchReadinessArchive(
     const projectId = reader.actualProjectId;
     const publication = structuredClone(
       await reader.loadImmutablePublication(expected.approvalId));
-    if (!publication) fail();
+    if (!publication ||
+        !(publication.archive?.archiveBytes instanceof Uint8Array)) fail();
+    publication.archive.archiveBytes =
+      Uint8Array.from(publication.archive.archiveBytes);
     validatePublication(publication, projectId, reader.now());
     if (digest(approvalParts(publication.approval.approval)) !==
         digest(approvalParts(expected))) fail();
