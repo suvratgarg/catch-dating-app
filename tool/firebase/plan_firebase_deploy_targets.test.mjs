@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
-import {createRequire} from "node:module";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
@@ -323,7 +323,7 @@ function executorFixture(t) {
   // Readiness statically parses source using the pinned TypeScript dependency.
   // Link only that public package; do not replace or stub the readiness check.
   fs.mkdirSync(path.join(directory, "node_modules"));
-  fs.symlinkSync(path.dirname(createRequire(import.meta.url).resolve("typescript/package.json")),
+  fs.symlinkSync(path.dirname(createFunctionsRequire().resolve("typescript/package.json")),
     path.join(directory, "node_modules/typescript"), "dir");
   write("tool/firebase/check_deploy_ref.mjs", "// Git freshness is independently tested.\n");
   const aliases = JSON.stringify({projects: {dev: "demo-project"}});
