@@ -540,24 +540,33 @@ export const completeOrganizerWhatsappConnection = onCall(
   (request) => completeOrganizerWhatsappConnectionHandler(request)
 );
 export const getOrganizerMessagingSetup = onCall(
-  appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
-    messagingCallableLimits
-  ),
+  {
+    ...appCheckCallableOptionsWithSecrets(
+      [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+      messagingCallableLimits
+    ),
+    serviceAccount: "catch-whatsapp-reader@",
+  },
   (request) => getOrganizerMessagingSetupHandler(request)
 );
 export const syncOrganizerWhatsappTemplates = onCall(
-  appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
-    messagingCallableLimits
-  ),
+  {
+    ...appCheckCallableOptionsWithSecrets(
+      [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+      messagingCallableLimits
+    ),
+    serviceAccount: "catch-whatsapp-reader@",
+  },
   (request) => syncOrganizerWhatsappTemplatesHandler(request)
 );
 export const sendOrganizerWhatsappTest = onCall(
-  appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
-    messagingCallableLimits
-  ),
+  {
+    ...appCheckCallableOptionsWithSecrets(
+      [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+      messagingCallableLimits
+    ),
+    serviceAccount: "catch-whatsapp-reader@",
+  },
   (request) => sendOrganizerWhatsappTestHandler(request)
 );
 export const disconnectOrganizerWhatsappConnection = onCall(

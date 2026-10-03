@@ -5,9 +5,14 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
+import {classifySecretRuntimeAccess} from "./check_environment_readiness.mjs";
 import {collectFunctionBindingIntent, discoverFunctionExportNames, runCli} from "./function_binding_intent.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const whatsappReaderConsumers = ["dispatchOrganizerCampaign", "getOrganizerMessagingSetup",
+  "sendOrganizerWhatsappReply", "sendOrganizerWhatsappTest", "syncOrganizerWhatsappTemplates"];
+const whatsappWriterConsumers = ["completeOrganizerWhatsappConnection",
+  "disconnectOrganizerWhatsappConnection"];
 const base = {environment: "dev", projectId: "test-project", projectNumber: "123456",
   sourceSha: "a".repeat(40), consumers: ["selected"]};
 const imports = `import {onRequest as request} from "firebase-functions/v2/https";
@@ -187,7 +192,9 @@ test("current manifest consumers and direct readers resolve from current source"
   assert.deepEqual(byName.get("cancelEvent").secretNames, []);
   for (const row of result.functions) {
     assert.deepEqual(Object.keys(row), ["consumer", "platform", "serviceAccount", "secretNames"]);
-    assert.equal(row.serviceAccount, "123456-compute@developer.gserviceaccount.com");
+    assert.equal(row.serviceAccount, whatsappReaderConsumers.includes(row.consumer) ?
+      "catch-whatsapp-reader@test-project.iam.gserviceaccount.com" :
+      "123456-compute@developer.gserviceaccount.com");
   }
 });
 
@@ -387,5 +394,51 @@ test("equivalent parenthesized and asserted mutation syntax remains unresolved",
       'unselected.ts': `import {opts} from './options';${code}`,
     });
     assert.throws(()=>collect(imported),unresolved);
+  }
+});
+
+
+test("WhatsApp source separates exactly five readers from the default connection writers in DEV and PROD", () => {
+  const consumers = discoverFunctionExportNames(fs.readFileSync(
+    path.join(repo, "functions/src/index.ts"), "utf8"));
+  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catchdates-prod"]]) {
+    const intent = collect(repo, {environment, projectId, consumers});
+    const readerAccount = `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`;
+    const readers = intent.functions.filter((row) => row.serviceAccount === readerAccount);
+    assert.deepEqual(readers.map((row) => row.consumer).sort(), [...whatsappReaderConsumers].sort());
+    for (const consumer of [...whatsappReaderConsumers, ...whatsappWriterConsumers]) {
+      const row = intent.functions.find((entry) => entry.consumer === consumer);
+      assert.ok(row, consumer);
+      assert.deepEqual(row.secretNames, ["META_WHATSAPP_APP_SECRET", "ORGANIZER_WHATSAPP_ACCESS_TOKENS"]);
+      assert.equal(row.serviceAccount, whatsappReaderConsumers.includes(consumer) ? readerAccount :
+        "123456-compute@developer.gserviceaccount.com");
+    }
+  }
+});
+
+test("WhatsApp reader cannot inherit connection-writer secret permissions", () => {
+  for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catchdates-prod"]]) {
+    const intent = collect(repo, {environment, projectId,
+      consumers: [...whatsappReaderConsumers, ...whatsappWriterConsumers]});
+    const reader = intent.functions.find((row) => row.consumer === "getOrganizerMessagingSetup").serviceAccount;
+    const writer = intent.functions.find((row) => row.consumer === "completeOrganizerWhatsappConnection").serviceAccount;
+    const accessor = "roles/secretmanager.secretAccessor";
+    const versionManager = "roles/secretmanager.secretVersionManager";
+    const policy = (roles, account) => ({status: 0, stdout: JSON.stringify({bindings:
+      roles.map((role) => ({role, members: [`serviceAccount:${account}`]}))}), stderr: ""});
+    const requirement = {id: "whatsapp-reader", name: "ORGANIZER_WHATSAPP_ACCESS_TOKENS", runtimeRoles: [accessor]};
+    const classify = (account, roles, contract = requirement) => classifySecretRuntimeAccess({
+      serviceAccount: account, requirement: contract, result: policy(roles, account)});
+    assert.equal(classify(reader, [accessor]).status, "ready");
+    for (const excess of [versionManager, "roles/secretmanager.admin", "roles/editor", "roles/owner"]) {
+      const denied = classify(reader, [accessor, excess]);
+      assert.equal(denied.status, "not-ready");
+      assert.equal(denied.reason, "runtime-secret-permission-leakage");
+    }
+    const writerRequirement = {...requirement, id: "whatsapp-writer", runtimeRoles: [accessor, versionManager]};
+    assert.equal(classify(writer, [accessor, versionManager], writerRequirement).status, "ready");
+    assert.equal(classify(writer, [accessor], writerRequirement).reason, "runtime-secret-access-unproven");
+    assert.equal(classifySecretRuntimeAccess({serviceAccount: reader, requirement,
+      result: policy([accessor, versionManager], writer)}).reason, "runtime-secret-access-unproven");
   }
 });
