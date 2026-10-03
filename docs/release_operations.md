@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.24
+version: 2.7.25
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -354,8 +354,8 @@ Orchestration job guards use `!cancelled()` so cancellation can terminate the
 planner and aggregate instead of leaving an `always()` job holding the serial
 slot. Failed or unadmitted runs still execute the rejecting aggregate; every
 selected target requires a successful owning job. A cancelled workflow has no
-successful validation authority. The single admitted integration slot and its
-live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
+single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
 
 Preserve these contracts when narrowing work:
 
@@ -372,8 +372,8 @@ Preserve these contracts when narrowing work:
 Whole-product widget similarity is advisory and has no product acceptance
 threshold. Request it explicitly with `check_design_parity.mjs --check --reports`
 or run its registered report command. Its extractor/clustering probes and focused
-generator regressions remain blocking. Snapshot/export checks retained in the
-current gate still prove only their documented source/metadata invariants.
+generator regressions remain blocking. Scoped snapshot/export checks prove only their documented source/metadata
+invariants; the explicit handoff command checks all of them together.
 
 Use GitHub run/job timestamps and execution artifacts to measure time to first
 actionable failure, ready-to-merge latency, completed job-seconds by runner,
@@ -452,6 +452,34 @@ environment inputs, builds exact production bytes and verifies artifact hashes,
 promotion authorization and readback. A PR bundle never supplies production
 bytes. The check contract is enforced by `ci:main-marketing-validation` and
 `ci:web-hosting-delivery-workflow`; no cross-SHA validation reuse is supported.
+
+Flutter reuses design parity and handoff checks only when the actual required
+Tools plan owns their complete registered checks. Standalone Flutter runs default
+to executing them. Otherwise its handoff step selects Figma/Claude/context checks
+from the exact committed input window; full runs and control changes retain all
+handoff checks. Ordinary unrelated app logic no longer regenerates the context
+pack. Failure or cancellation of the owning Tools lane still fails Required CI.
+
+Design parity source checks are explicit commands in `tool/tools_manifest.json`,
+shared by the local umbrella and the tool runner. Identical scanner commands run
+once within the Marketing/design tool bucket. Figma/Claude snapshot checks and
+portable context exports select from their recorded inputs; local handoff work
+can request `check_design_parity.mjs --check --handoff`. Whole-product similarity
+and advisory migration reports remain explicit `--reports` output. These prove
+source contracts or export freshness, never live visual parity. Missing snapshot
+metadata still fails its selected check; generated reports do not replace UI
+journeys, renderer tests or ownership checks.
+
+Route inventory version 5 records semantic presentation identities, not physical
+line positions or a hash of the entire router file. Its router fingerprint includes
+the configuration and reachable local callable signatures/bodies; route deletion,
+retargeting and composition changes still invalidate it. Imperative identities hash
+the normalized builder and fullscreen-dialog expressions, with an occurrence
+counter for identical presentations. The resolved Dart checker independently
+reconstructs those identities and verifies each typed presentation owner. Use
+`node tool/ui_capture/check_route_inventory.mjs --locations` for current diagnostic
+lines and `--update` to regenerate after a semantic route change. Review the
+resulting route/capture obligations rather than editing hashes by hand.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job

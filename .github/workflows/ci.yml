@@ -89,6 +89,8 @@ jobs:
       full: ${{ steps.plan.outputs.full }}
       commit_window: ${{ steps.plan.outputs.commit_window }}
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
+      tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
+      tools_owns_design_handoff: ${{ steps.plan.outputs.tools_owns_design_handoff }}
 
     steps:
       - name: Checkout planner closure
@@ -222,7 +224,7 @@ jobs:
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {toolsOwnUiLintSmoke} from './tool/lib/tool_impact.mjs';
+          import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
           const owned = toolsOwnUiLintSmoke({
             plan: read('build/ci/impact-plan.json'),
@@ -230,6 +232,12 @@ jobs:
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
+          const design = toolsOwnDesignChecks({
+            plan: read('build/ci/impact-plan.json'), manifest: read('tool/tools_manifest.json'),
+            componentGraph: read('tool/harness/component_graph.json'),
+          });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            `tools_owns_design_parity=${design.parity}\ntools_owns_design_handoff=${design.handoff}\n`);
           NODE
 
       - name: Report Audience documentation impact
@@ -323,6 +331,8 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
+      design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
+      design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
     secrets: inherit
 
   visual-integration:

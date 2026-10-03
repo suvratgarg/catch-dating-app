@@ -7,7 +7,7 @@ import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
-import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
+import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
@@ -1124,6 +1124,14 @@ test("cancelling admission or a validation run makes every aggregate job termina
       assert.equal(evaluate(guard, context(true, result)), false, `${id} ${result}`);
     }
   }
+  for (const file of ["flutter-ci.yml", "tools-ci.yml"]) {
+    const source = workflow(file);
+    assert.doesNotMatch(source, /^    if:.*always\(/mu);
+    const guard = source.match(/^    if: \$\{\{ (!cancelled\(\)) \}\}$/mu)?.[1];
+    assert.ok(guard, `${file} requires an explicit cancellation-aware aggregate`);
+    assert.equal(evaluate(guard, context(true)), false);
+    assert.equal(evaluate(guard, context(false, "failure")), true);
+  }
   const required = guardFor("required");
   assert.equal(evaluate(required.replace("!cancelled()", "always()"), context(true)), true,
     "negative control reproduces the obsolete run's cancellation-resistant aggregate");
@@ -1146,4 +1154,26 @@ test("selector comparison runs before fanout and keeps delivery plan artifact un
     assert.match(source, /name: selector-comparison-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/u);
   }
   assert.match(namedStep(workflow("ci.yml"), "Upload planner evidence"), /path: build\/ci\/impact-plan.json/u);
+});
+
+test("Flutter design checks share only complete owners in the actual required Tools plan", () => {
+  const owned = (changedPaths, full = false, manifest = toolsManifest) => toolsOwnDesignChecks({
+    plan: planAffected({changedPaths, graph, full, mode: full ? "nightly" : "pr"}), manifest, componentGraph: graph,
+  });
+  assert.deepEqual(owned([".github/workflows/ci.yml"]), {parity: true, handoff: true});
+  assert.deepEqual(owned([], true), {parity: true, handoff: true});
+  assert.deepEqual(owned(["lib/main.dart"]), {parity: false, handoff: false});
+  assert.deepEqual(owned(["tool/design/check_design_parity.mjs"]), {parity: true, handoff: false});
+  assert.throws(() => toolsOwnDesignChecks({plan: {complete: false}}), /incomplete/);
+  const broken = structuredClone(toolsManifest);
+  broken.tools.find(tool => tool.id === "design:context-pack").checks = [];
+  assert.throws(() => owned([], true, broken), /no longer provides/);
+  const ci = workflow("ci.yml"), flutter = workflow("flutter-ci.yml");
+  for (const kind of ["parity", "handoff"]) {
+    assert.ok(ci.includes("design_" + kind + "_in_tools: $" + "{{ needs.plan.outputs.tools_owns_design_" + kind + " == 'true' }}"));
+    assert.ok(flutter.includes("if: $" + "{{ !inputs.design_" + kind + "_in_tools }}"));
+    assert.match(flutter, new RegExp(`design_${kind}_in_tools:[\\s\\S]*?default: false`, "u"));
+  }
+  assert.match(flutter, /--check-handoff[\s\S]*--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  assert.doesNotMatch(flutter, /run: node tool\/design\/build_context_pack\.mjs --check/u);
 });

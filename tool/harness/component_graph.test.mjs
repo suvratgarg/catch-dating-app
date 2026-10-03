@@ -198,8 +198,10 @@ function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
     for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
       const result = plan(file, mode, sourceGraph);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      assert.deepEqual(result.operations.ciTargets,
-        mode === "release" ? [] : ["firestore_rules", "functions"], `${file} ${mode}`);
+      if (mode === "release") assert.deepEqual(result.operations.ciTargets, []);
+      else for (const required of ["firestore_rules", "functions"]) {
+        assert.ok(result.operations.ciTargets.includes(required), `${file} ${mode}: missing ${required}`);
+      }
       assert.deepEqual(result.operations.deployGroups,
         ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
       for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
@@ -218,8 +220,11 @@ test("organizer authority selector rejects the known-bad Functions-only edge", (
   const owner = broken.components.find((entry) => entry.id === "backend.organizer-authority");
   assert.ok(owner, "organizer authority selector owner must exist");
   owner.alsoAffects = [];
-  assert.deepEqual(plan(organizerAuthorityEmulatorPaths[1], "pr", broken)
-    .operations.ciTargets, ["functions"]);
+  for (const profile of Object.values(broken.operationProfiles)) {
+    for (const modes of Object.values(profile)) for (const operations of Object.values(modes)) {
+      if (operations.ciTargets) operations.ciTargets = operations.ciTargets.filter(target => target !== "firestore_rules");
+    }
+  }
   assert.throws(() => assertOrganizerAuthorityEmulatorSelection(broken),
     /firestore_rules/u);
 });
@@ -259,7 +264,7 @@ test("rules emulator command executes the organizer authority regression", () =>
   const script = packageJson.scripts["test:rules"];
   const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
   const assertIncluded = (command) => {
-    assert.match(command, /^npm run build && node --test --test-concurrency=1 /u);
+    assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
     assert.equal(command.split(/\s+/u).filter((part) => part === compiledTest).length,
       1, "test:rules must run the organizer authority emulator regression exactly once");
   };

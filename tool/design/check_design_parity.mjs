@@ -1,47 +1,75 @@
 #!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {spawnSync} from "node:child_process";
+import {changedPathsSince} from "../harness/lib/git_changes.mjs";
+import {matchesGlobPath as matchesGlob} from "../lib/path_glob.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--check";
 
-if (command === "--help" || command === "-h" || command === "help") {
-  printHelp();
-} else if (command === "--check" || command === "check") {
-  runGate();
-} else {
-  console.error(`Unknown command: ${command}`);
-  printHelp();
-  process.exit(64);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+
+function main() {
+  if (command === "--help" || command === "-h" || command === "help") {
+    printHelp();
+  } else if (command === "--check" || command === "check") {
+    runGate();
+  } else if (command === "--check-handoff") {
+    runAffectedHandoff();
+  } else {
+    console.error(`Unknown command: ${command}`);
+    printHelp();
+    process.exit(64);
+  }
+}
+
+export function designParityCommands(manifest) {
+  const entry = manifest.tools.find(tool => tool.id === "design:parity-gate");
+  if (!entry?.checks?.length) throw new Error("Missing explicit design parity checks.");
+  if (entry.checks.some(command => command === "node tool/design/check_design_parity.mjs --check")) {
+    throw new Error("Parity checks must be flat to share execution evidence.");
+  }
+  return [...new Set(entry.checks)];
+}
+
+export function selectedHandoffChecks(manifest, changedPaths, {full = false} = {}) {
+  const ids = ["design:figma-library-snapshot", "design:sync-manifest", "design:context-pack"];
+  const control = changedPaths.some(file => [".github/**", "tool/lib/**", "tool/harness/**",
+    "tool/tools_manifest.json", "tool/design/check_design_parity.mjs"].some(pattern => matchesGlob(file, pattern)));
+  return ids.flatMap(id => {
+    const entry = manifest.tools.find(tool => tool.id === id && tool.status === "active");
+    if (!entry?.checks?.length || !entry.impactPaths?.length) throw new Error(`Missing scoped handoff owner: ${id}`);
+    return full || control || changedPaths.some(file => file === entry.path ||
+      entry.impactPaths.some(pattern => matchesGlob(file, pattern))) ? entry.checks : [];
+  }).filter((command, index, commands) => commands.indexOf(command) === index);
+}
+
+function runAffectedHandoff() {
+  const option = flag => args[args.indexOf(flag) + 1];
+  const base = option("--base"), head = option("--head");
+  if (!/^[a-f0-9]{40}$/u.test(base ?? "") || !/^[a-f0-9]{40}$/u.test(head ?? "") ||
+      !["true", "false"].includes(option("--full")) || !["true", "false"].includes(option("--commit-window"))) {
+    throw new Error("Handoff selection requires exact base/head and explicit full/commit-window flags.");
+  }
+  const changedPaths = changedPathsSince({base, head, committedOnly: true,
+    commitWindow: option("--commit-window") === "true"});
+  const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/tools_manifest.json"), "utf8"));
+  const commands = selectedHandoffChecks(manifest, changedPaths, {full: option("--full") === "true"});
+  console.log(JSON.stringify({sourceSha: head, baseSha: base, changedPaths, selectedCommands: commands}));
+  for (const command of commands) run(command, {required: true});
 }
 
 function runGate() {
-  const blocking = [
-    "node --test tool/design/component_concepts.test.mjs",
-    "node tool/design/check_component_contracts.mjs",
-    "node tool/design/check_widget_classification.mjs",
-    "node tool/design/check_new_widget_inventory.mjs --check --no-write",
-    "node --test tool/design/build_widget_similarity.test.mjs",
-    "node tool/design/check_widget_pattern_families.mjs --check",
+  const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/tools_manifest.json"), "utf8"));
+  const blocking = designParityCommands(manifest);
+  if (args.includes("--handoff")) blocking.push(
     "node tool/design/import_figma_library_snapshot.mjs --check",
     "node tool/design/build_design_sync_manifest.mjs --check",
-    "node tool/ui_capture/check_route_inventory.mjs --check",
-    "node tool/ui_capture/check_capture_coverage.mjs --check --summary",
-    "node tool/design/check_host_shell_coverage.mjs",
-    "node tool/design/check_design_parity_matrix.mjs --check",
-    "node --test tool/design/check_comprehensive_todo_summary.test.mjs",
-    "node tool/design/check_comprehensive_todo_summary.mjs --check",
-    "node tool/design/check_screen_coverage.mjs --check --summary",
-    "node tool/design/check_screen_contracts.mjs --check --summary",
-    "node tool/design/check_feature_coverage.mjs --check",
-    "node tool/design/build_feature_contracts.mjs --check",
-    "node tool/design/build_host_feature_responsibilities.mjs --check",
-    "node tool/design/check_screen_top_bar_contracts.mjs --check",
-    "node tool/design/check_widgetbook_contract_refs.mjs --check",
-    "node tool/design/check_widgetbook_coverage.mjs --check",
-    "node tool/design/check_widget_dedupe_probes.mjs",
-    "node tool/design/check_reference_screens.mjs --check --summary",
-  ];
+    "node tool/design/build_context_pack.mjs --check",
+  );
   const advisory = args.includes("--reports") ? [
     "node tool/design/build_widget_similarity.mjs",
     "node tool/design/check_screen_coverage.mjs --advisory",
@@ -77,17 +105,19 @@ function run(commandLine, {required}) {
 
 function printHelp() {
   console.log(`Usage:
-  node tool/design/check_design_parity.mjs --check [--reports]
+  node tool/design/check_design_parity.mjs --check [--reports] [--handoff]
+  node tool/design/check_design_parity.mjs --check-handoff --base <sha> --head <sha> --full <true|false> --commit-window <true|false>
 
 Runs the standard local design parity gate. Blocking checks validate component
 concept topology, contracts, classification, new-widget inventory policy,
-normalized-member-set decision coverage, pattern-family decisions, Figma/Claude
-snapshot metadata, focused similarity-generator tests, role-derived Widgetbook
+normalized-member-set decision coverage, pattern-family decisions,
+focused similarity-generator tests, role-derived Widgetbook
 obligations, seeded dedupe probes, route
 inventory, capture coverage, Host shell coverage, screen coverage, screen
 contracts, screen-chrome ownership, state matrix, comprehensive todo summaries,
 exhaustive cross-surface feature coverage, feature orchestration contracts, and
 Widgetbook references. These source and metadata checks do not prove live visual
-parity. --reports additionally builds whole-product widget similarity and prints
+parity. --handoff checks Figma/Claude snapshot metadata and portable export
+freshness; normal CI selects those checks from their actual inputs. --reports additionally builds whole-product widget similarity and prints
 advisory screen migration reports; reports do not gate product acceptance.`);
 }
