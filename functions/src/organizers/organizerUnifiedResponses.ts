@@ -101,6 +101,15 @@ export async function listUnifiedResponses(params: {
         "OrganizerFormResponseDocument");
       if (!after(responsePosition(doc.id, response))) continue;
       const application = applicationBySource.get(doc.id);
+      // The ordered scan can observe a withdrawal committed after hydration.
+      // Its newer source state must win over the cached access summary.
+      if (application && response.status === "withdrawn") {
+        application.summary = {...application.summary,
+          reviewStatus: "withdrawn",
+          dataAccessState: "revokedParticipantGrant",
+          sourceResponseId: null,
+          applicantDisplayName: "Withdrawn applicant"};
+      }
       if (data.reviewStatus &&
           application?.summary.reviewStatus !== data.reviewStatus) continue;
       if (data.contactId) {

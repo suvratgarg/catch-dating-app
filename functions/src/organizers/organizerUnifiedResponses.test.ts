@@ -48,9 +48,9 @@ function application(id: string, time: number,
 }
 async function list(docs: Data, overrides: Partial<Query> = {},
   matches: (row: Response) => Promise<boolean> = async () => true,
-  reads?: Map<string, number>) {
+  reads?: Map<string, number>, beforeQuery?: (collection: string) => void) {
   const data = {...defaults, ...overrides};
-  return listUnifiedResponses({db: fakeDb(docs, reads), data,
+  return listUnifiedResponses({db: fakeDb(docs, reads, beforeQuery), data,
     filterHash: JSON.stringify({...data, organizerId: null, cursor: null}),
     answerFilterOptions: [], matches,
     project: async (snaps) => snaps.map((snap) => {
@@ -148,6 +148,25 @@ test(
       {code: "invalid-argument"});
     await assert.rejects(list(docs, {cursor: "bad"}),
       {code: "invalid-argument"});
+  });
+
+test("withdrawal after hydration wins over the earlier access summary",
+  async () => {
+    const docs = {...response("native", 100),
+      ...application(genericFormApplicationId("native"), 100,
+        "native", "approved")};
+    const result = await list(docs, {reviewStatus: "withdrawn"},
+      async () => true, undefined, (collection) => {
+        if (collection === "organizerFormResponses") {
+          docs["organizerFormResponses/native"].status = "withdrawn";
+        }
+      });
+    assert.deepEqual(result.entries?.map((r) => r.entryId), ["response:native"]);
+    assert.equal(result.entries?.[0].application?.dataAccessState,
+      "revokedParticipantGrant");
+    assert.equal(result.entries?.[0].application?.sourceResponseId, null);
+    assert.equal(result.entries?.[0].application?.applicantDisplayName,
+      "Withdrawn applicant");
   });
 
 test("withdrawal between pages invalidates the old source cursor",
@@ -517,11 +536,15 @@ test("legacy imported form and version scopes work", async () => {
     {code: "not-found"});
 });
 
-function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestore.Firestore {
+function fakeDb(docs: Data, reads = new Map<string, number>(),
+  beforeQuery?: (collection: string) => void): FirebaseFirestore.Firestore {
   const record = (key: string, count = 1) =>
     reads.set(key, (reads.get(key) ?? 0) + count);
   class Snapshot {
-    constructor(readonly path: string) {}
+    readonly value: Record<string, unknown> | undefined;
+    constructor(readonly path: string) {
+      this.value = docs[path] ? {...docs[path]} : undefined;
+    }
     get ref() {
       return {path: this.path};
     }
@@ -529,10 +552,10 @@ function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestor
       return this.path.split("/").at(-1)!;
     }
     get exists() {
-      return !!docs[this.path];
+      return !!this.value;
     }
     data() {
-      return docs[this.path];
+      return this.value;
     }
   }
   class Collection {
@@ -541,7 +564,10 @@ function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestor
     count = Infinity;
     position: unknown[] | null = null;
     inclusive = false;
-    constructor(readonly path: string) {}
+    readonly value: Record<string, unknown> | undefined;
+    constructor(readonly path: string) {
+      this.value = docs[path] ? {...docs[path]} : undefined;
+    }
     doc(id: string) {
       return {path: `${this.path}/${id}`,
         get: async () => {
@@ -567,8 +593,9 @@ function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestor
       this.position = values; this.inclusive = true; return this;
     }
     async get() {
+      beforeQuery?.(this.path);
       const value = (snap: Snapshot, key: string) => key === "__name__" ?
-        snap.id : snap.data()[key];
+        snap.id : snap.data()![key];
       const scalar = (v: unknown) => v instanceof admin.firestore.Timestamp ?
         v.toMillis() : v as string | number;
       const compare = (snap: Snapshot, right: unknown[]) => {
@@ -584,8 +611,8 @@ function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestor
         path.startsWith(`${this.path}/`)).map((path) => new Snapshot(path))
         .filter((snap) => this.filters
           .every(([key, op, v]) => op === "in" ?
-            (v as unknown[]).includes(snap.data()[key]) :
-            snap.data()[key] === v));
+            (v as unknown[]).includes(snap.data()![key]) :
+            snap.data()![key] === v));
       rows.sort((a, b) => compare(a, this.orders
         .map(([key]) => value(b, key))));
       if (this.position) {
