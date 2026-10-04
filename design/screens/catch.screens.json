@@ -31039,7 +31039,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "Private proposal actions and the existing layered 2D/list ProgramLodgingBoard inside CatchRouteScaffold.",
+        "currentLayout": "Private proposal actions and the existing layered 2D/list ProgramLodgingLayout inside CatchRouteScaffold.",
         "targetLayout": "Explicit party, demand, contract and verified room editors alongside source-fenced planning.",
         "sections": [
           {
@@ -31048,14 +31048,14 @@
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [
-              "ProgramLodgingBoard"
+              "ProgramLodgingLayout"
             ],
             "flutter": {
-              "file": "lib/programs/presentation/program_lodging_board.dart",
-              "symbol": "ProgramLodgingBoard"
+              "file": "lib/programs/presentation/program_lodging_layout.dart",
+              "symbol": "ProgramLodgingLayout"
             },
-            "currentOwner": "ProgramLodgingController + ProgramLodgingBoard",
-            "targetOwner": "ProgramLodgingController + ProgramLodgingBoard",
+            "currentOwner": "ProgramLodgingController + ProgramLodgingLayout",
+            "targetOwner": "ProgramLodgingController + ProgramLodgingLayout",
             "dependencies": [
               "catch.top_bar",
               "catch.section",

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
-import 'package:catch_dating_app/programs/presentation/program_lodging_board.dart';
+import 'package:catch_dating_app/programs/presentation/program_lodging_layout.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,7 +72,7 @@ const _options = [
   ),
 ];
 
-Widget _app(ProgramLodgingBoard board) => MaterialApp(
+Widget _app(ProgramLodgingLayout board) => MaterialApp(
   theme: AppTheme.light,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
@@ -95,7 +95,7 @@ void main() {
     final moves = <List<String>>[];
     await tester.pumpWidget(
       _app(
-        ProgramLodgingBoard(
+        ProgramLodgingLayout(
           proposalId: 'proposal-1',
           units: _units,
           parties: _parties,
@@ -128,7 +128,7 @@ void main() {
     var previews = 0;
     await tester.pumpWidget(
       _app(
-        ProgramLodgingBoard(
+        ProgramLodgingLayout(
           proposalId: 'proposal-1',
           units: _units,
           parties: _parties,
@@ -159,7 +159,7 @@ void main() {
     _size(tester);
     await tester.pumpWidget(
       _app(
-        ProgramLodgingBoard(
+        ProgramLodgingLayout(
           proposalId: 'proposal-1',
           units: _units,
           parties: _parties,
@@ -187,7 +187,7 @@ void main() {
     Future<List<ProgramLodgingDestination>> preview(String _, String _) =>
         pending.future;
     Future<void> move(String _, String _, String _) async {}
-    ProgramLodgingBoard board(String id) => ProgramLodgingBoard(
+    ProgramLodgingLayout board(String id) => ProgramLodgingLayout(
       proposalId: id,
       units: _units,
       parties: _parties,
@@ -214,7 +214,7 @@ void main() {
     _size(tester);
     final pending = Completer<void>();
     var moves = 0;
-    ProgramLodgingBoard board() => ProgramLodgingBoard(
+    ProgramLodgingLayout board() => ProgramLodgingLayout(
       proposalId: 'proposal-1',
       units: _units,
       parties: _parties,
@@ -268,7 +268,7 @@ void main() {
     final moves = <String>[];
     await tester.pumpWidget(
       _app(
-        ProgramLodgingBoard(
+        ProgramLodgingLayout(
           proposalId: 'proposal-1',
           units: _units,
           parties: _parties,

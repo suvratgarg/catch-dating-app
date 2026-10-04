@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 
 /// Reuses EventSuccess's 2D grid normalization only, never its pair/rotation
 /// semantics. No write occurs without an injected authoritative callback.
-class ProgramLodgingBoard extends StatefulWidget {
-  const ProgramLodgingBoard({
+class ProgramLodgingLayout extends StatefulWidget {
+  const ProgramLodgingLayout({
     super.key,
     required this.proposalId,
     required this.units,
@@ -39,10 +39,10 @@ class ProgramLodgingBoard extends StatefulWidget {
   onMove;
 
   @override
-  State<ProgramLodgingBoard> createState() => _ProgramLodgingBoardState();
+  State<ProgramLodgingLayout> createState() => _ProgramLodgingLayoutState();
 }
 
-class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
+class _ProgramLodgingLayoutState extends State<ProgramLodgingLayout> {
   String? _partyId;
   String? _layerId;
   String? _destinationId;
@@ -55,7 +55,7 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
   Object? _error;
 
   @override
-  void didUpdateWidget(covariant ProgramLodgingBoard oldWidget) {
+  void didUpdateWidget(covariant ProgramLodgingLayout oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.proposalId != widget.proposalId ||
         oldWidget.onMove != widget.onMove ||
@@ -151,6 +151,26 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
         .where((d) => d.inventoryId == _destinationId)
         .firstOrNull;
     final movable = widget.parties.any((p) => p.id == _partyId && p.canMove);
+    final roomTiles = {
+      for (final unit in visible)
+        unit.inventoryId: CatchButton(
+          key: ValueKey('lodging-room-${unit.inventoryId}'),
+          label: [
+            unit.layoutUnit.label,
+            for (final party in widget.parties)
+              if (unit.partyIds.contains(party.id)) party.label,
+            if (unit.provisional) widget.copy.provisional,
+          ].join(' · '),
+          variant: _destinationId == unit.inventoryId
+              ? CatchButtonVariant.secondary
+              : CatchButtonVariant.ghost,
+          onPressed:
+              _pending ||
+                  !_destinations.any((d) => d.inventoryId == unit.inventoryId)
+              ? null
+              : () => setState(() => _destinationId = unit.inventoryId),
+        ),
+    };
     return CatchSectionList(
       emptyStateOmitted: true,
       gap: CatchSpacing.s3,
@@ -206,11 +226,13 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
             variant: CatchEmptyStateVariant.inline,
           )
         else if (_map)
-          _LodgingFloorMap(units: visible, tile: _room)
+          ProgramLodgingFloorLayout(units: visible, tiles: roomTiles)
         else
           CatchSection.fieldRows(
             title: widget.copy.rooms,
-            children: [for (final unit in visible) _room(unit)],
+            children: [
+              for (final unit in visible) roomTiles[unit.inventoryId]!,
+            ],
           ),
         if (selectedTarget != null) ...[
           Text(
@@ -235,37 +257,17 @@ class _ProgramLodgingBoardState extends State<ProgramLodgingBoard> {
       ],
     );
   }
-
-  Widget _room(ProgramLodgingBoardUnit unit) {
-    final option = _destinations
-        .where((d) => d.inventoryId == unit.inventoryId)
-        .firstOrNull;
-    final occupants = widget.parties
-        .where((p) => unit.partyIds.contains(p.id))
-        .map((p) => p.label);
-    final label = [
-      unit.layoutUnit.label,
-      ...occupants,
-      if (unit.provisional) widget.copy.provisional,
-    ].join(' · ');
-    return CatchButton(
-      key: ValueKey('lodging-room-${unit.inventoryId}'),
-      label: label,
-      variant: _destinationId == unit.inventoryId
-          ? CatchButtonVariant.secondary
-          : CatchButtonVariant.ghost,
-      onPressed: _pending || option == null
-          ? null
-          : () => setState(() => _destinationId = unit.inventoryId),
-    );
-  }
 }
 
-class _LodgingFloorMap extends StatelessWidget {
-  const _LodgingFloorMap({required this.units, required this.tile});
+class ProgramLodgingFloorLayout extends StatelessWidget {
+  const ProgramLodgingFloorLayout({
+    super.key,
+    required this.units,
+    required this.tiles,
+  });
 
   final List<ProgramLodgingBoardUnit> units;
-  final Widget Function(ProgramLodgingBoardUnit) tile;
+  final Map<String, Widget> tiles;
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +285,7 @@ class _LodgingFloorMap extends StatelessWidget {
         child: InteractiveViewer(
           constrained: false,
           child: SizedBox(
-            width: columns * (CatchSpacing.s16 * 2),
+            width: columns * CatchLayout.lodgingMapColumnExtent,
             height: rows * CatchSpacing.s16,
             child: Stack(
               children: [
@@ -292,18 +294,19 @@ class _LodgingFloorMap extends StatelessWidget {
                     left:
                         normalized[index].left *
                         columns *
-                        (CatchSpacing.s16 * 2),
+                        CatchLayout.lodgingMapColumnExtent,
                     top: normalized[index].top * rows * CatchSpacing.s16,
                     width:
                         normalized[index].width *
                         columns *
-                        (CatchSpacing.s16 * 2),
+                        CatchLayout.lodgingMapColumnExtent,
                     height: normalized[index].height * rows * CatchSpacing.s16,
-                    child: tile(
-                      units.firstWhere(
-                        (u) => u.layoutUnit.id == normalized[index].id,
-                      ),
-                    ),
+                    child:
+                        tiles[units
+                            .firstWhere(
+                              (u) => u.layoutUnit.id == normalized[index].id,
+                            )
+                            .inventoryId]!,
                   ),
               ],
             ),

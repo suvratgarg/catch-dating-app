@@ -12,9 +12,9 @@ import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart'
 import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_lodging_board.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_lodging_setup_editor.dart';
+import 'package:catch_dating_app/programs/presentation/program_lodging_layout.dart';
+import 'package:catch_dating_app/programs/presentation/program_lodging_setup_page_body.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,10 +119,10 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
     value: ref.watch(programLodgingControllerProvider(widget.programId)),
     onRetry: () =>
         ref.invalidate(programLodgingControllerProvider(widget.programId)),
-    loadingBuilder: (_) => const _LodgingRouteScaffold(
+    loadingBuilder: (_) => const ProgramLodgingScaffold(
       body: CatchStateViewport.loading(accountForBottomOverlay: false),
     ),
-    errorBuilder: (_, error, _, retry) => _LodgingRouteScaffold(
+    errorBuilder: (_, error, _, retry) => ProgramLodgingScaffold(
       body: CatchLocalizedErrorState(
         error,
         context: AppErrorContext.event,
@@ -145,7 +145,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
         _membership = null;
         _membershipGroups = {};
         _membershipEpoch++;
-        return _LodgingExpiredView(
+        return ProgramLodgingExpiredPageBody(
           busy: view.busy || view.retryAction != null,
           onRefresh: _controller.refresh,
         );
@@ -164,7 +164,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
         _membershipEpoch++;
       }
       if (_membershipSetup != null) {
-        return _LodgingMembershipEditor(
+        return ProgramLodgingMembershipPageBody(
           setup: _membershipSetup!,
           view: view,
           membership: _membership,
@@ -194,7 +194,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
           body: CatchRouteBody.standardSections(
             sections: [
               CatchSectionListItem(
-                child: ProgramLodgingSetupEditor(
+                child: ProgramLodgingSetupPageBody(
                   key: ObjectKey(editing),
                   initial: editing,
                   busy: view.busy,
@@ -221,7 +221,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
       }
       final review = view.review;
       if (review == null) {
-        return _LodgingRouteScaffold(
+        return ProgramLodgingScaffold(
           body: Column(
             children: [
               CatchEmptyState(
@@ -382,7 +382,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
             CatchSectionListItem(
               child: AbsorbPointer(
                 absorbing: view.busy || retry != null,
-                child: ProgramLodgingBoard(
+                child: ProgramLodgingLayout(
                   proposalId: proposal.id,
                   units: review.units,
                   parties: review.parties,
@@ -410,8 +410,8 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
   );
 }
 
-class _LodgingRouteScaffold extends StatelessWidget {
-  const _LodgingRouteScaffold({required this.body});
+class ProgramLodgingScaffold extends StatelessWidget {
+  const ProgramLodgingScaffold({super.key, required this.body});
   final Widget body;
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
@@ -429,12 +429,16 @@ class _LodgingRouteScaffold extends StatelessWidget {
   );
 }
 
-class _LodgingExpiredView extends StatelessWidget {
-  const _LodgingExpiredView({required this.busy, required this.onRefresh});
+class ProgramLodgingExpiredPageBody extends StatelessWidget {
+  const ProgramLodgingExpiredPageBody({
+    super.key,
+    required this.busy,
+    required this.onRefresh,
+  });
   final bool busy;
   final VoidCallback onRefresh;
   @override
-  Widget build(BuildContext context) => _LodgingRouteScaffold(
+  Widget build(BuildContext context) => ProgramLodgingScaffold(
     body: Column(
       children: [
         Text(
@@ -450,8 +454,9 @@ class _LodgingExpiredView extends StatelessWidget {
   );
 }
 
-class _LodgingMembershipEditor extends ConsumerWidget {
-  const _LodgingMembershipEditor({
+class ProgramLodgingMembershipPageBody extends ConsumerWidget {
+  const ProgramLodgingMembershipPageBody({
+    super.key,
     required this.setup,
     required this.view,
     required this.membership,
@@ -485,7 +490,7 @@ class _LodgingMembershipEditor extends ConsumerWidget {
       ),
     );
     if (!active) {
-      return _LodgingExpiredView(
+      return ProgramLodgingExpiredPageBody(
         busy: view.busy || view.retryAction != null,
         onRefresh: onRefresh,
       );
@@ -497,7 +502,7 @@ class _LodgingMembershipEditor extends ConsumerWidget {
         for (final group in mapList(membership.json['groups'], 'groups'))
           requiredString(group, 'id'): requiredString(group, 'label'),
     };
-    return _LodgingRouteScaffold(
+    return ProgramLodgingScaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -276,13 +276,13 @@ Map<String, Object?> lodgingJsonMap(Object? value) {
       return Map<String, Object?>.unmodifiable(result);
     }
     if (item is List) return List<Object?>.unmodifiable(item.map(freeze));
-    if (item == null ||
-        item is String ||
-        item is bool ||
-        (item is num && item.isFinite)) {
-      return item;
-    }
-    throw const FormatException('Invalid lodging JSON value.');
+    return switch (item) {
+      null => null,
+      String value => value,
+      bool value => value,
+      num value when value.isFinite => value,
+      _ => throw const FormatException('Invalid lodging JSON value.'),
+    };
   }
 
   final frozen = freeze(value);

@@ -307,12 +307,9 @@ Map<Object?, Object?> _kind(Object? value, String kind) {
 /// applied. Generic transport/precondition failures remain uncertain and keep
 /// their original receipt identity. Never classify by user-facing error copy.
 bool isDefinitiveLodgingRejection(Object error) {
-  Object? cause = error;
-  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
-    cause = cause.cause;
-  }
-  if (cause is! FirebaseFunctionsException) return false;
-  return switch ((cause.code, cause.message)) {
+  final identity = backendCallableErrorIdentity(error);
+  if (identity == null) return false;
+  return switch ((identity.code, identity.message)) {
     ('aborted', 'Record changed since you loaded it. Reload and retry.') =>
       true,
     (

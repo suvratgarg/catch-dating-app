@@ -417,6 +417,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   markProgramTripArrived: {maxRequests: 60, windowMs: 60 * 1000},
   voidProgramTrip: {maxRequests: 60, windowMs: 60 * 1000},
   getProgramHotelInbound: {maxRequests: 120, windowMs: 60 * 1000},
+  manageProgramLodging: {maxRequests: 30, windowMs: 60 * 1000},
   getProgramHotelRooms: {maxRequests: 120, windowMs: 60 * 1000},
   upsertProgramStay: {maxRequests: 120, windowMs: 60 * 1000},
   upsertProgramRoomBlock: {maxRequests: 60, windowMs: 60 * 1000},

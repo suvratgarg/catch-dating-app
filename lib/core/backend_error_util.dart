@@ -4,6 +4,17 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// Internal callable identity for exact domain recovery classification. Never
+/// render provider messages as UI copy. Wrapped causes are bounded to eight.
+({String code, String? message})? backendCallableErrorIdentity(Object error) {
+  Object? cause = error;
+  for (var depth = 0; depth < 8 && cause is AppException; depth++) {
+    cause = cause.cause;
+  }
+  if (cause is! FirebaseFunctionsException) return null;
+  return (code: cause.code, message: cause.message);
+}
+
 typedef BackendErrorMapper =
     AppException? Function(
       Object error,

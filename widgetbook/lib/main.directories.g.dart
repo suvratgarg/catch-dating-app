@@ -537,6 +537,8 @@ import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
 import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
+import 'package:widgetbook_workspace/programs/program_lodging_use_cases.dart'
+    as _widgetbook_workspace_programs_program_lodging_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
@@ -13212,6 +13214,93 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_programs_workspace_use_cases_logistics
                         .programWorkspaceStationTileStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Programs',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Hotel lodging',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingExpiredPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Expired authority',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingExpired,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingFloorLayout',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Layered 2D floor',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingFloorLayout,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingLayout',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Party and dated room list',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingLayout,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingMembershipPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Social membership review before configuration',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingMembership,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingScaffold',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Private route chrome',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingScaffold,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Read-only populated private route',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingScreen,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgramLodgingSetupPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Verified setup editing',
+                    builder:
+                        _widgetbook_workspace_programs_program_lodging_use_cases
+                            .lodgingSetup,
+                  ),
+                ],
               ),
             ],
           ),

@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 
 /// Staged, provider-free form mechanics. Persistence and authority lifetime
 /// remain with the routed controller. No household creates sharing choices.
-class ProgramLodgingSetupEditor extends StatefulWidget {
-  const ProgramLodgingSetupEditor({
+class ProgramLodgingSetupPageBody extends StatefulWidget {
+  const ProgramLodgingSetupPageBody({
     super.key,
     required this.initial,
     required this.resolveDates,
@@ -38,11 +38,12 @@ class ProgramLodgingSetupEditor extends StatefulWidget {
   final Object? error;
 
   @override
-  State<ProgramLodgingSetupEditor> createState() =>
-      _ProgramLodgingSetupEditorState();
+  State<ProgramLodgingSetupPageBody> createState() =>
+      _ProgramLodgingSetupPageBodyState();
 }
 
-class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
+class _ProgramLodgingSetupPageBodyState
+    extends State<ProgramLodgingSetupPageBody> {
   late ProgramLodgingDraft _draft;
   late final Map<String, String> _calendarDates;
   final _arrival = TextEditingController();
@@ -53,7 +54,7 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
   final _demandFeatures = TextEditingController();
   final _partyType = TextEditingController();
   final _priority = TextEditingController(text: '0');
-  final _type = TextEditingController(text: 'standard');
+  final _type = TextEditingController();
   final _zone = TextEditingController();
   final _building = TextEditingController();
   final _floor = TextEditingController();
@@ -258,8 +259,11 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
         children: [
           if (_error ?? widget.error case final error?)
             CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
-          Text(l10n.programsLodgingSharingHint),
-          Text(catalog.timezone),
+          Text(
+            l10n.programsLodgingSharingHint,
+            style: CatchTextStyles.supporting(context),
+          ),
+          Text(catalog.timezone, style: CatchTextStyles.supporting(context)),
           CatchSection.containedFieldRows(
             title: l10n.programsLodgingDemand,
             children: [
@@ -312,7 +316,10 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
                 onPressed: _demand,
               ),
               for (final row in _draft.rows('demand'))
-                Text(label('guests', requiredString(row, 'guestId'))),
+                Text(
+                  label('guests', requiredString(row, 'guestId')),
+                  style: CatchTextStyles.supporting(context),
+                ),
               CatchButton(
                 label: l10n.programsLodgingRemove,
                 variant: CatchButtonVariant.ghost,
@@ -482,7 +489,10 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
           CatchSection.containedFieldRows(
             title: l10n.programsLodgingInventory,
             children: [
-              Text(l10n.programsLodgingInventoryHint),
+              Text(
+                l10n.programsLodgingInventoryHint,
+                style: CatchTextStyles.supporting(context),
+              ),
               CatchField<String>.choices(
                 copy: copy,
                 title: l10n.programsLodgingInventory,
@@ -569,6 +579,7 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
               ),
               CatchField.input(
                 copy: copy,
+                key: const ValueKey('lodging-inventory-room-type'),
                 title: l10n.programsLodgingRoomType,
                 controller: _type,
                 contract: CatchContractConstraints
@@ -597,7 +608,10 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
                 contract: CatchContractConstraints
                     .programLodgingConfigDocumentRoomsItemsVerifiedFeaturesItems,
               ),
-              Text(l10n.programsLodgingResourcesHint),
+              Text(
+                l10n.programsLodgingResourcesHint,
+                style: CatchTextStyles.supporting(context),
+              ),
               CatchField<String>.choices(
                 copy: copy,
                 title: l10n.programsLodgingResources,
@@ -820,10 +834,14 @@ class _ProgramLodgingSetupEditorState extends State<ProgramLodgingSetupEditor> {
                 for (final adoption in _adoptions.values)
                   Text(
                     '${l10n.programsLodgingVerified} · ${label('guests', requiredString(catalog.row('activeStays', adoption['stayId']! as String), 'guestId'))}',
+                    style: CatchTextStyles.supporting(context),
                   ),
               ],
             ),
-          Text(l10n.programsLodgingSaveHint),
+          Text(
+            l10n.programsLodgingSaveHint,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchButton(
             label: l10n.programsLodgingSaveSetup,
             onPressed: _ready && !_busy ? _save : null,
