@@ -21,7 +21,8 @@ export interface SalesIntelligenceReceiptDocument {
     | "draft.copy"
     | "partner.draft.record"
     | "partner.draft.review"
-    | "partner.draft.copy";
+    | "partner.draft.copy"
+    | "partner.draft.manual_send";
   requestId: string;
   materialHash: string;
   result: {

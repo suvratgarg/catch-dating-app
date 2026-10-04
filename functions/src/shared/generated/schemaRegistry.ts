@@ -14,6 +14,7 @@ export {getSalesPartnerOutreachJobCallablePayloadSchema} from "./schemas/getSale
 export {getSalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/getSalesPartnerOutreachDraftInput";
 export {reviewSalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/reviewSalesPartnerOutreachDraftInput";
 export {copySalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/copySalesPartnerOutreachDraftInput";
+export {recordSalesPartnerManualSendCallablePayloadSchema} from "./schemas/recordSalesPartnerManualSendInput";
 export {registerSalesPartnerCallablePayloadSchema} from "./schemas/registerSalesPartnerInput";
 export {nominateSalesOrganizerCallablePayloadSchema} from "./schemas/nominateSalesOrganizerInput";
 export {getSalesPartnerWorkspaceCallablePayloadSchema} from "./schemas/getSalesPartnerWorkspaceInput";

@@ -134417,6 +134417,68 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const recordSalesPartnerManualSendCallablePayloadAttestation = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.attestation',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadChannel = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['email', 'whatsapp', 'other'],
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadExpectedContentHash = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.expectedContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadOccurredAt = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.occurredAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordSalesPartnerManualSendCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendCallablePayload.requestId',
+    maxLength: 96,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const refreshProgramTravelLegCallablePayloadLegId = CatchContractFieldConstraints(
     path: 'refreshProgramTravelLegCallablePayload.legId',
     maxLength: 180,
@@ -141571,7 +141633,7 @@ abstract final class CatchContractConstraints {
   static const salesIntelligenceReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesIntelligenceReceiptDocument.action',
     required: true,
-    enumValues: <String>['policy.save', 'assessment.save', 'clause.save', 'clause.review', 'score.snapshot', 'draft.record', 'draft.review', 'draft.copy', 'partner.draft.record', 'partner.draft.review', 'partner.draft.copy'],
+    enumValues: <String>['policy.save', 'assessment.save', 'clause.save', 'clause.review', 'score.snapshot', 'draft.record', 'draft.review', 'draft.copy', 'partner.draft.record', 'partner.draft.review', 'partner.draft.copy', 'partner.draft.manual_send'],
   );
 
   static const salesIntelligenceReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -178353,6 +178415,14 @@ abstract final class CatchContractConstraints {
     'recordProgramFunctionRsvpCallableResponse.entityId': recordProgramFunctionRsvpCallableResponseEntityId,
     'recordProgramFunctionRsvpCallableResponse.guestRsvpStatus': recordProgramFunctionRsvpCallableResponseGuestRsvpStatus,
     'recordProgramFunctionRsvpCallableResponse.revision': recordProgramFunctionRsvpCallableResponseRevision,
+    'recordSalesPartnerManualSendCallablePayload.attestation': recordSalesPartnerManualSendCallablePayloadAttestation,
+    'recordSalesPartnerManualSendCallablePayload.channel': recordSalesPartnerManualSendCallablePayloadChannel,
+    'recordSalesPartnerManualSendCallablePayload.draftId': recordSalesPartnerManualSendCallablePayloadDraftId,
+    'recordSalesPartnerManualSendCallablePayload.expectedAssignmentRevision': recordSalesPartnerManualSendCallablePayloadExpectedAssignmentRevision,
+    'recordSalesPartnerManualSendCallablePayload.expectedContentHash': recordSalesPartnerManualSendCallablePayloadExpectedContentHash,
+    'recordSalesPartnerManualSendCallablePayload.occurredAt': recordSalesPartnerManualSendCallablePayloadOccurredAt,
+    'recordSalesPartnerManualSendCallablePayload.organizerId': recordSalesPartnerManualSendCallablePayloadOrganizerId,
+    'recordSalesPartnerManualSendCallablePayload.requestId': recordSalesPartnerManualSendCallablePayloadRequestId,
     'refreshProgramTravelLegCallablePayload.legId': refreshProgramTravelLegCallablePayloadLegId,
     'refreshProgramTravelLegCallablePayload.programId': refreshProgramTravelLegCallablePayloadProgramId,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,

@@ -5,7 +5,8 @@ import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../shared/
 import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../shared/generated/validators/copySalesPartnerOutreachDraftInput";
 import {generatePartnerOutreachDraft} from "../admin/salesIntelligence/runtime";
 import {getPartnerDraftJob} from "../admin/salesIntelligence/job";
-import {getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft} from "../admin/salesIntelligence/service";
+import {getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft, recordPartnerManualSend} from "../admin/salesIntelligence/service";
+import {validateRecordSalesPartnerManualSendCallablePayload} from "../shared/generated/validators/recordSalesPartnerManualSendInput";
 import type {ValidateFunction} from "ajv";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateRegisterSalesPartnerCallablePayload} from "../shared/generated/validators/registerSalesPartnerInput";
@@ -66,3 +67,4 @@ export const getSalesPartnerOutreachJob = callable("getSalesPartnerOutreachJob",
 export const getSalesPartnerOutreachDraft = callable("getSalesPartnerOutreachDraft", false, validateGetSalesPartnerOutreachDraftCallablePayload, getPartnerOutreachDraft);
 export const reviewSalesPartnerOutreachDraft = callable("reviewSalesPartnerOutreachDraft", false, validateReviewSalesPartnerOutreachDraftCallablePayload, reviewPartnerOutreachDraft);
 export const copySalesPartnerOutreachDraft = callable("copySalesPartnerOutreachDraft", false, validateCopySalesPartnerOutreachDraftCallablePayload, copyPartnerOutreachDraft);
+export const recordSalesPartnerManualSend = callable("recordSalesPartnerManualSend", false, validateRecordSalesPartnerManualSendCallablePayload, recordPartnerManualSend);

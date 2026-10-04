@@ -12,6 +12,7 @@ import {
   getSalesPartnerOutreachDraftCallablePayloadSchema,
   reviewSalesPartnerOutreachDraftCallablePayloadSchema,
   copySalesPartnerOutreachDraftCallablePayloadSchema,
+  recordSalesPartnerManualSendCallablePayloadSchema,
   registerSalesPartnerCallablePayloadSchema,
   nominateSalesOrganizerCallablePayloadSchema,
   getSalesPartnerWorkspaceCallablePayloadSchema,
@@ -1232,6 +1233,7 @@ export const validateGetSalesPartnerOutreachJobCallablePayload = ajv.compile(get
 export const validateGetSalesPartnerOutreachDraftCallablePayload = ajv.compile(getSalesPartnerOutreachDraftCallablePayloadSchema);
 export const validateReviewSalesPartnerOutreachDraftCallablePayload = ajv.compile(reviewSalesPartnerOutreachDraftCallablePayloadSchema);
 export const validateCopySalesPartnerOutreachDraftCallablePayload = ajv.compile(copySalesPartnerOutreachDraftCallablePayloadSchema);
+export const validateRecordSalesPartnerManualSendCallablePayload = ajv.compile(recordSalesPartnerManualSendCallablePayloadSchema);
 export const validateRegisterSalesPartnerCallablePayload = ajv.compile(registerSalesPartnerCallablePayloadSchema);
 export const validateNominateSalesOrganizerCallablePayload = ajv.compile(nominateSalesOrganizerCallablePayloadSchema);
 export const validateGetSalesPartnerWorkspaceCallablePayload = ajv.compile(getSalesPartnerWorkspaceCallablePayloadSchema);

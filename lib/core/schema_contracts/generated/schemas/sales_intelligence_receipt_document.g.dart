@@ -58,6 +58,7 @@ const schemaSalesIntelligenceReceiptDocumentSchema = <String, Object?>{
         'partner.draft.record',
         'partner.draft.review',
         'partner.draft.copy',
+        'partner.draft.manual_send',
       ],
     },
     'requestId': <String, Object?>{

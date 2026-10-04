@@ -479,6 +479,72 @@ export const copySalesPartnerOutreachDraftCallablePayloadSchema = {
   ]
 };
 
+export const recordSalesPartnerManualSendCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_sales_partner_manual_send_payload.schema.json",
+  "title": "RecordSalesPartnerManualSendCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash",
+    "channel",
+    "occurredAt",
+    "attestation"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "whatsapp",
+        "other"
+      ]
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "attestation": {
+      "type": "string",
+      "const": "i_manually_sent_this_reviewed_draft"
+    }
+  },
+  "x-callable-aliases": [
+    "recordSalesPartnerManualSend"
+  ]
+};
+
 export const registerSalesPartnerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
@@ -32797,7 +32863,8 @@ export const salesIntelligenceReceiptDocumentSchema = {
         "draft.copy",
         "partner.draft.record",
         "partner.draft.review",
-        "partner.draft.copy"
+        "partner.draft.copy",
+        "partner.draft.manual_send"
       ]
     },
     "requestId": {

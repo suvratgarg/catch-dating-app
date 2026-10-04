@@ -957,6 +957,7 @@ export 'record_program_door_journal_callable_payload.g.dart';
 export 'record_program_door_journal_callable_response.g.dart';
 export 'record_program_function_rsvp_callable_payload.g.dart';
 export 'record_program_function_rsvp_callable_response.g.dart';
+export 'record_sales_partner_manual_send_callable_payload.g.dart';
 export 'refresh_program_travel_leg_callable_payload.g.dart';
 export 'refresh_razorpay_host_payment_account_callable_payload.g.dart';
 export 'refresh_stripe_host_payment_account_callable_payload.g.dart';

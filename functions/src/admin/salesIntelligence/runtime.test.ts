@@ -7,6 +7,8 @@ import {validateGetSalesPartnerOutreachJobCallablePayload} from "../../shared/ge
 import {validateGetSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/getSalesPartnerOutreachDraftInput";
 import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/reviewSalesPartnerOutreachDraftInput";
 import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/copySalesPartnerOutreachDraftInput";
+import {validateRecordSalesPartnerManualSendCallablePayload} from "../../shared/generated/validators/recordSalesPartnerManualSendInput";
+import {validateSalesActivityDocument} from "../../shared/generated/validators/salesActivityDocument";
 import {strict as assert} from "node:assert";
 import {execFileSync} from "node:child_process";
 import path from "node:path";
@@ -20,6 +22,7 @@ import {claimDraftJob, claimPartnerDraftJob, completePartnerDraftJob,
 import {generatePartnerOutreachDraft, generateSalesOutreachDraft} from "./runtime";
 import {buildOutreachInput, buildPartnerOutreachInput, recordPartnerOperationsDraft,
   getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft,
+  recordPartnerManualSend,
   type DraftRequest, type IntelligenceDeps} from "./service";
 import {PARTNER_TERMS_VERSION, type PartnerDeps} from "../../partners/model";
 
@@ -522,6 +525,7 @@ test("partner preparation callable payloads reject identity, provider, send and 
     [validateGetSalesPartnerOutreachDraftCallablePayload, target],
     [validateReviewSalesPartnerOutreachDraftCallablePayload, {...target, requestId: "review-own", expectedContentHash: "a".repeat(64), factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"}],
     [validateCopySalesPartnerOutreachDraftCallablePayload, {...target, requestId: "copy-own", expectedContentHash: "a".repeat(64)}],
+    [validateRecordSalesPartnerManualSendCallablePayload, {...target, requestId: "manual-own", expectedContentHash: "a".repeat(64), channel: "email", occurredAt: started, attestation: "i_manually_sent_this_reviewed_draft"}],
   ];
   for (const [validator, data] of rows) {
     assert.equal(validator(data), true);
@@ -545,4 +549,81 @@ test("partner callable Auth resolution rejects disabled, revoked, missing and ma
   await assert.rejects(currentPartnerActor(request, async () => ({...user, tokensValidAfterTime: "2026-09-28T10:00:01.000Z", toJSON: () => ({})})), {code: "permission-denied"});
   await assert.rejects(currentPartnerActor({...request, auth: {...request.auth!, token: {...request.auth!.token, auth_time: "stale"}}} as unknown as CallableRequest<unknown>, async () => user), {code: "permission-denied"});
   await assert.rejects(currentPartnerActor(request, async () => {throw new Error("deleted Auth user");}), /deleted Auth user/u);
+});
+
+async function manualSendFixture(approve = true) {
+  const f = partnerFixture();
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), channel: "email"});
+  const generated = await generatePartnerOutreachDraft(f.partnerDeps, f.principal, partnerJobRequest);
+  const draftId = String((generated.result as {draftId: string}).draftId);
+  const stored = f.db.docs.get(`salesOutreachDrafts/${draftId}`)!;
+  const draft = stored.draft as Record<string, unknown>;
+  const target = {organizerId: "org-one", draftId, expectedAssignmentRevision: 2, expectedContentHash: draft.contentHash};
+  if (approve) await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, {...target,
+    requestId: "manual-review", factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"});
+  return {...f, target, payload: {...target, requestId: "manual-send", channel: "email",
+    occurredAt: started, attestation: "i_manually_sent_this_reviewed_draft"}};
+}
+
+test("partner manual-send records only a truthful attestation once and supports exact recovery", async () => {
+  const f = await manualSendFixture();
+  const first = await recordPartnerManualSend(f.partnerDeps, f.principal, f.payload);
+  assert.equal(first.outcome, "actor_attested_sent");
+  assert.equal(first.providerConfirmed, false); assert.equal(first.sendAuthority, false);
+  assert.deepEqual(await recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), first);
+  assert.deepEqual(await recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, requestId: "another-exact-manual"}), first);
+  const activities = [...f.db.docs.entries()].filter(([key]) => key.startsWith("salesActivities/"));
+  assert.equal(activities.length, 1); assert.equal(activities[0][1].actorUid, f.principal.uid);
+  assert.equal(validateSalesActivityDocument(activities[0][1]), true);
+  f.clock("2026-09-28T10:01:00.000Z");
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, requestId: "different-manual", occurredAt: "2026-09-28T10:00:30.000Z"}), {code: "already-exists"});
+});
+
+test("partner manual-send rejects unreviewed, wrong channel, time, content and foreign actor", async () => {
+  const pending = await manualSendFixture(false);
+  await assert.rejects(recordPartnerManualSend(pending.partnerDeps, pending.principal, pending.payload), {code: "failed-precondition"});
+  const f = await manualSendFixture();
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, attestation: "provider_sent"}), {code: "invalid-argument"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, channel: "whatsapp"}), {code: "failed-precondition"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, occurredAt: "2026-09-28T09:59:59.000Z"}), {code: "failed-precondition"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal,
+    {...f.payload, occurredAt: "2026-09-28T10:00:01.000Z"}), {code: "invalid-argument"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, {uid: "other-partner", roles: []}, f.payload), {code: "permission-denied"});
+  const path = `salesOutreachDrafts/${f.target.draftId}`;
+  const stored = f.db.docs.get(path)!;
+  f.db.docs.set(path, {...stored, draft: {...stored.draft as object, text: "Fabricated proof"}});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "failed-precondition"});
+  assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesActivities/")).length, 0);
+});
+
+test("manual-send replay rechecks source, assignment and immutable own activity", async () => {
+  const f = await manualSendFixture();
+  const saved = await recordPartnerManualSend(f.partnerDeps, f.principal, f.payload);
+  const activityPath = `salesActivities/${saved.activityId}`;
+  const activity = f.db.docs.get(activityPath)!;
+  f.db.docs.set(activityPath, {...activity, actorUid: "employee-one"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "failed-precondition"});
+  f.db.docs.set(activityPath, activity);
+  f.db.docs.set("salesIntelligenceClauses/capability-one", {...f.db.docs.get("salesIntelligenceClauses/capability-one"), revision: 2});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "aborted"});
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), status: "revoked"});
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "permission-denied"});
+});
+
+test("manual-send transaction retry rechecks revoked access without committing its first attempt", async () => {
+  const f = await manualSendFixture();
+  const receiptsBefore = [...f.db.docs.keys()].filter((key) => key.startsWith("salesIntelligenceReceipts/")).length;
+  f.db.runTransaction = async <T>(callback: (tx: MemoryTx) => Promise<T>): Promise<T> => {
+    await callback(new MemoryTx(f.db));
+    f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), status: "revoked"});
+    const retry = new MemoryTx(f.db); const result = await callback(retry); retry.commit(); return result;
+  };
+  await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "permission-denied"});
+  assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesActivities/")).length, 0);
+  assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesIntelligenceReceipts/")).length, receiptsBefore);
 });

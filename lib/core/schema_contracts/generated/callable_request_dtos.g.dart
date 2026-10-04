@@ -331,6 +331,7 @@ export 'callables/record_organizer_analytics_event_callable_request.g.dart';
 export 'callables/record_organizer_contact_outreach_callable_request.g.dart';
 export 'callables/record_program_door_journal_callable_request.g.dart';
 export 'callables/record_program_function_rsvp_callable_request.g.dart';
+export 'callables/record_sales_partner_manual_send_callable_request.g.dart';
 export 'callables/refresh_program_travel_leg_callable_request.g.dart';
 export 'callables/register_public_event_callable_request.g.dart';
 export 'callables/remove_club_host_callable_request.g.dart';

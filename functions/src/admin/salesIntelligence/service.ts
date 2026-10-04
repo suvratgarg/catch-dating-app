@@ -1067,3 +1067,78 @@ export async function getPartnerOutreachDraft(deps: PartnerDeps,
       reviewedAt: stored.reviewedAt, sendAuthority: false};
   });
 }
+
+/** Records a human's attestation after sending outside Catch. No provider send. */
+export async function recordPartnerManualSend(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown) {
+  const input = object(payload, ["requestId", "organizerId", "draftId",
+    "expectedAssignmentRevision", "expectedContentHash", "channel", "occurredAt", "attestation"]);
+  const request = requestId(input.requestId);
+  const organizerId = id(input.organizerId);
+  const draftId = id(input.draftId);
+  const expected = revision(input.expectedAssignmentRevision);
+  const expectedContentHash = text(input.expectedContentHash, 64);
+  const occurredAt = iso(input.occurredAt);
+  const channel = input.channel;
+  if (input.attestation !== "i_manually_sent_this_reviewed_draft" ||
+      !["email", "whatsapp", "other"].includes(String(channel))) {
+    fail("invalid-argument", "Confirm that you manually sent this exact reviewed draft.");
+  }
+  const material = {organizerId, draftId, expectedAssignmentRevision: expected,
+    expectedContentHash, channel, occurredAt, attestation: input.attestation};
+  const activityId = `partner-send-${hash({actorUid: actor.uid, organizerId,
+    draftId, expectedContentHash, expectedAssignmentRevision: expected}).slice(0, 48)}`;
+  const activityRef = deps.db.collection("salesActivities").doc(activityId);
+  const access = partnerDraftAccess(deps, actor, organizerId, expected, draftId);
+  const current = async (tx: FirebaseFirestore.Transaction) => {
+    const {stored} = await requirePartnerDraft(deps, actor, tx, organizerId, draftId, expected);
+    const assignment = await requireAssignment(deps, actor, tx, organizerId);
+    expectRevision(assignment.revision, expected);
+    const at = Date.parse(occurredAt);
+    if (stored.status !== "approved" || stored.reviewedBy !== actor.uid ||
+        stored.draft.contentHash !== expectedContentHash ||
+        channel !== assignment.channel ||
+        (stored.draft.channel === "email" ? channel !== "email" :
+          !["whatsapp", "other"].includes(String(channel))) ||
+        !Number.isFinite(Date.parse(stored.reviewedAt)) || at < Date.parse(stored.reviewedAt)) {
+      fail("failed-precondition", "Current own reviewed draft and established channel are required.");
+    }
+    return stored;
+  };
+  const matches = (row: FirebaseFirestore.DocumentData | undefined, opportunityId: string) =>
+    row?.schemaVersion === 1 && row.classification === "sales_private" &&
+    row.activityId === activityId && row.organizerId === organizerId &&
+    row.opportunityId === opportunityId && row.actorUid === actor.uid &&
+    row.type === "outreach_sent_manual" && row.outcome === "actor_attested_sent" &&
+    row.providerConfirmed === false && row.channel === channel && row.occurredAt === occurredAt &&
+    row.note === `Partner attested manual sending of reviewed draft ${draftId}; content hash ${expectedContentHash}.`;
+  return mutateAuthorized(deps, actor, "partner.draft.manual_send", request, material,
+    access, async (tx) => {
+      const stored = await current(tx);
+      const existing = await tx.get(activityRef);
+      if (existing.exists && !matches(existing.data(), stored.draft.opportunityId)) {
+        fail("already-exists", "This draft already has a different manual-send attestation.");
+      }
+      // All reads and final current authority precede writes; time is fresh after Auth.
+      await access.inTransaction(tx);
+      const recordedAt = deps.now().toISOString();
+      if (Date.parse(occurredAt) > Date.parse(recordedAt)) {
+        fail("invalid-argument", "Manual sending time cannot be in the future.");
+      }
+      if (!existing.exists) tx.create(activityRef, {schemaVersion: 1,
+        classification: "sales_private", activityId, organizerId,
+        opportunityId: stored.draft.opportunityId, type: "outreach_sent_manual",
+        channel, outcome: "actor_attested_sent", providerConfirmed: false,
+        occurredAt, recordedAt,
+        note: `Partner attested manual sending of reviewed draft ${draftId}; content hash ${expectedContentHash}.`,
+        actorUid: actor.uid});
+      return {organizerId, draftId, activityId, exactContentHash: expectedContentHash,
+        occurredAt, outcome: "actor_attested_sent", providerConfirmed: false, sendAuthority: false};
+    }, async (tx) => {
+      const stored = await current(tx);
+      const activity = await tx.get(activityRef);
+      if (!matches(activity.data(), stored.draft.opportunityId)) {
+        fail("failed-precondition", "Manual-send attestation changed; refresh before retrying.");
+      }
+    });
+}

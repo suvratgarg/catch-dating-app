@@ -55,7 +55,8 @@ export const salesIntelligenceReceiptDocumentSchema: Record<string, unknown> = {
         "draft.copy",
         "partner.draft.record",
         "partner.draft.review",
-        "partner.draft.copy"
+        "partner.draft.copy",
+        "partner.draft.manual_send"
       ]
     },
     "requestId": {

@@ -62,6 +62,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaCopySalesPartnerOutreachDraftCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'RecordSalesPartnerManualSendCallablePayload',
+    source: 'callables/record_sales_partner_manual_send_payload.schema.json',
+    schema: schemaRecordSalesPartnerManualSendCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'RegisterSalesPartnerCallablePayload',
     source: 'callables/register_sales_partner_payload.schema.json',
     schema: schemaRegisterSalesPartnerCallablePayloadSchema,
@@ -6008,6 +6013,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'GetSalesPartnerOutreachDraftCallablePayload': schemaGetSalesPartnerOutreachDraftCallablePayloadSchema,
   'ReviewSalesPartnerOutreachDraftCallablePayload': schemaReviewSalesPartnerOutreachDraftCallablePayloadSchema,
   'CopySalesPartnerOutreachDraftCallablePayload': schemaCopySalesPartnerOutreachDraftCallablePayloadSchema,
+  'RecordSalesPartnerManualSendCallablePayload': schemaRecordSalesPartnerManualSendCallablePayloadSchema,
   'RegisterSalesPartnerCallablePayload': schemaRegisterSalesPartnerCallablePayloadSchema,
   'NominateSalesOrganizerCallablePayload': schemaNominateSalesOrganizerCallablePayloadSchema,
   'GetSalesPartnerWorkspaceCallablePayload': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
@@ -7207,6 +7213,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/get_sales_partner_outreach_draft_payload.schema.json': schemaGetSalesPartnerOutreachDraftCallablePayloadSchema,
   'callables/review_sales_partner_outreach_draft_payload.schema.json': schemaReviewSalesPartnerOutreachDraftCallablePayloadSchema,
   'callables/copy_sales_partner_outreach_draft_payload.schema.json': schemaCopySalesPartnerOutreachDraftCallablePayloadSchema,
+  'callables/record_sales_partner_manual_send_payload.schema.json': schemaRecordSalesPartnerManualSendCallablePayloadSchema,
   'callables/register_sales_partner_payload.schema.json': schemaRegisterSalesPartnerCallablePayloadSchema,
   'callables/nominate_sales_organizer_payload.schema.json': schemaNominateSalesOrganizerCallablePayloadSchema,
   'callables/get_sales_partner_workspace_payload.schema.json': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
