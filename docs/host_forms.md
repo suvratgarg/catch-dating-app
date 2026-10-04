@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.3.0
-updated: 2026-09-23
+version: 1.3.1
+updated: 2026-10-04
 owner: host_tooling
 status: active
 ---
@@ -556,6 +556,18 @@ Each published version selects one policy:
 | `phoneVerified` | Phone OTP verification |
 | `emailOrPhoneVerified` | Respondent chooses either supported factor |
 | `catchAccount` | Explicitly account-required experiences only; never the default for standalone Forms |
+
+Anonymous policy never derives respondent UID, name, email, phone, or identity
+origin from ambient sign-in. Only deliberately submitted, reachable canonical
+contact answers may appear as organizer-acquired identity in Host views and
+exports. The public client does not prefill an anonymous phone answer or offer
+an account phone as its messaging endpoint. Explicit contact answers remain
+visible at review and submission; providing them does not change the anonymous
+policy or grant account linkage. Identified policies retain their permitted
+account snapshot and existing verification and consent requirements. Draft and
+receipt retries stay bound to the immutable version and original identity mode;
+anonymous forms cannot reuse private account responses. Existing stored
+responses are not rewritten by this change.
 
 Sensitive questions, signatures, participant-private suggestions, and specified
 completion actions raise the minimum permitted identity policy. A Host cannot

@@ -909,19 +909,22 @@ export function responseIdentitySnapshot(
     const answer = question ? answers[question.questionId] : null;
     return typeof answer === "string" && answer.trim() ? answer.trim() : null;
   };
-  const tokenEmail = typeof request.auth?.token.email === "string" ?
-    request.auth.token.email.trim().toLowerCase() : null;
-  const tokenPhone = typeof request.auth?.token.phone_number === "string" ?
-    request.auth.token.phone_number.trim() : null;
-  const tokenName = typeof request.auth?.token.name === "string" ?
-    request.auth.token.name.trim() : null;
+  // The immutable published policy controls enrichment, not ambient Auth.
+  // Anonymous contact is only the respondent's submitted canonical answers.
+  const auth = definition.identityPolicy === "anonymous" ? null : request.auth;
+  const tokenEmail = typeof auth?.token.email === "string" ?
+    auth.token.email.trim().toLowerCase() : null;
+  const tokenPhone = typeof auth?.token.phone_number === "string" ?
+    auth.token.phone_number.trim() : null;
+  const tokenName = typeof auth?.token.name === "string" ?
+    auth.token.name.trim() : null;
   const displayName = tokenName || canonicalAnswer("displayName") || [
     canonicalAnswer("givenName"),
     canonicalAnswer("familyName"),
   ].filter(Boolean).join(" ") || null;
   const email = tokenEmail || canonicalAnswer("email");
   const phoneE164 = tokenPhone || canonicalAnswer("phoneNumber");
-  const hasVerifiedIdentity = Boolean(request.auth?.uid);
+  const hasVerifiedIdentity = Boolean(auth?.uid);
   const hasOrganizerAcquiredIdentity = Boolean(
     displayName || email || phoneE164
   );
