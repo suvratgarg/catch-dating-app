@@ -82,6 +82,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
 
 class _HostSavedAudienceEditorForm extends ConsumerStatefulWidget {
   const _HostSavedAudienceEditorForm({
+    super.key,
     required this.organizerId,
     required this.initialAudience,
     this.onSaved,
@@ -106,6 +107,8 @@ class _HostSavedAudienceEditorFormState
   String? _pendingCreateRequestId;
   bool _busy = false;
   Object? _previewError;
+  bool _previewFailedAfterSave = false;
+  HostSavedAudience? _previewAudience;
   late bool _static;
   late Set<String> _selectedIds;
 
@@ -353,11 +356,13 @@ class _HostSavedAudienceEditorFormState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              context.l10n.hostAudienceSavedPreviewFailed,
-                              style: CatchTextStyles.recordTitle(context),
-                            ),
-                            gapH8,
+                            if (_previewFailedAfterSave) ...[
+                              Text(
+                                context.l10n.hostAudienceSavedPreviewFailed,
+                                style: CatchTextStyles.recordTitle(context),
+                              ),
+                              gapH8,
+                            ],
                             CatchLocalizedErrorState(
                               error,
                               context: AppErrorContext.customers,
@@ -366,7 +371,7 @@ class _HostSavedAudienceEditorFormState
                           ],
                         ),
                       ),
-                    if (_audience case final audience?)
+                    if ((_previewAudience ?? _audience) case final audience?)
                       CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
@@ -458,6 +463,7 @@ class _HostSavedAudienceEditorFormState
       if (!mounted) return;
       setState(() {
         _audience = saved;
+        _previewAudience = null;
         _pendingCreateRequestId = null;
         _previewError = null;
       });
@@ -478,7 +484,10 @@ class _HostSavedAudienceEditorFormState
       }
     } on Object catch (error) {
       if (mounted && savedSuccessfully) {
-        setState(() => _previewError = error);
+        setState(() {
+          _previewError = error;
+          _previewFailedAfterSave = savedSuccessfully;
+        });
       } else if (mounted) {
         showCatchNoticeError(
           context,
@@ -498,22 +507,28 @@ class _HostSavedAudienceEditorFormState
     try {
       final preview = await ref
           .read(hostAudienceControllerProvider)
-          .previewAudience(organizerId: widget.organizerId, audience: audience);
+          .refreshAudiencePreview(
+            organizerId: widget.organizerId,
+            audience: audience,
+            isCurrent: () => mounted,
+          );
+      if (!mounted) return;
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
       if (mounted) {
         setState(() {
-          _audience = preview.audience;
+          // Membership refresh does not rebase the editable draft. Save keeps
+          // its original expectedRevision so concurrent edits still conflict.
+          _previewAudience = preview.audience;
           _previewError = null;
         });
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.customers,
-        );
+        setState(() {
+          _previewError = error;
+          _previewFailedAfterSave = false;
+        });
       }
     } finally {
       if (mounted) setState(() => _busy = false);

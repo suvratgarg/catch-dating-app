@@ -21,17 +21,33 @@ class HostSavedAudienceMembersState {
 @riverpod
 class HostSavedAudienceMembersController
     extends _$HostSavedAudienceMembersController {
+  int _generation = 0;
+  bool _hasBuilt = false;
+
   @override
   Future<HostSavedAudienceMembersState> build(
     HostSavedAudience audience,
   ) async {
-    final preview = await ref
-        .read(hostSavedAudienceRepositoryProvider)
-        .previewSavedAudience(
-          organizerId: audience.organizerId,
-          audience: audience,
-          sampleLimit: 25,
-        );
+    final generation = ++_generation;
+    final operationRef = ref;
+    final reload = _hasBuilt;
+    _hasBuilt = true;
+    final repository = ref.read(hostSavedAudienceRepositoryProvider);
+    final authoritative = reload
+        ? await repository.reloadSavedAudience(
+            organizerId: audience.organizerId,
+            audienceId: audience.audienceId,
+            isCurrent: () => operationRef.mounted && generation == _generation,
+          )
+        : audience;
+    if (!operationRef.mounted || generation != _generation) {
+      throw StateError('Saved group refresh was superseded.');
+    }
+    final preview = await repository.previewSavedAudience(
+      organizerId: authoritative.organizerId,
+      audience: authoritative,
+      sampleLimit: 25,
+    );
     return HostSavedAudienceMembersState(
       preview: preview,
       members: preview.sample,
@@ -39,12 +55,16 @@ class HostSavedAudienceMembersController
   }
 
   Future<void> loadMore() async {
+    // A refresh can retain old AsyncData. It does not own a usable cursor.
+    if (state.isLoading || state.hasError) return;
     final current = state.asData?.value;
     if (current == null ||
         current.loadingMore ||
         current.preview.nextCursor == null) {
       return;
     }
+    final generation = _generation;
+    final operationRef = ref;
     state = AsyncData(
       HostSavedAudienceMembersState(
         preview: current.preview,
@@ -57,11 +77,11 @@ class HostSavedAudienceMembersController
           .read(hostSavedAudienceRepositoryProvider)
           .previewSavedAudience(
             organizerId: audience.organizerId,
-            audience: audience,
+            audience: current.preview.audience,
             sampleLimit: 25,
             cursor: current.preview.nextCursor,
           );
-      if (!ref.mounted) return;
+      if (!operationRef.mounted || generation != _generation) return;
       state = AsyncData(
         HostSavedAudienceMembersState(
           preview: page,
@@ -69,7 +89,7 @@ class HostSavedAudienceMembersController
         ),
       );
     } on Object catch (error) {
-      if (!ref.mounted) return;
+      if (!operationRef.mounted || generation != _generation) return;
       state = AsyncData(
         HostSavedAudienceMembersState(
           preview: current.preview,
