@@ -159,7 +159,7 @@ test("partner nomination uses Firestore timestamps through the existing employee
     startAfter(...args: unknown[]) {cursor = args; return this;},
     get: async () => ({docs: [document, document], size: 2})};
   const db = {collection: () => query} as unknown as FirebaseFirestore.Firestore;
-  const principal = {uid: employee.uid, clientId: null} as Parameters<typeof listSalesInboundIntents>[1];
+  const principal: Parameters<typeof listSalesInboundIntents>[1] = {uid: employee.uid, roles: ["admin"]};
   const page = await listSalesInboundIntents(db, principal, {limit: 1});
   assert.equal((page.rows as Array<Record<string, unknown>>)[0].createdAt, initial);
   assert.equal((page.rows as Array<Record<string, unknown>>)[0].source, "partner");
