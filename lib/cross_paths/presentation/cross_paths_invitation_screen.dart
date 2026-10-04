@@ -476,7 +476,10 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
               variant: CatchButtonVariant.secondary,
               onPressed: () => context.pushNamed(
                 Routes.eventDetailScreen.name,
-                pathParameters: {'eventId': widget.event.id},
+                pathParameters: {
+                  'clubId': widget.event.clubId,
+                  'eventId': widget.event.id,
+                },
                 extra: widget.event,
               ),
             ),
