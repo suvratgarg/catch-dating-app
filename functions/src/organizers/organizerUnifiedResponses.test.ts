@@ -22,7 +22,7 @@ const defaults: Query = {organizerId: "org", formId: null, versionId: null,
 function response(id: string, time: number): Data {
   return {[`organizerFormResponses/${id}`]: {
     organizerId: "org", formId: "form", versionId: "v1",
-    status: "submitted", submittedAt: timestamp(time),
+    draftId: `draft-${id}`, status: "submitted", submittedAt: timestamp(time),
     answerSnapshots: [], withdrawnAt: null,
     respondentUid: null, identityKind: "anonymous", sourceLinkId: null,
     identity: {displayName: id, searchName: id, email: null, phoneE164: null,
@@ -370,6 +370,7 @@ test("completed kinds remain bounded and complete beyond 200 receipts",
     const detail = await getOrganizerFormResponseDetailHandler({
       data: {organizerId: "org", responseId: "early"}, auth: {uid: "owner"},
     } as CallableRequest<unknown>, deps);
+    assert.equal(detail.payment, null);
     assert.deepEqual(detail.response.conversionKinds, ["crmContact"]);
     assert.ok((reads.get("query:organizerFormConversionReceipts") ?? 0) <= 4);
   });
