@@ -17,6 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('recipient sees accept and decline actions', (tester) async {
@@ -143,8 +144,7 @@ void main() {
         expect(tester.takeException(), isNull);
 
         await tester.tap(find.text('See the event'));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
+        await pumpFeatureUi(tester);
 
         expect(tester.takeException(), isNull);
         expect(find.byKey(const ValueKey('event-destination')), findsOneWidget);
