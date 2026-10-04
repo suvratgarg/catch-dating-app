@@ -5819,6 +5819,90 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "organizerApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "formVersionId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "formVersionId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "submittedAt",
+          "mode": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormConversionReceipts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "responseId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "kind",
+          "mode": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
