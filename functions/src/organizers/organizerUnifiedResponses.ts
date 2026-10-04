@@ -178,7 +178,7 @@ async function loadApplications(db: FirebaseFirestore.Firestore,
       "Narrow the form or version filters.");
   }
   // Bound before hydration; share immutable versions and read each source,
-  // grant and canonical origin once within this request. No cross-request cache.
+  // grant and canonical origin once per request. No cross-request cache.
   const refs = new Map<string, FirebaseFirestore.DocumentReference>();
   const add = (collection: string, id: string) => {
     const ref = db.collection(collection).doc(id);
@@ -194,7 +194,8 @@ async function loadApplications(db: FirebaseFirestore.Firestore,
       add("organizerFormResponses", app.latestResponseId);
       add("organizerFormVersions", app.formVersionId);
     } else if (app.source.kind === "native") {
-      add("participantOrganizerDataGrants", participantOrganizerGrantId(doc.id));
+      add("participantOrganizerDataGrants",
+        participantOrganizerGrantId(doc.id));
     }
     add("organizerContactOrigins", organizerContactOriginId({organizerId,
       sourceKind: "hostForm", sourceEntityKind: generic ?
@@ -204,7 +205,8 @@ async function loadApplications(db: FirebaseFirestore.Firestore,
   const snapshots = new Map<string, FirebaseFirestore.DocumentSnapshot>();
   const pending = [...refs.values()];
   for (let offset = 0; offset < pending.length; offset += scanPageSize) {
-    const docs = await db.getAll(...pending.slice(offset, offset + scanPageSize));
+    const docs = await db.getAll(
+      ...pending.slice(offset, offset + scanPageSize));
     for (const doc of docs) snapshots.set(doc.ref.path, doc);
   }
   const read = async (collection: string, id: string) => {

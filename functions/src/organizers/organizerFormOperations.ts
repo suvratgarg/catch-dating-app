@@ -625,8 +625,10 @@ function responseRow(
 
 // Exhaustive against the generated contract: adding a kind requires its
 // existence query here. Duplicate receipts never increase hydration work.
-const conversionKindSet: Record<ResponseRow["conversionKinds"][number], true> = {
-  crmContact: true, application: true, eventAttendeeProposal: true, followUp: true,
+const conversionKindSet:
+  Record<ResponseRow["conversionKinds"][number], true> = {
+  crmContact: true, application: true,
+  eventAttendeeProposal: true, followUp: true,
 };
 
 async function completedConversionKinds(
@@ -634,7 +636,8 @@ async function completedConversionKinds(
   organizerId: string,
   responseId: string
 ): Promise<ResponseRow["conversionKinds"]> {
-  const kinds = Object.keys(conversionKindSet) as ResponseRow["conversionKinds"];
+  const kinds = Object.keys(conversionKindSet) as
+    ResponseRow["conversionKinds"];
   const present = await Promise.all(kinds.map(async (kind) => {
     const snapshot = await db.collection("organizerFormConversionReceipts")
       .where("organizerId", "==", organizerId)

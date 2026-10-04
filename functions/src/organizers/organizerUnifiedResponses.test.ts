@@ -161,7 +161,8 @@ test("withdrawal after hydration wins over the earlier access summary",
           docs["organizerFormResponses/native"].status = "withdrawn";
         }
       });
-    assert.deepEqual(result.entries?.map((r) => r.entryId), ["response:native"]);
+    assert.deepEqual(result.entries?.map((r) => r.entryId),
+      ["response:native"]);
     assert.equal(result.entries?.[0].application?.dataAccessState,
       "revokedParticipantGrant");
     assert.equal(result.entries?.[0].application?.sourceResponseId, null);
@@ -359,7 +360,9 @@ test("completed kinds remain bounded and complete beyond 200 receipts",
     const reads = new Map<string, number>();
     const deps = {firestore: () => fakeDb(docs, reads),
       checkRateLimit: async () => undefined,
-      timestamp: () => timestamp(0), storageBucket: () => { throw Error(); }};
+      timestamp: () => timestamp(0), storageBucket: () => {
+        throw Error();
+      }};
     const result = await listOrganizerFormResponsesHandler({
       data: {...defaults, formId: "form"}, auth: {uid: "owner"},
     } as CallableRequest<unknown>, deps);
