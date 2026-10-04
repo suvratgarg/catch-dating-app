@@ -3068,7 +3068,7 @@
       ],
       "checks": [
         "node --check tool/demo/demo_ops.mjs",
-        "node --test tool/demo/demo_ops_core.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
+        "node --test tool/demo/demo_ops_core.test.mjs tool/demo/demo_provenance.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
         "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
       ],
       "role": "generator"
@@ -3095,16 +3095,18 @@
       "id": "demo:ops-core",
       "category": "demo",
       "path": "tool/demo/demo_ops_core.mjs",
-      "command": "node --test tool/demo/demo_ops_core.test.mjs",
+      "command": "node --test tool/demo/demo_ops_core.test.mjs tool/demo/demo_provenance.test.mjs",
       "safety": "local-test",
       "status": "internal",
       "description": "Shared planning and Firestore helpers for demo operations.",
       "impactPaths": [
         "tool/demo/demo_ops_core.mjs",
-        "tool/demo/demo_ops_core.test.mjs"
+        "tool/demo/demo_ops_core.test.mjs",
+        "tool/demo/demo_provenance.test.mjs"
       ],
       "checks": [
-        "node --check tool/demo/demo_ops_core.mjs"
+        "node --check tool/demo/demo_ops_core.mjs",
+        "node --test tool/demo/demo_ops_core.test.mjs tool/demo/demo_provenance.test.mjs"
       ]
     },
     {

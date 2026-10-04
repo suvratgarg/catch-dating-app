@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
+import {syntheticMatchMessagePaths} from "./demo_ops_core.mjs";
 import {isDeepStrictEqual} from "node:util";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
@@ -3304,6 +3305,7 @@ async function resetSyntheticData({db: firestore, manifestId, seedPrefix, fallba
   const orphanMessagePaths = await syntheticMatchMessagePaths({
     db: firestore,
     seedPrefix,
+    ownership: manifestSnap.exists ? manifestSnap.data() : null,
   });
   const paths = [...new Set([
     ...manifestPaths,
@@ -3323,13 +3325,6 @@ async function resetSyntheticData({db: firestore, manifestId, seedPrefix, fallba
     deleted,
     source: manifestSnap.exists ? `seedEvents/${manifestId}` : "current generated plan",
   };
-}
-
-async function syntheticMatchMessagePaths({db: firestore, seedPrefix}) {
-  const snap = await firestore.collectionGroup("messages").get();
-  return snap.docs
-    .filter((doc) => doc.ref.parent.parent?.id.includes(seedPrefix))
-    .map((doc) => doc.ref.path);
 }
 
 async function applyWritePlan({db: firestore, docs}) {

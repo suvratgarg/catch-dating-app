@@ -218,20 +218,8 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
 
   const plan = await buildResetUserDemoStatePlan({db, phone: "+910000000001"});
 
-  assert.deepEqual([...plan.paths].sort(), [
-    "demoOpsEvents/op_1",
-    "eventParticipations/demo_run_uid_a",
-    "matches/match_1",
-    "matches/match_1/messages/demo_message",
-    "matches/match_1/messages/dogfood_message",
-    "notifications/uid_a/items/demo",
-    "notifications/uid_a/items/trigger_owned",
-    "payments/demo_payment",
-    "savedEvents/demo_saved",
-    "savedEvents/from_manifest",
-    "profileDecisions/uid_a/outgoing/uid_b",
-    "profileDecisions/uid_b/outgoing/uid_a",
-  ].sort());
+  assert.deepEqual(plan.paths, []);
+  assert.ok(plan.retained.some((row) => row.path === "savedEvents/from_manifest"));
 });
 
 test("validate report surfaces demo readiness gaps", async () => {
@@ -468,8 +456,6 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
   assert.deepEqual(plan.paths, [
     "crossPathsShowcaseEligibility/demo_beta_2026_candidate",
     "eventCrossPathsConsents/demo_beta_2026_event_demo_beta_2026_candidate",
-    "matches/match_1",
-    "matches/match_1/messages/message_1",
     "notifications/real_user/items/demo",
     "profileDecisions/real_user/outgoing/demo_ops_2026_user",
     "users/demo_ops_2026_user",
@@ -606,9 +592,6 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
     "eventParticipations/p1",
     "events/demo_cancelled",
     "events/demo_past",
-    "matches/match_1",
-    "matches/match_1/messages/m1",
-    "notifications/uid_a/items/match_note",
     "notifications/uid_a/items/run_note",
     "payments/payment",
     "reviews/review",
@@ -721,6 +704,7 @@ function fakeFirestore(initialData) {
   const data = structuredClone(initialData);
   return {
     data,
+    doc: (path) => documentRef(data, path),
     collection: (collectionName) => collectionRef(data, collectionName),
     collectionGroup: (collectionId) => collectionGroupQuery(data, collectionId),
   };
