@@ -316,7 +316,9 @@ export function usePublicFormController(publicFormId: string) {
           (section) => section.questions).find((question) =>
           question.canonicalFieldId === "phoneNumber" &&
           question.kind === "phone");
-        if (canonicalPhoneQuestion && userRef.current?.phoneNumber) {
+        if (started.identityKind !== "anonymous" &&
+            nextForm.definition.identityPolicy !== "anonymous" &&
+            canonicalPhoneQuestion && userRef.current?.phoneNumber) {
           mergedAnswers[canonicalPhoneQuestion.questionId] =
             userRef.current.phoneNumber;
         }
@@ -1080,7 +1082,8 @@ function normalizePhone(value: string) {
 
 function hasMessagingEndpoint(form: PublicOrganizerForm,
   answers: PublicFormAnswers, verifiedPhone: string | null): boolean {
-  if (verifiedPhone && /^\+[1-9][0-9]{6,14}$/u.test(verifiedPhone)) {
+  if (form.definition.identityPolicy !== "anonymous" &&
+      verifiedPhone && /^\+[1-9][0-9]{6,14}$/u.test(verifiedPhone)) {
     return true;
   }
   const question = form.definition.sections.flatMap((section) =>

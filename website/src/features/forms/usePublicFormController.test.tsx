@@ -847,3 +847,47 @@ describe("explicit organizer-answer reuse", () => {
     expect(submitOrganizerFormResponse).toHaveBeenCalledOnce();
   });
 });
+
+describe("anonymous contact defaults", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  it.each(["anonymous", "phoneVerified"])(
+    "keeps the %s policy on account changes and preserves deliberate contact",
+    async (policy) => {
+      let authChanged!: (user: {uid: string; phoneNumber: string} | null) => void;
+      watchPublicFormAuthState.mockImplementation((listener) => {
+        authChanged = listener;
+        listener({uid: "person-1", phoneNumber: "+919876543210"});
+        return vi.fn();
+      });
+      const phone: PublicFormQuestion = {...photoQuestion, questionId: "phone",
+        key: "phone", label: "Phone", kind: "phone", required: false,
+        canonicalFieldId: "phoneNumber"};
+      const configured = {...form, definition: {...form.definition,
+        identityPolicy: policy, sections: [{sectionId: "details", title: "Details",
+          questions: [phone]}]}};
+      getPublicOrganizerForm.mockResolvedValue(configured);
+      beginOrganizerFormResponse.mockResolvedValue({...draft, form: configured,
+        identityKind: policy, draftToken: policy === "anonymous" ? "bearer" : null});
+      const view = renderHook(() => usePublicFormController("public-form-1"),
+        {wrapper: wrapper()});
+      await waitFor(() => expect(view.result.current.stage).toBe("form"));
+      expect(view.result.current.answers.phone).toBe(
+        policy === "anonymous" ? undefined : "+919876543210");
+      expect(view.result.current.canReuseAnswers).toBe(false);
+      expect(view.result.current.messagingEndpointAvailable).toBe(policy !== "anonymous");
+      act(() => authChanged({uid: "person-2", phoneNumber: "+919876543211"}));
+      await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(view.result.current.stage).toBe("form"));
+      expect(view.result.current.form?.definition.identityPolicy).toBe(policy);
+      expect(view.result.current.answers.phone).toBe(
+        policy === "anonymous" ? undefined : "+919876543211");
+      act(() => view.result.current.updateAnswer(phone.questionId, "+919000000002"));
+      expect(view.result.current.answers.phone).toBe("+919000000002");
+      view.unmount();
+    });
+});
