@@ -25,6 +25,7 @@ import type {
 import {
   buildOrganizerAttentionProjectionPlan,
   listOrganizerAttentionItemsHandler,
+  loadOrganizerAttentionSources,
   maxAttentionSourceRows,
   parseDeliveryReviewAttentionSource,
 } from "./organizerAttention";
@@ -591,6 +592,313 @@ test("callable fails closed instead of returning a partial queue", async () => {
       error.code === "resource-exhausted"
   );
 });
+
+// Exercise the real loader: selecting terminal state only in the policy
+// cannot prevent a truncated organizer-wide history scan from failing first.
+for (const historyCount of [400, 401, 1000]) {
+  test(`loader keeps attention available with ${historyCount} successes`,
+    async () => {
+      const fixture = attentionLoaderFixture({
+        organizerFormAutomationRules: [
+          row("rule-1", automationRule(), nowMillis),
+        ],
+        organizerFormAutomationRuns: Array.from(
+          {length: historyCount},
+          (_, i) => row(
+            `success-${String(i).padStart(4, "0")}`,
+            automationRun({
+              status: "succeeded", updatedAtMillis: nowMillis - i * 1000,
+            }),
+            nowMillis - i * 1000
+          )),
+        organizerApplications: [row("application-1", application(), nowMillis)],
+      });
+      const sources = await loadOrganizerAttentionSources(
+        fixture.db, "organizer-1", timestamp(nowMillis)
+      );
+      const items = deriveOrganizerAttentionItems({
+        organizerId: "organizer-1", nowMillis, sources,
+      });
+      assert.ok(items.some((item) => item.kind === "applicationReview"));
+      assert.equal(items.some((item) => item.kind === "formAutomationFailure"),
+        false);
+      assert.equal(sources.automationRuns.length, 1);
+      assert.equal(fixture.reads.filter((read) =>
+        read.collection === "organizerFormAutomationRuns")
+        .reduce((sum, read) => sum + read.rows, 0), 1);
+    });
+}
+
+test("loader selects current terminal state by enabled rule, form and revision",
+  async () => {
+    const rule = automationRule();
+    const run = automationRun();
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: [
+        row("rule-1", rule, nowMillis),
+        row("disabled", {...rule, enabled: false}, nowMillis),
+        row("no-terminal", rule, nowMillis),
+      ],
+      organizerFormAutomationRuns: [
+        row("a-failure", {...run, status: "failed"}, nowMillis),
+        row("z-success", {...run, status: "succeeded"}, nowMillis),
+        row("newer-running", automationRun({
+          status: "running", updatedAtMillis: nowMillis,
+        }), nowMillis),
+        row("wrong-form", {...run, formId: "other-form",
+          updatedAt: timestamp(nowMillis + 1)}, nowMillis + 1),
+        row("old-revision", {...run, ruleRevision: 1,
+          updatedAt: timestamp(nowMillis + 1)}, nowMillis + 1),
+        row("disabled-failure", {...run, ruleId: "disabled",
+          updatedAt: timestamp(nowMillis + 1)}, nowMillis + 1),
+        row("wrong-organizer", {...run, organizerId: "other",
+          updatedAt: timestamp(nowMillis + 1)}, nowMillis + 1),
+        row("pending-only", {...run, ruleId: "no-terminal", status: "pending"},
+          nowMillis),
+      ],
+    });
+    const sources = await loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    );
+    assert.deepEqual(sources.automationRules.map((rule) => rule.id),
+      ["rule-1", "no-terminal"]);
+    assert.deepEqual(sources.automationRuns.map((run) => run.id),
+      ["z-success"]);
+    assert.equal(deriveOrganizerAttentionItems({
+      organizerId: "organizer-1", nowMillis, sources,
+    }).some((item) => item.kind === "formAutomationFailure"), false);
+    const reads = fixture.reads.filter((read) =>
+      read.collection === "organizerFormAutomationRuns");
+    assert.equal(reads.length, 2);
+    assert.ok(reads.every((read) => read.limit === 1));
+  });
+
+for (const terminal of ["succeeded", "skipped"] as const) {
+  test(`loader newer ${terminal} resolves an older failure`, async () => {
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: [
+        row("rule-1", automationRule(), nowMillis),
+      ],
+      organizerFormAutomationRuns: [
+        row("z-failure", automationRun({status: "failed"}), nowMillis),
+        row("a-resolution", automationRun({
+          status: terminal, updatedAtMillis: nowMillis,
+        }), nowMillis),
+      ],
+    });
+    const sources = await loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    );
+    assert.deepEqual(sources.automationRuns.map((run) => run.id),
+      ["a-resolution"]);
+    assert.equal(deriveOrganizerAttentionItems({
+      organizerId: "organizer-1", nowMillis, sources,
+    }).some((item) => item.kind === "formAutomationFailure"), false);
+  });
+}
+
+test("loader orders terminal state by update time rather than creation time",
+  async () => {
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: [
+        row("rule-1", automationRule(), nowMillis),
+      ],
+      organizerFormAutomationRuns: [
+        row("z-new-created-failure", automationRun({
+          status: "failed", updatedAtMillis: nowMillis - 1000,
+        }), nowMillis - 1000),
+        row("a-retried-success", {...automationRun({
+          status: "succeeded", updatedAtMillis: nowMillis,
+        }), createdAt: timestamp(nowMillis - 3 * hourMillis)}, nowMillis),
+      ],
+    });
+    const sources = await loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    );
+    assert.deepEqual(sources.automationRuns.map((run) => run.id),
+      ["a-retried-success"]);
+  });
+
+test("loader retains tied winning failures and organizer-wide null-form rules",
+  async () => {
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: [row("rule-1", {
+        ...automationRule(), formId: null,
+      }, nowMillis)],
+      organizerFormAutomationRuns: [
+        row("a-success", {
+          ...automationRun({status: "succeeded"}), formId: null,
+        },
+        nowMillis),
+        row("z-failure", {...automationRun({status: "failed"}), formId: null},
+          nowMillis),
+      ],
+    });
+    const sources = await loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    );
+    const failures = deriveOrganizerAttentionItems({
+      organizerId: "organizer-1", nowMillis, sources,
+    }).filter((item) => item.kind === "formAutomationFailure");
+    assert.equal(failures.length, 1);
+    assert.equal(failures[0].sourceId, "z-failure");
+    assert.equal(failures[0].scope, "organizer");
+  });
+
+test("loader bounds enabled rules and does not query historical disabled rules",
+  async () => {
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: Array.from({length: 1000}, (_, i) =>
+        row(`disabled-${i}`, automationRule({enabled: false}), nowMillis)),
+      organizerFormAutomationRuns: [row("failed", automationRun(), nowMillis)],
+    });
+    const sources = await loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    );
+    assert.deepEqual(sources.automationRules, []);
+    assert.deepEqual(sources.automationRuns, []);
+    assert.equal(fixture.reads.some((read) =>
+      read.collection === "organizerFormAutomationRuns"), false);
+    for (const count of [400, 401]) {
+      const enabled = attentionLoaderFixture({
+        organizerFormAutomationRules: Array.from({length: count}, (_, i) =>
+          row(`rule-${i}`, automationRule(), nowMillis)),
+      });
+      if (count === 400) {
+        const loaded = await loadOrganizerAttentionSources(
+          enabled.db, "organizer-1", timestamp(nowMillis)
+        );
+        assert.equal(loaded.automationRules.length, 400);
+        assert.equal(enabled.reads.filter((read) =>
+          read.collection === "organizerFormAutomationRuns").length, 400);
+        assert.equal(enabled.maxRunConcurrency, 10);
+      } else {
+        await assert.rejects(loadOrganizerAttentionSources(
+          enabled.db, "organizer-1", timestamp(nowMillis)
+        ), (error: unknown) => error instanceof HttpsError &&
+          error.code === "resource-exhausted");
+        assert.equal(enabled.reads.some((read) =>
+          read.collection === "organizerFormAutomationRuns"), false);
+      }
+    }
+  });
+
+test("terminal query failure cannot reconcile or return complete coverage",
+  async () => {
+    const queryError = new Error("Required Firestore index is unavailable.");
+    const fixture = attentionLoaderFixture({
+      organizerFormAutomationRules: [
+        row("rule-1", automationRule(), nowMillis),
+      ],
+    }, queryError);
+    await assert.rejects(listOrganizerAttentionItemsHandler(request(), {
+      firestore: () => fixture.db,
+      checkRateLimit: async () => undefined,
+      requireManager: async () => undefined,
+      timestamp: () => timestamp(nowMillis),
+      loadSources: loadOrganizerAttentionSources,
+      reconcile: async () => {
+        return assert.fail("incomplete source must not reconcile");
+      },
+    }), (error: unknown) => error === queryError);
+  });
+
+// An immutable query double applies filters, ordering and limits against
+// history instead of returning an already-selected hand-built snapshot.
+function attentionLoaderFixture(
+  collections: Record<string, Array<AttentionSourceRow<unknown>>>,
+  runError?: Error
+) {
+  type Read = {collection: string; limit: number; rows: number};
+  const reads: Read[] = [];
+  let activeRunReads = 0;
+  let maxRunConcurrency = 0;
+  type Filter = {field: string; operator: string; value: unknown};
+  type Order = {field: string; direction: string};
+  function valueAt(data: unknown, field: string): unknown {
+    return field.split(".").reduce<unknown>((value, key) =>
+      (value as Record<string, unknown> | undefined)?.[key], data);
+  }
+  function comparable(value: unknown): string | number | null {
+    if (value &&
+        typeof (value as {toMillis?: unknown}).toMillis === "function") {
+      return (value as FirebaseFirestore.Timestamp).toMillis();
+    }
+    return value as string | number | null;
+  }
+  function query(collection: string, filters: Filter[] = [],
+    orders: Order[] = [], limit = Number.POSITIVE_INFINITY): unknown {
+    return {
+      doc: (id: string) => ({get: async () => ({
+        id, exists: collection === "organizers",
+        data: () => ({}), updateTime: timestamp(nowMillis),
+      })}),
+      where: (field: string, operator: string, value: unknown) =>
+        query(collection, [...filters, {field, operator, value}],
+          orders, limit),
+      orderBy: (field: string | FirebaseFirestore.FieldPath,
+        direction = "asc") => query(collection, filters, [...orders, {
+        field: typeof field === "string" ? field : "__name__", direction,
+      }], limit),
+      limit: (count: number) => query(collection, filters, orders, count),
+      get: async () => {
+        const isRunQuery = collection === "organizerFormAutomationRuns";
+        if (isRunQuery) {
+          activeRunReads++;
+          maxRunConcurrency = Math.max(maxRunConcurrency, activeRunReads);
+        }
+        try {
+          // A query remains in flight until the next event-loop turn, so the
+          // 400-rule fixture measures the loader's actual parallel fanout.
+          if (isRunQuery) {
+            await new Promise<void>((resolve) => setImmediate(resolve));
+          }
+          if (collection === "organizerFormAutomationRuns" && runError) {
+            throw runError;
+          }
+          let selected = (collections[collection] ?? []).filter((row) =>
+            filters.every(({field, operator, value}) => {
+              const actual = valueAt(row.data, field);
+              if (operator === "==") return actual === value;
+              if (operator === "in") {
+                return (value as unknown[]).includes(actual);
+              }
+              if (operator === ">") {
+                return comparable(actual)! > comparable(value)!;
+              }
+              throw new Error(`Unsupported operator ${operator}`);
+            }));
+          selected = [...selected].sort((a, b) => {
+            for (const {field, direction} of orders) {
+              const left = comparable(field === "__name__" ? a.id :
+                valueAt(a.data, field));
+              const right = comparable(field === "__name__" ? b.id :
+                valueAt(b.data, field));
+              const result = left === right ? 0 : left! > right! ? 1 : -1;
+              if (result) return direction === "desc" ? -result : result;
+            }
+            return 0;
+          }).slice(0, limit);
+          reads.push({collection, limit, rows: selected.length});
+          return {size: selected.length, docs: selected.map((row) => ({
+            id: row.id, exists: true, data: () => row.data,
+            updateTime: timestamp(row.sourceUpdatedAtMillis),
+          }))};
+        } finally {
+          if (isRunQuery) activeRunReads--;
+        }
+      },
+    };
+  }
+  return {
+    db: {collection: (name: string) => query(name)} as unknown as
+      FirebaseFirestore.Firestore,
+    reads,
+    get maxRunConcurrency() {
+      return maxRunConcurrency;
+    },
+  };
+}
 
 function sourceFixture(): OrganizerAttentionSources {
   const sources = emptySources();
