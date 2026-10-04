@@ -123,6 +123,23 @@ class HostAudienceController {
     audience: audience,
   );
 
+  Future<HostSavedAudiencePreview> refreshAudiencePreview({
+    required String organizerId,
+    required HostSavedAudience audience,
+    required bool Function() isCurrent,
+  }) async {
+    final authoritative = await _savedAudiences.reloadSavedAudience(
+      organizerId: organizerId,
+      audienceId: audience.audienceId,
+      isCurrent: isCurrent,
+    );
+    if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+    return _savedAudiences.previewSavedAudience(
+      organizerId: organizerId,
+      audience: authoritative,
+    );
+  }
+
   Future<HostSavedAudience> archiveAudience({
     required String organizerId,
     required HostSavedAudience audience,
