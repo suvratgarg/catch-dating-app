@@ -118,7 +118,8 @@ for (const signedIn of [false, true]) {
           actorUid: "host", organizerId: "org", formId: "form",
           versionId: "version"},
         {organizerId: "org", formId: "form", versionId: "version",
-          statuses: ["submitted"], predicate: null, sort: null,
+          statuses: ["submitted"], predicate: null,
+          sort: {questionId: null, direction: "asc", nulls: "last"},
           limit: 10, cursor: null});
         assert.deepEqual(typed.items[0].identity,
           {displayName: identity.displayName, email: identity.email,
