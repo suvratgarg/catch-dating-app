@@ -117,7 +117,7 @@ export function buildDemoMarker({admin, command, operationId, seedPrefix, now}) 
   return {
     demoOps: true,
     demoOpsCommand: command,
-    demoOpsId: operationId,
+    demoOpsId: `${operationId}__run_${now.getTime()}`,
     seedPrefix,
     synthetic: true,
     createdAt: timestampFromDate(admin, now),
@@ -274,6 +274,7 @@ export function buildMatchDoc({admin, marker, uidA, uidB, eventId, now}) {
     path: `matches/${matchIdFor(uidA, uidB)}`,
     data: {
       ...marker,
+      demoOpsCommand: "owned-match-v1",
       demoOpsEntityType: "matchThread",
       demoOpsDisposalPolicy: "deleteThreadWithMessages",
       user1Id,
@@ -773,7 +774,7 @@ export function buildSuvbotDocs({admin, marker, uid, now}) {
       path: `matches/${matchId}`,
       data: {
         ...marker,
-        demoOpsCommand: "suvbot-thread",
+        demoOpsCommand: "owned-match-v1",
         user1Id: SUVBOT_UID,
         user2Id: uid,
         eventIds: ["suvbot"],
@@ -1056,6 +1057,9 @@ export async function buildUnreadMessagePlan({
   if (!matchSnap.exists) {
     throw new Error(`Missing matches/${matchId}. Event match-phones first.`);
   }
+  if (!isDisposableDemoMatch(matchSnap.data())) {
+    throw new Error(`Refusing demo message in unproven matches/${matchId}.`);
+  }
   const operationId = demoOperationId({
     command: "unread_message",
     seedPrefix,
@@ -1078,6 +1082,8 @@ export async function buildUnreadMessagePlan({
       path: `matches/${matchId}/messages/${operationId}_msg_01`,
       data: {
         ...marker,
+        demoOpsId: matchSnap.data().demoOpsId,
+        seedPrefix: matchSnap.data().seedPrefix,
         senderId: fromUser.uid,
         text,
         imageUrl: null,
@@ -1488,19 +1494,21 @@ export async function buildResetUserDemoStatePlan({db, phone, uid}) {
   const docs = [];
   const demoMatchIds = new Set();
 
-  await collectManifestPaths(db, docs, userId);
+  const retained = [];
+  await collectManifestPaths(db, docs, userId, retained);
   await collectTopLevelQueryPaths(db, docs, "clubMemberships", "uid", userId);
   await collectTopLevelQueryPaths(db, docs, "eventParticipations", "uid", userId);
   await collectTopLevelQueryPaths(db, docs, "userEventScheduleLocks", "uid", userId);
   await collectTopLevelQueryPaths(db, docs, "savedEvents", "uid", userId);
   await collectTopLevelQueryPaths(db, docs, "payments", "userId", userId);
-  await collectMatchPaths(db, docs, demoMatchIds, userId);
+  await collectMatchPaths(db, docs, demoMatchIds, userId, retained);
   await collectOutgoingSwipePaths(db, docs, userId);
   await collectIncomingSwipePaths(db, docs, userId);
   await collectNotificationPaths(db, docs, userId, demoMatchIds);
 
   return {
     command: "reset-user-demo-state",
+    retained,
     uid: userId,
     phone: resolved.phoneNumber ?? null,
     paths: [...new Set(docs)].sort(),
@@ -1508,35 +1516,62 @@ export async function buildResetUserDemoStatePlan({db, phone, uid}) {
   };
 }
 
-async function collectManifestPaths(db, docs, uid) {
+async function collectManifestPaths(db, docs, uid, retained) {
   const snap = await db.collection(DEMO_MANIFEST_COLLECTION)
     .where("users", "array-contains", uid)
     .get();
   for (const doc of snap.docs) {
     const data = doc.data();
-    if (Array.isArray(data.paths)) {
-      docs.push(...data.paths.filter((docPath) => !isSuvbotPath(docPath, uid)));
+    let complete = true;
+    for (const docPath of data.paths ?? []) {
+      if (isSuvbotPath(docPath, uid)) continue;
+      const expected = data.ownership?.[docPath];
+      const current = await db.doc(docPath).get();
+      const parentPath = matchParentPath({path: docPath});
+      const parent = parentPath != null ? await db.doc(parentPath).get() : null;
+      // Root disposal is not implied by an operation's historical path list.
+      const sharedRoot = /^(users|publicProfiles|clubs|organizers)\//u.test(docPath);
+      if (sharedRoot || !current.exists || !sameDemoRun(current.data(), expected) ||
+          (parent != null && (!parent.exists ||
+           !isDisposableDemoMatch(parent.data()) || !sameDemoRun(parent.data(), expected) ||
+           !sameMatchOrigins(parent.data(), data.ownership?.[parentPath]) ||
+           (docPath === parentPath && !sameMatchOrigins(parent.data(), expected))))) {
+        retained.push({path: docPath, reason: sharedRoot ? "shared-root" : "unproven-current-run"});
+        complete = false;
+        continue;
+      }
+      docs.push(docPath);
     }
-    if (!isSuvbotPath(doc.ref.path, uid)) docs.push(doc.ref.path);
+    if (complete && !isSuvbotPath(doc.ref.path, uid)) docs.push(doc.ref.path);
   }
 }
 
 async function collectTopLevelQueryPaths(db, docs, collectionName, field, value) {
   const snap = await db.collection(collectionName).where(field, "==", value).get();
   for (const doc of snap.docs) {
-    if (isDemoOwned(doc.data())) docs.push(doc.ref.path);
+    if (hasDemoRunOwnership(doc.data()) && docs.includes(doc.ref.path)) docs.push(doc.ref.path);
   }
 }
 
-async function collectMatchPaths(db, docs, demoMatchIds, uid) {
+async function collectMatchPaths(db, docs, demoMatchIds, uid, retained) {
   const snap = await db.collection("matches")
     .where("participantIds", "array-contains", uid)
     .get();
   for (const doc of snap.docs) {
     if (doc.id === `${SUVBOT_UID}_${uid}`) continue;
-    if (!isDemoOwned(doc.data())) continue;
-    demoMatchIds.add(doc.id);
+    if (!isDisposableDemoMatch(doc.data()) || !docs.includes(doc.ref.path)) continue;
     const messages = await doc.ref.collection("messages").get();
+    if (messages.docs.some((message) => hasAnyDemoMarker(message.data()) &&
+        !sameDemoRun(message.data(), doc.data()))) {
+      for (let index = docs.length - 1; index >= 0; index -= 1) {
+        if (docs[index] === doc.ref.path || docs[index].startsWith(`${doc.ref.path}/`)) {
+          retained.push({path: docs[index], reason: "mixed-message-origin"});
+          docs.splice(index, 1);
+        }
+      }
+      continue;
+    }
+    demoMatchIds.add(doc.id);
     for (const message of messages.docs) {
       docs.push(message.ref.path);
     }
@@ -1547,7 +1582,7 @@ async function collectMatchPaths(db, docs, demoMatchIds, uid) {
 async function collectOutgoingSwipePaths(db, docs, uid) {
   const snap = await db.collection("profileDecisions").doc(uid).collection("outgoing").get();
   for (const doc of snap.docs) {
-    if (isDemoOwned(doc.data())) docs.push(doc.ref.path);
+    if (hasDemoRunOwnership(doc.data()) && docs.includes(doc.ref.path)) docs.push(doc.ref.path);
   }
 }
 
@@ -1558,7 +1593,7 @@ async function collectIncomingSwipePaths(db, docs, uid) {
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
     for (const doc of outgoing.docs) {
       const data = doc.data();
-      if (data.targetId === uid && isDemoOwned(data)) docs.push(doc.ref.path);
+      if (data.targetId === uid && hasDemoRunOwnership(data) && docs.includes(doc.ref.path)) docs.push(doc.ref.path);
     }
   }
 }
@@ -1567,7 +1602,7 @@ async function collectNotificationPaths(db, docs, uid, demoMatchIds = new Set())
   const snap = await db.collection("notifications").doc(uid).collection("items").get();
   for (const doc of snap.docs) {
     const data = doc.data();
-    if (isDemoOwned(data) || demoMatchIds.has(data.matchId)) docs.push(doc.ref.path);
+    if (docs.includes(doc.ref.path) || demoMatchIds.has(data.matchId)) docs.push(doc.ref.path);
   }
 }
 
@@ -1819,6 +1854,7 @@ export async function buildLaunchCleanupPlan({
       if ((isDemoOwned(data) || hasDemoPrefix(doc.id, seedPrefixes)) &&
         !belongsToKeptSeed(data, doc.id, keepSeedPrefixes)) {
         if (collectionName === "matches") {
+          if (!isDisposableDemoMatch(data)) continue;
           const messages = await doc.ref.collection("messages").get();
           for (const message of messages.docs) paths.add(message.ref.path);
         }
@@ -1925,7 +1961,7 @@ export async function buildStaleEventCleanupPlan({
     const data = doc.data();
     const touchesStaleEvent = Array.isArray(data.eventIds) &&
       data.eventIds.some((eventId) => staleEventIds.has(eventId));
-    if (!touchesStaleEvent || !isDemoOwned(data)) continue;
+    if (!touchesStaleEvent || !isDisposableDemoMatch(data)) continue;
     staleDemoMatchIds.add(doc.id);
     const messages = await doc.ref.collection("messages").get();
     for (const message of messages.docs) paths.add(message.ref.path);
@@ -1985,12 +2021,142 @@ function belongsToKeptSeed(data, docId, keepSeedPrefixes) {
     data.eventIds.some((value) => hasDemoPrefix(value, keepSeedPrefixes));
 }
 
-export async function applyDocPlan({db, docs}) {
+// Versioned ownership is written only after the transactional create boundary.
+// Historical markers alone cannot distinguish an adopted real relationship.
+export function hasDemoRunOwnership(data) {
+  return data?.synthetic === true && data?.demoOps === true &&
+    typeof data.seedPrefix === "string" && data.seedPrefix.length > 0 &&
+    typeof data.demoOpsId === "string" && /__run_\d+$/u.test(data.demoOpsId);
+}
+
+function hasAnyDemoMarker(data) {
+  return data?.synthetic !== undefined || data?.demoOps !== undefined ||
+    data?.seedPrefix !== undefined || data?.demoOpsId !== undefined;
+}
+
+export function sameDemoRun(current, expected) {
+  return hasDemoRunOwnership(current) && hasDemoRunOwnership(expected) &&
+    current.seedPrefix === expected.seedPrefix &&
+    current.demoOpsId === expected.demoOpsId;
+}
+
+function sameMatchOrigins(current, expected) {
+  return current.user1Id === expected?.user1Id && current.user2Id === expected?.user2Id &&
+    JSON.stringify(current.participantIds) === JSON.stringify(expected?.participantIds) &&
+    JSON.stringify(current.eventIds) === JSON.stringify(expected?.eventIds);
+}
+
+export function isDisposableDemoMatch(data) {
+  return hasDemoRunOwnership(data) && data.demoOpsCommand === "owned-match-v1";
+}
+
+export async function syntheticMatchMessagePaths({db, seedPrefix, ownership}) {
+  const snap = await db.collectionGroup("messages").get();
+  const paths = [];
+  const parents = new Map();
+  for (const doc of snap.docs) {
+    const parentRef = doc.ref.parent.parent;
+    if (parentRef == null || !/^matches\/[^/]+$/u.test(parentRef.path)) continue;
+    if (!parents.has(parentRef.path)) parents.set(parentRef.path, await parentRef.get());
+    const parent = parents.get(parentRef.path);
+    const mixed = snap.docs.some((message) => message.ref.parent.parent?.path === parentRef.path &&
+      hasAnyDemoMarker(message.data?.()) && !sameDemoRun(message.data(), ownership));
+    if (!mixed && parent.exists && isDisposableDemoMatch(parent.data()) &&
+        parent.data().seedPrefix === seedPrefix && sameDemoRun(parent.data(), ownership)) {
+      paths.push(doc.ref.path);
+    }
+  }
+  return paths;
+}
+
+function matchParentPath(doc) {
+  const parts = doc.path.split("/");
+  if (parts[0] === "matches" && parts.length === 2) return doc.path;
+  if (parts[0] === "matches" && parts.length === 4 && parts[2] === "messages") {
+    return parts.slice(0, 2).join("/");
+  }
+  return null;
+}
+
+function relationshipParentPath(doc) {
+  const matchPath = matchParentPath(doc);
+  if (matchPath != null) return matchPath;
+  const parts = doc.path.split("/");
+  if (parts[0] === "profileDecisions" && parts.length === 4 && parts[2] === "outgoing") {
+    return `matches/${matchIdFor(parts[1], parts[3])}`;
+  }
+  return null;
+}
+
+export async function applyDocPlan({db, docs, merge = true}) {
+  // Keep all relationship writes and their companions in one transaction. A
+  // conflicting pair must fail before any swipe, message or notification write.
+  if (docs.some((doc) => relationshipParentPath(doc) != null)) {
+    if (docs.length > DEFAULT_MAX_BATCH_WRITES) {
+      throw new Error("Relationship plan exceeds the atomic write bound.");
+    }
+    return db.runTransaction(async (transaction) => {
+      const snapshots = new Map();
+      const paths = new Set(docs.map((doc) => doc.path));
+      for (const doc of docs) {
+        const parent = relationshipParentPath(doc);
+        if (parent != null) paths.add(parent);
+      }
+      // Firestore requires all reads before writes; retries recheck collisions.
+      for (const docPath of paths) {
+        snapshots.set(docPath, await transaction.get(db.doc(docPath)));
+      }
+      for (const doc of docs) {
+        const parentPath = relationshipParentPath(doc);
+        if (parentPath == null) continue;
+        const parent = snapshots.get(parentPath);
+        const proposedParent = docs.find((item) => item.path === parentPath);
+        if (!parent.exists && proposedParent == null && doc.path.startsWith("matches/")) {
+          throw new Error(`Missing owned parent ${parentPath}.`);
+        }
+        const expected = proposedParent?.data ?? doc.data;
+        if (parent.exists) {
+          const current = parent.data();
+          if (!isDisposableDemoMatch(current) || !sameDemoRun(current, expected)) {
+            throw new Error(`Refusing demo collision at ${parentPath}.`);
+          }
+          const swipeOnly = doc.path.startsWith("profileDecisions/") && proposedParent == null;
+          if ((proposedParent != null && !sameMatchOrigins(current, expected)) ||
+              (swipeOnly && (current.status !== "active" ||
+               current.eventIds?.length !== 1 || current.eventIds[0] !== doc.data.eventId))) {
+            throw new Error(`Refusing mixed relationship origins at ${parentPath}.`);
+          }
+        } else if (proposedParent != null && !isDisposableDemoMatch(expected)) {
+          throw new Error(`Missing versioned demo ownership at ${parentPath}.`);
+        }
+      }
+      for (const doc of docs) {
+        const current = snapshots.get(doc.path);
+        if (current.exists && hasDemoRunOwnership(doc.data) &&
+            !sameDemoRun(current.data(), doc.data)) {
+          throw new Error(`Refusing demo document collision at ${doc.path}.`);
+        }
+      }
+      let written = 0;
+      for (const doc of docs) {
+        // Same-run repair is insert-only: preserve blocks, messages, counters,
+        // creation time, and any changes made after the original creation.
+        if (snapshots.get(doc.path).exists && hasDemoRunOwnership(doc.data)) continue;
+        if (doc.op === "update") transaction.update(db.doc(doc.path), doc.data);
+        else if (snapshots.get(doc.path).exists) {
+          transaction.set(db.doc(doc.path), doc.data, {merge});
+        } else transaction.create(db.doc(doc.path), doc.data);
+        written += 1;
+      }
+      return {written};
+    });
+  }
   let written = 0;
   for (const chunk of chunks(docs, DEFAULT_MAX_BATCH_WRITES)) {
     const batch = db.batch();
     for (const doc of chunk) {
-      batch.set(db.doc(doc.path), doc.data, {merge: true});
+      if (doc.op === "update") batch.update(db.doc(doc.path), doc.data);
+      else batch.set(db.doc(doc.path), doc.data, {merge});
       written += 1;
     }
     await batch.commit();
@@ -2030,6 +2196,16 @@ export async function writeManifest({db, admin, plan, apply, now = new Date()}) 
     eventId: plan.eventId ?? null,
     paths,
     pathCount: paths.length,
+    ownership: Object.fromEntries((plan.docs ?? []).map((doc) => [doc.path, {
+      synthetic: doc.data.synthetic ?? null,
+      demoOps: doc.data.demoOps ?? null,
+      seedPrefix: doc.data.seedPrefix ?? null,
+      demoOpsId: doc.data.demoOpsId ?? null,
+      ...(matchParentPath(doc) === doc.path ? {
+        user1Id: doc.data.user1Id, user2Id: doc.data.user2Id,
+        participantIds: doc.data.participantIds, eventIds: doc.data.eventIds,
+      } : {}),
+    }])),
   };
   if (apply) {
     await db.collection(DEMO_MANIFEST_COLLECTION).doc(operationId).set(manifest, {merge: true});
