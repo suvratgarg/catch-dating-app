@@ -31,8 +31,10 @@ function fixture() {
   h.version.definition.sections[0].questions[0].required = false;
   const name = h.version.definition.sections[0].questions[0];
   h.version.definition.sections[0].questions.push(
-    {...name, questionId: "email", key: "email", canonicalFieldId: "email", kind: "email"},
-    {...name, questionId: "phone", key: "phone", canonicalFieldId: "phoneNumber", kind: "phone"});
+    {...name, questionId: "email", key: "email",
+      canonicalFieldId: "email", kind: "email"},
+    {...name, questionId: "phone", key: "phone",
+      canonicalFieldId: "phoneNumber", kind: "phone"});
   const db = {collection: (name: string) => {
     const collection = h.store.collection(name);
     return {...collection, where: (field: string, op: string,
@@ -45,7 +47,8 @@ function fixture() {
     }};
   }, runTransaction: h.store.runTransaction.bind(h.store),
   } as unknown as FirebaseFirestore.Firestore;
-  const deps = {firestore: () => db, timestamp: () => Timestamp.fromMillis(2000),
+  const deps = {firestore: () => db,
+    timestamp: () => Timestamp.fromMillis(2000),
     checkRateLimit: async () => undefined, storageBucket: () => {
       throw new Error("No uploads");
     }};
@@ -54,12 +57,13 @@ function fixture() {
 
 for (const signedIn of [false, true]) {
   for (const volunteered of [false, true]) {
-    test(`anonymous submission signed in=${signedIn}, contact=${volunteered} excludes ambient identity through Host and export`,
+    test(`anonymous signed-in=${signedIn}, contact=${volunteered}`,
       async () => {
         const h = fixture();
         const auth = signedIn ? ambient : null;
         const begun = await begin(request({publicFormId: h.form.publicFormId,
-          sourceToken: null, requestId: "anonymous-start-request"}, auth), h.deps);
+          sourceToken: null, requestId: "anonymous-start-request"}, auth),
+        h.deps);
         assert.equal(begun.identityKind, "anonymous");
         assert.deepEqual(begun.prefillSuggestions, {});
         assert.deepEqual(await begin(request({publicFormId: h.form.publicFormId,
@@ -69,12 +73,14 @@ for (const signedIn of [false, true]) {
           email: "volunteered@example.com", phone: "+919000000002"} : {};
         const identity = volunteered ? {displayName: "Volunteered Name",
           email: "volunteered@example.com", phoneE164: "+919000000002",
-          searchName: "volunteered name", origin: "organizerAcquired"} : emptyIdentity;
+          searchName: "volunteered name", origin: "organizerAcquired"} :
+          emptyIdentity;
         const draftPath = `organizerFormResponseDrafts/${begun.draftId}`;
         h.store.records.set(draftPath, {...h.store.records.get(draftPath),
           consentAccepted: true, answers});
         const payload = {draftId: begun.draftId, draftToken: begun.draftToken,
-          expectedRevision: begun.revision, requestId: "anonymous-submit-request"};
+          expectedRevision: begun.revision,
+          requestId: "anonymous-submit-request"};
         const receipt = await submit(request(payload, auth), h.deps);
         const persisted = h.store.records.get(
           `organizerFormResponses/${receipt.responseId}`)!;
@@ -86,9 +92,11 @@ for (const signedIn of [false, true]) {
           {...ambient, uid: "changed-account"}), h.deps), receipt);
         assert.deepEqual(h.store.records.get(
           `organizerFormResponses/${receipt.responseId}`), persisted);
-        assert.equal(h.store.records.has("participantIntakeProfiles/ambient-person"), false);
+        assert.equal(h.store.records.has(
+          "participantIntakeProfiles/ambient-person"), false);
 
-        const store = new AudienceTestStore(Object.fromEntries(h.store.records));
+        const store = new AudienceTestStore(
+          Object.fromEntries(h.store.records));
         store.docs["organizers/org"] = {ownerUserId: "host", hostUserIds: [],
           hostProfiles: []};
         const views = {firestore: () => store.asFirestore(),
@@ -107,7 +115,8 @@ for (const signedIn of [false, true]) {
         assert.equal(full.applicationId, null);
         assert.equal(full.contactId, null);
         const typed = await runFirestoreResponseQuery({db: store.asFirestore(),
-          actorUid: "host", organizerId: "org", formId: "form", versionId: "version"},
+          actorUid: "host", organizerId: "org", formId: "form",
+          versionId: "version"},
         {organizerId: "org", formId: "form", versionId: "version",
           statuses: ["submitted"], predicate: null, sort: null,
           limit: 10, cursor: null});
@@ -125,23 +134,29 @@ for (const signedIn of [false, true]) {
           storageBucket: () => ({file: () => ({save: async (buffer: Buffer) => {
             csv = buffer.toString("utf8");
           }})}) as never});
-        assert.equal(store.docs["organizerFormExports/privacy-export"].rowCount, 1);
+        assert.equal(
+          store.docs["organizerFormExports/privacy-export"].rowCount, 1);
         assert.ok(csv.includes('"anonymous"'));
         if (volunteered) {
-          for (const value of Object.values(answers)) assert.ok(csv.includes(value));
+          for (const value of Object.values(answers)) {
+            assert.ok(csv.includes(value));
+          }
         }
-        for (const secret of [ambient.uid, ambient.token.name, ambient.token.email,
-          ambient.token.phone_number]) assert.ok(!csv.includes(secret), secret);
+        for (const secret of [ambient.uid, ambient.token.name,
+          ambient.token.email, ambient.token.phone_number]) {
+          assert.ok(!csv.includes(secret), secret);
+        }
       });
   }
 }
 
-test("anonymous canonical contact answers survive conflicting ambient auth", () => {
+test("anonymous canonical contact survives conflicting auth", () => {
   const h = fixture();
   const answers = {name: "Volunteered Name", email: "volunteered@example.com",
     phone: "+919000000002"};
   const expected = {displayName: answers.name, email: answers.email,
-    phoneE164: answers.phone, searchName: "volunteered name", origin: "organizerAcquired"};
+    phoneE164: answers.phone, searchName: "volunteered name",
+    origin: "organizerAcquired"};
   assert.deepEqual(responseIdentitySnapshot(h.version.definition, answers,
     request({})), expected);
   assert.deepEqual(responseIdentitySnapshot(h.version.definition, answers,
@@ -161,7 +176,7 @@ test("identified policy retains permitted account snapshot", () => {
   }
 });
 
-test("anonymous policy rejects private response reuse before creating a draft", async () => {
+test("anonymous policy denies private response reuse", async () => {
   const h = fixture();
   const before = [...h.store.records.keys()];
   await assert.rejects(begin(request({publicFormId: h.form.publicFormId,
@@ -171,15 +186,18 @@ test("anonymous policy rejects private response reuse before creating a draft", 
 });
 
 
-test("anonymous submission discards contact on an unreachable conditional path", async () => {
+test("anonymous retry discards unreachable contact", async () => {
   const h = fixture();
-  h.version.definition.logicRules = [{ruleId: "hide-contact", conditionMode: "all",
-    conditions: [{questionId: "name", operator: "equals", expectedValues: ["Skip"]}],
+  h.version.definition.logicRules = [{ruleId: "hide-contact",
+    conditionMode: "all",
+    conditions: [{questionId: "name", operator: "equals",
+      expectedValues: ["Skip"]}],
     action: "hideQuestion", targetQuestionId: "email", targetSectionId: null}];
   const begun = await begin(request({publicFormId: h.form.publicFormId,
     sourceToken: null, requestId: "hidden-contact-start"}), h.deps);
   const path = `organizerFormResponseDrafts/${begun.draftId}`;
-  h.store.records.set(path, {...h.store.records.get(path), consentAccepted: true,
+  h.store.records.set(path, {...h.store.records.get(path),
+    consentAccepted: true,
     answers: {name: "Skip", email: "stale@example.com"}});
   const payload = {draftId: begun.draftId, draftToken: begun.draftToken,
     expectedRevision: begun.revision, requestId: "hidden-contact-submit"};
@@ -189,7 +207,8 @@ test("anonymous submission discards contact on an unreachable conditional path",
     key.startsWith("organizerFormResponses/")), false);
   const receipt = await submit(request(payload, {...ambient,
     uid: "changed-account"}), h.deps);
-  const response = h.store.records.get(`organizerFormResponses/${receipt.responseId}`)!;
+  const response = h.store.records.get(
+    `organizerFormResponses/${receipt.responseId}`)!;
   assert.deepEqual(response.answers, {name: "Skip"});
   assert.deepEqual(response.identity, {displayName: "Skip", email: null,
     phoneE164: null, searchName: "skip", origin: "organizerAcquired"});
