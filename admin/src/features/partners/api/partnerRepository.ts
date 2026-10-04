@@ -13,10 +13,12 @@ export interface PartnerWorkspace {
   submissions: Array<{intentId: string; status: string; name: string; organizerId: string | null}>;
   nextCursor: string | null; sendAuthority: false;
 }
-export async function readPartnerWorkspace(cursor: string | null): Promise<PartnerWorkspace> {
+export async function readPartnerWorkspace(cursor: string | null, actorUid: string): Promise<PartnerWorkspace> {
   const response = await httpsCallable<{cursor: string | null}, unknown>(functions,
     "getSalesPartnerWorkspace")({cursor});
-  return parsePartnerWorkspace(response.data);
+  const workspace = parsePartnerWorkspace(response.data);
+  if (workspace.membership.uid !== actorUid) throw new Error("Partner identity changed. Sign in again.");
+  return workspace;
 }
 export async function writePartner(action: "register" | "nominate" | "decide" | "update",
   payload: Record<string, unknown>) {

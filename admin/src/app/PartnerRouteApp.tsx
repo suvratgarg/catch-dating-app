@@ -28,7 +28,7 @@ export function PartnerRouteApp() {
   </AdminSignInPanel></AdminSignInScreen>;
   return <AdminQueryProvider sessionKey={`partner:${session.user.uid}:${session.epoch}`} isCurrentSession={session.isCurrent}>
     <AdminPendingOperationProvider><Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}>
-      <PartnerWorkspaceScreen onSignOut={() => {void signOutAdmin();}} />
+      <PartnerWorkspaceScreen actorUid={session.user.uid} isCurrentSession={session.isCurrent} onSignOut={() => {void signOutAdmin();}} />
     </Suspense></AdminPendingOperationProvider>
   </AdminQueryProvider>;
 }

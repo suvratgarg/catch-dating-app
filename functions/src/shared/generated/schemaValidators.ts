@@ -16,6 +16,9 @@ export {validateReviewSalesPartnerOutreachDraftCallablePayload} from "./validato
 export {validateCopySalesPartnerOutreachDraftCallablePayload} from "./validators/copySalesPartnerOutreachDraftInput";
 export {validateRecordSalesPartnerManualSendCallablePayload} from "./validators/recordSalesPartnerManualSendInput";
 export {validateGetSalesPartnerPreparationCallablePayload} from "./validators/getSalesPartnerPreparationInput";
+export {validateGetSalesPartnerOutreachDraftResponse} from "./validators/getSalesPartnerOutreachDraftResponse";
+export {validateReviewSalesPartnerOutreachDraftResponse} from "./validators/reviewSalesPartnerOutreachDraftResponse";
+export {validateRecordSalesPartnerManualSendResponse} from "./validators/recordSalesPartnerManualSendResponse";
 export {validateRegisterSalesPartnerCallablePayload} from "./validators/registerSalesPartnerInput";
 export {validateNominateSalesOrganizerCallablePayload} from "./validators/nominateSalesOrganizerInput";
 export {validateGetSalesPartnerWorkspaceCallablePayload} from "./validators/getSalesPartnerWorkspaceInput";

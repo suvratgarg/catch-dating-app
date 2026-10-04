@@ -84058,6 +84058,272 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const getSalesPartnerOutreachDraftResponseDraftChannel = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.channel',
+    required: true,
+    enumValues: <String>['email', 'message'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftContactId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.contactId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftContentHash = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftDraftId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.draftId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftInputHash = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.inputHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftLanguage = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.language',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelCacheHit = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.cacheHit',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelModelId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.modelId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelPlaybookVersion = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.playbookVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelPromptVersion = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.promptVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelUsageCostMicros = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.usage.costMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelUsageInputTokens = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.usage.inputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftModelUsageOutputTokens = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.model.usage.outputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftOpportunityId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.opportunityId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftOrganizerId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.organizerId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftReviewStatus = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.reviewStatus',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSchemaVersion = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.schemaVersion',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionCapabilityId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.capabilityId',
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionContactId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.contactId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionCtaId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.ctaId',
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionLanguage = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.language',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionObservationId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.observationId',
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionOmittedIds = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.omittedIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionOmittedIdsItems = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.omittedIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionOpportunityId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.opportunityId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionOrganizerId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.organizerId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionReasonToBlock = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.reasonToBlock',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSelectionReferenceId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.selection.referenceId',
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSendAuthority = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sendAuthority',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSentences = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sentences',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSentencesItemsKind = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sentences.items.kind',
+    required: true,
+    enumValues: <String>['observation', 'capability', 'reference', 'cta', 'prior_interaction'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSentencesItemsSourceIds = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sentences.items.sourceIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSentencesItemsSourceIdsItems = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sentences.items.sourceIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSentencesItemsText = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sentences.items.text',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSourceRevisions = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.sourceRevisions',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftSubject = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.subject',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftText = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draft.text',
+    maxLength: 4000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getSalesPartnerOutreachDraftResponseDraftId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getSalesPartnerOutreachDraftResponseReviewedAt = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.reviewedAt',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const getSalesPartnerOutreachDraftResponseSendAuthority = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.sendAuthority',
+    required: true,
+  );
+
+  static const getSalesPartnerOutreachDraftResponseStatus = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftResponse.status',
+    required: true,
+    enumValues: <String>['pending_review', 'approved'],
+  );
+
   static const getSalesPartnerOutreachJobCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
     path: 'getSalesPartnerOutreachJobCallablePayload.expectedAssignmentRevision',
     required: true,
@@ -134627,6 +134893,63 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const recordSalesPartnerManualSendResponseActivityId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.activityId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordSalesPartnerManualSendResponseDraftId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordSalesPartnerManualSendResponseExactContentHash = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.exactContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const recordSalesPartnerManualSendResponseOccurredAt = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.occurredAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const recordSalesPartnerManualSendResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordSalesPartnerManualSendResponseOutcome = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.outcome',
+    required: true,
+  );
+
+  static const recordSalesPartnerManualSendResponseProviderConfirmed = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.providerConfirmed',
+    required: true,
+  );
+
+  static const recordSalesPartnerManualSendResponseSendAuthority = CatchContractFieldConstraints(
+    path: 'recordSalesPartnerManualSendResponse.sendAuthority',
+    required: true,
+  );
+
   static const refreshProgramTravelLegCallablePayloadLegId = CatchContractFieldConstraints(
     path: 'refreshProgramTravelLegCallablePayload.legId',
     maxLength: 180,
@@ -136669,6 +136992,42 @@ abstract final class CatchContractConstraints {
     path: 'reviewSalesPartnerOutreachDraftCallablePayload.tone',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseCapabilityApprovalAuthority = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.capabilityApprovalAuthority',
+    required: true,
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseCompositionReviewed = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.compositionReviewed',
+    required: true,
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseDraftId = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseExactContentHash = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.exactContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseProviderConfirmed = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.providerConfirmed',
+    required: true,
+  );
+
+  static const reviewSalesPartnerOutreachDraftResponseSendAuthority = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftResponse.sendAuthority',
+    required: true,
   );
 
   static const revokeEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
@@ -171646,6 +172005,47 @@ abstract final class CatchContractConstraints {
     'getSalesPartnerOutreachDraftCallablePayload.draftId': getSalesPartnerOutreachDraftCallablePayloadDraftId,
     'getSalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision': getSalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision,
     'getSalesPartnerOutreachDraftCallablePayload.organizerId': getSalesPartnerOutreachDraftCallablePayloadOrganizerId,
+    'getSalesPartnerOutreachDraftResponse.draft.channel': getSalesPartnerOutreachDraftResponseDraftChannel,
+    'getSalesPartnerOutreachDraftResponse.draft.contactId': getSalesPartnerOutreachDraftResponseDraftContactId,
+    'getSalesPartnerOutreachDraftResponse.draft.contentHash': getSalesPartnerOutreachDraftResponseDraftContentHash,
+    'getSalesPartnerOutreachDraftResponse.draft.draftId': getSalesPartnerOutreachDraftResponseDraftDraftId,
+    'getSalesPartnerOutreachDraftResponse.draft.inputHash': getSalesPartnerOutreachDraftResponseDraftInputHash,
+    'getSalesPartnerOutreachDraftResponse.draft.language': getSalesPartnerOutreachDraftResponseDraftLanguage,
+    'getSalesPartnerOutreachDraftResponse.draft.model.cacheHit': getSalesPartnerOutreachDraftResponseDraftModelCacheHit,
+    'getSalesPartnerOutreachDraftResponse.draft.model.modelId': getSalesPartnerOutreachDraftResponseDraftModelModelId,
+    'getSalesPartnerOutreachDraftResponse.draft.model.playbookVersion': getSalesPartnerOutreachDraftResponseDraftModelPlaybookVersion,
+    'getSalesPartnerOutreachDraftResponse.draft.model.promptVersion': getSalesPartnerOutreachDraftResponseDraftModelPromptVersion,
+    'getSalesPartnerOutreachDraftResponse.draft.model.usage.costMicros': getSalesPartnerOutreachDraftResponseDraftModelUsageCostMicros,
+    'getSalesPartnerOutreachDraftResponse.draft.model.usage.inputTokens': getSalesPartnerOutreachDraftResponseDraftModelUsageInputTokens,
+    'getSalesPartnerOutreachDraftResponse.draft.model.usage.outputTokens': getSalesPartnerOutreachDraftResponseDraftModelUsageOutputTokens,
+    'getSalesPartnerOutreachDraftResponse.draft.opportunityId': getSalesPartnerOutreachDraftResponseDraftOpportunityId,
+    'getSalesPartnerOutreachDraftResponse.draft.organizerId': getSalesPartnerOutreachDraftResponseDraftOrganizerId,
+    'getSalesPartnerOutreachDraftResponse.draft.reviewStatus': getSalesPartnerOutreachDraftResponseDraftReviewStatus,
+    'getSalesPartnerOutreachDraftResponse.draft.schemaVersion': getSalesPartnerOutreachDraftResponseDraftSchemaVersion,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.capabilityId': getSalesPartnerOutreachDraftResponseDraftSelectionCapabilityId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.contactId': getSalesPartnerOutreachDraftResponseDraftSelectionContactId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.ctaId': getSalesPartnerOutreachDraftResponseDraftSelectionCtaId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.language': getSalesPartnerOutreachDraftResponseDraftSelectionLanguage,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.observationId': getSalesPartnerOutreachDraftResponseDraftSelectionObservationId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.omittedIds': getSalesPartnerOutreachDraftResponseDraftSelectionOmittedIds,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.omittedIds.items': getSalesPartnerOutreachDraftResponseDraftSelectionOmittedIdsItems,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.opportunityId': getSalesPartnerOutreachDraftResponseDraftSelectionOpportunityId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.organizerId': getSalesPartnerOutreachDraftResponseDraftSelectionOrganizerId,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.reasonToBlock': getSalesPartnerOutreachDraftResponseDraftSelectionReasonToBlock,
+    'getSalesPartnerOutreachDraftResponse.draft.selection.referenceId': getSalesPartnerOutreachDraftResponseDraftSelectionReferenceId,
+    'getSalesPartnerOutreachDraftResponse.draft.sendAuthority': getSalesPartnerOutreachDraftResponseDraftSendAuthority,
+    'getSalesPartnerOutreachDraftResponse.draft.sentences': getSalesPartnerOutreachDraftResponseDraftSentences,
+    'getSalesPartnerOutreachDraftResponse.draft.sentences.items.kind': getSalesPartnerOutreachDraftResponseDraftSentencesItemsKind,
+    'getSalesPartnerOutreachDraftResponse.draft.sentences.items.sourceIds': getSalesPartnerOutreachDraftResponseDraftSentencesItemsSourceIds,
+    'getSalesPartnerOutreachDraftResponse.draft.sentences.items.sourceIds.items': getSalesPartnerOutreachDraftResponseDraftSentencesItemsSourceIdsItems,
+    'getSalesPartnerOutreachDraftResponse.draft.sentences.items.text': getSalesPartnerOutreachDraftResponseDraftSentencesItemsText,
+    'getSalesPartnerOutreachDraftResponse.draft.sourceRevisions': getSalesPartnerOutreachDraftResponseDraftSourceRevisions,
+    'getSalesPartnerOutreachDraftResponse.draft.subject': getSalesPartnerOutreachDraftResponseDraftSubject,
+    'getSalesPartnerOutreachDraftResponse.draft.text': getSalesPartnerOutreachDraftResponseDraftText,
+    'getSalesPartnerOutreachDraftResponse.draftId': getSalesPartnerOutreachDraftResponseDraftId,
+    'getSalesPartnerOutreachDraftResponse.reviewedAt': getSalesPartnerOutreachDraftResponseReviewedAt,
+    'getSalesPartnerOutreachDraftResponse.sendAuthority': getSalesPartnerOutreachDraftResponseSendAuthority,
+    'getSalesPartnerOutreachDraftResponse.status': getSalesPartnerOutreachDraftResponseStatus,
     'getSalesPartnerOutreachJobCallablePayload.expectedAssignmentRevision': getSalesPartnerOutreachJobCallablePayloadExpectedAssignmentRevision,
     'getSalesPartnerOutreachJobCallablePayload.organizerId': getSalesPartnerOutreachJobCallablePayloadOrganizerId,
     'getSalesPartnerOutreachJobCallablePayload.requestId': getSalesPartnerOutreachJobCallablePayloadRequestId,
@@ -178614,6 +179014,14 @@ abstract final class CatchContractConstraints {
     'recordSalesPartnerManualSendCallablePayload.occurredAt': recordSalesPartnerManualSendCallablePayloadOccurredAt,
     'recordSalesPartnerManualSendCallablePayload.organizerId': recordSalesPartnerManualSendCallablePayloadOrganizerId,
     'recordSalesPartnerManualSendCallablePayload.requestId': recordSalesPartnerManualSendCallablePayloadRequestId,
+    'recordSalesPartnerManualSendResponse.activityId': recordSalesPartnerManualSendResponseActivityId,
+    'recordSalesPartnerManualSendResponse.draftId': recordSalesPartnerManualSendResponseDraftId,
+    'recordSalesPartnerManualSendResponse.exactContentHash': recordSalesPartnerManualSendResponseExactContentHash,
+    'recordSalesPartnerManualSendResponse.occurredAt': recordSalesPartnerManualSendResponseOccurredAt,
+    'recordSalesPartnerManualSendResponse.organizerId': recordSalesPartnerManualSendResponseOrganizerId,
+    'recordSalesPartnerManualSendResponse.outcome': recordSalesPartnerManualSendResponseOutcome,
+    'recordSalesPartnerManualSendResponse.providerConfirmed': recordSalesPartnerManualSendResponseProviderConfirmed,
+    'recordSalesPartnerManualSendResponse.sendAuthority': recordSalesPartnerManualSendResponseSendAuthority,
     'refreshProgramTravelLegCallablePayload.legId': refreshProgramTravelLegCallablePayloadLegId,
     'refreshProgramTravelLegCallablePayload.programId': refreshProgramTravelLegCallablePayloadProgramId,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,
@@ -178892,6 +179300,12 @@ abstract final class CatchContractConstraints {
     'reviewSalesPartnerOutreachDraftCallablePayload.organizerId': reviewSalesPartnerOutreachDraftCallablePayloadOrganizerId,
     'reviewSalesPartnerOutreachDraftCallablePayload.requestId': reviewSalesPartnerOutreachDraftCallablePayloadRequestId,
     'reviewSalesPartnerOutreachDraftCallablePayload.tone': reviewSalesPartnerOutreachDraftCallablePayloadTone,
+    'reviewSalesPartnerOutreachDraftResponse.capabilityApprovalAuthority': reviewSalesPartnerOutreachDraftResponseCapabilityApprovalAuthority,
+    'reviewSalesPartnerOutreachDraftResponse.compositionReviewed': reviewSalesPartnerOutreachDraftResponseCompositionReviewed,
+    'reviewSalesPartnerOutreachDraftResponse.draftId': reviewSalesPartnerOutreachDraftResponseDraftId,
+    'reviewSalesPartnerOutreachDraftResponse.exactContentHash': reviewSalesPartnerOutreachDraftResponseExactContentHash,
+    'reviewSalesPartnerOutreachDraftResponse.providerConfirmed': reviewSalesPartnerOutreachDraftResponseProviderConfirmed,
+    'reviewSalesPartnerOutreachDraftResponse.sendAuthority': reviewSalesPartnerOutreachDraftResponseSendAuthority,
     'revokeEventStaffCallablePayload.eventId': revokeEventStaffCallablePayloadEventId,
     'revokeEventStaffCallablePayload.expectedRevision': revokeEventStaffCallablePayloadExpectedRevision,
     'revokeEventStaffCallablePayload.uid': revokeEventStaffCallablePayloadUid,

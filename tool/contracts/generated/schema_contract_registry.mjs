@@ -572,6 +572,402 @@ export const getSalesPartnerPreparationCallablePayloadSchema = {
   ]
 };
 
+export const getSalesPartnerOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_outreach_draft_response.schema.json",
+  "title": "GetSalesPartnerOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draft",
+    "status",
+    "reviewedAt",
+    "sendAuthority"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draft": {
+      "title": "OutreachDraft",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "draftId",
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "language",
+        "channel",
+        "subject",
+        "text",
+        "sentences",
+        "selection",
+        "inputHash",
+        "contentHash",
+        "sourceRevisions",
+        "model",
+        "reviewStatus",
+        "sendAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "const": "en"
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "subject": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sentences": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "kind",
+              "sourceIds"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "enum": [
+                  "observation",
+                  "capability",
+                  "reference",
+                  "cta",
+                  "prior_interaction"
+                ]
+              },
+              "sourceIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "selection": {
+          "title": "OutreachDraftingSelection",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "contactId",
+            "opportunityId",
+            "language",
+            "observationId",
+            "capabilityId",
+            "referenceId",
+            "ctaId",
+            "reasonToBlock",
+            "omittedIds"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "language": {
+              "const": "en"
+            },
+            "observationId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "capabilityId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ctaId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasonToBlock": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "omittedIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceRevisions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelId",
+            "promptVersion",
+            "playbookVersion",
+            "cacheHit",
+            "usage"
+          ],
+          "properties": {
+            "modelId": {
+              "type": "string"
+            },
+            "promptVersion": {
+              "type": "string"
+            },
+            "playbookVersion": {
+              "type": "string"
+            },
+            "cacheHit": {
+              "type": "boolean"
+            },
+            "usage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inputTokens",
+                "outputTokens",
+                "costMicros"
+              ],
+              "properties": {
+                "inputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "outputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "costMicros": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "reviewStatus": {
+          "const": "pending_review"
+        },
+        "sendAuthority": {
+          "const": false
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "reviewedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachDraft"
+  ]
+};
+
+export const reviewSalesPartnerOutreachDraftResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "exactContentHash",
+    "compositionReviewed",
+    "capabilityApprovalAuthority",
+    "sendAuthority",
+    "providerConfirmed"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "compositionReviewed": {
+      "const": true
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "providerConfirmed": {
+      "const": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/review_sales_partner_outreach_draft_response.schema.json",
+  "title": "ReviewSalesPartnerOutreachDraftResponse",
+  "x-callable-aliases": [
+    "reviewSalesPartnerOutreachDraft"
+  ]
+};
+
+export const recordSalesPartnerManualSendResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "draftId",
+    "activityId",
+    "exactContentHash",
+    "occurredAt",
+    "outcome",
+    "providerConfirmed",
+    "sendAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "activityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "outcome": {
+      "const": "actor_attested_sent"
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_sales_partner_manual_send_response.schema.json",
+  "title": "RecordSalesPartnerManualSendResponse",
+  "x-callable-aliases": [
+    "recordSalesPartnerManualSend"
+  ]
+};
+
 export const registerSalesPartnerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",

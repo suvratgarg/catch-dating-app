@@ -5536,6 +5536,28 @@
         ]
       },
       "notes": "Dedicated /partners/ route in existing React console; membership and canonical assignments are server scoped without employee roles."
+    },
+    {
+      "id": "workspace_partner_outreach",
+      "kind": "workspace",
+      "owner": "features/partners",
+      "source": "admin/src/features/partners/ui/PartnerOutreachWorkspace.tsx",
+      "exportName": "PartnerOutreachWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "preparation",
+          "pending-review",
+          "manual-copy",
+          "manual-send-attestation",
+          "interrupted",
+          "revoked"
+        ]
+      },
+      "notes": "Own accepted assignment current sources, exact reviewed wording and actor-attested manual sending; no employee capability or provider delivery authority."
     }
   ]
 }

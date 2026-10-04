@@ -1,3 +1,5 @@
+import type {DraftSourceRequest, DraftArtifact, DraftJob} from "../../../shared/domain/salesOutreach";
+export type {DraftSourceRequest, DraftArtifact, DraftJob} from "../../../shared/domain/salesOutreach";
 import type {SalesAccountDetail, SalesContact, SalesEvidence,
   SalesPage} from "./salesTypes";
 
@@ -43,37 +45,20 @@ export interface ScoreSnapshot {
   factors: Array<{factorId: string; state: FactorAssessment["state"];
     value: number | null; evidenceIds: string[]; reason: string | null}>;
 }
-export interface DraftSourceRequest {
-  organizerId: string; contactId: string; opportunityId: string;
-  observationIds: string[]; capabilityIds: string[];
-  referenceIds: string[]; ctaIds: string[];
-  channel: "email" | "message";
-  purpose: "first_message" | "follow_up";
-  priorActivityId?: string;
-}
+
 export interface DraftSummary {
   draftId: string; contactId: string; opportunityId: string;
   subject: string | null; status: "pending_review" | "approved";
   contentHash: string; createdAt: string; reviewedAt: string | null;
 }
-export interface DraftArtifact {
-  draftId: string; subject: string | null; text: string;
-  contentHash: string; sendAuthority: false;
-  model: {modelId: "deterministic"; usage: {inputTokens: 0;
-    outputTokens: 0; costMicros: 0}};
-  sentences: Array<{text: string; kind: string; sourceIds: string[]}>;
-}
+
 export interface DraftDetail {
   draftId: string; draft: DraftArtifact;
   status: DraftSummary["status"];
   reviewedAt: string | null; reviewedBy: string | null;
   sendAuthority: false;
 }
-export interface DraftJob {
-  status: "running" | "completed" | "failed";
-  result: {draftId: string; contentHash: string} | null;
-  failure: string | null; retryAfterSeconds: number | null;
-}
+
 export interface MutationResult {
   draftId: string; exactContentHash: string; sendAuthority: false;
   providerConfirmed: false;
