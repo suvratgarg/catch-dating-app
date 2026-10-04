@@ -35,7 +35,7 @@ export const DIRECT_SALES_COLLECTIONS = [
   "salesIntelligenceScoreSnapshots", "salesOutreachDrafts",
   "salesPilotPlans", "salesQuotes", "salesQuoteVersions",
   "salesCommercialDecisions", "salesOpportunityStageHistory",
-  "salesDemoBlueprints", "salesDemoSetups", "salesFitQueueEntries",
+  "salesDemoBlueprints", "salesDemoSetups", "salesDemoContinuations", "salesFitQueueEntries",
   "salesHostSettlementAttestations", "salesHostSettlementEvidenceUses",
   "salesHostSettlementIdentities",
 ] as const;

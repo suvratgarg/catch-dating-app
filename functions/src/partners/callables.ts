@@ -2,6 +2,7 @@ import type {ValidateFunction} from "ajv";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateRegisterSalesPartnerCallablePayload} from "../shared/generated/validators/registerSalesPartnerInput";
 import {validateNominateSalesOrganizerCallablePayload} from "../shared/generated/validators/nominateSalesOrganizerInput";
+import {validateUpdateSalesPartnerAssignmentCallablePayload} from "../shared/generated/validators/updateSalesPartnerAssignmentInput";
 import {validateGetSalesPartnerWorkspaceCallablePayload} from "../shared/generated/validators/getSalesPartnerWorkspaceInput";
 import {validateDecideSalesPartnerAssignmentCallablePayload} from "../shared/generated/validators/decideSalesPartnerAssignmentInput";
 import {validateAdminAssignSalesPartnerCallablePayload} from "../shared/generated/validators/adminAssignSalesPartnerInput";
@@ -15,7 +16,7 @@ import {currentSalesEmployee} from "../admin/sales/callables";
 import {adminRolesFromToken} from "../admin/adminAuth";
 import type {PartnerActor, PartnerDeps} from "./model";
 import {assignPartner, decideAssignment, getPartnerWorkspace,
-  nominateOrganizer, registerPartner, revokePartnerAccess} from "./service";
+  nominateOrganizer, registerPartner, revokePartnerAccess, updateAssignment} from "./service";
 
 export async function currentPartnerActor(request: CallableRequest<unknown>,
   getUser = (uid: string) => admin.auth().getUser(uid)): Promise<PartnerActor> {
@@ -49,3 +50,5 @@ export const getSalesPartnerWorkspace = callable("workspace", false, validateGet
 export const decideSalesPartnerAssignment = callable("assignment.decide", false, validateDecideSalesPartnerAssignmentCallablePayload, decideAssignment);
 export const adminAssignSalesPartner = callable("assign", true, validateAdminAssignSalesPartnerCallablePayload, assignPartner);
 export const adminRevokeSalesPartnerAccess = callable("revoke", true, validateAdminRevokeSalesPartnerAccessCallablePayload, revokePartnerAccess);
+
+export const updateSalesPartnerAssignment = callable("assignment.update", false, validateUpdateSalesPartnerAssignmentCallablePayload, updateAssignment);

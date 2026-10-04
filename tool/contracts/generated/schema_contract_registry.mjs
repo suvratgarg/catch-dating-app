@@ -1,6 +1,171 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const salesDemoContinuationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_continuations.schema.json",
+  "title": "SalesDemoContinuationDocument",
+  "description": "Bounded own completed-demo proof for private claim review delay. Contains references and hashes, never grant tokens or synthetic guest data. Every resume rechecks current identity, scope and real manager authority before Forms materialization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "continuationId",
+    "actorUid",
+    "organizerId",
+    "invitationId",
+    "invitationRevision",
+    "invitationExpiresAt",
+    "blueprintId",
+    "blueprintRevision",
+    "sessionId",
+    "sessionRevision",
+    "setupHash",
+    "completedAt",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "invitationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "invitationRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "invitationExpiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "sessionRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "setupHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "salesDemoContinuations",
+  "x-firestore-path": "salesDemoContinuations/{continuationId}",
+  "x-document-id-field": "continuationId",
+  "x-owner": "private Sales Demo continuation boundary"
+};
+
+export const createSalesDemoContinuationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_sales_demo_continuation_payload.schema.json",
+  "title": "CreateSalesDemoContinuationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "grantToken"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "grantToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  },
+  "x-callable-aliases": [
+    "createSalesDemoContinuation"
+  ]
+};
+
+export const getSalesDemoContinuationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_demo_continuation_payload.schema.json",
+  "title": "GetSalesDemoContinuationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "continuationId"
+  ],
+  "properties": {
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesDemoContinuation"
+  ]
+};
+
+export const prepareSalesDemoContinuationFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_sales_demo_continuation_form_payload.schema.json",
+  "title": "PrepareSalesDemoContinuationFormCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "continuationId",
+    "setupHash"
+  ],
+  "properties": {
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "setupHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "prepareSalesDemoContinuationForm"
+  ]
+};
+
 export const registerSalesPartnerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
@@ -99,6 +264,67 @@ export const getSalesPartnerWorkspaceCallablePayloadSchema = {
   },
   "x-callable-aliases": [
     "getSalesPartnerWorkspace"
+  ]
+};
+
+export const updateSalesPartnerAssignmentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_sales_partner_assignment_payload.schema.json",
+  "title": "UpdateSalesPartnerAssignmentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedRevision",
+    "relationshipContext",
+    "channel",
+    "nextAction",
+    "reviewAt"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "whatsapp",
+        "other"
+      ]
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-callable-aliases": [
+    "updateSalesPartnerAssignment"
   ]
 };
 
@@ -24576,7 +24802,8 @@ export const salesActionReceiptDocumentSchema = {
         "partner.nominate",
         "partner.assign",
         "partner.assignment.decide",
-        "partner.revoke"
+        "partner.revoke",
+        "partner.assignment.update"
       ]
     },
     "actorUid": {
@@ -28076,7 +28303,7 @@ export const salesDemoPreviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/sales_demo_preview.schema.json",
   "title": "GetSalesDemoPreviewCallablePayload",
-  "description": "Anonymous read-only preview. Fetching never opens or consumes an invitation.",
+  "description": "Generic anonymous unfurl; personalized preview requires current invited contact and bearer grant. No session consumption.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -28086,6 +28313,10 @@ export const salesDemoPreviewCallablePayloadSchema = {
     "invitationId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "grantToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
     }
   },
   "x-callable": "getSalesDemoPreview"
@@ -32184,7 +32415,7 @@ export const salesIntelligenceReceiptDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json",
   "title": "SalesIntelligenceReceiptDocument",
-  "description": "Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.",
+  "description": "Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesIntelligenceReceipts",
@@ -32230,7 +32461,10 @@ export const salesIntelligenceReceiptDocumentSchema = {
         "score.snapshot",
         "draft.record",
         "draft.review",
-        "draft.copy"
+        "draft.copy",
+        "partner.draft.record",
+        "partner.draft.review",
+        "partner.draft.copy"
       ]
     },
     "requestId": {
@@ -32882,6 +33116,33 @@ export const salesOutreachDraftsDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision",
+        "renderedDraftId"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "renderedDraftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "definitions": {

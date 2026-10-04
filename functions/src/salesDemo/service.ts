@@ -126,8 +126,10 @@ async function availableSalesAccount(deps: DemoDeps,
   else await assertSalesPrivacyOpenRead(deps.db, organizerId);
   const ref = deps.db.collection("organizerSalesAccounts").doc(organizerId);
   const account = (tx ? await tx.get(ref) : await ref.get()).data();
-  if (account?.researchStatus === "archived") {
-    fail("failed-precondition", "This Sales account is archived.");
+  if (account && (account.classification !== "sales_private" ||
+      account.organizerId !== organizerId || account.researchStatus === "archived" ||
+      account.suppressionStatus !== "clear" || account.duplicateReviewRequired === true)) {
+    fail("failed-precondition", "This Sales account is unavailable for a private demo.");
   }
 }
 async function invitationPrivacy(deps: DemoDeps, blueprintId: unknown,
@@ -430,6 +432,7 @@ async function validInvitation(deps: DemoDeps,
   tx?: FirebaseFirestore.Transaction): Promise<Invitation> {
   const gate = await currentCapability(deps, tx);
   if (!invitation || invitation.revoked ||
+      !Number.isFinite(Date.parse(invitation.expiresAt)) ||
       Date.parse(invitation.expiresAt) <= deps.now().getTime() ||
       !blueprint || blueprint.state !== "reviewed" ||
       blueprint.revision !== invitation.blueprintRevision ||
@@ -442,27 +445,37 @@ async function validInvitation(deps: DemoDeps,
   return invitation;
 }
 
-/** Anonymous, minimal and deliberately free of writes or access counters. */
-export async function getPreview(deps: DemoDeps, raw: unknown): Promise<{
+/** Anonymous unfurls show a generic sample; personalized material requires current contact and grant. */
+export async function getPreview(deps: DemoDeps, raw: unknown,
+  identity?: Identity): Promise<{
   schemaVersion: 1; invitationId: string; preview: Preview;
-  interactiveAvailable: boolean; expiresAt: string;
+  interactiveAvailable: boolean; expiresAt: string | null;
   synthetic: true; notice: string}> {
   const body = record(raw);
-  only(body, ["invitationId"]);
+  only(body, ["invitationId", "grantToken"]);
   const invitationId = id(body.invitationId);
-  const inviteSnap = await deps.db.collection(INVITATIONS)
-    .doc(invitationId).get();
-  const invitation = inviteSnap.data() as Invitation | undefined;
-  if (!invitation) return fail("not-found", "Preview unavailable.");
-  const source = await deps.db.collection(BLUEPRINTS)
-    .doc(invitation.blueprintId).get();
-  await validInvitation(deps, invitation,
-    source.data() as Blueprint | undefined);
-  const blueprint = source.data() as Blueprint;
-  return {schemaVersion: 1, invitationId, preview: blueprint.preview,
-    interactiveAvailable: Boolean(invitation.contactBinding),
-    expiresAt: invitation.expiresAt, synthetic: true,
-    notice: "Sample workflow only. No real messages, charges or admission."};
+  if (body.grantToken !== undefined) grantToken(body.grantToken);
+  if (!identity || !body.grantToken) {
+    return {schemaVersion: 1, invitationId, synthetic: true,
+      interactiveAvailable: false, expiresAt: null,
+      preview: {brandName: "Catch Host", headline: "Explore a private sample",
+        scenario: "Sign in with the invited contact to review your personalized example.",
+        steps: ["Review a fictional application", "Prepare an example reply"],
+        retainedTools: [], limitations: ["This is a synthetic practice workflow."],
+        cta: "Review private sample"},
+      notice: "Sample workflow only. No real messages, charges or admission."};
+  }
+  return deps.db.runTransaction(async (tx) => {
+    const invitation = (await tx.get(deps.db.collection(INVITATIONS)
+      .doc(invitationId))).data() as Invitation | undefined;
+    if (!invitation) return fail("permission-denied", "Preview unavailable.");
+    const blueprint = (await tx.get(deps.db.collection(BLUEPRINTS)
+      .doc(invitation.blueprintId))).data() as Blueprint | undefined;
+    await grant(deps, identity, invitation, blueprint, String(body.grantToken), tx);
+    return {schemaVersion: 1, invitationId, preview: blueprint!.preview,
+      interactiveAvailable: true, expiresAt: invitation.expiresAt, synthetic: true,
+      notice: "Sample workflow only. No real messages, charges or admission."};
+  });
 }
 
 async function grant(deps: DemoDeps, identity: Identity,
@@ -474,9 +487,11 @@ async function grant(deps: DemoDeps, identity: Identity,
       !current.contactBinding) {
     return fail("permission-denied", "Interactive grant unavailable.");
   }
-  const user = await deps.getUser(identity.uid);
+  const deletedRef = deps.db.collection("deletedUsers").doc(identity.uid);
+  const [user, deleted] = await Promise.all([deps.getUser(identity.uid),
+    tx ? tx.get(deletedRef) : deletedRef.get()]);
   currentToken(identity, user);
-  if (user.disabled || !boundContact(identity, user,
+  if (user.disabled || deleted.exists || !boundContact(identity, user,
     current.contactBinding, key(deps))) {
     return fail("permission-denied", "Verified contact does not match.");
   }
@@ -869,7 +884,6 @@ export async function salesDemoSetup(deps: DemoDeps, identity: Identity,
     ["sessionId", "grantToken"]);
   const sessionId = id(body.sessionId);
   const token = grantToken(body.grantToken);
-  const publicFormId = randomBytes(24).toString("base64url");
   return deps.db.runTransaction(async (tx) => {
     const session = (await tx.get(deps.db.collection(SESSIONS)
       .doc(sessionId))).data() as Session | undefined;
@@ -889,72 +903,207 @@ export async function salesDemoSetup(deps: DemoDeps, identity: Identity,
         session.blueprintRevision !== invitation.blueprintRevision) {
       return fail("permission-denied", "The reviewed setup changed.");
     }
-    const plan = currentSetupPlan(blueprint.setupPlan);
-    const setupHash = setupPlanHash(plan);
-    const organizerId = blueprint.organizerId;
-    const base = {schemaVersion: 1, setupHash, plan, organizerId,
-      formId: null, editorPath: null, publicationAuthority: false};
-    if (!organizerId || plan.mode === "manual") {
-      if (prepare) {
-        return fail("failed-precondition",
-          "This setup needs the Catch team's review.");
-      }
-      return {...base, status: "manual_setup"};
-    }
-    const organizer = (await tx.get(deps.db.collection("organizers")
-      .doc(organizerId))).data();
-    if (!organizer || !["claimed", "verified"].includes(
-      organizer.claim?.state)) {
-      if (prepare) {
-        return fail("permission-denied",
-          "Claim this organizer before preparing its draft.");
-      }
-      return {...base, status: "claim_required"};
-    }
-    try {
-      await authorizeFormMutation({db: deps.db, tx, actorUid: identity.uid,
-        organizerId});
-    } catch (error) {
-      if (prepare || !(error instanceof HttpsError) ||
-          !["permission-denied", "not-found"].includes(error.code)) throw error;
-      // Never expose organizer details or a prepared form to a non-manager.
-      return {...base, status: "claim_required"};
-    }
-    if (prepare && body.setupHash !== setupHash) {
-      return fail("failed-precondition", "Review the latest setup first.");
-    }
-    const setupId = hash(`${organizerId}\u0000${blueprint.blueprintId}`+
-      `\u0000${blueprint.revision}\u0000${setupHash}`);
-    const setupRef = deps.db.collection("salesDemoSetups").doc(setupId);
-    const prior = (await tx.get(setupRef)).data();
-    if (prior) {
-      if (prior.organizerId !== organizerId || prior.setupHash !== setupHash ||
-          prior.blueprintId !== blueprint.blueprintId ||
-          prior.blueprintRevision !== blueprint.revision ||
-          prior.formId !== `demo_${setupId.slice(0, 40)}`) {
-        return fail("failed-precondition", "Invalid setup receipt.");
-      }
-      const form = (await tx.get(deps.db.collection("organizerForms")
-        .doc(prior.formId))).data();
-      if (!form || form.organizerId !== organizerId) {
-        return fail("failed-precondition", "Prepared form is unavailable.");
-      }
-      return {...base, status: "prepared", formId: prior.formId,
-        editorPath: `/host/audience/forms/${prior.formId}`};
-    }
-    if (!prepare) return {...base, status: "ready"};
-    const formId = `demo_${setupId.slice(0, 40)}`;
-    // Read every Sales/grant/receipt gate before the Forms owner's first write.
-    await createOrganizerFormInTransaction({db: deps.db, tx,
-      actorUid: identity.uid, organizerId, formId,
-      templateId: plan.templateId, title: plan.title,
-      defaultTargetKind: "organizer", defaultTargetId: null, publicFormId,
-      timestamp: () => Timestamp.fromDate(deps.now())});
-    tx.create(setupRef, {schemaVersion: 1, classification: "sales_private",
-      setupId, organizerId, blueprintId: blueprint.blueprintId,
-      blueprintRevision: blueprint.revision, setupHash, formId,
-      createdByUid: identity.uid, createdAt: deps.now().toISOString()});
-    return {...base, status: "prepared", formId,
-      editorPath: `/host/audience/forms/${formId}`};
+    return reviewedOrganizerSetup(deps, identity, blueprint, tx, prepare, body.setupHash);
+
   });
+}
+
+
+/** Shared existing Forms materializer; callers must prove their own current demo scope. */
+async function reviewedOrganizerSetup(deps: DemoDeps, identity: Identity,
+  blueprint: Blueprint, tx: FirebaseFirestore.Transaction,
+  prepare: boolean, requestedSetupHash: unknown): Promise<Record<string, unknown>> {
+  const publicFormId = randomBytes(24).toString("base64url");
+  const plan = currentSetupPlan(blueprint.setupPlan);
+  const setupHash = setupPlanHash(plan);
+  const organizerId = blueprint.organizerId;
+  const base = {schemaVersion: 1, setupHash, plan, organizerId,
+    formId: null, editorPath: null, publicationAuthority: false};
+  if (!organizerId || plan.mode === "manual") {
+    if (prepare) {
+      return fail("failed-precondition",
+        "This setup needs the Catch team's review.");
+    }
+    return {...base, status: "manual_setup"};
+  }
+  const organizer = (await tx.get(deps.db.collection("organizers")
+    .doc(organizerId))).data();
+  if (!organizer || !["claimed", "verified"].includes(
+    organizer.claim?.state)) {
+    if (prepare) {
+      return fail("permission-denied",
+        "Claim this organizer before preparing its draft.");
+    }
+    return {...base, status: "claim_required"};
+  }
+  try {
+    await authorizeFormMutation({db: deps.db, tx, actorUid: identity.uid,
+      organizerId});
+  } catch (error) {
+    if (prepare || !(error instanceof HttpsError) ||
+        !["permission-denied", "not-found"].includes(error.code)) throw error;
+    // Never expose organizer details or a prepared form to a non-manager.
+    return {...base, status: "claim_required"};
+  }
+  if (prepare && requestedSetupHash !== setupHash) {
+    return fail("failed-precondition", "Review the latest setup first.");
+  }
+  const setupId = hash(`${organizerId}\u0000${blueprint.blueprintId}`+
+    `\u0000${blueprint.revision}\u0000${setupHash}`);
+  const setupRef = deps.db.collection("salesDemoSetups").doc(setupId);
+  const prior = (await tx.get(setupRef)).data();
+  if (prior) {
+    if (prior.organizerId !== organizerId || prior.setupHash !== setupHash ||
+        prior.blueprintId !== blueprint.blueprintId ||
+        prior.blueprintRevision !== blueprint.revision ||
+        prior.formId !== `demo_${setupId.slice(0, 40)}`) {
+      return fail("failed-precondition", "Invalid setup receipt.");
+    }
+    const form = (await tx.get(deps.db.collection("organizerForms")
+      .doc(prior.formId))).data();
+    if (!form || form.organizerId !== organizerId) {
+      return fail("failed-precondition", "Prepared form is unavailable.");
+    }
+    return {...base, status: "prepared", formId: prior.formId,
+      editorPath: `/host/audience/forms/${prior.formId}`};
+  }
+  if (!prepare) return {...base, status: "ready"};
+  const formId = `demo_${setupId.slice(0, 40)}`;
+  // Read every Sales/grant/receipt gate before the Forms owner's first write.
+  await createOrganizerFormInTransaction({db: deps.db, tx,
+    actorUid: identity.uid, organizerId, formId,
+    templateId: plan.templateId, title: plan.title,
+    defaultTargetKind: "organizer", defaultTargetId: null, publicFormId,
+    timestamp: () => Timestamp.fromDate(deps.now())});
+  tx.create(setupRef, {schemaVersion: 1, classification: "sales_private",
+    setupId, organizerId, blueprintId: blueprint.blueprintId,
+    blueprintRevision: blueprint.revision, setupHash, formId,
+    createdByUid: identity.uid, createdAt: deps.now().toISOString()});
+  return {...base, status: "prepared", formId,
+    editorPath: `/host/audience/forms/${formId}`};
+}
+
+interface DemoContinuation {
+  schemaVersion: 1; classification: "sales_private"; continuationId: string;
+  actorUid: string; organizerId: string; invitationId: string; invitationRevision: number;
+  invitationExpiresAt: string; blueprintId: string; blueprintRevision: number;
+  sessionId: string; sessionRevision: number; setupHash: string;
+  completedAt: string; createdAt: string; expiresAt: string;
+}
+const CONTINUATIONS = "salesDemoContinuations";
+const CONTINUATION_DAYS = 30;
+function continuationIdFor(uid: string, sessionId: string): string {
+  return hash(`continuation\u0000${uid}\u0000${sessionId}`);
+}
+async function continuationAccount(deps: DemoDeps, identity: Identity,
+  tx: FirebaseFirestore.Transaction, organizerId: string): Promise<void> {
+  const user = await deps.getUser(identity.uid); currentToken(identity, user);
+  const [deleted, organizer, account] = await Promise.all([
+    tx.get(deps.db.collection("deletedUsers").doc(identity.uid)),
+    tx.get(deps.db.collection("organizers").doc(organizerId)),
+    tx.get(deps.db.collection("organizerSalesAccounts").doc(organizerId)),
+  ]);
+  await assertSalesPrivacyOpen(tx, deps.db, organizerId);
+  const sales = account.data(); const canonical = organizer.data();
+  if (user.disabled || deleted.exists || !canonical || canonical.archived === true ||
+      canonical.status === "archived" || sales?.classification !== "sales_private" ||
+      sales.organizerId !== organizerId || sales.researchStatus === "archived" ||
+      sales.suppressionStatus !== "clear" || sales.duplicateReviewRequired) {
+    fail("permission-denied", "Current organizer onboarding scope is unavailable.");
+  }
+}
+
+/** Explicitly preserve completed practice for a bounded claim review delay; no bearer storage. */
+export async function createDemoContinuation(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<Record<string, unknown>> {
+  const body = record(raw); only(body, ["sessionId", "grantToken"]);
+  const sessionId = id(body.sessionId); const token = grantToken(body.grantToken);
+  return deps.db.runTransaction(async (tx) => {
+    const continuationId = continuationIdFor(identity.uid, sessionId);
+    const ref = deps.db.collection(CONTINUATIONS).doc(continuationId);
+    const existing = (await tx.get(ref)).data() as DemoContinuation | undefined;
+    if (existing) {
+      const recovered = await resumeContinuationInTransaction(deps, identity,
+        tx, continuationId, false, undefined);
+      return {continuationId, expiresAt: recovered.expiresAt, publicationAuthority: false};
+    }
+    const session = (await tx.get(deps.db.collection(SESSIONS).doc(sessionId))).data() as Session | undefined;
+    if (!session || session.actorUid !== identity.uid || session.status !== "completed" ||
+        !Number.isFinite(Date.parse(session.expiresAt)) || Date.parse(session.expiresAt) <= deps.now().getTime()) {
+      return fail("permission-denied", "Complete a current private sample before preserving its setup.");
+    }
+    const [inviteSnap, blueprintSnap] = await Promise.all([
+      tx.get(deps.db.collection(INVITATIONS).doc(session.invitationId)),
+      tx.get(deps.db.collection(BLUEPRINTS).doc(session.blueprintId)),
+    ]);
+    const blueprint = blueprintSnap.data() as Blueprint | undefined;
+    const invitation = await grant(deps, identity, inviteSnap.data() as Invitation | undefined, blueprint, token, tx);
+    if (!blueprint?.organizerId || blueprint.blueprintId !== session.blueprintId ||
+        blueprint.revision !== session.blueprintRevision) {
+      return fail("failed-precondition", "A reviewed canonical organizer setup is required.");
+    }
+    await continuationAccount(deps, identity, tx, blueprint.organizerId);
+    const setupHash = setupPlanHash(currentSetupPlan(blueprint.setupPlan));
+    const now = deps.now().toISOString();
+    const row: DemoContinuation = {schemaVersion: 1, classification: "sales_private", continuationId,
+      actorUid: identity.uid, organizerId: blueprint.organizerId,
+      invitationId: invitation.invitationId, invitationRevision: invitation.revision,
+      invitationExpiresAt: invitation.expiresAt, blueprintId: blueprint.blueprintId,
+      blueprintRevision: blueprint.revision, sessionId, sessionRevision: session.revision,
+      setupHash, completedAt: now, createdAt: now,
+      expiresAt: new Date(Date.parse(now) + CONTINUATION_DAYS * DAY).toISOString()};
+    tx.create(ref, row);
+    return {continuationId, expiresAt: row.expiresAt, publicationAuthority: false};
+  });
+}
+
+/** Read or materialize only after current Auth, invitation review, Sales and Forms authority checks. */
+export async function resumeDemoContinuation(deps: DemoDeps, identity: Identity,
+  raw: unknown, prepare: boolean): Promise<Record<string, unknown>> {
+  const body = record(raw); only(body, prepare ? ["continuationId", "setupHash"] : ["continuationId"]);
+  const continuationId = id(body.continuationId);
+  return deps.db.runTransaction((tx) => resumeContinuationInTransaction(deps,
+    identity, tx, continuationId, prepare, body.setupHash));
+}
+async function resumeContinuationInTransaction(deps: DemoDeps, identity: Identity,
+  tx: FirebaseFirestore.Transaction, continuationId: string, prepare: boolean,
+  requestedSetupHash: unknown): Promise<Record<string, unknown>> {
+    const row = (await tx.get(deps.db.collection(CONTINUATIONS).doc(continuationId))).data() as DemoContinuation | undefined;
+    const now = deps.now().getTime();
+    if (!row || row.actorUid !== identity.uid || row.schemaVersion !== 1 || row.classification !== "sales_private" ||
+        row.continuationId !== continuationId || continuationIdFor(identity.uid, row.sessionId) !== continuationId ||
+        !Number.isFinite(Date.parse(row.expiresAt)) || !Number.isFinite(Date.parse(row.createdAt)) ||
+        !Number.isFinite(Date.parse(row.completedAt)) || !Number.isFinite(Date.parse(row.invitationExpiresAt)) || Date.parse(row.expiresAt) <= now ||
+        Date.parse(row.createdAt) > now || row.completedAt !== row.createdAt ||
+        Date.parse(row.expiresAt) !== Date.parse(row.createdAt) + CONTINUATION_DAYS * DAY ||
+        Date.parse(row.completedAt) >= Date.parse(row.invitationExpiresAt)) {
+      return fail("permission-denied", "Current preserved setup is required.");
+    }
+    const [inviteSnap, blueprintSnap, user] = await Promise.all([
+      tx.get(deps.db.collection(INVITATIONS).doc(row.invitationId)),
+      tx.get(deps.db.collection(BLUEPRINTS).doc(row.blueprintId)), deps.getUser(identity.uid),
+    ]);
+    currentToken(identity, user);
+    const invite = inviteSnap.data() as Invitation | undefined;
+    const blueprint = blueprintSnap.data() as Blueprint | undefined;
+    const gate = await currentCapability(deps, tx);
+    // The original interactive invitation may expire during claim review. Only
+    // the previously preserved completion authorizes this bounded own setup;
+    // revocation, contact binding and all current review gates remain required.
+    if (user.disabled || !invite || invite.revoked || !invite.contactBinding ||
+        invite.revision !== row.invitationRevision || invite.invitationId !== row.invitationId ||
+        invite.expiresAt !== row.invitationExpiresAt || invite.blueprintId !== row.blueprintId ||
+        invite.blueprintRevision !== row.blueprintRevision || !blueprint || blueprint.state !== "reviewed" ||
+        blueprint.blueprintId !== row.blueprintId || blueprint.revision !== row.blueprintRevision ||
+        blueprint.organizerId !== row.organizerId || blueprint.capability !== DEMO_CAPABILITY ||
+        blueprint.capabilityRevision !== gate.revision || blueprint.evidenceRevision !== gate.evidenceRevision ||
+        setupPlanHash(currentSetupPlan(blueprint.setupPlan)) !== row.setupHash ||
+        !boundContact(identity, user, invite.contactBinding, key(deps))) {
+      return fail("permission-denied", "The preserved completion or current review changed.");
+    }
+    await continuationAccount(deps, identity, tx, row.organizerId);
+    const canonical = (await tx.get(deps.db.collection("organizers").doc(row.organizerId))).data()!;
+    const setup = await reviewedOrganizerSetup(deps, identity, blueprint, tx, prepare, requestedSetupHash);
+    return {continuationId, expiresAt: row.expiresAt, organizer: {organizerId: row.organizerId,
+      name: canonical.name ?? "Your organizer", claimState: canonical.claim?.state ?? "unclaimed"}, setup};
 }

@@ -5081,3 +5081,17 @@ links them to the same `organizers/{organizerId}` and private Sales companion.
 Partner submission projections are independent of the latest market-wide Intake
 view and withhold linked identities after a Sales privacy restriction. Both new
 record families deny direct client reads and writes, including Admin clients.
+
+
+`salesDemoContinuations/{continuationId}` retains an authenticated completed
+practice proof for exactly 30 days from explicit preservation. The identifier is
+scoped to actor UID and original session; storage contains reviewed references,
+revisions and setup hashes, never the bearer grant. Exact own-result recovery
+survives lost responses and removal of the original session without renewing the
+deadline. Current contact binding, Auth, deletion, invitation revocation/revision,
+blueprint/capability/evidence/setup revisions, suppression, duplicate review and
+Sales privacy remain gates on every read and preparation. Claims and publication
+remain independent. Materialization reuses the existing Forms manager check,
+transaction and immutable setup receipt. Client collection access is denied.
+Anonymous demo unfurls return a generic shell without private record reads;
+personalized previews require the invitation grant and currently verified contact.

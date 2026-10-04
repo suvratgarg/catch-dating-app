@@ -28578,6 +28578,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createSalesDemoContinuationCallablePayloadGrantToken = CatchContractFieldConstraints(
+    path: 'createSalesDemoContinuationCallablePayload.grantToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const createSalesDemoContinuationCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'createSalesDemoContinuationCallablePayload.sessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
   static const createSavedEventClientWriteDataEventId = CatchContractFieldConstraints(
     path: 'createSavedEventClientWrite.data.eventId',
     maxLength: 180,
@@ -83700,6 +83714,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{20,160}\$',
   );
 
+  static const getSalesDemoContinuationCallablePayloadContinuationId = CatchContractFieldConstraints(
+    path: 'getSalesDemoContinuationCallablePayload.continuationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const getSalesPartnerWorkspaceCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'getSalesPartnerWorkspaceCallablePayload.cursor',
     maxLength: 128,
@@ -119558,6 +119579,20 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9._:-]+\$',
   );
 
+  static const prepareSalesDemoContinuationFormCallablePayloadContinuationId = CatchContractFieldConstraints(
+    path: 'prepareSalesDemoContinuationFormCallablePayload.continuationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const prepareSalesDemoContinuationFormCallablePayloadSetupHash = CatchContractFieldConstraints(
+    path: 'prepareSalesDemoContinuationFormCallablePayload.setupHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const previewEventAssignmentFeaturesCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'previewEventAssignmentFeaturesCallablePayload.eventId',
     maxLength: 180,
@@ -136325,7 +136360,7 @@ abstract final class CatchContractConstraints {
   static const salesActionReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesActionReceiptDocument.action',
     required: true,
-    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply', 'partner.register', 'partner.nominate', 'partner.assign', 'partner.assignment.decide', 'partner.revoke'],
+    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply', 'partner.register', 'partner.nominate', 'partner.assign', 'partner.assignment.decide', 'partner.revoke', 'partner.assignment.update'],
   );
 
   static const salesActionReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -137392,6 +137427,114 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const salesDemoContinuationDocumentActorUid = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.actorUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const salesDemoContinuationDocumentBlueprintId = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.blueprintId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const salesDemoContinuationDocumentBlueprintRevision = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.blueprintRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesDemoContinuationDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.classification',
+    required: true,
+  );
+
+  static const salesDemoContinuationDocumentCompletedAt = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.completedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesDemoContinuationDocumentContinuationId = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.continuationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesDemoContinuationDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.createdAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesDemoContinuationDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesDemoContinuationDocumentInvitationExpiresAt = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.invitationExpiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesDemoContinuationDocumentInvitationId = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.invitationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const salesDemoContinuationDocumentInvitationRevision = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.invitationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesDemoContinuationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const salesDemoContinuationDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesDemoContinuationDocumentSessionId = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.sessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const salesDemoContinuationDocumentSessionRevision = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.sessionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesDemoContinuationDocumentSetupHash = CatchContractFieldConstraints(
+    path: 'salesDemoContinuationDocument.setupHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const salesDemoInvitationsDocumentBlueprintId = CatchContractFieldConstraints(
     path: 'salesDemoInvitationsDocument.blueprintId',
     required: true,
@@ -137811,6 +137954,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const salesDemoPreviewCallablePayloadGrantToken = CatchContractFieldConstraints(
+    path: 'salesDemoPreviewCallablePayload.grantToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
   static const salesDemoPreviewCallablePayloadInvitationId = CatchContractFieldConstraints(
@@ -141133,7 +141282,7 @@ abstract final class CatchContractConstraints {
   static const salesIntelligenceReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesIntelligenceReceiptDocument.action',
     required: true,
-    enumValues: <String>['policy.save', 'assessment.save', 'clause.save', 'clause.review', 'score.snapshot', 'draft.record', 'draft.review', 'draft.copy'],
+    enumValues: <String>['policy.save', 'assessment.save', 'clause.save', 'clause.review', 'score.snapshot', 'draft.record', 'draft.review', 'draft.copy', 'partner.draft.record', 'partner.draft.review', 'partner.draft.copy'],
   );
 
   static const salesIntelligenceReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -141817,6 +141966,31 @@ abstract final class CatchContractConstraints {
 
   static const salesOutreachDraftsDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'salesOutreachDraftsDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesOutreachDraftsDocumentParticipantScopeAssignmentRevision = CatchContractFieldConstraints(
+    path: 'salesOutreachDraftsDocument.participantScope.assignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesOutreachDraftsDocumentParticipantScopePartnerUid = CatchContractFieldConstraints(
+    path: 'salesOutreachDraftsDocument.participantScope.partnerUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesOutreachDraftsDocumentParticipantScopeRenderedDraftId = CatchContractFieldConstraints(
+    path: 'salesOutreachDraftsDocument.participantScope.renderedDraftId',
     maxLength: 160,
     minLength: 1,
     required: true,
@@ -153654,6 +153828,58 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const updateSalesPartnerAssignmentCallablePayloadChannel = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['email', 'whatsapp', 'other'],
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadNextAction = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.nextAction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadRelationshipContext = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.relationshipContext',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateSalesPartnerAssignmentCallablePayloadReviewAt = CatchContractFieldConstraints(
+    path: 'updateSalesPartnerAssignmentCallablePayload.reviewAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
   static const updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm',
     required: true,
@@ -163461,6 +163687,8 @@ abstract final class CatchContractConstraints {
     'createRazorpayOrderCallablePayload.eventId': createRazorpayOrderCallablePayloadEventId,
     'createRazorpayOrderCallablePayload.inviteCode': createRazorpayOrderCallablePayloadInviteCode,
     'createRazorpayOrderCallablePayload.inviteLinkId': createRazorpayOrderCallablePayloadInviteLinkId,
+    'createSalesDemoContinuationCallablePayload.grantToken': createSalesDemoContinuationCallablePayloadGrantToken,
+    'createSalesDemoContinuationCallablePayload.sessionId': createSalesDemoContinuationCallablePayloadSessionId,
     'createSavedEventClientWrite.data.eventId': createSavedEventClientWriteDataEventId,
     'createSavedEventClientWrite.data.savedAt._nanoseconds': createSavedEventClientWriteDataSavedAtNanoseconds,
     'createSavedEventClientWrite.data.savedAt._seconds': createSavedEventClientWriteDataSavedAtSeconds,
@@ -170837,6 +171065,7 @@ abstract final class CatchContractConstraints {
     'getProgramHouseholdRsvpViewCallablePayload.token': getProgramHouseholdRsvpViewCallablePayloadToken,
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
+    'getSalesDemoContinuationCallablePayload.continuationId': getSalesDemoContinuationCallablePayloadContinuationId,
     'getSalesPartnerWorkspaceCallablePayload.cursor': getSalesPartnerWorkspaceCallablePayloadCursor,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
@@ -175807,6 +176036,8 @@ abstract final class CatchContractConstraints {
     'prepareOrganizerManualSendTaskCallablePayload.organizerId': prepareOrganizerManualSendTaskCallablePayloadOrganizerId,
     'prepareOrganizerManualSendTaskCallablePayload.prefillText': prepareOrganizerManualSendTaskCallablePayloadPrefillText,
     'prepareOrganizerManualSendTaskCallablePayload.requestId': prepareOrganizerManualSendTaskCallablePayloadRequestId,
+    'prepareSalesDemoContinuationFormCallablePayload.continuationId': prepareSalesDemoContinuationFormCallablePayloadContinuationId,
+    'prepareSalesDemoContinuationFormCallablePayload.setupHash': prepareSalesDemoContinuationFormCallablePayloadSetupHash,
     'previewEventAssignmentFeaturesCallablePayload.eventId': previewEventAssignmentFeaturesCallablePayloadEventId,
     'previewEventAssignmentFeaturesCallablePayload.rules': previewEventAssignmentFeaturesCallablePayloadRules,
     'previewEventAssignmentFeaturesCallablePayload.rules.items.featureId': previewEventAssignmentFeaturesCallablePayloadRulesItemsFeatureId,
@@ -178235,6 +178466,22 @@ abstract final class CatchContractConstraints {
     'salesDemoCapabilitiesDocument.reviewedByUid': salesDemoCapabilitiesDocumentReviewedByUid,
     'salesDemoCapabilitiesDocument.revision': salesDemoCapabilitiesDocumentRevision,
     'salesDemoCapabilitiesDocument.schemaVersion': salesDemoCapabilitiesDocumentSchemaVersion,
+    'salesDemoContinuationDocument.actorUid': salesDemoContinuationDocumentActorUid,
+    'salesDemoContinuationDocument.blueprintId': salesDemoContinuationDocumentBlueprintId,
+    'salesDemoContinuationDocument.blueprintRevision': salesDemoContinuationDocumentBlueprintRevision,
+    'salesDemoContinuationDocument.classification': salesDemoContinuationDocumentClassification,
+    'salesDemoContinuationDocument.completedAt': salesDemoContinuationDocumentCompletedAt,
+    'salesDemoContinuationDocument.continuationId': salesDemoContinuationDocumentContinuationId,
+    'salesDemoContinuationDocument.createdAt': salesDemoContinuationDocumentCreatedAt,
+    'salesDemoContinuationDocument.expiresAt': salesDemoContinuationDocumentExpiresAt,
+    'salesDemoContinuationDocument.invitationExpiresAt': salesDemoContinuationDocumentInvitationExpiresAt,
+    'salesDemoContinuationDocument.invitationId': salesDemoContinuationDocumentInvitationId,
+    'salesDemoContinuationDocument.invitationRevision': salesDemoContinuationDocumentInvitationRevision,
+    'salesDemoContinuationDocument.organizerId': salesDemoContinuationDocumentOrganizerId,
+    'salesDemoContinuationDocument.schemaVersion': salesDemoContinuationDocumentSchemaVersion,
+    'salesDemoContinuationDocument.sessionId': salesDemoContinuationDocumentSessionId,
+    'salesDemoContinuationDocument.sessionRevision': salesDemoContinuationDocumentSessionRevision,
+    'salesDemoContinuationDocument.setupHash': salesDemoContinuationDocumentSetupHash,
     'salesDemoInvitationsDocument.blueprintId': salesDemoInvitationsDocumentBlueprintId,
     'salesDemoInvitationsDocument.blueprintRevision': salesDemoInvitationsDocumentBlueprintRevision,
     'salesDemoInvitationsDocument.classification': salesDemoInvitationsDocumentClassification,
@@ -178295,6 +178542,7 @@ abstract final class CatchContractConstraints {
     'salesDemoManagementCallablePayload.setupPlan.requirements.items': salesDemoManagementCallablePayloadSetupPlanRequirementsItems,
     'salesDemoManagementCallablePayload.setupPlan.templateId': salesDemoManagementCallablePayloadSetupPlanTemplateId,
     'salesDemoManagementCallablePayload.setupPlan.title': salesDemoManagementCallablePayloadSetupPlanTitle,
+    'salesDemoPreviewCallablePayload.grantToken': salesDemoPreviewCallablePayloadGrantToken,
     'salesDemoPreviewCallablePayload.invitationId': salesDemoPreviewCallablePayloadInvitationId,
     'salesDemoReceiptsDocument.action': salesDemoReceiptsDocumentAction,
     'salesDemoReceiptsDocument.actorUid': salesDemoReceiptsDocumentActorUid,
@@ -178865,6 +179113,9 @@ abstract final class CatchContractConstraints {
     'salesOutreachDraftsDocument.inputHash': salesOutreachDraftsDocumentInputHash,
     'salesOutreachDraftsDocument.opportunityId': salesOutreachDraftsDocumentOpportunityId,
     'salesOutreachDraftsDocument.organizerId': salesOutreachDraftsDocumentOrganizerId,
+    'salesOutreachDraftsDocument.participantScope.assignmentRevision': salesOutreachDraftsDocumentParticipantScopeAssignmentRevision,
+    'salesOutreachDraftsDocument.participantScope.partnerUid': salesOutreachDraftsDocumentParticipantScopePartnerUid,
+    'salesOutreachDraftsDocument.participantScope.renderedDraftId': salesOutreachDraftsDocumentParticipantScopeRenderedDraftId,
     'salesOutreachDraftsDocument.reviewedAt': salesOutreachDraftsDocumentReviewedAt,
     'salesOutreachDraftsDocument.reviewedBy': salesOutreachDraftsDocumentReviewedBy,
     'salesOutreachDraftsDocument.schemaVersion': salesOutreachDraftsDocumentSchemaVersion,
@@ -180484,6 +180735,13 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventPreferencesCallablePayload.organizerId': updatePrivateEventPreferencesCallablePayloadOrganizerId,
     'updatePrivateEventPreferencesCallablePayload.requestId': updatePrivateEventPreferencesCallablePayloadRequestId,
     'updatePrivateEventPreferencesCallablePayload.reviewedDefaultsHash': updatePrivateEventPreferencesCallablePayloadReviewedDefaultsHash,
+    'updateSalesPartnerAssignmentCallablePayload.channel': updateSalesPartnerAssignmentCallablePayloadChannel,
+    'updateSalesPartnerAssignmentCallablePayload.expectedRevision': updateSalesPartnerAssignmentCallablePayloadExpectedRevision,
+    'updateSalesPartnerAssignmentCallablePayload.nextAction': updateSalesPartnerAssignmentCallablePayloadNextAction,
+    'updateSalesPartnerAssignmentCallablePayload.organizerId': updateSalesPartnerAssignmentCallablePayloadOrganizerId,
+    'updateSalesPartnerAssignmentCallablePayload.relationshipContext': updateSalesPartnerAssignmentCallablePayloadRelationshipContext,
+    'updateSalesPartnerAssignmentCallablePayload.requestId': updateSalesPartnerAssignmentCallablePayloadRequestId,
+    'updateSalesPartnerAssignmentCallablePayload.reviewAt': updateSalesPartnerAssignmentCallablePayloadReviewAt,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.paceMinSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.preferredDistances': updateUserProfilePatchActivityPreferencesRunningPreferredDistances,

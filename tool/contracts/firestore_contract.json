@@ -3959,6 +3959,25 @@
         "adminAssignSalesPartner",
         "adminRevokeSalesPartnerAccess"
       ]
+    },
+    {
+      "id": "salesDemoContinuations",
+      "path": "salesDemoContinuations/{continuationId}",
+      "rulesMatch": "/salesDemoContinuations/{privateDocument=**}",
+      "typescriptInterface": "SalesDemoContinuationDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "private Sales Demo continuation boundary",
+      "read": "server only; current own completion projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "createSalesDemoContinuation",
+        "getSalesDemoContinuation",
+        "prepareSalesDemoContinuationForm"
+      ]
     }
   ]
 }

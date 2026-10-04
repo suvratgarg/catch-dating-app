@@ -5,9 +5,14 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {salesDemoContinuationDocumentSchema} from "./schemas/salesDemoContinuationDocument";
+export {createSalesDemoContinuationCallablePayloadSchema} from "./schemas/createSalesDemoContinuationInput";
+export {getSalesDemoContinuationCallablePayloadSchema} from "./schemas/getSalesDemoContinuationInput";
+export {prepareSalesDemoContinuationFormCallablePayloadSchema} from "./schemas/prepareSalesDemoContinuationFormInput";
 export {registerSalesPartnerCallablePayloadSchema} from "./schemas/registerSalesPartnerInput";
 export {nominateSalesOrganizerCallablePayloadSchema} from "./schemas/nominateSalesOrganizerInput";
 export {getSalesPartnerWorkspaceCallablePayloadSchema} from "./schemas/getSalesPartnerWorkspaceInput";
+export {updateSalesPartnerAssignmentCallablePayloadSchema} from "./schemas/updateSalesPartnerAssignmentInput";
 export {decideSalesPartnerAssignmentCallablePayloadSchema} from "./schemas/decideSalesPartnerAssignmentInput";
 export {adminAssignSalesPartnerCallablePayloadSchema} from "./schemas/adminAssignSalesPartnerInput";
 export {adminRevokeSalesPartnerAccessCallablePayloadSchema} from "./schemas/adminRevokeSalesPartnerAccessInput";

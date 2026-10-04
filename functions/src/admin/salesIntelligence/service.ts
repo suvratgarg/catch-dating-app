@@ -7,6 +7,8 @@ import {hasCurrentDraftContact} from "../sales/suppression";
 import {salesRelationshipId} from "../sales/records";
 import {assertQualifiedByRuntimePolicy} from "../sales/qualificationPolicy";
 import type {SalesPrincipal} from "../sales/types";
+import {requireAssignment} from "../../partners/service";
+import {expectRevision, type PartnerActor, type PartnerDeps} from "../../partners/model";
 import {Assessment, Clause, IntelligencePolicy, ScoreSnapshot,
   evaluateScore, fail, hash, id, iso, object, parsePolicy, requestId,
   revision, text, uniqueIds} from "./model";
@@ -45,13 +47,29 @@ async function mutate<T extends Record<string, unknown>>(
   replayGuard?: (tx: FirebaseFirestore.Transaction) => Promise<void>,
 ): Promise<T> {
   (ownerOnly ? owner : employee)(principal);
-  await deps.authorize(principal, ownerOnly);
+  return mutateAuthorized(deps, principal, action, request, material,
+    {beforeTransaction: () => deps.authorize(principal, ownerOnly),
+      inTransaction: () => deps.authorize(principal, ownerOnly)}, apply, replayGuard);
+}
+
+interface IntelligenceMutationAccess {
+  beforeTransaction: () => Promise<void>;
+  inTransaction: (tx: FirebaseFirestore.Transaction) => Promise<void>;
+}
+async function mutateAuthorized<T extends Record<string, unknown>>(
+  deps: Pick<IntelligenceDeps, "db" | "now">, principal: SalesPrincipal,
+  action: string, request: string, material: unknown,
+  access: IntelligenceMutationAccess,
+  apply: (tx: FirebaseFirestore.Transaction, now: string) => Promise<T>,
+  replayGuard?: (tx: FirebaseFirestore.Transaction) => Promise<void>,
+): Promise<T> {
+  await access.beforeTransaction();
   const db = deps.db;
   const ref = db.collection("salesIntelligenceReceipts")
     .doc(receiptId(principal, action, request));
   const materialHash = hash([principal.uid, action, material]);
   return db.runTransaction(async (tx) => {
-    await deps.authorize(principal, ownerOnly);
+    await access.inTransaction(tx);
     await assertSalesMaterialPrivacyOpen(db, material, tx);
     const scoped = material as {clauseId?: string; draftId?: string};
     if (scoped?.clauseId) {
@@ -62,7 +80,6 @@ async function mutate<T extends Record<string, unknown>>(
       await assertSalesMaterialPrivacyOpen(db,
         (await tx.get(db.collection("salesOutreachDrafts").doc(scoped.draftId))).data(), tx);
     }
-    if (replayGuard) await replayGuard(tx);
     const existing = await tx.get(ref);
     if (existing.exists) {
       const data = existing.data();
@@ -71,9 +88,12 @@ async function mutate<T extends Record<string, unknown>>(
           data?.action !== action) {
         return fail("already-exists", "Request ID belongs to different material.");
       }
+      if (replayGuard) await replayGuard(tx);
+      await access.inTransaction(tx);
       return data.result as T;
     }
     const now = deps.now().toISOString();
+    await access.inTransaction(tx);
     const result = await apply(tx, now);
     tx.create(ref, {schemaVersion: 1, classification: "sales_private",
       receiptId: ref.id, actorUid: principal.uid, action, requestId: request,
@@ -86,6 +106,31 @@ async function mutate<T extends Record<string, unknown>>(
         after: {receiptId: ref.id, materialHash}});
     return result;
   });
+}
+
+interface PartnerDraftScope {
+  partnerUid: string; assignmentRevision: number; renderedDraftId: string;
+}
+function partnerDraftAccess(deps: PartnerDeps, actor: PartnerActor,
+  organizerId: string, expectedAssignmentRevision: number,
+  draftId?: string): IntelligenceMutationAccess {
+  const expected = revision(expectedAssignmentRevision);
+  return {beforeTransaction: () => deps.checkAuth(actor, false),
+    inTransaction: async (tx) => {
+      const assignment = await requireAssignment(deps, actor, tx, organizerId);
+      expectRevision(assignment.revision, expected);
+      if (!draftId) return;
+      const stored = (await tx.get(deps.db.collection("salesOutreachDrafts").doc(draftId))).data();
+      if (stored?.classification !== "sales_private" || stored.organizerId !== organizerId ||
+          stored.createdBy !== actor.uid || stored.participantScope?.partnerUid !== actor.uid ||
+          stored.participantScope?.assignmentRevision !== expected ||
+          typeof stored.participantScope?.renderedDraftId !== "string" ||
+          stored.draftId !== draftId || stored.draft?.draftId !== draftId ||
+          draftId !== `draft-partner-${hash({organizerId, participantScope: stored.participantScope})}` ||
+          stored.sourceRequest?.organizerId !== organizerId) {
+        fail("permission-denied", "Current own assignment-bound draft is required.");
+      }
+    }};
 }
 function accountOk(row: FirebaseFirestore.DocumentData | undefined,
   organizerId: string): boolean {
@@ -463,11 +508,43 @@ export async function reviewIntelligenceClause(deps: IntelligenceDeps,
 export async function buildOutreachInput(deps: IntelligenceDeps,
   principal: SalesPrincipal, payload: unknown,
   tx?: FirebaseFirestore.Transaction): Promise<Record<string, unknown>> {
+  employee(principal);
+  return buildOutreachInputCore(deps, payload, {
+    authorize: async () => {await deps.authorize(principal, false); return null;},
+  }, tx);
+}
+
+/** Partner composition consumes approved platform clauses, never employee access. */
+export async function buildPartnerOutreachInput(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown, expectedAssignmentRevision: number,
+  tx?: FirebaseFirestore.Transaction): Promise<Record<string, unknown>> {
+  const expected = revision(expectedAssignmentRevision);
+  const input = object(payload, ["organizerId", "contactId", "opportunityId",
+    "observationIds", "capabilityIds", "referenceIds", "ctaIds",
+    "channel", "purpose", "priorActivityId"]);
+  const organizerId = id(input.organizerId);
+  return buildOutreachInputCore(deps, input, {
+    priorActivityActorUid: actor.uid,
+    authorize: async (readTx) => {
+      const assignment = await requireAssignment(deps, actor, readTx, organizerId);
+      expectRevision(assignment.revision, expected);
+      return {organizerId, partnerUid: actor.uid, assignmentRevision: assignment.revision};
+    },
+  }, tx);
+}
+
+interface OutreachSourceAccess {
+  authorize: (tx: FirebaseFirestore.Transaction) => Promise<Record<string, unknown> | null>;
+  priorActivityActorUid?: string;
+}
+
+async function buildOutreachInputCore(deps: Pick<IntelligenceDeps, "db" | "now">,
+  payload: unknown, access: OutreachSourceAccess,
+  tx?: FirebaseFirestore.Transaction): Promise<Record<string, unknown>> {
   if (!tx) {
     return deps.db.runTransaction((readTx) =>
-      buildOutreachInput(deps, principal, payload, readTx));
+      buildOutreachInputCore(deps, payload, access, readTx));
   }
-  employee(principal);
   const input = object(payload, ["organizerId", "contactId", "opportunityId",
     "observationIds", "capabilityIds", "referenceIds", "ctaIds",
     "channel", "purpose", "priorActivityId"]);
@@ -485,7 +562,7 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
       (input.purpose === "first_message" && input.priorActivityId)) {
     return fail("invalid-argument", "A grounded outreach purpose and clauses are required.");
   }
-  await deps.authorize(principal, false);
+  const authorizationScope = await access.authorize(tx);
   const db = deps.db;
   await assertSalesPrivacyOpen(tx, db, organizerId);
   const read = (ref: FirebaseFirestore.DocumentReference) =>
@@ -511,7 +588,7 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   const opportunity = opportunitySnap.data();
   const policy = requireCurrentPolicy(policySnap.data());
   const draftContact = await hasCurrentDraftContact(db, organizerId, contactId, now, tx);
-  await deps.authorize(principal, false);
+  await access.authorize(tx);
   if (!accountOk(account, organizerId) || account?.suppressionStatus !== "clear" ||
       account.duplicateReviewRequired || account.researchStatus !== "qualified" ||
       !account.qualificationPolicy || !contact ||
@@ -569,6 +646,12 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
       prior?.opportunityId !== opportunityId)) {
     return fail("failed-precondition", "Prior interaction does not match this opportunity.");
   }
+  if (prior && access.priorActivityActorUid &&
+      (prior.actorUid !== access.priorActivityActorUid ||
+       prior.type !== "outreach_sent_manual" || prior.outcome !== "actor_attested_sent" ||
+       prior.providerConfirmed !== false)) {
+    return fail("permission-denied", "Partner follow-up requires their own manually attested interaction.");
+  }
   const make = (ids: string[]) => ids.map((clauseId) => {
     const clause = clauses[clauseIds.indexOf(clauseId)]!;
     return {id: clause.clauseId, text: clause.text, revision: clause.revision,
@@ -594,8 +677,9 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
     }),
     priorInteraction: prior ? {activityId: id(input.priorActivityId),
       summary: prior.note, revision: 0} : null};
-  await deps.authorize(principal, false);
+  await access.authorize(tx);
   return {bundle, sourceHash: hash({material: materialBundle(bundle),
+    ...(authorizationScope ? {participantScope: authorizationScope} : {}),
     intelligencePolicy: policy,
     contactRecordRevision: contact.revision,
     allEvidence: allEvidence.docs.map((doc) => ({id: doc.id,
@@ -722,34 +806,88 @@ export async function recordOperationsDraft(deps: IntelligenceDeps,
             materialBundle(frozenBundle)) {
         return fail("aborted", "Outreach sources changed during drafting.");
       }
-      const ref = deps.db.collection("salesOutreachDrafts").doc(draft.draftId);
-      const prior = await tx.get(ref);
-      if (prior.exists) {
-        return fail("already-exists", "Draft identity already exists.");
-      }
-      const stored = {schemaVersion: 1, classification: "sales_private",
-        draftId: draft.draftId, organizerId: sourceRequest.organizerId,
-        contactId: sourceRequest.contactId,
-        opportunityId: sourceRequest.opportunityId,
-        sourceRequest, sourceMaterialHash: materialBundle(frozenBundle),
-        sourceHash: frozenSourceHash,
-        inputHash: draft.inputHash, draft, status: "pending_review",
-        createdAt: now, createdBy: principal.uid,
-        reviewedAt: null, reviewedBy: null};
-      tx.create(ref, stored);
-      return {draftId: draft.draftId, draft, status: stored.status};
+      return persistOperationsDraft(tx, deps.db, principal.uid, now,
+        sourceRequest, frozenBundle, frozenSourceHash, draft);
+    });
+}
+
+async function persistOperationsDraft(tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore, actorUid: string, now: string,
+  sourceRequest: DraftRequest, frozenBundle: Record<string, unknown>,
+  frozenSourceHash: string, draft: RenderedDraft, participantScope?: PartnerDraftScope) {
+  const ref = db.collection("salesOutreachDrafts").doc(draft.draftId);
+  const prior = await tx.get(ref);
+  if (prior.exists) {
+    return fail("already-exists", "Draft identity already exists.");
+  }
+  const stored = {schemaVersion: 1, classification: "sales_private",
+    draftId: draft.draftId, organizerId: sourceRequest.organizerId,
+    contactId: sourceRequest.contactId,
+    opportunityId: sourceRequest.opportunityId,
+    sourceRequest, sourceMaterialHash: materialBundle(frozenBundle),
+    sourceHash: frozenSourceHash,
+    inputHash: draft.inputHash, draft, status: "pending_review",
+    createdAt: now, createdBy: actorUid,
+    reviewedAt: null, reviewedBy: null,
+    ...(participantScope ? {participantScope} : {})};
+  tx.create(ref, stored);
+  return {draftId: draft.draftId, draft, status: stored.status};
+}
+
+/** Trusted Operations persistence; actual participant roles remain unchanged. */
+export async function recordPartnerOperationsDraft(deps: PartnerDeps,
+  actor: PartnerActor, request: string, sourceRequest: DraftRequest,
+  expectedAssignmentRevision: number, frozenBundle: Record<string, unknown>,
+  frozenSourceHash: string, rendered: unknown) {
+  requestId(request);
+  const organizerId = id(sourceRequest.organizerId);
+  const expected = revision(expectedAssignmentRevision);
+  const renderedDraft = checkedDraft(rendered, frozenBundle);
+  const participantScope = {partnerUid: actor.uid, assignmentRevision: expected,
+    renderedDraftId: renderedDraft.draftId};
+  const draft = {...renderedDraft, draftId: `draft-partner-${hash({organizerId,
+    participantScope})}`};
+  const material = {organizerId, sourceRequest, participantScope, frozenBundle, frozenSourceHash, draft};
+  const currentSource = async (tx: FirebaseFirestore.Transaction) => {
+    const current = await buildPartnerOutreachInput(deps, actor, sourceRequest, expected, tx);
+    if (current.sourceHash !== frozenSourceHash ||
+        materialBundle(current.bundle as Record<string, unknown>) !== materialBundle(frozenBundle)) {
+      fail("aborted", "Outreach sources changed during drafting.");
+    }
+  };
+  return mutateAuthorized(deps, actor, "partner.draft.record", request, material,
+    partnerDraftAccess(deps, actor, organizerId, expected), async (tx, now) => {
+      await currentSource(tx);
+      return persistOperationsDraft(tx, deps.db, actor.uid, now,
+        sourceRequest, frozenBundle, frozenSourceHash, draft, participantScope);
+    }, async (tx) => {
+      await currentSource(tx);
+      await requirePartnerDraft(deps, actor, tx, organizerId, draft.draftId, expected);
     });
 }
 
 async function requireCurrentDraft(deps: IntelligenceDeps,
   principal: SalesPrincipal, tx: FirebaseFirestore.Transaction, draftId: string) {
+  return requireCurrentDraftCore(deps, tx, draftId,
+    (sourceRequest) => buildOutreachInput(deps, principal, sourceRequest, tx));
+}
+async function requirePartnerDraft(deps: PartnerDeps, actor: PartnerActor,
+  tx: FirebaseFirestore.Transaction, organizerId: string, draftId: string,
+  expectedAssignmentRevision: number) {
+  await partnerDraftAccess(deps, actor, organizerId, expectedAssignmentRevision, draftId).inTransaction(tx);
+  return requireCurrentDraftCore(deps, tx, draftId,
+    (sourceRequest) => buildPartnerOutreachInput(deps, actor,
+      sourceRequest, expectedAssignmentRevision, tx));
+}
+async function requireCurrentDraftCore(deps: Pick<IntelligenceDeps, "db" | "now">,
+  tx: FirebaseFirestore.Transaction, draftId: string,
+  currentSource: (sourceRequest: unknown) => Promise<Record<string, unknown>>) {
   const ref = deps.db.collection("salesOutreachDrafts").doc(draftId);
   const stored = (await tx.get(ref)).data();
   if (!stored || stored.classification !== "sales_private") {
     return fail("not-found", "Private outreach draft not found.");
   }
-  const current = await buildOutreachInput(deps, principal,
-    stored.sourceRequest, tx);
+  const current = await currentSource(stored.sourceRequest);
   if (current.sourceHash !== stored.sourceHash ||
       materialBundle(current.bundle as Record<string, unknown>) !==
         stored.sourceMaterialHash) {
@@ -825,4 +963,86 @@ export async function getOutreachDraft(deps: IntelligenceDeps,
   await deps.authorize(principal, false);
   await assertSalesMaterialPrivacyOpen(deps.db, result);
   return result;
+}
+
+/** Participant composition review never approves platform capabilities or proof. */
+export async function reviewPartnerOutreachDraft(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown) {
+  const input = object(payload, ["requestId", "organizerId", "draftId",
+    "expectedAssignmentRevision", "expectedContentHash", "factualValidity", "tone", "channelReadiness"]);
+  const request = requestId(input.requestId);
+  const organizerId = id(input.organizerId);
+  const draftId = id(input.draftId);
+  const expected = revision(input.expectedAssignmentRevision);
+  const expectedContentHash = text(input.expectedContentHash, 64);
+  if (input.factualValidity !== "verified" || input.tone !== "approved" ||
+      input.channelReadiness !== "manual_copy_only") {
+    fail("invalid-argument", "Explicit factual, tone and manual-channel review required.");
+  }
+  const current = (tx: FirebaseFirestore.Transaction) =>
+    requirePartnerDraft(deps, actor, tx, organizerId, draftId, expected);
+  return mutateAuthorized(deps, actor, "partner.draft.review", request,
+    {organizerId, draftId, expectedAssignmentRevision: expected, expectedContentHash,
+      factualValidity: input.factualValidity, tone: input.tone, channelReadiness: input.channelReadiness},
+    partnerDraftAccess(deps, actor, organizerId, expected, draftId), async (tx, now) => {
+      const {ref, stored} = await current(tx);
+      if (stored.status !== "pending_review" || stored.draft.contentHash !== expectedContentHash) {
+        fail("aborted", "Exact own draft changed since review.");
+      }
+      tx.update(ref, {status: "approved", reviewedAt: now, reviewedBy: actor.uid});
+      return {draftId, exactContentHash: expectedContentHash, compositionReviewed: true,
+        capabilityApprovalAuthority: false, sendAuthority: false, providerConfirmed: false};
+    }, async (tx) => {
+      const {stored} = await current(tx);
+      if (stored.status !== "approved" || stored.reviewedBy !== actor.uid ||
+          stored.draft.contentHash !== expectedContentHash) {
+        fail("failed-precondition", "Current own composition review is required for replay.");
+      }
+    });
+}
+
+export async function copyPartnerOutreachDraft(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown) {
+  const input = object(payload, ["requestId", "organizerId", "draftId",
+    "expectedAssignmentRevision", "expectedContentHash"]);
+  const request = requestId(input.requestId);
+  const organizerId = id(input.organizerId);
+  const draftId = id(input.draftId);
+  const expected = revision(input.expectedAssignmentRevision);
+  const expectedContentHash = text(input.expectedContentHash, 64);
+  const current = (tx: FirebaseFirestore.Transaction) =>
+    requirePartnerDraft(deps, actor, tx, organizerId, draftId, expected);
+  return mutateAuthorized(deps, actor, "partner.draft.copy", request,
+    {organizerId, draftId, expectedAssignmentRevision: expected, expectedContentHash},
+    partnerDraftAccess(deps, actor, organizerId, expected, draftId), async (tx, now) => {
+      const {stored} = await current(tx);
+      if (stored.status !== "approved" || stored.reviewedBy !== actor.uid ||
+          stored.draft.contentHash !== expectedContentHash) {
+        fail("failed-precondition", "Current own reviewed draft is required for copying.");
+      }
+      return {draftId, subject: stored.draft.subject as string | null,
+        text: stored.draft.text as string, exactContentHash: expectedContentHash,
+        copiedAt: now, sendAuthority: false, providerConfirmed: false};
+    }, async (tx) => {
+      const {stored} = await current(tx);
+      if (stored.status !== "approved" || stored.reviewedBy !== actor.uid ||
+          stored.draft.contentHash !== expectedContentHash) {
+        fail("failed-precondition", "Current own reviewed draft is required for copying.");
+      }
+    });
+}
+
+export async function getPartnerOutreachDraft(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown) {
+  const input = object(payload, ["organizerId", "draftId", "expectedAssignmentRevision"]);
+  const organizerId = id(input.organizerId);
+  const draftId = id(input.draftId);
+  const expected = revision(input.expectedAssignmentRevision);
+  await deps.checkAuth(actor, false);
+  return deps.db.runTransaction(async (tx) => {
+    const {stored} = await requirePartnerDraft(deps, actor, tx, organizerId, draftId, expected);
+    await partnerDraftAccess(deps, actor, organizerId, expected, draftId).inTransaction(tx);
+    return {draftId, draft: stored.draft, status: stored.status,
+      reviewedAt: stored.reviewedAt, sendAuthority: false};
+  });
 }

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeFirestore} from "../operations/testFirestore";
 import {assignPartner, decideAssignment, getPartnerWorkspace, nominateOrganizer,
-  registerPartner, revokePartnerAccess, requireAssignment} from "./service";
+  registerPartner, revokePartnerAccess, requireAssignment, updateAssignment} from "./service";
 import {PARTNER_TERMS_VERSION, type PartnerActor, type PartnerDeps} from "./model";
 
 const partner: PartnerActor = {uid: "partner-one", roles: []};
@@ -166,4 +166,25 @@ test("partner nomination uses Firestore timestamps through the existing employee
   await listSalesInboundIntents(db, principal, {limit: 1, cursor: page.nextCursor});
   assert.equal((cursor[0] as {toDate(): Date}).toDate().toISOString(), initial);
   assert.equal(cursor[1], created.intentId);
+});
+
+
+test("own accepted lead next steps are versioned self-report without claim, publication or send", async () => {
+  const {fake, deps} = fixture(); await registerPartner(deps, partner, registration);
+  await assignPartner(deps, employee, offer); await decideAssignment(deps, partner, accept);
+  const before = fake.read("organizers/organizer-one");
+  const input = {requestId: "next-action-one", organizerId: "organizer-one", expectedRevision: 2,
+    relationshipContext: "We have not established a personal relationship.", channel: "email",
+    nextAction: "Review the private preparation before considering an introduction.",
+    reviewAt: "2026-10-06T00:00:00.000Z"};
+  const saved = await updateAssignment(deps, partner, input);
+  assert.deepEqual(await updateAssignment(deps, partner, input), saved);
+  assert.deepEqual(fake.read("organizers/organizer-one"), before);
+  assert.equal(fake.entries().some(([path]) => /^(salesOutreachDrafts|salesActivities|organizerForms)\//u.test(path)), false);
+  await assert.rejects(updateAssignment(deps, {uid: "foreign", roles: []}, input), {code: "permission-denied"});
+  await assert.rejects(updateAssignment(deps, partner, {...input, nextAction: "Different"}), {code: "already-exists"});
+  await assert.rejects(updateAssignment(deps, partner, {...input, requestId: "past-review-one", expectedRevision: 3,
+    reviewAt: initial}), {code: "invalid-argument"});
+  fake.write("salesPrivacyRestrictions/organizer-one", {status: "restricted"});
+  await assert.rejects(updateAssignment(deps, partner, input), {code: "failed-precondition"});
 });

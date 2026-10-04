@@ -5,9 +5,14 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateSalesDemoContinuationDocument} from "./validators/salesDemoContinuationDocument";
+export {validateCreateSalesDemoContinuationCallablePayload} from "./validators/createSalesDemoContinuationInput";
+export {validateGetSalesDemoContinuationCallablePayload} from "./validators/getSalesDemoContinuationInput";
+export {validatePrepareSalesDemoContinuationFormCallablePayload} from "./validators/prepareSalesDemoContinuationFormInput";
 export {validateRegisterSalesPartnerCallablePayload} from "./validators/registerSalesPartnerInput";
 export {validateNominateSalesOrganizerCallablePayload} from "./validators/nominateSalesOrganizerInput";
 export {validateGetSalesPartnerWorkspaceCallablePayload} from "./validators/getSalesPartnerWorkspaceInput";
+export {validateUpdateSalesPartnerAssignmentCallablePayload} from "./validators/updateSalesPartnerAssignmentInput";
 export {validateDecideSalesPartnerAssignmentCallablePayload} from "./validators/decideSalesPartnerAssignmentInput";
 export {validateAdminAssignSalesPartnerCallablePayload} from "./validators/adminAssignSalesPartnerInput";
 export {validateAdminRevokeSalesPartnerAccessCallablePayload} from "./validators/adminRevokeSalesPartnerAccessInput";

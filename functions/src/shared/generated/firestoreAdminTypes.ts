@@ -550,6 +550,28 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Bounded own completed-demo proof for private claim review delay. Contains references and hashes, never grant tokens or synthetic guest data. Every resume rechecks current identity, scope and real manager authority before Forms materialization.
+ */
+export interface SalesDemoContinuationDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  continuationId: string;
+  actorUid: string;
+  organizerId: string;
+  invitationId: string;
+  invitationRevision: number;
+  invitationExpiresAt: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  sessionId: string;
+  sessionRevision: number;
+  setupHash: string;
+  completedAt: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+/**
  * Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.
  */
 export interface ProgramLodgingConfigDocument {
@@ -1931,7 +1953,8 @@ export interface SalesActionReceiptDocument {
     | "partner.nominate"
     | "partner.assign"
     | "partner.assignment.decide"
-    | "partner.revoke";
+    | "partner.revoke"
+    | "partner.assignment.update";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -2725,7 +2748,7 @@ export interface SalesIntelligencePolicyDocument {
 }
 
 /**
- * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
+ * Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.
  */
 export interface SalesIntelligenceReceiptDocument {
   schemaVersion: 1;
@@ -2740,7 +2763,10 @@ export interface SalesIntelligenceReceiptDocument {
     | "score.snapshot"
     | "draft.record"
     | "draft.review"
-    | "draft.copy";
+    | "draft.copy"
+    | "partner.draft.record"
+    | "partner.draft.review"
+    | "partner.draft.copy";
   requestId: string;
   materialHash: string;
   result: {
@@ -2825,6 +2851,11 @@ export interface SalesOutreachDraftsDocument {
   createdBy: string;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+    renderedDraftId: string;
+  };
 }
 
 /**

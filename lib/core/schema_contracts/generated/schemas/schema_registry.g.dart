@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'SalesDemoContinuationDocument',
+    source: 'firestore/sales_demo_continuations.schema.json',
+    schema: schemaSalesDemoContinuationDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CreateSalesDemoContinuationCallablePayload',
+    source: 'callables/create_sales_demo_continuation_payload.schema.json',
+    schema: schemaCreateSalesDemoContinuationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetSalesDemoContinuationCallablePayload',
+    source: 'callables/get_sales_demo_continuation_payload.schema.json',
+    schema: schemaGetSalesDemoContinuationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PrepareSalesDemoContinuationFormCallablePayload',
+    source: 'callables/prepare_sales_demo_continuation_form_payload.schema.json',
+    schema: schemaPrepareSalesDemoContinuationFormCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'RegisterSalesPartnerCallablePayload',
     source: 'callables/register_sales_partner_payload.schema.json',
     schema: schemaRegisterSalesPartnerCallablePayloadSchema,
@@ -30,6 +50,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'GetSalesPartnerWorkspaceCallablePayload',
     source: 'callables/get_sales_partner_workspace_payload.schema.json',
     schema: schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdateSalesPartnerAssignmentCallablePayload',
+    source: 'callables/update_sales_partner_assignment_payload.schema.json',
+    schema: schemaUpdateSalesPartnerAssignmentCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'DecideSalesPartnerAssignmentCallablePayload',
@@ -5949,9 +5974,14 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'SalesDemoContinuationDocument': schemaSalesDemoContinuationDocumentSchema,
+  'CreateSalesDemoContinuationCallablePayload': schemaCreateSalesDemoContinuationCallablePayloadSchema,
+  'GetSalesDemoContinuationCallablePayload': schemaGetSalesDemoContinuationCallablePayloadSchema,
+  'PrepareSalesDemoContinuationFormCallablePayload': schemaPrepareSalesDemoContinuationFormCallablePayloadSchema,
   'RegisterSalesPartnerCallablePayload': schemaRegisterSalesPartnerCallablePayloadSchema,
   'NominateSalesOrganizerCallablePayload': schemaNominateSalesOrganizerCallablePayloadSchema,
   'GetSalesPartnerWorkspaceCallablePayload': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  'UpdateSalesPartnerAssignmentCallablePayload': schemaUpdateSalesPartnerAssignmentCallablePayloadSchema,
   'DecideSalesPartnerAssignmentCallablePayload': schemaDecideSalesPartnerAssignmentCallablePayloadSchema,
   'AdminAssignSalesPartnerCallablePayload': schemaAdminAssignSalesPartnerCallablePayloadSchema,
   'AdminRevokeSalesPartnerAccessCallablePayload': schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema,
@@ -7138,9 +7168,14 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/sales_demo_continuations.schema.json': schemaSalesDemoContinuationDocumentSchema,
+  'callables/create_sales_demo_continuation_payload.schema.json': schemaCreateSalesDemoContinuationCallablePayloadSchema,
+  'callables/get_sales_demo_continuation_payload.schema.json': schemaGetSalesDemoContinuationCallablePayloadSchema,
+  'callables/prepare_sales_demo_continuation_form_payload.schema.json': schemaPrepareSalesDemoContinuationFormCallablePayloadSchema,
   'callables/register_sales_partner_payload.schema.json': schemaRegisterSalesPartnerCallablePayloadSchema,
   'callables/nominate_sales_organizer_payload.schema.json': schemaNominateSalesOrganizerCallablePayloadSchema,
   'callables/get_sales_partner_workspace_payload.schema.json': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  'callables/update_sales_partner_assignment_payload.schema.json': schemaUpdateSalesPartnerAssignmentCallablePayloadSchema,
   'callables/decide_sales_partner_assignment_payload.schema.json': schemaDecideSalesPartnerAssignmentCallablePayloadSchema,
   'callables/admin_assign_sales_partner_payload.schema.json': schemaAdminAssignSalesPartnerCallablePayloadSchema,
   'callables/admin_revoke_sales_partner_access_payload.schema.json': schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema,

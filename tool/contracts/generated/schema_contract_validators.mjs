@@ -3,9 +3,14 @@
 
 import {createRequire} from "node:module";
 import {
+  salesDemoContinuationDocumentSchema,
+  createSalesDemoContinuationCallablePayloadSchema,
+  getSalesDemoContinuationCallablePayloadSchema,
+  prepareSalesDemoContinuationFormCallablePayloadSchema,
   registerSalesPartnerCallablePayloadSchema,
   nominateSalesOrganizerCallablePayloadSchema,
   getSalesPartnerWorkspaceCallablePayloadSchema,
+  updateSalesPartnerAssignmentCallablePayloadSchema,
   decideSalesPartnerAssignmentCallablePayloadSchema,
   adminAssignSalesPartnerCallablePayloadSchema,
   adminRevokeSalesPartnerAccessCallablePayloadSchema,
@@ -1213,9 +1218,14 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateSalesDemoContinuationDocument = ajv.compile(salesDemoContinuationDocumentSchema);
+export const validateCreateSalesDemoContinuationCallablePayload = ajv.compile(createSalesDemoContinuationCallablePayloadSchema);
+export const validateGetSalesDemoContinuationCallablePayload = ajv.compile(getSalesDemoContinuationCallablePayloadSchema);
+export const validatePrepareSalesDemoContinuationFormCallablePayload = ajv.compile(prepareSalesDemoContinuationFormCallablePayloadSchema);
 export const validateRegisterSalesPartnerCallablePayload = ajv.compile(registerSalesPartnerCallablePayloadSchema);
 export const validateNominateSalesOrganizerCallablePayload = ajv.compile(nominateSalesOrganizerCallablePayloadSchema);
 export const validateGetSalesPartnerWorkspaceCallablePayload = ajv.compile(getSalesPartnerWorkspaceCallablePayloadSchema);
+export const validateUpdateSalesPartnerAssignmentCallablePayload = ajv.compile(updateSalesPartnerAssignmentCallablePayloadSchema);
 export const validateDecideSalesPartnerAssignmentCallablePayload = ajv.compile(decideSalesPartnerAssignmentCallablePayloadSchema);
 export const validateAdminAssignSalesPartnerCallablePayload = ajv.compile(adminAssignSalesPartnerCallablePayloadSchema);
 export const validateAdminRevokeSalesPartnerAccessCallablePayload = ajv.compile(adminRevokeSalesPartnerAccessCallablePayloadSchema);

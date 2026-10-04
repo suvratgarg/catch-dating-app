@@ -2871,6 +2871,9 @@ service cloud.firestore {
     match /salesImportCompensations/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /salesDemoContinuations/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /salesDemoSetups/{privateDocument=**} {
       allow read, write: if false;
     }

@@ -15,9 +15,15 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "SalesDemoContinuationDocument", "source": "firestore/sales_demo_continuations.schema.json", "typeOutput": "functions/src/shared/generated/salesDemoContinuationDocument.ts"},
+  {"name": "CreateSalesDemoContinuationCallablePayload", "source": "callables/create_sales_demo_continuation_payload.schema.json", "typeOutput": "functions/src/shared/generated/createSalesDemoContinuationCallablePayload.ts"},
+  {"name": "GetSalesDemoContinuationCallablePayload", "source": "callables/get_sales_demo_continuation_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesDemoContinuationCallablePayload.ts"},
+  {"name": "PrepareSalesDemoContinuationFormCallablePayload", "source": "callables/prepare_sales_demo_continuation_form_payload.schema.json", "typeOutput": "functions/src/shared/generated/prepareSalesDemoContinuationFormCallablePayload.ts"},
+
   {"name": "RegisterSalesPartnerCallablePayload", "source": "callables/register_sales_partner_payload.schema.json", "typeOutput": "functions/src/shared/generated/registerSalesPartnerCallablePayload.ts"},
   {"name": "NominateSalesOrganizerCallablePayload", "source": "callables/nominate_sales_organizer_payload.schema.json", "typeOutput": "functions/src/shared/generated/nominateSalesOrganizerCallablePayload.ts"},
   {"name": "GetSalesPartnerWorkspaceCallablePayload", "source": "callables/get_sales_partner_workspace_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesPartnerWorkspaceCallablePayload.ts"},
+  {"name": "UpdateSalesPartnerAssignmentCallablePayload", "source": "callables/update_sales_partner_assignment_payload.schema.json", "typeOutput": "functions/src/shared/generated/updateSalesPartnerAssignmentCallablePayload.ts"},
   {"name": "DecideSalesPartnerAssignmentCallablePayload", "source": "callables/decide_sales_partner_assignment_payload.schema.json", "typeOutput": "functions/src/shared/generated/decideSalesPartnerAssignmentCallablePayload.ts"},
   {"name": "AdminAssignSalesPartnerCallablePayload", "source": "callables/admin_assign_sales_partner_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminAssignSalesPartnerCallablePayload.ts"},
   {"name": "AdminRevokeSalesPartnerAccessCallablePayload", "source": "callables/admin_revoke_sales_partner_access_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminRevokeSalesPartnerAccessCallablePayload.ts"},

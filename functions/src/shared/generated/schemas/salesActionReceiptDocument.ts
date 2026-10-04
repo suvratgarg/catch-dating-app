@@ -71,7 +71,8 @@ export const salesActionReceiptDocumentSchema: Record<string, unknown> = {
         "partner.nominate",
         "partner.assign",
         "partner.assignment.decide",
-        "partner.revoke"
+        "partner.revoke",
+        "partner.assignment.update"
       ]
     },
     "actorUid": {

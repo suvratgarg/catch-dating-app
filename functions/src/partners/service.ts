@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {prepareHostSalesIntent} from "../waitlist/hostSalesIntent";
 import {assertSalesPrivacyOpen} from "../admin/salesPrivacy/model";
 import {PARTNER_TERMS_VERSION, MEMBERSHIPS, ASSIGNMENTS,
-  employee, expectRevision, fail, future, hash, id, object, officialUrl,
+  employee, expectRevision, fail, future, hash, id, iso, object, officialUrl,
   requestId, revision, text, type PartnerActor, type PartnerAssignment,
   type PartnerDeps, type PartnerMembership} from "./model";
 
@@ -237,6 +237,43 @@ export async function decideAssignment(deps: PartnerDeps, actor: PartnerActor,
         status: decision === "accept" ? "accepted" : "declined", relationshipContext,
         relationshipConfirmedAt: decision === "accept" ? now : null,
         channel: channel as PartnerAssignment["channel"], updatedAt: now};
+      tx.set(deps.db.collection(ASSIGNMENTS).doc(organizerId), next);
+      return {organizerId, revision: next.revision, status: next.status};
+    });
+}
+
+/** Own accepted lead context remains a self-report; this action sends no outreach. */
+export async function updateAssignment(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["requestId", "organizerId", "expectedRevision",
+    "relationshipContext", "channel", "nextAction", "reviewAt"]);
+  const request = requestId(input.requestId);
+  const organizerId = id(input.organizerId);
+  const expectedRevision = revision(input.expectedRevision);
+  const relationshipContext = input.relationshipContext === null ? null : text(input.relationshipContext, 1000);
+  const channel = input.channel;
+  if (!["email", "whatsapp", "other"].includes(String(channel))) {
+    fail("invalid-argument", "Choose your established contact channel.");
+  }
+  const nextAction = text(input.nextAction, 500);
+  const reviewAt = iso(input.reviewAt);
+  return mutate(deps, actor, "partner.assignment.update", request,
+    {organizerId, expectedRevision, relationshipContext, channel, nextAction, reviewAt}, false,
+    async (tx) => {
+      const current = await requireAssignment(deps, actor, tx, organizerId, true);
+      if (current.revision !== expectedRevision && current.revision !== expectedRevision + 1) {
+        fail("aborted", "Assignment generation changed; refresh before editing.");
+      }
+    }, async (tx, now) => {
+      const row = await requireAssignment(deps, actor, tx, organizerId, true);
+      expectRevision(row.revision, expectedRevision);
+      future(reviewAt, deps.now(), 30);
+      if (Date.parse(reviewAt) > Date.parse(row.expiresAt)) {
+        fail("invalid-argument", "Review before this assignment expires.");
+      }
+      const next: PartnerAssignment = {...row, revision: row.revision + 1,
+        relationshipContext, relationshipConfirmedAt: relationshipContext ? now : null,
+        channel: channel as PartnerAssignment["channel"], nextAction, reviewAt, updatedAt: now};
       tx.set(deps.db.collection(ASSIGNMENTS).doc(organizerId), next);
       return {organizerId, revision: next.revision, status: next.status};
     });

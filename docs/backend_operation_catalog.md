@@ -789,6 +789,21 @@ Canonical stay publication does not activate a provider or make a booking.
 
 ## Referral partner boundaries
 
+The shared outreach source builder has an internal partner entry point. It
+requires current accepted assignment access inside each transactional authority
+check, binds the exact assignment revision and actor into the source hash, and
+retains current qualification, contact and approved-clause requirements.
+Follow-up context comes only from that actor's manually attested interaction;
+staff activity notes are rejected. Employee wrappers retain their authorization.
+Internal participant draft persistence, reads, composition review and copy reuse
+the same Sales artifact and receipt families. They require current assignment,
+creator and generation binding before every replay; copy requires current exact
+own composition approval. Stored draft identities include actor and assignment
+generation, preventing identical content from colliding with an earlier actor.
+This composition review grants no platform capability approval or sending proof.
+Participant jobs and browser callable review/copy actions are not wired by this
+extraction.
+
 `registerSalesPartner` accepts the current bounded role for a current, non-deleted
 Auth user without changing custom claims or organizer authority.
 `nominateSalesOrganizer` records only an immutable, unverified private Intake
@@ -800,3 +815,14 @@ projection, withholding employee notes, assignment reasons and attribution UIDs.
 Every retry rechecks fresh Auth, membership, privacy and relevant suppression.
 All partner collection client reads and writes are denied. These operations grant
 no publication, organizer claim, provider execution or send authority.
+
+
+`createSalesDemoContinuation` explicitly preserves an own completed current demo
+for bounded delayed claim review. Repeated creation recovers the same proof with
+full current resume fences even if the old session is gone. It never stores a
+grant, renews expiry, claims or publishes. `getSalesDemoContinuation` returns an
+own contact-bound private canonical target and reviewed setup. The separate
+`prepareSalesDemoContinuationForm` action additionally requires current real
+Forms manager authority and an exact reviewed setup hash; it reuses the existing
+materializer. Expired proofs use the existing Demo cleanup worker. Neither a
+partner assignment nor completed practice grants real organizer authority.

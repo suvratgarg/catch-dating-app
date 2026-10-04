@@ -37,7 +37,8 @@ export interface SalesActionReceiptDocument {
     | "partner.nominate"
     | "partner.assign"
     | "partner.assignment.decide"
-    | "partner.revoke";
+    | "partner.revoke"
+    | "partner.assignment.update";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;

@@ -9,7 +9,10 @@ import type {SalesPrincipal} from "../sales/types";
 import {parsePolicy} from "./model";
 import {claimDraftJob, getDraftJob, jobIdFor} from "./job";
 import {generateSalesOutreachDraft} from "./runtime";
-import type {IntelligenceDeps} from "./service";
+import {buildOutreachInput, buildPartnerOutreachInput, recordPartnerOperationsDraft,
+  getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft,
+  type DraftRequest, type IntelligenceDeps} from "./service";
+import {PARTNER_TERMS_VERSION, type PartnerDeps} from "../../partners/model";
 
 const started = "2026-09-28T10:00:00.000Z";
 const sampleRequest = {requestId: "draft-request-123",
@@ -240,4 +243,126 @@ test("current-source drift and revoked employee block freeze, replay and complet
     sampleRequest), /employee revoked/u);
   assert.equal([...revoked.db.docs.keys()].some((key) =>
     key.startsWith("salesOutreachDrafts/")), false);
+});
+
+function partnerFixture() {
+  const f = fixture();
+  f.db.docs.set("organizers/org-one", {name: "Synthetic", appVisibility: "hidden",
+    claim: {state: "unclaimed"}, publicPage: {publicationStatus: "draft"}});
+  f.db.docs.set("salesPartnerMemberships/partner-one", {schemaVersion: 1,
+    classification: "sales_private", uid: "partner-one", status: "active",
+    termsVersion: PARTNER_TERMS_VERSION, expiresAt: "2026-11-01T00:00:00.000Z"});
+  f.db.docs.set("salesPartnerAssignments/org-one", {schemaVersion: 1,
+    classification: "sales_private", organizerId: "org-one", partnerUid: "partner-one",
+    revision: 2, status: "accepted", expiresAt: "2026-11-01T00:00:00.000Z"});
+  const principal = {uid: "partner-one", roles: []};
+  const deps: PartnerDeps = {db: f.deps.db, now: f.deps.now,
+    checkAuth: async (current, employee) => {
+      assert.equal(employee, false); assert.deepEqual(current.roles, []);
+    }};
+  return {...f, principal, partnerDeps: deps};
+}
+
+test("partner source composition shares qualification gates without borrowing employee roles", async () => {
+  const f = partnerFixture();
+  const result = await buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 2);
+  assert.equal(result.sendAuthority, false);
+  assert.equal((result.bundle as {priorInteraction: unknown}).priorInteraction, null);
+  await assert.rejects(buildOutreachInput(f.deps, f.principal, sampleRequest.sourceRequest),
+    {code: "permission-denied"});
+  await assert.rejects(buildPartnerOutreachInput(f.partnerDeps,
+    {uid: "other-partner", roles: []}, sampleRequest.sourceRequest, 2), {code: "permission-denied"});
+  f.db.docs.set("organizerSalesAccounts/org-one", {...f.db.docs.get("organizerSalesAccounts/org-one"),
+    researchStatus: "new"});
+  await assert.rejects(buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 2),
+    {code: "failed-precondition"});
+});
+
+test("partner source hashes bind current assignment generation and reject stale access during reads", async () => {
+  const f = partnerFixture();
+  const before = await buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 2);
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), revision: 3});
+  await assert.rejects(buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 2),
+    {code: "aborted"});
+  const after = await buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 3);
+  assert.notEqual(before.sourceHash, after.sourceHash);
+  let checks = 0;
+  f.partnerDeps.checkAuth = async () => {
+    if (++checks === 2) f.db.docs.set("salesPartnerMemberships/partner-one",
+      {...f.db.docs.get("salesPartnerMemberships/partner-one"), status: "revoked"});
+  };
+  await assert.rejects(buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 3),
+    {code: "permission-denied"});
+});
+
+test("partner follow-up rejects staff notes and consumes only own manual interaction", async () => {
+  const f = partnerFixture();
+  const row = {classification: "sales_private", organizerId: "org-one",
+    opportunityId: "opportunity-one", actorUid: "employee-one", note: "Private staff note",
+    type: "outreach_sent_manual", outcome: "actor_attested_sent", providerConfirmed: false};
+  f.db.docs.set("salesActivities/prior-one", row);
+  const source = {...sampleRequest.sourceRequest, purpose: "follow_up", priorActivityId: "prior-one"};
+  await assert.rejects(buildPartnerOutreachInput(f.partnerDeps, f.principal, source, 2),
+    {code: "permission-denied"});
+  f.db.docs.set("salesActivities/prior-one", {...row, actorUid: f.principal.uid, note: "Own manually recorded context"});
+  const result = await buildPartnerOutreachInput(f.partnerDeps, f.principal, source, 2);
+  assert.equal((result.bundle as {priorInteraction: {summary: string}}).priorInteraction.summary,
+    "Own manually recorded context");
+  assert.ok(!JSON.stringify(result).includes("Private staff note"));
+});
+
+test("identical employee and replacement-partner renderings retain separate scoped identities", async () => {
+  const f = partnerFixture();
+  await generateSalesOutreachDraft(f.deps, actor, sampleRequest);
+  const employeeDraft = [...f.db.docs.entries()].find(([key]) => key.startsWith("salesOutreachDrafts/"))![1];
+  const rendered = employeeDraft.draft;
+  const request = sampleRequest.sourceRequest as DraftRequest;
+  const source = await buildPartnerOutreachInput(f.partnerDeps, f.principal, request, 2);
+  const first = await recordPartnerOperationsDraft(f.partnerDeps, f.principal, "partner-first",
+    request, 2, source.bundle as Record<string, unknown>, source.sourceHash as string, rendered);
+  assert.notEqual(first.draftId, employeeDraft.draftId);
+  assert.deepEqual(await recordPartnerOperationsDraft(f.partnerDeps, f.principal, "partner-first",
+    request, 2, source.bundle as Record<string, unknown>, source.sourceHash as string, rendered), first);
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), revision: 3});
+  const newer = await buildPartnerOutreachInput(f.partnerDeps, f.principal, request, 3);
+  const second = await recordPartnerOperationsDraft(f.partnerDeps, f.principal, "partner-next",
+    request, 3, newer.bundle as Record<string, unknown>, newer.sourceHash as string, rendered);
+  assert.notEqual(second.draftId, first.draftId);
+  const replacement = {uid: "partner-two", roles: []};
+  f.db.docs.set("salesPartnerMemberships/partner-two", {...f.db.docs.get("salesPartnerMemberships/partner-one"), uid: replacement.uid});
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), partnerUid: replacement.uid});
+  const changed = await buildPartnerOutreachInput(f.partnerDeps, replacement, request, 3);
+  const third = await recordPartnerOperationsDraft(f.partnerDeps, replacement, "partner-replaced",
+    request, 3, changed.bundle as Record<string, unknown>, changed.sourceHash as string, rendered);
+  assert.notEqual(third.draftId, second.draftId);
+  assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesOutreachDrafts/")).length, 4);
+});
+
+test("participant review and copy require own current artifact on fresh calls and exact replay", async () => {
+  const f = partnerFixture();
+  await generateSalesOutreachDraft(f.deps, actor, sampleRequest);
+  const employeeDraft = [...f.db.docs.entries()].find(([key]) => key.startsWith("salesOutreachDrafts/"))![1];
+  const request = sampleRequest.sourceRequest as DraftRequest;
+  const source = await buildPartnerOutreachInput(f.partnerDeps, f.principal, request, 2);
+  const saved = await recordPartnerOperationsDraft(f.partnerDeps, f.principal, "partner-draft",
+    request, 2, source.bundle as Record<string, unknown>, source.sourceHash as string, employeeDraft.draft);
+  const target = {organizerId: "org-one", draftId: saved.draftId, expectedAssignmentRevision: 2};
+  const expectedContentHash = saved.draft.contentHash;
+  const copy = {...target, requestId: "copy-own", expectedContentHash};
+  await assert.rejects(copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy), {code: "failed-precondition"});
+  const review = {...target, requestId: "review-own", expectedContentHash,
+    factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"};
+  const reviewed = await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review);
+  assert.equal(reviewed.capabilityApprovalAuthority, false);
+  assert.deepEqual(await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review), reviewed);
+  const copied = await copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy);
+  assert.equal(copied.sendAuthority, false); assert.equal(copied.providerConfirmed, false);
+  assert.deepEqual(await copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy), copied);
+  const own = await getPartnerOutreachDraft(f.partnerDeps, f.principal, target);
+  assert.ok(!("reviewedBy" in own));
+  await assert.rejects(getPartnerOutreachDraft(f.partnerDeps, f.principal,
+    {...target, draftId: employeeDraft.draftId}), {code: "permission-denied"});
+  f.db.docs.set(`salesOutreachDrafts/${saved.draftId}`, {...f.db.docs.get(`salesOutreachDrafts/${saved.draftId}`), status: "pending_review"});
+  await assert.rejects(copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy), {code: "failed-precondition"});
+  await assert.rejects(reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review), {code: "failed-precondition"});
 });

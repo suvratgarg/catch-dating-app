@@ -12,9 +12,14 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SalesDemoContinuationDocument | `firestore/sales_demo_continuations.schema.json` | `functions/src/shared/generated/salesDemoContinuationDocument.ts` |
+| CreateSalesDemoContinuationCallablePayload | `callables/create_sales_demo_continuation_payload.schema.json` | `functions/src/shared/generated/createSalesDemoContinuationCallablePayload.ts` |
+| GetSalesDemoContinuationCallablePayload | `callables/get_sales_demo_continuation_payload.schema.json` | `functions/src/shared/generated/getSalesDemoContinuationCallablePayload.ts` |
+| PrepareSalesDemoContinuationFormCallablePayload | `callables/prepare_sales_demo_continuation_form_payload.schema.json` | `functions/src/shared/generated/prepareSalesDemoContinuationFormCallablePayload.ts` |
 | RegisterSalesPartnerCallablePayload | `callables/register_sales_partner_payload.schema.json` | `functions/src/shared/generated/registerSalesPartnerCallablePayload.ts` |
 | NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `functions/src/shared/generated/nominateSalesOrganizerCallablePayload.ts` |
 | GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `functions/src/shared/generated/getSalesPartnerWorkspaceCallablePayload.ts` |
+| UpdateSalesPartnerAssignmentCallablePayload | `callables/update_sales_partner_assignment_payload.schema.json` | `functions/src/shared/generated/updateSalesPartnerAssignmentCallablePayload.ts` |
 | DecideSalesPartnerAssignmentCallablePayload | `callables/decide_sales_partner_assignment_payload.schema.json` | `functions/src/shared/generated/decideSalesPartnerAssignmentCallablePayload.ts` |
 | AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `functions/src/shared/generated/adminAssignSalesPartnerCallablePayload.ts` |
 | AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `functions/src/shared/generated/adminRevokeSalesPartnerAccessCallablePayload.ts` |
@@ -1203,9 +1208,14 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSalesDemoContinuationDocumentSchema` | SalesDemoContinuationDocument | `firestore/sales_demo_continuations.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_continuation_document.g.dart` |
+| `schemaCreateSalesDemoContinuationCallablePayloadSchema` | CreateSalesDemoContinuationCallablePayload | `callables/create_sales_demo_continuation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_sales_demo_continuation_callable_payload.g.dart` |
+| `schemaGetSalesDemoContinuationCallablePayloadSchema` | GetSalesDemoContinuationCallablePayload | `callables/get_sales_demo_continuation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_sales_demo_continuation_callable_payload.g.dart` |
+| `schemaPrepareSalesDemoContinuationFormCallablePayloadSchema` | PrepareSalesDemoContinuationFormCallablePayload | `callables/prepare_sales_demo_continuation_form_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_sales_demo_continuation_form_callable_payload.g.dart` |
 | `schemaRegisterSalesPartnerCallablePayloadSchema` | RegisterSalesPartnerCallablePayload | `callables/register_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_sales_partner_callable_payload.g.dart` |
 | `schemaNominateSalesOrganizerCallablePayloadSchema` | NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/nominate_sales_organizer_callable_payload.g.dart` |
 | `schemaGetSalesPartnerWorkspaceCallablePayloadSchema` | GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_sales_partner_workspace_callable_payload.g.dart` |
+| `schemaUpdateSalesPartnerAssignmentCallablePayloadSchema` | UpdateSalesPartnerAssignmentCallablePayload | `callables/update_sales_partner_assignment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_sales_partner_assignment_callable_payload.g.dart` |
 | `schemaDecideSalesPartnerAssignmentCallablePayloadSchema` | DecideSalesPartnerAssignmentCallablePayload | `callables/decide_sales_partner_assignment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_sales_partner_assignment_callable_payload.g.dart` |
 | `schemaAdminAssignSalesPartnerCallablePayloadSchema` | AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_assign_sales_partner_callable_payload.g.dart` |
 | `schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema` | AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_revoke_sales_partner_access_callable_payload.g.dart` |
@@ -2394,8 +2404,12 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| CreateSalesDemoContinuationCallableRequest | CreateSalesDemoContinuationCallablePayload | `callables/create_sales_demo_continuation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_sales_demo_continuation_callable_request.g.dart` |
+| GetSalesDemoContinuationCallableRequest | GetSalesDemoContinuationCallablePayload | `callables/get_sales_demo_continuation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_sales_demo_continuation_callable_request.g.dart` |
+| PrepareSalesDemoContinuationFormCallableRequest | PrepareSalesDemoContinuationFormCallablePayload | `callables/prepare_sales_demo_continuation_form_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_sales_demo_continuation_form_callable_request.g.dart` |
 | NominateSalesOrganizerCallableRequest | NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/nominate_sales_organizer_callable_request.g.dart` |
 | GetSalesPartnerWorkspaceCallableRequest | GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_sales_partner_workspace_callable_request.g.dart` |
+| UpdateSalesPartnerAssignmentCallableRequest | UpdateSalesPartnerAssignmentCallablePayload | `callables/update_sales_partner_assignment_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_sales_partner_assignment_callable_request.g.dart` |
 | AdminAssignSalesPartnerCallableRequest | AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_assign_sales_partner_callable_request.g.dart` |
 | AdminRevokeSalesPartnerAccessCallableRequest | AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_revoke_sales_partner_access_callable_request.g.dart` |
 | AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
