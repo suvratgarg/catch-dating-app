@@ -1,3 +1,4 @@
+import {listSalesInboundIntents} from "../admin/sales/intents";
 import type {Timestamp} from "firebase-admin/firestore";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -152,7 +153,6 @@ test("partner nomination uses Firestore timestamps through the existing employee
   assert.ok(created);
   assert.equal(created.createdAt.toDate().toISOString(), initial);
   assert.equal(created.updatedAt.toDate().toISOString(), initial);
-  const {listSalesInboundIntents} = await import("../admin/sales/intents");
   let cursor: unknown[] = [];
   const document = {id: created.intentId, data: () => created!, get: (key: string) => created![key]};
   const query = {orderBy() {return this;}, limit() {return this;},
