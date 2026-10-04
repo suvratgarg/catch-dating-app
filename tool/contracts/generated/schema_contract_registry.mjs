@@ -1,6 +1,280 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const registerSalesPartnerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
+  "title": "RegisterSalesPartnerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "displayName",
+    "termsVersion"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "termsVersion": {
+      "const": "referral-preview-v1"
+    }
+  },
+  "x-callable-aliases": [
+    "registerSalesPartner"
+  ]
+};
+
+export const nominateSalesOrganizerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/nominate_sales_organizer_payload.schema.json",
+  "title": "NominateSalesOrganizerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "name",
+    "city",
+    "url",
+    "relationshipContext"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "nominateSalesOrganizer"
+  ]
+};
+
+export const getSalesPartnerWorkspaceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_workspace_payload.schema.json",
+  "title": "GetSalesPartnerWorkspaceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerWorkspace"
+  ]
+};
+
+export const decideSalesPartnerAssignmentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/decide_sales_partner_assignment_payload.schema.json",
+  "title": "DecideSalesPartnerAssignmentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedRevision",
+    "decision",
+    "relationshipContext",
+    "channel"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "decision": {
+      "enum": [
+        "accept",
+        "decline"
+      ]
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "channel": {
+      "enum": [
+        "email",
+        "whatsapp",
+        "other",
+        null
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "decideSalesPartnerAssignment"
+  ]
+};
+
+export const adminAssignSalesPartnerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_assign_sales_partner_payload.schema.json",
+  "title": "AdminAssignSalesPartnerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "partnerUid",
+    "expectedRevision",
+    "nextAction",
+    "reviewAt",
+    "expiresAt",
+    "reason",
+    "originatorUid"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "originatorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "x-callable-aliases": [
+    "adminAssignSalesPartner"
+  ]
+};
+
+export const adminRevokeSalesPartnerAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_revoke_sales_partner_access_payload.schema.json",
+  "title": "AdminRevokeSalesPartnerAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "partnerUid",
+    "expectedRevision",
+    "reason"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminRevokeSalesPartnerAccess"
+  ]
+};
+
 export const manageProgramLodgingCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_program_lodging_payload.schema.json",
@@ -5313,6 +5587,288 @@ export const workspaceMembershipDecisionDocumentSchema = {
       "minimum": 1,
       "maximum": 9007199254740991,
       "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const salesPartnerMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_partner_memberships.schema.json",
+  "title": "SalesPartnerMembershipDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesPartnerMemberships",
+  "x-firestore-path": "salesPartnerMemberships/{id}",
+  "x-document-id-field": "uid",
+  "x-owner": "partner Sales scoped services",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "uid",
+    "status",
+    "termsVersion",
+    "acceptedAt",
+    "expiresAt",
+    "displayName",
+    "marketingGrants"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "status": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "termsVersion": {
+      "const": "referral-preview-v1"
+    },
+    "acceptedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "marketingGrants": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "campaignId",
+          "channel",
+          "assetIds",
+          "expiresAt"
+        ],
+        "properties": {
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "channel": {
+            "enum": [
+              "email",
+              "whatsapp",
+              "other"
+            ]
+          },
+          "assetIds": {
+            "type": "array",
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const salesPartnerAssignmentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_partner_assignments.schema.json",
+  "title": "SalesPartnerAssignmentDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesPartnerAssignments",
+  "x-firestore-path": "salesPartnerAssignments/{id}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "partner Sales scoped services",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "revision",
+    "updatedAt",
+    "organizerId",
+    "partnerUid",
+    "status",
+    "originatorUid",
+    "introducingSenderUid",
+    "catchOwnerUid",
+    "activationOwnerUid",
+    "relationshipContext",
+    "relationshipConfirmedAt",
+    "channel",
+    "nextAction",
+    "reviewAt",
+    "expiresAt",
+    "assignedAt",
+    "reason"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "status": {
+      "enum": [
+        "offered",
+        "accepted",
+        "declined",
+        "revoked"
+      ]
+    },
+    "originatorUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "introducingSenderUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "catchOwnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "activationOwnerUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relationshipContext": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relationshipConfirmedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "channel": {
+      "anyOf": [
+        {
+          "enum": [
+            "email",
+            "whatsapp",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assignedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
     }
   }
 };
@@ -24015,7 +24571,12 @@ export const salesActionReceiptDocumentSchema = {
         "commercial.quotes.accept",
         "commercial.finance.attest",
         "imports.compensation.apply",
-        "imports.history.apply"
+        "imports.history.apply",
+        "partner.register",
+        "partner.nominate",
+        "partner.assign",
+        "partner.assignment.decide",
+        "partner.revoke"
       ]
     },
     "actorUid": {
@@ -30782,7 +31343,10 @@ export const salesInboundIntentsDocumentSchema = {
       "pattern": "^[a-f0-9]{64}$"
     },
     "source": {
-      "const": "website"
+      "enum": [
+        "website",
+        "partner"
+      ]
     },
     "submissionId": {
       "type": "string",
@@ -30826,9 +31390,16 @@ export const salesInboundIntentsDocumentSchema = {
       "maxLength": 100
     },
     "email": {
-      "type": "string",
-      "format": "email",
-      "maxLength": 320
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "city": {
       "type": "string",
@@ -31136,6 +31707,11 @@ export const salesInboundIntentsDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   },
   "allOf": [
@@ -31166,6 +31742,37 @@ export const salesInboundIntentsDocumentSchema = {
           "organizerId": {
             "type": "null"
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "partner"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "partnerUid"
+        ],
+        "properties": {
+          "email": {
+            "type": "null"
+          },
+          "entryRoute": {
+            "const": "/partners/"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "partnerUid": false
         }
       }
     }

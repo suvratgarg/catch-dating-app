@@ -5,6 +5,12 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateRegisterSalesPartnerCallablePayload} from "./validators/registerSalesPartnerInput";
+export {validateNominateSalesOrganizerCallablePayload} from "./validators/nominateSalesOrganizerInput";
+export {validateGetSalesPartnerWorkspaceCallablePayload} from "./validators/getSalesPartnerWorkspaceInput";
+export {validateDecideSalesPartnerAssignmentCallablePayload} from "./validators/decideSalesPartnerAssignmentInput";
+export {validateAdminAssignSalesPartnerCallablePayload} from "./validators/adminAssignSalesPartnerInput";
+export {validateAdminRevokeSalesPartnerAccessCallablePayload} from "./validators/adminRevokeSalesPartnerAccessInput";
 export {validateManageProgramLodgingCallablePayload} from "./validators/manageProgramLodgingInput";
 export {validateManageProgramLodgingCallableResponse} from "./validators/manageProgramLodgingOutput";
 export {validateProgramLodgingConfigDocument} from "./validators/programLodgingConfigDocument";
@@ -14,6 +20,8 @@ export {validateProgramLodgingWorkflowDocument} from "./validators/programLodgin
 export {validateProgramLodgingReceiptDocument} from "./validators/programLodgingReceiptDocument";
 export {validateWorkspaceMembershipAssertionDocument} from "./validators/workspaceMembershipAssertionDocument";
 export {validateWorkspaceMembershipDecisionDocument} from "./validators/workspaceMembershipDecisionDocument";
+export {validateSalesPartnerMembershipDocument} from "./validators/salesPartnerMembershipDocument";
+export {validateSalesPartnerAssignmentDocument} from "./validators/salesPartnerAssignmentDocument";
 export {validateCatchWhatsappReadinessApprovalDocument} from "./validators/catchWhatsappReadinessApprovalDocument";
 export {validateCatchWhatsappReadinessIngressDocument} from "./validators/catchWhatsappReadinessIngressDocument";
 export {validateCatchWhatsappReadinessAuditDocument} from "./validators/catchWhatsappReadinessAuditDocument";

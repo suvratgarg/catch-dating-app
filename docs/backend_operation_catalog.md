@@ -786,3 +786,17 @@ and exact revisions. Lifecycle receipts bind actor, operation ID and command.
 Hotel-desk reads return only the hotel-scoped operational projection; setup,
 affinity memberships and functional requirements remain coordinator-private.
 Canonical stay publication does not activate a provider or make a booking.
+
+## Referral partner boundaries
+
+`registerSalesPartner` accepts the current bounded role for a current, non-deleted
+Auth user without changing custom claims or organizer authority.
+`nominateSalesOrganizer` records only an immutable, unverified private Intake
+intent; existing employee identity review chooses the canonical organizer.
+`adminAssignSalesPartner` and `adminRevokeSalesPartnerAccess` require fresh Sales
+employee authority. `decideSalesPartnerAssignment` accepts or declines one own
+current reservation. `getSalesPartnerWorkspace` returns a bounded explicit own
+projection, withholding employee notes, assignment reasons and attribution UIDs.
+Every retry rechecks fresh Auth, membership, privacy and relevant suppression.
+All partner collection client reads and writes are denied. These operations grant
+no publication, organizer claim, provider execution or send authority.

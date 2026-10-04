@@ -5061,3 +5061,23 @@ contract occupant limits do not establish bed types or accessibility. A strict d
 configuration edits, publication replay, canonical roommate counting, transactional
 rollback and stale native edits; private collection deny rules are also exercised.
 Fresh captures and full combined release validation remain pending.
+### Referral partner Sales scope
+
+`salesPartnerMemberships/{uid}` records acceptance of the bounded referral role,
+expiry and revocation. Self-registration creates no Admin claims, organizer
+membership, marketing grants or provider access. `salesPartnerAssignments/{organizerId}`
+reserves one relationship owner across channels for a reviewed canonical organizer.
+Its independent offer/accept/decline/revoke state never changes organizer claim,
+ownership, app visibility or publication. Employee reasons and ownership/attribution
+identities remain private; the partner projection includes only their relationship
+context, review dates and next action. Existing immutable `salesActionReceipts`
+preserve changes and request replay; every retry checks current Auth, membership,
+assignment, suppression, archive and the permanent Sales privacy restriction.
+
+Partner nominations use `salesInboundIntents` with `source=partner`, the submitting
+UID and self-reported evidence. They are not trusted Intake verification, canonical
+matches, claims or public organizer records. Existing employee identity review
+links them to the same `organizers/{organizerId}` and private Sales companion.
+Partner submission projections are independent of the latest market-wide Intake
+view and withhold linked identities after a Sales privacy restriction. Both new
+record families deny direct client reads and writes, including Admin clients.

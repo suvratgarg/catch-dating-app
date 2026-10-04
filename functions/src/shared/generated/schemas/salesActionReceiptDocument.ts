@@ -66,7 +66,12 @@ export const salesActionReceiptDocumentSchema: Record<string, unknown> = {
         "commercial.quotes.accept",
         "commercial.finance.attest",
         "imports.compensation.apply",
-        "imports.history.apply"
+        "imports.history.apply",
+        "partner.register",
+        "partner.nominate",
+        "partner.assign",
+        "partner.assignment.decide",
+        "partner.revoke"
       ]
     },
     "actorUid": {

@@ -5513,6 +5513,29 @@
         ]
       },
       "notes": "Default-disabled DEV-only single support reply; explicit review and confirmation, current session and server readiness, no automatic retries."
+    },
+    {
+      "id": "workspace_partner_sales",
+      "kind": "workspace",
+      "owner": "features/partners",
+      "source": "admin/src/features/partners/ui/PartnerWorkspaceScreen.tsx",
+      "exportName": "PartnerWorkspaceScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "membership",
+          "nomination",
+          "offered",
+          "accepted",
+          "revoked",
+          "pending",
+          "save-conflict"
+        ]
+      },
+      "notes": "Dedicated /partners/ route in existing React console; membership and canonical assignments are server scoped without employee roles."
     }
   ]
 }

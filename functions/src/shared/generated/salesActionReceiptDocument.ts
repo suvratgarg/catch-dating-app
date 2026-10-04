@@ -32,7 +32,12 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.accept"
     | "commercial.finance.attest"
     | "imports.compensation.apply"
-    | "imports.history.apply";
+    | "imports.history.apply"
+    | "partner.register"
+    | "partner.nominate"
+    | "partner.assign"
+    | "partner.assignment.decide"
+    | "partner.revoke";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;

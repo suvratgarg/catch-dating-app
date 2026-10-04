@@ -258,6 +258,11 @@
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/partners/controllers/usePartnerWorkspaceController.ts",
+      "test": "admin/src/features/partners/controllers/usePartnerWorkspaceController.test.tsx",
+      "status": "required"
     }
   ]
 }

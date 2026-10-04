@@ -1,0 +1,51 @@
+import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {createQueryHarness} from "../../../shared/test/queryHarness";
+import {usePartnerWorkspaceController} from "./usePartnerWorkspaceController";
+const api = vi.hoisted(() => ({readPartnerWorkspace: vi.fn(), writePartner: vi.fn()}));
+vi.mock("../api/partnerRepository", () => api);
+afterEach(cleanup);
+beforeEach(() => {vi.clearAllMocks(); api.readPartnerWorkspace.mockResolvedValue({leads: [], submissions: [], nextCursor: null});});
+describe("partner workspace recovery", () => {
+  it("keeps the exact request identity after an uncertain failure and blocks duplicate concurrent writes", async () => {
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => usePartnerWorkspaceController(), {wrapper});
+    await waitFor(() => expect(result.current.workspace.isSuccess).toBe(true));
+    api.writePartner.mockRejectedValueOnce(new Error("Connection interrupted"));
+    const material = {name: "Synthetic organizer", url: "https://synthetic.example", city: "Mumbai", relationshipContext: null};
+    await act(async () => {expect(await result.current.save("nominate", material)).toBe(false);});
+    const first = api.writePartner.mock.calls[0][1];
+    let complete!: (value: unknown) => void;
+    api.writePartner.mockImplementationOnce(() => new Promise((resolve) => {complete = resolve;}));
+    let pending!: Promise<boolean>;
+    await act(async () => {pending = result.current.save("nominate", material);});
+    await act(async () => {expect(await result.current.save("nominate", material)).toBe(false);});
+    expect(api.writePartner).toHaveBeenCalledTimes(2);
+    expect(api.writePartner.mock.calls[1][1]).toEqual(first);
+    await act(async () => {complete({}); expect(await pending).toBe(true);});
+    expect(result.current.error).toBe(null);
+  });
+  it("blocks changed material until an uncertain save is reconciled", async () => {
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => usePartnerWorkspaceController(), {wrapper});
+    await waitFor(() => expect(result.current.workspace.isSuccess).toBe(true));
+    api.writePartner.mockRejectedValue(new Error("Interrupted"));
+    await act(async () => {await result.current.save("nominate", {name: "One"});});
+    await act(async () => {await result.current.save("nominate", {name: "Two"});});
+    expect(api.writePartner).toHaveBeenCalledTimes(1);
+    expect(result.current.needsRetry).toBe(true);
+    api.writePartner.mockResolvedValue({});
+    await act(async () => {await result.current.retry();});
+    expect(api.writePartner.mock.calls[1][1]).toEqual(api.writePartner.mock.calls[0][1]);
+  });
+  it("blocks private writes after a successful read is followed by authority denial", async () => {
+    const {wrapper, client} = createQueryHarness();
+    const {result} = renderHook(() => usePartnerWorkspaceController(), {wrapper});
+    await waitFor(() => expect(result.current.workspace.isSuccess).toBe(true));
+    api.readPartnerWorkspace.mockRejectedValue(Object.assign(new Error("Revoked"), {code: "functions/permission-denied"}));
+    await act(async () => {await client.invalidateQueries({queryKey: ["partner-workspace"]});});
+    await waitFor(() => expect(result.current.workspace.isError).toBe(true));
+    await act(async () => {expect(await result.current.save("nominate", {name: "One"})).toBe(false);});
+    expect(api.writePartner).not.toHaveBeenCalled();
+  });
+});

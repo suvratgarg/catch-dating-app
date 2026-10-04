@@ -888,3 +888,6 @@ export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
   from "./analytics/organizerTrackingSettings";
 
 export {manageProgramLodging} from "./programs/programLodgingApi";
+export {registerSalesPartner, nominateSalesOrganizer, getSalesPartnerWorkspace,
+  decideSalesPartnerAssignment, adminAssignSalesPartner,
+  adminRevokeSalesPartnerAccess} from "./partners/callables";

@@ -3,6 +3,12 @@
 
 import {createRequire} from "node:module";
 import {
+  registerSalesPartnerCallablePayloadSchema,
+  nominateSalesOrganizerCallablePayloadSchema,
+  getSalesPartnerWorkspaceCallablePayloadSchema,
+  decideSalesPartnerAssignmentCallablePayloadSchema,
+  adminAssignSalesPartnerCallablePayloadSchema,
+  adminRevokeSalesPartnerAccessCallablePayloadSchema,
   manageProgramLodgingCallablePayloadSchema,
   manageProgramLodgingCallableResponseSchema,
   programLodgingConfigDocumentSchema,
@@ -12,6 +18,8 @@ import {
   programLodgingReceiptDocumentSchema,
   workspaceMembershipAssertionDocumentSchema,
   workspaceMembershipDecisionDocumentSchema,
+  salesPartnerMembershipDocumentSchema,
+  salesPartnerAssignmentDocumentSchema,
   catchWhatsappReadinessApprovalDocumentSchema,
   catchWhatsappReadinessIngressDocumentSchema,
   catchWhatsappReadinessAuditDocumentSchema,
@@ -1205,6 +1213,12 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateRegisterSalesPartnerCallablePayload = ajv.compile(registerSalesPartnerCallablePayloadSchema);
+export const validateNominateSalesOrganizerCallablePayload = ajv.compile(nominateSalesOrganizerCallablePayloadSchema);
+export const validateGetSalesPartnerWorkspaceCallablePayload = ajv.compile(getSalesPartnerWorkspaceCallablePayloadSchema);
+export const validateDecideSalesPartnerAssignmentCallablePayload = ajv.compile(decideSalesPartnerAssignmentCallablePayloadSchema);
+export const validateAdminAssignSalesPartnerCallablePayload = ajv.compile(adminAssignSalesPartnerCallablePayloadSchema);
+export const validateAdminRevokeSalesPartnerAccessCallablePayload = ajv.compile(adminRevokeSalesPartnerAccessCallablePayloadSchema);
 export const validateManageProgramLodgingCallablePayload = ajv.compile(manageProgramLodgingCallablePayloadSchema);
 export const validateManageProgramLodgingCallableResponse = ajv.compile(manageProgramLodgingCallableResponseSchema);
 export const validateProgramLodgingConfigDocument = ajv.compile(programLodgingConfigDocumentSchema);
@@ -1214,6 +1228,8 @@ export const validateProgramLodgingWorkflowDocument = ajv.compile(programLodging
 export const validateProgramLodgingReceiptDocument = ajv.compile(programLodgingReceiptDocumentSchema);
 export const validateWorkspaceMembershipAssertionDocument = ajv.compile(workspaceMembershipAssertionDocumentSchema);
 export const validateWorkspaceMembershipDecisionDocument = ajv.compile(workspaceMembershipDecisionDocumentSchema);
+export const validateSalesPartnerMembershipDocument = ajv.compile(salesPartnerMembershipDocumentSchema);
+export const validateSalesPartnerAssignmentDocument = ajv.compile(salesPartnerAssignmentDocumentSchema);
 export const validateCatchWhatsappReadinessApprovalDocument = ajv.compile(catchWhatsappReadinessApprovalDocumentSchema);
 export const validateCatchWhatsappReadinessIngressDocument = ajv.compile(catchWhatsappReadinessIngressDocumentSchema);
 export const validateCatchWhatsappReadinessAuditDocument = ajv.compile(catchWhatsappReadinessAuditDocumentSchema);

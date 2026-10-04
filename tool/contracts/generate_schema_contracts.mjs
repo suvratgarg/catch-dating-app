@@ -15,6 +15,13 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "RegisterSalesPartnerCallablePayload", "source": "callables/register_sales_partner_payload.schema.json", "typeOutput": "functions/src/shared/generated/registerSalesPartnerCallablePayload.ts"},
+  {"name": "NominateSalesOrganizerCallablePayload", "source": "callables/nominate_sales_organizer_payload.schema.json", "typeOutput": "functions/src/shared/generated/nominateSalesOrganizerCallablePayload.ts"},
+  {"name": "GetSalesPartnerWorkspaceCallablePayload", "source": "callables/get_sales_partner_workspace_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesPartnerWorkspaceCallablePayload.ts"},
+  {"name": "DecideSalesPartnerAssignmentCallablePayload", "source": "callables/decide_sales_partner_assignment_payload.schema.json", "typeOutput": "functions/src/shared/generated/decideSalesPartnerAssignmentCallablePayload.ts"},
+  {"name": "AdminAssignSalesPartnerCallablePayload", "source": "callables/admin_assign_sales_partner_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminAssignSalesPartnerCallablePayload.ts"},
+  {"name": "AdminRevokeSalesPartnerAccessCallablePayload", "source": "callables/admin_revoke_sales_partner_access_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminRevokeSalesPartnerAccessCallablePayload.ts"},
+
   {"name": "ManageProgramLodgingCallablePayload", "source": "callables/manage_program_lodging_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallablePayload.ts"},
   {"name": "ManageProgramLodgingCallableResponse", "source": "callable_responses/manage_program_lodging_response.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallableResponse.ts"},
   {"name": "ProgramLodgingConfigDocument", "source": "firestore/program_lodging_configs.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingConfigDocument.ts"},
@@ -24,6 +31,8 @@ const schemaSpecs = [
   {"name": "ProgramLodgingReceiptDocument", "source": "firestore/program_lodging_receipts.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingReceiptDocument.ts"},
   {"name": "WorkspaceMembershipAssertionDocument", "source": "firestore/workspace_membership_assertions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipAssertionDocument.ts"},
   {"name": "WorkspaceMembershipDecisionDocument", "source": "firestore/workspace_membership_decisions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipDecisionDocument.ts"},
+  {name: "SalesPartnerMembershipDocument", source: "firestore/sales_partner_memberships.schema.json", typeOutput: "functions/src/shared/generated/salesPartnerMembershipDocument.ts"},
+  {name: "SalesPartnerAssignmentDocument", source: "firestore/sales_partner_assignments.schema.json", typeOutput: "functions/src/shared/generated/salesPartnerAssignmentDocument.ts"},
   {"name": "CatchWhatsappReadinessApprovalDocument", "source": "firestore/catch_whatsapp_readiness_approval.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessApprovalDocument.ts"},
   {"name": "CatchWhatsappReadinessIngressDocument", "source": "firestore/catch_whatsapp_readiness_ingress.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessIngressDocument.ts"},
   {"name": "CatchWhatsappReadinessAuditDocument", "source": "firestore/catch_whatsapp_readiness_audit.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts"},

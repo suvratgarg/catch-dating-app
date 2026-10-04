@@ -17,6 +17,36 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'RegisterSalesPartnerCallablePayload',
+    source: 'callables/register_sales_partner_payload.schema.json',
+    schema: schemaRegisterSalesPartnerCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'NominateSalesOrganizerCallablePayload',
+    source: 'callables/nominate_sales_organizer_payload.schema.json',
+    schema: schemaNominateSalesOrganizerCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetSalesPartnerWorkspaceCallablePayload',
+    source: 'callables/get_sales_partner_workspace_payload.schema.json',
+    schema: schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'DecideSalesPartnerAssignmentCallablePayload',
+    source: 'callables/decide_sales_partner_assignment_payload.schema.json',
+    schema: schemaDecideSalesPartnerAssignmentCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminAssignSalesPartnerCallablePayload',
+    source: 'callables/admin_assign_sales_partner_payload.schema.json',
+    schema: schemaAdminAssignSalesPartnerCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminRevokeSalesPartnerAccessCallablePayload',
+    source: 'callables/admin_revoke_sales_partner_access_payload.schema.json',
+    schema: schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ManageProgramLodgingCallablePayload',
     source: 'callables/manage_program_lodging_payload.schema.json',
     schema: schemaManageProgramLodgingCallablePayloadSchema,
@@ -60,6 +90,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'WorkspaceMembershipDecisionDocument',
     source: 'firestore/workspace_membership_decisions.schema.json',
     schema: schemaWorkspaceMembershipDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SalesPartnerMembershipDocument',
+    source: 'firestore/sales_partner_memberships.schema.json',
+    schema: schemaSalesPartnerMembershipDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SalesPartnerAssignmentDocument',
+    source: 'firestore/sales_partner_assignments.schema.json',
+    schema: schemaSalesPartnerAssignmentDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'CatchWhatsappReadinessApprovalDocument',
@@ -5909,6 +5949,12 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'RegisterSalesPartnerCallablePayload': schemaRegisterSalesPartnerCallablePayloadSchema,
+  'NominateSalesOrganizerCallablePayload': schemaNominateSalesOrganizerCallablePayloadSchema,
+  'GetSalesPartnerWorkspaceCallablePayload': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  'DecideSalesPartnerAssignmentCallablePayload': schemaDecideSalesPartnerAssignmentCallablePayloadSchema,
+  'AdminAssignSalesPartnerCallablePayload': schemaAdminAssignSalesPartnerCallablePayloadSchema,
+  'AdminRevokeSalesPartnerAccessCallablePayload': schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema,
   'ManageProgramLodgingCallablePayload': schemaManageProgramLodgingCallablePayloadSchema,
   'ManageProgramLodgingCallableResponse': schemaManageProgramLodgingCallableResponseSchema,
   'ProgramLodgingConfigDocument': schemaProgramLodgingConfigDocumentSchema,
@@ -5918,6 +5964,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ProgramLodgingReceiptDocument': schemaProgramLodgingReceiptDocumentSchema,
   'WorkspaceMembershipAssertionDocument': schemaWorkspaceMembershipAssertionDocumentSchema,
   'WorkspaceMembershipDecisionDocument': schemaWorkspaceMembershipDecisionDocumentSchema,
+  'SalesPartnerMembershipDocument': schemaSalesPartnerMembershipDocumentSchema,
+  'SalesPartnerAssignmentDocument': schemaSalesPartnerAssignmentDocumentSchema,
   'CatchWhatsappReadinessApprovalDocument': schemaCatchWhatsappReadinessApprovalDocumentSchema,
   'CatchWhatsappReadinessIngressDocument': schemaCatchWhatsappReadinessIngressDocumentSchema,
   'CatchWhatsappReadinessAuditDocument': schemaCatchWhatsappReadinessAuditDocumentSchema,
@@ -7090,6 +7138,12 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/register_sales_partner_payload.schema.json': schemaRegisterSalesPartnerCallablePayloadSchema,
+  'callables/nominate_sales_organizer_payload.schema.json': schemaNominateSalesOrganizerCallablePayloadSchema,
+  'callables/get_sales_partner_workspace_payload.schema.json': schemaGetSalesPartnerWorkspaceCallablePayloadSchema,
+  'callables/decide_sales_partner_assignment_payload.schema.json': schemaDecideSalesPartnerAssignmentCallablePayloadSchema,
+  'callables/admin_assign_sales_partner_payload.schema.json': schemaAdminAssignSalesPartnerCallablePayloadSchema,
+  'callables/admin_revoke_sales_partner_access_payload.schema.json': schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema,
   'callables/manage_program_lodging_payload.schema.json': schemaManageProgramLodgingCallablePayloadSchema,
   'callable_responses/manage_program_lodging_response.schema.json': schemaManageProgramLodgingCallableResponseSchema,
   'firestore/program_lodging_configs.schema.json': schemaProgramLodgingConfigDocumentSchema,
@@ -7099,6 +7153,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/program_lodging_receipts.schema.json': schemaProgramLodgingReceiptDocumentSchema,
   'firestore/workspace_membership_assertions.schema.json': schemaWorkspaceMembershipAssertionDocumentSchema,
   'firestore/workspace_membership_decisions.schema.json': schemaWorkspaceMembershipDecisionDocumentSchema,
+  'firestore/sales_partner_memberships.schema.json': schemaSalesPartnerMembershipDocumentSchema,
+  'firestore/sales_partner_assignments.schema.json': schemaSalesPartnerAssignmentDocumentSchema,
   'firestore/catch_whatsapp_readiness_approval.schema.json': schemaCatchWhatsappReadinessApprovalDocumentSchema,
   'firestore/catch_whatsapp_readiness_ingress.schema.json': schemaCatchWhatsappReadinessIngressDocumentSchema,
   'firestore/catch_whatsapp_readiness_audit.schema.json': schemaCatchWhatsappReadinessAuditDocumentSchema,

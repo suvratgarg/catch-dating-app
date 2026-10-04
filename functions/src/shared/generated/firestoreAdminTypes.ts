@@ -816,6 +816,54 @@ export interface WorkspaceMembershipDecisionDocument {
   observedAtMillis: number;
 }
 
+export interface SalesPartnerMembershipDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: number;
+  createdAt: string;
+  updatedAt: string;
+  uid: string;
+  status: "active" | "revoked";
+  termsVersion: "referral-preview-v1";
+  acceptedAt: string;
+  expiresAt: string;
+  displayName: string;
+  /**
+   * @maxItems 30
+   */
+  marketingGrants: {
+    campaignId: string;
+    channel: "email" | "whatsapp" | "other";
+    /**
+     * @maxItems 30
+     */
+    assetIds: string[];
+    expiresAt: string;
+  }[];
+}
+
+export interface SalesPartnerAssignmentDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: number;
+  updatedAt: string;
+  organizerId: string;
+  partnerUid: string;
+  status: "offered" | "accepted" | "declined" | "revoked";
+  originatorUid: string | null;
+  introducingSenderUid: string | null;
+  catchOwnerUid: string;
+  activationOwnerUid: string | null;
+  relationshipContext: string | null;
+  relationshipConfirmedAt: string | null;
+  channel: ("email" | "whatsapp" | "other") | null;
+  nextAction: string;
+  reviewAt: string;
+  expiresAt: string;
+  assignedAt: string;
+  reason: string;
+}
+
 /**
  * Server-only independently authorized review. Provisioning consumes it atomically with readiness and immutable audit; this source provides no approval writer. No TTL, token, endpoint or message body.
  */
@@ -1878,7 +1926,12 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.accept"
     | "commercial.finance.attest"
     | "imports.compensation.apply"
-    | "imports.history.apply";
+    | "imports.history.apply"
+    | "partner.register"
+    | "partner.nominate"
+    | "partner.assign"
+    | "partner.assignment.decide"
+    | "partner.revoke";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -2544,7 +2597,7 @@ export interface SalesInboundIntentsDocument {
   revision: number;
   classification: "sales_private";
   intentId: string;
-  source: "website";
+  source: "website" | "partner";
   submissionId: string;
   requestHash: string;
   waitlistId: string;
@@ -2552,7 +2605,7 @@ export interface SalesInboundIntentsDocument {
   organizerId: string | null;
   evidenceStatus: "self_reported";
   fullName: string;
-  email: string;
+  email: string | null;
   city: string;
   entryRoute: string | null;
   alreadyJoined: boolean;
@@ -2588,6 +2641,7 @@ export interface SalesInboundIntentsDocument {
   linkedAt?: FirebaseFirestore.Timestamp;
   linkedBy?: string;
   linkRequestId?: string;
+  partnerUid?: string;
 }
 
 /**

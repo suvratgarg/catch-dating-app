@@ -12,6 +12,12 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| RegisterSalesPartnerCallablePayload | `callables/register_sales_partner_payload.schema.json` | `functions/src/shared/generated/registerSalesPartnerCallablePayload.ts` |
+| NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `functions/src/shared/generated/nominateSalesOrganizerCallablePayload.ts` |
+| GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `functions/src/shared/generated/getSalesPartnerWorkspaceCallablePayload.ts` |
+| DecideSalesPartnerAssignmentCallablePayload | `callables/decide_sales_partner_assignment_payload.schema.json` | `functions/src/shared/generated/decideSalesPartnerAssignmentCallablePayload.ts` |
+| AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `functions/src/shared/generated/adminAssignSalesPartnerCallablePayload.ts` |
+| AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `functions/src/shared/generated/adminRevokeSalesPartnerAccessCallablePayload.ts` |
 | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallablePayload.ts` |
 | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallableResponse.ts` |
 | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `functions/src/shared/generated/programLodgingConfigDocument.ts` |
@@ -21,6 +27,8 @@ Do not edit it by hand.
 | ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `functions/src/shared/generated/programLodgingReceiptDocument.ts` |
 | WorkspaceMembershipAssertionDocument | `firestore/workspace_membership_assertions.schema.json` | `functions/src/shared/generated/workspaceMembershipAssertionDocument.ts` |
 | WorkspaceMembershipDecisionDocument | `firestore/workspace_membership_decisions.schema.json` | `functions/src/shared/generated/workspaceMembershipDecisionDocument.ts` |
+| SalesPartnerMembershipDocument | `firestore/sales_partner_memberships.schema.json` | `functions/src/shared/generated/salesPartnerMembershipDocument.ts` |
+| SalesPartnerAssignmentDocument | `firestore/sales_partner_assignments.schema.json` | `functions/src/shared/generated/salesPartnerAssignmentDocument.ts` |
 | CatchWhatsappReadinessApprovalDocument | `firestore/catch_whatsapp_readiness_approval.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessApprovalDocument.ts` |
 | CatchWhatsappReadinessIngressDocument | `firestore/catch_whatsapp_readiness_ingress.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessIngressDocument.ts` |
 | CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts` |
@@ -1195,6 +1203,12 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaRegisterSalesPartnerCallablePayloadSchema` | RegisterSalesPartnerCallablePayload | `callables/register_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_sales_partner_callable_payload.g.dart` |
+| `schemaNominateSalesOrganizerCallablePayloadSchema` | NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/nominate_sales_organizer_callable_payload.g.dart` |
+| `schemaGetSalesPartnerWorkspaceCallablePayloadSchema` | GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_sales_partner_workspace_callable_payload.g.dart` |
+| `schemaDecideSalesPartnerAssignmentCallablePayloadSchema` | DecideSalesPartnerAssignmentCallablePayload | `callables/decide_sales_partner_assignment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/decide_sales_partner_assignment_callable_payload.g.dart` |
+| `schemaAdminAssignSalesPartnerCallablePayloadSchema` | AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_assign_sales_partner_callable_payload.g.dart` |
+| `schemaAdminRevokeSalesPartnerAccessCallablePayloadSchema` | AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_revoke_sales_partner_access_callable_payload.g.dart` |
 | `schemaManageProgramLodgingCallablePayloadSchema` | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_payload.g.dart` |
 | `schemaManageProgramLodgingCallableResponseSchema` | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_response.g.dart` |
 | `schemaProgramLodgingConfigDocumentSchema` | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_config_document.g.dart` |
@@ -1204,6 +1218,8 @@ Do not edit it by hand.
 | `schemaProgramLodgingReceiptDocumentSchema` | ProgramLodgingReceiptDocument | `firestore/program_lodging_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_receipt_document.g.dart` |
 | `schemaWorkspaceMembershipAssertionDocumentSchema` | WorkspaceMembershipAssertionDocument | `firestore/workspace_membership_assertions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_membership_assertion_document.g.dart` |
 | `schemaWorkspaceMembershipDecisionDocumentSchema` | WorkspaceMembershipDecisionDocument | `firestore/workspace_membership_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_membership_decision_document.g.dart` |
+| `schemaSalesPartnerMembershipDocumentSchema` | SalesPartnerMembershipDocument | `firestore/sales_partner_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_partner_membership_document.g.dart` |
+| `schemaSalesPartnerAssignmentDocumentSchema` | SalesPartnerAssignmentDocument | `firestore/sales_partner_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_partner_assignment_document.g.dart` |
 | `schemaCatchWhatsappReadinessApprovalDocumentSchema` | CatchWhatsappReadinessApprovalDocument | `firestore/catch_whatsapp_readiness_approval.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_approval_document.g.dart` |
 | `schemaCatchWhatsappReadinessIngressDocumentSchema` | CatchWhatsappReadinessIngressDocument | `firestore/catch_whatsapp_readiness_ingress.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_ingress_document.g.dart` |
 | `schemaCatchWhatsappReadinessAuditDocumentSchema` | CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_audit_document.g.dart` |
@@ -2378,6 +2394,10 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| NominateSalesOrganizerCallableRequest | NominateSalesOrganizerCallablePayload | `callables/nominate_sales_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/nominate_sales_organizer_callable_request.g.dart` |
+| GetSalesPartnerWorkspaceCallableRequest | GetSalesPartnerWorkspaceCallablePayload | `callables/get_sales_partner_workspace_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_sales_partner_workspace_callable_request.g.dart` |
+| AdminAssignSalesPartnerCallableRequest | AdminAssignSalesPartnerCallablePayload | `callables/admin_assign_sales_partner_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_assign_sales_partner_callable_request.g.dart` |
+| AdminRevokeSalesPartnerAccessCallableRequest | AdminRevokeSalesPartnerAccessCallablePayload | `callables/admin_revoke_sales_partner_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_revoke_sales_partner_access_callable_request.g.dart` |
 | AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
 | AdminSendCatchWhatsappReplyCallableRequest | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_send_catch_whatsapp_reply_callable_request.g.dart` |
 | GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |
@@ -2796,6 +2816,8 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| RegisterSalesPartnerCallablePayload | cannot map field "termsVersion" (no type) |
+| DecideSalesPartnerAssignmentCallablePayload | cannot map field "decision" (no type) |
 | ManageProgramLodgingCallablePayload | not an object schema |
 | DecideOrganizerCommunityMembershipCallablePayload | cannot map field "action" (no type) |
 | AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |

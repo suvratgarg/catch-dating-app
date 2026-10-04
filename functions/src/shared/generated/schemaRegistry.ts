@@ -5,6 +5,12 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {registerSalesPartnerCallablePayloadSchema} from "./schemas/registerSalesPartnerInput";
+export {nominateSalesOrganizerCallablePayloadSchema} from "./schemas/nominateSalesOrganizerInput";
+export {getSalesPartnerWorkspaceCallablePayloadSchema} from "./schemas/getSalesPartnerWorkspaceInput";
+export {decideSalesPartnerAssignmentCallablePayloadSchema} from "./schemas/decideSalesPartnerAssignmentInput";
+export {adminAssignSalesPartnerCallablePayloadSchema} from "./schemas/adminAssignSalesPartnerInput";
+export {adminRevokeSalesPartnerAccessCallablePayloadSchema} from "./schemas/adminRevokeSalesPartnerAccessInput";
 export {manageProgramLodgingCallablePayloadSchema} from "./schemas/manageProgramLodgingInput";
 export {manageProgramLodgingCallableResponseSchema} from "./schemas/manageProgramLodgingOutput";
 export {programLodgingConfigDocumentSchema} from "./schemas/programLodgingConfigDocument";
@@ -14,6 +20,8 @@ export {programLodgingWorkflowDocumentSchema} from "./schemas/programLodgingWork
 export {programLodgingReceiptDocumentSchema} from "./schemas/programLodgingReceiptDocument";
 export {workspaceMembershipAssertionDocumentSchema} from "./schemas/workspaceMembershipAssertionDocument";
 export {workspaceMembershipDecisionDocumentSchema} from "./schemas/workspaceMembershipDecisionDocument";
+export {salesPartnerMembershipDocumentSchema} from "./schemas/salesPartnerMembershipDocument";
+export {salesPartnerAssignmentDocumentSchema} from "./schemas/salesPartnerAssignmentDocument";
 export {catchWhatsappReadinessApprovalDocumentSchema} from "./schemas/catchWhatsappReadinessApprovalDocument";
 export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsappReadinessIngressDocument";
 export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";

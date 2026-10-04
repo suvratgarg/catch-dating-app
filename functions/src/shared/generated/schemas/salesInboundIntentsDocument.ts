@@ -50,7 +50,10 @@ export const salesInboundIntentsDocumentSchema: Record<string, unknown> = {
       "pattern": "^[a-f0-9]{64}$"
     },
     "source": {
-      "const": "website"
+      "enum": [
+        "website",
+        "partner"
+      ]
     },
     "submissionId": {
       "type": "string",
@@ -94,9 +97,16 @@ export const salesInboundIntentsDocumentSchema: Record<string, unknown> = {
       "maxLength": 100
     },
     "email": {
-      "type": "string",
-      "format": "email",
-      "maxLength": 320
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "city": {
       "type": "string",
@@ -404,6 +414,11 @@ export const salesInboundIntentsDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   },
   "allOf": [
@@ -434,6 +449,37 @@ export const salesInboundIntentsDocumentSchema: Record<string, unknown> = {
           "organizerId": {
             "type": "null"
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "partner"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "partnerUid"
+        ],
+        "properties": {
+          "email": {
+            "type": "null"
+          },
+          "entryRoute": {
+            "const": "/partners/"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "partnerUid": false
         }
       }
     }

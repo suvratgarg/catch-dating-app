@@ -1965,6 +1965,74 @@ abstract final class CatchContractConstraints {
     pattern: '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
   );
 
+  static const adminAssignSalesPartnerCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadExpiresAt = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadNextAction = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.nextAction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadOriginatorUid = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.originatorUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadPartnerUid = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.partnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.reason',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSalesPartnerCallablePayloadReviewAt = CatchContractFieldConstraints(
+    path: 'adminAssignSalesPartnerCallablePayload.reviewAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
   static const adminAttestSalesHostSettlementPayloadAmountMinor = CatchContractFieldConstraints(
     path: 'adminAttestSalesHostSettlementPayload.amountMinor',
     required: true,
@@ -11359,6 +11427,44 @@ abstract final class CatchContractConstraints {
   static const adminRevokeOrganizerEntitlementGrantCallablePayloadReason = CatchContractFieldConstraints(
     path: 'adminRevokeOrganizerEntitlementGrantCallablePayload.reason',
     maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeSalesPartnerAccessCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'adminRevokeSalesPartnerAccessCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminRevokeSalesPartnerAccessCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminRevokeSalesPartnerAccessCallablePayload.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeSalesPartnerAccessCallablePayloadPartnerUid = CatchContractFieldConstraints(
+    path: 'adminRevokeSalesPartnerAccessCallablePayload.partnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeSalesPartnerAccessCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'adminRevokeSalesPartnerAccessCallablePayload.reason',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRevokeSalesPartnerAccessCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminRevokeSalesPartnerAccessCallablePayload.requestId',
+    maxLength: 128,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -29188,6 +29294,48 @@ abstract final class CatchContractConstraints {
     path: 'decideOrganizerCommunityMembershipCallableResponse.replayed',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadChannel = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.channel',
+    required: true,
+    enumValues: <String>['email', 'whatsapp', 'other'],
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.decision',
+    required: true,
+    enumValues: <String>['accept', 'decline'],
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadRelationshipContext = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.relationshipContext',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const decideSalesPartnerAssignmentCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'decideSalesPartnerAssignmentCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const deleteClubCallablePayloadClubId = CatchContractFieldConstraints(
@@ -83552,6 +83700,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{20,160}\$',
   );
 
+  static const getSalesPartnerWorkspaceCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'getSalesPartnerWorkspaceCallablePayload.cursor',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const grantEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'grantEventStaffCallablePayload.eventId',
     maxLength: 180,
@@ -94565,6 +94720,45 @@ abstract final class CatchContractConstraints {
   static const mutateOrganizerContactNoteCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'mutateOrganizerContactNoteCallablePayload.organizerId',
     maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nominateSalesOrganizerCallablePayloadCity = CatchContractFieldConstraints(
+    path: 'nominateSalesOrganizerCallablePayload.city',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nominateSalesOrganizerCallablePayloadName = CatchContractFieldConstraints(
+    path: 'nominateSalesOrganizerCallablePayload.name',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nominateSalesOrganizerCallablePayloadRelationshipContext = CatchContractFieldConstraints(
+    path: 'nominateSalesOrganizerCallablePayload.relationshipContext',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const nominateSalesOrganizerCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'nominateSalesOrganizerCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nominateSalesOrganizerCallablePayloadUrl = CatchContractFieldConstraints(
+    path: 'nominateSalesOrganizerCallablePayload.url',
+    maxLength: 512,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -134040,6 +134234,27 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['registered', 'waitlisted', 'alreadyRegistered'],
   );
 
+  static const registerSalesPartnerCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'registerSalesPartnerCallablePayload.displayName',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerSalesPartnerCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'registerSalesPartnerCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerSalesPartnerCallablePayloadTermsVersion = CatchContractFieldConstraints(
+    path: 'registerSalesPartnerCallablePayload.termsVersion',
+    required: true,
+  );
+
   static const removeClubHostCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'removeClubHostCallablePayload.clubId',
     maxLength: 180,
@@ -136110,7 +136325,7 @@ abstract final class CatchContractConstraints {
   static const salesActionReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesActionReceiptDocument.action',
     required: true,
-    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply'],
+    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply', 'partner.register', 'partner.nominate', 'partner.assign', 'partner.assignment.decide', 'partner.revoke'],
   );
 
   static const salesActionReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -140178,7 +140393,6 @@ abstract final class CatchContractConstraints {
   static const salesInboundIntentsDocumentEmail = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.email',
     maxLength: 320,
-    required: true,
     valueTypes: <String>['string'],
     format: 'email',
   );
@@ -140378,6 +140592,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const salesInboundIntentsDocumentPartnerUid = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.partnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const salesInboundIntentsDocumentRequestHash = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.requestHash',
     required: true,
@@ -140400,6 +140622,7 @@ abstract final class CatchContractConstraints {
   static const salesInboundIntentsDocumentSource = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.source',
     required: true,
+    enumValues: <String>['website', 'partner'],
   );
 
   static const salesInboundIntentsDocumentStatus = CatchContractFieldConstraints(
@@ -142383,6 +142606,254 @@ abstract final class CatchContractConstraints {
 
   static const salesOutreachJobsDocumentUpdatedAt = CatchContractFieldConstraints(
     path: 'salesOutreachJobsDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerAssignmentDocumentActivationOwnerUid = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.activationOwnerUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentAssignedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.assignedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerAssignmentDocumentCatchOwnerUid = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.catchOwnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentChannel = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.channel',
+    enumValues: <String>['email', 'whatsapp', 'other'],
+  );
+
+  static const salesPartnerAssignmentDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.classification',
+    required: true,
+  );
+
+  static const salesPartnerAssignmentDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerAssignmentDocumentIntroducingSenderUid = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.introducingSenderUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentNextAction = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.nextAction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentOriginatorUid = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.originatorUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentPartnerUid = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.partnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentReason = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.reason',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentRelationshipConfirmedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.relationshipConfirmedAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerAssignmentDocumentRelationshipContext = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.relationshipContext',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerAssignmentDocumentReviewAt = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.reviewAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerAssignmentDocumentRevision = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesPartnerAssignmentDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesPartnerAssignmentDocumentStatus = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.status',
+    required: true,
+    enumValues: <String>['offered', 'accepted', 'declined', 'revoked'],
+  );
+
+  static const salesPartnerAssignmentDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerAssignmentDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentAcceptedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.acceptedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.classification',
+    required: true,
+  );
+
+  static const salesPartnerMembershipDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.createdAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.displayName',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrants = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 30,
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsAssetIds = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.assetIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsAssetIdsItems = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.assetIds.items',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsCampaignId = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.campaignId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsChannel = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.channel',
+    required: true,
+    enumValues: <String>['email', 'whatsapp', 'other'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsExpiresAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentRevision = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesPartnerMembershipDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesPartnerMembershipDocumentStatus = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.status',
+    required: true,
+    enumValues: <String>['active', 'revoked'],
+  );
+
+  static const salesPartnerMembershipDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.termsVersion',
+    required: true,
+  );
+
+  static const salesPartnerMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.uid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.updatedAt',
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
@@ -159360,6 +159831,15 @@ abstract final class CatchContractConstraints {
     'adminAssignSafetyTriageItemCallableResponse.assignment.queue': adminAssignSafetyTriageItemCallableResponseAssignmentQueue,
     'adminAssignSafetyTriageItemCallableResponse.assignment.severity': adminAssignSafetyTriageItemCallableResponseAssignmentSeverity,
     'adminAssignSafetyTriageItemCallableResponse.targetPath': adminAssignSafetyTriageItemCallableResponseTargetPath,
+    'adminAssignSalesPartnerCallablePayload.expectedRevision': adminAssignSalesPartnerCallablePayloadExpectedRevision,
+    'adminAssignSalesPartnerCallablePayload.expiresAt': adminAssignSalesPartnerCallablePayloadExpiresAt,
+    'adminAssignSalesPartnerCallablePayload.nextAction': adminAssignSalesPartnerCallablePayloadNextAction,
+    'adminAssignSalesPartnerCallablePayload.organizerId': adminAssignSalesPartnerCallablePayloadOrganizerId,
+    'adminAssignSalesPartnerCallablePayload.originatorUid': adminAssignSalesPartnerCallablePayloadOriginatorUid,
+    'adminAssignSalesPartnerCallablePayload.partnerUid': adminAssignSalesPartnerCallablePayloadPartnerUid,
+    'adminAssignSalesPartnerCallablePayload.reason': adminAssignSalesPartnerCallablePayloadReason,
+    'adminAssignSalesPartnerCallablePayload.requestId': adminAssignSalesPartnerCallablePayloadRequestId,
+    'adminAssignSalesPartnerCallablePayload.reviewAt': adminAssignSalesPartnerCallablePayloadReviewAt,
     'adminAttestSalesHostSettlementPayload.amountMinor': adminAttestSalesHostSettlementPayloadAmountMinor,
     'adminAttestSalesHostSettlementPayload.currency': adminAttestSalesHostSettlementPayloadCurrency,
     'adminAttestSalesHostSettlementPayload.evidence.evidenceId': adminAttestSalesHostSettlementPayloadEvidenceEvidenceId,
@@ -160660,6 +161140,11 @@ abstract final class CatchContractConstraints {
     'adminRevokeOrganizerEntitlementGrantCallablePayload.operationId': adminRevokeOrganizerEntitlementGrantCallablePayloadOperationId,
     'adminRevokeOrganizerEntitlementGrantCallablePayload.organizerId': adminRevokeOrganizerEntitlementGrantCallablePayloadOrganizerId,
     'adminRevokeOrganizerEntitlementGrantCallablePayload.reason': adminRevokeOrganizerEntitlementGrantCallablePayloadReason,
+    'adminRevokeSalesPartnerAccessCallablePayload.expectedRevision': adminRevokeSalesPartnerAccessCallablePayloadExpectedRevision,
+    'adminRevokeSalesPartnerAccessCallablePayload.organizerId': adminRevokeSalesPartnerAccessCallablePayloadOrganizerId,
+    'adminRevokeSalesPartnerAccessCallablePayload.partnerUid': adminRevokeSalesPartnerAccessCallablePayloadPartnerUid,
+    'adminRevokeSalesPartnerAccessCallablePayload.reason': adminRevokeSalesPartnerAccessCallablePayloadReason,
+    'adminRevokeSalesPartnerAccessCallablePayload.requestId': adminRevokeSalesPartnerAccessCallablePayloadRequestId,
     'adminSalesEvidenceProposalsListCallablePayload.cursor': adminSalesEvidenceProposalsListCallablePayloadCursor,
     'adminSalesEvidenceProposalsListCallablePayload.limit': adminSalesEvidenceProposalsListCallablePayloadLimit,
     'adminSalesEvidenceProposalsListCallablePayload.organizerId': adminSalesEvidenceProposalsListCallablePayloadOrganizerId,
@@ -163074,6 +163559,12 @@ abstract final class CatchContractConstraints {
     'decideOrganizerCommunityMembershipCallableResponse.decisionRevision': decideOrganizerCommunityMembershipCallableResponseDecisionRevision,
     'decideOrganizerCommunityMembershipCallableResponse.membershipId': decideOrganizerCommunityMembershipCallableResponseMembershipId,
     'decideOrganizerCommunityMembershipCallableResponse.replayed': decideOrganizerCommunityMembershipCallableResponseReplayed,
+    'decideSalesPartnerAssignmentCallablePayload.channel': decideSalesPartnerAssignmentCallablePayloadChannel,
+    'decideSalesPartnerAssignmentCallablePayload.decision': decideSalesPartnerAssignmentCallablePayloadDecision,
+    'decideSalesPartnerAssignmentCallablePayload.expectedRevision': decideSalesPartnerAssignmentCallablePayloadExpectedRevision,
+    'decideSalesPartnerAssignmentCallablePayload.organizerId': decideSalesPartnerAssignmentCallablePayloadOrganizerId,
+    'decideSalesPartnerAssignmentCallablePayload.relationshipContext': decideSalesPartnerAssignmentCallablePayloadRelationshipContext,
+    'decideSalesPartnerAssignmentCallablePayload.requestId': decideSalesPartnerAssignmentCallablePayloadRequestId,
     'deleteClubCallablePayload.clubId': deleteClubCallablePayloadClubId,
     'deletedUserTombstoneDocument.completedAt._nanoseconds': deletedUserTombstoneDocumentCompletedAtNanoseconds,
     'deletedUserTombstoneDocument.completedAt._seconds': deletedUserTombstoneDocumentCompletedAtSeconds,
@@ -170346,6 +170837,7 @@ abstract final class CatchContractConstraints {
     'getProgramHouseholdRsvpViewCallablePayload.token': getProgramHouseholdRsvpViewCallablePayloadToken,
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
+    'getSalesPartnerWorkspaceCallablePayload.cursor': getSalesPartnerWorkspaceCallablePayloadCursor,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
     'grantEventStaffCallablePayload.phoneNumber': grantEventStaffCallablePayloadPhoneNumber,
@@ -171869,6 +172361,11 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactNoteCallablePayload.expectedRevision': mutateOrganizerContactNoteCallablePayloadExpectedRevision,
     'mutateOrganizerContactNoteCallablePayload.noteId': mutateOrganizerContactNoteCallablePayloadNoteId,
     'mutateOrganizerContactNoteCallablePayload.organizerId': mutateOrganizerContactNoteCallablePayloadOrganizerId,
+    'nominateSalesOrganizerCallablePayload.city': nominateSalesOrganizerCallablePayloadCity,
+    'nominateSalesOrganizerCallablePayload.name': nominateSalesOrganizerCallablePayloadName,
+    'nominateSalesOrganizerCallablePayload.relationshipContext': nominateSalesOrganizerCallablePayloadRelationshipContext,
+    'nominateSalesOrganizerCallablePayload.requestId': nominateSalesOrganizerCallablePayloadRequestId,
+    'nominateSalesOrganizerCallablePayload.url': nominateSalesOrganizerCallablePayloadUrl,
     'offerEventTargetListCallableResponse.events': offerEventTargetListCallableResponseEvents,
     'offerEventTargetListCallableResponse.events.items.eventId': offerEventTargetListCallableResponseEventsItemsEventId,
     'offerEventTargetListCallableResponse.events.items.name': offerEventTargetListCallableResponseEventsItemsName,
@@ -177304,6 +177801,9 @@ abstract final class CatchContractConstraints {
     'registerPublicEventCallableResponse.attendeeId': registerPublicEventCallableResponseAttendeeId,
     'registerPublicEventCallableResponse.eventId': registerPublicEventCallableResponseEventId,
     'registerPublicEventCallableResponse.status': registerPublicEventCallableResponseStatus,
+    'registerSalesPartnerCallablePayload.displayName': registerSalesPartnerCallablePayloadDisplayName,
+    'registerSalesPartnerCallablePayload.requestId': registerSalesPartnerCallablePayloadRequestId,
+    'registerSalesPartnerCallablePayload.termsVersion': registerSalesPartnerCallablePayloadTermsVersion,
     'removeClubHostCallablePayload.clubId': removeClubHostCallablePayloadClubId,
     'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
@@ -178194,6 +178694,7 @@ abstract final class CatchContractConstraints {
     'salesInboundIntentsDocument.linkedBy': salesInboundIntentsDocumentLinkedBy,
     'salesInboundIntentsDocument.linkRequestId': salesInboundIntentsDocumentLinkRequestId,
     'salesInboundIntentsDocument.organizerId': salesInboundIntentsDocumentOrganizerId,
+    'salesInboundIntentsDocument.partnerUid': salesInboundIntentsDocumentPartnerUid,
     'salesInboundIntentsDocument.requestHash': salesInboundIntentsDocumentRequestHash,
     'salesInboundIntentsDocument.revision': salesInboundIntentsDocumentRevision,
     'salesInboundIntentsDocument.schemaVersion': salesInboundIntentsDocumentSchemaVersion,
@@ -178466,6 +178967,42 @@ abstract final class CatchContractConstraints {
     'salesOutreachJobsDocument.sourceRequest.referenceIds.items': salesOutreachJobsDocumentSourceRequestReferenceIdsItems,
     'salesOutreachJobsDocument.status': salesOutreachJobsDocumentStatus,
     'salesOutreachJobsDocument.updatedAt': salesOutreachJobsDocumentUpdatedAt,
+    'salesPartnerAssignmentDocument.activationOwnerUid': salesPartnerAssignmentDocumentActivationOwnerUid,
+    'salesPartnerAssignmentDocument.assignedAt': salesPartnerAssignmentDocumentAssignedAt,
+    'salesPartnerAssignmentDocument.catchOwnerUid': salesPartnerAssignmentDocumentCatchOwnerUid,
+    'salesPartnerAssignmentDocument.channel': salesPartnerAssignmentDocumentChannel,
+    'salesPartnerAssignmentDocument.classification': salesPartnerAssignmentDocumentClassification,
+    'salesPartnerAssignmentDocument.expiresAt': salesPartnerAssignmentDocumentExpiresAt,
+    'salesPartnerAssignmentDocument.introducingSenderUid': salesPartnerAssignmentDocumentIntroducingSenderUid,
+    'salesPartnerAssignmentDocument.nextAction': salesPartnerAssignmentDocumentNextAction,
+    'salesPartnerAssignmentDocument.organizerId': salesPartnerAssignmentDocumentOrganizerId,
+    'salesPartnerAssignmentDocument.originatorUid': salesPartnerAssignmentDocumentOriginatorUid,
+    'salesPartnerAssignmentDocument.partnerUid': salesPartnerAssignmentDocumentPartnerUid,
+    'salesPartnerAssignmentDocument.reason': salesPartnerAssignmentDocumentReason,
+    'salesPartnerAssignmentDocument.relationshipConfirmedAt': salesPartnerAssignmentDocumentRelationshipConfirmedAt,
+    'salesPartnerAssignmentDocument.relationshipContext': salesPartnerAssignmentDocumentRelationshipContext,
+    'salesPartnerAssignmentDocument.reviewAt': salesPartnerAssignmentDocumentReviewAt,
+    'salesPartnerAssignmentDocument.revision': salesPartnerAssignmentDocumentRevision,
+    'salesPartnerAssignmentDocument.schemaVersion': salesPartnerAssignmentDocumentSchemaVersion,
+    'salesPartnerAssignmentDocument.status': salesPartnerAssignmentDocumentStatus,
+    'salesPartnerAssignmentDocument.updatedAt': salesPartnerAssignmentDocumentUpdatedAt,
+    'salesPartnerMembershipDocument.acceptedAt': salesPartnerMembershipDocumentAcceptedAt,
+    'salesPartnerMembershipDocument.classification': salesPartnerMembershipDocumentClassification,
+    'salesPartnerMembershipDocument.createdAt': salesPartnerMembershipDocumentCreatedAt,
+    'salesPartnerMembershipDocument.displayName': salesPartnerMembershipDocumentDisplayName,
+    'salesPartnerMembershipDocument.expiresAt': salesPartnerMembershipDocumentExpiresAt,
+    'salesPartnerMembershipDocument.marketingGrants': salesPartnerMembershipDocumentMarketingGrants,
+    'salesPartnerMembershipDocument.marketingGrants.items.assetIds': salesPartnerMembershipDocumentMarketingGrantsItemsAssetIds,
+    'salesPartnerMembershipDocument.marketingGrants.items.assetIds.items': salesPartnerMembershipDocumentMarketingGrantsItemsAssetIdsItems,
+    'salesPartnerMembershipDocument.marketingGrants.items.campaignId': salesPartnerMembershipDocumentMarketingGrantsItemsCampaignId,
+    'salesPartnerMembershipDocument.marketingGrants.items.channel': salesPartnerMembershipDocumentMarketingGrantsItemsChannel,
+    'salesPartnerMembershipDocument.marketingGrants.items.expiresAt': salesPartnerMembershipDocumentMarketingGrantsItemsExpiresAt,
+    'salesPartnerMembershipDocument.revision': salesPartnerMembershipDocumentRevision,
+    'salesPartnerMembershipDocument.schemaVersion': salesPartnerMembershipDocumentSchemaVersion,
+    'salesPartnerMembershipDocument.status': salesPartnerMembershipDocumentStatus,
+    'salesPartnerMembershipDocument.termsVersion': salesPartnerMembershipDocumentTermsVersion,
+    'salesPartnerMembershipDocument.uid': salesPartnerMembershipDocumentUid,
+    'salesPartnerMembershipDocument.updatedAt': salesPartnerMembershipDocumentUpdatedAt,
     'salesPilotPlansDocument.classification': salesPilotPlansDocumentClassification,
     'salesPilotPlansDocument.endsAt': salesPilotPlansDocumentEndsAt,
     'salesPilotPlansDocument.objective': salesPilotPlansDocumentObjective,
